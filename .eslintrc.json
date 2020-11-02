@@ -1,0 +1,52 @@
+{
+  "plugins": ["prettier", "@typescript-eslint", "jest"],
+  "extends": [
+    "airbnb-typescript",
+    "airbnb/hooks",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:jest/recommended",
+    "prettier",
+    "prettier/react",
+    "prettier/@typescript-eslint",
+    "plugin:prettier/recommended"
+  ],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "env": {
+    "node": true,
+    "browser": true,
+    "jest": true
+  },
+  "rules": {
+    "prettier/prettier": "error",
+    "global-require": "off",
+    "no-prototype-builtins": "off",
+    "react/destructuring-assignment": "off",
+    "react/jsx-filename-extension": "off",
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "default-case": "off",
+    "quotes": [
+      "error",
+      "single",
+      {
+        "avoidEscape": true
+      }
+    ],
+
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "no-empty-function": "off",
+    "no-empty": "off",
+    "consistent-return": "off",
+    "react/require-default-props": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off"
+  }
+}
