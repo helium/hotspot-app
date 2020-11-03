@@ -1,12 +1,19 @@
 import React from 'react';
-import { Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeAreaBox from '../components/SafeAreaBox';
+import Text from '../components/Text';
 
 const SplashScreen = () => {
   return (
-    <SafeAreaView>
-      <Text>Splash</Text>
-    </SafeAreaView>
+    <SafeAreaBox
+      backgroundColor="mainBackground"
+      flex={1}
+      justifyContent="space-evenly"
+      alignContent="center"
+      padding="xl"
+      flexDirection="column"
+    >
+      <Text variant="header">Helium</Text>
+    </SafeAreaBox>
   );
 };
 

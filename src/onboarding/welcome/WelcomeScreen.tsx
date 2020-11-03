@@ -1,6 +1,7 @@
 import React from 'react';
-import { Text, Button } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import Button from '../../components/Button';
+import SafeAreaBox from '../../components/SafeAreaBox';
+import Text from '../../components/Text';
 import { WelcomeScreenNavigationProp } from '../onboardingTypes';
 
 type Props = {
@@ -9,13 +10,20 @@ type Props = {
 
 const WelcomeScreen = ({ navigation }: Props) => {
   return (
-    <SafeAreaView>
-      <Text>Welcome</Text>
+    <SafeAreaBox
+      backgroundColor="mainBackground"
+      flex={1}
+      justifyContent="space-evenly"
+      alignContent="center"
+      padding="xl"
+      flexDirection="column"
+    >
+      <Text variant="body">Welcome</Text>
       <Button
         title="Create an Account"
         onPress={() => navigation.push('AccountDescription')}
       />
-    </SafeAreaView>
+    </SafeAreaBox>
   );
 };
 

@@ -1,12 +1,18 @@
 import React from 'react';
-import { Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeAreaBox from '../../components/SafeAreaBox';
+import Text from '../../components/Text';
 
 const AccountDescriptionScreen = () => {
   return (
-    <SafeAreaView>
-      <Text>An account that is completely yours</Text>
-    </SafeAreaView>
+    <SafeAreaBox
+      backgroundColor="mainBackground"
+      flex={1}
+      justifyContent="center"
+      padding="xl"
+      flexDirection="column"
+    >
+      <Text variant="body">An account that is completely yours</Text>
+    </SafeAreaBox>
   );
 };
 
