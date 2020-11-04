@@ -4,6 +4,7 @@ import Box from '../../components/Box'
 import Card from '../../components/Card'
 import Text from '../../components/Text'
 import { StatsState } from '../../store/stats/statsSlice'
+import { t } from '../../utils/translate'
 
 type Props = { statsState: StatsState }
 
@@ -13,7 +14,7 @@ const StatsView = ({ statsState }: Props) => {
   }
   return (
     <Box backgroundColor="mainBackground">
-      <Text variant="header">Stats:</Text>
+      <Text variant="header">{t('stats.title')}</Text>
       <Card variant="elevated">
         <ScrollView>
           <Text variant="body" style={{ color: 'black' }}>

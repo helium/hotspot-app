@@ -30,9 +30,18 @@
     "@react-navigation/stack": "^5.12.1",
     "@reduxjs/toolkit": "^1.4.0",
     "@shopify/restyle": "^1.3.1",
+<<<<<<< HEAD
+=======
+    "@types/i18n-js": "^3.0.3",
+    "@types/react-redux": "^7.1.11",
+    "@types/webpack-env": "^1.15.3",
+    "i18n-js": "^3.8.0",
+    "lodash": "^4.17.20",
+>>>>>>> Add and configure react-native-localize and i18n
     "react": "16.13.1",
     "react-native": "0.63.3",
     "react-native-gesture-handler": "^1.8.0",
+    "react-native-localize": "^1.4.3",
     "react-native-reanimated": "^1.13.1",
     "react-native-safe-area-context": "^3.1.8",
     "react-native-screens": "^2.12.0",
