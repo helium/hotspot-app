@@ -39,8 +39,9 @@ export const theme = createTheme({
   colors: {
     ...palette,
     mainBackground: palette.blueGray,
-    cardRegularBackground: palette.lightGray,
-    cardPrimaryBackground: palette.white,
+    cardBackground: palette.white,
+    primary: palette.white,
+    secondary: palette.lightGray,
   },
   spacing: {
     none: 0,
@@ -86,7 +87,9 @@ export const darkTheme: Theme = {
   colors: {
     ...theme.colors,
     mainBackground: palette.white,
-    cardPrimaryBackground: palette.black,
+    cardBackground: palette.black,
+    primary: palette.black,
+    secondary: palette.blueGray,
   },
   textVariants: darkTextVariants,
 }
