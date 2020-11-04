@@ -7,6 +7,10 @@ import { name as appName } from './app.json'
 
 import store from './src/store/store'
 
+if (__DEV__) {
+  import('././ReactotronConfig')
+}
+
 const render = () => {
   return (
     <Provider store={store}>
