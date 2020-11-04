@@ -1,6 +1,6 @@
-import { createText } from '@shopify/restyle';
-import { Theme } from '../theme/theme';
+import { createText } from '@shopify/restyle'
+import { Theme } from '../theme/theme'
 
-const Text = createText<Theme>();
+const Text = createText<Theme>()
 
-export default Text;
+export default Text

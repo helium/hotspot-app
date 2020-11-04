@@ -1,6 +1,6 @@
-import React from 'react';
-import SafeAreaBox from '../components/SafeAreaBox';
-import Text from '../components/Text';
+import React from 'react'
+import SafeAreaBox from '../../components/SafeAreaBox'
+import Text from '../../components/Text'
 
 const SplashScreen = () => {
   return (
@@ -14,7 +14,7 @@ const SplashScreen = () => {
     >
       <Text variant="header">Helium</Text>
     </SafeAreaBox>
-  );
-};
+  )
+}
 
-export default SplashScreen;
+export default SplashScreen

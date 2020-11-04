@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import React from 'react'
+import { TouchableOpacity, View } from 'react-native'
 import {
   useRestyle,
   spacing,
@@ -9,21 +9,21 @@ import {
   SpacingProps,
   BorderProps,
   BackgroundColorProps,
-} from '@shopify/restyle';
+} from '@shopify/restyle'
 
-import Text from './Text';
-import { Theme } from '../theme/theme';
+import Text from './Text'
+import { Theme } from '../theme/theme'
 
-const restyleFunctions = [spacing, border, backgroundColor];
+const restyleFunctions = [spacing, border, backgroundColor]
 type Props = SpacingProps<Theme> &
   BorderProps<Theme> &
   BackgroundColorProps<Theme> & {
-    onPress: () => void;
-    title: string;
-  };
+    onPress: () => void
+    title: string
+  }
 
 const Button = ({ onPress, title, ...rest }: Props) => {
-  const props = useRestyle(restyleFunctions, rest);
+  const props = useRestyle(restyleFunctions, rest)
 
   return (
     <TouchableOpacity onPress={onPress}>
@@ -31,7 +31,7 @@ const Button = ({ onPress, title, ...rest }: Props) => {
         <Text variant="button">{title}</Text>
       </View>
     </TouchableOpacity>
-  );
-};
+  )
+}
 
-export default Button;
+export default Button

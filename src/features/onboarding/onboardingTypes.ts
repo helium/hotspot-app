@@ -1,11 +1,11 @@
-import { StackNavigationProp } from '@react-navigation/stack';
+import { StackNavigationProp } from '@react-navigation/stack'
 
 export type OnboardingStackParamList = {
-  Welcome: undefined;
-  AccountDescription: undefined;
-};
+  Welcome: undefined
+  AccountDescription: undefined
+}
 
 export type WelcomeScreenNavigationProp = StackNavigationProp<
   OnboardingStackParamList,
   'Welcome'
->;
+>
