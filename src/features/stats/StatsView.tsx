@@ -14,7 +14,12 @@ const StatsView = ({ statsState }: Props) => {
   const theme = useTheme<Theme>()
 
   if (statsState.loading !== 'succeeded') {
-    return <ActivityIndicator color={theme.colors.primary} />
+    return (
+      <ActivityIndicator
+        color={theme.colors.primary}
+        accessibilityLabel="Loading"
+      />
+    )
   }
   return (
     <Box backgroundColor="mainBackground">
