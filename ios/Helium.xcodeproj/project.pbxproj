@@ -8,22 +8,22 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* HeliumTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* HeliumTests.m */; };
+		028A47D1144942AAB084FC03 /* NotoSerif-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8CF7CB13CCE24F928D25FB7F /* NotoSerif-Regular.ttf */; };
+		0B74DE2CA1694927BF8B64BC /* NotoSerif-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1007DBE6C5684F4999FA631B /* NotoSerif-Bold.ttf */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		152177F134874D2B9184AD42 /* NotoSerif-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9EB90AF3A0FA454484F833EB /* NotoSerif-BoldItalic.ttf */; };
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* HeliumTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* HeliumTests.m */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		A10E8BD929D049EDA161260D /* NotoSerif-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BF9582A476D94209AF37866B /* NotoSerif-Italic.ttf */; };
 		AE09BDAAFA5633C3FBB3CC2A /* libPods-Helium.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BFC8F5689DF0E8DFCBFDFF0E /* libPods-Helium.a */; };
 		D148E1710952AE3A310860B2 /* libPods-Helium-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FED522A81BD9E8B1A359CE9 /* libPods-Helium-tvOS.a */; };
 		D951FAD3A3EA27973CDC6CE8 /* libPods-Helium-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C0482E47D43B3CB2778544F7 /* libPods-Helium-tvOSTests.a */; };
 		DA3756ECC96C5E12871048DC /* libPods-Helium-HeliumTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 716314A1F5197415126491D0 /* libPods-Helium-HeliumTests.a */; };
-		0B74DE2CA1694927BF8B64BC /* NotoSerif-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1007DBE6C5684F4999FA631B /* NotoSerif-Bold.ttf */; };
-		152177F134874D2B9184AD42 /* NotoSerif-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9EB90AF3A0FA454484F833EB /* NotoSerif-BoldItalic.ttf */; };
-		A10E8BD929D049EDA161260D /* NotoSerif-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BF9582A476D94209AF37866B /* NotoSerif-Italic.ttf */; };
-		028A47D1144942AAB084FC03 /* NotoSerif-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8CF7CB13CCE24F928D25FB7F /* NotoSerif-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +49,7 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* HeliumTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HeliumTests.m; sourceTree = "<group>"; };
 		0963EB8E43A6D93118EAFD8B /* Pods-Helium-HeliumTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Helium-HeliumTests.release.xcconfig"; path = "Target Support Files/Pods-Helium-HeliumTests/Pods-Helium-HeliumTests.release.xcconfig"; sourceTree = "<group>"; };
+		1007DBE6C5684F4999FA631B /* NotoSerif-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSerif-Bold.ttf"; path = "../src/assets/fonts/NotoSerif-Bold.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Helium.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Helium.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Helium/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = Helium/AppDelegate.m; sourceTree = "<group>"; };
@@ -61,8 +62,11 @@
 		716314A1F5197415126491D0 /* libPods-Helium-HeliumTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Helium-HeliumTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FED522A81BD9E8B1A359CE9 /* libPods-Helium-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Helium-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Helium/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		8CF7CB13CCE24F928D25FB7F /* NotoSerif-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSerif-Regular.ttf"; path = "../src/assets/fonts/NotoSerif-Regular.ttf"; sourceTree = "<group>"; };
 		9A58DAEE17B8F2A87629B536 /* Pods-Helium.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Helium.debug.xcconfig"; path = "Target Support Files/Pods-Helium/Pods-Helium.debug.xcconfig"; sourceTree = "<group>"; };
+		9EB90AF3A0FA454484F833EB /* NotoSerif-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSerif-BoldItalic.ttf"; path = "../src/assets/fonts/NotoSerif-BoldItalic.ttf"; sourceTree = "<group>"; };
 		AC7E44E9CCBCF353DB59D919 /* Pods-Helium-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Helium-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-Helium-tvOSTests/Pods-Helium-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
+		BF9582A476D94209AF37866B /* NotoSerif-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSerif-Italic.ttf"; path = "../src/assets/fonts/NotoSerif-Italic.ttf"; sourceTree = "<group>"; };
 		BFC8F5689DF0E8DFCBFDFF0E /* libPods-Helium.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Helium.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0482E47D43B3CB2778544F7 /* libPods-Helium-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Helium-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C350D42071001CFEA409D203 /* Pods-Helium.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Helium.release.xcconfig"; path = "Target Support Files/Pods-Helium/Pods-Helium.release.xcconfig"; sourceTree = "<group>"; };
@@ -71,10 +75,6 @@
 		D0A6900AF49EF785F447CE28 /* Pods-Helium-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Helium-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-Helium-tvOSTests/Pods-Helium-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
-		1007DBE6C5684F4999FA631B /* NotoSerif-Bold.ttf */ = {isa = PBXFileReference; name = "NotoSerif-Bold.ttf"; path = "../src/assets/fonts/NotoSerif-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		9EB90AF3A0FA454484F833EB /* NotoSerif-BoldItalic.ttf */ = {isa = PBXFileReference; name = "NotoSerif-BoldItalic.ttf"; path = "../src/assets/fonts/NotoSerif-BoldItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		BF9582A476D94209AF37866B /* NotoSerif-Italic.ttf */ = {isa = PBXFileReference; name = "NotoSerif-Italic.ttf"; path = "../src/assets/fonts/NotoSerif-Italic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		8CF7CB13CCE24F928D25FB7F /* NotoSerif-Regular.ttf */ = {isa = PBXFileReference; name = "NotoSerif-Regular.ttf"; path = "../src/assets/fonts/NotoSerif-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +157,17 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		4E395C02883C4FB2ADE7CF53 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				1007DBE6C5684F4999FA631B /* NotoSerif-Bold.ttf */,
+				9EB90AF3A0FA454484F833EB /* NotoSerif-BoldItalic.ttf */,
+				BF9582A476D94209AF37866B /* NotoSerif-Italic.ttf */,
+				8CF7CB13CCE24F928D25FB7F /* NotoSerif-Regular.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -203,21 +214,8 @@
 				AC7E44E9CCBCF353DB59D919 /* Pods-Helium-tvOSTests.debug.xcconfig */,
 				D0A6900AF49EF785F447CE28 /* Pods-Helium-tvOSTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
-		};
-		4E395C02883C4FB2ADE7CF53 /* Resources */ = {
-			isa = "PBXGroup";
-			children = (
-				1007DBE6C5684F4999FA631B /* NotoSerif-Bold.ttf */,
-				9EB90AF3A0FA454484F833EB /* NotoSerif-BoldItalic.ttf */,
-				BF9582A476D94209AF37866B /* NotoSerif-Italic.ttf */,
-				8CF7CB13CCE24F928D25FB7F /* NotoSerif-Regular.ttf */,
-			);
-			name = Resources;
-			sourceTree = "<group>";
-			path = "";
 		};
 /* End PBXGroup section */
 
@@ -684,12 +682,13 @@
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Helium/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 3.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.helium.mobile.wallet;
 				PRODUCT_NAME = Helium;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -706,12 +705,13 @@
 				CURRENT_PROJECT_VERSION = 1;
 				INFOPLIST_FILE = Helium/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 3.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.helium.mobile.wallet;
 				PRODUCT_NAME = Helium;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -738,7 +738,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.Helium-tvOS";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.helium.mobile.wallet-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
@@ -766,7 +766,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.Helium-tvOS";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.helium.mobile.wallet-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
@@ -793,7 +793,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.Helium-tvOSTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.helium.mobile.wallet-tvOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Helium-tvOS.app/Helium-tvOS";
@@ -820,7 +820,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.Helium-tvOSTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.helium.mobile.wallet-tvOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Helium-tvOS.app/Helium-tvOS";
