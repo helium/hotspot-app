@@ -2,6 +2,18 @@
 
 Helium hotspot app for iOS and Android built using [React Native](https://reactnative.dev).
 
+## Get the app
+
+Release versions of the app are available here:
+
+- [Hotspot App for iOS](https://apps.apple.com/us/app/helium-hotspot/id1450463605)
+  on the iTunes App Store
+- [Hotspot App for Android](https://play.google.com/store/apps/details?id=com.helium.wallet&hl=en_US&gl=US)
+  on the Google Play Store
+  - Or if you don't use Google Play, you can [download an
+    APK](https://install.appcenter.ms/orgs/helium/apps/helium-mobile-wallet-android/distribution_groups/public)
+    from the official AppCenter build.
+
 ## Getting Started
 
 ### React Native Dev Setup
