@@ -1,11 +1,12 @@
-import { createTheme } from '@shopify/restyle';
-import { TextProps } from 'react-native';
+import { createTheme } from '@shopify/restyle'
+import { TextProps } from 'react-native'
 
 const palette = {
-  black: '#0B0B0B',
-  white: '#F0F2F3',
-  gray: '#33414E',
-};
+  black: '#000',
+  white: '#FFF',
+  blueGray: '#33414E',
+  lightGray: '#EEEEEE',
+}
 
 const textVariants = {
   header: {
@@ -32,15 +33,17 @@ const textVariants = {
     textAlign: 'center',
     fontFamily: 'NotoSerif',
   } as TextProps,
-};
+}
 
 export const theme = createTheme({
   colors: {
     ...palette,
-    mainBackground: palette.gray,
+    mainBackground: palette.blueGray,
+    cardRegularBackground: palette.lightGray,
     cardPrimaryBackground: palette.white,
   },
   spacing: {
+    none: 0,
     s: 8,
     m: 16,
     l: 24,
@@ -50,15 +53,33 @@ export const theme = createTheme({
     phone: 0,
     tablet: 768,
   },
+  cardVariants: {
+    regular: {
+      padding: 's',
+    },
+    elevated: {
+      backgroundColor: 'white',
+      padding: 's',
+      shadowColor: 'black',
+      borderRadius: 4,
+      shadowOffset: {
+        width: 0,
+        height: 4,
+      },
+      shadowOpacity: 0.3,
+      shadowRadius: 6,
+      elevation: 9,
+    },
+  },
   textVariants,
-});
+})
 
 const darkTextVariants = {
   header: { ...textVariants.header, color: 'black' },
   body: { ...textVariants.body, color: 'black' },
   input: { ...textVariants.input },
   button: { ...textVariants.button, color: 'black' },
-};
+}
 
 export const darkTheme: Theme = {
   ...theme,
@@ -68,6 +89,6 @@ export const darkTheme: Theme = {
     cardPrimaryBackground: palette.black,
   },
   textVariants: darkTextVariants,
-};
+}
 
-export type Theme = typeof theme;
+export type Theme = typeof theme
