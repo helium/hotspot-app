@@ -1,0 +1,35 @@
+{
+  "data": {
+    "token_supply": 58620596.69546484,
+    "state_channel_counts": {
+      "last_week": { "num_packets": 5590185, "num_dcs": 21359482 },
+      "last_month": { "num_packets": 11182082918, "num_dcs": 11228528289 },
+      "last_day": { "num_packets": 884379, "num_dcs": 3557016 }
+    },
+    "fees": {
+      "last_week": { "transaction": 239400000, "staking": 5802000000 },
+      "last_month": { "transaction": 708290000, "staking": 14193000000 },
+      "last_day": { "transaction": 24790000, "staking": 432000000 }
+    },
+    "election_times": {
+      "last_week": { "stddev": 376.279419300191, "avg": 2091.0 },
+      "last_month": { "stddev": 542.781350739398, "avg": 2174.632520325203 },
+      "last_hour": { "stddev": null, "avg": 1920.0 },
+      "last_day": { "stddev": 216.640305731329, "avg": 2049.6190476190477 }
+    },
+    "counts": {
+      "transactions": 31752963,
+      "hotspots": 11965,
+      "consensus_groups": 15072,
+      "challenges": 11800552,
+      "blocks": 575563
+    },
+    "challenge_counts": { "last_day": 59917, "active": 2833 },
+    "block_times": {
+      "last_week": { "stddev": 24.142153594604757, "avg": 56.858311395261374 },
+      "last_month": { "stddev": 42.81923653740086, "avg": 60.40211091315036 },
+      "last_hour": { "stddev": 10.47198980158527, "avg": 56.3968253968254 },
+      "last_day": { "stddev": 9.298201057549967, "avg": 57.374750830564786 }
+    }
+  }
+}
