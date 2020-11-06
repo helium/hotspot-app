@@ -60,5 +60,21 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>NotoSerif-Bold.ttf</string>
+		<string>NotoSerif-BoldItalic.ttf</string>
+		<string>NotoSerif-Italic.ttf</string>
+		<string>NotoSerif-Regular.ttf</string>
+		<string>InputMono-Bold.ttf</string>
+		<string>InputMono-Light.ttf</string>
+		<string>InputMono-Medium.ttf</string>
+		<string>InputMono-Regular.ttf</string>
+		<string>Soleil-Bold.ttf</string>
+		<string>Soleil-Book.otf</string>
+		<string>Soleil-Light.otf</string>
+		<string>Soleil-Regular.otf</string>
+		<string>Soleil-SemiBold.otf</string>
+	</array>
 </dict>
 </plist>

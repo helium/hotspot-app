@@ -6,32 +6,39 @@ const palette = {
   white: '#FFF',
   blueGray: '#33414E',
   lightGray: '#EEEEEE',
+  gray: '#5B6D7E',
+  green: '#29D391',
+  lightBlue: '#51AEFF',
+  darkGray: '#252F3B',
 }
 
 const textVariants = {
   header: {
-    fontFamily: 'NotoSerif',
-    fontWeight: 'bold',
+    fontFamily: 'soleil',
+    fontWeight: '400',
     fontSize: 34,
     lineHeight: 42.5,
     color: 'white',
   },
   body: {
-    fontFamily: 'NotoSerif',
+    fontFamily: 'soleil',
+    fontWeight: '100',
     fontSize: 16,
     lineHeight: 24,
     color: 'white',
   },
   input: {
-    fontFamily: 'NotoSerif',
+    fontFamily: 'soleil',
     flex: 1,
     borderWidth: 1,
     padding: 8,
   },
   button: {
     color: 'white',
+    fontWeight: '400',
     textAlign: 'center',
-    fontFamily: 'NotoSerif',
+    fontSize: 17,
+    fontFamily: 'soleil',
   } as TextProps,
 }
 
@@ -40,15 +47,27 @@ export const theme = createTheme({
     ...palette,
     mainBackground: palette.blueGray,
     cardBackground: palette.white,
-    primary: palette.white,
-    secondary: palette.lightGray,
+    primaryMain: palette.green,
+    primaryText: palette.darkGray,
+    secondaryMain: palette.lightBlue,
+    secondaryText: palette.gray,
   },
   spacing: {
     none: 0,
+    xxs: 2,
+    xs: 4,
     s: 8,
+    ms: 12,
     m: 16,
+    lm: 20,
     l: 24,
     xl: 40,
+    xxl: 60,
+  },
+  borderRadii: {
+    s: 4,
+    m: 8,
+    l: 12,
   },
   breakpoints: {
     phone: 0,
@@ -88,10 +107,11 @@ export const darkTheme: Theme = {
     ...theme.colors,
     mainBackground: palette.white,
     cardBackground: palette.black,
-    primary: palette.black,
-    secondary: palette.blueGray,
+    primaryMain: palette.black,
+    secondaryMain: palette.blueGray,
   },
   textVariants: darkTextVariants,
 }
 
 export type Theme = typeof theme
+export type Colors = keyof Theme['colors']

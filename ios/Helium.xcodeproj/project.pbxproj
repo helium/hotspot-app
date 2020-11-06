@@ -24,6 +24,19 @@
 		D148E1710952AE3A310860B2 /* libPods-Helium-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FED522A81BD9E8B1A359CE9 /* libPods-Helium-tvOS.a */; };
 		D951FAD3A3EA27973CDC6CE8 /* libPods-Helium-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C0482E47D43B3CB2778544F7 /* libPods-Helium-tvOSTests.a */; };
 		DA3756ECC96C5E12871048DC /* libPods-Helium-HeliumTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 716314A1F5197415126491D0 /* libPods-Helium-HeliumTests.a */; };
+		0B74DE2CA1694927BF8B64BC /* NotoSerif-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1007DBE6C5684F4999FA631B /* NotoSerif-Bold.ttf */; };
+		152177F134874D2B9184AD42 /* NotoSerif-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9EB90AF3A0FA454484F833EB /* NotoSerif-BoldItalic.ttf */; };
+		A10E8BD929D049EDA161260D /* NotoSerif-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BF9582A476D94209AF37866B /* NotoSerif-Italic.ttf */; };
+		028A47D1144942AAB084FC03 /* NotoSerif-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8CF7CB13CCE24F928D25FB7F /* NotoSerif-Regular.ttf */; };
+		C7840AAA72F848BEBD73CBA8 /* InputMono-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D1EC077532EF40BCA6430610 /* InputMono-Bold.ttf */; };
+		50416777003A4F49B0555192 /* InputMono-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A479F1315370424BA4C2BF03 /* InputMono-Light.ttf */; };
+		2E9A234A8A2048BDA978454D /* InputMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB40A7C9F9344DC7A09F6876 /* InputMono-Medium.ttf */; };
+		28A2A93001814339911894A4 /* InputMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C7BF43D0CDD04C61BC626EBC /* InputMono-Regular.ttf */; };
+		7B8CAA0072BE46E58E542998 /* Soleil-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 898B757CCE3C47C3BEE06830 /* Soleil-Bold.ttf */; };
+		814FFD845C7F45FB97CF70C6 /* Soleil-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = D63A417472CB43E0967E4EE5 /* Soleil-Book.otf */; };
+		92C6185DA0484FA99E23D71F /* Soleil-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = E8F391FD281F4727B9C1681A /* Soleil-Light.otf */; };
+		A42E05B8AD2D452DBA997CF2 /* Soleil-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = E60DB270CEE74027B4039F4A /* Soleil-Regular.otf */; };
+		73882C4BC2B149C8A0C6018F /* Soleil-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 7EE3C0182B6E484FB54DB40C /* Soleil-SemiBold.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +88,19 @@
 		D0A6900AF49EF785F447CE28 /* Pods-Helium-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Helium-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-Helium-tvOSTests/Pods-Helium-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
+		1007DBE6C5684F4999FA631B /* NotoSerif-Bold.ttf */ = {isa = PBXFileReference; name = "NotoSerif-Bold.ttf"; path = "../src/assets/fonts/NotoSerif-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		9EB90AF3A0FA454484F833EB /* NotoSerif-BoldItalic.ttf */ = {isa = PBXFileReference; name = "NotoSerif-BoldItalic.ttf"; path = "../src/assets/fonts/NotoSerif-BoldItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		BF9582A476D94209AF37866B /* NotoSerif-Italic.ttf */ = {isa = PBXFileReference; name = "NotoSerif-Italic.ttf"; path = "../src/assets/fonts/NotoSerif-Italic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		8CF7CB13CCE24F928D25FB7F /* NotoSerif-Regular.ttf */ = {isa = PBXFileReference; name = "NotoSerif-Regular.ttf"; path = "../src/assets/fonts/NotoSerif-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		D1EC077532EF40BCA6430610 /* InputMono-Bold.ttf */ = {isa = PBXFileReference; name = "InputMono-Bold.ttf"; path = "../src/assets/fonts/InputMono-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		A479F1315370424BA4C2BF03 /* InputMono-Light.ttf */ = {isa = PBXFileReference; name = "InputMono-Light.ttf"; path = "../src/assets/fonts/InputMono-Light.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		EB40A7C9F9344DC7A09F6876 /* InputMono-Medium.ttf */ = {isa = PBXFileReference; name = "InputMono-Medium.ttf"; path = "../src/assets/fonts/InputMono-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		C7BF43D0CDD04C61BC626EBC /* InputMono-Regular.ttf */ = {isa = PBXFileReference; name = "InputMono-Regular.ttf"; path = "../src/assets/fonts/InputMono-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		898B757CCE3C47C3BEE06830 /* Soleil-Bold.ttf */ = {isa = PBXFileReference; name = "Soleil-Bold.ttf"; path = "../src/assets/fonts/Soleil-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		D63A417472CB43E0967E4EE5 /* Soleil-Book.otf */ = {isa = PBXFileReference; name = "Soleil-Book.otf"; path = "../src/assets/fonts/Soleil-Book.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		E8F391FD281F4727B9C1681A /* Soleil-Light.otf */ = {isa = PBXFileReference; name = "Soleil-Light.otf"; path = "../src/assets/fonts/Soleil-Light.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		E60DB270CEE74027B4039F4A /* Soleil-Regular.otf */ = {isa = PBXFileReference; name = "Soleil-Regular.otf"; path = "../src/assets/fonts/Soleil-Regular.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		7EE3C0182B6E484FB54DB40C /* Soleil-SemiBold.otf */ = {isa = PBXFileReference; name = "Soleil-SemiBold.otf"; path = "../src/assets/fonts/Soleil-SemiBold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -216,6 +242,27 @@
 			);
 			path = Pods;
 			sourceTree = "<group>";
+		};
+		4E395C02883C4FB2ADE7CF53 /* Resources */ = {
+			isa = "PBXGroup";
+			children = (
+				1007DBE6C5684F4999FA631B /* NotoSerif-Bold.ttf */,
+				9EB90AF3A0FA454484F833EB /* NotoSerif-BoldItalic.ttf */,
+				BF9582A476D94209AF37866B /* NotoSerif-Italic.ttf */,
+				8CF7CB13CCE24F928D25FB7F /* NotoSerif-Regular.ttf */,
+				D1EC077532EF40BCA6430610 /* InputMono-Bold.ttf */,
+				A479F1315370424BA4C2BF03 /* InputMono-Light.ttf */,
+				EB40A7C9F9344DC7A09F6876 /* InputMono-Medium.ttf */,
+				C7BF43D0CDD04C61BC626EBC /* InputMono-Regular.ttf */,
+				898B757CCE3C47C3BEE06830 /* Soleil-Bold.ttf */,
+				D63A417472CB43E0967E4EE5 /* Soleil-Book.otf */,
+				E8F391FD281F4727B9C1681A /* Soleil-Light.otf */,
+				E60DB270CEE74027B4039F4A /* Soleil-Regular.otf */,
+				7EE3C0182B6E484FB54DB40C /* Soleil-SemiBold.otf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+			path = "";
 		};
 /* End PBXGroup section */
 
@@ -365,6 +412,15 @@
 				152177F134874D2B9184AD42 /* NotoSerif-BoldItalic.ttf in Resources */,
 				A10E8BD929D049EDA161260D /* NotoSerif-Italic.ttf in Resources */,
 				028A47D1144942AAB084FC03 /* NotoSerif-Regular.ttf in Resources */,
+				C7840AAA72F848BEBD73CBA8 /* InputMono-Bold.ttf in Resources */,
+				50416777003A4F49B0555192 /* InputMono-Light.ttf in Resources */,
+				2E9A234A8A2048BDA978454D /* InputMono-Medium.ttf in Resources */,
+				28A2A93001814339911894A4 /* InputMono-Regular.ttf in Resources */,
+				7B8CAA0072BE46E58E542998 /* Soleil-Bold.ttf in Resources */,
+				814FFD845C7F45FB97CF70C6 /* Soleil-Book.otf in Resources */,
+				92C6185DA0484FA99E23D71F /* Soleil-Light.otf in Resources */,
+				A42E05B8AD2D452DBA997CF2 /* Soleil-Regular.otf in Resources */,
+				73882C4BC2B149C8A0C6018F /* Soleil-SemiBold.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
