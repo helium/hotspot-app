@@ -12,33 +12,37 @@ const palette = {
   darkGray: '#252F3B',
 }
 
+const Font = {
+  main: 'soleil',
+}
+
 const textVariants = {
   header: {
-    fontFamily: 'soleil',
+    fontFamily: Font.main,
     fontWeight: '400',
     fontSize: 34,
     lineHeight: 42.5,
     color: 'white',
   },
   body: {
-    fontFamily: 'soleil',
+    fontFamily: Font.main,
     fontWeight: '100',
     fontSize: 16,
     lineHeight: 24,
     color: 'white',
   },
   input: {
-    fontFamily: 'soleil',
+    fontFamily: Font.main,
     flex: 1,
     borderWidth: 1,
     padding: 8,
   },
   button: {
+    fontFamily: Font.main,
     color: 'white',
     fontWeight: '400',
     textAlign: 'center',
     fontSize: 17,
-    fontFamily: 'soleil',
   } as TextProps,
 }
 

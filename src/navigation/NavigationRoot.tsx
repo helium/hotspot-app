@@ -25,7 +25,7 @@ const NavigationRoot = () => {
   useEffect(() => {
     setTimeout(() => {
       setShowSplash(false)
-    }, 1500)
+    }, 750)
   }, [])
 
   const currentScreen = useCallback(() => {

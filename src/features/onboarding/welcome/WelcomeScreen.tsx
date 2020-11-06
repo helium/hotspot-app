@@ -6,8 +6,8 @@ import { WelcomeScreenNavigationProp } from '../onboardingTypes'
 import { t } from '../../../utils/translate'
 import UserLocationMap from '../../../components/UserLocationMap'
 import SafeAreaBox from '../../../components/SafeAreaBox'
-import ImageBox from '../../../components/ImageBox'
 import Box from '../../../components/Box'
+import HeliumLogo from '../../../assets/images/logo.svg'
 
 type Props = {
   navigation: WelcomeScreenNavigationProp
@@ -28,12 +28,10 @@ const WelcomeScreen = ({ navigation }: Props) => {
           alignItems="center"
           width="100%"
           flex={3}
+          marginTop="xl"
           justifyContent="flex-start"
         >
-          <ImageBox
-            source={require('../../../assets/images/helium-logo.png')}
-            marginTop="xl"
-          />
+          <HeliumLogo />
         </Box>
         <Box
           flexDirection="column"
