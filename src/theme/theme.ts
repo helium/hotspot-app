@@ -1,5 +1,5 @@
 import { createTheme } from '@shopify/restyle'
-import { TextProps } from 'react-native'
+import { TextProps, Platform } from 'react-native'
 
 const palette = {
   black: '#000',
@@ -12,35 +12,35 @@ const palette = {
   darkGray: '#252F3B',
 }
 
-const Font = {
-  main: 'soleil',
+export const Font = {
+  main: {
+    regular: 'Soleil-Regular',
+    semiBold: Platform.OS === 'ios' ? 'SoleilW02-SemiBold' : 'Soleil-SemiBold',
+  },
 }
 
 const textVariants = {
   header: {
-    fontFamily: Font.main,
-    fontWeight: '400',
+    fontFamily: Font.main.semiBold,
     fontSize: 34,
     lineHeight: 42.5,
     color: 'white',
   },
   body: {
-    fontFamily: Font.main,
-    fontWeight: '100',
+    fontFamily: Font.main.regular,
     fontSize: 16,
     lineHeight: 24,
     color: 'white',
   },
   input: {
-    fontFamily: Font.main,
+    fontFamily: Font.main.regular,
     flex: 1,
     borderWidth: 1,
     padding: 8,
   },
   button: {
-    fontFamily: Font.main,
+    fontFamily: Font.main.semiBold,
     color: 'white',
-    fontWeight: '400',
     textAlign: 'center',
     fontSize: 17,
   } as TextProps,

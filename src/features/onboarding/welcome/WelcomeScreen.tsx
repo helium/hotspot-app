@@ -8,6 +8,7 @@ import UserLocationMap from '../../../components/UserLocationMap'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Box from '../../../components/Box'
 import HeliumLogo from '../../../assets/images/logo.svg'
+import { Font } from '../../../theme/theme'
 
 type Props = {
   navigation: WelcomeScreenNavigationProp
@@ -46,7 +47,11 @@ const WelcomeScreen = ({ navigation }: Props) => {
           <Text variant="body" textAlign="center" marginVertical="m">
             {t('account_setup.welcome.subtitle')}
           </Text>
-          <Text variant="body" fontWeight="500" textAlign="center">
+          <Text
+            variant="body"
+            fontFamily={Font.main.semiBold}
+            textAlign="center"
+          >
             {t('account_setup.welcome.get_started')}
           </Text>
         </Box>
