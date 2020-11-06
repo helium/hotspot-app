@@ -85,7 +85,7 @@ export const theme = createTheme({
       backgroundColor: 'white',
       padding: 's',
       shadowColor: 'black',
-      borderRadius: 4,
+      borderRadius: 's',
       shadowOffset: {
         width: 0,
         height: 4,

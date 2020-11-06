@@ -16,7 +16,7 @@ const StatsView = ({ statsState }: Props) => {
   if (statsState.loading !== 'succeeded') {
     return (
       <ActivityIndicator
-        color={theme.colors.primary}
+        color={theme.colors.primaryMain}
         accessibilityLabel="Loading"
       />
     )
@@ -26,7 +26,7 @@ const StatsView = ({ statsState }: Props) => {
       <Text variant="header">{t('stats.title')}</Text>
       <Card variant="elevated">
         <ScrollView>
-          <Text variant="body" style={{ color: 'black' }}>
+          <Text variant="body" color="black">
             {JSON.stringify(statsState.data, null, 2)}
           </Text>
         </ScrollView>
