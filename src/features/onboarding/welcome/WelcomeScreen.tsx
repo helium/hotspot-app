@@ -67,11 +67,11 @@ const WelcomeScreen = ({ navigation }: Props) => {
             variant="primary"
             width="100%"
             marginBottom="l"
-            onPress={() => navigation.push('AccountDescription')}
+            onPress={() => navigation.push('AccountPassphraseWarning')}
             title={t('account_setup.welcome.create_account')}
           />
           <Button
-            onPress={() => navigation.push('AccountDescription')}
+            onPress={() => navigation.push('AccountPassphraseWarning')}
             mode="text"
             variant="primary"
             title={t('account_setup.welcome.import_account')}

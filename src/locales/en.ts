@@ -1,5 +1,5 @@
 export default {
-  hello: 'Hello',
+  back: 'Back',
   stats: {
     title: 'Stats:',
   },

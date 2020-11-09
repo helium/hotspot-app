@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
-import AccountDescriptionScreen from './accountDescription/AccountDescriptionScreen'
+import AccountPassphraseWarningScreen from './accountPassphraseWarning/AccountPassphraseWarningScreen'
 import WelcomeScreen from './welcome/WelcomeScreen'
 import { OnboardingStackParamList } from './onboardingTypes'
 
@@ -11,8 +11,8 @@ const Onboarding = () => {
     <OnboardingStack.Navigator headerMode="none">
       <OnboardingStack.Screen name="Welcome" component={WelcomeScreen} />
       <OnboardingStack.Screen
-        name="AccountDescription"
-        component={AccountDescriptionScreen}
+        name="AccountPassphraseWarning"
+        component={AccountPassphraseWarningScreen}
       />
     </OnboardingStack.Navigator>
   )

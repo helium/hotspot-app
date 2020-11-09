@@ -6,10 +6,11 @@ const palette = {
   white: '#FFF',
   blueGray: '#33414E',
   lightGray: '#EEEEEE',
+  darkGray: '#252F3B',
+  steelGray: '#74869A',
   gray: '#5B6D7E',
   green: '#29D391',
   lightBlue: '#51AEFF',
-  darkGray: '#252F3B',
 }
 
 export const Font = {

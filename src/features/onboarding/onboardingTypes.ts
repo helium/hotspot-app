@@ -2,7 +2,7 @@ import { StackNavigationProp } from '@react-navigation/stack'
 
 export type OnboardingStackParamList = {
   Welcome: undefined
-  AccountDescription: undefined
+  AccountPassphraseWarning: undefined
 }
 
 export type WelcomeScreenNavigationProp = StackNavigationProp<
