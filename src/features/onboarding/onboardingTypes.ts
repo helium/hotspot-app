@@ -4,6 +4,7 @@ export type OnboardingStackParamList = {
   Welcome: undefined
   AccountPassphraseWarning: undefined
   AccountPassphraseGeneration: undefined
+  AccountCreatePassphraseScreen: undefined
 }
 
 export type OnboardingNavigationProp = StackNavigationProp<

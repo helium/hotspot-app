@@ -2,6 +2,7 @@ import * as React from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
 import AccountPassphraseWarningScreen from './accountPassphraseWarning/AccountPassphraseWarningScreen'
 import AccountPassphraseGenerationScreen from './accountPassphraseGeneration/AccountPassphraseGenerationScreen'
+import AccountCreatePassphraseScreen from './accountCreatePassphrase/AccountCreatePassphraseScreen'
 import WelcomeScreen from './welcome/WelcomeScreen'
 import { OnboardingStackParamList } from './onboardingTypes'
 
@@ -18,6 +19,10 @@ const Onboarding = () => {
       <OnboardingStack.Screen
         name="AccountPassphraseGeneration"
         component={AccountPassphraseGenerationScreen}
+      />
+      <OnboardingStack.Screen
+        name="AccountCreatePassphraseScreen"
+        component={AccountCreatePassphraseScreen}
       />
     </OnboardingStack.Navigator>
   )

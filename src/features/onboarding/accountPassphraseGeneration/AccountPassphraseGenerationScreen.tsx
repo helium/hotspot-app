@@ -1,12 +1,27 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import LottieView from 'lottie-react-native'
 import { useTranslation } from 'react-i18next'
+import { useNavigation } from '@react-navigation/native'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
+import { OnboardingNavigationProp } from '../onboardingTypes'
 
 const AccountPassphraseGenerationScreen = () => {
   const { t } = useTranslation()
+  const navigation = useNavigation<OnboardingNavigationProp>()
+
+  useEffect(() => {
+    const timer = setTimeout(
+      () => navigation.replace('AccountCreatePassphraseScreen'),
+      3000,
+    )
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [navigation])
+
   return (
     <SafeAreaBox
       height="100%"
