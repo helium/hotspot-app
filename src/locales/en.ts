@@ -17,7 +17,7 @@ export default {
       subtitle:
         'Your Helium account belongs only to you and is protected by <b>12 unique words</b>.',
       recover:
-        "You'll need these words if you need to <green><b>recover your account</b></green> or move it to a different phone",
+        "You'll need these words if you need to recover your account or move it to a different phone",
       understand: 'I Understand',
     },
     generating: 'GENERATING YOUR 12 UNIQUE WORDS',

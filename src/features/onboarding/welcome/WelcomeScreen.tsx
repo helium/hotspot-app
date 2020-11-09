@@ -1,20 +1,19 @@
 import React from 'react'
 import { View } from 'react-native'
+import { useTranslation } from 'react-i18next'
+import { useNavigation } from '@react-navigation/native'
 import Button from '../../../components/Button'
 import Text from '../../../components/Text'
 import { WelcomeScreenNavigationProp } from '../onboardingTypes'
-import { t } from '../../../utils/translate'
 import UserLocationMap from '../../../components/UserLocationMap'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Box from '../../../components/Box'
 import HeliumLogo from '../../../assets/images/logo.svg'
-import { Font } from '../../../theme/theme'
 
-type Props = {
-  navigation: WelcomeScreenNavigationProp
-}
+const WelcomeScreen = () => {
+  const { t } = useTranslation()
+  const navigation = useNavigation<WelcomeScreenNavigationProp>()
 
-const WelcomeScreen = ({ navigation }: Props) => {
   return (
     <View>
       <UserLocationMap />
@@ -47,11 +46,7 @@ const WelcomeScreen = ({ navigation }: Props) => {
           <Text variant="body" textAlign="center" marginVertical="m">
             {t('account_setup.welcome.subtitle')}
           </Text>
-          <Text
-            variant="body"
-            fontFamily={Font.main.semiBold}
-            textAlign="center"
-          >
+          <Text variant="bodyBold" textAlign="center">
             {t('account_setup.welcome.get_started')}
           </Text>
         </Box>

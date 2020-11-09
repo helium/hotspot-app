@@ -15,6 +15,7 @@ const palette = {
 
 export const Font = {
   main: {
+    light: 'Soleil-Light',
     regular: 'Soleil-Regular',
     semiBold: Platform.OS === 'ios' ? 'SoleilW02-SemiBold' : 'Soleil-SemiBold',
   },
@@ -28,7 +29,7 @@ const textVariants = {
     color: 'white',
   },
   body: {
-    fontFamily: Font.main.regular,
+    fontFamily: Font.main.light,
     fontSize: 16,
     lineHeight: 24,
     color: 'white',
@@ -75,7 +76,8 @@ export const theme = createTheme({
     l: 12,
   },
   breakpoints: {
-    phone: 0,
+    smallPhone: 0,
+    phone: 375,
     tablet: 768,
   },
   cardVariants: {
@@ -96,7 +98,10 @@ export const theme = createTheme({
       elevation: 9,
     },
   },
-  textVariants,
+  textVariants: {
+    ...textVariants,
+    bodyBold: { ...textVariants.body, fontFamily: Font.main.semiBold },
+  },
 })
 
 const darkTextVariants = {
