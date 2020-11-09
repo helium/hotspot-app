@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
 import Button from '../../../components/Button'
 import Text from '../../../components/Text'
-import { WelcomeScreenNavigationProp } from '../onboardingTypes'
+import { OnboardingNavigationProp } from '../onboardingTypes'
 import UserLocationMap from '../../../components/UserLocationMap'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Box from '../../../components/Box'
@@ -12,7 +12,7 @@ import HeliumLogo from '../../../assets/images/logo.svg'
 
 const WelcomeScreen = () => {
   const { t } = useTranslation()
-  const navigation = useNavigation<WelcomeScreenNavigationProp>()
+  const navigation = useNavigation<OnboardingNavigationProp>()
 
   return (
     <View>

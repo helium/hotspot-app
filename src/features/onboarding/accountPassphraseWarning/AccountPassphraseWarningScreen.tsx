@@ -9,10 +9,11 @@ import Box from '../../../components/Box'
 import TextTransform from '../../../components/TextTransform'
 import WordGraph from '../../../assets/images/wordGraph.svg'
 import Button from '../../../components/Button'
+import { OnboardingNavigationProp } from '../onboardingTypes'
 
 const AccountPassphraseWarningScreen = () => {
   const { t } = useTranslation()
-  const navigation = useNavigation()
+  const navigation = useNavigation<OnboardingNavigationProp>()
   return (
     <Box flex={1} backgroundColor="mainBackground">
       <Box position="absolute" right={0}>
@@ -39,7 +40,7 @@ const AccountPassphraseWarningScreen = () => {
             variant="primary"
             width="100%"
             marginBottom="l"
-            onPress={() => navigation.goBack()}
+            onPress={() => navigation.push('AccountPassphraseGeneration')}
             title={t('account_setup.warning.understand')}
           />
         </Box>

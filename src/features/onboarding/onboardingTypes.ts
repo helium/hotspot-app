@@ -3,9 +3,9 @@ import { StackNavigationProp } from '@react-navigation/stack'
 export type OnboardingStackParamList = {
   Welcome: undefined
   AccountPassphraseWarning: undefined
+  AccountPassphraseGeneration: undefined
 }
 
-export type WelcomeScreenNavigationProp = StackNavigationProp<
-  OnboardingStackParamList,
-  'Welcome'
+export type OnboardingNavigationProp = StackNavigationProp<
+  OnboardingStackParamList
 >
