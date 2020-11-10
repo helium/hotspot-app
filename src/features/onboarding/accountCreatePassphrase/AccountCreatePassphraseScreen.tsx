@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
+import { Animated } from 'react-native'
 import Lock from '../../../assets/images/lock.svg'
 import BackButton from '../../../components/BackButton'
 import Box from '../../../components/Box'
@@ -14,6 +15,7 @@ import Button from '../../../components/Button'
 const AccountCreatePassphraseScreen = () => {
   const { t } = useTranslation()
   const [words, setWords] = useState<Array<string>>([])
+  const opacity = new Animated.Value(0)
 
   useEffect(() => {
     setWords([
@@ -31,6 +33,15 @@ const AccountCreatePassphraseScreen = () => {
       'fork',
     ])
   }, [])
+
+  useEffect(() => {
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [words])
 
   const navigation = useNavigation<OnboardingNavigationProp>()
   return (
@@ -51,17 +62,28 @@ const AccountCreatePassphraseScreen = () => {
         <Box
           backgroundColor="secondaryBackground"
           flexDirection="row"
+          minHeight={180}
           alignContent="space-between"
           paddingVertical="m"
         >
           <Box flex={1} paddingHorizontal="lx">
             {words.slice(0, 6).map((word, idx) => (
-              <Word key={word} position={idx + 1} word={word} />
+              <Word
+                key={word}
+                position={idx + 1}
+                word={word}
+                opacity={opacity}
+              />
             ))}
           </Box>
           <Box flex={1} paddingHorizontal="lx">
             {words.slice(6).map((word, idx) => (
-              <Word key={word} position={idx + 7} word={word} />
+              <Word
+                key={word}
+                position={idx + 7}
+                word={word}
+                opacity={opacity}
+              />
             ))}
           </Box>
         </Box>
