@@ -22,9 +22,10 @@ export default {
     },
     generating: 'GENERATING YOUR 12 UNIQUE WORDS',
     passphrase: {
-      title: 'Write These 12 Words Down',
+      title1: 'Write These',
+      title2: '12 Words Down',
       warning_1:
-        'Helium Inc <red>cannot help recover your account</red> so make sure to write these down and store them securely.',
+        'Helium Inc <red>cannot help recover your account</red>, so make sure to write these down and store them securely.',
       warning_2: "<red>Don't lose these 12 words!</red>",
       next: "OK, they're written down",
     },

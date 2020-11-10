@@ -5,12 +5,15 @@ const palette = {
   black: '#000',
   white: '#FFF',
   blueGray: '#33414E',
-  lightGray: '#EEEEEE',
+  lightGray: '#DADADA',
+  midGray: '#81909F',
   darkGray: '#252F3B',
   steelGray: '#74869A',
   gray: '#5B6D7E',
   green: '#29D391',
   lightBlue: '#51AEFF',
+  darkBlue: '#131F2A',
+  red: '#F97570',
 }
 
 export const Font = {
@@ -18,6 +21,9 @@ export const Font = {
     light: 'Soleil-Light',
     regular: 'Soleil-Regular',
     semiBold: Platform.OS === 'ios' ? 'SoleilW02-SemiBold' : 'Soleil-SemiBold',
+  },
+  mono: {
+    regular: 'InputMono-Regular',
   },
 }
 
@@ -52,6 +58,7 @@ export const theme = createTheme({
   colors: {
     ...palette,
     mainBackground: palette.blueGray,
+    secondaryBackground: palette.darkBlue,
     cardBackground: palette.white,
     primaryMain: palette.green,
     primaryText: palette.darkGray,
@@ -67,6 +74,7 @@ export const theme = createTheme({
     m: 16,
     lm: 20,
     l: 24,
+    lx: 32,
     xl: 40,
     xxl: 60,
   },
@@ -101,6 +109,7 @@ export const theme = createTheme({
   textVariants: {
     ...textVariants,
     bodyBold: { ...textVariants.body, fontFamily: Font.main.semiBold },
+    bodyMono: { ...textVariants.body, fontFamily: Font.mono.regular },
   },
 })
 
@@ -116,11 +125,16 @@ export const darkTheme: Theme = {
   colors: {
     ...theme.colors,
     mainBackground: palette.white,
+    secondaryBackground: palette.lightBlue,
     cardBackground: palette.black,
     primaryMain: palette.black,
     secondaryMain: palette.blueGray,
   },
-  textVariants: darkTextVariants,
+  textVariants: {
+    ...darkTextVariants,
+    bodyBold: { ...darkTextVariants.body, fontFamily: Font.main.semiBold },
+    bodyMono: { ...darkTextVariants.body, fontFamily: Font.mono.regular },
+  },
 }
 
 export type Theme = typeof theme
