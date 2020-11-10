@@ -1,23 +1,70 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import { useNavigation } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
+import Lock from '../../../assets/images/lock.svg'
+import BackButton from '../../../components/BackButton'
+import Box from '../../../components/Box'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
+import { OnboardingNavigationProp } from '../onboardingTypes'
+import Word from './Word'
 
 const AccountCreatePassphraseScreen = () => {
   const { t } = useTranslation()
+  const [words, setWords] = useState<Array<string>>([])
+
+  useEffect(() => {
+    setWords([
+      'bacon',
+      'eggs',
+      'potato',
+      'salt',
+      'pepper',
+      'paprika',
+      'toast',
+      'butter',
+      'pancake',
+      'syrup',
+      'plate',
+      'fork',
+    ])
+  }, [])
+
+  const navigation = useNavigation<OnboardingNavigationProp>()
   return (
-    <SafeAreaBox
-      height="100%"
-      width="100%"
-      paddingVertical={{ phone: 'xxl', smallPhone: 'l' }}
-      paddingHorizontal="l"
-      backgroundColor="mainBackground"
-      alignItems="center"
-    >
-      <Text textAlign="center" variant="header">
-        {t('account_setup.passphrase.title')}
-      </Text>
-    </SafeAreaBox>
+    <Box flex={1} backgroundColor="mainBackground">
+      <Box position="absolute" right={0}>
+        <Lock />
+      </Box>
+
+      <SafeAreaBox flex={1} flexDirection="column">
+        <BackButton paddingHorizontal="l" onPress={() => navigation.goBack()} />
+        <Box paddingHorizontal="lx">
+          <Text marginTop={{ smallPhone: 's', phone: 'xl' }} variant="header">
+            {t('account_setup.passphrase.title1')}
+          </Text>
+          <Text variant="header">{t('account_setup.passphrase.title2')}</Text>
+        </Box>
+        <Box
+          backgroundColor="secondaryBackground"
+          flexDirection="row"
+          alignContent="space-between"
+          marginTop="xxl"
+          paddingVertical="m"
+        >
+          <Box flex={1} paddingHorizontal="lx">
+            {words.slice(0, 6).map((word, idx) => (
+              <Word key={word} position={idx + 1} word={word} />
+            ))}
+          </Box>
+          <Box flex={1} paddingHorizontal="lx">
+            {words.slice(6).map((word, idx) => (
+              <Word key={word} position={idx + 7} word={word} />
+            ))}
+          </Box>
+        </Box>
+      </SafeAreaBox>
+    </Box>
   )
 }
 
