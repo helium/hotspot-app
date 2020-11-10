@@ -1,8 +1,8 @@
+import upperFirst from 'lodash/upperFirst'
 import React from 'react'
 import { Animated } from 'react-native'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
-import upperFirst from '../../../utils/upperFirst'
 
 type Props = { word: string; position: number; opacity: Animated.Value }
 const Word = ({ position, word, opacity }: Props) => {
