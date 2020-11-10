@@ -13,6 +13,7 @@ const palette = {
   green: '#29D391',
   lightBlue: '#51AEFF',
   darkBlue: '#131F2A',
+  red: '#F97570',
 }
 
 export const Font = {

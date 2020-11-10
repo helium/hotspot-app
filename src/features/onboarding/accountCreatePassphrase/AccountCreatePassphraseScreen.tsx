@@ -8,6 +8,8 @@ import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { OnboardingNavigationProp } from '../onboardingTypes'
 import Word from './Word'
+import TextTransform from '../../../components/TextTransform'
+import Button from '../../../components/Button'
 
 const AccountCreatePassphraseScreen = () => {
   const { t } = useTranslation()
@@ -37,19 +39,19 @@ const AccountCreatePassphraseScreen = () => {
         <Lock />
       </Box>
 
-      <SafeAreaBox flex={1} flexDirection="column">
-        <BackButton paddingHorizontal="l" onPress={() => navigation.goBack()} />
+      <SafeAreaBox>
+        <BackButton paddingHorizontal="l" onPress={navigation.goBack} />
+      </SafeAreaBox>
+
+      <Box flex={1} flexDirection="column" justifyContent="space-around">
         <Box paddingHorizontal="lx">
-          <Text marginTop={{ smallPhone: 's', phone: 'xl' }} variant="header">
-            {t('account_setup.passphrase.title1')}
-          </Text>
+          <Text variant="header">{t('account_setup.passphrase.title1')}</Text>
           <Text variant="header">{t('account_setup.passphrase.title2')}</Text>
         </Box>
         <Box
           backgroundColor="secondaryBackground"
           flexDirection="row"
           alignContent="space-between"
-          marginTop="xxl"
           paddingVertical="m"
         >
           <Box flex={1} paddingHorizontal="lx">
@@ -63,7 +65,25 @@ const AccountCreatePassphraseScreen = () => {
             ))}
           </Box>
         </Box>
-      </SafeAreaBox>
+        <Box paddingHorizontal="l">
+          <TextTransform
+            marginBottom="m"
+            variant="body"
+            i18nKey="account_setup.passphrase.warning_1"
+          />
+          <TextTransform
+            variant="body"
+            i18nKey="account_setup.passphrase.warning_2"
+          />
+        </Box>
+        <Button
+          marginHorizontal="l"
+          mode="contained"
+          variant="primary"
+          onPress={() => navigation.push('AccountEnterPassphraseScreen')}
+          title={t('account_setup.passphrase.next')}
+        />
+      </Box>
     </Box>
   )
 }

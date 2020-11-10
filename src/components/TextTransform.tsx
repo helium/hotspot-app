@@ -5,7 +5,7 @@ import { TextProps } from '@shopify/restyle'
 import Text from './Text'
 import { Theme } from '../theme/theme'
 
-const components = { b: <Text variant="bodyBold" /> }
+const components = { b: <Text variant="bodyBold" />, red: <Text color="red" /> }
 
 type Props = TextProps<Theme> & { i18nKey: string }
 const TextTransform = ({ i18nKey, ...props }: Props) => {
