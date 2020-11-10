@@ -17,11 +17,16 @@ Release versions of the app are available here:
 ## What to expect in the new Hotspot App
 
 ### Simplification
-We've heard that the existing app can be overwhelming and cause undue stress and "doom scrolling". We hear you and know we can do better. This new app will help  users understand the network and their Hotspot better. We will enable users to self-service easy to resolve issues. This includes alerts, status without pairing, and watching a Hotspot that's not yours. Less guessing, more knowing.
+
+We've heard that the existing app can be overwhelming and cause undue stress and "doom scrolling". To fix this, the new app will prefer synthesized summaries over raw activity feeds to help users understand the network and their Hotspot better.
+
 ### Visualization
-We will use charts and graphs to explain mining performance over time, and maps to show your Hotspot in relation to others around you. We know witnesses matter, and we want to show you where they are. 
+
+We will use charts and graphs to explain mining performance over time, and maps to show your Hotspot in relation to others around you. We know witnesses matter, and we want to show you where they are.
+
 ### Recommendation Engine
-The new Hotspot app will include a recommendation engine, where it can take multiple inputs to determine and suggest actionable steps users can take to improve the performance of their Hotspot.
+
+The new Hotspot app will include a recommendation engine which will suggest actionable steps users can take to improve the performance of their Hotspot.
 
 ## Join us in Discord
 
