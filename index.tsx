@@ -4,6 +4,7 @@ import { AppRegistry } from 'react-native'
 import { Provider } from 'react-redux'
 import App from './src/App'
 import { name as appName } from './app.json'
+import './src/utils/i18n'
 
 import store from './src/store/store'
 

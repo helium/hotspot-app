@@ -1,24 +1,21 @@
 import 'react-native-gesture-handler'
-import React, { useState } from 'react'
+import React from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { ThemeProvider } from '@shopify/restyle'
-import { Switch } from 'react-native'
-import { theme, darkTheme } from './theme/theme'
+import { Platform, StatusBar } from 'react-native'
+import { theme } from './theme/theme'
 import NavigationRoot from './navigation/NavigationRoot'
-import Box from './components/Box'
 
 const App = () => {
-  const [darkMode, setDarkMode] = useState(false)
   return (
-    <ThemeProvider theme={darkMode ? darkTheme : theme}>
+    <ThemeProvider theme={theme}>
       <SafeAreaProvider>
+        {/* Will need to adapt status bar for light/dark modes */}
+        {Platform.OS === 'ios' && <StatusBar barStyle="light-content" />}
+        {Platform.OS === 'android' && (
+          <StatusBar translucent backgroundColor="transparent" />
+        )}
         <NavigationRoot />
-        <Box backgroundColor="mainBackground" paddingLeft="m">
-          <Switch
-            value={darkMode}
-            onValueChange={(value: boolean) => setDarkMode(value)}
-          />
-        </Box>
       </SafeAreaProvider>
     </ThemeProvider>
   )
