@@ -6,10 +6,19 @@ import SafeAreaBox from '../../../components/SafeAreaBox'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import { OnboardingNavigationProp } from '../onboardingTypes'
+import { createKeypair } from '../../../utils/Account'
 
 const AccountPassphraseGenerationScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<OnboardingNavigationProp>()
+
+  useEffect(() => {
+    const genKeypair = async () => {
+      await createKeypair()
+    }
+
+    genKeypair()
+  }, [])
 
   useEffect(() => {
     const timer = setTimeout(
