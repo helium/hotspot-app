@@ -24,6 +24,7 @@ export const Font = {
     semiBold: Platform.OS === 'ios' ? 'SoleilW02-SemiBold' : 'Soleil-SemiBold',
   },
   mono: {
+    light: 'InputMono-Light',
     regular: 'InputMono-Regular',
   },
 }
@@ -53,6 +54,11 @@ const textVariants = {
     textAlign: 'center',
     fontSize: 17,
   } as TextProps,
+  keypad: {
+    fontFamily: Font.mono.light,
+    fontSize: 34,
+    color: 'white',
+  },
 }
 
 export const theme = createTheme({
@@ -84,6 +90,7 @@ export const theme = createTheme({
     s: 4,
     m: 8,
     l: 12,
+    round: 1000,
   },
   breakpoints: {
     smallPhone: 0,
