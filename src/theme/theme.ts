@@ -5,6 +5,7 @@ const palette = {
   black: '#000',
   white: '#FFF',
   blueGray: '#33414E',
+  lighterGray: '#465666',
   lightGray: '#DADADA',
   midGray: '#81909F',
   darkGray: '#252F3B',
@@ -64,6 +65,7 @@ export const theme = createTheme({
     primaryText: palette.darkGray,
     secondaryMain: palette.lightBlue,
     secondaryText: palette.gray,
+    disabled: palette.lighterGray,
   },
   spacing: {
     none: 0,
