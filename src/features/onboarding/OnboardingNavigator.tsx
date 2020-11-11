@@ -4,8 +4,10 @@ import AccountPassphraseWarningScreen from './accountPassphraseWarning/AccountPa
 import AccountPassphraseGenerationScreen from './accountPassphraseGeneration/AccountPassphraseGenerationScreen'
 import AccountCreatePassphraseScreen from './accountCreatePassphrase/AccountCreatePassphraseScreen'
 import AccountEnterPassphraseScreen from './accountEnterPassphrase/AccountEnterPassphraseScreen'
+import AccountSecureScreen from './accountSecure/AccountSecureScreen'
 import WelcomeScreen from './welcome/WelcomeScreen'
 import { OnboardingStackParamList } from './onboardingTypes'
+import AccountCreatePinScreen from './accountCreatePin/AccountCreatePinScreen'
 
 const OnboardingStack = createStackNavigator<OnboardingStackParamList>()
 
@@ -28,6 +30,14 @@ const Onboarding = () => {
       <OnboardingStack.Screen
         name="AccountEnterPassphraseScreen"
         component={AccountEnterPassphraseScreen}
+      />
+      <OnboardingStack.Screen
+        name="AccountSecureScreen"
+        component={AccountSecureScreen}
+      />
+      <OnboardingStack.Screen
+        name="AccountCreatePinScreen"
+        component={AccountCreatePinScreen}
       />
     </OnboardingStack.Navigator>
   )

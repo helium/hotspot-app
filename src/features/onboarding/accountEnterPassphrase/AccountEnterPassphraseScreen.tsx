@@ -69,13 +69,19 @@ const AccountEnterPassphraseScreen = () => {
       >
         <Box>
           <Box flexDirection="row" flexWrap="wrap">
-            {challengeWords.map((word) => (
+            {challengeWords.map((word, idx) => (
               <PhraseChip
                 marginRight="s"
                 marginBottom="s"
                 key={word}
                 title={word}
-                onPress={() => setFailed(true)}
+                onPress={() => {
+                  if (idx % 2 === 0) {
+                    setFailed(true)
+                  } else {
+                    navigation.push('AccountSecureScreen')
+                  }
+                }}
               />
             ))}
           </Box>
