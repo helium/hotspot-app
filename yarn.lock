@@ -783,10 +783,10 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@helium/crypto-react-native@^3.4.0":
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/@helium/crypto-react-native/-/crypto-react-native-3.4.0.tgz#c530b4bcb6dc2accdb72ab7529984a4d08425593"
-  integrity sha512-1X2Xomx0o9VlxmhwRbGQFMHKpXgFtQsgohI8pSIkERXCCFWPibf1JovFwmQJr5tHlWeK66w6Dvl//yb9Eb0Ebw==
+"@helium/crypto-react-native@^3.5.0":
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/@helium/crypto-react-native/-/crypto-react-native-3.5.0.tgz#23a889a6fb106c2b580803ee645c6595c54be6d1"
+  integrity sha512-Cvc+6S6iPUNBPMAL/Qi6UecvMXuaImdB+XSQ1SVhlnsAy78+9hBz8PddNA2ZH53nMsEUMS89nu8OihQGTJODdQ==
   dependencies:
     bs58 "^4.0.1"
     buffer "^6.0.1"

@@ -6,9 +6,6 @@ import { Platform, StatusBar } from 'react-native'
 import { theme } from './theme/theme'
 import NavigationRoot from './navigation/NavigationRoot'
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-extraneous-dependencies
-global.Buffer = require('safe-buffer').Buffer
-
 const App = () => {
   return (
     <ThemeProvider theme={theme}>
