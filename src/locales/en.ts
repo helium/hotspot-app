@@ -1,5 +1,19 @@
 export default {
   back: 'Back',
+  ordinals: [
+    '1st',
+    '2nd',
+    '3rd',
+    '4th',
+    '5th',
+    '6th',
+    '7th',
+    '8th',
+    '9th',
+    '10th',
+    '11th',
+    '12th',
+  ],
   stats: {
     title: 'Stats:',
   },
@@ -31,7 +45,7 @@ export default {
     },
     confirm: {
       title: 'Confirm Your Words',
-      subtitle: 'Select the %{ordinal} word',
+      subtitle: 'Select the {{ordinal}} word',
       forgot: 'I forgot my words',
       failed: {
         title: 'Sorry...',

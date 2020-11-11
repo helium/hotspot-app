@@ -3,7 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import AccountPassphraseWarningScreen from './accountPassphraseWarning/AccountPassphraseWarningScreen'
 import AccountPassphraseGenerationScreen from './accountPassphraseGeneration/AccountPassphraseGenerationScreen'
 import AccountCreatePassphraseScreen from './accountCreatePassphrase/AccountCreatePassphraseScreen'
-import AccountEnterPassphraseScreen from './AccountEnterPassphrase/AccountEnterPassphraseScreen'
+import AccountEnterPassphraseScreen from './accountEnterPassphrase/AccountEnterPassphraseScreen'
 import WelcomeScreen from './welcome/WelcomeScreen'
 import { OnboardingStackParamList } from './onboardingTypes'
 

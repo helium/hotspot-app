@@ -18,7 +18,7 @@ type Props = Omit<React.ComponentProps<typeof BaseButton>, 'children'> & {
   selected?: boolean
 }
 
-const PhraseChip = ({ title, selected }: Props) => {
+const PhraseChip = ({ title, selected, ...props }: Props) => {
   const theme = useTheme<Theme>()
   const [underlayShowing, setUnderlayShowing] = useState(false)
 
@@ -31,11 +31,12 @@ const PhraseChip = ({ title, selected }: Props) => {
       disabled={selected}
       onHideUnderlay={() => setUnderlayShowing(false)}
       onShowUnderlay={() => setUnderlayShowing(true)}
+      {...props}
     >
       <Text
         paddingVertical="s"
         paddingHorizontal="m"
-        variant="body"
+        variant="bodyMono"
         color={selected || underlayShowing ? 'mainBackground' : 'midGray'}
       >
         {upperFirst(title)}
