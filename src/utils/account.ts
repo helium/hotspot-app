@@ -29,7 +29,9 @@ export const getKeypair = async (): Promise<Keypair> => {
 }
 
 export const signOut = async () => {
-  await SecureStore.deleteItemAsync('mnemonic')
-  await SecureStore.deleteItemAsync('keypair')
-  await SecureStore.deleteItemAsync('address')
+  await Promise.all([
+    SecureStore.deleteItemAsync('mnemonic'),
+    SecureStore.deleteItemAsync('keypair'),
+    SecureStore.deleteItemAsync('address'),
+  ])
 }
