@@ -40,6 +40,9 @@
       "./node_modules/react-native-gesture-handler/jestSetup.js",
       "@testing-library/jest-native/extend-expect",
       "./jestSetup"
+    ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!@helium)/"
     ]
   },
   "dependencies": {
