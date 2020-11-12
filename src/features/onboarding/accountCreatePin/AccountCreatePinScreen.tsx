@@ -16,22 +16,27 @@ const AccountCreatePinScreen = () => {
       backgroundColor="mainBackground"
       flex={1}
       padding="l"
+      paddingBottom="none"
       justifyContent="center"
       alignItems="center"
     >
       <EnterPin />
-      <Text marginVertical="m" variant="header" marginTop="lx">
+      <Text
+        marginBottom="m"
+        variant="header"
+        marginTop={{ smallPhone: 'none', phone: 'xl' }}
+      >
         {t('account_setup.create_pin.title')}
       </Text>
 
-      <Text variant="body" marginBottom="xl">
+      <Text variant="body" marginBottom={{ smallPhone: 'm', phone: 'xl' }}>
         {t(
           `account_setup.create_pin.${
             failedConfirmation ? 'failed' : 'subtitle'
           }`,
         )}
       </Text>
-      <PinDisplay marginBottom="xl" length={pin.length} />
+      <PinDisplay length={pin.length} />
       <Keypad
         onBackspacePress={() => {
           setPin((val) => val.slice(0, -1))

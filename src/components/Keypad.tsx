@@ -1,5 +1,6 @@
 import React from 'react'
 import Icon from 'react-native-vector-icons/Ionicons'
+import haptic from '../utils/haptic'
 import Box from './Box'
 import Text from './Text'
 import TouchableCircle from './TouchableCircle'
@@ -15,13 +16,17 @@ const Keypad = ({ onNumberPress, onBackspacePress }: Props) => {
       flexDirection="row"
       flexWrap="wrap"
       justifyContent="space-around"
+      alignContent="center"
     >
       {[...Array(9).keys()].map((idx) => (
         <TouchableCircle
           alignItems="center"
           marginBottom="xs"
           flexBasis="33%"
-          onPressIn={() => onNumberPress(idx + 1)}
+          onPressIn={() => {
+            haptic()
+            onNumberPress(idx + 1)
+          }}
           key={idx}
         >
           <Text variant="keypad">{idx + 1}</Text>
@@ -32,7 +37,10 @@ const Keypad = ({ onNumberPress, onBackspacePress }: Props) => {
         alignItems="center"
         marginBottom="xs"
         flexBasis="33%"
-        onPressIn={() => onNumberPress(0)}
+        onPressIn={() => {
+          haptic()
+          onNumberPress(0)
+        }}
       >
         <Text variant="keypad">{0}</Text>
       </TouchableCircle>
@@ -40,7 +48,10 @@ const Keypad = ({ onNumberPress, onBackspacePress }: Props) => {
         alignItems="center"
         marginBottom="xs"
         flexBasis="33%"
-        onPressIn={() => onBackspacePress()}
+        onPressIn={() => {
+          haptic()
+          onBackspacePress()
+        }}
       >
         <Text variant="keypad">
           <Icon name="ios-backspace-outline" size={34} />

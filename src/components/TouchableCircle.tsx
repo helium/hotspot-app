@@ -39,8 +39,8 @@ const TouchableCircle = ({ children, onPressIn, ...rest }: Props) => {
           justifyContent="center"
           alignItems="center"
           position="relative"
-          height={80}
-          width={80}
+          height={{ phone: 80, smallPhone: 60 }}
+          width={{ phone: 80, smallPhone: 60 }}
         >
           <AnimatedBox
             style={{ opacity: anim }}

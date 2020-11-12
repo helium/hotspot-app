@@ -1,6 +1,5 @@
 package com.helium.wallet;
 
-// com.myapp should be your package name
 import com.helium.wallet.generated.BasePackageList;
 
 import android.app.Application;
@@ -14,7 +13,6 @@ import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Arrays;
- 
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import org.unimodules.core.interfaces.SingletonModule;
@@ -33,16 +31,13 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
           @SuppressWarnings("UnnecessaryLocalVariable")
           List<ReactPackage> packages = new PackageList(this).getPackages();
-          // Packages that cannot be autolinked yet can be added manually here, for example:
-          // packages.add(new MyReactNativePackage());
+
+          List<ReactPackage> unimodules = Arrays.<ReactPackage>asList(
+            new ModuleRegistryAdapter(mModuleRegistryProvider)
+          );
+          packages.addAll(unimodules);
           return packages;
         }
-
-        // Add unimodules
-        List<ReactPackage> unimodules = Arrays.<ReactPackage>asList(
-          new ModuleRegistryAdapter(mModuleRegistryProvider)
-        );
-        packages.addAll(unimodules);
 
         @Override
         protected String getJSMainModuleName() {
