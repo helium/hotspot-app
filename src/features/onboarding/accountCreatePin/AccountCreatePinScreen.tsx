@@ -8,7 +8,9 @@ import Keypad from '../../../components/Keypad'
 
 const AccountCreatePinScreen = () => {
   const { t } = useTranslation()
+  const [pin, setPin] = useState('')
   const [failedConfirmation, setFailedConfirmation] = useState(false)
+
   return (
     <SafeAreaBox
       backgroundColor="mainBackground"
@@ -29,9 +31,13 @@ const AccountCreatePinScreen = () => {
           }`,
         )}
       </Text>
-      <PinDisplay marginBottom="xl" />
+      <PinDisplay marginBottom="xl" length={pin.length} />
       <Keypad
-        onNumberPress={() => {
+        onBackspacePress={() => {
+          setPin((val) => val.slice(0, -1))
+        }}
+        onNumberPress={(num) => {
+          setPin((val) => val + num)
           setFailedConfirmation(true)
         }}
       />

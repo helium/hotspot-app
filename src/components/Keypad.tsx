@@ -1,10 +1,14 @@
 import React from 'react'
+import Icon from 'react-native-vector-icons/Ionicons'
 import Box from './Box'
 import Text from './Text'
 import TouchableCircle from './TouchableCircle'
 
-type Props = { onNumberPress: (value: number) => void }
-const Keypad = ({ onNumberPress }: Props) => {
+type Props = {
+  onNumberPress: (value: number) => void
+  onBackspacePress: () => void
+}
+const Keypad = ({ onNumberPress, onBackspacePress }: Props) => {
   return (
     <Box
       flex={1}
@@ -24,12 +28,23 @@ const Keypad = ({ onNumberPress }: Props) => {
         </TouchableCircle>
       ))}
       <Box flexBasis="33%" />
-      <TouchableCircle alignItems="center" marginBottom="xs" flexBasis="33%">
+      <TouchableCircle
+        alignItems="center"
+        marginBottom="xs"
+        flexBasis="33%"
+        onPressIn={() => onNumberPress(0)}
+      >
         <Text variant="keypad">{0}</Text>
       </TouchableCircle>
-      <TouchableCircle alignItems="center" marginBottom="xs" flexBasis="33%">
-        {/* TODO: Bring in react native icons and use the backspace icon */}
-        <Text variant="keypad">{'<'}</Text>
+      <TouchableCircle
+        alignItems="center"
+        marginBottom="xs"
+        flexBasis="33%"
+        onPressIn={() => onBackspacePress()}
+      >
+        <Text variant="keypad">
+          <Icon name="ios-backspace-outline" size={34} />
+        </Text>
       </TouchableCircle>
     </Box>
   )
