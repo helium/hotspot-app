@@ -8,6 +8,7 @@ import AccountSecureScreen from './accountSecure/AccountSecureScreen'
 import WelcomeScreen from './welcome/WelcomeScreen'
 import { OnboardingStackParamList } from './onboardingTypes'
 import AccountCreatePinScreen from './accountCreatePin/AccountCreatePinScreen'
+import AccountConfirmPinScreen from './accountConfirmPin/AccountConfirmPinScreen'
 
 const OnboardingStack = createStackNavigator<OnboardingStackParamList>()
 
@@ -38,6 +39,10 @@ const Onboarding = () => {
       <OnboardingStack.Screen
         name="AccountCreatePinScreen"
         component={AccountCreatePinScreen}
+      />
+      <OnboardingStack.Screen
+        name="AccountConfirmPinScreen"
+        component={AccountConfirmPinScreen}
       />
     </OnboardingStack.Navigator>
   )

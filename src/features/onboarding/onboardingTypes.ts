@@ -8,6 +8,7 @@ export type OnboardingStackParamList = {
   AccountEnterPassphraseScreen: undefined
   AccountSecureScreen: undefined
   AccountCreatePinScreen: undefined
+  AccountConfirmPinScreen: { pin: string }
 }
 
 export type OnboardingNavigationProp = StackNavigationProp<

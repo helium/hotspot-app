@@ -1,25 +1,36 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigation } from '@react-navigation/native'
+import { RouteProp, useRoute, useNavigation } from '@react-navigation/native'
 import Text from '../../../components/Text'
 import EnterPin from '../../../assets/images/enter-pin.svg'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import PinDisplay from '../../../components/PinDisplay'
 import Keypad from '../../../components/Keypad'
-import { OnboardingNavigationProp } from '../onboardingTypes'
+import {
+  OnboardingNavigationProp,
+  OnboardingStackParamList,
+} from '../onboardingTypes'
 
-const AccountCreatePinScreen = () => {
+type Route = RouteProp<OnboardingStackParamList, 'AccountConfirmPinScreen'>
+
+const AccountConfirmPinScreen = () => {
+  const navigation = useNavigation<OnboardingNavigationProp>()
+  const route = useRoute<Route>()
+  const { pin: originalPin } = route.params
+
   const { t } = useTranslation()
   const [pin, setPin] = useState('')
-  const [failedConfirmation, setFailedConfirmation] = useState(false)
-
-  const navigation = useNavigation<OnboardingNavigationProp>()
 
   useEffect(() => {
     if (pin.length === 6) {
-      navigation.push('AccountConfirmPinScreen', { pin })
+      if (originalPin === pin) {
+        // TODO: Success
+      } else {
+        // TODO: Fail
+      }
+      // navigation.push('AccountConfirmPinScreen', { pin })
     }
-  }, [pin, navigation])
+  }, [pin, navigation, originalPin])
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
@@ -44,15 +55,11 @@ const AccountCreatePinScreen = () => {
         variant="header"
         marginTop={{ smallPhone: 'none', phone: 'xl' }}
       >
-        {t('account_setup.create_pin.title')}
+        {t('account_setup.confirm_pin.title')}
       </Text>
 
       <Text variant="body" marginBottom={{ smallPhone: 'm', phone: 'xl' }}>
-        {t(
-          `account_setup.create_pin.${
-            failedConfirmation ? 'failed' : 'subtitle'
-          }`,
-        )}
+        {t('account_setup.confirm_pin.subtitle')}
       </Text>
       <PinDisplay length={pin.length} />
       <Keypad
@@ -61,11 +68,10 @@ const AccountCreatePinScreen = () => {
         }}
         onNumberPress={(num) => {
           setPin((val) => (val.length < 6 ? val + num : val))
-          setFailedConfirmation(true)
         }}
       />
     </SafeAreaBox>
   )
 }
 
-export default AccountCreatePinScreen
+export default AccountConfirmPinScreen
