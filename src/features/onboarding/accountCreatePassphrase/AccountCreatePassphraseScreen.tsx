@@ -11,6 +11,7 @@ import { OnboardingNavigationProp } from '../onboardingTypes'
 import Word from './Word'
 import TextTransform from '../../../components/TextTransform'
 import Button from '../../../components/Button'
+import { getMnemonic } from '../../../utils/account'
 
 const AccountCreatePassphraseScreen = () => {
   const { t } = useTranslation()
@@ -18,20 +19,11 @@ const AccountCreatePassphraseScreen = () => {
   const opacity = new Animated.Value(0)
 
   useEffect(() => {
-    setWords([
-      'bacon',
-      'eggs',
-      'potato',
-      'salt',
-      'pepper',
-      'paprika',
-      'toast',
-      'butter',
-      'pancake',
-      'syrup',
-      'plate',
-      'fork',
-    ])
+    const getWords = async () => {
+      const mnemonic = await getMnemonic()
+      setWords(mnemonic.words)
+    }
+    getWords()
   }, [])
 
   useEffect(() => {

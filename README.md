@@ -13,7 +13,7 @@ Release versions of the app are available here:
   - Or if you don't use Google Play, you can [download an
     APK](https://install.appcenter.ms/orgs/helium/apps/helium-mobile-wallet-android/distribution_groups/public)
     from the official AppCenter build.
-    
+
 ## What to expect in the new Hotspot App
 
 ### Simplification
