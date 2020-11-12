@@ -1,25 +1,37 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigation } from '@react-navigation/native'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import Text from '../../../components/Text'
 import EnterPin from '../../../assets/images/enter-pin.svg'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import PinDisplay from '../../../components/PinDisplay'
 import Keypad from '../../../components/Keypad'
-import { OnboardingNavigationProp } from '../onboardingTypes'
+import {
+  OnboardingNavigationProp,
+  OnboardingStackParamList,
+} from '../onboardingTypes'
 
+type Route = RouteProp<OnboardingStackParamList, 'AccountCreatePinScreen'>
 const AccountCreatePinScreen = () => {
   const { t } = useTranslation()
+  const route = useRoute<Route>()
+  const navigation = useNavigation<OnboardingNavigationProp>()
+
   const [pin, setPin] = useState('')
   const [failedConfirmation, setFailedConfirmation] = useState(false)
 
-  const navigation = useNavigation<OnboardingNavigationProp>()
-
   useEffect(() => {
     if (pin.length === 6) {
-      navigation.push('AccountConfirmPinScreen', { pin })
+      if (route.params?.pinReset) {
+        // TODO: Nav to ConfirmResetPin
+      } else {
+        navigation.push('AccountConfirmPinScreen', {
+          pin,
+          fromImport: route.params?.fromImport,
+        })
+      }
     }
-  }, [pin, navigation])
+  }, [pin, navigation, route])
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {

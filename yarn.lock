@@ -1518,6 +1518,13 @@
   resolved "https://registry.yarnpkg.com/@types/q/-/q-1.5.4.tgz#15925414e0ad2cd765bfef58842f7e26a7accb24"
   integrity sha512-1HcDas8SEj4z1Wc696tH56G8OlRaH/sqZOynNNB+HF0WOeXPaxTtbYzJY2oEfiUxjSKjhCKr+MvR7dCHcEelug==
 
+"@types/react-addons-shallow-compare@^0.14.22":
+  version "0.14.22"
+  resolved "https://registry.yarnpkg.com/@types/react-addons-shallow-compare/-/react-addons-shallow-compare-0.14.22.tgz#25177d8ab88aedfc2937b434b09b1fcbc9c2eccd"
+  integrity sha512-krgFRorWtbVJLzpJsJD6O27Lew3YHuemVZbL9RFvq8TF1w9DbrHjiiLuIyWIL6AjunBkUrQlErfbUv1TYKiK9w==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-native-vector-icons@^6.4.6":
   version "6.4.6"
   resolved "https://registry.yarnpkg.com/@types/react-native-vector-icons/-/react-native-vector-icons-6.4.6.tgz#848e3b14572def56212cafbf5cb1254b445bfb41"
@@ -3236,6 +3243,11 @@ core-js-pure@^3.0.0:
   resolved "https://registry.yarnpkg.com/core-js-pure/-/core-js-pure-3.7.0.tgz#28a57c861d5698e053f0ff36905f7a3301b4191e"
   integrity sha512-EZD2ckZysv8MMt4J6HSvS9K2GdtlZtdBncKAmF9lr2n0c9dJUaUN88PSTjvgwCgQPWKTkERXITgS6JJRAnljtg==
 
+core-js@^1.0.0:
+  version "1.2.7"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-1.2.7.tgz#652294c14651db28fa93bd2d5ff2983a4f08c636"
+  integrity sha1-ZSKUwUZR2yj6k70tX/KYOk8IxjY=
+
 core-js@^2.2.2, core-js@^2.4.0, core-js@^2.4.1:
   version "2.6.11"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.11.tgz#38831469f9922bded8ee21c9dc46985e0399308c"
@@ -4368,6 +4380,19 @@ fbjs@1.0.0, fbjs@^1.0.0:
   dependencies:
     core-js "^2.4.1"
     fbjs-css-vars "^1.0.0"
+    isomorphic-fetch "^2.1.1"
+    loose-envify "^1.0.0"
+    object-assign "^4.1.0"
+    promise "^7.1.1"
+    setimmediate "^1.0.5"
+    ua-parser-js "^0.7.18"
+
+fbjs@^0.8.4:
+  version "0.8.17"
+  resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.8.17.tgz#c4d598ead6949112653d6588b01a5cdcd9f90fdd"
+  integrity sha1-xNWY6taUkRJlPWWIsBpc3Nn5D90=
+  dependencies:
+    core-js "^1.0.0"
     isomorphic-fetch "^2.1.1"
     loose-envify "^1.0.0"
     object-assign "^4.1.0"
@@ -7593,6 +7618,14 @@ range-parser@~1.2.1:
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.1.tgz#3cf37023d199e1c24d1a55b84800c2f3e6468031"
   integrity sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==
 
+react-addons-shallow-compare@15.6.2:
+  version "15.6.2"
+  resolved "https://registry.yarnpkg.com/react-addons-shallow-compare/-/react-addons-shallow-compare-15.6.2.tgz#198a00b91fc37623db64a28fd17b596ba362702f"
+  integrity sha1-GYoAuR/DdiPbZKKP0XtZa6NicC8=
+  dependencies:
+    fbjs "^0.8.4"
+    object-assign "^4.1.0"
+
 react-deep-force-update@^1.0.0:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/react-deep-force-update/-/react-deep-force-update-1.1.2.tgz#3d2ae45c2c9040cbb1772be52f8ea1ade6ca2ee1"
@@ -7672,6 +7705,14 @@ react-native-screens@^2.12.0:
   version "2.14.0"
   resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-2.14.0.tgz#2f0534c76e5bd0a95908ca61ec5d1cb7818d5f1e"
   integrity sha512-7EfxpYiJVvlFQNb1NlkEz7JRELVMLNIsrKo8jHq0+vXbDq+UxnAm/dMeYIXi8hY5iwqzk43uNPL8VyGPcLfBGQ==
+
+react-native-snap-carousel@^4.0.0-beta.6:
+  version "4.0.0-beta.6"
+  resolved "https://registry.yarnpkg.com/react-native-snap-carousel/-/react-native-snap-carousel-4.0.0-beta.6.tgz#cc73108f83cbcf227cd1c6367f17926e8451fd01"
+  integrity sha512-jr6Kesrn+/047FwL32JRwAL6/l4Soz2uw73rFM5LfoGTgZhPatUsw60eTE3bznqFewPhoFIKezYe2m3LypTnIA==
+  dependencies:
+    "@types/react-addons-shallow-compare" "^0.14.22"
+    react-addons-shallow-compare "15.6.2"
 
 react-native-sodium@^0.3.8, react-native-sodium@^0.3.9:
   version "0.3.9"

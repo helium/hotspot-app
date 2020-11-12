@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native'
 import Text from '../../../components/Text'
@@ -21,16 +21,26 @@ const AccountConfirmPinScreen = () => {
   const { t } = useTranslation()
   const [pin, setPin] = useState('')
 
+  const pinSuccess = useCallback(() => {
+    if (!route.params.fromImport && !route.params.pinReset) {
+      navigation.push('HotspotEducationScreen')
+    }
+  }, [navigation, route])
+
+  const pinFailure = useCallback(() => {
+    // TODO: don't nav back. Shake anim and clear pin?
+    navigation.goBack()
+  }, [navigation])
+
   useEffect(() => {
     if (pin.length === 6) {
       if (originalPin === pin) {
-        // TODO: Success
+        pinSuccess()
       } else {
-        // TODO: Fail
+        pinFailure()
       }
-      // navigation.push('AccountConfirmPinScreen', { pin })
     }
-  }, [pin, navigation, originalPin])
+  }, [pin, navigation, originalPin, pinSuccess, pinFailure])
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
