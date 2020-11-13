@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { random, shuffle, uniq, take, reject, sampleSize } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
@@ -10,6 +9,7 @@ import wordlist from '../../../constants/wordlists/english.json'
 import PhraseChip from './PhraseChip'
 import Button from '../../../components/Button'
 import { OnboardingNavigationProp } from '../onboardingTypes'
+import { getMnemonic } from '../../../utils/account'
 
 const testIndices = __DEV__
   ? [0, 1, 2]
@@ -23,40 +23,65 @@ const generateChallengeWords = (targetWord: string) =>
   )
 
 const AccountEnterPassphraseScreen = () => {
-  const wordArr = [
-    'bacon',
-    'eggs',
-    'potato',
-    'salt',
-    'pepper',
-    'paprika',
-    'toast',
-    'butter',
-    'pancake',
-    'syrup',
-    'plate',
-    'fork',
-  ]
   const [step, setStep] = useState(0)
-  const [correctWord, setCorrectWord] = useState<string | null>('chicken')
-  const [chipPress, setChipPressed] = useState<string | null>(null)
+  const [correctWord, setCorrectWord] = useState<string | null>(null)
   const [failed, setFailed] = useState(false)
   const [mnemonic, setMnemonic] = useState<Array<string>>([])
-  const [challengeWords, setChallengeWords] = useState<Array<string>>(wordArr)
+  const [challengeWords, setChallengeWords] = useState<Array<string>>([])
 
   const { t } = useTranslation()
   const navigation = useNavigation<OnboardingNavigationProp>()
 
-  const resetState = async () => {
-    // const wordStr = await getMnemonic()
-    const wordStr = wordArr.join(' ')
-    setMnemonic(wordStr.split(' '))
+  const findTargetWord = useCallback(
+    (pos: number, nextMnemonic?: string[] | undefined) => {
+      return (nextMnemonic || mnemonic)[testIndices[pos]]
+    },
+    [mnemonic],
+  )
+
+  const onPressWord = (word: string) => {
+    if (word === findTargetWord(step)) {
+      setCorrectWord(word)
+      nextStep()
+    } else {
+      setFailed(true)
+      setChallengeWords(generateChallengeWords(findTargetWord(step)))
+    }
+  }
+
+  const nextStep = () => {
+    setTimeout(() => {
+      if (step === 2) {
+        navigation.push('AccountSecureScreen')
+      } else {
+        setStep(step + 1)
+        setCorrectWord(null)
+        setChallengeWords(generateChallengeWords(findTargetWord(step + 1)))
+      }
+    }, 1000)
+  }
+
+  const resetState = useCallback(async () => {
+    const wordStr = await getMnemonic()
+    const nextMnemonic = wordStr?.words || []
+    setMnemonic(nextMnemonic)
     setStep(0)
     setCorrectWord(null)
     setFailed(false)
-    setChipPressed(null)
-    setChallengeWords(wordArr)
-  }
+    setChallengeWords(
+      generateChallengeWords(findTargetWord(step, nextMnemonic)),
+    )
+  }, [step, findTargetWord])
+
+  useEffect(() => {
+    resetState()
+    const unsubscribe = navigation.addListener('blur', () => {
+      resetState()
+    })
+
+    return unsubscribe
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigation])
 
   return (
     <>
@@ -69,19 +94,13 @@ const AccountEnterPassphraseScreen = () => {
       >
         <Box>
           <Box flexDirection="row" flexWrap="wrap">
-            {challengeWords.map((word, idx) => (
+            {challengeWords.map((word) => (
               <PhraseChip
                 marginRight="s"
                 marginBottom="s"
                 key={word}
                 title={word}
-                onPress={() => {
-                  if (idx % 2 === 0) {
-                    setFailed(true)
-                  } else {
-                    navigation.push('AccountSecureScreen')
-                  }
-                }}
+                onPress={() => !correctWord && onPressWord(word)}
               />
             ))}
           </Box>
@@ -103,7 +122,7 @@ const AccountEnterPassphraseScreen = () => {
             </Text>
             <Text variant="body">
               {t('account_setup.confirm.subtitle', {
-                ordinal: t(`ordinals.${0}`),
+                ordinal: t(`ordinals.${testIndices[step]}`),
               })}
             </Text>
             {correctWord && (

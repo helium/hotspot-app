@@ -21,7 +21,7 @@ const AccountCreatePassphraseScreen = () => {
   useEffect(() => {
     const getWords = async () => {
       const mnemonic = await getMnemonic()
-      setWords(mnemonic.words)
+      setWords(mnemonic?.words || [])
     }
     getWords()
   }, [])
