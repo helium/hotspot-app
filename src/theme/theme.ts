@@ -71,7 +71,7 @@ export const theme = createTheme({
     primaryMain: palette.green,
     primaryText: palette.darkGray,
     secondaryMain: palette.lightBlue,
-    secondaryText: palette.blueGray,
+    secondaryText: palette.steelGray,
     disabled: palette.lighterGray,
   },
   spacing: {

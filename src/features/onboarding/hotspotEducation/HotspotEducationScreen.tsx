@@ -32,7 +32,7 @@ const HotspotEducationScreen = () => {
     if (viewedSlides) {
       return (
         <Button
-          // onPress={this.navNext} style={styles.button}
+          // onPress={this.navNext}
           marginHorizontal="m"
           variant="primary"
           mode="contained"
@@ -43,9 +43,9 @@ const HotspotEducationScreen = () => {
     return (
       <Button
         marginHorizontal="m"
+        variant="secondary"
+        mode="text"
         // onPress={this.navNext}
-        // style={styles.button}
-        // variant="noBackground"
         title={t('generic.skip')}
       />
     )
@@ -70,6 +70,7 @@ const HotspotEducationScreen = () => {
           textAlign="center"
           color="darkestBlue"
           numberOfLines={3}
+          adjustsFontSizeToFit
         >
           {t(item.desc)}
         </Text>
@@ -78,8 +79,13 @@ const HotspotEducationScreen = () => {
   )
 
   return (
-    <SafeAreaBox backgroundColor="mainBackground" flex={1}>
-      <Text variant="header" textAlign="center" padding="l" flex={2}>
+    <SafeAreaBox backgroundColor="mainBackground" flex={1} paddingBottom="s">
+      <Text
+        variant="header"
+        textAlign="center"
+        padding={{ smallPhone: 'm', phone: 'l' }}
+        flex={2}
+      >
         {t('learn.title')}
       </Text>
 
@@ -98,7 +104,7 @@ const HotspotEducationScreen = () => {
       </Box>
       <Box flex={3} flexDirection="column" justifyContent="space-between">
         <ProgressBar
-          marginTop="l"
+          marginTop={{ phone: 'l', smallPhone: 'm' }}
           progress={(slideIndex + 1) / slides.length}
         />
         {showButton && renderButton()}
