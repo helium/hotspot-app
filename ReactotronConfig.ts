@@ -1,4 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
+/* eslint-disable import/no-extraneous-dependencies */
+import AsyncStorage from '@react-native-community/async-storage'
 import Reactotron from 'reactotron-react-native'
 import { reactotronRedux } from 'reactotron-redux'
 
