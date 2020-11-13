@@ -6,7 +6,7 @@ Helium hotspot app for iOS and Android built using [React Native](https://reactn
 
 Release versions of the app are available here:
 
-**Note: These links currently point to 2.x release of the app and this repository represent the 3.x release that's currently in active development**
+_Note: These links currently point to 2.x release of the app and this repository represents the 3.x release that's currently in active development._
 
 - [Hotspot App for iOS](https://apps.apple.com/us/app/helium-hotspot/id1450463605)
   on the iTunes App Store
