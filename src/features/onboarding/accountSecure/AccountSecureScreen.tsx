@@ -10,6 +10,7 @@ import { OnboardingNavigationProp } from '../onboardingTypes'
 const AccountSecureScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<OnboardingNavigationProp>()
+
   return (
     <Box backgroundColor="mainBackground" flex={1} padding="l">
       <Box flex={1} justifyContent="center" alignItems="center">
