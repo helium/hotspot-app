@@ -79,4 +79,35 @@ export default {
       later: "No thanks, I'll set it up later",
     },
   },
+  learn: {
+    title: 'How does a Hotspot earn Tokens?',
+    slides: [
+      {
+        title: '1. Earning by Issuing Challenges',
+        body:
+          'Encrypted messages are sent from Hotspots over the internet to target areas, creating a challenge in the process.',
+      },
+      {
+        title: '2. Earn with Proof-of-Coverage',
+        body:
+          "Hotspots earn Helium when they validate their peer's wireless coverage. Amount earned depends on how often it is directly involved in Proof-of-Coverage activity.",
+      },
+      {
+        title: '3. Earn by Witnessing',
+        body:
+          'Hotspots that hear Proof-of-Coverage that were not intended for them can "witness" those challenges and submit them to the blockchain.',
+      },
+      {
+        title: '4. Earn by Transferring Data',
+        body:
+          'Hotspots that transfer data from LongFi devices on the network earn Helium proportional to the amount sent.',
+      },
+      {
+        title: '5. Earn with Consensus Group',
+        body:
+          'The highest scoring Hotspots are elected to a consensus group which forms transactions into blocks and adds them to the blockchain. Hotspots earn Helium when participating in Consensus.',
+      },
+    ],
+    next: "I've read the guide",
+  },
 }

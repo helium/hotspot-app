@@ -14,6 +14,7 @@ const palette = {
   green: '#29D391',
   lightBlue: '#51AEFF',
   darkBlue: '#131F2A',
+  darkestBlue: '#232E39',
   red: '#F97570',
 }
 
@@ -103,12 +104,11 @@ export const theme = createTheme({
     },
     elevated: {
       backgroundColor: 'white',
-      padding: 's',
-      shadowColor: 'black',
-      borderRadius: 's',
+      shadowColor: 'darkestBlue',
+      borderRadius: 'm',
       shadowOffset: {
         width: 0,
-        height: 4,
+        height: 9,
       },
       shadowOpacity: 0.3,
       shadowRadius: 6,
