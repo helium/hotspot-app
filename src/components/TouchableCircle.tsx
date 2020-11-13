@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { BoxProps } from '@shopify/restyle'
-import React from 'react'
+import React, { useRef } from 'react'
 import {
   Animated,
   TouchableWithoutFeedback,
@@ -17,10 +17,10 @@ type Props = BoxProps<Theme> &
 const AnimatedBox = Animated.createAnimatedComponent(Box)
 
 const TouchableCircle = ({ children, onPressIn, ...rest }: Props) => {
-  const anim = new Animated.Value(0)
+  const anim = useRef(new Animated.Value(0))
 
   const setOpacityTo = (value: number, duration: number) =>
-    Animated.timing(anim, {
+    Animated.timing(anim.current, {
       toValue: value,
       duration,
       easing: Easing.inOut(Easing.quad),
@@ -43,7 +43,7 @@ const TouchableCircle = ({ children, onPressIn, ...rest }: Props) => {
           width={{ phone: 80, smallPhone: 60 }}
         >
           <AnimatedBox
-            style={{ opacity: anim }}
+            style={{ opacity: anim.current }}
             position="absolute"
             top={0}
             height="100%"

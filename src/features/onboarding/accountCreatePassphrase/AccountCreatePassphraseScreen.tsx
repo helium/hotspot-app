@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import { Animated } from 'react-native'
@@ -16,7 +16,7 @@ import { getMnemonic } from '../../../utils/account'
 const AccountCreatePassphraseScreen = () => {
   const { t } = useTranslation()
   const [words, setWords] = useState<Array<string>>([])
-  const opacity = new Animated.Value(0)
+  const opacity = useRef(new Animated.Value(0))
 
   useEffect(() => {
     const getWords = async () => {
@@ -27,7 +27,7 @@ const AccountCreatePassphraseScreen = () => {
   }, [])
 
   useEffect(() => {
-    Animated.timing(opacity, {
+    Animated.timing(opacity.current, {
       toValue: 1,
       duration: 300,
       useNativeDriver: true,
@@ -64,7 +64,7 @@ const AccountCreatePassphraseScreen = () => {
                 key={word}
                 position={idx + 1}
                 word={word}
-                opacity={opacity}
+                opacity={opacity.current}
               />
             ))}
           </Box>
@@ -74,7 +74,7 @@ const AccountCreatePassphraseScreen = () => {
                 key={word}
                 position={idx + 7}
                 word={word}
-                opacity={opacity}
+                opacity={opacity.current}
               />
             ))}
           </Box>
