@@ -2,6 +2,7 @@ import * as React from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
 import { EducationStackParamList } from './educationTypes'
 import HotspotEducationScreen from './hotspotEducation/HotspotEducationScreen'
+import AccountEndSetupScreen from './end/AccountEndSetupScreen'
 
 const EducationStack = createStackNavigator<EducationStackParamList>()
 
@@ -11,6 +12,10 @@ const Education = () => {
       <EducationStack.Screen
         name="HotspotEducationScreen"
         component={HotspotEducationScreen}
+      />
+      <EducationStack.Screen
+        name="AccountEndSetupScreen"
+        component={AccountEndSetupScreen}
       />
     </EducationStack.Navigator>
   )

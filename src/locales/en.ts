@@ -143,4 +143,260 @@ export default {
     error: 'Error',
     loading: 'Loading...',
   },
+  hotspot_setup: {
+    selection: {
+      title: 'What would you like to add to the network?',
+      option_one: 'Helium Hotspot',
+      option_two: 'RAK Hotspot Miner',
+      third_party_header: 'Other Hotspots',
+      helium_edition: 'For the Helium Network',
+      fine_print:
+        'RAK Hotspot Miners have special firmware preloaded by RAK. Double check your hardware is a RAK Hotspot Miner before proceeding.',
+    },
+    start: {
+      title: 'Set up Hotspot',
+      subtitle_1:
+        'Helium Hotspot enables anyone to earn cryptocurrency, Helium (HLM), for providing wireless coverage for low power Internet of Things devices.',
+      subtitle_2: 'Would you like to set up your hotspot now?',
+      next: 'Set up Hotspot',
+    },
+    education: {
+      title: 'Find the ideal spot for your Hotspot',
+      cards: [
+        {
+          title: 'Give me a nice view',
+          subtitle:
+            'Hotspots love places where they can see plenty of sky and spaced at least 300 meters away from other Hotspots. ',
+        },
+        {
+          title: "Don't hide me",
+          subtitle:
+            "Hotspots shouldn't hide in a nightstand or bookcase. Put it next to a window instead.",
+        },
+        {
+          title: 'Buildings may block my signals',
+          subtitle:
+            "Nearby buildings may decrease your Hotspot's coverage for nearby devices.",
+        },
+        {
+          title: 'Finally - I hate bug screens!',
+          subtitle:
+            'Try to keep your Hotspot away from metal meshes, which can block radio signals dramatically.',
+        },
+      ],
+      next: "I've read the guide",
+      generic: {
+        title: 'Find the ideal spot for your Hotspot.',
+        sub_one_accent: 'Position the antenna ',
+        sub_one: 'close to a window with no obstructions. ',
+        sub_two_accent: 'Be mindful of bug screens that may ',
+        sub_two: 'interfere with radio signals.',
+      },
+    },
+    diagnostics: {
+      title: 'Diagnostics Support',
+      p_1:
+        'To better serve your support needs, we have enabled diagnostic support on Hotspots until a request to opt-out has been processed. Diagnostic Support can be manually enabled in the app at a later time.',
+      p_2:
+        'Diagnostic Support helps identify issues with low scores, poor internet, and other firmware issues, ensuring your Hotspot earns %{ticker}.',
+      p_3:
+        'Helium will never have access to your private keys that are stored in a secure hardware-encrypted cryptographic chip.',
+      p_4:
+        'Diagnostic Support only access the Hotspot and cannot access anything on your network. If you would like to opt-out of diagnostic support, please email <blue>support@helium.com</blue> from the email used to purchase the Hotspot.',
+    },
+    power: {
+      title: 'I Need Power',
+      subtitle_1:
+        'Plug in the provided power adapter into an outlet near a window and screw in the provided antenna on the back of the Hotspot.',
+      rak_subtitle_1:
+        'Plug in the provided power adapter into an outlet near a window.',
+      subtitle_2:
+        'The Hotspot is ready when the light goes from yellow to green.',
+      rak_subtitle_2:
+        'The RAK Hotspot Miner will show a red LED light once it’s powered on.',
+    },
+    pair: {
+      title: 'Pair with Me',
+      subtitle_1:
+        'Press the black button on the side of the Hotspot to pair. The light will turn blue.',
+      rak_subtitle_1: 'There is no pairing button on the RAK Hotspot Miner.',
+      subtitle_2: "Make sure your phone's bluetooth is turned on!",
+      rak_subtitle_2:
+        'Bluetooth is automatically enabled for 5 minutes after the RAK Hotspot Miner is powered on.\n\nHotspot can take up to 1 minute to fully boot up.\n\nPress Next to scan.',
+      alert_no_permissions: {
+        title: 'Authorize Bluetooth',
+        body:
+          'Helium needs permission to use Bluetooth. You can enable Bluetooth permission in Settings.',
+      },
+      alert_ble_off: {
+        title: 'Enable Bluetooth',
+        body:
+          'To start pairing, turn on Bluetooth. Keep Bluetooth on until you finish registration.',
+      },
+    },
+    ble_scan: {
+      title: 'Scanning...',
+      subtitle: 'Looking for Hotspots near you',
+      cancel: 'Cancel Scan',
+    },
+    ble_select: {
+      title: 'Nearby Hotspots',
+      hotspots_found: {
+        one: '1 Hotspot found.',
+        other: '%{count} Hotspots found.',
+        zero: '0 Hotspots found.',
+      },
+      subtitle: 'Select your Hotspot to continue.',
+    },
+    ble_error: {
+      title: 'No Hotspots Found',
+      subtitle: "We're not having much luck finding any Hotspots nearby.",
+      tips: [
+        'Are you <green>within a few feet</green> of your Hotspot?',
+        "Is your phone's <blue>Bluetooth turned on</blue>?",
+        'Did you <purple>push the pairing button</purple>?',
+        'It can take <purple>up to a minute</purple> to find the RAK Hotspot Miner.',
+      ],
+    },
+    wifi_scan: {
+      title: 'Set Up Wi-Fi',
+      settings_title: 'Wi-Fi Settings',
+      subtitle:
+        'Your Hotspot has found Wi-Fi network nearby. Select yours so we can get the Hotspot online.',
+      ethernet: 'Use Ethernet Instead',
+      connection_failed: 'Connection failed, please try again',
+      disconnect_failed: 'Disconnect failed, please try again',
+      connected:
+        'Your Hotspot is <green>Online</green> and connected to %{network}.',
+      scan_fail_subtitle:
+        'Your Hotspot has found no Wi-Fi networks nearby. Check your router is online and nearby.',
+      tip: 'Did you check if your <blue>Wi-fi is set to hidden</blue>?',
+      saved_networks: 'Configured Network',
+      available_networks: 'Available Networks',
+      disconnect_help:
+        'To update the password or connect to a new network, first forget the old network.',
+      disconnect: 'Forget Network',
+    },
+    disconnect_dialog: {
+      title: 'Forget Network?',
+      body: 'The Hotspot will no longer automatically connect to %{wifiName}.',
+    },
+    wifi_password: {
+      join_title: 'Join Wi-Fi',
+      update_title: 'Update Wi-Fi',
+      message:
+        'The Hotspot is currently connected to this network. Changing the password can cause the Hotspot to go offline.',
+      error_title: 'Invalid Password',
+      subtitle: "What's your Wi-Fi password?",
+      placeholder: 'Password',
+      show_password: 'Show Password',
+      hide_password: 'Hide Password',
+      connecting: 'Connecting...',
+      forget: 'Forget',
+      forget_network: 'Forget Network',
+      forget_alert_title: 'Forget Network?',
+      forget_alert_message:
+        'The Hotspot will no longer automatically connect to ',
+    },
+    ethernet: {
+      title: "Let's use Ethernet",
+      subtitle:
+        'Plug your Hotspot into an available and active port on your internet router.',
+      secure: 'Please connect your ethernet cable securely',
+      next: 'My Hotspot is Connected',
+    },
+    firmware_update: {
+      title: 'Firmware Update Required',
+      subtitle: 'This Hotspot needs a firmware update before it can continue',
+      current_version: 'Current Version:',
+      required_version: 'Required Version:',
+      explanation:
+        'This Hotspot will check for updates automatically. This can take about 10 minutes. Leave it plugged in and check back later.',
+      next: 'Got it',
+    },
+    genesis: {
+      title: 'Helium Hotspot',
+      subtitle: 'Zero On-Boarding Fees',
+      p:
+        'As a creator of the Helium Network, your first time adding the Hotspot and setting its location will have <b>zero fees</b>.',
+    },
+    add_hotspot: {
+      title: 'Add Hotspot',
+      subtitle:
+        'Adding Hotspots requires a small fee (paid in Data Credits) to verify its authenticity.',
+      checking_status: 'Checking Hotspot status...',
+      already_added:
+        'You already added this hotspot to your wallet. Continue to the next screen to assert its location.',
+      not_owned:
+        'You do not own this hotspot and cannot add it to your wallet.',
+      label: 'CURRENT ADD HOTSPOT FEE (PAID IN %{dc})',
+      help_link: 'What are Data Credits?',
+      support_title: 'What are Data Credits (%{dc})?',
+      support_answer:
+        'Data Credits are required to send data over the Helium Network.',
+      error:
+        'Cannot proceed with Add Hotspot. If you purchased the Hotspot from Helium, please contact support@helium.com and include mac address %{mac}',
+      back: 'Back to Hotspot Pairing',
+      wait_error_title: 'Please Try Again',
+      wait_error_body:
+        'Hotspot miner is waiting to start. Please try again in a few minutes.',
+    },
+    enable_location: {
+      title: 'Confirm Location',
+      subtitle: 'Enable Location Services',
+      p_1:
+        "Your phone can be used to help find your Hotspot's location. An accurate location means more Proof-of-Coverage Challenges.",
+      p_2: 'Location Services Permissions can be updated in app settings.',
+      settings_p_1:
+        "In order to update your Hotspot's location, we'll need additional location permissions.",
+      settings_p_2:
+        "Tap the button below to be taken to Settings. Under 'Location' tap 'While using the App'.",
+      next: 'Enable Location Services',
+      cancel: "No thanks, I'll set it up later",
+    },
+    location_fee: {
+      title: 'Confirm Location',
+      subtitle: 'The fee to confirm your location is:',
+      pending_p_1:
+        'Your Hotspot has a Confirm Location transaction pending in the blockchain.',
+      pending_p_2:
+        "If you'd like to change the Hotspot's location, wait for the previous transaction to complete before updating its location.",
+      free_title: 'FREE',
+      free_text:
+        "The first time you confirm a Hotspot's location is free of any charges.",
+      free_subtext:
+        'However, changing the location of a Hotspot more than 300 meters will incur a small fee next time.',
+      no_funds:
+        'There is insufficient HNT in your account balance. Unable to confirm location.',
+      calculating_text: 'Calculating HNT Amount',
+      error_title: 'Error',
+      error_body: 'There was an error loading fee data. Please try again.',
+    },
+    location: {
+      title: 'Where are you?',
+      update_title: 'Update Location',
+      subtitle:
+        "Fine-tune your Hotspot's location by pinching and dragging the pin.",
+      finding: 'Please wait while we acquire GPS',
+      next: 'Confirm Hotspot Location',
+    },
+    progress: {
+      title: 'REGISTERING HOTSPOT',
+      p_1:
+        'Adding a Hotspot means submitting a transaction to the blockchain. This appears as a pending transaction like the one below.',
+      p_2:
+        "Pending transactions take time to clear so we'll let you know when it's done.",
+      p_3: 'Tap continue to explore the rest of the app.',
+      pending_txn: {
+        name: 'YOUR HOTSPOT NAME',
+      },
+      example: 'example transaction',
+      next: 'Continue to Accounts',
+    },
+    error: {
+      alertTitle: 'Servers Unable to Respond',
+      alertMessage:
+        'Request to servers have timed out and we cannot add your Hotspot at this time.\n\nPlease contact support@helium.com and note MAC address %{mac}.',
+    },
+  },
 }

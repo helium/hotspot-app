@@ -1,7 +1,9 @@
-import { RouteProp, useRoute } from '@react-navigation/native'
 import React, { useRef, useState } from 'react'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
+import { Platform } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import Carousel from 'react-native-snap-carousel'
+import OneSignal from 'react-native-onesignal'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
 import Card from '../../../components/Card'
@@ -9,17 +11,23 @@ import ImageBox from '../../../components/ImageBox'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { wp } from '../../../utils/layout'
-import { OnboardingStackParamList } from '../../onboarding/onboardingTypes'
+import {
+  EducationNavigationProp,
+  EducationStackParamList,
+} from '../educationTypes'
 import { SlideItem, slides } from './slides'
 import ProgressBar from '../../../components/ProgressBar'
 
-type Route = RouteProp<OnboardingStackParamList, 'HotspotEducationScreen'>
+type Route = RouteProp<EducationStackParamList, 'HotspotEducationScreen'>
+const NOT_DETERMINED = 0
+
 const HotspotEducationScreen = () => {
   const { t } = useTranslation()
   const { params: { showButton } = { showButton: true } } = useRoute<Route>()
   const carouselRef = useRef<Carousel<SlideItem>>(null)
   const [slideIndex, setSlideIndex] = useState(0)
   const [viewedSlides, setViewedSlides] = useState(false)
+  const navigation = useNavigation<EducationNavigationProp>()
 
   const onSnapToItem = (index: number) => {
     setSlideIndex(index)
@@ -28,9 +36,19 @@ const HotspotEducationScreen = () => {
     }
   }
 
-  const navNext = () => {
-    // TODO: Nav to EnableNotifications if ios and notifications not enabled
-    // else go to AccountEndSetup
+  const navNext = async () => {
+    if (Platform.OS === 'android') {
+      navigation.push('AccountEndSetupScreen')
+    }
+
+    const deviceState = await OneSignal.getDeviceState()
+
+    if (deviceState.notificationPermissionStatus === NOT_DETERMINED) {
+      // navigate('EnableNotifications')
+      console.log('not determined')
+    } else {
+      navigation.push('AccountEndSetupScreen')
+    }
   }
 
   const renderButton = () => {

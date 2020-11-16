@@ -6,7 +6,7 @@ import {
 } from '@react-navigation/stack'
 import { useSelector } from 'react-redux'
 import Onboarding from '../features/onboarding/OnboardingNavigator'
-import Education from '../features/education/EducationNavigator'
+import Education from '../features/educationSetup/EducationNavigator'
 import SplashScreen from '../features/splash/SplashScreen'
 import { RootState } from '../store/rootReducer'
 import Stats from '../features/stats/StatsNavigator'

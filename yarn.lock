@@ -7677,6 +7677,13 @@ react-native-localize@^1.4.3:
   resolved "https://registry.yarnpkg.com/react-native-localize/-/react-native-localize-1.4.3.tgz#6fde2fb1e73a7205910419a680cb4734187d556f"
   integrity sha512-n3pi89LBeSzB825CBagyaYRtBS93LdvNz3sI386iXwLSg1ONjEGR1Ez36JBuxZalZgORjrKzV2Pun6MO7iwD6w==
 
+react-native-onesignal@^4.0.0-beta.4:
+  version "4.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/react-native-onesignal/-/react-native-onesignal-4.0.0-beta.4.tgz#d2938312b9a26a08d7a53e9b69032a67c5b8997d"
+  integrity sha512-O1Kd8rjXziwhKyo7eLI8oHOmjC6tOoGKxMfSSLXPecnlSNlTeF/JzhYEV5idN/0I0PfogJ+BLzm/AxNbjKO6qA==
+  dependencies:
+    invariant "^2.2.2"
+
 react-native-reanimated@^1.13.1:
   version "1.13.1"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.13.1.tgz#c370c32cc4d447ae896cb029bb9c6a2f7608c5b4"

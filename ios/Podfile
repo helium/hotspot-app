@@ -32,4 +32,8 @@ target 'Helium-tvOS' do
     inherit! :search_paths
     # Pods for testing
   end
+  
+  target 'OneSignalNotificationServiceExtension' do
+    pod 'OneSignal', '>= 2.9.3', '< 3.0'
+  end
 end
