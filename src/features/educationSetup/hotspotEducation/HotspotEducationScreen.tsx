@@ -44,8 +44,7 @@ const HotspotEducationScreen = () => {
     const deviceState = await OneSignal.getDeviceState()
 
     if (deviceState.notificationPermissionStatus === NOT_DETERMINED) {
-      // navigate('EnableNotifications')
-      console.log('not determined')
+      navigation.push('EnableNotificationsScreen')
     } else {
       navigation.push('AccountEndSetupScreen')
     }
