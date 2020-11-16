@@ -36,6 +36,7 @@ const AccountCreatePassphraseScreen = () => {
   }, [words])
 
   const navigation = useNavigation<OnboardingNavigationProp>()
+
   return (
     <Box flex={1} backgroundColor="mainBackground">
       <Box position="absolute" right={0}>

@@ -28,11 +28,16 @@ const HotspotEducationScreen = () => {
     }
   }
 
+  const navNext = () => {
+    // TODO: Nav to EnableNotifications if ios and notifications not enabled
+    // else go to AccountEndSetup
+  }
+
   const renderButton = () => {
     if (viewedSlides) {
       return (
         <Button
-          // onPress={this.navNext}
+          onPress={navNext}
           marginHorizontal="m"
           variant="primary"
           mode="contained"
@@ -45,19 +50,20 @@ const HotspotEducationScreen = () => {
         marginHorizontal="m"
         variant="secondary"
         mode="text"
-        // onPress={this.navNext}
+        onPress={navNext}
         title={t('generic.skip')}
       />
     )
   }
 
   const renderItem = ({ item }: { item: SlideItem }) => (
-    <Card margin="s" variant="elevated" flex={1}>
+    <Card marginHorizontal="s" variant="elevated" flex={1} overflow="hidden">
       <ImageBox source={item.image} width="100%" flex={1} />
-      <Box flex={1} paddingHorizontal="m">
+      <Box backgroundColor="white" flex={1} paddingHorizontal="m">
         <Text
-          paddingVertical="m"
           variant="bodyBold"
+          paddingTop={{ smallPhone: 's', phone: 'm' }}
+          paddingBottom={{ smallPhone: 'xs', phone: 'm' }}
           color="darkestBlue"
           textAlign="center"
           numberOfLines={1}
@@ -66,10 +72,10 @@ const HotspotEducationScreen = () => {
           {t(item.title)}
         </Text>
         <Text
+          numberOfLines={5}
           variant="body"
           textAlign="center"
           color="darkestBlue"
-          numberOfLines={3}
           adjustsFontSizeToFit
         >
           {t(item.desc)}
@@ -79,17 +85,21 @@ const HotspotEducationScreen = () => {
   )
 
   return (
-    <SafeAreaBox backgroundColor="mainBackground" flex={1} paddingBottom="s">
+    <SafeAreaBox
+      backgroundColor="mainBackground"
+      flex={1}
+      paddingBottom="s"
+      justifyContent="space-evenly"
+    >
       <Text
         variant="header"
         textAlign="center"
         padding={{ smallPhone: 'm', phone: 'l' }}
-        flex={2}
       >
         {t('learn.title')}
       </Text>
 
-      <Box flex={9}>
+      <Box flex={1} maxHeight={500}>
         <Carousel
           layout="default"
           ref={carouselRef}
@@ -101,12 +111,12 @@ const HotspotEducationScreen = () => {
           inactiveSlideScale={1}
           onSnapToItem={(i) => onSnapToItem(i)}
         />
-      </Box>
-      <Box flex={3} flexDirection="column" justifyContent="space-between">
         <ProgressBar
-          marginTop={{ phone: 'l', smallPhone: 'm' }}
+          margin={{ phone: 'l', smallPhone: 'm' }}
           progress={(slideIndex + 1) / slides.length}
         />
+      </Box>
+      <Box flexDirection="column" justifyContent="space-between">
         {showButton && renderButton()}
       </Box>
     </SafeAreaBox>

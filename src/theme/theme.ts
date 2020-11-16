@@ -103,7 +103,6 @@ export const theme = createTheme({
       padding: 's',
     },
     elevated: {
-      backgroundColor: 'white',
       shadowColor: 'darkestBlue',
       borderRadius: 'm',
       shadowOffset: {
