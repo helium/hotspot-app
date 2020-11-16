@@ -5,6 +5,7 @@ const palette = {
   black: '#000',
   white: '#FFF',
   blueGray: '#33414E',
+  lighterGray: '#465666',
   lightGray: '#DADADA',
   midGray: '#81909F',
   darkGray: '#252F3B',
@@ -13,6 +14,7 @@ const palette = {
   green: '#29D391',
   lightBlue: '#51AEFF',
   darkBlue: '#131F2A',
+  darkestBlue: '#232E39',
   red: '#F97570',
 }
 
@@ -23,6 +25,7 @@ export const Font = {
     semiBold: Platform.OS === 'ios' ? 'SoleilW02-SemiBold' : 'Soleil-SemiBold',
   },
   mono: {
+    light: 'InputMono-Light',
     regular: 'InputMono-Regular',
   },
 }
@@ -52,6 +55,11 @@ const textVariants = {
     textAlign: 'center',
     fontSize: 17,
   } as TextProps,
+  keypad: {
+    fontFamily: Font.mono.light,
+    fontSize: 34,
+    color: 'white',
+  },
 }
 
 export const theme = createTheme({
@@ -63,7 +71,8 @@ export const theme = createTheme({
     primaryMain: palette.green,
     primaryText: palette.darkGray,
     secondaryMain: palette.lightBlue,
-    secondaryText: palette.gray,
+    secondaryText: palette.steelGray,
+    disabled: palette.lighterGray,
   },
   spacing: {
     none: 0,
@@ -82,6 +91,7 @@ export const theme = createTheme({
     s: 4,
     m: 8,
     l: 12,
+    round: 1000,
   },
   breakpoints: {
     smallPhone: 0,
@@ -93,13 +103,11 @@ export const theme = createTheme({
       padding: 's',
     },
     elevated: {
-      backgroundColor: 'white',
-      padding: 's',
-      shadowColor: 'black',
-      borderRadius: 's',
+      shadowColor: 'darkestBlue',
+      borderRadius: 'm',
       shadowOffset: {
         width: 0,
-        height: 4,
+        height: 9,
       },
       shadowOpacity: 0.3,
       shadowRadius: 6,

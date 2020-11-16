@@ -1,9 +1,16 @@
 import { combineReducers } from '@reduxjs/toolkit'
+import { persistReducer } from 'redux-persist'
+import AsyncStorage from '@react-native-community/async-storage'
 import statsSlice from './stats/statsSlice'
 import userSlice from './user/userSlice'
 
+const userPersistConfig = {
+  key: 'user',
+  storage: AsyncStorage,
+}
+
 const rootReducer = combineReducers({
-  user: userSlice.reducer,
+  user: persistReducer(userPersistConfig, userSlice.reducer),
   stats: statsSlice.reducer,
 })
 

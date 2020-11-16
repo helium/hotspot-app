@@ -3,9 +3,13 @@ import { createStackNavigator } from '@react-navigation/stack'
 import AccountPassphraseWarningScreen from './accountPassphraseWarning/AccountPassphraseWarningScreen'
 import AccountPassphraseGenerationScreen from './accountPassphraseGeneration/AccountPassphraseGenerationScreen'
 import AccountCreatePassphraseScreen from './accountCreatePassphrase/AccountCreatePassphraseScreen'
-import AccountEnterPassphraseScreen from './AccountEnterPassphrase/AccountEnterPassphraseScreen'
+import AccountEnterPassphraseScreen from './accountEnterPassphrase/AccountEnterPassphraseScreen'
+import AccountSecureScreen from './accountSecure/AccountSecureScreen'
 import WelcomeScreen from './welcome/WelcomeScreen'
 import { OnboardingStackParamList } from './onboardingTypes'
+import AccountCreatePinScreen from './accountCreatePin/AccountCreatePinScreen'
+import AccountConfirmPinScreen from './accountConfirmPin/AccountConfirmPinScreen'
+import HotspotEducationScreen from './hotspotEducation/HotspotEducationScreen'
 
 const OnboardingStack = createStackNavigator<OnboardingStackParamList>()
 
@@ -28,6 +32,22 @@ const Onboarding = () => {
       <OnboardingStack.Screen
         name="AccountEnterPassphraseScreen"
         component={AccountEnterPassphraseScreen}
+      />
+      <OnboardingStack.Screen
+        name="AccountSecureScreen"
+        component={AccountSecureScreen}
+      />
+      <OnboardingStack.Screen
+        name="AccountCreatePinScreen"
+        component={AccountCreatePinScreen}
+      />
+      <OnboardingStack.Screen
+        name="AccountConfirmPinScreen"
+        component={AccountConfirmPinScreen}
+      />
+      <OnboardingStack.Screen
+        name="HotspotEducationScreen"
+        component={HotspotEducationScreen}
       />
     </OnboardingStack.Navigator>
   )

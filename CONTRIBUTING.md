@@ -4,12 +4,12 @@ We value contributions from the community and will do everything we
 can go get them reviewed in a timely fashion. If you have code to send
 our way or a bug to report:
 
-* **Contributing Code**: If you have new code or a bug fix, fork this
+- **Contributing Code**: If you have new code or a bug fix, fork this
   repo, create a logically-named branch, and [submit a PR against this
   repo](https://github.com/helium/hotspot-app). Include a
   write up of the PR with details on what it does.
 
-* **Reporting Bugs**: Open an issue [against this
+- **Reporting Bugs**: Open an issue [against this
   repo](https://github.com/helium/hotspot-app/issues) with as
   much detail as you can. At the very least you'll include steps to
   reproduce the problem.

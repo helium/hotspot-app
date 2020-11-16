@@ -6,6 +6,16 @@ export type OnboardingStackParamList = {
   AccountPassphraseGeneration: undefined
   AccountCreatePassphraseScreen: undefined
   AccountEnterPassphraseScreen: undefined
+  AccountSecureScreen: undefined
+  AccountCreatePinScreen:
+    | { fromImport?: boolean; pinReset?: boolean }
+    | undefined
+  AccountConfirmPinScreen: {
+    pin: string
+    fromImport?: boolean
+    pinReset?: boolean
+  }
+  HotspotEducationScreen: { showButton: boolean } | undefined
 }
 
 export type OnboardingNavigationProp = StackNavigationProp<
