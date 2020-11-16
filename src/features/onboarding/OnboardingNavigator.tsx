@@ -9,7 +9,6 @@ import WelcomeScreen from './welcome/WelcomeScreen'
 import { OnboardingStackParamList } from './onboardingTypes'
 import AccountCreatePinScreen from './accountCreatePin/AccountCreatePinScreen'
 import AccountConfirmPinScreen from './accountConfirmPin/AccountConfirmPinScreen'
-import HotspotEducationScreen from './hotspotEducation/HotspotEducationScreen'
 
 const OnboardingStack = createStackNavigator<OnboardingStackParamList>()
 
@@ -44,10 +43,6 @@ const Onboarding = () => {
       <OnboardingStack.Screen
         name="AccountConfirmPinScreen"
         component={AccountConfirmPinScreen}
-      />
-      <OnboardingStack.Screen
-        name="HotspotEducationScreen"
-        component={HotspotEducationScreen}
       />
     </OnboardingStack.Navigator>
   )

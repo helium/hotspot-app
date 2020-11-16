@@ -12,11 +12,14 @@ import {
   OnboardingStackParamList,
 } from '../onboardingTypes'
 import haptic from '../../../utils/haptic'
+import userSlice from '../../../store/user/userSlice'
+import { useAppDispatch } from '../../../store/store'
 
 type Route = RouteProp<OnboardingStackParamList, 'AccountConfirmPinScreen'>
 
 const AccountConfirmPinScreen = () => {
   const navigation = useNavigation<OnboardingNavigationProp>()
+  const dispatch = useAppDispatch()
   const route = useRoute<Route>()
   const { pin: originalPin } = route.params
   const { t } = useTranslation()
@@ -49,9 +52,9 @@ const AccountConfirmPinScreen = () => {
 
   const pinSuccess = useCallback(() => {
     if (!route.params.fromImport && !route.params.pinReset) {
-      navigation.push('HotspotEducationScreen')
+      dispatch(userSlice.actions.signIn())
     }
-  }, [navigation, route])
+  }, [route, dispatch])
 
   useEffect(() => {
     if (pin.length === 6) {

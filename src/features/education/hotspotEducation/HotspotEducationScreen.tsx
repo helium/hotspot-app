@@ -9,7 +9,7 @@ import ImageBox from '../../../components/ImageBox'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { wp } from '../../../utils/layout'
-import { OnboardingStackParamList } from '../onboardingTypes'
+import { OnboardingStackParamList } from '../../onboarding/onboardingTypes'
 import { SlideItem, slides } from './slides'
 import ProgressBar from '../../../components/ProgressBar'
 

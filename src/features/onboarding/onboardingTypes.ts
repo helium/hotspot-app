@@ -15,7 +15,6 @@ export type OnboardingStackParamList = {
     fromImport?: boolean
     pinReset?: boolean
   }
-  HotspotEducationScreen: { showButton: boolean } | undefined
 }
 
 export type OnboardingNavigationProp = StackNavigationProp<
