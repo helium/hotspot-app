@@ -19,7 +19,6 @@ import { SlideItem, slides } from './slides'
 import ProgressBar from '../../../components/ProgressBar'
 
 type Route = RouteProp<EducationStackParamList, 'HotspotEducationScreen'>
-const NOT_DETERMINED = 0
 
 const HotspotEducationScreen = () => {
   const { t } = useTranslation()
@@ -42,8 +41,7 @@ const HotspotEducationScreen = () => {
     }
 
     const deviceState = await OneSignal.getDeviceState()
-
-    if (deviceState.notificationPermissionStatus === NOT_DETERMINED) {
+    if (!deviceState.isSubscribed) {
       navigation.push('EnableNotificationsScreen')
     } else {
       navigation.push('AccountEndSetupScreen')
