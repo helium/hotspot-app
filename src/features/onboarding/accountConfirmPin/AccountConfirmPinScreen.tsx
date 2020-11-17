@@ -52,9 +52,9 @@ const AccountConfirmPinScreen = () => {
 
   const pinSuccess = useCallback(() => {
     if (!route.params.fromImport && !route.params.pinReset) {
-      dispatch(userSlice.actions.signIn())
+      dispatch(userSlice.actions.backupAccount(pin))
     }
-  }, [route, dispatch])
+  }, [route, dispatch, pin])
 
   useEffect(() => {
     if (pin.length === 6) {

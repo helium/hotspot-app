@@ -8,8 +8,10 @@ import { useSelector } from 'react-redux'
 import Onboarding from '../features/onboarding/OnboardingNavigator'
 import Education from '../features/educationSetup/EducationNavigator'
 import SplashScreen from '../features/splash/SplashScreen'
-import { RootState } from '../store/rootReducer'
 import Stats from '../features/stats/StatsNavigator'
+import { restoreUser } from '../store/user/userSlice'
+import { useAppDispatch } from '../store/store'
+import { RootState } from '../store/rootReducer'
 
 const RootStack = createStackNavigator()
 
@@ -21,28 +23,30 @@ const forFade = ({ current }: StackCardInterpolationProps) => ({
 
 const NavigationRoot = () => {
   const [showSplash, setShowSplash] = useState(true)
-  const { isSignedIn, hasFinishedEducation } = useSelector(
+  const { isBackedUp, isEducated, isRestored } = useSelector(
     (state: RootState) => state.user,
   )
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
+    dispatch(restoreUser())
     setTimeout(() => {
       setShowSplash(false)
     }, 1250)
-  }, [])
+  }, [dispatch])
 
   const currentScreen = useCallback(() => {
-    if (showSplash)
+    if (showSplash || !isRestored)
       return <RootStack.Screen name="Splash" component={SplashScreen} />
 
-    if (!isSignedIn)
+    if (!isBackedUp)
       return <RootStack.Screen name="Onboarding" component={Onboarding} />
 
-    if (!hasFinishedEducation)
+    if (!isEducated)
       return <RootStack.Screen name="Education" component={Education} />
 
     return <RootStack.Screen name="Stats" component={Stats} />
-  }, [showSplash, isSignedIn, hasFinishedEducation])
+  }, [showSplash, isEducated, isBackedUp, isRestored])
 
   return (
     <NavigationContainer>

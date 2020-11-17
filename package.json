@@ -62,6 +62,7 @@
     "lottie-ios": "3.1.8",
     "lottie-react-native": "^3.5.0",
     "react": "16.13.1",
+    "react-async-hook": "^3.6.2",
     "react-i18next": "^11.7.3",
     "react-native": "0.63.3",
     "react-native-gesture-handler": "^1.8.0",
