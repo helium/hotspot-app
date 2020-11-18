@@ -8,7 +8,7 @@ const palette = {
   lighterGray: '#465666',
   lightGray: '#DADADA',
   midGray: '#81909F',
-  darkGray: '#252F3B',
+  darkGray: '#202B37',
   steelGray: '#74869A',
   gray: '#5B6D7E',
   green: '#29D391',
@@ -73,6 +73,7 @@ export const theme = createTheme({
     secondaryMain: palette.lightBlue,
     secondaryText: palette.steelGray,
     disabled: palette.lighterGray,
+    inputPlaceholderText: palette.lighterGray,
   },
   spacing: {
     none: 0,
@@ -118,6 +119,15 @@ export const theme = createTheme({
     ...textVariants,
     bodyBold: { ...textVariants.body, fontFamily: Font.main.semiBold },
     bodyMono: { ...textVariants.body, fontFamily: Font.mono.regular },
+  },
+  inputVariants: {
+    regular: {
+      backgroundColor: 'darkGray',
+      fontFamily: Font.main.regular,
+      fontSize: 18,
+      color: 'white',
+      borderRadius: 'm',
+    },
   },
 })
 

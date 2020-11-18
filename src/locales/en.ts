@@ -399,4 +399,26 @@ export default {
         'Request to servers have timed out and we cannot add your Hotspot at this time.\n\nPlease contact support@helium.com and note MAC address %{mac}.',
     },
   },
+  account_import: {
+    word_entry: {
+      title: 'Enter Recovery Seed Phrase',
+      directions: 'Enter the <b>{{ordinal}}</b> Word',
+      placeholder: '{{ordinal}} word',
+      subtitle: 'Recovery Seed Phrases are not case-sensitive',
+    },
+    confirm: {
+      title: 'Confirm Seed Phrase',
+      subtitle:
+        "Here are the 12 words you've entered. If needed, you can tap the words to update.",
+      next: 'Submit Seed Phrase',
+    },
+    complete: {
+      title: 'Recovering Account...',
+      subtitle: 'This will just take a moment.',
+    },
+    alert: {
+      title: 'Error',
+      body: "This seed phrase doesn't correspond to a Helium account",
+    },
+  },
 }

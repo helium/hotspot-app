@@ -66,7 +66,7 @@ const WelcomeScreen = () => {
             title={t('account_setup.welcome.create_account')}
           />
           <Button
-            onPress={() => navigation.push('AccountPassphraseWarning')}
+            onPress={() => navigation.push('AccountImportScreen')}
             mode="text"
             variant="primary"
             title={t('account_setup.welcome.import_account')}
