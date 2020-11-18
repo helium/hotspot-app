@@ -156,7 +156,7 @@ export default {
     start: {
       title: 'Set up Hotspot',
       subtitle_1:
-        'Helium Hotspot enables anyone to earn cryptocurrency, Helium (HLM), for providing wireless coverage for low power Internet of Things devices.',
+        'Helium Hotspot enables anyone to earn cryptocurrency, Helium (HNT), for providing wireless coverage for low power Internet of Things devices.',
       subtitle_2: 'Would you like to set up your hotspot now?',
       next: 'Set up Hotspot',
     },
