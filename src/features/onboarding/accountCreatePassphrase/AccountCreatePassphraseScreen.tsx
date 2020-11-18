@@ -8,10 +8,10 @@ import Box from '../../../components/Box'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { OnboardingNavigationProp } from '../onboardingTypes'
-import Word from './Word'
 import TextTransform from '../../../components/TextTransform'
 import Button from '../../../components/Button'
 import { getMnemonic } from '../../../utils/account'
+import WordList from '../../../components/WordList'
 
 const AccountCreatePassphraseScreen = () => {
   const { t } = useTranslation()
@@ -52,34 +52,7 @@ const AccountCreatePassphraseScreen = () => {
           <Text variant="header">{t('account_setup.passphrase.title1')}</Text>
           <Text variant="header">{t('account_setup.passphrase.title2')}</Text>
         </Box>
-        <Box
-          backgroundColor="secondaryBackground"
-          flexDirection="row"
-          minHeight={180}
-          alignContent="space-between"
-          paddingVertical="m"
-        >
-          <Box flex={1} paddingHorizontal="lx">
-            {words.slice(0, 6).map((word, idx) => (
-              <Word
-                key={word}
-                position={idx + 1}
-                word={word}
-                opacity={opacity.current}
-              />
-            ))}
-          </Box>
-          <Box flex={1} paddingHorizontal="lx">
-            {words.slice(6).map((word, idx) => (
-              <Word
-                key={word}
-                position={idx + 7}
-                word={word}
-                opacity={opacity.current}
-              />
-            ))}
-          </Box>
-        </Box>
+        <WordList words={words} />
         <Box paddingHorizontal="l">
           <TextTransform
             marginBottom="m"

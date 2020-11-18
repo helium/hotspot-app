@@ -1,19 +1,14 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react'
 import { upperFirst } from 'lodash'
-import { TouchableHighlight, TouchableHighlightProps } from 'react-native'
-import { createBox, useTheme } from '@shopify/restyle'
+import { useTheme } from '@shopify/restyle'
 import Text from '../../../components/Text'
 import { Theme } from '../../../theme/theme'
+import TouchableHighlightBox, {
+  TouchableHighlightBoxProps,
+} from '../../../components/TouchableHighlightBox'
 
-const BaseButton = createBox<
-  Theme,
-  TouchableHighlightProps & {
-    children: React.ReactNode
-  }
->(TouchableHighlight)
-
-type Props = Omit<React.ComponentProps<typeof BaseButton>, 'children'> & {
+type Props = Omit<TouchableHighlightBoxProps, 'children'> & {
   title: string
   selected?: boolean
 }
@@ -23,7 +18,7 @@ const PhraseChip = ({ title, selected, ...props }: Props) => {
   const [underlayShowing, setUnderlayShowing] = useState(false)
 
   return (
-    <BaseButton
+    <TouchableHighlightBox
       backgroundColor={selected ? 'lightBlue' : 'disabled'}
       onPress={() => {}}
       borderRadius="s"
@@ -41,7 +36,7 @@ const PhraseChip = ({ title, selected, ...props }: Props) => {
       >
         {upperFirst(title)}
       </Text>
-    </BaseButton>
+    </TouchableHighlightBox>
   )
 }
 

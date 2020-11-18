@@ -1,9 +1,9 @@
-import { createBox } from '@shopify/restyle'
 import { capitalize } from 'lodash'
 import React from 'react'
-import { TouchableOpacity, TouchableOpacityProps } from 'react-native'
+import TouchableOpacityBox, {
+  TouchableOpacityBoxProps,
+} from '../../../components/TouchableOpacityBox'
 import Text from '../../../components/Text'
-import { Theme } from '../../../theme/theme'
 
 type WordProps = {
   fullWord: string
@@ -11,29 +11,18 @@ type WordProps = {
   onPress: (fullWord: string) => void
 }
 
-const BaseButton = createBox<
-  Theme,
-  TouchableOpacityProps & {
-    children: React.ReactNode
-  }
->(TouchableOpacity)
-
-type Props = Omit<
-  React.ComponentProps<typeof BaseButton>,
-  'children' | 'onPress'
-> &
-  WordProps
+type Props = Omit<TouchableOpacityBoxProps, 'children' | 'onPress'> & WordProps
 
 const MatchingWord = ({ fullWord, matchingText, onPress }: Props) => (
-  <BaseButton
+  <TouchableOpacityBox
     justifyContent="center"
     alignContent="center"
     marginRight="s"
-    // height={{ smallPhone: 54, phone: 40 }}
-    padding={{ smallPhone: 'm', phone: 'ms' }}
+    paddingHorizontal={{ smallPhone: 'm', phone: 'ms' }}
     borderRadius="m"
     backgroundColor="lighterGray"
     onPress={() => onPress(fullWord)}
+    height={54}
   >
     <Text
       variant="bodyMono"
@@ -51,7 +40,7 @@ const MatchingWord = ({ fullWord, matchingText, onPress }: Props) => (
         {fullWord.slice(matchingText.length)}
       </Text>
     </Text>
-  </BaseButton>
+  </TouchableOpacityBox>
 )
 
 export default MatchingWord
