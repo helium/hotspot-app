@@ -48,7 +48,7 @@ const Button = ({
   const getTextColor = (): Colors => {
     if (mode === 'contained') {
       if (variant === 'secondary') {
-        return 'secondaryText'
+        return 'blueGray'
       }
       return 'primaryText'
     }
