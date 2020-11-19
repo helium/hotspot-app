@@ -1,4 +1,10 @@
 export default {
+  navigation: {
+    account: 'Account',
+    hotspots: 'Hotspots',
+    network: 'Network',
+    more: 'More',
+  },
   back: 'Back',
   ordinals: [
     '1st',
