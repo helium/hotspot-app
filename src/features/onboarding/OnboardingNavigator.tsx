@@ -12,12 +12,16 @@ import AccountConfirmPinScreen from './accountConfirmPin/AccountConfirmPinScreen
 import AccountImportScreen from './accountImport/AccountImportScreen'
 import ImportAccountConfirmScreen from './importAccountConfirm/ImportAccountConfirmScreen'
 import AccountImportCompleteScreen from './accountImportComplete/AccountImportCompleteScreen'
+import DefaultScreenOptions from '../../navigation/defaultScreenOptions'
 
 const OnboardingStack = createStackNavigator<OnboardingStackParamList>()
 
 const Onboarding = () => {
   return (
-    <OnboardingStack.Navigator headerMode="none">
+    <OnboardingStack.Navigator
+      headerMode="none"
+      screenOptions={DefaultScreenOptions}
+    >
       <OnboardingStack.Screen name="Welcome" component={WelcomeScreen} />
       <OnboardingStack.Screen
         name="AccountPassphraseWarning"
