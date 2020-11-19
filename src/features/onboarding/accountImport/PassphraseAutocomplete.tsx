@@ -73,10 +73,6 @@ const PassphraseAutocomplete = ({ onSelectWord, wordIdx }: Props) => {
       />
       <ScrollView
         horizontal
-        contentContainerStyle={{
-          flexDirection: 'row',
-          justifyContent: 'flex-start',
-        }}
         keyboardShouldPersistTaps="always"
         keyboardDismissMode="none"
         showsHorizontalScrollIndicator={false}
