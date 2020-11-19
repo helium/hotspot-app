@@ -18,6 +18,7 @@ type Restore = {
   isBackedUp: boolean
   isEducated: boolean
   isSettingUpHotspot: boolean
+  isPinRequired: boolean
 }
 
 export const restoreUser = createAsyncThunk<Restore>(
@@ -27,11 +28,13 @@ export const restoreUser = createAsyncThunk<Restore>(
       getBoolean('accountBackedUp'),
       getBoolean('isEducated'),
       getBoolean('isSettingUpHotspot'),
+      getBoolean('requirePin'),
     ])
     return {
       isBackedUp: vals[0],
       isEducated: vals[1],
       isSettingUpHotspot: vals[2],
+      isPinRequired: vals[3],
     }
   },
 )
@@ -42,6 +45,7 @@ const userSlice = createSlice({
   reducers: {
     backupAccount: (state, action: PayloadAction<string>) => {
       setItem('accountBackedUp', true)
+      setItem('requirePin', true)
       setItem('userPin', action.payload)
       state.isBackedUp = true
       return state

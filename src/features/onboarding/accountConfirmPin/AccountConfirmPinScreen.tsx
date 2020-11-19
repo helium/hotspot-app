@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native'
 import { Animated } from 'react-native'
+import OneSignal from 'react-native-onesignal'
 import Text from '../../../components/Text'
 import EnterPin from '../../../assets/images/enter-pin.svg'
 import SafeAreaBox from '../../../components/SafeAreaBox'
@@ -21,7 +22,7 @@ const AccountConfirmPinScreen = () => {
   const navigation = useNavigation<OnboardingNavigationProp>()
   const dispatch = useAppDispatch()
   const route = useRoute<Route>()
-  const { pin: originalPin } = route.params
+  const { pin: originalPin, fromImport, pinReset } = route.params
   const { t } = useTranslation()
   const [pin, setPin] = useState('')
   const shakeAnim = useRef(new Animated.Value(0))
@@ -50,11 +51,20 @@ const AccountConfirmPinScreen = () => {
     haptic()
   }, [])
 
+  const backup = useCallback(
+    () => dispatch(userSlice.actions.backupAccount(pin)),
+    [dispatch, pin],
+  )
+
   const pinSuccess = useCallback(() => {
-    if (!route.params.fromImport && !route.params.pinReset) {
-      dispatch(userSlice.actions.backupAccount(pin))
+    if (!fromImport && !pinReset) {
+      backup()
+    } else if (fromImport) {
+      OneSignal.promptForPushNotificationsWithUserResponse(() => {
+        backup()
+      })
     }
-  }, [route, dispatch, pin])
+  }, [backup, fromImport, pinReset])
 
   useEffect(() => {
     if (pin.length === 6) {

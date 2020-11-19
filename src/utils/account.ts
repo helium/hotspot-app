@@ -10,6 +10,7 @@ const boolKeys = [
   'accountBackedUp',
   'isEducated',
   'isSettingUpHotspot',
+  'requirePin',
 ] as const
 type BooleanKey = typeof boolKeys[number]
 
@@ -27,9 +28,19 @@ export const getString = async (key: StringKey) => SecureStore.getItemAsync(key)
 export const deleteItem = async (key: AccountStoreKey) =>
   SecureStore.deleteItemAsync(key)
 
-export const createKeypair = async (givenMnemonic: Mnemonic | null = null) => {
-  const mnemonic = givenMnemonic || (await Mnemonic.create())
+export const createKeypair = async (
+  givenMnemonic: Mnemonic | Array<string> | null = null,
+) => {
+  let mnemonic: Mnemonic
+  if (!givenMnemonic) {
+    mnemonic = await Mnemonic.create()
+  } else if ('words' in givenMnemonic) {
+    mnemonic = givenMnemonic
+  } else {
+    mnemonic = new Mnemonic(givenMnemonic)
+  }
   const { keypair: keypairRaw, address } = await Keypair.fromMnemonic(mnemonic)
+
   await Promise.all([
     setItem('mnemonic', JSON.stringify(mnemonic.words)),
     setItem('keypair', JSON.stringify(keypairRaw)),
