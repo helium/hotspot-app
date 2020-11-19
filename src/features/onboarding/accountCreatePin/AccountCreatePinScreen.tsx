@@ -22,14 +22,11 @@ const AccountCreatePinScreen = () => {
 
   useEffect(() => {
     if (pin.length === 6) {
-      if (route.params?.pinReset) {
-        // TODO: Nav to ConfirmResetPin
-      } else {
-        navigation.push('AccountConfirmPinScreen', {
-          pin,
-          fromImport: route.params?.fromImport,
-        })
-      }
+      navigation.push('AccountConfirmPinScreen', {
+        pin,
+        fromImport: route.params?.fromImport,
+        pinReset: route.params?.pinReset,
+      })
     }
   }, [pin, navigation, route])
 

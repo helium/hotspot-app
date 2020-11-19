@@ -57,12 +57,15 @@ const AccountConfirmPinScreen = () => {
   )
 
   const pinSuccess = useCallback(() => {
-    if (!fromImport && !pinReset) {
-      backup()
-    } else if (fromImport) {
+    if (fromImport) {
       OneSignal.promptForPushNotificationsWithUserResponse(() => {
         backup()
       })
+    } else {
+      backup()
+      if (pinReset) {
+        // TODO: Handle pin reset complete
+      }
     }
   }, [backup, fromImport, pinReset])
 
