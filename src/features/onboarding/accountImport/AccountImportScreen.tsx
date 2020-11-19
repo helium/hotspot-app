@@ -42,7 +42,11 @@ const AccountImportScreen = () => {
       paddingHorizontal="l"
     >
       <BackButton onPress={navigation.goBack} />
-      <KeyboardAwareScrollView keyboardShouldPersistTaps="always">
+      <KeyboardAwareScrollView
+        enableOnAndroid
+        extraScrollHeight={40}
+        keyboardShouldPersistTaps="always"
+      >
         <PassphraseAutocomplete
           onSelectWord={handleSelectWord}
           wordIdx={words.length}
