@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Alert } from 'react-native'
 import LottieView from 'lottie-react-native'
 import { useTranslation } from 'react-i18next'
@@ -17,6 +17,7 @@ type Route = RouteProp<OnboardingStackParamList, 'AccountImportCompleteScreen'>
 const AccountImportCompleteScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<OnboardingNavigationProp>()
+  const lottieRef = useRef<LottieView>(null)
 
   const {
     params: { words },
@@ -32,12 +33,16 @@ const AccountImportCompleteScreen = () => {
           navigation.push('AccountCreatePinScreen', { fromImport: true })
         }, 2000)
       } catch (error) {
-        Alert.alert(
-          t('account_import.alert.title'),
-          t('account_import.alert.body'),
-          [{ text: t('generic.ok'), onPress: () => navigation.goBack() }],
-          { cancelable: false },
-        )
+        timer = setTimeout(() => {
+          lottieRef.current?.pause()
+          lottieRef.current?.reset()
+          Alert.alert(
+            t('account_import.alert.title'),
+            t('account_import.alert.body'),
+            [{ text: t('generic.ok'), onPress: () => navigation.goBack() }],
+            { cancelable: false },
+          )
+        }, 1000)
       }
     }
 
@@ -60,6 +65,7 @@ const AccountImportCompleteScreen = () => {
         <LottieView
           source={require('../../../assets/animations/importAccountLoader.json')}
           autoPlay
+          ref={lottieRef}
         />
       </Box>
       <Text variant="header" color="white" marginBottom="m" textAlign="center">
