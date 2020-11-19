@@ -4,17 +4,15 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import BackButton from '../../../components/BackButton'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import { OnboardingNavigationProp } from '../onboardingTypes'
-import PassphraseAutocomplete from './PassphraseAutocomplete'
+import PassphraseAutocomplete, { TOTAL_WORDS } from './PassphraseAutocomplete'
 
 const AccountImportScreen = () => {
   const [words, setWords] = useState(new Array<string>())
-  const [complete, setComplete] = useState(false)
 
   const navigation = useNavigation<OnboardingNavigationProp>()
 
   const resetState = () => {
     setWords([])
-    setComplete(false)
   }
 
   useEffect(() => {
@@ -26,21 +24,15 @@ const AccountImportScreen = () => {
     return unsubscribe
   }, [navigation])
 
-  const handleSelectWord = (selectedWord: string) =>
-    setWords((prevWords) => [...prevWords, selectedWord])
-
-  useEffect(() => {
-    if (words.length === 12) {
-      setComplete(true)
-    }
-  }, [words])
-
-  useEffect(() => {
-    if (complete) {
-      navigation.push('ImportAccountConfirmScreen', { words })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [complete, navigation])
+  const handleSelectWord = (selectedWord: string) => {
+    setWords((prevWords) => {
+      const nextWords = [...prevWords, selectedWord]
+      if (nextWords.length === TOTAL_WORDS) {
+        navigation.push('ImportAccountConfirmScreen', { words: nextWords })
+      }
+      return nextWords
+    })
+  }
 
   return (
     <SafeAreaBox
@@ -51,12 +43,10 @@ const AccountImportScreen = () => {
     >
       <BackButton onPress={navigation.goBack} />
       <KeyboardAwareScrollView keyboardShouldPersistTaps="always">
-        {!complete && (
-          <PassphraseAutocomplete
-            onSelectWord={handleSelectWord}
-            wordIdx={words.length}
-          />
-        )}
+        <PassphraseAutocomplete
+          onSelectWord={handleSelectWord}
+          wordIdx={words.length}
+        />
       </KeyboardAwareScrollView>
     </SafeAreaBox>
   )

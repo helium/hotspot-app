@@ -13,10 +13,13 @@ type Props = {
   wordIdx: number
 }
 
+export const TOTAL_WORDS = 12
+
 const PassphraseAutocomplete = ({ onSelectWord, wordIdx }: Props) => {
   const [word, setWord] = useState('')
   const [matchingWords, setMatchingWords] = useState<Array<string>>([])
   const { t } = useTranslation()
+  const ordinal = wordIdx <= TOTAL_WORDS ? t(`ordinals.${wordIdx}`) : ''
 
   useEffect(() => {
     setMatchingWords(
@@ -46,7 +49,7 @@ const PassphraseAutocomplete = ({ onSelectWord, wordIdx }: Props) => {
         color="green"
         marginBottom="s"
         i18nKey={t('account_import.word_entry.directions', {
-          ordinal: t(`ordinals.${wordIdx}`),
+          ordinal,
         })}
       />
       <Text variant="body" textAlign="center" color="lightGray">
@@ -57,7 +60,7 @@ const PassphraseAutocomplete = ({ onSelectWord, wordIdx }: Props) => {
         padding="m"
         variant="regular"
         placeholder={t('account_import.word_entry.placeholder', {
-          ordinal: t(`ordinals.${wordIdx}`),
+          ordinal,
         })}
         onChangeText={setWord}
         value={word}
@@ -79,9 +82,10 @@ const PassphraseAutocomplete = ({ onSelectWord, wordIdx }: Props) => {
         showsHorizontalScrollIndicator={false}
       >
         {matchingWords.length <= 20 &&
-          matchingWords.map((matchingWord) => (
+          matchingWords.map((matchingWord, idx) => (
             <MatchingWord
-              key={matchingWord}
+              // eslint-disable-next-line react/no-array-index-key
+              key={`${matchingWord}.${idx}`}
               fullWord={matchingWord}
               matchingText={word.toLowerCase()}
               onPress={handleWordSelect}

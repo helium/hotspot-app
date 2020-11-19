@@ -31,6 +31,7 @@ const Word = ({
         <Text variant="bodyMono" color="midGray">
           {position}
         </Text>
+
         <Text variant="bodyMono" color="lightGray" marginLeft="s">
           {upperFirst(word)}
         </Text>

@@ -17,6 +17,7 @@ export type OnboardingStackParamList = {
   }
   AccountImportScreen: undefined
   ImportAccountConfirmScreen: { words: Array<string> }
+  AccountImportCompleteScreen: { words: Array<string> }
 }
 
 export type OnboardingNavigationProp = StackNavigationProp<

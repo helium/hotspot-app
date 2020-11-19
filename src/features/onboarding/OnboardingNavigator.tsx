@@ -11,6 +11,7 @@ import AccountCreatePinScreen from './accountCreatePin/AccountCreatePinScreen'
 import AccountConfirmPinScreen from './accountConfirmPin/AccountConfirmPinScreen'
 import AccountImportScreen from './accountImport/AccountImportScreen'
 import ImportAccountConfirmScreen from './importAccountConfirm/ImportAccountConfirmScreen'
+import AccountImportCompleteScreen from './accountImportComplete/AccountImportCompleteScreen'
 
 const OnboardingStack = createStackNavigator<OnboardingStackParamList>()
 
@@ -53,6 +54,10 @@ const Onboarding = () => {
       <OnboardingStack.Screen
         name="ImportAccountConfirmScreen"
         component={ImportAccountConfirmScreen}
+      />
+      <OnboardingStack.Screen
+        name="AccountImportCompleteScreen"
+        component={AccountImportCompleteScreen}
       />
     </OnboardingStack.Navigator>
   )

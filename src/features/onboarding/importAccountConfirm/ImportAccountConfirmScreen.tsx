@@ -15,6 +15,7 @@ import {
 import Lock from '../../../assets/images/lock.svg'
 import PassphraseAutocomplete from '../accountImport/PassphraseAutocomplete'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import Button from '../../../components/Button'
 
 type Route = RouteProp<OnboardingStackParamList, 'ImportAccountConfirmScreen'>
 const ImportAccountConfirmScreen = () => {
@@ -36,33 +37,42 @@ const ImportAccountConfirmScreen = () => {
 
   const replaceWord = (newWord: string, idx: number) => {
     clearSelection()
+
     setWords((prevWords) => {
       const nextWords = [...prevWords]
       nextWords[idx] = newWord
       return nextWords
     })
   }
+
   return (
     <Box flex={1} backgroundColor="mainBackground">
       <Box position="absolute" right={0}>
         <Lock />
       </Box>
-      <SafeAreaBox
-        flex={1}
-        backgroundColor="mainBackground"
-        flexDirection="column"
-      >
-        <Box paddingHorizontal="l">
+      <SafeAreaBox flex={1} flexDirection="column">
+        <Box paddingHorizontal="l" flex={1}>
           <BackButton onPress={navigation.goBack} />
-          <Text variant="header" marginTop={{ smallPhone: 's', phone: 'xl' }}>
-            {t('account_import.confirm.title')}
-          </Text>
+        </Box>
+        <Box paddingHorizontal="l">
+          <Text variant="header">{t('account_import.confirm.title')}</Text>
           <Text variant="body" marginTop="s" marginBottom="xl">
             {t('account_import.confirm.subtitle')}
           </Text>
         </Box>
         <WordList words={words} onPressWord={handleWordEdit} />
+        <Box paddingHorizontal="l" flex={3} justifyContent="flex-end">
+          <Button
+            onPress={() =>
+              navigation.push('AccountImportCompleteScreen', { words })
+            }
+            variant="primary"
+            mode="contained"
+            title={t('account_import.confirm.next')}
+          />
+        </Box>
       </SafeAreaBox>
+
       <Modal
         presentationStyle="overFullScreen"
         transparent

@@ -27,7 +27,7 @@ const WordList = ({ words, onPressWord }: Props) => {
       <Box flex={1} paddingHorizontal="lx">
         {words.slice(0, 6).map((word, idx) => (
           <Word
-            key={word}
+            key={`${word}.${idx + 1}`}
             position={idx + 1}
             word={word}
             onPress={onPressWord?.(idx)}
@@ -38,7 +38,7 @@ const WordList = ({ words, onPressWord }: Props) => {
       <Box flex={1} paddingHorizontal="lx">
         {words.slice(6).map((word, idx) => (
           <Word
-            key={word}
+            key={`${word}.${idx + 7}`}
             position={idx + 7}
             word={word}
             onPress={onPressWord?.(idx + 6)}

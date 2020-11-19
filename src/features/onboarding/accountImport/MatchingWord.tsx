@@ -22,7 +22,7 @@ const MatchingWord = ({ fullWord, matchingText, onPress }: Props) => (
     borderRadius="m"
     backgroundColor="lighterGray"
     onPress={() => onPress(fullWord)}
-    height={54}
+    height={44}
   >
     <Text
       variant="bodyMono"
