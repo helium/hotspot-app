@@ -18,7 +18,6 @@ const AccountCreatePinScreen = () => {
   const navigation = useNavigation<OnboardingNavigationProp>()
 
   const [pin, setPin] = useState('')
-  const [failedConfirmation, setFailedConfirmation] = useState(false)
 
   useEffect(() => {
     if (pin.length === 6) {
@@ -57,11 +56,7 @@ const AccountCreatePinScreen = () => {
       </Text>
 
       <Text variant="body" marginBottom={{ smallPhone: 'm', phone: 'xl' }}>
-        {t(
-          `account_setup.create_pin.${
-            failedConfirmation ? 'failed' : 'subtitle'
-          }`,
-        )}
+        {t('account_setup.create_pin.subtitle')}
       </Text>
       <PinDisplay length={pin.length} />
       <Keypad
@@ -70,7 +65,6 @@ const AccountCreatePinScreen = () => {
         }}
         onNumberPress={(num) => {
           setPin((val) => (val.length < 6 ? val + num : val))
-          setFailedConfirmation(true)
         }}
       />
     </SafeAreaBox>
