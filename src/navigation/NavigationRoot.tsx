@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
-import {
-  createStackNavigator,
-  StackCardInterpolationProps,
-} from '@react-navigation/stack'
+import { createStackNavigator } from '@react-navigation/stack'
 import { useSelector } from 'react-redux'
 import Onboarding from '../features/onboarding/OnboardingNavigator'
 import Education from '../features/educationSetup/EducationNavigator'
@@ -12,14 +9,9 @@ import Stats from '../features/stats/StatsNavigator'
 import { restoreUser } from '../store/user/userSlice'
 import { useAppDispatch } from '../store/store'
 import { RootState } from '../store/rootReducer'
+import defaultScreenOptions from './defaultScreenOptions'
 
 const RootStack = createStackNavigator()
-
-const forFade = ({ current }: StackCardInterpolationProps) => ({
-  cardStyle: {
-    opacity: current.progress,
-  },
-})
 
 const NavigationRoot = () => {
   const [showSplash, setShowSplash] = useState(true)
@@ -52,9 +44,7 @@ const NavigationRoot = () => {
     <NavigationContainer>
       <RootStack.Navigator
         headerMode="none"
-        screenOptions={{
-          cardStyleInterpolator: forFade,
-        }}
+        screenOptions={defaultScreenOptions}
       >
         {currentScreen()}
       </RootStack.Navigator>

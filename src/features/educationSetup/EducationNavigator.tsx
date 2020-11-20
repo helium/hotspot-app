@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
+import { Platform } from 'react-native'
 import { EducationStackParamList } from './educationTypes'
 import HotspotEducationScreen from './hotspotEducation/HotspotEducationScreen'
 import AccountEndSetupScreen from './end/AccountEndSetupScreen'
@@ -12,7 +13,10 @@ const Education = () => {
   return (
     <EducationStack.Navigator
       headerMode="none"
-      screenOptions={DefaultScreenOptions}
+      screenOptions={
+        Platform.OS === 'android' ? DefaultScreenOptions : undefined
+      }
+      mode={Platform.OS === 'android' ? 'modal' : undefined}
     >
       <EducationStack.Screen
         name="HotspotEducationScreen"

@@ -61,7 +61,12 @@ const ImportAccountConfirmScreen = () => {
           </Text>
         </Box>
         <WordList words={words} onPressWord={handleWordEdit} />
-        <Box paddingHorizontal="l" flex={3} justifyContent="flex-end">
+        <Box
+          paddingHorizontal="l"
+          paddingBottom="l"
+          flex={3}
+          justifyContent="flex-end"
+        >
           <Button
             onPress={() =>
               navigation.push('AccountImportCompleteScreen', { words })

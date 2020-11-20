@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
+import { Platform } from 'react-native'
 import AccountPassphraseWarningScreen from './accountPassphraseWarning/AccountPassphraseWarningScreen'
 import AccountPassphraseGenerationScreen from './accountPassphraseGeneration/AccountPassphraseGenerationScreen'
 import AccountCreatePassphraseScreen from './accountCreatePassphrase/AccountCreatePassphraseScreen'
@@ -15,12 +16,14 @@ import AccountImportCompleteScreen from './accountImportComplete/AccountImportCo
 import DefaultScreenOptions from '../../navigation/defaultScreenOptions'
 
 const OnboardingStack = createStackNavigator<OnboardingStackParamList>()
-
 const Onboarding = () => {
   return (
     <OnboardingStack.Navigator
       headerMode="none"
-      screenOptions={DefaultScreenOptions}
+      screenOptions={
+        Platform.OS === 'android' ? DefaultScreenOptions : undefined
+      }
+      mode={Platform.OS === 'android' ? 'modal' : undefined}
     >
       <OnboardingStack.Screen name="Welcome" component={WelcomeScreen} />
       <OnboardingStack.Screen
