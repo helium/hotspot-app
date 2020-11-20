@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import { Animated } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
 import OneSignal from 'react-native-onesignal'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -10,18 +10,13 @@ import SafeAreaBox from '../../../components/SafeAreaBox'
 import Button from '../../../components/Button'
 import { wp } from '../../../utils/layout'
 import Notification from '../../../components/Notification'
-import {
-  EducationNavigationProp,
-  EducationStackParamList,
-} from '../educationTypes'
+import { EducationNavigationProp } from '../educationTypes'
 
 const AnimatedBox = Animated.createAnimatedComponent(Box)
-type Route = RouteProp<EducationStackParamList, 'EnableNotificationsScreen'>
 
 const EnableNotificationsScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<EducationNavigationProp>()
-  const route = useRoute<Route>()
   const xPos = useRef(new Animated.Value(wp(100)))
 
   useEffect(() => {
@@ -34,13 +29,7 @@ const EnableNotificationsScreen = () => {
     }).start()
   }, [])
 
-  const navNext = () => {
-    if (route.params?.fromImport) {
-      // TODO: navigate('Wallet')
-    } else {
-      navigation.push('AccountEndSetupScreen')
-    }
-  }
+  const navNext = () => navigation.push('AccountEndSetupScreen')
 
   const checkNotificationPermissions = async () => {
     OneSignal.promptForPushNotificationsWithUserResponse(() => {
@@ -59,7 +48,7 @@ const EnableNotificationsScreen = () => {
       <Box paddingTop="l">
         <EnableNotif />
       </Box>
-      <Box flex={1} style={{ marginTop: -40 }} width="100%">
+      <Box flex={1} marginTop="n_xl" width="100%">
         <Text variant="header" textAlign="center">
           {t('account_setup.enable_notifications.title')}
         </Text>

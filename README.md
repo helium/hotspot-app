@@ -145,6 +145,10 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 
 ## Installing
 
+### Environment Variables
+
+Copy the file `.env.sample` and rename it to `.env`. Once renamed update the values within the file.
+
 ### Dependencies
 
 Install 3rd party dependencies

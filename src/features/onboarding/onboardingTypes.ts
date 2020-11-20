@@ -15,6 +15,9 @@ export type OnboardingStackParamList = {
     fromImport?: boolean
     pinReset?: boolean
   }
+  AccountImportScreen: undefined
+  ImportAccountConfirmScreen: { words: Array<string> }
+  AccountImportCompleteScreen: { words: Array<string> }
 }
 
 export type OnboardingNavigationProp = StackNavigationProp<

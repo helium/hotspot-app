@@ -10,6 +10,7 @@ buildscript {
 apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 apply plugin: "com.android.application"
 apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
 import com.android.build.OutputFile
 

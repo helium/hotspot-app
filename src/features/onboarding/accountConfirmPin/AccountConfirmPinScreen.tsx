@@ -21,7 +21,7 @@ const AccountConfirmPinScreen = () => {
   const navigation = useNavigation<OnboardingNavigationProp>()
   const dispatch = useAppDispatch()
   const route = useRoute<Route>()
-  const { pin: originalPin } = route.params
+  const { pin: originalPin, pinReset } = route.params
   const { t } = useTranslation()
   const [pin, setPin] = useState('')
   const shakeAnim = useRef(new Animated.Value(0))
@@ -50,11 +50,17 @@ const AccountConfirmPinScreen = () => {
     haptic()
   }, [])
 
+  const backup = useCallback(
+    () => dispatch(userSlice.actions.backupAccount(pin)),
+    [dispatch, pin],
+  )
+
   const pinSuccess = useCallback(() => {
-    if (!route.params.fromImport && !route.params.pinReset) {
-      dispatch(userSlice.actions.backupAccount(pin))
+    backup()
+    if (pinReset) {
+      // TODO: Handle pin reset complete
     }
-  }, [route, dispatch, pin])
+  }, [backup, pinReset])
 
   useEffect(() => {
     if (pin.length === 6) {

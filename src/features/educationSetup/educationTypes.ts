@@ -2,7 +2,7 @@ import { StackNavigationProp } from '@react-navigation/stack'
 
 export type EducationStackParamList = {
   HotspotEducationScreen: { showButton: boolean } | undefined
-  EnableNotificationsScreen: { fromImport?: boolean } | undefined
+  EnableNotificationsScreen: undefined
   AccountEndSetupScreen: undefined
 }
 
