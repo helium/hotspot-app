@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native'
-import { Animated, Platform } from 'react-native'
-import OneSignal from 'react-native-onesignal'
+import { Animated } from 'react-native'
 import Text from '../../../components/Text'
 import EnterPin from '../../../assets/images/enter-pin.svg'
 import SafeAreaBox from '../../../components/SafeAreaBox'
@@ -22,7 +21,7 @@ const AccountConfirmPinScreen = () => {
   const navigation = useNavigation<OnboardingNavigationProp>()
   const dispatch = useAppDispatch()
   const route = useRoute<Route>()
-  const { pin: originalPin, fromImport, pinReset } = route.params
+  const { pin: originalPin, pinReset } = route.params
   const { t } = useTranslation()
   const [pin, setPin] = useState('')
   const shakeAnim = useRef(new Animated.Value(0))
@@ -57,18 +56,11 @@ const AccountConfirmPinScreen = () => {
   )
 
   const pinSuccess = useCallback(() => {
-    if (fromImport && Platform.OS !== 'android') {
-      OneSignal.promptForPushNotificationsWithUserResponse((response) => {
-        console.log(response)
-        backup()
-      })
-    } else {
-      backup()
-      if (pinReset) {
-        // TODO: Handle pin reset complete
-      }
+    backup()
+    if (pinReset) {
+      // TODO: Handle pin reset complete
     }
-  }, [backup, fromImport, pinReset])
+  }, [backup, pinReset])
 
   useEffect(() => {
     if (pin.length === 6) {
