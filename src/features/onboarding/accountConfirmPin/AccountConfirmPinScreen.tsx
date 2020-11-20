@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native'
-import { Animated } from 'react-native'
+import { Animated, Platform } from 'react-native'
 import OneSignal from 'react-native-onesignal'
 import Text from '../../../components/Text'
 import EnterPin from '../../../assets/images/enter-pin.svg'
@@ -57,8 +57,9 @@ const AccountConfirmPinScreen = () => {
   )
 
   const pinSuccess = useCallback(() => {
-    if (fromImport) {
-      OneSignal.promptForPushNotificationsWithUserResponse(() => {
+    if (fromImport && Platform.OS !== 'android') {
+      OneSignal.promptForPushNotificationsWithUserResponse((response) => {
+        console.log(response)
         backup()
       })
     } else {
