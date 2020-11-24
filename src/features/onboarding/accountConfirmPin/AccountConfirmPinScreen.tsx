@@ -9,13 +9,16 @@ import {
 import userSlice from '../../../store/user/userSlice'
 import { useAppDispatch } from '../../../store/store'
 import ConfirmPinView from '../../../components/ConfirmPinView'
+import { MoreNavigationProp } from '../../moreTab/moreTypes'
 
 type Route = RouteProp<OnboardingStackParamList, 'AccountConfirmPinScreen'>
 
 const AccountConfirmPinScreen = () => {
-  const navigation = useNavigation<OnboardingNavigationProp>()
   const dispatch = useAppDispatch()
   const route = useRoute<Route>()
+  const navigation = useNavigation<
+    MoreNavigationProp & OnboardingNavigationProp
+  >()
   const { pin: originalPin, pinReset } = route.params
   const { t } = useTranslation()
 
@@ -24,14 +27,15 @@ const AccountConfirmPinScreen = () => {
       dispatch(userSlice.actions.backupAccount(pin))
       if (pinReset) {
         // TODO: Handle pin reset complete
+        navigation.navigate('MoreScreen')
       }
     },
-    [pinReset, dispatch],
+    [pinReset, dispatch, navigation],
   )
 
   return (
     <SafeAreaBox
-      backgroundColor="mainBackground"
+      backgroundColor={pinReset ? 'secondaryBackground' : 'mainBackground'}
       flex={1}
       padding="l"
       paddingBottom="none"

@@ -5,6 +5,8 @@ import { MoreStackParamList } from './moreTypes'
 import DefaultScreenOptions from '../../navigation/defaultScreenOptions'
 import MoreScreen from './more/MoreScreen'
 import VerifyPinScreen from './verifyPin/VerifyPinScreen'
+import AccountCreatePinScreen from '../onboarding/accountCreatePin/AccountCreatePinScreen'
+import AccountConfirmPinScreen from '../onboarding/accountConfirmPin/AccountConfirmPinScreen'
 
 const MoreStack = createStackNavigator<MoreStackParamList>()
 
@@ -19,6 +21,14 @@ const More = () => {
     >
       <MoreStack.Screen name="MoreScreen" component={MoreScreen} />
       <MoreStack.Screen name="VerifyPinScreen" component={VerifyPinScreen} />
+      <MoreStack.Screen
+        name="AccountCreatePinScreen"
+        component={AccountCreatePinScreen}
+      />
+      <MoreStack.Screen
+        name="AccountConfirmPinScreen"
+        component={AccountConfirmPinScreen}
+      />
     </MoreStack.Navigator>
   )
 }

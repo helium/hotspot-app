@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useEffect } from 'react'
+import React, { useCallback, useMemo, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, SectionList, Switch } from 'react-native'
 import { useSelector } from 'react-redux'
@@ -22,6 +22,7 @@ type SectionRow = {
 type Route = RouteProp<MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
   const { t } = useTranslation()
+  const [disablePin, setDisablePin] = useState(false)
   const dispatch = useAppDispatch()
   const { version } = useDevice()
   const { isPinRequired, isPinRequiredForPayment } = useSelector(
@@ -29,15 +30,15 @@ const MoreScreen = () => {
   )
 
   const { params: { pinVerified } = { pinVerfied: true } } = useRoute<Route>()
-  console.log(pinVerified)
 
   const navigation = useNavigation<MoreNavigationProp>()
 
   useEffect(() => {
-    if (pinVerified) {
+    if (pinVerified && disablePin) {
+      setDisablePin(false)
       dispatch(userSlice.actions.disablePin())
     }
-  }, [pinVerified, dispatch])
+  }, [pinVerified, dispatch, disablePin])
 
   const handlePinRequiredForPayment = useCallback(
     (value?: boolean) => {
@@ -56,10 +57,12 @@ const MoreScreen = () => {
     (value?: boolean) => {
       if (!isPinRequired && value) {
         // toggling on
+        navigation.push('AccountCreatePinScreen', { pinReset: true })
       }
 
       if (isPinRequired && !value) {
         // toggling off, confirm pin before turning off
+        setDisablePin(true)
         navigation.push('VerifyPinScreen')
       }
     },
