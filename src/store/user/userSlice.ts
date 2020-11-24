@@ -55,6 +55,7 @@ const userSlice = createSlice({
       setItem('requirePin', true)
       setItem('userPin', action.payload)
       state.isBackedUp = true
+      state.isPinRequired = true
       return state
     },
     finishEducation: (state) => {

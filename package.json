@@ -57,6 +57,7 @@
     "@types/lodash": "^4.14.165",
     "date-fns": "^2.16.1",
     "expo-haptics": "^8.3.0",
+    "expo-local-authentication": "^9.3.0",
     "expo-secure-store": "^9.2.0",
     "i18next": "^19.8.3",
     "lodash": "^4.17.20",

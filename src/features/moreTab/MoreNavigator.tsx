@@ -4,6 +4,7 @@ import { Platform } from 'react-native'
 import { MoreStackParamList } from './moreTypes'
 import DefaultScreenOptions from '../../navigation/defaultScreenOptions'
 import MoreScreen from './more/MoreScreen'
+import VerifyPinScreen from './verifyPin/VerifyPinScreen'
 
 const MoreStack = createStackNavigator<MoreStackParamList>()
 
@@ -17,6 +18,7 @@ const More = () => {
       mode={Platform.OS === 'android' ? 'modal' : undefined}
     >
       <MoreStack.Screen name="MoreScreen" component={MoreScreen} />
+      <MoreStack.Screen name="VerifyPinScreen" component={VerifyPinScreen} />
     </MoreStack.Navigator>
   )
 }

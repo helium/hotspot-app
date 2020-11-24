@@ -4230,6 +4230,13 @@ expo-image-loader@~1.2.0:
   resolved "https://registry.yarnpkg.com/expo-image-loader/-/expo-image-loader-1.2.0.tgz#1cf70fc14c45e8595c3d1a2b16f40a53810b4ba4"
   integrity sha512-cftM8EonIPD4Tjydr5aFpFM1/GsNoIC79YV+ulVR3Zfn3RYcR4whwDcmzFCPuVFEO1Df4oBfEbdXfqlk96DR5Q==
 
+expo-local-authentication@^9.3.0:
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/expo-local-authentication/-/expo-local-authentication-9.3.0.tgz#5e4bbc73c4b40ce5a2ad3555b51138cddeab37bb"
+  integrity sha512-treB43thcgh7dDt/g+0QrmznhaHF7s6jHVfzi5yO8kdsSkK0uHOyDhAJfAy8oN5d8GQjdmJ5vZIoJw/zE5nJoA==
+  dependencies:
+    invariant "^2.2.4"
+
 expo-permissions@~9.3.0:
   version "9.3.0"
   resolved "https://registry.yarnpkg.com/expo-permissions/-/expo-permissions-9.3.0.tgz#b90c7e9e411d306c1c7ba2bae18d5c53c201affd"

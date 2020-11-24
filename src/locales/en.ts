@@ -450,4 +450,9 @@ export default {
       app: { title: 'app' },
     },
   },
+  auth: {
+    title: 'Enter Your PIN',
+    error: 'Incorrect PIN',
+    enter_current: 'Enter your current PIN to continue',
+  },
 }

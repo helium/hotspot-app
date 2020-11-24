@@ -1,7 +1,8 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, SectionList, Switch } from 'react-native'
 import { useSelector } from 'react-redux'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
@@ -9,6 +10,7 @@ import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
 import userSlice from '../../../store/user/userSlice'
 import useDevice from '../../../utils/useDevice'
+import { MoreNavigationProp, MoreStackParamList } from '../moreTypes'
 
 type SectionRow = {
   title: string
@@ -17,38 +19,51 @@ type SectionRow = {
   onToggle?: (value: boolean) => void
   value?: boolean | string
 }
-
+type Route = RouteProp<MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const { version } = useDevice()
-  const user = useSelector((state: RootState) => state.user)
+  const { isPinRequired, isPinRequiredForPayment } = useSelector(
+    (state: RootState) => state.user,
+  )
+
+  const { params: { pinVerified } = { pinVerfied: true } } = useRoute<Route>()
+  console.log(pinVerified)
+
+  const navigation = useNavigation<MoreNavigationProp>()
+
+  useEffect(() => {
+    if (pinVerified) {
+      dispatch(userSlice.actions.disablePin())
+    }
+  }, [pinVerified, dispatch])
 
   const handlePinRequiredForPayment = useCallback(
     (value?: boolean) => {
-      if (!user.isPinRequiredForPayment && value) {
+      if (!isPinRequiredForPayment && value) {
         // toggling on
       }
 
-      if (user.isPinRequiredForPayment && !value) {
+      if (isPinRequiredForPayment && !value) {
         // toggling off, confirm pin before turning off
       }
     },
-    [user],
+    [isPinRequiredForPayment],
   )
 
   const handlePinRequired = useCallback(
     (value?: boolean) => {
-      if (!user.isPinRequired && value) {
+      if (!isPinRequired && value) {
         // toggling on
       }
 
-      if (user.isPinRequired && !value) {
+      if (isPinRequired && !value) {
         // toggling off, confirm pin before turning off
-        // dispatch(userSlice.actions.disablePin())
+        navigation.push('VerifyPinScreen')
       }
     },
-    [user],
+    [isPinRequired, navigation],
   )
 
   const handleSignOut = useCallback(() => {
@@ -76,11 +91,11 @@ const MoreScreen = () => {
       {
         title: t('more.sections.security.enablePin'),
         onToggle: handlePinRequired,
-        value: user.isPinRequired,
+        value: isPinRequired,
       },
     ]
 
-    if (user.isPinRequired) {
+    if (isPinRequired) {
       pin = [
         ...pin,
         { title: t('more.sections.security.requirePin') },
@@ -88,7 +103,7 @@ const MoreScreen = () => {
         {
           title: t('more.sections.security.requirePinForPayments'),
           onToggle: handlePinRequiredForPayment,
-          value: user.isPinRequiredForPayment,
+          value: isPinRequiredForPayment,
         },
       ]
     }
@@ -104,8 +119,7 @@ const MoreScreen = () => {
         data: [
           {
             title: t('more.sections.account.signOut'),
-            action: handleSignOut,
-            actionType: 'press',
+            onPress: handleSignOut,
             destructive: true,
           },
         ],
@@ -118,7 +132,8 @@ const MoreScreen = () => {
   }, [
     handleSignOut,
     version,
-    user,
+    isPinRequired,
+    isPinRequiredForPayment,
     handlePinRequiredForPayment,
     t,
     handlePinRequired,
