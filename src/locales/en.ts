@@ -429,7 +429,13 @@ export default {
   },
   more: {
     sections: {
-      security: { title: 'security', enablePin: 'Enable PIN' },
+      security: {
+        title: 'security',
+        enablePin: 'Enable PIN',
+        requirePin: 'Require PIN',
+        resetPin: 'Reset PIN',
+        requirePinForPayments: 'Require PIN for Payments',
+      },
       learn: { title: 'learn' },
       advanced: { title: 'advanced' },
       account: {

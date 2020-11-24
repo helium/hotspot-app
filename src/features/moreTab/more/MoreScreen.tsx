@@ -1,24 +1,27 @@
 import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Alert, SectionList } from 'react-native'
+import { Alert, SectionList, Switch } from 'react-native'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { useAppDispatch } from '../../../store/store'
 import userSlice from '../../../store/user/userSlice'
+import version from '../../../utils/version'
 
 type ActionType = 'press' | 'toggle' | 'select'
 type SectionRow = {
   title: string
   destructive?: boolean
-  action?: () => void
+  action?: (value?: boolean) => void
   actionType?: ActionType
+  value?: boolean
 }
 type Section = { title: string; data: SectionRow[] }
 
 const MoreScreen = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
+
   const handleSignOut = useCallback(() => {
     Alert.alert(
       t('more.sections.account.signOutAlert.title'),
@@ -42,10 +45,22 @@ const MoreScreen = () => {
   const SECTION_DATA: Section[] = [
     {
       title: t('more.sections.security.title'),
-      data: [{ title: t('more.sections.security.enablePin') }],
+      data: [
+        { title: t('more.sections.security.enablePin') },
+        { title: t('more.sections.security.requirePin') },
+        { title: t('more.sections.security.resetPin') },
+        {
+          title: t('more.sections.security.requirePinForPayments'),
+          action: (value) => {
+            console.log(value)
+          },
+          value: true,
+          actionType: 'toggle',
+        },
+      ],
     },
-    { title: t('more.sections.learn.title'), data: [] },
-    { title: t('more.sections.advanced.title'), data: [] },
+    // { title: t('more.sections.learn.title'), data: [] },
+    // { title: t('more.sections.advanced.title'), data: [] },
     {
       title: t('more.sections.account.title'),
       data: [
@@ -57,7 +72,10 @@ const MoreScreen = () => {
         },
       ],
     },
-    { title: t('more.sections.app.title'), data: [] },
+    {
+      title: t('more.sections.app.title'),
+      data: [{ title: `v${version}` }],
+    },
   ]
 
   const Item = ({
@@ -76,6 +94,12 @@ const MoreScreen = () => {
       <Text variant="body" color={destructive ? 'red' : 'primaryText'}>
         {title}
       </Text>
+      {actionType === 'toggle' && (
+        <Switch
+          // value={value}
+          onValueChange={action}
+        />
+      )}
     </TouchableOpacityBox>
   )
 
@@ -89,7 +113,7 @@ const MoreScreen = () => {
           <Text
             variant="body"
             fontSize={12}
-            paddingHorizontal="l"
+            paddingHorizontal="m"
             paddingVertical="s"
           >
             {title.toUpperCase()}
