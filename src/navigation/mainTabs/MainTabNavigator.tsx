@@ -10,7 +10,7 @@ const MainTab = createBottomTabNavigator()
 
 const Main = () => {
   const {
-    colors: { mainBackground },
+    colors: { secondaryBackground },
   } = useTheme<Theme>()
 
   return (
@@ -18,7 +18,7 @@ const Main = () => {
       tabBarOptions={{
         showLabel: false,
         style: {
-          backgroundColor: mainBackground,
+          backgroundColor: secondaryBackground,
           borderTopWidth: 0,
         },
       }}

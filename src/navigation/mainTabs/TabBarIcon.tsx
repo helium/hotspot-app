@@ -33,7 +33,7 @@ const TabBarIcon = ({ name, focused, size }: Props) => {
   const { t } = useTranslation()
 
   return (
-    <Box alignItems="center">
+    <Box alignItems="center" flex={1} justifyContent="flex-end" padding="xxxs">
       <Icon size={size} color={color} name={name} />
       <Text variant="bodyMono" lineHeight={16} fontSize={10} style={{ color }}>
         {t(`navigation.${name.toLowerCase()}`)}

@@ -23,7 +23,7 @@ const StatsView = ({ statsState }: Props) => {
     )
   }
   return (
-    <Box backgroundColor="mainBackground">
+    <Box>
       <Text variant="header">{t('stats.title')}</Text>
       <Card backgroundColor="white" variant="elevated">
         <ScrollView>
