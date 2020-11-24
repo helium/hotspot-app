@@ -11,6 +11,8 @@ const boolKeys = [
   'isEducated',
   'isSettingUpHotspot',
   'requirePin',
+  'authInterval',
+  'requirePinForPayment',
 ] as const
 type BooleanKey = typeof boolKeys[number]
 

@@ -1,26 +1,55 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, SectionList, Switch } from 'react-native'
+import { useSelector } from 'react-redux'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
 import userSlice from '../../../store/user/userSlice'
-import version from '../../../utils/version'
+import useDevice from '../../../utils/useDevice'
 
-type ActionType = 'press' | 'toggle' | 'select'
 type SectionRow = {
   title: string
   destructive?: boolean
-  action?: (value?: boolean) => void
-  actionType?: ActionType
-  value?: boolean
+  onPress?: () => void
+  onToggle?: (value: boolean) => void
+  value?: boolean | string
 }
-type Section = { title: string; data: SectionRow[] }
 
 const MoreScreen = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
+  const { version } = useDevice()
+  const user = useSelector((state: RootState) => state.user)
+
+  const handlePinRequiredForPayment = useCallback(
+    (value?: boolean) => {
+      if (!user.isPinRequiredForPayment && value) {
+        // toggling on
+      }
+
+      if (user.isPinRequiredForPayment && !value) {
+        // toggling off, confirm pin before turning off
+      }
+    },
+    [user],
+  )
+
+  const handlePinRequired = useCallback(
+    (value?: boolean) => {
+      if (!user.isPinRequired && value) {
+        // toggling on
+      }
+
+      if (user.isPinRequired && !value) {
+        // toggling off, confirm pin before turning off
+        // dispatch(userSlice.actions.disablePin())
+      }
+    },
+    [user],
+  )
 
   const handleSignOut = useCallback(() => {
     Alert.alert(
@@ -42,44 +71,61 @@ const MoreScreen = () => {
     )
   }, [t, dispatch])
 
-  const SECTION_DATA: Section[] = [
-    {
-      title: t('more.sections.security.title'),
-      data: [
-        { title: t('more.sections.security.enablePin') },
+  const SectionData = useMemo(() => {
+    let pin: SectionRow[] = [
+      {
+        title: t('more.sections.security.enablePin'),
+        onToggle: handlePinRequired,
+        value: user.isPinRequired,
+      },
+    ]
+
+    if (user.isPinRequired) {
+      pin = [
+        ...pin,
         { title: t('more.sections.security.requirePin') },
         { title: t('more.sections.security.resetPin') },
         {
           title: t('more.sections.security.requirePinForPayments'),
-          action: (value) => {
-            console.log(value)
+          onToggle: handlePinRequiredForPayment,
+          value: user.isPinRequiredForPayment,
+        },
+      ]
+    }
+    return [
+      {
+        title: t('more.sections.security.title'),
+        data: pin,
+      },
+      // { title: t('more.sections.learn.title'), data: [] },
+      // { title: t('more.sections.advanced.title'), data: [] },
+      {
+        title: t('more.sections.account.title'),
+        data: [
+          {
+            title: t('more.sections.account.signOut'),
+            action: handleSignOut,
+            actionType: 'press',
+            destructive: true,
           },
-          value: true,
-          actionType: 'toggle',
-        },
-      ],
-    },
-    // { title: t('more.sections.learn.title'), data: [] },
-    // { title: t('more.sections.advanced.title'), data: [] },
-    {
-      title: t('more.sections.account.title'),
-      data: [
-        {
-          title: t('more.sections.account.signOut'),
-          action: handleSignOut,
-          actionType: 'press',
-          destructive: true,
-        },
-      ],
-    },
-    {
-      title: t('more.sections.app.title'),
-      data: [{ title: `v${version}` }],
-    },
-  ]
+        ],
+      },
+      {
+        title: t('more.sections.app.title'),
+        data: [{ title: `v${version}` }],
+      },
+    ]
+  }, [
+    handleSignOut,
+    version,
+    user,
+    handlePinRequiredForPayment,
+    t,
+    handlePinRequired,
+  ])
 
   const Item = ({
-    item: { title, destructive, action, actionType },
+    item: { title, value, destructive, onToggle, onPress },
   }: {
     item: SectionRow
   }) => (
@@ -88,25 +134,20 @@ const MoreScreen = () => {
       justifyContent="space-between"
       backgroundColor="darkGray"
       padding="m"
-      onPress={action}
-      disabled={actionType !== 'press'}
+      onPress={onPress}
+      disabled={!onPress}
     >
       <Text variant="body" color={destructive ? 'red' : 'primaryText'}>
         {title}
       </Text>
-      {actionType === 'toggle' && (
-        <Switch
-          // value={value}
-          onValueChange={action}
-        />
-      )}
+      {onToggle && <Switch value={value as boolean} onValueChange={onToggle} />}
     </TouchableOpacityBox>
   )
 
   return (
     <SafeAreaBox backgroundColor="secondaryBackground" flex={1} paddingTop="xl">
       <SectionList
-        sections={SECTION_DATA}
+        sections={SectionData}
         keyExtractor={(item, index) => item.title + index}
         renderItem={({ item }) => <Item item={item} />}
         renderSectionHeader={({ section: { title } }) => (

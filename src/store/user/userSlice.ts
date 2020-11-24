@@ -1,17 +1,21 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import { getBoolean, setItem, signOut } from '../../utils/account'
+import { getBoolean, setItem, deleteItem, signOut } from '../../utils/account'
 
 export type UserState = {
   isBackedUp: boolean
   isEducated: boolean
   isSettingUpHotspot: boolean
   isRestored: boolean
+  isPinRequired: boolean
+  isPinRequiredForPayment: boolean
 }
 const initialState: UserState = {
   isBackedUp: false,
   isEducated: false,
   isSettingUpHotspot: false,
   isRestored: false,
+  isPinRequired: false,
+  isPinRequiredForPayment: false,
 }
 
 type Restore = {
@@ -19,6 +23,7 @@ type Restore = {
   isEducated: boolean
   isSettingUpHotspot: boolean
   isPinRequired: boolean
+  isPinRequiredForPayment: boolean
 }
 
 export const restoreUser = createAsyncThunk<Restore>(
@@ -29,12 +34,14 @@ export const restoreUser = createAsyncThunk<Restore>(
       getBoolean('isEducated'),
       getBoolean('isSettingUpHotspot'),
       getBoolean('requirePin'),
+      getBoolean('requirePinForPayment'),
     ])
     return {
       isBackedUp: vals[0],
       isEducated: vals[1],
       isSettingUpHotspot: vals[2],
       isPinRequired: vals[3],
+      isPinRequiredForPayment: vals[4],
     }
   },
 )
@@ -66,6 +73,19 @@ const userSlice = createSlice({
       signOut()
       state = initialState
       state.isRestored = true
+      return state
+    },
+    requirePinForPayment: (state, action: PayloadAction<boolean>) => {
+      state.isPinRequiredForPayment = action.payload
+      setItem('requirePinForPayment', action.payload)
+      return state
+    },
+    disablePin: (state) => {
+      deleteItem('requirePin')
+      deleteItem('requirePinForPayment')
+      deleteItem('userPin')
+      state.isPinRequired = false
+      state.isPinRequiredForPayment = false
       return state
     },
   },

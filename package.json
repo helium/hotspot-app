@@ -67,6 +67,7 @@
     "react-i18next": "^11.7.3",
     "react-native": "0.63.3",
     "react-native-config": "^1.4.1",
+    "react-native-device-info": "^7.1.0",
     "react-native-gesture-handler": "^1.8.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.3",
     "react-native-localize": "^1.4.3",
