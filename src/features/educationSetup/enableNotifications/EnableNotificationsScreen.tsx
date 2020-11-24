@@ -52,7 +52,7 @@ const EnableNotificationsScreen = () => {
         <Text variant="header" textAlign="center">
           {t('account_setup.enable_notifications.title')}
         </Text>
-        <Text variant="body" textAlign="center">
+        <Text variant="bodyLight" textAlign="center">
           {t('account_setup.enable_notifications.subtitle')}
         </Text>
         <Box flex={1}>

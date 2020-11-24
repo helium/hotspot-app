@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import { getBoolean, setItem } from '../../utils/account'
+import { getBoolean, setItem, signOut } from '../../utils/account'
 
 export type UserState = {
   isBackedUp: boolean
@@ -60,6 +60,12 @@ const userSlice = createSlice({
       setItem('isSettingUpHotspot', true)
       state.isEducated = true
       state.isSettingUpHotspot = true
+      return state
+    },
+    signOut: (state) => {
+      signOut()
+      state = initialState
+      state.isRestored = true
       return state
     },
   },

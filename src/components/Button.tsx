@@ -50,7 +50,7 @@ const Button = ({
       if (variant === 'secondary') {
         return 'blueGray'
       }
-      return 'primaryText'
+      return 'primaryButtonText'
     }
 
     return 'secondaryText'

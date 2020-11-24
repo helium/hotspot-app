@@ -27,7 +27,7 @@ const StatsView = ({ statsState }: Props) => {
       <Text variant="header">{t('stats.title')}</Text>
       <Card backgroundColor="white" variant="elevated">
         <ScrollView>
-          <Text variant="body" color="black">
+          <Text variant="bodyLight" color="black">
             {JSON.stringify(statsState.data, null, 2)}
           </Text>
         </ScrollView>

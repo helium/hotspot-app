@@ -98,7 +98,7 @@ const AccountConfirmPinScreen = () => {
         {t('account_setup.confirm_pin.title')}
       </Text>
 
-      <Text variant="body" marginBottom={{ smallPhone: 'm', phone: 'xl' }}>
+      <Text variant="bodyLight" marginBottom={{ smallPhone: 'm', phone: 'xl' }}>
         {t('account_setup.confirm_pin.subtitle')}
       </Text>
       <Animated.View style={{ transform: [{ translateX: shakeAnim.current }] }}>

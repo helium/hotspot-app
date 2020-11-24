@@ -5,6 +5,7 @@ import { Theme } from '../../theme/theme'
 import Hotspots from '../../features/hotspots/HotspotsNavigator'
 import { TabBarIconType, MainTabType } from './tabTypes'
 import TabBarIcon from './TabBarIcon'
+import More from '../../features/moreTab/MoreNavigator'
 
 const MainTab = createBottomTabNavigator()
 
@@ -38,7 +39,7 @@ const Main = () => {
       <MainTab.Screen name="Account" component={Hotspots} />
       <MainTab.Screen name="Hotspots" component={Hotspots} />
       <MainTab.Screen name="Network" component={Hotspots} />
-      <MainTab.Screen name="More" component={Hotspots} />
+      <MainTab.Screen name="More" component={More} />
     </MainTab.Navigator>
   )
 }

@@ -37,13 +37,13 @@ const textVariants = {
     fontFamily: Font.main.semiBold,
     fontSize: 34,
     lineHeight: 42.5,
-    color: 'white',
+    color: 'primaryText',
   },
   body: {
-    fontFamily: Font.main.light,
+    fontFamily: Font.main.regular,
     fontSize: 16,
     lineHeight: 24,
-    color: 'white',
+    color: 'primaryText',
   },
   input: {
     fontFamily: Font.main.regular,
@@ -53,14 +53,14 @@ const textVariants = {
   },
   button: {
     fontFamily: Font.main.semiBold,
-    color: 'white',
+    color: 'primaryText',
     textAlign: 'center',
     fontSize: 17,
   } as TextProps,
   keypad: {
     fontFamily: Font.mono.light,
     fontSize: 34,
-    color: 'white',
+    color: 'primaryText',
   },
 }
 
@@ -71,7 +71,8 @@ export const theme = createTheme({
     secondaryBackground: palette.darkBlue,
     cardBackground: palette.white,
     primaryMain: palette.green,
-    primaryText: palette.darkGray,
+    primaryText: palette.white,
+    primaryButtonText: palette.darkGray,
     secondaryMain: palette.lightBlue,
     secondaryText: palette.steelGray,
     disabled: palette.lighterGray,
@@ -131,6 +132,7 @@ export const theme = createTheme({
   },
   textVariants: {
     ...textVariants,
+    bodyLight: { ...textVariants.body, fontFamily: Font.main.light },
     bodyBold: { ...textVariants.body, fontFamily: Font.main.semiBold },
     bodyMono: { ...textVariants.body, fontFamily: Font.mono.regular },
   },

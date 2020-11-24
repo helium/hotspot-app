@@ -55,7 +55,7 @@ const AccountCreatePinScreen = () => {
         {t('account_setup.create_pin.title')}
       </Text>
 
-      <Text variant="body" marginBottom={{ smallPhone: 'm', phone: 'xl' }}>
+      <Text variant="bodyLight" marginBottom={{ smallPhone: 'm', phone: 'xl' }}>
         {t('account_setup.create_pin.subtitle')}
       </Text>
       <PinDisplay length={pin.length} />
