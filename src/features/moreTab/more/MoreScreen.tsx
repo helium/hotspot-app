@@ -22,6 +22,8 @@ type SectionRow = {
 type Route = RouteProp<MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
   const { t } = useTranslation()
+  const { params } = useRoute<Route>()
+  const [pinVerified, setPinVerified] = useState(false)
   const [disablePin, setDisablePin] = useState(false)
   const dispatch = useAppDispatch()
   const { version } = useDevice()
@@ -29,13 +31,16 @@ const MoreScreen = () => {
     (state: RootState) => state.user,
   )
 
-  const { params: { pinVerified } = { pinVerfied: true } } = useRoute<Route>()
-
   const navigation = useNavigation<MoreNavigationProp>()
+
+  useEffect(() => {
+    setPinVerified(!!params?.pinVerified)
+  }, [params?.pinVerified])
 
   useEffect(() => {
     if (pinVerified && disablePin) {
       setDisablePin(false)
+      setPinVerified(false)
       dispatch(userSlice.actions.disablePin())
     }
   }, [pinVerified, dispatch, disablePin])

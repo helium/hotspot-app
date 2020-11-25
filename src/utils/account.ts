@@ -16,9 +16,8 @@ const boolKeys = [
 ] as const
 type BooleanKey = typeof boolKeys[number]
 
-export const setItem = async (key: AccountStoreKey, val: string | boolean) => {
-  return SecureStore.setItemAsync(key, String(val))
-}
+export const setItem = async (key: AccountStoreKey, val: string | boolean) =>
+  SecureStore.setItemAsync(key, String(val))
 
 export const getBoolean = async (key: BooleanKey) => {
   const val = await SecureStore.getItemAsync(key)
