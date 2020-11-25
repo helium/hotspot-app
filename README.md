@@ -1,6 +1,7 @@
 # Hotspot App
 
 Helium hotspot app for iOS and Android built using [React Native](https://reactnative.dev).
+For a list of issues and prioritization, please go to our [Project page](https://github.com/orgs/helium/projects/8).
 
 ## Get the app
 
