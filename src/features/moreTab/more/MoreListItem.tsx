@@ -3,6 +3,7 @@ import { Switch } from 'react-native'
 import RNPickerSelect, { Item } from 'react-native-picker-select'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import { useColors, useTextVariants } from '../../../theme/themeHooks'
 
 export type SelectProps = {
   onDonePress?: () => void
@@ -24,13 +25,24 @@ const MoreListItem = ({
 }: {
   item: MoreListItemType
 }) => {
-  if (select?.items) console.log(value, select.items)
+  const { secondaryText } = useColors()
+  const { body } = useTextVariants()
+
+  const style = {
+    ...body,
+    color: secondaryText,
+    height: '100%',
+  }
+
   return (
     <TouchableOpacityBox
       flexDirection="row"
       justifyContent="space-between"
       backgroundColor="darkGray"
-      padding="m"
+      alignItems="center"
+      height={64}
+      paddingHorizontal="m"
+      marginBottom="s"
       onPress={onPress}
       disabled={!onPress}
     >
@@ -43,18 +55,11 @@ const MoreListItem = ({
           placeholder={{}}
           style={{
             inputIOS: {
-              color: '#698CAD',
-              fontSize: 14,
-              letterSpacing: 0.9,
-              fontFamily: 'soleil-regular',
+              ...style,
               lineHeight: 19,
             },
             inputAndroid: {
-              color: '#698CAD',
-              fontSize: 14,
-              letterSpacing: 0.9,
-              fontFamily: 'soleil-regular',
-              paddingHorizontal: 14,
+              ...style,
             },
           }}
           items={select.items}

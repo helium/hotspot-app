@@ -14,7 +14,7 @@ export type UserState = {
   isRestored: boolean
   isPinRequired: boolean
   isPinRequiredForPayment: boolean
-  authInterval: number | null
+  authInterval: number
 }
 const initialState: UserState = {
   isBackedUp: false,
@@ -23,7 +23,7 @@ const initialState: UserState = {
   isRestored: false,
   isPinRequired: false,
   isPinRequiredForPayment: false,
-  authInterval: null,
+  authInterval: 0,
 }
 
 type Restore = {

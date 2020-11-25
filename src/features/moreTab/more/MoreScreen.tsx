@@ -16,6 +16,7 @@ import {
 } from '../../../navigation/mainTabs/tabTypes'
 import MoreListItem, { MoreListItemType } from './MoreListItem'
 import useAuthIntervals from './useAuthIntervals'
+import { useSpacing } from '../../../theme/themeHooks'
 
 type Route = RouteProp<RootStackParamList & MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
@@ -27,6 +28,7 @@ const MoreScreen = () => {
   const authIntervals = useAuthIntervals()
 
   const navigation = useNavigation<MoreNavigationProp & RootNavigationProp>()
+  const { l } = useSpacing()
 
   useEffect(() => {
     if (!params?.pinVerifiedFor) return
@@ -52,14 +54,14 @@ const MoreScreen = () => {
     (value?: boolean) => {
       if (!user.isPinRequiredForPayment && value) {
         // toggling on
-        navigation.push('VerifyPinScreen', {
+        navigation.push('LockScreen', {
           requestType: 'enablePinForPayments',
         })
       }
 
       if (user.isPinRequiredForPayment && !value) {
         // toggling off, confirm pin before turning off
-        navigation.push('VerifyPinScreen', {
+        navigation.push('LockScreen', {
           requestType: 'disablePinForPayments',
         })
       }
@@ -76,14 +78,14 @@ const MoreScreen = () => {
 
       if (user.isPinRequired && !value) {
         // toggling off, confirm pin before turning off
-        navigation.push('VerifyPinScreen', { requestType: 'disablePin' })
+        navigation.push('LockScreen', { requestType: 'disablePin' })
       }
     },
     [user.isPinRequired, navigation],
   )
 
   const handleResetPin = useCallback(() => {
-    navigation.push('VerifyPinScreen', { requestType: 'resetPin' })
+    navigation.push('LockScreen', { requestType: 'resetPin' })
   }, [navigation])
 
   const handleSignOut = useCallback(() => {
@@ -179,8 +181,9 @@ const MoreScreen = () => {
   ])
 
   return (
-    <SafeAreaBox backgroundColor="secondaryBackground" flex={1} paddingTop="xl">
+    <SafeAreaBox backgroundColor="secondaryBackground" flex={1}>
       <SectionList
+        contentContainerStyle={{ paddingTop: l }}
         sections={SectionData}
         keyExtractor={(item, index) => item.title + index}
         renderItem={({ item }) => <MoreListItem item={item} />}

@@ -8,15 +8,16 @@ export type TabBarIconType = {
   size: number
 }
 
-export type VerifyPinRequestType =
+export type LockScreenRequestType =
   | 'disablePin'
   | 'enablePinForPayments'
   | 'disablePinForPayments'
   | 'resetPin'
+  | 'unlock'
 
 export type RootStackParamList = {
-  MainTabs: undefined
-  VerifyPinScreen: { requestType: VerifyPinRequestType }
+  MainTabs: undefined | { pinVerifiedFor: LockScreenRequestType }
+  LockScreen: { requestType: LockScreenRequestType; lock?: boolean }
 }
 
 export type RootNavigationProp = StackNavigationProp<RootStackParamList>

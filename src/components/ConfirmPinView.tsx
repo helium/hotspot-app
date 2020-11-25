@@ -22,6 +22,7 @@ const ConfirmPinView = ({
   originalPin,
   onCancel,
 }: Props) => {
+  const success = useRef(false)
   const [pin, setPin] = useState('')
   const shakeAnim = useRef(new Animated.Value(0))
   const navigation = useNavigation()
@@ -52,12 +53,14 @@ const ConfirmPinView = ({
   useEffect(() => {
     if (pin.length === 6) {
       if (originalPin === pin) {
+        success.current = true
         pinSuccess(pin)
       } else {
         pinFailure()
       }
     }
-  }, [pin, navigation, originalPin, pinSuccess, pinFailure])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pin])
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {

@@ -1,8 +1,8 @@
 import { StackNavigationProp } from '@react-navigation/stack'
-import { VerifyPinRequestType } from '../../navigation/mainTabs/tabTypes'
+import { LockScreenRequestType } from '../../navigation/mainTabs/tabTypes'
 
 export type MoreStackParamList = {
-  MoreScreen: undefined | { pinVerifiedFor: VerifyPinRequestType }
+  MoreScreen: undefined | { pinVerifiedFor: LockScreenRequestType }
   AccountCreatePinScreen:
     | { fromImport?: boolean; pinReset?: boolean }
     | undefined
