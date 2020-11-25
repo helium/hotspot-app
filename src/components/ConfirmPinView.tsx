@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
-import { useTranslation } from 'react-i18next'
 import { Animated } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import EnterPin from '../assets/images/enter-pin.svg'
@@ -9,19 +8,21 @@ import Keypad from './Keypad'
 import haptic from '../utils/haptic'
 import Box from './Box'
 
+type Props = {
+  originalPin: string
+  title: string
+  subtitle: string
+  pinSuccess: (pin: string) => void
+  onCancel?: () => void
+}
 const ConfirmPinView = ({
   title,
+  subtitle,
   pinSuccess,
   originalPin,
   onCancel,
-}: {
-  originalPin: string
-  title: string
-  pinSuccess: (pin: string) => void
-  onCancel?: () => void
-}) => {
+}: Props) => {
   const [pin, setPin] = useState('')
-  const { t } = useTranslation()
   const shakeAnim = useRef(new Animated.Value(0))
   const navigation = useNavigation()
   const pinFailure = useCallback(() => {
@@ -78,7 +79,7 @@ const ConfirmPinView = ({
       </Text>
 
       <Text variant="bodyLight" marginBottom={{ smallPhone: 'm', phone: 'xl' }}>
-        {t('auth.enter_current')}
+        {subtitle}
       </Text>
       <Animated.View style={{ transform: [{ translateX: shakeAnim.current }] }}>
         <PinDisplay length={pin.length} />

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useEffect, useState } from 'react'
+import React, { useCallback, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, SectionList, Switch } from 'react-native'
 import { useSelector } from 'react-redux'
@@ -19,12 +19,11 @@ type SectionRow = {
   onToggle?: (value: boolean) => void
   value?: boolean | string
 }
+
 type Route = RouteProp<MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
   const { t } = useTranslation()
   const { params } = useRoute<Route>()
-  const [pinVerified, setPinVerified] = useState(false)
-  const [disablePin, setDisablePin] = useState(false)
   const dispatch = useAppDispatch()
   const { version } = useDevice()
   const { isPinRequired, isPinRequiredForPayment } = useSelector(
@@ -34,28 +33,34 @@ const MoreScreen = () => {
   const navigation = useNavigation<MoreNavigationProp>()
 
   useEffect(() => {
-    setPinVerified(!!params?.pinVerified)
-  }, [params?.pinVerified])
+    if (!params?.pinVerifiedFor) return
 
-  useEffect(() => {
-    if (pinVerified && disablePin) {
-      setDisablePin(false)
-      setPinVerified(false)
+    if (params.pinVerifiedFor === 'disablePin') {
       dispatch(userSlice.actions.disablePin())
+    } else if (params.pinVerifiedFor === 'disablePinForPayments') {
+      dispatch(userSlice.actions.requirePinForPayment(false))
+    } else if (params.pinVerifiedFor === 'enablePinForPayments') {
+      dispatch(userSlice.actions.requirePinForPayment(true))
     }
-  }, [pinVerified, dispatch, disablePin])
+  }, [dispatch, params])
 
   const handlePinRequiredForPayment = useCallback(
     (value?: boolean) => {
       if (!isPinRequiredForPayment && value) {
         // toggling on
+        navigation.push('VerifyPinScreen', {
+          requestType: 'enablePinForPayments',
+        })
       }
 
       if (isPinRequiredForPayment && !value) {
         // toggling off, confirm pin before turning off
+        navigation.push('VerifyPinScreen', {
+          requestType: 'disablePinForPayments',
+        })
       }
     },
-    [isPinRequiredForPayment],
+    [isPinRequiredForPayment, navigation],
   )
 
   const handlePinRequired = useCallback(
@@ -67,8 +72,7 @@ const MoreScreen = () => {
 
       if (isPinRequired && !value) {
         // toggling off, confirm pin before turning off
-        setDisablePin(true)
-        navigation.push('VerifyPinScreen')
+        navigation.push('VerifyPinScreen', { requestType: 'disablePin' })
       }
     },
     [isPinRequired, navigation],

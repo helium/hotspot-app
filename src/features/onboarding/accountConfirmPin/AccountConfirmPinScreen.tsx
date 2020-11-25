@@ -42,7 +42,8 @@ const AccountConfirmPinScreen = () => {
     >
       <ConfirmPinView
         originalPin={originalPin}
-        title={t('auth.title')}
+        title={t('account_setup.confirm_pin.title')}
+        subtitle={t('account_setup.confirm_pin.subtitle')}
         pinSuccess={pinSuccess}
         onCancel={navigation.goBack}
       />

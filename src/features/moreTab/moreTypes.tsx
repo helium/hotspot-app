@@ -1,8 +1,13 @@
 import { StackNavigationProp } from '@react-navigation/stack'
 
+export type RequestType =
+  | 'disablePin'
+  | 'enablePinForPayments'
+  | 'disablePinForPayments'
+
 export type MoreStackParamList = {
-  MoreScreen: undefined | { pinVerified: boolean }
-  VerifyPinScreen: undefined
+  MoreScreen: undefined | { pinVerifiedFor: RequestType }
+  VerifyPinScreen: { requestType: RequestType }
   AccountCreatePinScreen:
     | { fromImport?: boolean; pinReset?: boolean }
     | undefined

@@ -1,14 +1,16 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigation } from '@react-navigation/native'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useAsync } from 'react-async-hook'
 import SafeAreaBox from '../../../components/SafeAreaBox'
-import { MoreNavigationProp } from '../moreTypes'
+import { MoreNavigationProp, MoreStackParamList } from '../moreTypes'
 import ConfirmPinView from '../../../components/ConfirmPinView'
 import { getString } from '../../../utils/account'
 
+type Route = RouteProp<MoreStackParamList, 'VerifyPinScreen'>
 const VerifyPinScreen = () => {
   const { t } = useTranslation()
+  const { params } = useRoute<Route>()
   const navigation = useNavigation<MoreNavigationProp>()
   const { result: pin } = useAsync(getString, ['userPin'])
 
@@ -23,8 +25,11 @@ const VerifyPinScreen = () => {
         <ConfirmPinView
           originalPin={pin}
           title={t('auth.title')}
+          subtitle={t('auth.enter_current')}
           pinSuccess={() => {
-            navigation.navigate('MoreScreen', { pinVerified: true })
+            navigation.navigate('MoreScreen', {
+              pinVerifiedFor: params.requestType,
+            })
           }}
           onCancel={navigation.goBack}
         />
