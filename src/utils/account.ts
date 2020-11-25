@@ -3,7 +3,13 @@ import * as SecureStore from 'expo-secure-store'
 
 type AccountStoreKey = BooleanKey | StringKey
 
-const stringKeys = ['mnemonic', 'keypair', 'address', 'userPin'] as const
+const stringKeys = [
+  'mnemonic',
+  'keypair',
+  'address',
+  'userPin',
+  'authInterval',
+] as const
 type StringKey = typeof stringKeys[number]
 
 const boolKeys = [
@@ -11,7 +17,6 @@ const boolKeys = [
   'isEducated',
   'isSettingUpHotspot',
   'requirePin',
-  'authInterval',
   'requirePinForPayment',
 ] as const
 type BooleanKey = typeof boolKeys[number]

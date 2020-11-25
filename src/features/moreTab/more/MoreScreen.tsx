@@ -1,11 +1,10 @@
 import React, { useCallback, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Alert, SectionList, Switch } from 'react-native'
+import { Alert, SectionList } from 'react-native'
 import { useSelector } from 'react-redux'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
-import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
 import userSlice from '../../../store/user/userSlice'
@@ -15,14 +14,8 @@ import {
   RootNavigationProp,
   RootStackParamList,
 } from '../../../navigation/mainTabs/tabTypes'
-
-type SectionRow = {
-  title: string
-  destructive?: boolean
-  onPress?: () => void
-  onToggle?: (value: boolean) => void
-  value?: boolean | string
-}
+import MoreListItem, { MoreListItemType } from './MoreListItem'
+import useAuthIntervals from './useAuthIntervals'
 
 type Route = RouteProp<RootStackParamList & MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
@@ -30,9 +23,8 @@ const MoreScreen = () => {
   const { params } = useRoute<Route>()
   const dispatch = useAppDispatch()
   const { version } = useDevice()
-  const { isPinRequired, isPinRequiredForPayment } = useSelector(
-    (state: RootState) => state.user,
-  )
+  const user = useSelector((state: RootState) => state.user)
+  const authIntervals = useAuthIntervals()
 
   const navigation = useNavigation<MoreNavigationProp & RootNavigationProp>()
 
@@ -41,49 +33,53 @@ const MoreScreen = () => {
 
     const { pinVerifiedFor } = params
 
-    if (pinVerifiedFor === 'disablePin') {
-      dispatch(userSlice.actions.disablePin())
-    } else if (pinVerifiedFor === 'disablePinForPayments') {
-      dispatch(userSlice.actions.requirePinForPayment(false))
-    } else if (pinVerifiedFor === 'enablePinForPayments') {
-      dispatch(userSlice.actions.requirePinForPayment(true))
-    } else if (pinVerifiedFor === 'resetPin') {
-      navigation.push('AccountCreatePinScreen', { pinReset: true })
+    switch (pinVerifiedFor) {
+      case 'disablePin':
+        dispatch(userSlice.actions.disablePin())
+        break
+      case 'disablePinForPayments':
+        dispatch(userSlice.actions.requirePinForPayment(false))
+        break
+      case 'enablePinForPayments':
+        dispatch(userSlice.actions.requirePinForPayment(true))
+        break
+      case 'resetPin':
+        navigation.push('AccountCreatePinScreen', { pinReset: true })
     }
   }, [dispatch, params, navigation])
 
   const handlePinRequiredForPayment = useCallback(
     (value?: boolean) => {
-      if (!isPinRequiredForPayment && value) {
+      if (!user.isPinRequiredForPayment && value) {
         // toggling on
         navigation.push('VerifyPinScreen', {
           requestType: 'enablePinForPayments',
         })
       }
 
-      if (isPinRequiredForPayment && !value) {
+      if (user.isPinRequiredForPayment && !value) {
         // toggling off, confirm pin before turning off
         navigation.push('VerifyPinScreen', {
           requestType: 'disablePinForPayments',
         })
       }
     },
-    [isPinRequiredForPayment, navigation],
+    [user.isPinRequiredForPayment, navigation],
   )
 
   const handlePinRequired = useCallback(
     (value?: boolean) => {
-      if (!isPinRequired && value) {
+      if (!user.isPinRequired && value) {
         // toggling on
         navigation.push('AccountCreatePinScreen', { pinReset: true })
       }
 
-      if (isPinRequired && !value) {
+      if (user.isPinRequired && !value) {
         // toggling off, confirm pin before turning off
         navigation.push('VerifyPinScreen', { requestType: 'disablePin' })
       }
     },
-    [isPinRequired, navigation],
+    [user.isPinRequired, navigation],
   )
 
   const handleResetPin = useCallback(() => {
@@ -110,19 +106,33 @@ const MoreScreen = () => {
     )
   }, [t, dispatch])
 
+  const handleIntervalSelected = useCallback(
+    (value: string) => {
+      dispatch(userSlice.actions.updateAuthInterval(parseInt(value, 10)))
+    },
+    [dispatch],
+  )
+
   const SectionData = useMemo(() => {
-    let pin: SectionRow[] = [
+    let pin: MoreListItemType[] = [
       {
         title: t('more.sections.security.enablePin'),
         onToggle: handlePinRequired,
-        value: isPinRequired,
+        value: user.isPinRequired,
       },
     ]
 
-    if (isPinRequired) {
+    if (user.isPinRequired) {
       pin = [
         ...pin,
-        { title: t('more.sections.security.requirePin') },
+        {
+          title: t('more.sections.security.requirePin'),
+          value: user.authInterval || '',
+          select: {
+            items: authIntervals,
+            onValueSelect: handleIntervalSelected,
+          },
+        },
         {
           title: t('more.sections.security.resetPin'),
           onPress: handleResetPin,
@@ -130,7 +140,7 @@ const MoreScreen = () => {
         {
           title: t('more.sections.security.requirePinForPayments'),
           onToggle: handlePinRequiredForPayment,
-          value: isPinRequiredForPayment,
+          value: user.isPinRequiredForPayment,
         },
       ]
     }
@@ -157,42 +167,23 @@ const MoreScreen = () => {
       },
     ]
   }, [
+    user,
     handleSignOut,
     version,
-    isPinRequired,
-    isPinRequiredForPayment,
     handlePinRequiredForPayment,
     t,
     handlePinRequired,
     handleResetPin,
+    authIntervals,
+    handleIntervalSelected,
   ])
-
-  const Item = ({
-    item: { title, value, destructive, onToggle, onPress },
-  }: {
-    item: SectionRow
-  }) => (
-    <TouchableOpacityBox
-      flexDirection="row"
-      justifyContent="space-between"
-      backgroundColor="darkGray"
-      padding="m"
-      onPress={onPress}
-      disabled={!onPress}
-    >
-      <Text variant="body" color={destructive ? 'red' : 'primaryText'}>
-        {title}
-      </Text>
-      {onToggle && <Switch value={value as boolean} onValueChange={onToggle} />}
-    </TouchableOpacityBox>
-  )
 
   return (
     <SafeAreaBox backgroundColor="secondaryBackground" flex={1} paddingTop="xl">
       <SectionList
         sections={SectionData}
         keyExtractor={(item, index) => item.title + index}
-        renderItem={({ item }) => <Item item={item} />}
+        renderItem={({ item }) => <MoreListItem item={item} />}
         renderSectionHeader={({ section: { title } }) => (
           <Text
             variant="body"

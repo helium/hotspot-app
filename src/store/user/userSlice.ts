@@ -1,5 +1,11 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import { getBoolean, setItem, deleteItem, signOut } from '../../utils/account'
+import {
+  getBoolean,
+  setItem,
+  deleteItem,
+  signOut,
+  getString,
+} from '../../utils/account'
 
 export type UserState = {
   isBackedUp: boolean
@@ -8,6 +14,7 @@ export type UserState = {
   isRestored: boolean
   isPinRequired: boolean
   isPinRequiredForPayment: boolean
+  authInterval: number | null
 }
 const initialState: UserState = {
   isBackedUp: false,
@@ -16,6 +23,7 @@ const initialState: UserState = {
   isRestored: false,
   isPinRequired: false,
   isPinRequiredForPayment: false,
+  authInterval: null,
 }
 
 type Restore = {
@@ -24,6 +32,7 @@ type Restore = {
   isSettingUpHotspot: boolean
   isPinRequired: boolean
   isPinRequiredForPayment: boolean
+  authInterval: number | null
 }
 
 export const restoreUser = createAsyncThunk<Restore>(
@@ -35,6 +44,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       getBoolean('isSettingUpHotspot'),
       getBoolean('requirePin'),
       getBoolean('requirePinForPayment'),
+      getString('authInterval'),
     ])
     return {
       isBackedUp: vals[0],
@@ -42,6 +52,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       isSettingUpHotspot: vals[2],
       isPinRequired: vals[3],
       isPinRequiredForPayment: vals[4],
+      authInterval: vals[5] ? parseInt(vals[5], 10) : null,
     }
   },
 )
@@ -79,6 +90,11 @@ const userSlice = createSlice({
     requirePinForPayment: (state, action: PayloadAction<boolean>) => {
       state.isPinRequiredForPayment = action.payload
       setItem('requirePinForPayment', action.payload)
+      return state
+    },
+    updateAuthInterval: (state, action: PayloadAction<number>) => {
+      state.authInterval = action.payload
+      setItem('authInterval', action.payload.toString())
       return state
     },
     disablePin: (state) => {
