@@ -11,6 +11,10 @@ import { useAppDispatch } from '../../../store/store'
 import userSlice from '../../../store/user/userSlice'
 import useDevice from '../../../utils/useDevice'
 import { MoreNavigationProp, MoreStackParamList } from '../moreTypes'
+import {
+  RootNavigationProp,
+  RootStackParamList,
+} from '../../../navigation/mainTabs/tabTypes'
 
 type SectionRow = {
   title: string
@@ -20,7 +24,7 @@ type SectionRow = {
   value?: boolean | string
 }
 
-type Route = RouteProp<MoreStackParamList, 'MoreScreen'>
+type Route = RouteProp<RootStackParamList & MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
   const { t } = useTranslation()
   const { params } = useRoute<Route>()
@@ -30,19 +34,23 @@ const MoreScreen = () => {
     (state: RootState) => state.user,
   )
 
-  const navigation = useNavigation<MoreNavigationProp>()
+  const navigation = useNavigation<MoreNavigationProp & RootNavigationProp>()
 
   useEffect(() => {
     if (!params?.pinVerifiedFor) return
 
-    if (params.pinVerifiedFor === 'disablePin') {
+    const { pinVerifiedFor } = params
+
+    if (pinVerifiedFor === 'disablePin') {
       dispatch(userSlice.actions.disablePin())
-    } else if (params.pinVerifiedFor === 'disablePinForPayments') {
+    } else if (pinVerifiedFor === 'disablePinForPayments') {
       dispatch(userSlice.actions.requirePinForPayment(false))
-    } else if (params.pinVerifiedFor === 'enablePinForPayments') {
+    } else if (pinVerifiedFor === 'enablePinForPayments') {
       dispatch(userSlice.actions.requirePinForPayment(true))
+    } else if (pinVerifiedFor === 'resetPin') {
+      navigation.push('AccountCreatePinScreen', { pinReset: true })
     }
-  }, [dispatch, params])
+  }, [dispatch, params, navigation])
 
   const handlePinRequiredForPayment = useCallback(
     (value?: boolean) => {
@@ -78,6 +86,10 @@ const MoreScreen = () => {
     [isPinRequired, navigation],
   )
 
+  const handleResetPin = useCallback(() => {
+    navigation.push('VerifyPinScreen', { requestType: 'resetPin' })
+  }, [navigation])
+
   const handleSignOut = useCallback(() => {
     Alert.alert(
       t('more.sections.account.signOutAlert.title'),
@@ -111,7 +123,10 @@ const MoreScreen = () => {
       pin = [
         ...pin,
         { title: t('more.sections.security.requirePin') },
-        { title: t('more.sections.security.resetPin') },
+        {
+          title: t('more.sections.security.resetPin'),
+          onPress: handleResetPin,
+        },
         {
           title: t('more.sections.security.requirePinForPayments'),
           onToggle: handlePinRequiredForPayment,
@@ -149,6 +164,7 @@ const MoreScreen = () => {
     handlePinRequiredForPayment,
     t,
     handlePinRequired,
+    handleResetPin,
   ])
 
   const Item = ({

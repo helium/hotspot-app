@@ -6,8 +6,12 @@ import SafeAreaBox from '../../../components/SafeAreaBox'
 import { MoreNavigationProp, MoreStackParamList } from '../moreTypes'
 import ConfirmPinView from '../../../components/ConfirmPinView'
 import { getString } from '../../../utils/account'
+import { RootStackParamList } from '../../../navigation/mainTabs/tabTypes'
 
-type Route = RouteProp<MoreStackParamList, 'VerifyPinScreen'>
+type Route = RouteProp<
+  MoreStackParamList & RootStackParamList,
+  'VerifyPinScreen'
+>
 const VerifyPinScreen = () => {
   const { t } = useTranslation()
   const { params } = useRoute<Route>()
