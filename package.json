@@ -8,7 +8,11 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "prettier": "prettier --write *.ts*",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "icon": "yarn icon-label && yarn icon-gen && yarn icon-cleanup",
+    "icon-label": "app-icon label -i icon.png -o output.png --bottom 3.0.0",
+    "icon-gen": "app-icon generate -i output.png",
+    "icon-cleanup": "rm output.png"
   },
   "husky": {
     "hooks": {
@@ -103,6 +107,7 @@
     "@types/webpack-env": "^1.15.3",
     "@typescript-eslint/eslint-plugin": "^4.1.0",
     "@typescript-eslint/parser": "^4.1.0",
+    "app-icon": "^0.13.2",
     "babel-jest": "^25.1.0",
     "babel-preset-react-native": "^4.0.1",
     "eslint": "^7.8.1",
