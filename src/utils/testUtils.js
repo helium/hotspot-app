@@ -5,14 +5,18 @@ import React from 'react'
 import { render } from '@testing-library/react-native'
 import { ThemeProvider } from '@shopify/restyle'
 import { I18nextProvider } from 'react-i18next'
+import { Provider } from 'react-redux'
 import { theme } from '../theme/theme'
 import i18n from './i18n'
+import store from '../store/store'
 
 const AllTheProviders = ({ children }) => {
   return (
-    <ThemeProvider theme={theme}>
-      <I18nextProvider i18n={i18n}>{children}</I18nextProvider>
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <I18nextProvider i18n={i18n}>{children}</I18nextProvider>
+      </ThemeProvider>
+    </Provider>
   )
 }
 

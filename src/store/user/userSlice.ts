@@ -1,17 +1,34 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import { getBoolean, setItem } from '../../utils/account'
+import getUnixTime from 'date-fns/getUnixTime'
+import {
+  getBoolean,
+  setItem,
+  deleteItem,
+  signOut,
+  getString,
+} from '../../utils/account'
 
 export type UserState = {
   isBackedUp: boolean
   isEducated: boolean
   isSettingUpHotspot: boolean
   isRestored: boolean
+  isPinRequired: boolean
+  isPinRequiredForPayment: boolean
+  authInterval: number
+  lastIdle: number | null
+  isLocked: boolean
 }
 const initialState: UserState = {
   isBackedUp: false,
   isEducated: false,
   isSettingUpHotspot: false,
   isRestored: false,
+  isPinRequired: false,
+  isPinRequiredForPayment: false,
+  authInterval: 0,
+  lastIdle: null,
+  isLocked: false,
 }
 
 type Restore = {
@@ -19,6 +36,9 @@ type Restore = {
   isEducated: boolean
   isSettingUpHotspot: boolean
   isPinRequired: boolean
+  isPinRequiredForPayment: boolean
+  authInterval: number
+  isLocked: boolean
 }
 
 export const restoreUser = createAsyncThunk<Restore>(
@@ -29,12 +49,17 @@ export const restoreUser = createAsyncThunk<Restore>(
       getBoolean('isEducated'),
       getBoolean('isSettingUpHotspot'),
       getBoolean('requirePin'),
+      getBoolean('requirePinForPayment'),
+      getString('authInterval'),
     ])
     return {
       isBackedUp: vals[0],
       isEducated: vals[1],
       isSettingUpHotspot: vals[2],
       isPinRequired: vals[3],
+      isPinRequiredForPayment: vals[4],
+      authInterval: vals[5] ? parseInt(vals[5], 10) : 0,
+      isLocked: vals[3],
     }
   },
 )
@@ -48,6 +73,7 @@ const userSlice = createSlice({
       setItem('requirePin', true)
       setItem('userPin', action.payload)
       state.isBackedUp = true
+      state.isPinRequired = true
       return state
     },
     finishEducation: (state) => {
@@ -60,6 +86,41 @@ const userSlice = createSlice({
       setItem('isSettingUpHotspot', true)
       state.isEducated = true
       state.isSettingUpHotspot = true
+      return state
+    },
+    signOut: (state) => {
+      signOut()
+      state = initialState
+      state.isRestored = true
+      return state
+    },
+    requirePinForPayment: (state, action: PayloadAction<boolean>) => {
+      state.isPinRequiredForPayment = action.payload
+      setItem('requirePinForPayment', action.payload)
+      return state
+    },
+    updateAuthInterval: (state, action: PayloadAction<number>) => {
+      state.authInterval = action.payload
+      setItem('authInterval', action.payload.toString())
+      return state
+    },
+    disablePin: (state) => {
+      deleteItem('requirePin')
+      deleteItem('requirePinForPayment')
+      deleteItem('userPin')
+      state.isPinRequired = false
+      state.isPinRequiredForPayment = false
+      return state
+    },
+    updateLastIdle: (state) => {
+      state.lastIdle = getUnixTime(Date.now())
+      return state
+    },
+    lock: (state, action: PayloadAction<boolean>) => {
+      state.isLocked = action.payload
+      if (!state.isLocked) {
+        state.lastIdle = null
+      }
       return state
     },
   },

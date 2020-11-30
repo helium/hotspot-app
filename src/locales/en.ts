@@ -427,4 +427,40 @@ export default {
       body: "This seed phrase doesn't correspond to a Helium account",
     },
   },
+  more: {
+    sections: {
+      security: {
+        title: 'security',
+        enablePin: 'Enable PIN',
+        requirePin: 'Require PIN',
+        resetPin: 'Reset PIN',
+        requirePinForPayments: 'Require PIN for Payments',
+        auth_intervals: {
+          immediately: 'Immediately',
+          after_1_min: 'After 1 minute',
+          after_5_min: 'After 5 minutes',
+          after_15_min: 'After 15 minutes',
+          after_1_hr: 'After 1 hour',
+          after_4_hr: 'After 4 hours',
+        },
+      },
+      learn: { title: 'learn' },
+      advanced: { title: 'advanced' },
+      account: {
+        title: 'account',
+        signOut: 'Sign out',
+        signOutAlert: {
+          title: 'Warning!',
+          body:
+            'This will remove all account info from this device. The only way to restore access to your account and Hotspots will be by using your 12 word recovery seed phrase.',
+        },
+      },
+      app: { title: 'app' },
+    },
+  },
+  auth: {
+    title: 'Enter Your PIN',
+    error: 'Incorrect PIN',
+    enter_current: 'Enter your current PIN to continue',
+  },
 }

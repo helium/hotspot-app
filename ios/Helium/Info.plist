@@ -39,6 +39,8 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Allow Helium to authenticate with Face ID</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>NotoSerif-Bold.ttf</string>

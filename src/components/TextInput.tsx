@@ -5,10 +5,10 @@ import {
   VariantProps,
   createVariant,
   createBox,
-  useTheme,
 } from '@shopify/restyle'
 import { TextInput as RNTextInput } from 'react-native'
 import { Colors, Theme } from '../theme/theme'
+import { useColors } from '../theme/themeHooks'
 
 const TextInputBox = createBox<Theme, React.ComponentProps<typeof RNTextInput>>(
   RNTextInput,
@@ -25,13 +25,13 @@ type Props = React.ComponentProps<typeof TextInput> & {
 }
 
 const TI = ({ variant, placeholderTextColor, ...rest }: Props) => {
-  const theme = useTheme<Theme>()
+  const colors = useColors()
 
   const getPlaceholderTextColor = () => {
-    if (placeholderTextColor) return theme.colors[placeholderTextColor]
+    if (placeholderTextColor) return colors[placeholderTextColor]
 
     if (variant === 'regular') {
-      return theme.colors.inputPlaceholderText
+      return colors.inputPlaceholderText
     }
     return undefined
   }
