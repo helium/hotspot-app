@@ -1,8 +1,8 @@
 export default {
   navigation: {
-    account: 'Account',
+    wallet: 'Wallet',
     hotspots: 'Hotspots',
-    network: 'Network',
+    notifications: 'Notifications',
     more: 'More',
   },
   back: 'Back',

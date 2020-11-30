@@ -1,6 +1,6 @@
 import { StackNavigationProp } from '@react-navigation/stack'
 
-export type MainTabType = 'Hotspots' | 'Network' | 'Account' | 'More'
+export type MainTabType = 'Hotspots' | 'Wallet' | 'Notifications' | 'More'
 
 export type TabBarIconType = {
   focused: boolean

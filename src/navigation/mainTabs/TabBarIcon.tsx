@@ -23,8 +23,8 @@ const Icon = ({
   name: MainTabType
 }) => {
   if (name === 'Hotspots') return <HotspotsSvg color={color} size={size} />
-  if (name === 'Account') return <AccountSvg size={size} color={color} />
-  if (name === 'Network') return <NetworkSvg size={size} color={color} />
+  if (name === 'Wallet') return <AccountSvg size={size} color={color} />
+  if (name === 'Notifications') return <NetworkSvg size={size} color={color} />
   return <MoreSvg color={color} size={size} />
 }
 

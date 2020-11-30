@@ -72,9 +72,9 @@ const MainTabs = () => {
         },
       })}
     >
-      <MainTab.Screen name="Account" component={Hotspots} />
       <MainTab.Screen name="Hotspots" component={Hotspots} />
-      <MainTab.Screen name="Network" component={Hotspots} />
+      <MainTab.Screen name="Wallet" component={Hotspots} />
+      <MainTab.Screen name="Notifications" component={Hotspots} />
       <MainTab.Screen name="More" component={More} />
     </MainTab.Navigator>
   )
