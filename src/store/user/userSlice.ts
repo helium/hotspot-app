@@ -74,35 +74,28 @@ const userSlice = createSlice({
       setItem('userPin', action.payload)
       state.isBackedUp = true
       state.isPinRequired = true
-      return state
     },
     finishEducation: (state) => {
       setItem('isEducated', true)
       state.isEducated = true
-      return state
     },
     setupHotspot: (state) => {
       setItem('isEducated', true)
       setItem('isSettingUpHotspot', true)
       state.isEducated = true
       state.isSettingUpHotspot = true
-      return state
     },
-    signOut: (state) => {
+    signOut: () => {
       signOut()
-      state = initialState
-      state.isRestored = true
-      return state
+      return { ...initialState, isRestored: true }
     },
     requirePinForPayment: (state, action: PayloadAction<boolean>) => {
       state.isPinRequiredForPayment = action.payload
       setItem('requirePinForPayment', action.payload)
-      return state
     },
     updateAuthInterval: (state, action: PayloadAction<number>) => {
       state.authInterval = action.payload
       setItem('authInterval', action.payload.toString())
-      return state
     },
     disablePin: (state) => {
       deleteItem('requirePin')
@@ -110,18 +103,15 @@ const userSlice = createSlice({
       deleteItem('userPin')
       state.isPinRequired = false
       state.isPinRequiredForPayment = false
-      return state
     },
     updateLastIdle: (state) => {
       state.lastIdle = getUnixTime(Date.now())
-      return state
     },
     lock: (state, action: PayloadAction<boolean>) => {
       state.isLocked = action.payload
       if (!state.isLocked) {
         state.lastIdle = null
       }
-      return state
     },
   },
   extraReducers: (builder) => {

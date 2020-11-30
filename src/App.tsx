@@ -12,12 +12,13 @@ import NavigationRoot from './navigation/NavigationRoot'
 import { useAppDispatch } from './store/store'
 import userSlice from './store/user/userSlice'
 import { RootState } from './store/rootReducer'
+import { fetchData } from './store/account/accountSlice'
 
 const App = () => {
   const dispatch = useAppDispatch()
 
   const {
-    user: { lastIdle, isPinRequired, authInterval },
+    user: { lastIdle, isPinRequired, authInterval, isRestored, isBackedUp },
   } = useSelector((state: RootState) => state)
 
   const handleChange = useCallback(
@@ -39,6 +40,12 @@ const App = () => {
     },
     [dispatch, isPinRequired, lastIdle, authInterval],
   )
+
+  useEffect(() => {
+    if (!isRestored && !isBackedUp) return
+
+    dispatch(fetchData())
+  }, [isRestored, isBackedUp, dispatch])
 
   useEffect(() => {
     OneSignal.setAppId(Config.ONE_SIGNAL_APP_ID)

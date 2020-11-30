@@ -19,6 +19,7 @@ import userSlice from '../../store/user/userSlice'
 import defaultScreenOptions from '../defaultScreenOptions'
 import { useColors } from '../../theme/themeHooks'
 import Box from '../../components/Box'
+import StatsScreen from '../../features/stats/StatsScreen'
 
 const MainTab = createBottomTabNavigator()
 type Route = RouteProp<RootStackParamList, 'MainTabs'>
@@ -73,8 +74,8 @@ const MainTabs = () => {
       })}
     >
       <MainTab.Screen name="Hotspots" component={Hotspots} />
-      <MainTab.Screen name="Wallet" component={Hotspots} />
-      <MainTab.Screen name="Notifications" component={Hotspots} />
+      <MainTab.Screen name="Wallet" component={StatsScreen} />
+      <MainTab.Screen name="Notifications" component={StatsScreen} />
       <MainTab.Screen name="More" component={More} />
     </MainTab.Navigator>
   )
