@@ -8,8 +8,9 @@ import './src/utils/i18n'
 
 import store from './src/store/store'
 
+// eslint-disable-next-line no-undef
 if (__DEV__) {
-  import('././ReactotronConfig')
+  import('./ReactotronConfig')
 }
 
 const render = () => {
