@@ -14,7 +14,9 @@ import {
 type Route = RouteProp<OnboardingStackParamList, 'AccountCreatePinScreen'>
 const AccountCreatePinScreen = () => {
   const { t } = useTranslation()
-  const route = useRoute<Route>()
+  const {
+    params: { fromImport, pinReset } = { fromImport: false, pinReset: false },
+  } = useRoute<Route>()
   const navigation = useNavigation<OnboardingNavigationProp>()
 
   const [pin, setPin] = useState('')
@@ -23,11 +25,11 @@ const AccountCreatePinScreen = () => {
     if (pin.length === 6) {
       navigation.push('AccountConfirmPinScreen', {
         pin,
-        fromImport: route.params?.fromImport,
-        pinReset: route.params?.pinReset,
+        fromImport,
+        pinReset,
       })
     }
-  }, [pin, navigation, route])
+  }, [pin, fromImport, pinReset, navigation])
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
@@ -39,7 +41,7 @@ const AccountCreatePinScreen = () => {
 
   return (
     <SafeAreaBox
-      backgroundColor="mainBackground"
+      backgroundColor={pinReset ? 'secondaryBackground' : 'mainBackground'}
       flex={1}
       padding="l"
       paddingBottom="none"
@@ -55,7 +57,7 @@ const AccountCreatePinScreen = () => {
         {t('account_setup.create_pin.title')}
       </Text>
 
-      <Text variant="body" marginBottom={{ smallPhone: 'm', phone: 'xl' }}>
+      <Text variant="bodyLight" marginBottom={{ smallPhone: 'm', phone: 'xl' }}>
         {t('account_setup.create_pin.subtitle')}
       </Text>
       <PinDisplay length={pin.length} />

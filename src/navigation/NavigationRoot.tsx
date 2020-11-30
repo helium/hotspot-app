@@ -5,11 +5,11 @@ import { useSelector } from 'react-redux'
 import Onboarding from '../features/onboarding/OnboardingNavigator'
 import Education from '../features/educationSetup/EducationNavigator'
 import SplashScreen from '../features/splash/SplashScreen'
-import Stats from '../features/stats/StatsNavigator'
 import { restoreUser } from '../store/user/userSlice'
 import { useAppDispatch } from '../store/store'
 import { RootState } from '../store/rootReducer'
 import defaultScreenOptions from './defaultScreenOptions'
+import MainTab from './mainTabs/MainTabNavigator'
 
 const RootStack = createStackNavigator()
 
@@ -37,7 +37,7 @@ const NavigationRoot = () => {
     if (!isEducated)
       return <RootStack.Screen name="Education" component={Education} />
 
-    return <RootStack.Screen name="Stats" component={Stats} />
+    return <RootStack.Screen name="MainTab" component={MainTab} />
   }, [showSplash, isEducated, isBackedUp, isRestored])
 
   return (

@@ -9,7 +9,7 @@ if (Reactotron.createEnhancer) {
   enhancers.push(Reactotron.createEnhancer())
 }
 
-export const store = configureStore({
+const store = configureStore({
   reducer: rootReducer,
   enhancers,
 })

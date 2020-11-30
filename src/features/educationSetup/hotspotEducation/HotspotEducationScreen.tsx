@@ -88,7 +88,7 @@ const HotspotEducationScreen = () => {
         </Text>
         <Text
           numberOfLines={5}
-          variant="body"
+          variant="bodyLight"
           textAlign="center"
           color="darkestBlue"
           adjustsFontSizeToFit

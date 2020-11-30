@@ -56,11 +56,11 @@ const AccountCreatePassphraseScreen = () => {
         <Box paddingHorizontal="l">
           <TextTransform
             marginBottom="m"
-            variant="body"
+            variant="bodyLight"
             i18nKey="account_setup.passphrase.warning_1"
           />
           <TextTransform
-            variant="body"
+            variant="bodyLight"
             i18nKey="account_setup.passphrase.warning_2"
           />
         </Box>

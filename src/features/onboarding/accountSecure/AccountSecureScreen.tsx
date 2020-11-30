@@ -18,10 +18,10 @@ const AccountSecureScreen = () => {
         <Text variant="header" marginTop="xxl">
           {t('account_setup.success.title')}
         </Text>
-        <Text variant="body" marginTop="s" textAlign="center">
+        <Text variant="bodyLight" marginTop="s" textAlign="center">
           {t('account_setup.success.subtitle_1')}
         </Text>
-        <Text variant="body" marginTop="m" textAlign="center">
+        <Text variant="bodyLight" marginTop="m" textAlign="center">
           {t('account_setup.success.subtitle_2')}
         </Text>
       </Box>

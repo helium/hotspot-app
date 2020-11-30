@@ -56,7 +56,7 @@ const ImportAccountConfirmScreen = () => {
         </Box>
         <Box paddingHorizontal="l">
           <Text variant="header">{t('account_import.confirm.title')}</Text>
-          <Text variant="body" marginTop="s" marginBottom="xl">
+          <Text variant="bodyLight" marginTop="s" marginBottom="xl">
             {t('account_import.confirm.subtitle')}
           </Text>
         </Box>

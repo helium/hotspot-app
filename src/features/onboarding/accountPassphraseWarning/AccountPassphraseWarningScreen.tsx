@@ -27,11 +27,11 @@ const AccountPassphraseWarningScreen = () => {
         </Text>
         <TextTransform
           marginVertical="xl"
-          variant="body"
+          variant="bodyLight"
           i18nKey="account_setup.warning.subtitle"
         />
         <WordGraph />
-        <Text marginTop="xl" variant="body">
+        <Text marginTop="xl" variant="bodyLight">
           {t('account_setup.warning.recover')}
         </Text>
         <Box flex={1} justifyContent="flex-end">

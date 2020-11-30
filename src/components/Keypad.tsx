@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import Icon from 'react-native-vector-icons/Ionicons'
 import haptic from '../utils/haptic'
 import Box from './Box'
@@ -8,8 +9,51 @@ import TouchableCircle from './TouchableCircle'
 type Props = {
   onNumberPress: (value: number) => void
   onBackspacePress: () => void
+  onCancel?: () => void
 }
-const Keypad = ({ onNumberPress, onBackspacePress }: Props) => {
+const Key = ({
+  children,
+  onPressIn,
+}: {
+  children: React.ReactNode
+  onPressIn: () => void
+}) => {
+  return (
+    <TouchableCircle
+      alignItems="center"
+      marginBottom="xs"
+      flexBasis="33%"
+      onPressIn={() => {
+        haptic()
+        onPressIn()
+      }}
+    >
+      {children}
+    </TouchableCircle>
+  )
+}
+
+const Keypad = ({ onNumberPress, onCancel, onBackspacePress }: Props) => {
+  const { t } = useTranslation()
+
+  const renderDynamicButton = () => {
+    if (onCancel) {
+      return (
+        <Key onPressIn={onCancel}>
+          <Text
+            variant="keypad"
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            padding="s"
+          >
+            {t('generic.cancel')}
+          </Text>
+        </Key>
+      )
+    }
+    return <Box flexBasis="33%" />
+  }
+
   return (
     <Box
       flex={1}
@@ -32,7 +76,9 @@ const Keypad = ({ onNumberPress, onBackspacePress }: Props) => {
           <Text variant="keypad">{idx + 1}</Text>
         </TouchableCircle>
       ))}
-      <Box flexBasis="33%" />
+
+      {renderDynamicButton()}
+
       <TouchableCircle
         alignItems="center"
         marginBottom="xs"
