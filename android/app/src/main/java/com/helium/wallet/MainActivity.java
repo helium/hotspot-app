@@ -1,4 +1,4 @@
-package com.helium.wallet;
+package com.helium.wallet.v3;
 
 import com.facebook.react.ReactActivity;
 

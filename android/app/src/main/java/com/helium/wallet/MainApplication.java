@@ -1,6 +1,6 @@
-package com.helium.wallet;
+package com.helium.wallet.v3;
 
-import com.helium.wallet.generated.BasePackageList;
+import com.helium.wallet.v3.generated.BasePackageList;
 
 import android.app.Application;
 import android.content.Context;
@@ -72,7 +72,7 @@ public class MainApplication extends Application implements ReactApplication {
          We use reflection here to pick up the class that initializes Flipper,
         since Flipper library is not available in release mode
         */
-        Class<?> aClass = Class.forName("com.helium.wallet.ReactNativeFlipper");
+        Class<?> aClass = Class.forName("com.helium.wallet.v3.ReactNativeFlipper");
         aClass
             .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
             .invoke(null, context, reactInstanceManager);
