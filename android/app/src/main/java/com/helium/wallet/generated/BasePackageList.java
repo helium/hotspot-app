@@ -1,4 +1,4 @@
-package com.helium.wallet.generated;
+package com.helium.wallet.v3.generated;
 
 import java.util.Arrays;
 import java.util.List;
