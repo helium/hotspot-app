@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useCallback } from 'react'
+import { Alert } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useAsync } from 'react-async-hook'
@@ -11,6 +12,8 @@ import {
 import { getString } from '../../utils/account'
 import ConfirmPinView from '../../components/ConfirmPinView'
 import { MoreNavigationProp } from '../moreTab/moreTypes'
+import { useAppDispatch } from '../../store/store'
+import userSlice from '../../store/user/userSlice'
 
 type Route = RouteProp<RootStackParamList, 'LockScreen'>
 
@@ -22,8 +25,29 @@ const LockScreen = () => {
   const rootNav = useNavigation<RootNavigationProp>()
   const moreNav = useNavigation<MoreNavigationProp>()
   const [locked, setLocked] = useStateWithCallbackLazy(shouldLock)
+  const dispatch = useAppDispatch()
 
   const { result: pin } = useAsync(getString, ['userPin'])
+
+  const handleSignOut = useCallback(() => {
+    Alert.alert(
+      t('more.sections.account.signOutAlert.title'),
+      t('more.sections.account.signOutAlert.body'),
+      [
+        {
+          text: t('generic.cancel'),
+          style: 'cancel',
+        },
+        {
+          text: t('generic.ok'),
+          style: 'destructive',
+          onPress: () => {
+            dispatch(userSlice.actions.signOut())
+          },
+        },
+      ],
+    )
+  }, [t, dispatch])
 
   useEffect(() => {
     const unsubscribe = rootNav.addListener('beforeRemove', (e) => {
@@ -58,7 +82,7 @@ const LockScreen = () => {
               })
             }
           }}
-          onCancel={shouldLock ? undefined : moreNav.goBack}
+          onCancel={shouldLock ? handleSignOut : moreNav.goBack}
         />
       )}
     </SafeAreaBox>

@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
+import getUnixTime from 'date-fns/getUnixTime'
 import {
   getBoolean,
   setItem,
@@ -15,6 +16,8 @@ export type UserState = {
   isPinRequired: boolean
   isPinRequiredForPayment: boolean
   authInterval: number
+  lastIdle: number | null
+  isLocked: boolean
 }
 const initialState: UserState = {
   isBackedUp: false,
@@ -24,6 +27,8 @@ const initialState: UserState = {
   isPinRequired: false,
   isPinRequiredForPayment: false,
   authInterval: 0,
+  lastIdle: null,
+  isLocked: false,
 }
 
 type Restore = {
@@ -32,7 +37,8 @@ type Restore = {
   isSettingUpHotspot: boolean
   isPinRequired: boolean
   isPinRequiredForPayment: boolean
-  authInterval: number | null
+  authInterval: number
+  isLocked: boolean
 }
 
 export const restoreUser = createAsyncThunk<Restore>(
@@ -52,7 +58,8 @@ export const restoreUser = createAsyncThunk<Restore>(
       isSettingUpHotspot: vals[2],
       isPinRequired: vals[3],
       isPinRequiredForPayment: vals[4],
-      authInterval: vals[5] ? parseInt(vals[5], 10) : null,
+      authInterval: vals[5] ? parseInt(vals[5], 10) : 0,
+      isLocked: vals[3],
     }
   },
 )
@@ -103,6 +110,17 @@ const userSlice = createSlice({
       deleteItem('userPin')
       state.isPinRequired = false
       state.isPinRequiredForPayment = false
+      return state
+    },
+    updateLastIdle: (state) => {
+      state.lastIdle = getUnixTime(Date.now())
+      return state
+    },
+    lock: (state, action: PayloadAction<boolean>) => {
+      state.isLocked = action.payload
+      if (!state.isLocked) {
+        state.lastIdle = null
+      }
       return state
     },
   },

@@ -15,9 +15,10 @@ import More from '../../features/moreTab/MoreNavigator'
 import { RootState } from '../../store/rootReducer'
 import LockScreen from '../../features/lock/LockScreen'
 import { useAppDispatch } from '../../store/store'
-import appSlice from '../../store/app/appSlice'
+import userSlice from '../../store/user/userSlice'
 import defaultScreenOptions from '../defaultScreenOptions'
 import { useColors } from '../../theme/themeHooks'
+import Box from '../../components/Box'
 
 const MainTab = createBottomTabNavigator()
 type Route = RouteProp<RootStackParamList, 'MainTabs'>
@@ -26,7 +27,7 @@ const MainTabs = () => {
   const navigation = useNavigation<RootNavigationProp>()
   const { params } = useRoute<Route>()
   const {
-    app: { isLocked },
+    user: { isLocked },
   } = useSelector((state: RootState) => state)
   const dispatch = useAppDispatch()
 
@@ -42,10 +43,12 @@ const MainTabs = () => {
 
     switch (pinVerifiedFor) {
       case 'unlock':
-        dispatch(appSlice.actions.lock(false))
+        dispatch(userSlice.actions.lock(false))
         break
     }
   }, [dispatch, params, navigation])
+
+  if (isLocked) return <Box backgroundColor="secondaryBackground" flex={1} />
 
   return (
     <MainTab.Navigator

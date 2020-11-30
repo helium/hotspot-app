@@ -10,21 +10,20 @@ import { getUnixTime } from 'date-fns'
 import { theme } from './theme/theme'
 import NavigationRoot from './navigation/NavigationRoot'
 import { useAppDispatch } from './store/store'
-import appSlice from './store/app/appSlice'
+import userSlice from './store/user/userSlice'
 import { RootState } from './store/rootReducer'
 
 const App = () => {
   const dispatch = useAppDispatch()
 
   const {
-    app: { lastIdle },
-    user: { isPinRequired, authInterval },
+    user: { lastIdle, isPinRequired, authInterval },
   } = useSelector((state: RootState) => state)
 
   const handleChange = useCallback(
     (newState: AppStateStatus) => {
       if (newState === 'background') {
-        dispatch(appSlice.actions.updateLastIdle())
+        dispatch(userSlice.actions.updateLastIdle())
         return
       }
 
@@ -35,7 +34,7 @@ const App = () => {
         lastIdle &&
         lastIdle < getUnixTime(Date.now()) - authInterval
       ) {
-        dispatch(appSlice.actions.lock(true))
+        dispatch(userSlice.actions.lock(true))
       }
     },
     [dispatch, isPinRequired, lastIdle, authInterval],
