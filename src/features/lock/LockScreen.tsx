@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useAsync } from 'react-async-hook'
 import { useStateWithCallbackLazy } from 'use-state-with-callback'
+import * as LocalAuthentication from 'expo-local-authentication'
 import SafeAreaBox from '../../components/SafeAreaBox'
 import {
   RootNavigationProp,
@@ -28,6 +29,20 @@ const LockScreen = () => {
   const dispatch = useAppDispatch()
 
   const { result: pin } = useAsync(getString, ['userPin'])
+
+  const handleSuccess = useCallback(() => {
+    if (shouldLock) {
+      setLocked(false, () => {
+        rootNav.navigate('MainTabs', {
+          pinVerifiedFor: requestType,
+        })
+      })
+    } else {
+      moreNav.navigate('MoreScreen', {
+        pinVerifiedFor: requestType,
+      })
+    }
+  }, [moreNav, requestType, rootNav, setLocked, shouldLock])
 
   const handleSignOut = useCallback(() => {
     Alert.alert(
@@ -57,6 +72,20 @@ const LockScreen = () => {
     return unsubscribe
   }, [rootNav, locked])
 
+  useEffect(() => {
+    const localAuth = async () => {
+      const hasHardware = await LocalAuthentication.hasHardwareAsync()
+      const isEnrolled = await LocalAuthentication.isEnrolledAsync()
+      if (!isEnrolled || !hasHardware) return
+
+      const { success } = await LocalAuthentication.authenticateAsync()
+      if (success) handleSuccess()
+    }
+
+    localAuth()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <SafeAreaBox
       backgroundColor="secondaryBackground"
@@ -69,19 +98,7 @@ const LockScreen = () => {
           originalPin={pin}
           title={t('auth.title')}
           subtitle={t('auth.enter_current')}
-          pinSuccess={() => {
-            if (shouldLock) {
-              setLocked(false, () => {
-                rootNav.navigate('MainTabs', {
-                  pinVerifiedFor: requestType,
-                })
-              })
-            } else {
-              moreNav.navigate('MoreScreen', {
-                pinVerifiedFor: requestType,
-              })
-            }
-          }}
+          pinSuccess={handleSuccess}
           onCancel={shouldLock ? handleSignOut : moreNav.goBack}
         />
       )}
