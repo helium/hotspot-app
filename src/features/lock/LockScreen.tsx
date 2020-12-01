@@ -9,7 +9,7 @@ import SafeAreaBox from '../../components/SafeAreaBox'
 import {
   RootNavigationProp,
   RootStackParamList,
-} from '../../navigation/mainTabs/tabTypes'
+} from '../../navigation/main/tabTypes'
 import { getString } from '../../utils/account'
 import ConfirmPinView from '../../components/ConfirmPinView'
 import { MoreNavigationProp } from '../moreTab/moreTypes'

@@ -13,7 +13,7 @@ import { MoreNavigationProp, MoreStackParamList } from '../moreTypes'
 import {
   RootNavigationProp,
   RootStackParamList,
-} from '../../../navigation/mainTabs/tabTypes'
+} from '../../../navigation/main/tabTypes'
 import MoreListItem, { MoreListItemType } from './MoreListItem'
 import useAuthIntervals from './useAuthIntervals'
 import { useSpacing } from '../../../theme/themeHooks'

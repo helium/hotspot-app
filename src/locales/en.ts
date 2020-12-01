@@ -463,4 +463,13 @@ export default {
     error: 'Incorrect PIN',
     enter_current: 'Enter your current PIN to continue',
   },
+  hotspots: {
+    new: {
+      title: 'Add a New Hotspot',
+      subtitle:
+        'If you just added a Hotspot, hang tight. It takes a few moments for the Network to propagate the Hotspot.',
+      setup: 'Set up Hotspot',
+      explorer: 'Global Hotspot Explorer',
+    },
+  },
 }

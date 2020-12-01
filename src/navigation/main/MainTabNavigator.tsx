@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { createStackNavigator } from '@react-navigation/stack'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useSelector } from 'react-redux'
-import Hotspots from '../../features/hotspots/HotspotsNavigator'
+import Hotspots from '../../features/hotspots/root/HotspotsNavigator'
 import {
   TabBarIconType,
   MainTabType,
@@ -13,16 +12,15 @@ import {
 import TabBarIcon from './TabBarIcon'
 import More from '../../features/moreTab/MoreNavigator'
 import { RootState } from '../../store/rootReducer'
-import LockScreen from '../../features/lock/LockScreen'
 import { useAppDispatch } from '../../store/store'
 import userSlice from '../../store/user/userSlice'
-import defaultScreenOptions from '../defaultScreenOptions'
 import { useColors } from '../../theme/themeHooks'
 import Box from '../../components/Box'
 import StatsScreen from '../../features/stats/StatsScreen'
 
 const MainTab = createBottomTabNavigator()
 type Route = RouteProp<RootStackParamList, 'MainTabs'>
+
 const MainTabs = () => {
   const { secondaryBackground } = useColors()
   const navigation = useNavigation<RootNavigationProp>()
@@ -81,23 +79,4 @@ const MainTabs = () => {
   )
 }
 
-const RootStack = createStackNavigator()
-const RootStackScreen = () => {
-  return (
-    <RootStack.Navigator
-      mode="modal"
-      screenOptions={{ ...defaultScreenOptions, gestureEnabled: false }}
-    >
-      <RootStack.Screen name="MainTabs" options={{ headerShown: false }}>
-        {() => <MainTabs />}
-      </RootStack.Screen>
-      <RootStack.Screen
-        name="LockScreen"
-        component={LockScreen}
-        options={{ headerShown: false }}
-      />
-    </RootStack.Navigator>
-  )
-}
-
-export default RootStackScreen
+export default MainTabs

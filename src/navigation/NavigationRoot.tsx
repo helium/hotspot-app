@@ -9,7 +9,7 @@ import { restoreUser } from '../store/user/userSlice'
 import { useAppDispatch } from '../store/store'
 import { RootState } from '../store/rootReducer'
 import defaultScreenOptions from './defaultScreenOptions'
-import MainTab from './mainTabs/MainTabNavigator'
+import RootNav from './main/HomeNavigator'
 
 const RootStack = createStackNavigator()
 
@@ -37,7 +37,7 @@ const NavigationRoot = () => {
     if (!isEducated)
       return <RootStack.Screen name="Education" component={Education} />
 
-    return <RootStack.Screen name="MainTab" component={MainTab} />
+    return <RootStack.Screen name="MainTab" component={RootNav} />
   }, [showSplash, isEducated, isBackedUp, isRestored])
 
   return (

@@ -18,6 +18,7 @@ export type LockScreenRequestType =
 export type RootStackParamList = {
   MainTabs: undefined | { pinVerifiedFor: LockScreenRequestType }
   LockScreen: { requestType: LockScreenRequestType; lock?: boolean }
+  HotspotSetup: undefined
 }
 
 export type RootNavigationProp = StackNavigationProp<RootStackParamList>

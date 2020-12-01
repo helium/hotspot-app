@@ -51,6 +51,7 @@
   },
   "dependencies": {
     "@helium/crypto-react-native": "^3.5.0",
+    "@helium/http": "file:../helium-js/packages/http/helium-http-v3.6.3.tgz",
     "@react-native-community/async-storage": "^1.12.1",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-native-community/picker": "^1.8.1",
@@ -65,7 +66,6 @@
     "expo-haptics": "^8.3.0",
     "expo-local-authentication": "^9.3.0",
     "expo-secure-store": "^9.2.0",
-    "@helium/http": "^3.0.0",
     "i18next": "^19.8.3",
     "lodash": "^4.17.20",
     "lottie-ios": "3.1.8",

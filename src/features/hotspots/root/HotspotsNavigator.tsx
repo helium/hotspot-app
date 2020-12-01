@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
-import defaultScreenOptions from '../../navigation/defaultScreenOptions'
+import defaultScreenOptions from '../../../navigation/defaultScreenOptions'
 import HotspotsScreen from './HotspotsScreen'
 
 const HotspotsStack = createStackNavigator()

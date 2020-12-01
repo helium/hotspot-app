@@ -1,5 +1,5 @@
 import { StackNavigationProp } from '@react-navigation/stack'
-import { LockScreenRequestType } from '../../navigation/mainTabs/tabTypes'
+import { LockScreenRequestType } from '../../navigation/main/tabTypes'
 
 export type MoreStackParamList = {
   MoreScreen: undefined | { pinVerifiedFor: LockScreenRequestType }
