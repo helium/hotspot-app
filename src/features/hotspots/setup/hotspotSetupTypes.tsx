@@ -7,6 +7,7 @@ export type HotspotSetupStackParamList = {
   HotspotSetupEducationScreen: { hotspotType: HotspotType }
   HotspotSetupDiagnosticsScreen: { hotspotType: HotspotType }
   HotspotSetupPowerScreen: { hotspotType: HotspotType }
+  HotspotSetupPairingScreen: { hotspotType: HotspotType }
 }
 
 export type HotspotSetupNavigationProp = StackNavigationProp<

@@ -53,6 +53,11 @@ const HotspotSetupSelectionScreen = () => {
         <TouchableOpacityBox
           height="100%"
           width="100%"
+          onPress={() =>
+            navigation.push('HotspotSetupEducationScreen', {
+              hotspotType: 'RAK',
+            })
+          }
           alignItems="center"
           justifyContent="center"
         >
