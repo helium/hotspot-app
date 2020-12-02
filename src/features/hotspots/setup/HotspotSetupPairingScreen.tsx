@@ -1,6 +1,7 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+import { useBluetoothStatus } from 'react-native-bluetooth-status'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
@@ -18,6 +19,7 @@ const HotspotSetupPairingScreen = () => {
   const {
     params: { hotspotType },
   } = useRoute<Route>()
+  const [btStatus, isPending, setBluetooth] = useBluetoothStatus()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
   const subtitle1 = t(
     `hotspot_setup.pair.${hotspotType === 'RAK' ? 'rak_' : ''}subtitle_1`,
@@ -25,6 +27,7 @@ const HotspotSetupPairingScreen = () => {
   const subtitle2 = t(
     `hotspot_setup.pair.${hotspotType === 'RAK' ? 'rak_' : ''}subtitle_2`,
   )
+  console.log(btStatus, isPending, setBluetooth)
   return (
     <BackScreen backgroundColor="mainBackground" padding="l">
       <Box flex={1} justifyContent="center" alignItems="center">

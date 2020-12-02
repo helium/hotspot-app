@@ -18,7 +18,14 @@ const App = () => {
   const dispatch = useAppDispatch()
 
   const {
-    user: { lastIdle, isPinRequired, authInterval, isRestored, isBackedUp },
+    user: {
+      lastIdle,
+      isPinRequired,
+      authInterval,
+      isRestored,
+      isBackedUp,
+      isRequestingPermission,
+    },
   } = useSelector((state: RootState) => state)
 
   const handleChange = useCallback(
@@ -32,13 +39,14 @@ const App = () => {
         // pin is required and last idle is past user interval, lock the screen
         newState === 'active' &&
         isPinRequired &&
+        !isRequestingPermission &&
         lastIdle &&
         lastIdle < getUnixTime(Date.now()) - authInterval
       ) {
         dispatch(userSlice.actions.lock(true))
       }
     },
-    [dispatch, isPinRequired, lastIdle, authInterval],
+    [dispatch, isPinRequired, lastIdle, authInterval, isRequestingPermission],
   )
 
   useEffect(() => {

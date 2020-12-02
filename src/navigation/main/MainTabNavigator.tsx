@@ -1,51 +1,29 @@
 import React, { useEffect } from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
 import { useSelector } from 'react-redux'
 import Hotspots from '../../features/hotspots/root/HotspotsNavigator'
-import {
-  TabBarIconType,
-  MainTabType,
-  RootNavigationProp,
-  RootStackParamList,
-} from './tabTypes'
+import { TabBarIconType, MainTabType, RootNavigationProp } from './tabTypes'
 import TabBarIcon from './TabBarIcon'
 import More from '../../features/moreTab/MoreNavigator'
 import { RootState } from '../../store/rootReducer'
-import { useAppDispatch } from '../../store/store'
-import userSlice from '../../store/user/userSlice'
 import { useColors } from '../../theme/themeHooks'
 import Box from '../../components/Box'
 import StatsScreen from '../../features/stats/StatsScreen'
 
 const MainTab = createBottomTabNavigator()
-type Route = RouteProp<RootStackParamList, 'MainTabs'>
 
 const MainTabs = () => {
   const { secondaryBackground } = useColors()
   const navigation = useNavigation<RootNavigationProp>()
-  const { params } = useRoute<Route>()
   const {
     user: { isLocked },
   } = useSelector((state: RootState) => state)
-  const dispatch = useAppDispatch()
 
   useEffect(() => {
     if (!isLocked) return
     navigation.push('LockScreen', { requestType: 'unlock', lock: true })
   }, [isLocked, navigation])
-
-  useEffect(() => {
-    if (!params?.pinVerifiedFor) return
-
-    const { pinVerifiedFor } = params
-
-    switch (pinVerifiedFor) {
-      case 'unlock':
-        dispatch(userSlice.actions.lock(false))
-        break
-    }
-  }, [dispatch, params, navigation])
 
   if (isLocked) return <Box backgroundColor="secondaryBackground" flex={1} />
 

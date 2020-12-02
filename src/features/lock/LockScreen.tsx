@@ -33,16 +33,15 @@ const LockScreen = () => {
   const handleSuccess = useCallback(() => {
     if (shouldLock) {
       setLocked(false, () => {
-        rootNav.navigate('MainTabs', {
-          pinVerifiedFor: requestType,
-        })
+        dispatch(userSlice.actions.lock(false))
+        rootNav.goBack()
       })
     } else {
       moreNav.navigate('MoreScreen', {
         pinVerifiedFor: requestType,
       })
     }
-  }, [moreNav, requestType, rootNav, setLocked, shouldLock])
+  }, [moreNav, requestType, rootNav, setLocked, shouldLock, dispatch])
 
   const handleSignOut = useCallback(() => {
     Alert.alert(

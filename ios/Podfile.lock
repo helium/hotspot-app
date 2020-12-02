@@ -265,6 +265,8 @@ PODS:
     - React-cxxreact (= 0.63.3)
     - React-jsi (= 0.63.3)
   - React-jsinspector (0.63.3)
+  - react-native-bluetooth-status (1.5.1):
+    - React
   - react-native-config (1.4.1):
     - react-native-config/App (= 1.4.1)
   - react-native-config/App (1.4.1):
@@ -425,6 +427,7 @@ DEPENDENCIES:
   - React-jsi (from `../node_modules/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
+  - react-native-bluetooth-status (from `../node_modules/react-native-bluetooth-status`)
   - react-native-config (from `../node_modules/react-native-config`)
   - react-native-onesignal (from `../node_modules/react-native-onesignal`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -531,6 +534,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsiexecutor"
   React-jsinspector:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
+  react-native-bluetooth-status:
+    :path: "../node_modules/react-native-bluetooth-status"
   react-native-config:
     :path: "../node_modules/react-native-config"
   react-native-onesignal:
@@ -630,8 +635,8 @@ SPEC CHECKSUMS:
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: 64e7431a55835eb953b0bf984ef3b90ae9fdddd7
   FlipperKit: ab353d41aea8aae2ea6daaf813e67496642f3d7d
-  Folly: b73c3869541e86821df3c387eb0af5f65addfab4
-  glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
+  Folly: aeb27d02cdff07ca01f8a8a5a6dd5bcaf6be6f70
+  glog: 2ad46e202fbaa5641fceb4b2af37dcd88fd8762d
   lottie-ios: 48fac6be217c76937e36e340e2d09cf7b10b7f5f
   lottie-react-native: 1fb4ce21d6ad37dab8343eaff8719df76035bd93
   OneSignal: e0b82aa4e5a38df2bbc203ccc794021ea9832c43
@@ -646,6 +651,7 @@ SPEC CHECKSUMS:
   React-jsi: df07aa95b39c5be3e41199921509bfa929ed2b9d
   React-jsiexecutor: b56c03e61c0dd5f5801255f2160a815f4a53d451
   React-jsinspector: 8e68ffbfe23880d3ee9bafa8be2777f60b25cbe2
+  react-native-bluetooth-status: 306a9e5311c377813ea68066dd81b66165b3026f
   react-native-config: d8b45133fd13d4f23bd2064b72f6e2c08b2763ed
   react-native-onesignal: b84ee994a7f31d63fa306f3981d7a0450d335911
   react-native-safe-area-context: b6e0e284002381d2ff29fa4fff42b4d8282e3c94

@@ -3,7 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import LockScreen from '../../features/lock/LockScreen'
 import defaultScreenOptions from '../defaultScreenOptions'
 import HotspotSetup from '../../features/hotspots/setup/HotspotSetupNavigator'
-import HomeTabs from './MainTabNavigator'
+import MainTabs from './MainTabNavigator'
 
 const HomeStack = createStackNavigator()
 
@@ -21,7 +21,7 @@ const HomeStackScreen = () => {
       <HomeStack.Screen
         name="MainTabs"
         options={{ headerShown: false }}
-        component={HomeTabs}
+        component={MainTabs}
       />
       <HomeStack.Screen
         name="LockScreen"

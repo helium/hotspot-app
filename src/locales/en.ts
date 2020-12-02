@@ -472,4 +472,11 @@ export default {
       explorer: 'Global Hotspot Explorer',
     },
   },
+  permissions: {
+    location: {
+      title: 'Location Permission',
+      message:
+        'Helium Wallet needs access to your location for Bluetooth LE discovery.',
+    },
+  },
 }
