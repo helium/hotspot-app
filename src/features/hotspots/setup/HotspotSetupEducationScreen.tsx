@@ -1,53 +1,36 @@
-import React, { useRef, useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
-import { Platform } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import Carousel from 'react-native-snap-carousel'
-import OneSignal from 'react-native-onesignal'
+import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
-import Button from '../../../components/Button'
-import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
+import slides from './hotspotSetupSlides'
 import { wp } from '../../../utils/layout'
-import {
-  EducationNavigationProp,
-  EducationStackParamList,
-} from '../educationTypes'
-import slides from './slides'
 import ProgressBar from '../../../components/ProgressBar'
+import Button from '../../../components/Button'
 import CarouselItem, {
   CarouselItemData,
 } from '../../../components/CarouselItem'
+import {
+  HotspotSetupNavigationProp,
+  HotspotSetupStackParamList,
+} from './hotspotSetupTypes'
 
-type Route = RouteProp<EducationStackParamList, 'HotspotEducationScreen'>
+type Route = RouteProp<
+  HotspotSetupStackParamList,
+  'HotspotSetupEducationScreen'
+>
 
 const HotspotEducationScreen = () => {
   const { t } = useTranslation()
-  const { params: { showButton } = { showButton: true } } = useRoute<Route>()
+  const navigation = useNavigation<HotspotSetupNavigationProp>()
   const carouselRef = useRef<Carousel<CarouselItemData>>(null)
   const [slideIndex, setSlideIndex] = useState(0)
   const [viewedSlides, setViewedSlides] = useState(false)
-  const navigation = useNavigation<EducationNavigationProp>()
+  const { params } = useRoute<Route>()
 
-  const onSnapToItem = (index: number) => {
-    setSlideIndex(index)
-    if (index === slides.length - 1) {
-      setViewedSlides(true)
-    }
-  }
-
-  const navNext = async () => {
-    if (Platform.OS === 'android') {
-      navigation.push('AccountEndSetupScreen')
-    }
-
-    const deviceState = await OneSignal.getDeviceState()
-    if (!deviceState.isSubscribed) {
-      navigation.push('EnableNotificationsScreen')
-    } else {
-      navigation.push('AccountEndSetupScreen')
-    }
-  }
+  const navNext = () => navigation.push('HotspotSetupDiagnosticsScreen', params)
 
   const renderButton = () => {
     if (viewedSlides) {
@@ -72,23 +55,30 @@ const HotspotEducationScreen = () => {
     )
   }
 
+  const onSnapToItem = (index: number) => {
+    setSlideIndex(index)
+    if (index === slides.length - 1) {
+      setViewedSlides(true)
+    }
+  }
   const renderItem = ({ item }: { item: CarouselItemData }) => (
     <CarouselItem item={item} />
   )
 
   return (
-    <SafeAreaBox
+    <BackScreen
       backgroundColor="mainBackground"
-      flex={1}
       paddingBottom="s"
-      justifyContent="space-evenly"
+      justifyContent="space-between"
     >
       <Text
         variant="header"
         textAlign="center"
         padding={{ smallPhone: 'm', phone: 'l' }}
+        numberOfLines={2}
+        adjustsFontSizeToFit
       >
-        {t('learn.title')}
+        {t('hotspot_setup.education.title')}
       </Text>
 
       <Box flex={1} maxHeight={500}>
@@ -109,9 +99,9 @@ const HotspotEducationScreen = () => {
         />
       </Box>
       <Box flexDirection="column" justifyContent="space-between">
-        {showButton && renderButton()}
+        {renderButton()}
       </Box>
-    </SafeAreaBox>
+    </BackScreen>
   )
 }
 

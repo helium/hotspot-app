@@ -19,7 +19,7 @@ const HomeStackScreen = () => {
       }}
     >
       <HomeStack.Screen
-        name="HomeTabs"
+        name="MainTabs"
         options={{ headerShown: false }}
         component={HomeTabs}
       />

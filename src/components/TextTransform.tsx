@@ -8,6 +8,7 @@ import { Font, Theme } from '../theme/theme'
 const components = {
   b: <Text fontFamily={Font.main.semiBold} />,
   red: <Text color="red" />,
+  blue: <Text color="blue" />,
 }
 
 type Props = TextProps<Theme> & { i18nKey: string }

@@ -6,6 +6,7 @@ const palette = {
   white: '#FFF',
   blueGray: '#33414E',
   grayBlue: '#3D5A73',
+  blue: '#4BABFF',
   lighterGray: '#465666',
   lightGray: '#DADADA',
   midGray: '#81909F',

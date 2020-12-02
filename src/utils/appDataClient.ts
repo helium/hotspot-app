@@ -5,11 +5,10 @@ const client = new Client()
 
 export const fetchHotspots = async () => {
   const address = await getString('address')
-  if (!address) return
+  if (!address) return []
 
-  const newHotspotList = await client.account(address).hotspots.listJson()
-  const hotspots = await newHotspotList.take(1000)
-  return hotspots
+  const newHotspotList = await client.account(address).hotspots.list()
+  return newHotspotList.takeJSON(1000)
 }
 
 export default client

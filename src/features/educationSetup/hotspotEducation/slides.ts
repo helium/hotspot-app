@@ -1,12 +1,6 @@
-import { ImageSourcePropType } from 'react-native'
+import { CarouselItemData } from '../../../components/CarouselItem'
 
-export type SlideItem = {
-  title: string
-  desc: string
-  image: ImageSourcePropType
-}
-
-export const slides: Array<SlideItem> = [
+const slides: Array<CarouselItemData> = [
   {
     title: 'learn.slides.0.title',
     desc: 'learn.slides.0.body',
@@ -33,3 +27,5 @@ export const slides: Array<SlideItem> = [
     image: require('../../../assets/images/slide5.png'),
   },
 ]
+
+export default slides

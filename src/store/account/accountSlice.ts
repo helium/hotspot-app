@@ -13,8 +13,15 @@ type AccountData = { hotspots: Hotspot[] }
 export const fetchData = createAsyncThunk<AccountData>(
   'account/fetchData',
   async () => {
-    const data = await Promise.all([fetchHotspots()])
-    return { hotspots: data[0] || [] }
+    try {
+      const data = await Promise.all([fetchHotspots()])
+      console.log(data[0])
+      return { hotspots: data[0] || [] }
+    } catch (e) {
+      console.log(e)
+    }
+
+    return { hotspots: [] }
   },
 )
 
