@@ -77,7 +77,6 @@
     "react-i18next": "^11.7.3",
     "react-native": "0.63.3",
     "react-native-ble-plx": "^2.0.2",
-    "react-native-bluetooth-status": "^1.5.1",
     "react-native-config": "^1.4.1",
     "react-native-device-info": "^7.1.0",
     "react-native-gesture-handler": "^1.8.0",

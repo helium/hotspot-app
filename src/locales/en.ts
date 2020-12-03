@@ -204,7 +204,7 @@ export default {
       p_1:
         'To better serve your support needs, we have enabled diagnostic support on Hotspots until a request to opt-out has been processed. Diagnostic Support can be manually enabled in the app at a later time.',
       p_2:
-        'Diagnostic Support helps identify issues with low scores, poor internet, and other firmware issues, ensuring your Hotspot earns %{ticker}.',
+        'Diagnostic Support helps identify issues with low scores, poor internet, and other firmware issues, ensuring your Hotspot earns HNT.',
       p_3:
         'Helium will never have access to your private keys that are stored in a secure hardware-encrypted cryptographic chip.',
       p_4:

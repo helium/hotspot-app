@@ -6,12 +6,16 @@ import HotspotSetupDiagnosticsScreen from './HotspotSetupDiagnosticsScreen'
 import HotspotSetupPowerScreen from './HotspotSetupPowerScreen'
 import HotspotSetupPairingScreen from './HotspotSetupPairingScreen'
 import HotspotScanningScreen from './HotspotScanningScreen'
+import defaultScreenOptions from '../../../navigation/defaultScreenOptions'
 
 const HotspotSetupStack = createStackNavigator()
 
 const HotspotSetup = () => {
   return (
-    <HotspotSetupStack.Navigator headerMode="none">
+    <HotspotSetupStack.Navigator
+      headerMode="none"
+      screenOptions={defaultScreenOptions}
+    >
       <HotspotSetupStack.Screen
         name="HotspotSetupSelectionScreen"
         component={HotspotSetupSelectionScreen}

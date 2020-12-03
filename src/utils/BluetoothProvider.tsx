@@ -5,6 +5,7 @@ import useBluetooth from './bluetooth/useBluetooth'
 const initialState = {
   getState: async () => State.Unknown,
   enable: async () => {},
+  scanForHotspots: async () => {},
 }
 
 const BleContext = createContext<ReturnType<typeof useBluetooth>>(initialState)

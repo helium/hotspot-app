@@ -53,7 +53,10 @@ const Button = ({
       return 'primaryButtonText'
     }
 
-    return 'secondaryText'
+    if (variant === 'secondary') {
+      return 'secondaryText'
+    }
+    return 'white'
   }
 
   return (
