@@ -1,7 +1,7 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
+import { Linking, Platform } from 'react-native'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { useBluetoothStatus } from 'react-native-bluetooth-status'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
@@ -11,6 +11,8 @@ import {
   HotspotSetupStackParamList,
 } from './hotspotSetupTypes'
 import Bluetooth from '../../../assets/images/bluetooth.svg'
+import { useBluetoothContext } from '../../../utils/BluetoothProvider'
+import useAlert from '../../../utils/useAlert'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotSetupPowerScreen'>
 
@@ -19,15 +21,52 @@ const HotspotSetupPairingScreen = () => {
   const {
     params: { hotspotType },
   } = useRoute<Route>()
-  const [btStatus, isPending, setBluetooth] = useBluetoothStatus()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
+  const { getState, enable } = useBluetoothContext()
+  const { showOKCancelAlert } = useAlert()
+
   const subtitle1 = t(
     `hotspot_setup.pair.${hotspotType === 'RAK' ? 'rak_' : ''}subtitle_1`,
   )
   const subtitle2 = t(
     `hotspot_setup.pair.${hotspotType === 'RAK' ? 'rak_' : ''}subtitle_2`,
   )
-  console.log(btStatus, isPending, setBluetooth)
+
+  const navNext = () =>
+    navigation.push('HotspotScanningScreen', { hotspotType })
+
+  const checkBluetooth = async () => {
+    const state = await getState()
+
+    if (state === 'PoweredOn') navNext()
+
+    if (Platform.OS === 'ios') {
+      if (state === 'PoweredOff') {
+        await showOKCancelAlert(
+          (decision) => {
+            if (decision) Linking.openURL('App-Prefs:Bluetooth')
+          },
+          'hotspot_setup.pair.alert_ble_off.title',
+          'hotspot_setup.pair.alert_ble_off.body',
+          'generic.go_to_settings',
+        )
+      } else {
+        await showOKCancelAlert(
+          (decision) => {
+            if (decision) Linking.openURL('app-settings:')
+          },
+          'hotspot_setup.pair.alert_ble_off.title',
+          'hotspot_setup.pair.alert_ble_off.body',
+          'generic.go_to_settings',
+        )
+      }
+    }
+    if (Platform.OS === 'android') {
+      await enable()
+      navNext()
+    }
+  }
+
   return (
     <BackScreen backgroundColor="mainBackground" padding="l">
       <Box flex={1} justifyContent="center" alignItems="center">
@@ -49,7 +88,12 @@ const HotspotSetupPairingScreen = () => {
         {hotspotType === 'Helium' && <Bluetooth />}
       </Box>
 
-      <Button variant="secondary" mode="contained" title={t('generic.next')} />
+      <Button
+        variant="secondary"
+        mode="contained"
+        title={t('generic.next')}
+        onPress={checkBluetooth}
+      />
 
       <Button
         marginHorizontal="m"

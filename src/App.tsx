@@ -13,6 +13,7 @@ import { useAppDispatch } from './store/store'
 import userSlice from './store/user/userSlice'
 import { RootState } from './store/rootReducer'
 import { fetchData } from './store/account/accountSlice'
+import BluetoothProvider from './utils/BluetoothProvider'
 
 const App = () => {
   const dispatch = useAppDispatch()
@@ -69,14 +70,16 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <SafeAreaProvider>
-        {/* TODO: Will need to adapt status bar for light/dark modes */}
-        {Platform.OS === 'ios' && <StatusBar barStyle="light-content" />}
-        {Platform.OS === 'android' && (
-          <StatusBar translucent backgroundColor="transparent" />
-        )}
-        <NavigationRoot />
-      </SafeAreaProvider>
+      <BluetoothProvider>
+        <SafeAreaProvider>
+          {/* TODO: Will need to adapt status bar for light/dark modes */}
+          {Platform.OS === 'ios' && <StatusBar barStyle="light-content" />}
+          {Platform.OS === 'android' && (
+            <StatusBar translucent backgroundColor="transparent" />
+          )}
+          <NavigationRoot />
+        </SafeAreaProvider>
+      </BluetoothProvider>
     </ThemeProvider>
   )
 }

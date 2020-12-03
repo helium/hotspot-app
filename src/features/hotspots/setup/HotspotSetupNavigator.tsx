@@ -5,6 +5,7 @@ import HotspotSetupEducationScreen from './HotspotSetupEducationScreen'
 import HotspotSetupDiagnosticsScreen from './HotspotSetupDiagnosticsScreen'
 import HotspotSetupPowerScreen from './HotspotSetupPowerScreen'
 import HotspotSetupPairingScreen from './HotspotSetupPairingScreen'
+import HotspotScanningScreen from './HotspotScanningScreen'
 
 const HotspotSetupStack = createStackNavigator()
 
@@ -30,6 +31,10 @@ const HotspotSetup = () => {
       <HotspotSetupStack.Screen
         name="HotspotSetupPairingScreen"
         component={HotspotSetupPairingScreen}
+      />
+      <HotspotSetupStack.Screen
+        name="HotspotScanningScreen"
+        component={HotspotScanningScreen}
       />
     </HotspotSetupStack.Navigator>
   )

@@ -1,5 +1,6 @@
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React, { useEffect } from 'react'
+import { Platform } from 'react-native'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
@@ -30,7 +31,9 @@ const HotspotSetupPowerScreen = () => {
   )
 
   useEffect(() => {
-    requestLocationPermission()
+    if (Platform.OS === 'android') {
+      requestLocationPermission()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

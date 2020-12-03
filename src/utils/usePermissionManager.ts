@@ -1,36 +1,19 @@
 import { LOCATION, getAsync, askAsync, PermissionType } from 'expo-permissions'
 import { useTranslation } from 'react-i18next'
-import { Alert } from 'react-native'
+import { useAppDispatch } from '../store/store'
+import userSlice from '../store/user/userSlice'
+import useAlert from './useAlert'
 
 const usePermissionManager = () => {
   const { t } = useTranslation()
+  const { showOKCancelAlert } = useAlert()
+  const dispatch = useAppDispatch()
 
   const requestPermission = async (type: PermissionType) => {
-    // TODO: set is redux isAskingForPermission to true
+    dispatch(userSlice.actions.requestingPermission(true))
     const { status } = await askAsync(type)
-    // TODO: set is redux isAskingForPermission to false
+    dispatch(userSlice.actions.requestingPermission(false))
     return status === 'granted'
-  }
-
-  const showOKCancelAlert = (
-    callback: (decision: boolean) => void,
-    titleKey: string,
-    messageKey?: string,
-  ) => {
-    const title = t(titleKey)
-    const message = messageKey ? t(messageKey) : undefined
-    Alert.alert(title, message, [
-      {
-        text: t('generic.cancel'),
-        style: 'cancel',
-        onPress: () => callback(false),
-      },
-      {
-        text: t('generic.ok'),
-        style: 'destructive',
-        onPress: () => callback(true),
-      },
-    ])
   }
 
   const requestLocationPermission = async () => {
