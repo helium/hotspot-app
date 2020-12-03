@@ -10,6 +10,8 @@ import { RootState } from '../../store/rootReducer'
 import { useColors } from '../../theme/themeHooks'
 import Box from '../../components/Box'
 import StatsScreen from '../../features/stats/StatsScreen'
+import { useAppDispatch } from '../../store/store'
+import userSlice from '../../store/user/userSlice'
 
 const MainTab = createBottomTabNavigator()
 
@@ -17,13 +19,21 @@ const MainTabs = () => {
   const { secondaryBackground } = useColors()
   const navigation = useNavigation<RootNavigationProp>()
   const {
-    user: { isLocked },
+    user: { isLocked, isSettingUpHotspot },
   } = useSelector((state: RootState) => state)
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     if (!isLocked) return
     navigation.push('LockScreen', { requestType: 'unlock', lock: true })
   }, [isLocked, navigation])
+
+  useEffect(() => {
+    if (!isSettingUpHotspot) return
+
+    dispatch(userSlice.actions.startHotspotSetup())
+    navigation.push('HotspotSetup')
+  }, [isSettingUpHotspot, dispatch, navigation])
 
   if (isLocked) return <Box backgroundColor="secondaryBackground" flex={1} />
 

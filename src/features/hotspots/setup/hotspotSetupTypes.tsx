@@ -1,6 +1,5 @@
 import { StackNavigationProp } from '@react-navigation/stack'
-
-export type HotspotType = 'Helium' | 'RAK'
+import { HotspotType } from '../../../utils/hotspot'
 
 export type HotspotSetupStackParamList = {
   HotspotSetupSelectionScreen: undefined

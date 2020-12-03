@@ -87,6 +87,9 @@ const userSlice = createSlice({
       state.isEducated = true
       state.isSettingUpHotspot = true
     },
+    startHotspotSetup: (state) => {
+      state.isSettingUpHotspot = false
+    },
     signOut: () => {
       signOut()
       return { ...initialState, isRestored: true }

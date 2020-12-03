@@ -24,13 +24,13 @@ const HomeStackScreen = () => {
         component={MainTabs}
       />
       <HomeStack.Screen
-        name="LockScreen"
-        component={LockScreen}
+        name="HotspotSetup"
+        component={HotspotSetup}
         options={{ headerShown: false }}
       />
       <HomeStack.Screen
-        name="HotspotSetup"
-        component={HotspotSetup}
+        name="LockScreen"
+        component={LockScreen}
         options={{ headerShown: false }}
       />
     </HomeStack.Navigator>
