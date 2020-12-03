@@ -247,11 +247,8 @@ export default {
     },
     ble_select: {
       title: 'Nearby Hotspots',
-      hotspots_found: {
-        one: '1 Hotspot found.',
-        other: '%{count} Hotspots found.',
-        zero: '0 Hotspots found.',
-      },
+      hotspots_found: '{{count}} Hotspot found.',
+      hotspots_found_plural: '{{count}} Hotspots found.',
       subtitle: 'Select your Hotspot to continue.',
     },
     ble_error: {

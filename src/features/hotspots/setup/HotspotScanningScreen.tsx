@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Animated } from 'react-native'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
 import SafeAreaBox from '../../../components/SafeAreaBox'
@@ -8,12 +9,21 @@ import Text from '../../../components/Text'
 import { hp, wp } from '../../../utils/layout'
 import Phone from '../../../assets/images/phone.svg'
 import { useBluetoothContext } from '../../../utils/BluetoothProvider'
+import {
+  HotspotSetupNavigationProp,
+  HotspotSetupStackParamList,
+} from './hotspotSetupTypes'
+
+type Route = RouteProp<HotspotSetupStackParamList, 'HotspotScanningScreen'>
 
 const HotspotScanningScreen = () => {
   const rotateAnim = useRef(new Animated.Value(0))
   const opacityAnim = useRef(new Animated.Value(0))
   const { t } = useTranslation()
   const { scanForHotspots } = useBluetoothContext()
+
+  const { params } = useRoute<Route>()
+  const navigation = useNavigation<HotspotSetupNavigationProp>()
 
   useEffect(() => {
     Animated.parallel([
@@ -40,7 +50,11 @@ const HotspotScanningScreen = () => {
   }, [])
 
   useEffect(() => {
-    scanForHotspots()
+    const scan = async () => {
+      await scanForHotspots(6000)
+      navigation.replace('HotspotSetupBluetoothScreen', params)
+    }
+    scan()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -90,7 +104,7 @@ const HotspotScanningScreen = () => {
           marginBottom="m"
           flex={1}
           justifyContent="flex-end"
-          // onPress={this.navBack}
+          onPress={navigation.goBack}
           variant="primary"
           mode="text"
           title={t('hotspot_setup.ble_scan.cancel')}

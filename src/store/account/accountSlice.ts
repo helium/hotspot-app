@@ -15,11 +15,8 @@ export const fetchData = createAsyncThunk<AccountData>(
   async () => {
     try {
       const data = await Promise.all([fetchHotspots()])
-      console.log(data[0])
       return { hotspots: data[0] || [] }
-    } catch (e) {
-      console.log(e)
-    }
+    } catch (e) {}
 
     return { hotspots: [] }
   },
