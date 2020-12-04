@@ -8,11 +8,11 @@ import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { hp, wp } from '../../../utils/layout'
 import Phone from '../../../assets/images/phone.svg'
-import { useBluetoothContext } from '../../../utils/BluetoothProvider'
 import {
   HotspotSetupNavigationProp,
   HotspotSetupStackParamList,
 } from './hotspotSetupTypes'
+import { useHotspotContext } from '../../../providers/HotspotProvider'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotScanningScreen'>
 
@@ -20,7 +20,7 @@ const HotspotScanningScreen = () => {
   const rotateAnim = useRef(new Animated.Value(0))
   const opacityAnim = useRef(new Animated.Value(0))
   const { t } = useTranslation()
-  const { scanForHotspots } = useBluetoothContext()
+  const { scanForHotspots } = useHotspotContext()
 
   const { params } = useRoute<Route>()
   const navigation = useNavigation<HotspotSetupNavigationProp>()

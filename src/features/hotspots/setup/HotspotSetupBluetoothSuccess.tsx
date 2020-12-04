@@ -4,16 +4,16 @@ import { Device } from 'react-native-ble-plx'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
 import Text from '../../../components/Text'
-import { useBluetoothContext } from '../../../utils/BluetoothProvider'
+import { useHotspotContext } from '../../../providers/HotspotProvider'
 
 const HotspotSetupBluetoothSuccess = () => {
   const { t } = useTranslation()
-  const { availableHotspots } = useBluetoothContext()
+  const { availableHotspots, connectAndConfigHotspot } = useHotspotContext()
+
   const keys = Object.keys(availableHotspots)
-  const { connectToHotspot } = useBluetoothContext()
 
   const handleConnect = (hotspot: Device) => {
-    connectToHotspot(hotspot)
+    connectAndConfigHotspot(hotspot)
   }
 
   return (

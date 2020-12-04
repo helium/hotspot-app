@@ -1,5 +1,5 @@
 import { StackNavigationProp } from '@react-navigation/stack'
-import { HotspotType } from '../../../utils/hotspot'
+import { HotspotType } from '../../../utils/useHotspot'
 
 export type HotspotSetupStackParamList = {
   HotspotSetupSelectionScreen: undefined
