@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "@helium/crypto-react-native": "^3.5.0",
-    "@helium/http": "file:../helium-js/packages/http/helium-http-v3.6.15.tgz",
+    "@helium/http": "^3.8.0",
     "@react-native-community/async-storage": "^1.12.1",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-native-community/picker": "^1.8.1",
