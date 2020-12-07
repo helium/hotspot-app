@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useRef } from 'react'
 import { BleManager, Characteristic, Device } from 'react-native-ble-plx'
 import { fromBs64 } from './base64'
 import sleep from './sleep'
@@ -14,16 +14,22 @@ export type HotspotCharacteristic =
   | typeof WIFI_SSID_UUID
 
 const useBluetooth = () => {
-  const [manager, setManager] = useState<BleManager | null>(null)
+  const instanceRef = useRef<BleManager | null>(null)
 
-  useEffect(() => {
-    setManager(new BleManager())
-  }, [])
+  function getBleManager() {
+    const instance = instanceRef.current
+    if (instance !== null) {
+      return instance
+    }
+    const newInstance = new BleManager()
+    instanceRef.current = newInstance
+    return newInstance
+  }
 
-  const getState = async () => manager?.state()
+  const getState = async () => getBleManager().state()
 
   const enable = async () => {
-    manager?.enable()
+    getBleManager().enable()
   }
 
   const connect = async (hotspotDevice: Device): Promise<Device | undefined> =>
@@ -32,7 +38,7 @@ const useBluetooth = () => {
     })
 
   const scan = async (ms: number, callback: (device: Device) => void) => {
-    manager?.startDeviceScan(
+    getBleManager().startDeviceScan(
       [SERVICE_UUID],
       { allowDuplicates: false },
       (error, device) => {
@@ -49,7 +55,7 @@ const useBluetooth = () => {
 
     await sleep(ms)
 
-    manager?.stopDeviceScan()
+    getBleManager().stopDeviceScan()
   }
 
   const readCharacteristic = async (
