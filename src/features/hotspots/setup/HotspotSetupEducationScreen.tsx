@@ -1,13 +1,12 @@
 import React, { useState, useRef } from 'react'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
-import Carousel from 'react-native-snap-carousel'
+import Carousel, { Pagination } from 'react-native-snap-carousel'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import slides from './hotspotSetupSlides'
 import { wp } from '../../../utils/layout'
-import ProgressBar from '../../../components/ProgressBar'
 import Button from '../../../components/Button'
 import CarouselItem, {
   CarouselItemData,
@@ -16,6 +15,7 @@ import {
   HotspotSetupNavigationProp,
   HotspotSetupStackParamList,
 } from './hotspotSetupTypes'
+import { useColors, useSpacing } from '../../../theme/themeHooks'
 
 type Route = RouteProp<
   HotspotSetupStackParamList,
@@ -29,6 +29,8 @@ const HotspotEducationScreen = () => {
   const [slideIndex, setSlideIndex] = useState(0)
   const [viewedSlides, setViewedSlides] = useState(false)
   const { params } = useRoute<Route>()
+  const spacing = useSpacing()
+  const colors = useColors()
 
   const navNext = () => navigation.push('HotspotSetupDiagnosticsScreen', params)
 
@@ -37,7 +39,6 @@ const HotspotEducationScreen = () => {
       return (
         <Button
           onPress={navNext}
-          marginHorizontal="m"
           variant="primary"
           mode="contained"
           title={t('learn.next')}
@@ -46,11 +47,10 @@ const HotspotEducationScreen = () => {
     }
     return (
       <Button
-        marginHorizontal="m"
         variant="secondary"
         mode="text"
         onPress={navNext}
-        title={t('generic.skip')}
+        title={t('generic.skip_for_now')}
       />
     )
   }
@@ -68,20 +68,20 @@ const HotspotEducationScreen = () => {
   return (
     <BackScreen
       backgroundColor="primaryBackground"
-      paddingBottom="s"
-      justifyContent="space-between"
+      padding="none"
+      justifyContent="space-evenly"
     >
       <Text
         variant="header"
-        textAlign="center"
-        padding={{ smallPhone: 'm', phone: 'l' }}
         numberOfLines={2}
+        paddingHorizontal="lx"
+        marginVertical={{ smallPhone: 's', phone: 'lx' }}
         adjustsFontSizeToFit
       >
         {t('hotspot_setup.education.title')}
       </Text>
 
-      <Box flex={1} maxHeight={500}>
+      <Box flex={1} maxHeight={473}>
         <Carousel
           layout="default"
           ref={carouselRef}
@@ -93,12 +93,21 @@ const HotspotEducationScreen = () => {
           inactiveSlideScale={1}
           onSnapToItem={(i) => onSnapToItem(i)}
         />
-        <ProgressBar
-          margin={{ phone: 'l', smallPhone: 'm' }}
-          progress={(slideIndex + 1) / slides.length}
+        <Pagination
+          dotsLength={slides.length}
+          activeDotIndex={slideIndex}
+          dotStyle={{
+            width: 6,
+            height: 6,
+            borderRadius: 3,
+            marginHorizontal: spacing.s,
+            backgroundColor: colors.white,
+          }}
+          inactiveDotOpacity={0.4}
+          inactiveDotScale={1}
         />
       </Box>
-      <Box flexDirection="column" justifyContent="space-between">
+      <Box flexDirection="column" marginHorizontal="lx" marginBottom="s">
         {renderButton()}
       </Box>
     </BackScreen>

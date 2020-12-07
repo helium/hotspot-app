@@ -151,7 +151,8 @@ export default {
   },
   hotspot_setup: {
     selection: {
-      title: 'What would you like to add to the network?',
+      title: 'Choose\nyour Hotspot.',
+      subtitle: 'What kind of Hotspot do you wish to add?',
       option_one: 'Helium Hotspot',
       option_two: 'RAK Hotspot Miner',
       third_party_header: 'Other Hotspots',
@@ -167,7 +168,7 @@ export default {
       next: 'Set up Hotspot',
     },
     education: {
-      title: 'Find the ideal spot for your Hotspot',
+      title: 'Placing\nyour Hotspot.',
       cards: [
         {
           title: 'Give me a nice view',
@@ -191,13 +192,6 @@ export default {
         },
       ],
       next: "I've read the guide",
-      generic: {
-        title: 'Find the ideal spot for your Hotspot.',
-        sub_one_accent: 'Position the antenna ',
-        sub_one: 'close to a window with no obstructions. ',
-        sub_two_accent: 'Be mindful of bug screens that may ',
-        sub_two: 'interfere with radio signals.',
-      },
     },
     diagnostics: {
       title: 'Diagnostics Support',

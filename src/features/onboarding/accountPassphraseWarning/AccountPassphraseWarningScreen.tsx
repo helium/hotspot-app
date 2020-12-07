@@ -21,8 +21,13 @@ const AccountPassphraseWarningScreen = () => {
       </Box>
 
       <SafeAreaBox flex={1} flexDirection="column" paddingHorizontal="l">
-        <BackButton onPress={navigation.goBack} />
-        <Text marginTop={{ smallPhone: 's', phone: 'xl' }} variant="header">
+        <BackButton onPress={navigation.goBack} paddingHorizontal="none" />
+        <Text
+          marginTop={{ smallPhone: 's', phone: 'xl' }}
+          variant="header"
+          numberOfLines={2}
+          adjustsFontSizeToFit
+        >
           {t('account_setup.warning.title')}
         </Text>
         <TextTransform

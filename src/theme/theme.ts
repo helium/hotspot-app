@@ -42,13 +42,19 @@ export const Font = {
 const textVariants = {
   header: {
     fontFamily: Font.main.semiBold,
-    fontSize: 34,
-    lineHeight: 42.5,
+    fontSize: 40,
+    lineHeight: 45.5,
     color: 'primaryText',
+  },
+  subtitle: {
+    fontFamily: Font.main.light,
+    fontSize: 19,
+    lineHeight: 26,
+    color: 'purpleLight',
   },
   body: {
     fontFamily: Font.main.regular,
-    fontSize: 16,
+    fontSize: 14,
     lineHeight: 24,
     color: 'primaryText',
   },

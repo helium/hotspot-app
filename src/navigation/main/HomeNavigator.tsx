@@ -1,4 +1,5 @@
 import React from 'react'
+import { Platform } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack'
 import LockScreen from '../../features/lock/LockScreen'
 import defaultScreenOptions from '../defaultScreenOptions'
@@ -15,6 +16,7 @@ const HomeStackScreen = () => {
         if (route.name === 'LockScreen')
           return { ...defaultScreenOptions, gestureEnabled: false }
 
+        if (Platform.OS === 'android') return defaultScreenOptions
         return {}
       }}
     >

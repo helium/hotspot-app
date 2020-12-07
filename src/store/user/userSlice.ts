@@ -36,7 +36,6 @@ const initialState: UserState = {
 type Restore = {
   isBackedUp: boolean
   isEducated: boolean
-  isSettingUpHotspot: boolean
   isPinRequired: boolean
   isPinRequiredForPayment: boolean
   authInterval: number
@@ -49,7 +48,6 @@ export const restoreUser = createAsyncThunk<Restore>(
     const vals = await Promise.all([
       getBoolean('accountBackedUp'),
       getBoolean('isEducated'),
-      getBoolean('isSettingUpHotspot'),
       getBoolean('requirePin'),
       getBoolean('requirePinForPayment'),
       getString('authInterval'),
@@ -57,11 +55,10 @@ export const restoreUser = createAsyncThunk<Restore>(
     return {
       isBackedUp: vals[0],
       isEducated: vals[1],
-      isSettingUpHotspot: vals[2],
-      isPinRequired: vals[3],
-      isPinRequiredForPayment: vals[4],
-      authInterval: vals[5] ? parseInt(vals[5], 10) : 0,
-      isLocked: vals[3],
+      isPinRequired: vals[2],
+      isPinRequiredForPayment: vals[3],
+      authInterval: vals[4] ? parseInt(vals[4], 10) : 0,
+      isLocked: vals[2],
     }
   },
 )
@@ -83,7 +80,6 @@ const userSlice = createSlice({
     },
     setupHotspot: (state) => {
       setItem('isEducated', true)
-      setItem('isSettingUpHotspot', true)
       state.isEducated = true
       state.isSettingUpHotspot = true
     },

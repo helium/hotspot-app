@@ -38,8 +38,6 @@ const HotspotSetupPairingScreen = () => {
   const checkBluetooth = async () => {
     const state = await getState()
 
-    console.log(state)
-
     if (state === 'PoweredOn') {
       navNext()
       return

@@ -9,15 +9,21 @@ import SafeAreaBox from './SafeAreaBox'
 
 type Props = BoxProps<Theme> & { children: React.ReactNode }
 
-const BackScreen = ({ backgroundColor, children, flex, ...rest }: Props) => {
+const BackScreen = ({
+  backgroundColor,
+  children,
+  flex,
+  padding,
+  ...rest
+}: Props) => {
   const navigation = useNavigation()
   return (
     <SafeAreaBox
       backgroundColor={backgroundColor || 'primaryBackground'}
       flex={1}
     >
-      <BackButton paddingHorizontal="l" onPress={navigation.goBack} />
-      <Box flex={flex || 1} {...rest}>
+      <BackButton paddingHorizontal="lx" onPress={navigation.goBack} />
+      <Box padding={padding || 'lx'} flex={flex || 1} {...rest}>
         {children}
       </Box>
     </SafeAreaBox>

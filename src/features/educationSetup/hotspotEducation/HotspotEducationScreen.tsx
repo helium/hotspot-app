@@ -86,6 +86,8 @@ const HotspotEducationScreen = () => {
       <Text
         variant="header"
         textAlign="center"
+        numberOfLines={2}
+        adjustsFontSizeToFit
         padding={{ smallPhone: 'm', phone: 'l' }}
       >
         {t('learn.title')}

@@ -15,13 +15,19 @@ export type CarouselItemData = {
 const CarouselItem = ({ item }: { item: CarouselItemData }) => {
   const { t } = useTranslation()
   return (
-    <Card marginHorizontal="s" variant="elevated" flex={1} overflow="hidden">
+    <Card
+      marginHorizontal="s"
+      variant="elevated"
+      flex={1}
+      overflow="hidden"
+      height={500}
+    >
       <ImageBox source={item.image} width="100%" flex={1} />
       <Box
         backgroundColor="white"
-        flex={1}
         paddingHorizontal="m"
         justifyContent="center"
+        height={175}
       >
         <Text
           variant="bodyBold"
