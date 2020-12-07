@@ -23,7 +23,7 @@ const palette = {
   purpleMain: '#474DFF',
   purpleDark: '#13162E',
 
-  greenPrimary: '#32C48D',
+  greenMain: '#32C48D',
   greenDark: '#13162E',
 }
 
@@ -65,7 +65,7 @@ const textVariants = {
     padding: 8,
   },
   button: {
-    fontFamily: Font.main.semiBold,
+    fontFamily: Font.main.regular,
     color: 'primaryText',
     textAlign: 'center',
     fontSize: 17,
@@ -82,10 +82,10 @@ export const theme = createTheme({
     ...palette,
     primaryBackground: palette.purpleDark,
     cardBackground: palette.white,
-    primaryMain: palette.greenPrimary,
+    primaryMain: palette.purpleMain,
     primaryText: palette.white,
-    primaryButtonText: palette.darkGray,
-    secondaryMain: palette.lightBlue,
+    primaryButtonText: palette.white,
+    secondaryMain: palette.greenMain,
     secondaryText: palette.steelGray,
     disabled: palette.lighterGray,
     inputPlaceholderText: palette.lighterGray,
@@ -144,9 +144,13 @@ export const theme = createTheme({
   },
   textVariants: {
     ...textVariants,
+    buttonLight: { ...textVariants.button, fontFamily: Font.main.light },
+    buttonMedium: { ...textVariants.button, fontFamily: Font.main.medium },
+    buttonBold: { ...textVariants.button, fontFamily: Font.main.semiBold },
     bodyLight: { ...textVariants.body, fontFamily: Font.main.light },
     bodyMedium: { ...textVariants.body, fontFamily: Font.main.medium },
     bodyBold: { ...textVariants.body, fontFamily: Font.main.semiBold },
+    subtitleBold: { ...textVariants.subtitle, fontFamily: Font.main.semiBold },
     bodyMono: { ...textVariants.body, fontFamily: Font.mono.regular },
   },
   inputVariants: {

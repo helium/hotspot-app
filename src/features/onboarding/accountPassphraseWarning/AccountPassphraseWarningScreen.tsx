@@ -46,7 +46,7 @@ const AccountPassphraseWarningScreen = () => {
             width="100%"
             marginBottom="l"
             onPress={() => navigation.push('AccountPassphraseGeneration')}
-            title={t('account_setup.warning.understand')}
+            title={t('generic.understand')}
           />
         </Box>
       </SafeAreaBox>

@@ -13,6 +13,7 @@ const HotspotsScreen = () => {
     <SafeAreaBox
       backgroundColor="primaryBackground"
       flex={1}
+      padding="lx"
       justifyContent="space-evenly"
       alignContent="center"
       flexDirection="column"

@@ -3,16 +3,14 @@ import { Platform } from 'react-native'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import BackScreen from '../../../components/BackScreen'
-import Box from '../../../components/Box'
 import Button from '../../../components/Button'
 import Text from '../../../components/Text'
 import {
   HotspotSetupNavigationProp,
   HotspotSetupStackParamList,
 } from './hotspotSetupTypes'
-import Power from '../../../assets/images/power.svg'
-import RakFront from '../../../assets/images/rakFront.svg'
 import usePermissionManager from '../../../utils/usePermissionManager'
+import Lightning from '../../../assets/images/lightning.svg'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotSetupPowerScreen'>
 
@@ -38,41 +36,43 @@ const HotspotSetupPowerScreen = () => {
   }, [])
 
   return (
-    <BackScreen backgroundColor="primaryBackground" padding="l">
-      <Box flex={1} justifyContent="center" alignItems="center">
-        <Text
-          variant="header"
-          numberOfLines={2}
-          adjustsFontSizeToFit
-          marginBottom="m"
-          textAlign="center"
-        >
-          {t('hotspot_setup.power.title')}
-        </Text>
-        <Text marginBottom="s" variant="bodyLight" textAlign="center">
-          {subtitle1}
-        </Text>
-        <Text marginBottom="s" variant="bodyLight" textAlign="center">
-          {subtitle2}
-        </Text>
-        {hotspotType === 'Helium' && <Power />}
-        {hotspotType === 'RAK' && <RakFront />}
-      </Box>
-
+    <BackScreen
+      backgroundColor="primaryBackground"
+      padding="lx"
+      alignItems="center"
+      justifyContent="flex-end"
+    >
+      <Lightning />
+      <Text
+        marginTop="xl"
+        variant="header"
+        numberOfLines={2}
+        adjustsFontSizeToFit
+        marginBottom="l"
+        textAlign="center"
+      >
+        {t('hotspot_setup.power.title')}
+      </Text>
+      <Text
+        marginBottom="lx"
+        variant="subtitleBold"
+        textAlign="center"
+        color="white"
+      >
+        {subtitle1}
+      </Text>
+      <Text marginBottom="xl" variant="subtitle" textAlign="center">
+        {subtitle2}
+      </Text>
       <Button
+        marginTop="xxl"
+        width="100%"
         variant="secondary"
         mode="contained"
         title={t('generic.next')}
         onPress={() =>
           navigation.push('HotspotSetupPairingScreen', { hotspotType })
         }
-      />
-
-      <Button
-        marginHorizontal="m"
-        variant="secondary"
-        mode="text"
-        title={t('generic.need_help')}
       />
     </BackScreen>
   )

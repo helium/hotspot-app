@@ -3,7 +3,6 @@ import { Linking, Platform } from 'react-native'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import BackScreen from '../../../components/BackScreen'
-import Box from '../../../components/Box'
 import Button from '../../../components/Button'
 import Text from '../../../components/Text'
 import {
@@ -71,38 +70,41 @@ const HotspotSetupPairingScreen = () => {
   }
 
   return (
-    <BackScreen backgroundColor="primaryBackground" padding="l">
-      <Box flex={1} justifyContent="center" alignItems="center">
-        <Text
-          variant="header"
-          numberOfLines={2}
-          adjustsFontSizeToFit
-          marginBottom="m"
-          textAlign="center"
-        >
-          {t('hotspot_setup.pair.title')}
-        </Text>
-        <Text marginBottom="s" variant="bodyLight" textAlign="center">
-          {subtitle1}
-        </Text>
-        <Text marginBottom="s" variant="bodyLight" textAlign="center">
-          {subtitle2}
-        </Text>
-        {hotspotType === 'Helium' && <Bluetooth />}
-      </Box>
-
+    <BackScreen
+      backgroundColor="primaryBackground"
+      padding="lx"
+      alignItems="center"
+      justifyContent="flex-end"
+    >
+      <Bluetooth />
+      <Text
+        marginTop="xl"
+        variant="header"
+        numberOfLines={2}
+        adjustsFontSizeToFit
+        marginBottom="l"
+        textAlign="center"
+      >
+        {t('hotspot_setup.pair.title')}
+      </Text>
+      <Text
+        marginBottom="lx"
+        variant="subtitleBold"
+        textAlign="center"
+        color="white"
+      >
+        {subtitle1}
+      </Text>
+      <Text marginBottom="xl" variant="subtitle" textAlign="center">
+        {subtitle2}
+      </Text>
       <Button
-        variant="secondary"
+        marginTop="xxl"
+        width="100%"
+        variant="primary"
         mode="contained"
-        title={t('generic.next')}
+        title={t('hotspot_setup.pair.scan')}
         onPress={checkBluetooth}
-      />
-
-      <Button
-        marginHorizontal="m"
-        variant="secondary"
-        mode="text"
-        title={t('generic.need_help')}
       />
     </BackScreen>
   )

@@ -7,7 +7,6 @@ import Button from '../../../components/Button'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { hp, wp } from '../../../utils/layout'
-import Phone from '../../../assets/images/phone.svg'
 import {
   HotspotSetupNavigationProp,
   HotspotSetupStackParamList,
@@ -86,30 +85,25 @@ const HotspotScanningScreen = () => {
           }}
         />
       </Box>
-      <Box flex={1} />
-      <Box alignItems="center">
-        <Phone />
-      </Box>
-      <Box flex={1} alignItems="center">
+      <Box flex={1} justifyContent="flex-end">
         <Text
-          variant="header"
+          variant="bodyLight"
           numberOfLines={1}
           adjustsFontSizeToFit
-          margin="s"
+          textAlign="center"
         >
           {t('hotspot_setup.ble_scan.title')}
         </Text>
-        <Text variant="bodyLight">{t('hotspot_setup.ble_scan.subtitle')}</Text>
-        <Button
-          marginBottom="m"
-          flex={1}
-          justifyContent="flex-end"
-          onPress={navigation.goBack}
-          variant="primary"
-          mode="text"
-          title={t('hotspot_setup.ble_scan.cancel')}
-        />
       </Box>
+      <Button
+        marginBottom="m"
+        flex={1}
+        justifyContent="flex-end"
+        onPress={navigation.goBack}
+        variant="primary"
+        mode="text"
+        title={t('hotspot_setup.ble_scan.cancel')}
+      />
     </SafeAreaBox>
   )
 }

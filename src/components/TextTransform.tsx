@@ -9,6 +9,7 @@ const components = {
   b: <Text fontFamily={Font.main.semiBold} />,
   red: <Text color="red" />,
   blue: <Text color="blue" />,
+  white: <Text color="white" />,
 }
 
 type Props = TextProps<Theme> & { i18nKey: string }

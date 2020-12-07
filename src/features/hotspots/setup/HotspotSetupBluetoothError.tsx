@@ -18,7 +18,7 @@ const HotspotSetupBluetoothError = () => {
   const { params } = useRoute<Route>()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
   return (
-    <Box flex={1} margin="l">
+    <Box flex={1}>
       <Text
         margin="m"
         variant="header"

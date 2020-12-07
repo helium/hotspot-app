@@ -10,6 +10,7 @@ import {
   HotspotSetupNavigationProp,
   HotspotSetupStackParamList,
 } from './hotspotSetupTypes'
+import Clipboard from '../../../assets/images/clipboard.svg'
 
 type Route = RouteProp<
   HotspotSetupStackParamList,
@@ -24,36 +25,28 @@ const HotspotSetupDiagnosticsScreen = () => {
     <BackScreen
       backgroundColor="primaryBackground"
       paddingBottom="s"
-      paddingHorizontal="xl"
-      justifyContent="space-between"
+      paddingHorizontal="lx"
     >
-      <Text
-        variant="header"
-        textAlign="center"
-        numberOfLines={1}
-        adjustsFontSizeToFit
-        marginVertical="l"
-      >
-        {t('hotspot_setup.diagnostics.title')}
-      </Text>
       <ScrollView>
-        <Text variant="bodyLight">{t('hotspot_setup.diagnostics.p_1')}</Text>
-        <Text variant="bodyLight" marginTop="m">
-          {t('hotspot_setup.diagnostics.p_2')}
-        </Text>
-        <Text variant="bodyLight" marginTop="m">
-          {t('hotspot_setup.diagnostics.p_3')}
+        <Clipboard />
+        <Text
+          variant="header"
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          marginVertical="l"
+        >
+          {t('hotspot_setup.diagnostics.title')}
         </Text>
         <TextTransform
-          variant="bodyLight"
+          variant="subtitle"
           marginTop="m"
-          i18nKey={t('hotspot_setup.diagnostics.p_4')}
+          i18nKey={t('hotspot_setup.diagnostics.p_1')}
         />
       </ScrollView>
       <Button
-        variant="secondary"
+        variant="primary"
         mode="contained"
-        title={t('generic.next')}
+        title={t('generic.understand')}
         onPress={() => navigation.push('HotspotSetupPowerScreen', params)}
       />
     </BackScreen>

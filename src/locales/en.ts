@@ -38,7 +38,6 @@ export default {
         'Your Helium account belongs only to you and is protected by <b>12 unique words</b>.',
       recover:
         "You'll need these words if you need to recover your account or move it to a different phone",
-      understand: 'I Understand',
     },
     generating: 'GENERATING YOUR 12 UNIQUE WORDS',
     passphrase: {
@@ -117,6 +116,7 @@ export default {
     next: "I've read the guide",
   },
   generic: {
+    understand: 'I Understand',
     blocks: 'Blocks',
     active: 'Active',
     skip: 'Skip',
@@ -194,33 +194,26 @@ export default {
       next: "I've read the guide",
     },
     diagnostics: {
-      title: 'Diagnostics Support',
+      title: 'Diagnostics',
       p_1:
-        'To better serve your support needs, we have enabled diagnostic support on Hotspots until a request to opt-out has been processed. Diagnostic Support can be manually enabled in the app at a later time.',
-      p_2:
-        'Diagnostic Support helps identify issues with low scores, poor internet, and other firmware issues, ensuring your Hotspot earns HNT.',
-      p_3:
-        'Helium will never have access to your private keys that are stored in a secure hardware-encrypted cryptographic chip.',
-      p_4:
-        'Diagnostic Support only access the Hotspot and cannot access anything on your network. If you would like to opt-out of diagnostic support, please email <blue>support@helium.com</blue> from the email used to purchase the Hotspot.',
+        '<b><white>Diagnostic support allows Helium to identify issues with your Hotspot in a secure way.</white></b>\n\nHelium will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <blue>support@helium.com</blue> from the email used to purchase the Hotspot.',
     },
     power: {
-      title: 'I Need Power',
-      subtitle_1:
-        'Plug in the provided power adapter into an outlet near a window and screw in the provided antenna on the back of the Hotspot.',
+      title: 'Power Up',
+      subtitle_1: 'Attach the antenna and plug in the provided power adapter.',
       rak_subtitle_1:
         'Plug in the provided power adapter into an outlet near a window.',
       subtitle_2:
-        'The Hotspot is ready when the light goes from yellow to green.',
+        'Your Hotspot will boot up, and its light will become Green when ready.',
       rak_subtitle_2:
         'The RAK Hotspot Miner will show a red LED light once it’s powered on.',
     },
     pair: {
-      title: 'Pair with Me',
+      title: 'Bluetooth',
       subtitle_1:
-        'Press the black button on the side of the Hotspot to pair. The light will turn blue.',
+        'Press the black button on your Hotspot. Its light should turn blue.',
       rak_subtitle_1: 'There is no pairing button on the RAK Hotspot Miner.',
-      subtitle_2: "Make sure your phone's bluetooth is turned on!",
+      subtitle_2: "Ensure your phone's bluetooth is on before proceeding",
       rak_subtitle_2:
         'Bluetooth is automatically enabled for 5 minutes after the RAK Hotspot Miner is powered on.\n\nHotspot can take up to 1 minute to fully boot up.\n\nPress Next to scan.',
       alert_no_permissions: {
@@ -233,10 +226,10 @@ export default {
         body:
           'To start pairing, turn on Bluetooth. Keep Bluetooth on until you finish registration.',
       },
+      scan: 'Scan for my Hotspot',
     },
     ble_scan: {
-      title: 'Scanning...',
-      subtitle: 'Looking for Hotspots near you',
+      title: 'SCANNING FOR HOTSPOTS',
       cancel: 'Cancel Scan',
     },
     ble_select: {

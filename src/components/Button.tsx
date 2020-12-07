@@ -47,16 +47,18 @@ const Button = ({
 
   const getTextColor = (): Colors => {
     if (mode === 'contained') {
-      if (variant === 'secondary') {
-        return 'blueGray'
-      }
       return 'primaryButtonText'
     }
 
     if (variant === 'secondary') {
       return 'secondaryText'
     }
-    return 'white'
+    return 'purpleLight'
+  }
+
+  const getTextVariant = () => {
+    if (mode === 'contained') return 'buttonBold'
+    return 'buttonLight'
   }
 
   return (
@@ -64,7 +66,7 @@ const Button = ({
       <TouchableOpacity onPress={onPress}>
         <Text
           paddingVertical="m"
-          variant="button"
+          variant={getTextVariant()}
           color={getTextColor()}
           style={textStyle}
         >

@@ -17,7 +17,7 @@ const HotspotSetupBluetoothSuccess = () => {
   }
 
   return (
-    <Box margin="l">
+    <Box>
       <Text
         variant="header"
         textAlign="center"
