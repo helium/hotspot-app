@@ -37,7 +37,7 @@ const AccountPassphraseGenerationScreen = () => {
       width="100%"
       paddingVertical={{ phone: 'xxl', smallPhone: 'l' }}
       paddingHorizontal="l"
-      backgroundColor="mainBackground"
+      backgroundColor="primaryBackground"
       alignItems="center"
     >
       <Box width="100%" aspectRatio={1}>

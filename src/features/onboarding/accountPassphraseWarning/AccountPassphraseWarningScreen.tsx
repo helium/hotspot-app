@@ -15,7 +15,7 @@ const AccountPassphraseWarningScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<OnboardingNavigationProp>()
   return (
-    <Box flex={1} backgroundColor="mainBackground">
+    <Box flex={1} backgroundColor="primaryBackground">
       <Box position="absolute" right={0}>
         <Lock />
       </Box>

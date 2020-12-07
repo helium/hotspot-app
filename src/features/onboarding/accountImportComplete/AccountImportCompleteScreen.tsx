@@ -56,7 +56,7 @@ const AccountImportCompleteScreen = () => {
   return (
     <SafeAreaBox
       flex={1}
-      backgroundColor="mainBackground"
+      backgroundColor="primaryBackground"
       justifyContent="flex-start"
       padding="xl"
       paddingTop="xxl"

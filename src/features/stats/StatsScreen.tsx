@@ -16,7 +16,7 @@ const StatsScreen = () => {
 
   return (
     <SafeAreaBox
-      backgroundColor="secondaryBackground"
+      backgroundColor="primaryBackground"
       flex={1}
       justifyContent="space-evenly"
       alignContent="center"

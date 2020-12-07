@@ -87,7 +87,7 @@ const AccountEnterPassphraseScreen = () => {
   return (
     <>
       <SafeAreaBox
-        backgroundColor="mainBackground"
+        backgroundColor="primaryBackground"
         flex={1}
         alignItems="center"
         padding="l"
@@ -133,7 +133,7 @@ const AccountEnterPassphraseScreen = () => {
         animationType="fade"
       >
         <Box
-          backgroundColor="mainBackground"
+          backgroundColor="primaryBackground"
           opacity={0.95}
           flex={1}
           alignItems="center"

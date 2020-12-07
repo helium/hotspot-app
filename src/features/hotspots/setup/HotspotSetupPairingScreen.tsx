@@ -38,6 +38,8 @@ const HotspotSetupPairingScreen = () => {
   const checkBluetooth = async () => {
     const state = await getState()
 
+    console.log(state)
+
     if (state === 'PoweredOn') {
       navNext()
       return
@@ -71,7 +73,7 @@ const HotspotSetupPairingScreen = () => {
   }
 
   return (
-    <BackScreen backgroundColor="mainBackground" padding="l">
+    <BackScreen backgroundColor="primaryBackground" padding="l">
       <Box flex={1} justifyContent="center" alignItems="center">
         <Text
           variant="header"

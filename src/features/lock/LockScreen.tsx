@@ -87,7 +87,7 @@ const LockScreen = () => {
 
   return (
     <SafeAreaBox
-      backgroundColor="secondaryBackground"
+      backgroundColor="primaryBackground"
       flex={1}
       padding="l"
       paddingBottom="none"

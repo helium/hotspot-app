@@ -38,7 +38,7 @@ const HotspotSetupPowerScreen = () => {
   }, [])
 
   return (
-    <BackScreen backgroundColor="mainBackground" padding="l">
+    <BackScreen backgroundColor="primaryBackground" padding="l">
       <Box flex={1} justifyContent="center" alignItems="center">
         <Text
           variant="header"

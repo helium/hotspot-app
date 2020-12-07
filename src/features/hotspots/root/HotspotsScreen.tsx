@@ -11,7 +11,7 @@ const HotspotsScreen = () => {
   } = useSelector((state: RootState) => state)
   return (
     <SafeAreaBox
-      backgroundColor="secondaryBackground"
+      backgroundColor="primaryBackground"
       flex={1}
       justifyContent="space-evenly"
       alignContent="center"

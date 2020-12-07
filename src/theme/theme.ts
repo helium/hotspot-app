@@ -13,12 +13,18 @@ const palette = {
   darkGray: '#202B37',
   steelGray: '#74869A',
   gray: '#5B6D7E',
-  green: '#29D391',
   lightBlue: '#51AEFF',
   darkBlue: '#131F2A',
   darkestBlue: '#232E39',
   red: '#F97570',
+
   purple: '#B377FF',
+  purpleLight: '#6C71A3',
+  purpleMain: '#474DFF',
+  purpleDark: '#13162E',
+
+  greenPrimary: '#32C48D',
+  greenDark: '#13162E',
 }
 
 export const Font = {
@@ -68,10 +74,9 @@ const textVariants = {
 export const theme = createTheme({
   colors: {
     ...palette,
-    mainBackground: palette.blueGray,
-    secondaryBackground: palette.darkBlue,
+    primaryBackground: palette.purpleDark,
     cardBackground: palette.white,
-    primaryMain: palette.green,
+    primaryMain: palette.greenPrimary,
     primaryText: palette.white,
     primaryButtonText: palette.darkGray,
     secondaryMain: palette.lightBlue,
@@ -159,8 +164,7 @@ export const darkTheme: Theme = {
   ...theme,
   colors: {
     ...theme.colors,
-    mainBackground: palette.white,
-    secondaryBackground: palette.lightBlue,
+    primaryBackground: palette.white,
     cardBackground: palette.black,
     primaryMain: palette.black,
     secondaryMain: palette.blueGray,

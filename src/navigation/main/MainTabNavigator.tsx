@@ -16,7 +16,7 @@ import userSlice from '../../store/user/userSlice'
 const MainTab = createBottomTabNavigator()
 
 const MainTabs = () => {
-  const { secondaryBackground } = useColors()
+  const { primaryBackground } = useColors()
   const navigation = useNavigation<RootNavigationProp>()
   const {
     user: { isLocked, isSettingUpHotspot },
@@ -35,14 +35,14 @@ const MainTabs = () => {
     navigation.push('HotspotSetup')
   }, [isSettingUpHotspot, dispatch, navigation])
 
-  if (isLocked) return <Box backgroundColor="secondaryBackground" flex={1} />
+  if (isLocked) return <Box backgroundColor="primaryBackground" flex={1} />
 
   return (
     <MainTab.Navigator
       tabBarOptions={{
         showLabel: false,
         style: {
-          backgroundColor: secondaryBackground,
+          backgroundColor: primaryBackground,
           borderTopWidth: 0,
         },
       }}

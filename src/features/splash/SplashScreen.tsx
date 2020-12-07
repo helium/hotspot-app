@@ -6,7 +6,7 @@ import HeliumLogo from '../../assets/images/logo.svg'
 const SplashScreen = () => {
   return (
     <SafeAreaBox
-      backgroundColor="mainBackground"
+      backgroundColor="primaryBackground"
       flex={1}
       justifyContent="center"
       alignItems="center"

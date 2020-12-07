@@ -15,7 +15,7 @@ const AccountEndSetupScreen = () => {
   return (
     <SafeAreaBox
       flex={1}
-      backgroundColor="mainBackground"
+      backgroundColor="primaryBackground"
       alignItems="center"
       paddingHorizontal="l"
     >

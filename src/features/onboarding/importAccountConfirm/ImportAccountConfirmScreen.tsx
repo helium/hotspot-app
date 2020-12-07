@@ -46,7 +46,7 @@ const ImportAccountConfirmScreen = () => {
   }
 
   return (
-    <Box flex={1} backgroundColor="mainBackground">
+    <Box flex={1} backgroundColor="primaryBackground">
       <Box position="absolute" right={0}>
         <Lock />
       </Box>
@@ -86,7 +86,7 @@ const ImportAccountConfirmScreen = () => {
         animationType="fade"
       >
         <SafeAreaBox
-          backgroundColor="mainBackground"
+          backgroundColor="primaryBackground"
           opacity={0.98}
           flex={1}
           alignItems="center"

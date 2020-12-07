@@ -22,7 +22,7 @@ const HotspotSetupDiagnosticsScreen = () => {
   const navigation = useNavigation<HotspotSetupNavigationProp>()
   return (
     <BackScreen
-      backgroundColor="mainBackground"
+      backgroundColor="primaryBackground"
       paddingBottom="s"
       paddingHorizontal="xl"
       justifyContent="space-between"

@@ -13,7 +13,7 @@ const BackScreen = ({ backgroundColor, children, flex, ...rest }: Props) => {
   const navigation = useNavigation()
   return (
     <SafeAreaBox
-      backgroundColor={backgroundColor || 'secondaryBackground'}
+      backgroundColor={backgroundColor || 'primaryBackground'}
       flex={1}
     >
       <BackButton paddingHorizontal="l" onPress={navigation.goBack} />

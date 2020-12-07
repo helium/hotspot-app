@@ -78,7 +78,7 @@ const HotspotEducationScreen = () => {
 
   return (
     <SafeAreaBox
-      backgroundColor="mainBackground"
+      backgroundColor="primaryBackground"
       flex={1}
       paddingBottom="s"
       justifyContent="space-evenly"

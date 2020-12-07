@@ -59,7 +59,7 @@ const HotspotScanningScreen = () => {
   }, [])
 
   return (
-    <SafeAreaBox backgroundColor="secondaryBackground" flex={1}>
+    <SafeAreaBox backgroundColor="primaryBackground" flex={1}>
       <Box
         overflow="hidden"
         position="absolute"

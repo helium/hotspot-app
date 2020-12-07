@@ -11,7 +11,7 @@ const HotspotSetupSelectionScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
   return (
-    <BackScreen backgroundColor="mainBackground" padding="l">
+    <BackScreen backgroundColor="primaryBackground" padding="l">
       <Text
         variant="header"
         numberOfLines={2}

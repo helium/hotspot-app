@@ -9,7 +9,7 @@ const HotspotSetupBluetoothScreen = () => {
   const hotspotCount = Object.keys(availableHotspots).length
 
   return (
-    <BackScreen backgroundColor="secondaryBackground">
+    <BackScreen backgroundColor="primaryBackground">
       {hotspotCount === 0 && <HotspotSetupBluetoothError />}
       {hotspotCount > 0 && <HotspotSetupBluetoothSuccess />}
     </BackScreen>

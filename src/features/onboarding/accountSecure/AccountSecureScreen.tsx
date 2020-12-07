@@ -12,7 +12,7 @@ const AccountSecureScreen = () => {
   const navigation = useNavigation<OnboardingNavigationProp>()
 
   return (
-    <Box backgroundColor="mainBackground" flex={1} padding="l">
+    <Box backgroundColor="primaryBackground" flex={1} padding="l">
       <Box flex={1} justifyContent="center" alignItems="center">
         <Secure />
         <Text variant="header" marginTop="xxl">

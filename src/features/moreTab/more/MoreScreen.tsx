@@ -181,7 +181,7 @@ const MoreScreen = () => {
   ])
 
   return (
-    <SafeAreaBox backgroundColor="secondaryBackground" flex={1}>
+    <SafeAreaBox backgroundColor="primaryBackground" flex={1}>
       <SectionList
         contentContainerStyle={{ paddingTop: l }}
         sections={SectionData}

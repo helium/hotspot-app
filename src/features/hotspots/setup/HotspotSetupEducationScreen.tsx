@@ -67,7 +67,7 @@ const HotspotEducationScreen = () => {
 
   return (
     <BackScreen
-      backgroundColor="mainBackground"
+      backgroundColor="primaryBackground"
       paddingBottom="s"
       justifyContent="space-between"
     >

@@ -39,7 +39,7 @@ const EnableNotificationsScreen = () => {
 
   return (
     <SafeAreaBox
-      backgroundColor="mainBackground"
+      backgroundColor="primaryBackground"
       flex={1}
       alignItems="center"
       paddingHorizontal="l"

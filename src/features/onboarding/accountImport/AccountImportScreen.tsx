@@ -37,7 +37,7 @@ const AccountImportScreen = () => {
   return (
     <SafeAreaBox
       flex={1}
-      backgroundColor="mainBackground"
+      backgroundColor="primaryBackground"
       flexDirection="column"
       paddingHorizontal="l"
     >
