@@ -12,7 +12,12 @@
     "icon": "yarn icon-label && yarn icon-gen && yarn icon-cleanup",
     "icon-label": "app-icon label -i icon.png -o output.png --bottom 3.0.0",
     "icon-gen": "app-icon generate -i output.png",
-    "icon-cleanup": "rm output.png"
+    "icon-cleanup": "rm output.png",
+    "android-clean": "cd android && ./gradlew clean && cd ..",
+    "ios-clean": "rm -rf ios/Pods && rm -rf ios/build",
+    "pod-install": "cd ios && pod install && cd ..",
+    "clean-install": "watchman watch-del-all && rm -rf $TMPDIR/react-native-packager-cache-* && rm -rf $TMPDIR/metro-bundler-cache-* && rm -rf node_modules/ && yarn cache clean && yarn install && yarn android-clean && yarn ios-clean && yarn pod-install",
+    "clean-start": "yarn start -- --reset-cache"
   },
   "husky": {
     "hooks": {
@@ -84,6 +89,7 @@
     "react-native-gesture-handler": "^1.8.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.3",
     "react-native-localize": "^1.4.3",
+    "react-native-navigation-bar-color": "^2.0.1",
     "react-native-onesignal": "^4.0.0-beta.4",
     "react-native-picker-select": "^8.0.3",
     "react-native-reanimated": "^1.13.1",
