@@ -1,5 +1,5 @@
 import { createTheme } from '@shopify/restyle'
-import { TextProps, Platform } from 'react-native'
+import { TextProps } from 'react-native'
 
 const palette = {
   black: '#000',
@@ -29,9 +29,10 @@ const palette = {
 
 export const Font = {
   main: {
-    light: 'Soleil-Light',
-    regular: 'Soleil-Regular',
-    semiBold: Platform.OS === 'ios' ? 'SoleilW02-SemiBold' : 'Soleil-SemiBold',
+    light: 'Inter-Light',
+    regular: 'Inter-Regular',
+    medium: 'Inter-Medium',
+    semiBold: 'Inter-SemiBold',
   },
   mono: {
     light: 'InputMono-Light',
@@ -55,7 +56,6 @@ const textVariants = {
   body: {
     fontFamily: Font.main.regular,
     fontSize: 14,
-    lineHeight: 24,
     color: 'primaryText',
   },
   input: {
@@ -145,6 +145,7 @@ export const theme = createTheme({
   textVariants: {
     ...textVariants,
     bodyLight: { ...textVariants.body, fontFamily: Font.main.light },
+    bodyMedium: { ...textVariants.body, fontFamily: Font.main.medium },
     bodyBold: { ...textVariants.body, fontFamily: Font.main.semiBold },
     bodyMono: { ...textVariants.body, fontFamily: Font.mono.regular },
   },

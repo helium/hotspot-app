@@ -48,7 +48,7 @@ const HotspotSetupSelectionScreen = () => {
                 <Hotspot />
               </Box>
               <Text
-                variant="body"
+                variant="bodyMedium"
                 color="blueGray"
                 marginTop="l"
                 textAlign="center"
@@ -83,7 +83,7 @@ const HotspotSetupSelectionScreen = () => {
                 <RAK />
               </Box>
               <Text
-                variant="body"
+                variant="bodyMedium"
                 color="blueGray"
                 marginTop="l"
                 textAlign="center"
