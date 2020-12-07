@@ -11,7 +11,7 @@ import {
 } from './hotspotSetupTypes'
 import Bluetooth from '../../../assets/images/bluetooth.svg'
 import useAlert from '../../../utils/useAlert'
-import { useHotspotContext } from '../../../providers/HotspotProvider'
+import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotSetupPowerScreen'>
 
@@ -21,7 +21,7 @@ const HotspotSetupPairingScreen = () => {
     params: { hotspotType },
   } = useRoute<Route>()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
-  const { getState, enable } = useHotspotContext()
+  const { getState, enable } = useConnectedHotspotContext()
   const { showOKCancelAlert } = useAlert()
 
   const subtitle1 = t(

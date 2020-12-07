@@ -14,7 +14,7 @@ import userSlice from './store/user/userSlice'
 import { RootState } from './store/rootReducer'
 import { fetchData } from './store/account/accountSlice'
 import BluetoothProvider from './providers/BluetoothProvider'
-import HotspotProvider from './providers/HotspotProvider'
+import ConnectedHotspotProvider from './providers/ConnectedHotspotProvider'
 
 const App = () => {
   const dispatch = useAppDispatch()
@@ -72,7 +72,7 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <BluetoothProvider>
-        <HotspotProvider>
+        <ConnectedHotspotProvider>
           <SafeAreaProvider>
             {/* TODO: Will need to adapt status bar for light/dark modes */}
             {Platform.OS === 'ios' && <StatusBar barStyle="light-content" />}
@@ -81,7 +81,7 @@ const App = () => {
             )}
             <NavigationRoot />
           </SafeAreaProvider>
-        </HotspotProvider>
+        </ConnectedHotspotProvider>
       </BluetoothProvider>
     </ThemeProvider>
   )

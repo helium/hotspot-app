@@ -1,11 +1,11 @@
 import React from 'react'
 import BackScreen from '../../../components/BackScreen'
-import { useHotspotContext } from '../../../providers/HotspotProvider'
+import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import HotspotSetupBluetoothError from './HotspotSetupBluetoothError'
 import HotspotSetupBluetoothSuccess from './HotspotSetupBluetoothSuccess'
 
 const HotspotSetupBluetoothScreen = () => {
-  const { availableHotspots } = useHotspotContext()
+  const { availableHotspots } = useConnectedHotspotContext()
   const hotspotCount = Object.keys(availableHotspots).length
 
   return (

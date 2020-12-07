@@ -12,15 +12,16 @@ const initialState = {
   availableHotspots: {},
 }
 
-const HotspotContext = createContext<ReturnType<typeof useHotspot>>(
+const ConnectedHotspotContext = createContext<ReturnType<typeof useHotspot>>(
   initialState,
 )
-const { Provider } = HotspotContext
+const { Provider } = ConnectedHotspotContext
 
-const HotspotProvider = ({ children }: { children: ReactNode }) => {
+const ConnectedHotspotProvider = ({ children }: { children: ReactNode }) => {
   return <Provider value={useHotspot()}>{children}</Provider>
 }
 
-export const useHotspotContext = () => useContext(HotspotContext)
+export const useConnectedHotspotContext = () =>
+  useContext(ConnectedHotspotContext)
 
-export default HotspotProvider
+export default ConnectedHotspotProvider

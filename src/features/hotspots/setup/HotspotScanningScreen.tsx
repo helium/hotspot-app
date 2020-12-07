@@ -11,7 +11,7 @@ import {
   HotspotSetupNavigationProp,
   HotspotSetupStackParamList,
 } from './hotspotSetupTypes'
-import { useHotspotContext } from '../../../providers/HotspotProvider'
+import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotScanningScreen'>
 
@@ -19,7 +19,7 @@ const HotspotScanningScreen = () => {
   const rotateAnim = useRef(new Animated.Value(0))
   const opacityAnim = useRef(new Animated.Value(0))
   const { t } = useTranslation()
-  const { scanForHotspots } = useHotspotContext()
+  const { scanForHotspots } = useConnectedHotspotContext()
 
   const { params } = useRoute<Route>()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
