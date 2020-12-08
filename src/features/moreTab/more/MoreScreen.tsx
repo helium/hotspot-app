@@ -7,7 +7,7 @@ import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
-import userSlice from '../../../store/user/userSlice'
+import appSlice from '../../../store/user/appSlice'
 import useDevice from '../../../utils/useDevice'
 import { MoreNavigationProp, MoreStackParamList } from '../moreTypes'
 import {
@@ -24,7 +24,7 @@ const MoreScreen = () => {
   const { params } = useRoute<Route>()
   const dispatch = useAppDispatch()
   const { version } = useDevice()
-  const user = useSelector((state: RootState) => state.user)
+  const { app } = useSelector((state: RootState) => state)
   const authIntervals = useAuthIntervals()
 
   const navigation = useNavigation<MoreNavigationProp & RootNavigationProp>()
@@ -37,13 +37,13 @@ const MoreScreen = () => {
 
     switch (pinVerifiedFor) {
       case 'disablePin':
-        dispatch(userSlice.actions.disablePin())
+        dispatch(appSlice.actions.disablePin())
         break
       case 'disablePinForPayments':
-        dispatch(userSlice.actions.requirePinForPayment(false))
+        dispatch(appSlice.actions.requirePinForPayment(false))
         break
       case 'enablePinForPayments':
-        dispatch(userSlice.actions.requirePinForPayment(true))
+        dispatch(appSlice.actions.requirePinForPayment(true))
         break
       case 'resetPin':
         navigation.push('AccountCreatePinScreen', { pinReset: true })
@@ -52,36 +52,36 @@ const MoreScreen = () => {
 
   const handlePinRequiredForPayment = useCallback(
     (value?: boolean) => {
-      if (!user.isPinRequiredForPayment && value) {
+      if (!app.isPinRequiredForPayment && value) {
         // toggling on
         navigation.push('LockScreen', {
           requestType: 'enablePinForPayments',
         })
       }
 
-      if (user.isPinRequiredForPayment && !value) {
+      if (app.isPinRequiredForPayment && !value) {
         // toggling off, confirm pin before turning off
         navigation.push('LockScreen', {
           requestType: 'disablePinForPayments',
         })
       }
     },
-    [user.isPinRequiredForPayment, navigation],
+    [app.isPinRequiredForPayment, navigation],
   )
 
   const handlePinRequired = useCallback(
     (value?: boolean) => {
-      if (!user.isPinRequired && value) {
+      if (!app.isPinRequired && value) {
         // toggling on
         navigation.push('AccountCreatePinScreen', { pinReset: true })
       }
 
-      if (user.isPinRequired && !value) {
+      if (app.isPinRequired && !value) {
         // toggling off, confirm pin before turning off
         navigation.push('LockScreen', { requestType: 'disablePin' })
       }
     },
-    [user.isPinRequired, navigation],
+    [app.isPinRequired, navigation],
   )
 
   const handleResetPin = useCallback(() => {
@@ -101,7 +101,7 @@ const MoreScreen = () => {
           text: t('generic.ok'),
           style: 'destructive',
           onPress: () => {
-            dispatch(userSlice.actions.signOut())
+            dispatch(appSlice.actions.signOut())
           },
         },
       ],
@@ -110,7 +110,7 @@ const MoreScreen = () => {
 
   const handleIntervalSelected = useCallback(
     (value: string) => {
-      dispatch(userSlice.actions.updateAuthInterval(parseInt(value, 10)))
+      dispatch(appSlice.actions.updateAuthInterval(parseInt(value, 10)))
     },
     [dispatch],
   )
@@ -120,16 +120,16 @@ const MoreScreen = () => {
       {
         title: t('more.sections.security.enablePin'),
         onToggle: handlePinRequired,
-        value: user.isPinRequired,
+        value: app.isPinRequired,
       },
     ]
 
-    if (user.isPinRequired) {
+    if (app.isPinRequired) {
       pin = [
         ...pin,
         {
           title: t('more.sections.security.requirePin'),
-          value: user.authInterval || '',
+          value: app.authInterval || '',
           select: {
             items: authIntervals,
             onValueSelect: handleIntervalSelected,
@@ -142,7 +142,7 @@ const MoreScreen = () => {
         {
           title: t('more.sections.security.requirePinForPayments'),
           onToggle: handlePinRequiredForPayment,
-          value: user.isPinRequiredForPayment,
+          value: app.isPinRequiredForPayment,
         },
       ]
     }
@@ -169,7 +169,7 @@ const MoreScreen = () => {
       },
     ]
   }, [
-    user,
+    app,
     handleSignOut,
     version,
     handlePinRequiredForPayment,

@@ -20,6 +20,4 @@ export type OnboardingStackParamList = {
   AccountImportCompleteScreen: { words: Array<string> }
 }
 
-export type OnboardingNavigationProp = StackNavigationProp<
-  OnboardingStackParamList
->
+export type OnboardingNavigationProp = StackNavigationProp<OnboardingStackParamList>

@@ -7,8 +7,11 @@ import {
   signOut,
   getString,
 } from '../../utils/account'
+import { getCurrentPosition } from '../../utils/location'
 
-export type UserState = {
+type Location = { latitude: number; longitude: number }
+
+export type AppState = {
   isBackedUp: boolean
   isEducated: boolean
   isSettingUpHotspot: boolean
@@ -19,8 +22,10 @@ export type UserState = {
   lastIdle: number | null
   isLocked: boolean
   isRequestingPermission: boolean
+  currentLocation?: Location
+  isLoadingLocation: boolean
 }
-const initialState: UserState = {
+const initialState: AppState = {
   isBackedUp: false,
   isEducated: false,
   isSettingUpHotspot: false,
@@ -31,6 +36,7 @@ const initialState: UserState = {
   lastIdle: null,
   isLocked: false,
   isRequestingPermission: false,
+  isLoadingLocation: false,
 }
 
 type Restore = {
@@ -43,7 +49,7 @@ type Restore = {
 }
 
 export const restoreUser = createAsyncThunk<Restore>(
-  'user/restore',
+  'app/restoreUser',
   async () => {
     const vals = await Promise.all([
       getBoolean('accountBackedUp'),
@@ -63,8 +69,14 @@ export const restoreUser = createAsyncThunk<Restore>(
   },
 )
 
-const userSlice = createSlice({
-  name: 'user',
+export const getLocation = createAsyncThunk<Location>(
+  'app/location',
+  async () => getCurrentPosition(),
+)
+
+// This slice contains data related to the state of the app
+const appSlice = createSlice({
+  name: 'app',
   initialState,
   reducers: {
     backupAccount: (state, action: PayloadAction<string>) => {
@@ -122,7 +134,17 @@ const userSlice = createSlice({
     builder.addCase(restoreUser.fulfilled, (state, { payload }) => {
       return { ...state, ...payload, isRestored: true }
     })
+    builder.addCase(getLocation.pending, (state) => {
+      state.isLoadingLocation = true
+    })
+    builder.addCase(getLocation.rejected, (state) => {
+      state.isLoadingLocation = false
+    })
+    builder.addCase(getLocation.fulfilled, (state, { payload }) => {
+      state.currentLocation = payload
+      state.isLoadingLocation = false
+    })
   },
 })
 
-export default userSlice
+export default appSlice

@@ -14,7 +14,7 @@ import { getString } from '../../utils/account'
 import ConfirmPinView from '../../components/ConfirmPinView'
 import { MoreNavigationProp } from '../moreTab/moreTypes'
 import { useAppDispatch } from '../../store/store'
-import userSlice from '../../store/user/userSlice'
+import appSlice from '../../store/user/appSlice'
 
 type Route = RouteProp<RootStackParamList, 'LockScreen'>
 
@@ -33,7 +33,7 @@ const LockScreen = () => {
   const handleSuccess = useCallback(() => {
     if (shouldLock) {
       setLocked(false, () => {
-        dispatch(userSlice.actions.lock(false))
+        dispatch(appSlice.actions.lock(false))
         rootNav.goBack()
       })
     } else {
@@ -56,7 +56,7 @@ const LockScreen = () => {
           text: t('generic.ok'),
           style: 'destructive',
           onPress: () => {
-            dispatch(userSlice.actions.signOut())
+            dispatch(appSlice.actions.signOut())
           },
         },
       ],

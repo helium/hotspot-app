@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useContext } from 'react'
-import { State } from 'react-native-ble-plx'
-import useBluetooth from '../utils/useBluetooth'
+import { Characteristic, State } from 'react-native-ble-plx'
+import useBluetooth from '../utils/bluetooth/useBluetooth'
 
 const initialState = {
   getState: async () => State.Unknown,
@@ -8,9 +8,15 @@ const initialState = {
   scan: async () => {},
   connect: async () => undefined,
   discoverAllServicesAndCharacteristics: async () => undefined,
-  getServiceCharacteristics: async () => undefined,
   findAndReadCharacteristic: () =>
     new Promise<undefined>((resolve) => resolve()),
+  findAndWriteCharacteristic: () =>
+    new Promise<undefined>((resolve) => resolve()),
+  readCharacteristic: () => new Promise<Characteristic>((resolve) => resolve()),
+  writeCharacteristic: () =>
+    new Promise<Characteristic>((resolve) => resolve()),
+  findCharacteristic: async () => undefined,
+  subscribeToState: () => ({ remove: () => {} }),
 }
 
 const BleContext = createContext<ReturnType<typeof useBluetooth>>(initialState)

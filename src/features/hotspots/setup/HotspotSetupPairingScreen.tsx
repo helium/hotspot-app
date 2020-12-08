@@ -1,6 +1,6 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { Linking, Platform } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import BackScreen from '../../../components/BackScreen'
 import Button from '../../../components/Button'
@@ -11,7 +11,7 @@ import {
 } from './hotspotSetupTypes'
 import Bluetooth from '../../../assets/images/bluetooth.svg'
 import useAlert from '../../../utils/useAlert'
-import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
+import { useBluetoothContext } from '../../../providers/BluetoothProvider'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotSetupPowerScreen'>
 
@@ -21,7 +21,7 @@ const HotspotSetupPairingScreen = () => {
     params: { hotspotType },
   } = useRoute<Route>()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
-  const { getState, enable } = useConnectedHotspotContext()
+  const { enable, getState } = useBluetoothContext()
   const { showOKCancelAlert } = useAlert()
 
   const subtitle1 = t(
@@ -30,6 +30,10 @@ const HotspotSetupPairingScreen = () => {
   const subtitle2 = t(
     `hotspot_setup.pair.${hotspotType === 'RAK' ? 'rak_' : ''}subtitle_2`,
   )
+
+  useEffect(() => {
+    getState()
+  }, [getState])
 
   const navNext = () =>
     navigation.push('HotspotScanningScreen', { hotspotType })
@@ -44,23 +48,19 @@ const HotspotSetupPairingScreen = () => {
 
     if (Platform.OS === 'ios') {
       if (state === 'PoweredOff') {
-        await showOKCancelAlert(
-          (decision) => {
-            if (decision) Linking.openURL('App-Prefs:Bluetooth')
-          },
-          'hotspot_setup.pair.alert_ble_off.title',
-          'hotspot_setup.pair.alert_ble_off.body',
-          'generic.go_to_settings',
-        )
+        const decision = await showOKCancelAlert({
+          titleKey: 'hotspot_setup.pair.alert_ble_off.title',
+          messageKey: 'hotspot_setup.pair.alert_ble_off.body',
+          okKey: 'generic.go_to_settings',
+        })
+        if (decision) Linking.openURL('App-Prefs:Bluetooth')
       } else {
-        await showOKCancelAlert(
-          (decision) => {
-            if (decision) Linking.openURL('app-settings:')
-          },
-          'hotspot_setup.pair.alert_ble_off.title',
-          'hotspot_setup.pair.alert_ble_off.body',
-          'generic.go_to_settings',
-        )
+        const decision = await showOKCancelAlert({
+          titleKey: 'hotspot_setup.pair.alert_ble_off.title',
+          messageKey: 'hotspot_setup.pair.alert_ble_off.body',
+          okKey: 'generic.go_to_settings',
+        })
+        if (decision) Linking.openURL('app-settings:')
       }
     }
     if (Platform.OS === 'android') {

@@ -1,5 +1,15 @@
 const baseConfig = {
   presets: ['module:metro-react-native-babel-preset'],
+  plugins: [
+    [
+      'module-resolver',
+      {
+        alias: {
+          '@helium/crypto': './node_modules/@helium/crypto-react-native',
+        },
+      },
+    ],
+  ],
 }
 
 // this is a temporary hack to fix reanimated2 causing tests to fail

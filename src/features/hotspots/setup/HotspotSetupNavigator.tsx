@@ -8,7 +8,16 @@ import HotspotSetupPairingScreen from './HotspotSetupPairingScreen'
 import HotspotScanningScreen from './HotspotScanningScreen'
 import HotspotSetupBluetoothScreen from './HotspotSetupBluetoothScreen'
 import HotspotSetupScanWifiScreen from './HotspotSetupScanWifiScreen'
+import HotspotSetupWifiScreen from './HotspotSetupWifiScreen'
+import HotspotEthernetScreen from './HotspotEthernetScreen'
 import defaultScreenOptions from '../../../navigation/defaultScreenOptions'
+import HotspotGenesisScreen from './HotspotGenesisScreen'
+import HotspotSetupAddTxnScreen from './HotspotSetupAddTxnScreen'
+import EnableLocationScreen from './EnableLocationScreen'
+import HotspotLocationFeeScreen from './HotspotLocationFeeScreen'
+import FirmwareUpdateNeededScreen from './FirmwareUpdateNeededScreen'
+import ConfirmLocationScreen from './ConfirmLocationScreen'
+import HotspotTxnsProgressScreen from './HotspotTxnsProgressScreen'
 
 const HotspotSetupStack = createStackNavigator()
 
@@ -49,6 +58,42 @@ const HotspotSetup = () => {
       <HotspotSetupStack.Screen
         name="HotspotSetupScanWifiScreen"
         component={HotspotSetupScanWifiScreen}
+      />
+      <HotspotSetupStack.Screen
+        name="HotspotSetupWifiScreen"
+        component={HotspotSetupWifiScreen}
+      />
+      <HotspotSetupStack.Screen
+        name="HotspotEthernetScreen"
+        component={HotspotEthernetScreen}
+      />
+      <HotspotSetupStack.Screen
+        name="HotspotGenesisScreen"
+        component={HotspotGenesisScreen}
+      />
+      <HotspotSetupStack.Screen
+        name="HotspotSetupAddTxnScreen"
+        component={HotspotSetupAddTxnScreen}
+      />
+      <HotspotSetupStack.Screen
+        name="EnableLocationScreen"
+        component={EnableLocationScreen}
+      />
+      <HotspotSetupStack.Screen
+        name="HotspotLocationFeeScreen"
+        component={HotspotLocationFeeScreen}
+      />
+      <HotspotSetupStack.Screen
+        name="FirmwareUpdateNeededScreen"
+        component={FirmwareUpdateNeededScreen}
+      />
+      <HotspotSetupStack.Screen
+        name="ConfirmLocationScreen"
+        component={ConfirmLocationScreen}
+      />
+      <HotspotSetupStack.Screen
+        name="HotspotTxnsProgressScreen"
+        component={HotspotTxnsProgressScreen}
       />
     </HotspotSetupStack.Navigator>
   )
