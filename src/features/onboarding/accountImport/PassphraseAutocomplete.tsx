@@ -52,7 +52,7 @@ const PassphraseAutocomplete = ({ onSelectWord, wordIdx }: Props) => {
           ordinal,
         })}
       />
-      <Text variant="body2Light" textAlign="center" color="lightGray">
+      <Text variant="body2Light" textAlign="center" color="grayLight">
         {t('account_import.word_entry.subtitle')}
       </Text>
       <TextInput

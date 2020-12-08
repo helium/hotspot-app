@@ -38,7 +38,7 @@ const MoreListItem = ({
     <TouchableOpacityBox
       flexDirection="row"
       justifyContent="space-between"
-      backgroundColor="darkGray"
+      backgroundColor="grayDark"
       alignItems="center"
       height={64}
       paddingHorizontal="m"

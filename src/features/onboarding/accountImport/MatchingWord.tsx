@@ -20,7 +20,7 @@ const MatchingWord = ({ fullWord, matchingText, onPress }: Props) => (
     marginRight="s"
     paddingHorizontal={{ smallPhone: 'm', phone: 'ms' }}
     borderRadius="m"
-    backgroundColor="lighterGray"
+    backgroundColor="grayExtraLight"
     onPress={() => onPress(fullWord)}
     height={44}
   >
@@ -35,7 +35,7 @@ const MatchingWord = ({ fullWord, matchingText, onPress }: Props) => (
         variant="body2Mono"
         alignContent="center"
         justifyContent="center"
-        color="midGray"
+        color="grayMain"
       >
         {fullWord.slice(matchingText.length)}
       </Text>

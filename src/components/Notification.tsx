@@ -20,7 +20,7 @@ const Notification = ({ children, date, ...props }: Props) => {
       <Text variant="body2Bold" color="black">
         {children}
       </Text>
-      <Text variant="body2Mono" fontSize={12} color="lighterGray">
+      <Text variant="body2Mono" fontSize={12} color="grayExtraLight">
         {formatDistance(date, new Date(), {
           addSuffix: true,
         })}

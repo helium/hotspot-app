@@ -13,15 +13,15 @@ type Props = Omit<TouchableHighlightBoxProps, 'children'> & {
 }
 
 const PhraseChip = ({ title, selected, ...props }: Props) => {
-  const { lightBlue } = useColors()
+  const { blueLight } = useColors()
   const [underlayShowing, setUnderlayShowing] = useState(false)
 
   return (
     <TouchableHighlightBox
-      backgroundColor={selected ? 'lightBlue' : 'disabled'}
+      backgroundColor={selected ? 'blueLight' : 'disabled'}
       onPress={() => {}}
       borderRadius="s"
-      underlayColor={lightBlue}
+      underlayColor={blueLight}
       disabled={selected}
       onHideUnderlay={() => setUnderlayShowing(false)}
       onShowUnderlay={() => setUnderlayShowing(true)}
@@ -31,7 +31,7 @@ const PhraseChip = ({ title, selected, ...props }: Props) => {
         paddingVertical="s"
         paddingHorizontal="m"
         variant="body2Mono"
-        color={selected || underlayShowing ? 'primaryBackground' : 'midGray'}
+        color={selected || underlayShowing ? 'primaryBackground' : 'grayMain'}
       >
         {upperFirst(title)}
       </Text>

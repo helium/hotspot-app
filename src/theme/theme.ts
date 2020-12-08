@@ -4,19 +4,20 @@ import { TextProps } from 'react-native'
 const palette = {
   black: '#000',
   white: '#FFF',
+
   blueGray: '#33414E',
+  blueLight: '#51AEFF',
+  blueMain: '#4BABFF',
+  blueDark: '#232E39',
+
+  grayLight: '#DADADA',
+  grayExtraLight: '#465666',
+  grayMain: '#81909F',
+  graySteel: '#74869A',
+  grayDark: '#202B37',
   grayBlue: '#3D5A73',
-  blue: '#4BABFF',
-  lighterGray: '#465666',
-  lightGray: '#DADADA',
-  midGray: '#81909F',
-  darkGray: '#202B37',
-  steelGray: '#74869A',
-  gray: '#5B6D7E',
-  lightBlue: '#51AEFF',
-  darkBlue: '#131F2A',
-  darkestBlue: '#232E39',
-  red: '#F97570',
+
+  redMain: '#F97570',
 
   purple: '#B377FF',
   purpleLight: '#6C71A3',
@@ -111,9 +112,9 @@ export const theme = createTheme({
     primaryText: palette.white,
     primaryButtonText: palette.white,
     secondaryMain: palette.greenMain,
-    secondaryText: palette.steelGray,
-    disabled: palette.lighterGray,
-    inputPlaceholderText: palette.lighterGray,
+    secondaryText: palette.graySteel,
+    disabled: palette.grayExtraLight,
+    inputPlaceholderText: palette.grayExtraLight,
   },
   spacing: {
     n_xxl: -60,
@@ -156,7 +157,7 @@ export const theme = createTheme({
       padding: 's',
     },
     elevated: {
-      shadowColor: 'darkestBlue',
+      shadowColor: 'blueDark',
       borderRadius: 'm',
       shadowOffset: {
         width: 0,
@@ -192,7 +193,7 @@ export const theme = createTheme({
   },
   inputVariants: {
     regular: {
-      backgroundColor: 'darkGray',
+      backgroundColor: 'grayDark',
       fontFamily: Font.main.regular,
       fontSize: 18,
       color: 'white',

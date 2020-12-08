@@ -7,8 +7,8 @@ import { Font, Theme } from '../theme/theme'
 
 const components = {
   b: <Text fontFamily={Font.main.semiBold} />,
-  red: <Text color="red" />,
-  blue: <Text color="blue" />,
+  red: <Text color="redMain" />,
+  blue: <Text color="blueMain" />,
   white: <Text color="white" />,
   purpleMain: <Text color="purpleMain" />,
 }

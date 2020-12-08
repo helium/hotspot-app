@@ -28,11 +28,11 @@ const Word = ({
         disabled={!onPress}
         onPress={onPress}
       >
-        <Text variant="body1Mono" color="midGray">
+        <Text variant="body1Mono" color="grayMain">
           {position}
         </Text>
 
-        <Text variant="body1Mono" color="lightGray" marginLeft="s">
+        <Text variant="body1Mono" color="grayLight" marginLeft="s">
           {upperFirst(word)}
         </Text>
       </TouchableOpacityBox>
