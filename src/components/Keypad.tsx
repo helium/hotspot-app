@@ -1,10 +1,11 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import Icon from 'react-native-vector-icons/Ionicons'
 import haptic from '../utils/haptic'
 import Box from './Box'
 import Text from './Text'
 import TouchableCircle from './TouchableCircle'
+import Backspace from '../assets/images/backspace.svg'
+import { useColors } from '../theme/themeHooks'
 
 type Props = {
   onNumberPress: (value: number) => void
@@ -35,6 +36,7 @@ const Key = ({
 
 const Keypad = ({ onNumberPress, onCancel, onBackspacePress }: Props) => {
   const { t } = useTranslation()
+  const colors = useColors()
 
   const renderDynamicButton = () => {
     if (onCancel) {
@@ -99,9 +101,7 @@ const Keypad = ({ onNumberPress, onCancel, onBackspacePress }: Props) => {
           onBackspacePress()
         }}
       >
-        <Text variant="keypad">
-          <Icon name="ios-backspace-outline" size={34} />
-        </Text>
+        <Backspace color={colors.white} height={24} width={24} />
       </TouchableCircle>
     </Box>
   )

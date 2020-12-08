@@ -15,23 +15,28 @@ const AccountPassphraseWarningScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<OnboardingNavigationProp>()
   return (
-    <Box flex={1} backgroundColor="mainBackground">
+    <Box flex={1} backgroundColor="primaryBackground">
       <Box position="absolute" right={0}>
         <Lock />
       </Box>
 
       <SafeAreaBox flex={1} flexDirection="column" paddingHorizontal="l">
-        <BackButton onPress={navigation.goBack} />
-        <Text marginTop={{ smallPhone: 's', phone: 'xl' }} variant="header">
+        <BackButton onPress={navigation.goBack} paddingHorizontal="none" />
+        <Text
+          marginTop={{ smallPhone: 's', phone: 'xl' }}
+          variant="header"
+          numberOfLines={2}
+          adjustsFontSizeToFit
+        >
           {t('account_setup.warning.title')}
         </Text>
         <TextTransform
           marginVertical="xl"
-          variant="bodyLight"
+          variant="body2Light"
           i18nKey="account_setup.warning.subtitle"
         />
         <WordGraph />
-        <Text marginTop="xl" variant="bodyLight">
+        <Text marginTop="xl" variant="body2Light">
           {t('account_setup.warning.recover')}
         </Text>
         <Box flex={1} justifyContent="flex-end">
@@ -41,7 +46,7 @@ const AccountPassphraseWarningScreen = () => {
             width="100%"
             marginBottom="l"
             onPress={() => navigation.push('AccountPassphraseGeneration')}
-            title={t('account_setup.warning.understand')}
+            title={t('generic.understand')}
           />
         </Box>
       </SafeAreaBox>

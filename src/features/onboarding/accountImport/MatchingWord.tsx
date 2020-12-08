@@ -20,22 +20,22 @@ const MatchingWord = ({ fullWord, matchingText, onPress }: Props) => (
     marginRight="s"
     paddingHorizontal={{ smallPhone: 'm', phone: 'ms' }}
     borderRadius="m"
-    backgroundColor="lighterGray"
+    backgroundColor="grayExtraLight"
     onPress={() => onPress(fullWord)}
     height={44}
   >
     <Text
-      variant="bodyMono"
+      variant="body2Mono"
       justifyContent="center"
       alignContent="center"
       color="white"
     >
       {capitalize(matchingText)}
       <Text
-        variant="bodyMono"
+        variant="body2Mono"
         alignContent="center"
         justifyContent="center"
-        color="midGray"
+        color="grayMain"
       >
         {fullWord.slice(matchingText.length)}
       </Text>

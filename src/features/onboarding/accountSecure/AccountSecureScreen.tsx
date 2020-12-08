@@ -12,16 +12,16 @@ const AccountSecureScreen = () => {
   const navigation = useNavigation<OnboardingNavigationProp>()
 
   return (
-    <Box backgroundColor="mainBackground" flex={1} padding="l">
+    <Box backgroundColor="primaryBackground" flex={1} padding="l">
       <Box flex={1} justifyContent="center" alignItems="center">
         <Secure />
         <Text variant="header" marginTop="xxl">
           {t('account_setup.success.title')}
         </Text>
-        <Text variant="bodyLight" marginTop="s" textAlign="center">
+        <Text variant="body2Light" marginTop="s" textAlign="center">
           {t('account_setup.success.subtitle_1')}
         </Text>
-        <Text variant="bodyLight" marginTop="m" textAlign="center">
+        <Text variant="body2Light" marginTop="m" textAlign="center">
           {t('account_setup.success.subtitle_2')}
         </Text>
       </Box>

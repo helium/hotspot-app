@@ -18,7 +18,7 @@ const WordList = ({ words, onPressWord }: Props) => {
 
   return (
     <Box
-      backgroundColor="secondaryBackground"
+      backgroundColor="primaryBackground"
       flexDirection="row"
       minHeight={180}
       alignContent="space-between"

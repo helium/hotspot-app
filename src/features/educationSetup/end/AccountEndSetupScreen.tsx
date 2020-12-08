@@ -15,7 +15,7 @@ const AccountEndSetupScreen = () => {
   return (
     <SafeAreaBox
       flex={1}
-      backgroundColor="mainBackground"
+      backgroundColor="primaryBackground"
       alignItems="center"
       paddingHorizontal="l"
     >
@@ -23,10 +23,10 @@ const AccountEndSetupScreen = () => {
         <HotspotFront height="100%" />
       </Box>
       <Text variant="header">{t('hotspot_setup.start.title')}</Text>
-      <Text variant="bodyLight" textAlign="center" marginVertical="m">
+      <Text variant="body2Light" textAlign="center" marginVertical="m">
         {t('hotspot_setup.start.subtitle_1')}
       </Text>
-      <Text textAlign="center" width={260} variant="bodyLight">
+      <Text textAlign="center" width={260} variant="body2Light">
         {t('hotspot_setup.start.subtitle_2')}
       </Text>
 

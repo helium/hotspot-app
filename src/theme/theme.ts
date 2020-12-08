@@ -1,30 +1,39 @@
 import { createTheme } from '@shopify/restyle'
-import { TextProps, Platform } from 'react-native'
+import { TextProps } from 'react-native'
 
 const palette = {
   black: '#000',
   white: '#FFF',
+
   blueGray: '#33414E',
+  blueLight: '#51AEFF',
+  blueMain: '#4BABFF',
+  blueDark: '#232E39',
+
+  grayLight: '#DADADA',
+  grayExtraLight: '#465666',
+  grayMain: '#81909F',
+  graySteel: '#74869A',
+  grayDark: '#202B37',
   grayBlue: '#3D5A73',
-  lighterGray: '#465666',
-  lightGray: '#DADADA',
-  midGray: '#81909F',
-  darkGray: '#202B37',
-  steelGray: '#74869A',
-  gray: '#5B6D7E',
-  green: '#29D391',
-  lightBlue: '#51AEFF',
-  darkBlue: '#131F2A',
-  darkestBlue: '#232E39',
-  red: '#F97570',
+
+  redMain: '#F97570',
+
   purple: '#B377FF',
+  purpleLight: '#6C71A3',
+  purpleMain: '#474DFF',
+  purpleDark: '#13162E',
+
+  greenMain: '#32C48D',
+  greenDark: '#13162E',
 }
 
 export const Font = {
   main: {
-    light: 'Soleil-Light',
-    regular: 'Soleil-Regular',
-    semiBold: Platform.OS === 'ios' ? 'SoleilW02-SemiBold' : 'Soleil-SemiBold',
+    light: 'Inter-Light',
+    regular: 'Inter-Regular',
+    medium: 'Inter-Medium',
+    semiBold: 'Inter-SemiBold',
   },
   mono: {
     light: 'InputMono-Light',
@@ -35,14 +44,44 @@ export const Font = {
 const textVariants = {
   header: {
     fontFamily: Font.main.semiBold,
-    fontSize: 34,
-    lineHeight: 42.5,
+    fontSize: 40,
+    lineHeight: 45.5,
     color: 'primaryText',
   },
-  body: {
+  regular: {
     fontFamily: Font.main.regular,
-    fontSize: 16,
-    lineHeight: 24,
+    color: 'primaryText',
+  },
+  light: {
+    fontFamily: Font.main.light,
+    color: 'primaryText',
+  },
+  bold: {
+    fontFamily: Font.main.semiBold,
+    color: 'primaryText',
+  },
+  mono: {
+    fontFamily: Font.mono.regular,
+    color: 'primaryText',
+  },
+  medium: {
+    fontFamily: Font.main.medium,
+    color: 'primaryText',
+  },
+  subtitle: {
+    fontFamily: Font.main.light,
+    fontSize: 19,
+    lineHeight: 26,
+    color: 'purpleLight',
+  },
+  body1: {
+    fontFamily: Font.main.regular,
+    fontSize: 17,
+    color: 'primaryText',
+  },
+  body2: {
+    fontFamily: Font.main.regular,
+    fontSize: 14,
     color: 'primaryText',
   },
   input: {
@@ -52,7 +91,7 @@ const textVariants = {
     padding: 8,
   },
   button: {
-    fontFamily: Font.main.semiBold,
+    fontFamily: Font.main.regular,
     color: 'primaryText',
     textAlign: 'center',
     fontSize: 17,
@@ -67,16 +106,15 @@ const textVariants = {
 export const theme = createTheme({
   colors: {
     ...palette,
-    mainBackground: palette.blueGray,
-    secondaryBackground: palette.darkBlue,
+    primaryBackground: palette.purpleDark,
     cardBackground: palette.white,
-    primaryMain: palette.green,
+    primaryMain: palette.purpleMain,
     primaryText: palette.white,
-    primaryButtonText: palette.darkGray,
-    secondaryMain: palette.lightBlue,
-    secondaryText: palette.steelGray,
-    disabled: palette.lighterGray,
-    inputPlaceholderText: palette.lighterGray,
+    primaryButtonText: palette.white,
+    secondaryMain: palette.greenMain,
+    secondaryText: palette.graySteel,
+    disabled: palette.grayExtraLight,
+    inputPlaceholderText: palette.grayExtraLight,
   },
   spacing: {
     n_xxl: -60,
@@ -119,7 +157,7 @@ export const theme = createTheme({
       padding: 's',
     },
     elevated: {
-      shadowColor: 'darkestBlue',
+      shadowColor: 'blueDark',
       borderRadius: 'm',
       shadowOffset: {
         width: 0,
@@ -132,13 +170,30 @@ export const theme = createTheme({
   },
   textVariants: {
     ...textVariants,
-    bodyLight: { ...textVariants.body, fontFamily: Font.main.light },
-    bodyBold: { ...textVariants.body, fontFamily: Font.main.semiBold },
-    bodyMono: { ...textVariants.body, fontFamily: Font.mono.regular },
+
+    buttonLight: { ...textVariants.button, ...textVariants.light },
+    buttonMedium: { ...textVariants.button, ...textVariants.medium },
+    buttonBold: { ...textVariants.button, ...textVariants.bold },
+    buttonMono: { ...textVariants.button, ...textVariants.mono },
+
+    body1Light: { ...textVariants.body1, ...textVariants.light },
+    body1Medium: { ...textVariants.body1, ...textVariants.medium },
+    body1Bold: { ...textVariants.body1, ...textVariants.bold },
+    body1Mono: { ...textVariants.body1, ...textVariants.mono },
+
+    body2Light: { ...textVariants.body2, ...textVariants.light },
+    body2Medium: { ...textVariants.body2, ...textVariants.medium },
+    body2Bold: { ...textVariants.body2, ...textVariants.bold },
+    body2Mono: { ...textVariants.body2, ...textVariants.mono },
+
+    subtitleRegular: { ...textVariants.subtitle, ...textVariants.regular },
+    subtitleMedium: { ...textVariants.subtitle, ...textVariants.medium },
+    subtitleBold: { ...textVariants.subtitle, ...textVariants.bold },
+    subtitleMono: { ...textVariants.subtitle, ...textVariants.mono },
   },
   inputVariants: {
     regular: {
-      backgroundColor: 'darkGray',
+      backgroundColor: 'grayDark',
       fontFamily: Font.main.regular,
       fontSize: 18,
       color: 'white',
@@ -149,7 +204,7 @@ export const theme = createTheme({
 
 const darkTextVariants = {
   header: { ...textVariants.header, color: 'black' },
-  body: { ...textVariants.body, color: 'black' },
+  body2: { ...textVariants.body2, color: 'black' },
   input: { ...textVariants.input },
   button: { ...textVariants.button, color: 'black' },
 }
@@ -158,16 +213,15 @@ export const darkTheme: Theme = {
   ...theme,
   colors: {
     ...theme.colors,
-    mainBackground: palette.white,
-    secondaryBackground: palette.lightBlue,
+    primaryBackground: palette.white,
     cardBackground: palette.black,
     primaryMain: palette.black,
     secondaryMain: palette.blueGray,
   },
   textVariants: {
     ...darkTextVariants,
-    bodyBold: { ...darkTextVariants.body, fontFamily: Font.main.semiBold },
-    bodyMono: { ...darkTextVariants.body, fontFamily: Font.mono.regular },
+    body2Bold: { ...darkTextVariants.body2, fontFamily: Font.main.semiBold },
+    body2Mono: { ...darkTextVariants.body2, fontFamily: Font.mono.regular },
   },
 }
 

@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native'
 import OneSignal from 'react-native-onesignal'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
-import EnableNotif from '../../../assets/enable-notif.svg'
+import EnableNotif from '../../../assets/images/enable-notif.svg'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Button from '../../../components/Button'
 import { wp } from '../../../utils/layout'
@@ -39,7 +39,7 @@ const EnableNotificationsScreen = () => {
 
   return (
     <SafeAreaBox
-      backgroundColor="mainBackground"
+      backgroundColor="primaryBackground"
       flex={1}
       alignItems="center"
       paddingHorizontal="l"
@@ -52,7 +52,7 @@ const EnableNotificationsScreen = () => {
         <Text variant="header" textAlign="center">
           {t('account_setup.enable_notifications.title')}
         </Text>
-        <Text variant="bodyLight" textAlign="center">
+        <Text variant="body2Light" textAlign="center">
           {t('account_setup.enable_notifications.subtitle')}
         </Text>
         <Box flex={1}>

@@ -9,7 +9,7 @@ import SafeAreaBox from '../../components/SafeAreaBox'
 import {
   RootNavigationProp,
   RootStackParamList,
-} from '../../navigation/mainTabs/tabTypes'
+} from '../../navigation/main/tabTypes'
 import { getString } from '../../utils/account'
 import ConfirmPinView from '../../components/ConfirmPinView'
 import { MoreNavigationProp } from '../moreTab/moreTypes'
@@ -33,16 +33,15 @@ const LockScreen = () => {
   const handleSuccess = useCallback(() => {
     if (shouldLock) {
       setLocked(false, () => {
-        rootNav.navigate('MainTabs', {
-          pinVerifiedFor: requestType,
-        })
+        dispatch(userSlice.actions.lock(false))
+        rootNav.goBack()
       })
     } else {
       moreNav.navigate('MoreScreen', {
         pinVerifiedFor: requestType,
       })
     }
-  }, [moreNav, requestType, rootNav, setLocked, shouldLock])
+  }, [moreNav, requestType, rootNav, setLocked, shouldLock, dispatch])
 
   const handleSignOut = useCallback(() => {
     Alert.alert(
@@ -88,7 +87,7 @@ const LockScreen = () => {
 
   return (
     <SafeAreaBox
-      backgroundColor="secondaryBackground"
+      backgroundColor="primaryBackground"
       flex={1}
       padding="l"
       paddingBottom="none"

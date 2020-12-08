@@ -12,12 +12,22 @@ import NavigationRoot from './navigation/NavigationRoot'
 import { useAppDispatch } from './store/store'
 import userSlice from './store/user/userSlice'
 import { RootState } from './store/rootReducer'
+import { fetchData } from './store/account/accountSlice'
+import BluetoothProvider from './providers/BluetoothProvider'
+import ConnectedHotspotProvider from './providers/ConnectedHotspotProvider'
 
 const App = () => {
   const dispatch = useAppDispatch()
 
   const {
-    user: { lastIdle, isPinRequired, authInterval },
+    user: {
+      lastIdle,
+      isPinRequired,
+      authInterval,
+      isRestored,
+      isBackedUp,
+      isRequestingPermission,
+    },
   } = useSelector((state: RootState) => state)
 
   const handleChange = useCallback(
@@ -31,14 +41,21 @@ const App = () => {
         // pin is required and last idle is past user interval, lock the screen
         newState === 'active' &&
         isPinRequired &&
+        !isRequestingPermission &&
         lastIdle &&
         lastIdle < getUnixTime(Date.now()) - authInterval
       ) {
         dispatch(userSlice.actions.lock(true))
       }
     },
-    [dispatch, isPinRequired, lastIdle, authInterval],
+    [dispatch, isPinRequired, lastIdle, authInterval, isRequestingPermission],
   )
+
+  useEffect(() => {
+    if (!isRestored && !isBackedUp) return
+
+    dispatch(fetchData())
+  }, [isRestored, isBackedUp, dispatch])
 
   useEffect(() => {
     OneSignal.setAppId(Config.ONE_SIGNAL_APP_ID)
@@ -54,14 +71,18 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <SafeAreaProvider>
-        {/* TODO: Will need to adapt status bar for light/dark modes */}
-        {Platform.OS === 'ios' && <StatusBar barStyle="light-content" />}
-        {Platform.OS === 'android' && (
-          <StatusBar translucent backgroundColor="transparent" />
-        )}
-        <NavigationRoot />
-      </SafeAreaProvider>
+      <BluetoothProvider>
+        <ConnectedHotspotProvider>
+          <SafeAreaProvider>
+            {/* TODO: Will need to adapt status bar for light/dark modes */}
+            {Platform.OS === 'ios' && <StatusBar barStyle="light-content" />}
+            {Platform.OS === 'android' && (
+              <StatusBar translucent backgroundColor="transparent" />
+            )}
+            <NavigationRoot />
+          </SafeAreaProvider>
+        </ConnectedHotspotProvider>
+      </BluetoothProvider>
     </ThemeProvider>
   )
 }

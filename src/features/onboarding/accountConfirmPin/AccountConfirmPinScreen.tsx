@@ -35,7 +35,7 @@ const AccountConfirmPinScreen = () => {
 
   return (
     <SafeAreaBox
-      backgroundColor={pinReset ? 'secondaryBackground' : 'mainBackground'}
+      backgroundColor="primaryBackground"
       flex={1}
       padding="l"
       paddingBottom="none"

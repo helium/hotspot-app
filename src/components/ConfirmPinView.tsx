@@ -81,7 +81,10 @@ const ConfirmPinView = ({
         {title}
       </Text>
 
-      <Text variant="bodyLight" marginBottom={{ smallPhone: 'm', phone: 'xl' }}>
+      <Text
+        variant="body2Light"
+        marginBottom={{ smallPhone: 'm', phone: 'xl' }}
+      >
         {subtitle}
       </Text>
       <Animated.View style={{ transform: [{ translateX: shakeAnim.current }] }}>

@@ -26,10 +26,10 @@ const MoreListItem = ({
   item: MoreListItemType
 }) => {
   const { secondaryText } = useColors()
-  const { body } = useTextVariants()
+  const { body2 } = useTextVariants()
 
   const style = {
-    ...body,
+    ...body2,
     color: secondaryText,
     height: '100%',
   }
@@ -38,7 +38,7 @@ const MoreListItem = ({
     <TouchableOpacityBox
       flexDirection="row"
       justifyContent="space-between"
-      backgroundColor="darkGray"
+      backgroundColor="grayDark"
       alignItems="center"
       height={64}
       paddingHorizontal="m"
@@ -46,7 +46,7 @@ const MoreListItem = ({
       onPress={onPress}
       disabled={!onPress}
     >
-      <Text variant="body" color={destructive ? 'red' : 'primaryText'}>
+      <Text variant="body2" color={destructive ? 'redMain' : 'primaryText'}>
         {title}
       </Text>
       {onToggle && <Switch value={value as boolean} onValueChange={onToggle} />}

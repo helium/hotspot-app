@@ -37,7 +37,7 @@ const AccountPassphraseGenerationScreen = () => {
       width="100%"
       paddingVertical={{ phone: 'xxl', smallPhone: 'l' }}
       paddingHorizontal="l"
-      backgroundColor="mainBackground"
+      backgroundColor="primaryBackground"
       alignItems="center"
     >
       <Box width="100%" aspectRatio={1}>
@@ -48,7 +48,7 @@ const AccountPassphraseGenerationScreen = () => {
         />
       </Box>
       <Box width={180} alignItems="center" justifyContent="flex-end" flex={1}>
-        <Text textAlign="center" variant="bodyLight">
+        <Text textAlign="center" variant="body2Light">
           {t('account_setup.generating')}
         </Text>
       </Box>

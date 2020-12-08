@@ -45,14 +45,14 @@ const PassphraseAutocomplete = ({ onSelectWord, wordIdx }: Props) => {
       </Text>
       <TextTransform
         textAlign="center"
-        variant="bodyLight"
-        color="green"
+        variant="body2Light"
+        color="greenMain"
         marginBottom="s"
         i18nKey={t('account_import.word_entry.directions', {
           ordinal,
         })}
       />
-      <Text variant="bodyLight" textAlign="center" color="lightGray">
+      <Text variant="body2Light" textAlign="center" color="grayLight">
         {t('account_import.word_entry.subtitle')}
       </Text>
       <TextInput

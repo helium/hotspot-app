@@ -6,8 +6,6 @@ import Carousel from 'react-native-snap-carousel'
 import OneSignal from 'react-native-onesignal'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
-import Card from '../../../components/Card'
-import ImageBox from '../../../components/ImageBox'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { wp } from '../../../utils/layout'
@@ -15,15 +13,18 @@ import {
   EducationNavigationProp,
   EducationStackParamList,
 } from '../educationTypes'
-import { SlideItem, slides } from './slides'
+import slides from './slides'
 import ProgressBar from '../../../components/ProgressBar'
+import CarouselItem, {
+  CarouselItemData,
+} from '../../../components/CarouselItem'
 
 type Route = RouteProp<EducationStackParamList, 'HotspotEducationScreen'>
 
 const HotspotEducationScreen = () => {
   const { t } = useTranslation()
   const { params: { showButton } = { showButton: true } } = useRoute<Route>()
-  const carouselRef = useRef<Carousel<SlideItem>>(null)
+  const carouselRef = useRef<Carousel<CarouselItemData>>(null)
   const [slideIndex, setSlideIndex] = useState(0)
   const [viewedSlides, setViewedSlides] = useState(false)
   const navigation = useNavigation<EducationNavigationProp>()
@@ -71,37 +72,13 @@ const HotspotEducationScreen = () => {
     )
   }
 
-  const renderItem = ({ item }: { item: SlideItem }) => (
-    <Card marginHorizontal="s" variant="elevated" flex={1} overflow="hidden">
-      <ImageBox source={item.image} width="100%" flex={1} />
-      <Box backgroundColor="white" flex={1} paddingHorizontal="m">
-        <Text
-          variant="bodyBold"
-          paddingTop={{ smallPhone: 's', phone: 'm' }}
-          paddingBottom={{ smallPhone: 'xs', phone: 'm' }}
-          color="darkestBlue"
-          textAlign="center"
-          numberOfLines={1}
-          adjustsFontSizeToFit
-        >
-          {t(item.title)}
-        </Text>
-        <Text
-          numberOfLines={5}
-          variant="bodyLight"
-          textAlign="center"
-          color="darkestBlue"
-          adjustsFontSizeToFit
-        >
-          {t(item.desc)}
-        </Text>
-      </Box>
-    </Card>
+  const renderItem = ({ item }: { item: CarouselItemData }) => (
+    <CarouselItem item={item} />
   )
 
   return (
     <SafeAreaBox
-      backgroundColor="mainBackground"
+      backgroundColor="primaryBackground"
       flex={1}
       paddingBottom="s"
       justifyContent="space-evenly"
@@ -109,6 +86,8 @@ const HotspotEducationScreen = () => {
       <Text
         variant="header"
         textAlign="center"
+        numberOfLines={2}
+        adjustsFontSizeToFit
         padding={{ smallPhone: 'm', phone: 'l' }}
       >
         {t('learn.title')}

@@ -18,6 +18,7 @@ export type UserState = {
   authInterval: number
   lastIdle: number | null
   isLocked: boolean
+  isRequestingPermission: boolean
 }
 const initialState: UserState = {
   isBackedUp: false,
@@ -29,12 +30,12 @@ const initialState: UserState = {
   authInterval: 0,
   lastIdle: null,
   isLocked: false,
+  isRequestingPermission: false,
 }
 
 type Restore = {
   isBackedUp: boolean
   isEducated: boolean
-  isSettingUpHotspot: boolean
   isPinRequired: boolean
   isPinRequiredForPayment: boolean
   authInterval: number
@@ -47,7 +48,6 @@ export const restoreUser = createAsyncThunk<Restore>(
     const vals = await Promise.all([
       getBoolean('accountBackedUp'),
       getBoolean('isEducated'),
-      getBoolean('isSettingUpHotspot'),
       getBoolean('requirePin'),
       getBoolean('requirePinForPayment'),
       getString('authInterval'),
@@ -55,11 +55,10 @@ export const restoreUser = createAsyncThunk<Restore>(
     return {
       isBackedUp: vals[0],
       isEducated: vals[1],
-      isSettingUpHotspot: vals[2],
-      isPinRequired: vals[3],
-      isPinRequiredForPayment: vals[4],
-      authInterval: vals[5] ? parseInt(vals[5], 10) : 0,
-      isLocked: vals[3],
+      isPinRequired: vals[2],
+      isPinRequiredForPayment: vals[3],
+      authInterval: vals[4] ? parseInt(vals[4], 10) : 0,
+      isLocked: vals[2],
     }
   },
 )
@@ -74,35 +73,30 @@ const userSlice = createSlice({
       setItem('userPin', action.payload)
       state.isBackedUp = true
       state.isPinRequired = true
-      return state
     },
     finishEducation: (state) => {
       setItem('isEducated', true)
       state.isEducated = true
-      return state
     },
     setupHotspot: (state) => {
       setItem('isEducated', true)
-      setItem('isSettingUpHotspot', true)
       state.isEducated = true
       state.isSettingUpHotspot = true
-      return state
     },
-    signOut: (state) => {
+    startHotspotSetup: (state) => {
+      state.isSettingUpHotspot = false
+    },
+    signOut: () => {
       signOut()
-      state = initialState
-      state.isRestored = true
-      return state
+      return { ...initialState, isRestored: true }
     },
     requirePinForPayment: (state, action: PayloadAction<boolean>) => {
       state.isPinRequiredForPayment = action.payload
       setItem('requirePinForPayment', action.payload)
-      return state
     },
     updateAuthInterval: (state, action: PayloadAction<number>) => {
       state.authInterval = action.payload
       setItem('authInterval', action.payload.toString())
-      return state
     },
     disablePin: (state) => {
       deleteItem('requirePin')
@@ -110,18 +104,18 @@ const userSlice = createSlice({
       deleteItem('userPin')
       state.isPinRequired = false
       state.isPinRequiredForPayment = false
-      return state
     },
     updateLastIdle: (state) => {
       state.lastIdle = getUnixTime(Date.now())
-      return state
     },
     lock: (state, action: PayloadAction<boolean>) => {
       state.isLocked = action.payload
       if (!state.isLocked) {
         state.lastIdle = null
       }
-      return state
+    },
+    requestingPermission: (state, action: PayloadAction<boolean>) => {
+      state.isRequestingPermission = action.payload
     },
   },
   extraReducers: (builder) => {

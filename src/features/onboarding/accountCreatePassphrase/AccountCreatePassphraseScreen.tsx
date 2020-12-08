@@ -38,7 +38,7 @@ const AccountCreatePassphraseScreen = () => {
   const navigation = useNavigation<OnboardingNavigationProp>()
 
   return (
-    <Box flex={1} backgroundColor="mainBackground">
+    <Box flex={1} backgroundColor="primaryBackground">
       <Box position="absolute" right={0}>
         <Lock />
       </Box>
@@ -56,11 +56,11 @@ const AccountCreatePassphraseScreen = () => {
         <Box paddingHorizontal="l">
           <TextTransform
             marginBottom="m"
-            variant="bodyLight"
+            variant="body2Light"
             i18nKey="account_setup.passphrase.warning_1"
           />
           <TextTransform
-            variant="bodyLight"
+            variant="body2Light"
             i18nKey="account_setup.passphrase.warning_2"
           />
         </Box>

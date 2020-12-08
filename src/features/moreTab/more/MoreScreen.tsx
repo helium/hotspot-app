@@ -13,7 +13,7 @@ import { MoreNavigationProp, MoreStackParamList } from '../moreTypes'
 import {
   RootNavigationProp,
   RootStackParamList,
-} from '../../../navigation/mainTabs/tabTypes'
+} from '../../../navigation/main/tabTypes'
 import MoreListItem, { MoreListItemType } from './MoreListItem'
 import useAuthIntervals from './useAuthIntervals'
 import { useSpacing } from '../../../theme/themeHooks'
@@ -181,7 +181,7 @@ const MoreScreen = () => {
   ])
 
   return (
-    <SafeAreaBox backgroundColor="secondaryBackground" flex={1}>
+    <SafeAreaBox backgroundColor="primaryBackground" flex={1}>
       <SectionList
         contentContainerStyle={{ paddingTop: l }}
         sections={SectionData}
@@ -189,7 +189,7 @@ const MoreScreen = () => {
         renderItem={({ item }) => <MoreListItem item={item} />}
         renderSectionHeader={({ section: { title } }) => (
           <Text
-            variant="body"
+            variant="body2"
             fontSize={12}
             paddingHorizontal="m"
             paddingVertical="s"
