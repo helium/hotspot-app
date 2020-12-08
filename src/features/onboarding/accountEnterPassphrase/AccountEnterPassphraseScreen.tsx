@@ -96,7 +96,7 @@ const AccountEnterPassphraseScreen = () => {
           <Text variant="header" numberOfLines={1} adjustsFontSizeToFit>
             {t('account_setup.confirm.title')}
           </Text>
-          <Text variant="bodyLight">
+          <Text variant="body2Light">
             {t('account_setup.confirm.subtitle', {
               ordinal: t(`ordinals.${testIndices[step]}`),
             })}
@@ -143,10 +143,10 @@ const AccountEnterPassphraseScreen = () => {
           <Text variant="header">
             {t('account_setup.confirm.failed.title')}
           </Text>
-          <Text variant="bodyLight" marginTop="l">
+          <Text variant="body2Light" marginTop="l">
             {t('account_setup.confirm.failed.subtitle_1')}
           </Text>
-          <Text variant="bodyLight">
+          <Text variant="body2Light">
             {t('account_setup.confirm.failed.subtitle_2')}
           </Text>
           <Button

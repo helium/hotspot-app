@@ -87,7 +87,7 @@ const HotspotScanningScreen = () => {
       </Box>
       <Box flex={1} justifyContent="flex-end">
         <Text
-          variant="bodyLight"
+          variant="body2Light"
           numberOfLines={1}
           adjustsFontSizeToFit
           textAlign="center"

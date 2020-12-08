@@ -17,10 +17,10 @@ const Notification = ({ children, date, ...props }: Props) => {
       paddingVertical="s"
       {...props}
     >
-      <Text variant="bodyBold" color="black">
+      <Text variant="body2Bold" color="black">
         {children}
       </Text>
-      <Text variant="bodyMono" fontSize={12} color="lighterGray">
+      <Text variant="body2Mono" fontSize={12} color="lighterGray">
         {formatDistance(date, new Date(), {
           addSuffix: true,
         })}

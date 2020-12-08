@@ -189,7 +189,7 @@ const MoreScreen = () => {
         renderItem={({ item }) => <MoreListItem item={item} />}
         renderSectionHeader={({ section: { title } }) => (
           <Text
-            variant="body"
+            variant="body2"
             fontSize={12}
             paddingHorizontal="m"
             paddingVertical="s"

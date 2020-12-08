@@ -30,7 +30,7 @@ const PhraseChip = ({ title, selected, ...props }: Props) => {
       <Text
         paddingVertical="s"
         paddingHorizontal="m"
-        variant="bodyMono"
+        variant="body2Mono"
         color={selected || underlayShowing ? 'primaryBackground' : 'midGray'}
       >
         {upperFirst(title)}

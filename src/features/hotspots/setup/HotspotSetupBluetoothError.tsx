@@ -28,7 +28,7 @@ const HotspotSetupBluetoothError = () => {
       >
         {t('hotspot_setup.ble_error.title')}
       </Text>
-      <Text variant="bodyLight" textAlign="center">
+      <Text variant="body2Light" textAlign="center">
         {t('hotspot_setup.ble_error.subtitle')}
       </Text>
 

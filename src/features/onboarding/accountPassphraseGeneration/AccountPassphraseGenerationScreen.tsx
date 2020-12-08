@@ -48,7 +48,7 @@ const AccountPassphraseGenerationScreen = () => {
         />
       </Box>
       <Box width={180} alignItems="center" justifyContent="flex-end" flex={1}>
-        <Text textAlign="center" variant="bodyLight">
+        <Text textAlign="center" variant="body2Light">
           {t('account_setup.generating')}
         </Text>
       </Box>

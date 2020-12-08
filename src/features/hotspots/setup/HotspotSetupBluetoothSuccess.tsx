@@ -30,12 +30,12 @@ const HotspotSetupBluetoothSuccess = () => {
       >
         {t('hotspot_setup.ble_select.title')}
       </Text>
-      <Text variant="body" textAlign="center">
+      <Text variant="body2" textAlign="center">
         {t('hotspot_setup.ble_select.hotspots_found', {
           count: Object.keys(availableHotspots).length,
         })}
       </Text>
-      <Text variant="bodyLight" textAlign="center" marginBottom="m">
+      <Text variant="body2Light" textAlign="center" marginBottom="m">
         {t('hotspot_setup.ble_select.subtitle')}
       </Text>
       {keys.map((key) => {

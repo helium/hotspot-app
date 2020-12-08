@@ -2,8 +2,6 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Modal } from 'react-native'
-import Icon from 'react-native-vector-icons/Ionicons'
-import BackButton from '../../../components/BackButton'
 import Box from '../../../components/Box'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
@@ -12,10 +10,11 @@ import {
   OnboardingNavigationProp,
   OnboardingStackParamList,
 } from '../onboardingTypes'
-import Lock from '../../../assets/images/lock.svg'
 import PassphraseAutocomplete from '../accountImport/PassphraseAutocomplete'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Button from '../../../components/Button'
+import Close from '../../../assets/images/close.svg'
+import BackScreen from '../../../components/BackScreen'
 
 type Route = RouteProp<OnboardingStackParamList, 'ImportAccountConfirmScreen'>
 const ImportAccountConfirmScreen = () => {
@@ -46,37 +45,29 @@ const ImportAccountConfirmScreen = () => {
   }
 
   return (
-    <Box flex={1} backgroundColor="primaryBackground">
-      <Box position="absolute" right={0}>
-        <Lock />
+    <BackScreen>
+      <Box paddingHorizontal="l">
+        <Text variant="header">{t('account_import.confirm.title')}</Text>
+        <Text variant="body2Light" marginTop="s" marginBottom="xl">
+          {t('account_import.confirm.subtitle')}
+        </Text>
       </Box>
-      <SafeAreaBox flex={1} flexDirection="column">
-        <Box paddingHorizontal="l" flex={1}>
-          <BackButton onPress={navigation.goBack} />
-        </Box>
-        <Box paddingHorizontal="l">
-          <Text variant="header">{t('account_import.confirm.title')}</Text>
-          <Text variant="bodyLight" marginTop="s" marginBottom="xl">
-            {t('account_import.confirm.subtitle')}
-          </Text>
-        </Box>
-        <WordList words={words} onPressWord={handleWordEdit} />
-        <Box
-          paddingHorizontal="l"
-          paddingBottom="l"
-          flex={3}
-          justifyContent="flex-end"
-        >
-          <Button
-            onPress={() =>
-              navigation.push('AccountImportCompleteScreen', { words })
-            }
-            variant="primary"
-            mode="contained"
-            title={t('account_import.confirm.next')}
-          />
-        </Box>
-      </SafeAreaBox>
+      <WordList words={words} onPressWord={handleWordEdit} />
+      <Box
+        paddingHorizontal="l"
+        paddingBottom="l"
+        flex={3}
+        justifyContent="flex-end"
+      >
+        <Button
+          onPress={() =>
+            navigation.push('AccountImportCompleteScreen', { words })
+          }
+          variant="primary"
+          mode="contained"
+          title={t('account_import.confirm.next')}
+        />
+      </Box>
 
       <Modal
         presentationStyle="overFullScreen"
@@ -95,7 +86,7 @@ const ImportAccountConfirmScreen = () => {
           paddingTop="l"
         >
           <TouchableOpacityBox alignSelf="flex-start" onPress={clearSelection}>
-            <Icon name="close-outline" color="white" size={34} />
+            <Close color="white" height={24} width={24} />
           </TouchableOpacityBox>
           <PassphraseAutocomplete
             onSelectWord={replaceWord}
@@ -103,7 +94,7 @@ const ImportAccountConfirmScreen = () => {
           />
         </SafeAreaBox>
       </Modal>
-    </Box>
+    </BackScreen>
   )
 }
 

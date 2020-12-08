@@ -46,7 +46,7 @@ const MoreListItem = ({
       onPress={onPress}
       disabled={!onPress}
     >
-      <Text variant="body" color={destructive ? 'red' : 'primaryText'}>
+      <Text variant="body2" color={destructive ? 'red' : 'primaryText'}>
         {title}
       </Text>
       {onToggle && <Switch value={value as boolean} onValueChange={onToggle} />}

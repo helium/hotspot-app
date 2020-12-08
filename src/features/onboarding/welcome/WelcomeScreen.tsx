@@ -43,10 +43,10 @@ const WelcomeScreen = () => {
           <Text variant="header" numberOfLines={1} adjustsFontSizeToFit>
             {t('account_setup.welcome.title')}
           </Text>
-          <Text variant="bodyLight" textAlign="center" marginVertical="m">
+          <Text variant="body2Light" textAlign="center" marginVertical="m">
             {t('account_setup.welcome.subtitle')}
           </Text>
-          <Text variant="bodyBold" textAlign="center">
+          <Text variant="body2Bold" textAlign="center">
             {t('account_setup.welcome.get_started')}
           </Text>
         </Box>

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import BackButton from '../../../components/BackButton'
-import SafeAreaBox from '../../../components/SafeAreaBox'
 import { OnboardingNavigationProp } from '../onboardingTypes'
 import PassphraseAutocomplete, { TOTAL_WORDS } from './PassphraseAutocomplete'
+import BackScreen from '../../../components/BackScreen'
 
 const AccountImportScreen = () => {
   const [words, setWords] = useState(new Array<string>())
@@ -35,13 +34,11 @@ const AccountImportScreen = () => {
   }
 
   return (
-    <SafeAreaBox
+    <BackScreen
       flex={1}
       backgroundColor="primaryBackground"
       flexDirection="column"
-      paddingHorizontal="l"
     >
-      <BackButton onPress={navigation.goBack} />
       <KeyboardAwareScrollView
         enableOnAndroid
         extraScrollHeight={40}
@@ -52,7 +49,7 @@ const AccountImportScreen = () => {
           wordIdx={words.length}
         />
       </KeyboardAwareScrollView>
-    </SafeAreaBox>
+    </BackScreen>
   )
 }
 

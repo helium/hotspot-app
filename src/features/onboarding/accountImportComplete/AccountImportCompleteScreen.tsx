@@ -71,7 +71,7 @@ const AccountImportCompleteScreen = () => {
       <Text variant="header" color="white" marginBottom="m" textAlign="center">
         {t('account_import.complete.title')}
       </Text>
-      <Text variant="bodyLight" color="white" textAlign="center">
+      <Text variant="body2Light" color="white" textAlign="center">
         {t('account_import.complete.subtitle')}
       </Text>
     </SafeAreaBox>

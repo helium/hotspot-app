@@ -35,7 +35,7 @@ const TabBarIcon = ({ name, focused, size }: Props) => {
   return (
     <Box alignItems="center" flex={1} justifyContent="flex-end" padding="xxxs">
       <Icon size={size} color={color} name={name} />
-      <Text variant="bodyMono" lineHeight={16} fontSize={10} style={{ color }}>
+      <Text variant="body2Mono" lineHeight={16} fontSize={10} style={{ color }}>
         {t(`navigation.${name.toLowerCase()}`)}
       </Text>
     </Box>

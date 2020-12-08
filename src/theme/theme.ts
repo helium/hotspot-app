@@ -53,7 +53,12 @@ const textVariants = {
     lineHeight: 26,
     color: 'purpleLight',
   },
-  body: {
+  body1: {
+    fontFamily: Font.main.regular,
+    fontSize: 17,
+    color: 'primaryText',
+  },
+  body2: {
     fontFamily: Font.main.regular,
     fontSize: 14,
     color: 'primaryText',
@@ -144,14 +149,22 @@ export const theme = createTheme({
   },
   textVariants: {
     ...textVariants,
+
     buttonLight: { ...textVariants.button, fontFamily: Font.main.light },
     buttonMedium: { ...textVariants.button, fontFamily: Font.main.medium },
     buttonBold: { ...textVariants.button, fontFamily: Font.main.semiBold },
-    bodyLight: { ...textVariants.body, fontFamily: Font.main.light },
-    bodyMedium: { ...textVariants.body, fontFamily: Font.main.medium },
-    bodyBold: { ...textVariants.body, fontFamily: Font.main.semiBold },
+
+    body1Light: { ...textVariants.body1, fontFamily: Font.main.light },
+    body1Medium: { ...textVariants.body1, fontFamily: Font.main.medium },
+    body1Bold: { ...textVariants.body1, fontFamily: Font.main.semiBold },
+    body1Mono: { ...textVariants.body1, fontFamily: Font.mono.regular },
+
+    body2Light: { ...textVariants.body2, fontFamily: Font.main.light },
+    body2Medium: { ...textVariants.body2, fontFamily: Font.main.medium },
+    body2Bold: { ...textVariants.body2, fontFamily: Font.main.semiBold },
+    body2Mono: { ...textVariants.body2, fontFamily: Font.mono.regular },
+
     subtitleBold: { ...textVariants.subtitle, fontFamily: Font.main.semiBold },
-    bodyMono: { ...textVariants.body, fontFamily: Font.mono.regular },
   },
   inputVariants: {
     regular: {
@@ -166,7 +179,7 @@ export const theme = createTheme({
 
 const darkTextVariants = {
   header: { ...textVariants.header, color: 'black' },
-  body: { ...textVariants.body, color: 'black' },
+  body2: { ...textVariants.body2, color: 'black' },
   input: { ...textVariants.input },
   button: { ...textVariants.button, color: 'black' },
 }
@@ -182,8 +195,8 @@ export const darkTheme: Theme = {
   },
   textVariants: {
     ...darkTextVariants,
-    bodyBold: { ...darkTextVariants.body, fontFamily: Font.main.semiBold },
-    bodyMono: { ...darkTextVariants.body, fontFamily: Font.mono.regular },
+    body2Bold: { ...darkTextVariants.body2, fontFamily: Font.main.semiBold },
+    body2Mono: { ...darkTextVariants.body2, fontFamily: Font.mono.regular },
   },
 }
 

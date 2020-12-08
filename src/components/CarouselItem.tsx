@@ -30,7 +30,7 @@ const CarouselItem = ({ item }: { item: CarouselItemData }) => {
         height={175}
       >
         <Text
-          variant="bodyBold"
+          variant="body2Bold"
           paddingBottom={{ smallPhone: 'xs', phone: 'm' }}
           color="darkestBlue"
           textAlign="center"
@@ -41,7 +41,7 @@ const CarouselItem = ({ item }: { item: CarouselItemData }) => {
         </Text>
         <Text
           numberOfLines={5}
-          variant="bodyLight"
+          variant="body2Light"
           textAlign="center"
           color="darkestBlue"
           adjustsFontSizeToFit
