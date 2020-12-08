@@ -47,6 +47,26 @@ const textVariants = {
     lineHeight: 45.5,
     color: 'primaryText',
   },
+  regular: {
+    fontFamily: Font.main.regular,
+    color: 'primaryText',
+  },
+  light: {
+    fontFamily: Font.main.light,
+    color: 'primaryText',
+  },
+  bold: {
+    fontFamily: Font.main.semiBold,
+    color: 'primaryText',
+  },
+  mono: {
+    fontFamily: Font.mono.regular,
+    color: 'primaryText',
+  },
+  medium: {
+    fontFamily: Font.main.medium,
+    color: 'primaryText',
+  },
   subtitle: {
     fontFamily: Font.main.light,
     fontSize: 19,
@@ -150,21 +170,25 @@ export const theme = createTheme({
   textVariants: {
     ...textVariants,
 
-    buttonLight: { ...textVariants.button, fontFamily: Font.main.light },
-    buttonMedium: { ...textVariants.button, fontFamily: Font.main.medium },
-    buttonBold: { ...textVariants.button, fontFamily: Font.main.semiBold },
+    buttonLight: { ...textVariants.button, ...textVariants.light },
+    buttonMedium: { ...textVariants.button, ...textVariants.medium },
+    buttonBold: { ...textVariants.button, ...textVariants.bold },
+    buttonMono: { ...textVariants.button, ...textVariants.mono },
 
-    body1Light: { ...textVariants.body1, fontFamily: Font.main.light },
-    body1Medium: { ...textVariants.body1, fontFamily: Font.main.medium },
-    body1Bold: { ...textVariants.body1, fontFamily: Font.main.semiBold },
-    body1Mono: { ...textVariants.body1, fontFamily: Font.mono.regular },
+    body1Light: { ...textVariants.body1, ...textVariants.light },
+    body1Medium: { ...textVariants.body1, ...textVariants.medium },
+    body1Bold: { ...textVariants.body1, ...textVariants.bold },
+    body1Mono: { ...textVariants.body1, ...textVariants.mono },
 
-    body2Light: { ...textVariants.body2, fontFamily: Font.main.light },
-    body2Medium: { ...textVariants.body2, fontFamily: Font.main.medium },
-    body2Bold: { ...textVariants.body2, fontFamily: Font.main.semiBold },
-    body2Mono: { ...textVariants.body2, fontFamily: Font.mono.regular },
+    body2Light: { ...textVariants.body2, ...textVariants.light },
+    body2Medium: { ...textVariants.body2, ...textVariants.medium },
+    body2Bold: { ...textVariants.body2, ...textVariants.bold },
+    body2Mono: { ...textVariants.body2, ...textVariants.mono },
 
-    subtitleBold: { ...textVariants.subtitle, fontFamily: Font.main.semiBold },
+    subtitleRegular: { ...textVariants.subtitle, ...textVariants.regular },
+    subtitleMedium: { ...textVariants.subtitle, ...textVariants.medium },
+    subtitleBold: { ...textVariants.subtitle, ...textVariants.bold },
+    subtitleMono: { ...textVariants.subtitle, ...textVariants.mono },
   },
   inputVariants: {
     regular: {

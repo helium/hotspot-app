@@ -24,8 +24,8 @@ const BackButton = ({ onPress, ...props }: Props) => {
         flexDirection="row"
         {...props}
       >
-        <BackArrow />
-        <Text marginLeft="xs" color="primaryText" variant="button">
+        <BackArrow height={16} width={16} />
+        <Text marginLeft="xs" color="primaryText" variant="bold" fontSize={22}>
           {t('back')}
         </Text>
       </Box>

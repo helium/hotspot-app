@@ -69,7 +69,7 @@ const HotspotSetupPowerScreen = () => {
         width="100%"
         variant="secondary"
         mode="contained"
-        title={t('generic.next')}
+        title={t('hotspot_setup.power.next')}
         onPress={() =>
           navigation.push('HotspotSetupPairingScreen', { hotspotType })
         }

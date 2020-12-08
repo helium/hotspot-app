@@ -10,6 +10,7 @@ const components = {
   red: <Text color="red" />,
   blue: <Text color="blue" />,
   white: <Text color="white" />,
+  purpleMain: <Text color="purpleMain" />,
 }
 
 type Props = TextProps<Theme> & { i18nKey: string }

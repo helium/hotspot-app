@@ -32,7 +32,7 @@ const HotspotSetupSelectionScreen = () => {
         {t('hotspot_setup.selection.subtitle')}
       </Text>
 
-      <Box flexDirection="row" height={191}>
+      <Box flexDirection="row" height={191} marginTop="s">
         <Card flex={1} variant="elevated" backgroundColor="white">
           <TouchableHighlightBox
             height="100%"
@@ -56,12 +56,12 @@ const HotspotSetupSelectionScreen = () => {
                 />
               </Box>
               <Text
-                variant="body2Medium"
+                variant="body1Medium"
                 color={pressing === 'Helium' ? 'white' : 'blueGray'}
                 marginTop="l"
                 textAlign="center"
                 numberOfLines={2}
-                width={100}
+                adjustsFontSizeToFit
                 lineHeight={19}
               >
                 {t('hotspot_setup.selection.option_one')}
@@ -95,12 +95,12 @@ const HotspotSetupSelectionScreen = () => {
                 />
               </Box>
               <Text
-                variant="body2Medium"
+                variant="body1Medium"
                 color={pressing === 'RAK' ? 'white' : 'blueGray'}
                 marginTop="l"
                 textAlign="center"
                 numberOfLines={2}
-                width={100}
+                adjustsFontSizeToFit
                 lineHeight={19}
               >
                 {t('hotspot_setup.selection.option_two')}

@@ -116,7 +116,7 @@ export default {
     next: "I've read the guide",
   },
   generic: {
-    understand: 'I Understand',
+    understand: 'I understand',
     blocks: 'Blocks',
     active: 'Active',
     skip: 'Skip',
@@ -152,9 +152,9 @@ export default {
   hotspot_setup: {
     selection: {
       title: 'Choose\nyour Hotspot.',
-      subtitle: 'What kind of Hotspot do you wish to add?',
-      option_one: 'Helium Hotspot',
-      option_two: 'RAK Hotspot Miner',
+      subtitle: 'What kind of Hotspot do you\nwish to add?',
+      option_one: 'Helium\nHotspot',
+      option_two: 'RAK\nHotspot Miner',
       third_party_header: 'Other Hotspots',
       helium_edition: 'For the Helium Network',
       fine_print:
@@ -196,10 +196,11 @@ export default {
     diagnostics: {
       title: 'Diagnostics',
       p_1:
-        '<b><white>Diagnostic support allows Helium to identify issues with your Hotspot in a secure way.</white></b>\n\nHelium will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <blue>support@helium.com</blue> from the email used to purchase the Hotspot.',
+        '<b><white>Diagnostic support allows Helium to identify issues with your Hotspot in a secure way.</white></b>\n\nHelium will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purpleMain><b>support@helium.com</b></purpleMain> from the email used to purchase the Hotspot.',
     },
     power: {
       title: 'Power Up',
+      next: "I'm powered up",
       subtitle_1: 'Attach the antenna and plug in the provided power adapter.',
       rak_subtitle_1:
         'Plug in the provided power adapter into an outlet near a window.',
