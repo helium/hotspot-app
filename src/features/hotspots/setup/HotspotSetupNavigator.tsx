@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { Platform } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack'
 import HotspotSetupSelectionScreen from './HotspotSelectionScreen'
 import HotspotSetupEducationScreen from './HotspotSetupEducationScreen'
@@ -16,7 +15,7 @@ const HotspotSetup = () => {
   return (
     <HotspotSetupStack.Navigator
       headerMode="none"
-      screenOptions={Platform.OS === 'android' ? defaultScreenOptions : {}}
+      screenOptions={defaultScreenOptions}
     >
       <HotspotSetupStack.Screen
         name="HotspotSetupSelectionScreen"
