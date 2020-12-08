@@ -7,10 +7,10 @@ const initialState = {
   enable: async () => {},
   scan: async () => {},
   connect: async () => undefined,
-  getAddress: async () => '',
   discoverAllServicesAndCharacteristics: async () => undefined,
   getServiceCharacteristics: async () => undefined,
-  findAndReadCharacteristic: () => undefined,
+  findAndReadCharacteristic: () =>
+    new Promise<undefined>((resolve) => resolve()),
 }
 
 const BleContext = createContext<ReturnType<typeof useBluetooth>>(initialState)

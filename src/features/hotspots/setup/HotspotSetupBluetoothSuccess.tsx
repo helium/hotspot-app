@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Device } from 'react-native-ble-plx'
@@ -5,9 +6,11 @@ import Box from '../../../components/Box'
 import Button from '../../../components/Button'
 import Text from '../../../components/Text'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
+import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
 
 const HotspotSetupBluetoothSuccess = () => {
   const { t } = useTranslation()
+  const navigation = useNavigation<HotspotSetupNavigationProp>()
   const {
     availableHotspots,
     connectAndConfigHotspot,
@@ -15,8 +18,9 @@ const HotspotSetupBluetoothSuccess = () => {
 
   const keys = Object.keys(availableHotspots)
 
-  const handleConnect = (hotspot: Device) => {
-    connectAndConfigHotspot(hotspot)
+  const handleConnect = async (hotspot: Device) => {
+    await connectAndConfigHotspot(hotspot)
+    navigation.navigate('HotspotSetupScanWifiScreen')
   }
 
   return (

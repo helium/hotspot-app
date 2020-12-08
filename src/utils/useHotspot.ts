@@ -2,8 +2,11 @@ import { useState } from 'react'
 import { Device } from 'react-native-ble-plx'
 import validator from 'validator'
 import { useBluetoothContext } from '../providers/BluetoothProvider'
-import { WIFI_SSID_UUID, ONBOARDING_KEY_UUID } from './useBluetooth'
-import { fromBs64 } from './base64'
+import {
+  WIFI_SSID_UUID,
+  ONBOARDING_KEY_UUID,
+  PUBKEY_UUID,
+} from './useBluetooth'
 import { getStaking } from './stakingClient'
 
 export type HotspotDetails = {
@@ -37,7 +40,6 @@ const useHotspot = () => {
     discoverAllServicesAndCharacteristics,
     getServiceCharacteristics,
     findAndReadCharacteristic,
-    getAddress,
   } = useBluetoothContext()
   const [availableHotspots, setAvailableHotspots] = useState<
     Record<string, Device>
@@ -93,24 +95,25 @@ const useHotspot = () => {
     )
     if (!serviceCharacteristics) return
 
-    const wifiChar = await findAndReadCharacteristic(
+    const wifi = await findAndReadCharacteristic(
       WIFI_SSID_UUID,
       serviceCharacteristics,
     )
 
-    const deviceAddress = await getAddress(connectedDevice)
+    const address = await findAndReadCharacteristic(
+      PUBKEY_UUID,
+      serviceCharacteristics,
+    )
 
-    const onboardingChar = await findAndReadCharacteristic(
+    const onboardingAddress = await findAndReadCharacteristic(
       ONBOARDING_KEY_UUID,
       serviceCharacteristics,
     )
 
-    if (!onboardingChar || !onboardingChar.value) return
+    if (!onboardingAddress) return
 
-    const onboardingAddress = fromBs64(onboardingChar.value)
     const type = getHotspotType(onboardingAddress)
     const name = getHotspotName(type)
-    const wifi = wifiChar?.value ? fromBs64(wifiChar.value) : ''
     const mac = hotspotDevice.localName?.slice(15)
 
     if (onboardingAddress.length < 20) {
@@ -123,15 +126,16 @@ const useHotspot = () => {
       `hotspots/${onboardingAddress}`,
     )) as HotspotStaking)
 
-    setHotspotDetails({
-      address: deviceAddress,
+    const details = {
+      address,
       mac,
       type,
       name,
       wifi,
       freeAddHotspot,
       onboardingAddress,
-    })
+    }
+    setHotspotDetails(details)
   }
 
   return {

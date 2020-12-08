@@ -9,6 +9,7 @@ export type HotspotSetupStackParamList = {
   HotspotSetupPairingScreen: { hotspotType: HotspotType }
   HotspotScanningScreen: { hotspotType: HotspotType }
   HotspotSetupBluetoothScreen: { hotspotType: HotspotType }
+  HotspotSetupScanWifiScreen: undefined
 }
 
 export type HotspotSetupNavigationProp = StackNavigationProp<
