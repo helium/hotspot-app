@@ -412,6 +412,9 @@ export default {
       body: "This seed phrase doesn't correspond to a Helium account",
     },
   },
+  wallet: {
+    title: 'My Wallet',
+  },
   more: {
     sections: {
       security: {

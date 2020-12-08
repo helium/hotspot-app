@@ -12,6 +12,7 @@ import Box from '../../components/Box'
 import StatsScreen from '../../features/stats/StatsScreen'
 import { useAppDispatch } from '../../store/store'
 import userSlice from '../../store/user/userSlice'
+import WalletNavigator from '../../features/wallet/WalletNavigator'
 
 const MainTab = createBottomTabNavigator()
 
@@ -39,6 +40,7 @@ const MainTabs = () => {
 
   return (
     <MainTab.Navigator
+      initialRouteName="Wallet"
       tabBarOptions={{
         showLabel: false,
         style: {
@@ -60,7 +62,7 @@ const MainTabs = () => {
       })}
     >
       <MainTab.Screen name="Hotspots" component={Hotspots} />
-      <MainTab.Screen name="Wallet" component={StatsScreen} />
+      <MainTab.Screen name="Wallet" component={WalletNavigator} />
       <MainTab.Screen name="Notifications" component={StatsScreen} />
       <MainTab.Screen name="More" component={More} />
     </MainTab.Navigator>
