@@ -1,12 +1,11 @@
 import React, { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Animated } from 'react-native'
+import { Animated, Easing } from 'react-native'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
-import { hp, wp } from '../../../utils/layout'
 import {
   HotspotSetupNavigationProp,
   HotspotSetupStackParamList,
@@ -17,39 +16,27 @@ type Route = RouteProp<HotspotSetupStackParamList, 'HotspotScanningScreen'>
 
 const HotspotScanningScreen = () => {
   const rotateAnim = useRef(new Animated.Value(0))
-  const opacityAnim = useRef(new Animated.Value(0))
   const { t } = useTranslation()
   const { scanForHotspots } = useConnectedHotspotContext()
 
   const { params } = useRoute<Route>()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
 
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(rotateAnim.current, {
-        toValue: 1,
-        duration: 6000,
-        useNativeDriver: true,
-      }),
+  const anim = () =>
+    Animated.loop(
       Animated.sequence([
-        Animated.timing(opacityAnim.current, {
-          toValue: 1,
-          delay: 100,
-          duration: 2900,
+        Animated.timing(rotateAnim.current, {
+          toValue: -3,
+          duration: 6000,
           useNativeDriver: true,
-        }),
-        Animated.timing(opacityAnim.current, {
-          toValue: 0,
-          delay: 100,
-          duration: 2900,
-          useNativeDriver: true,
+          easing: Easing.linear,
         }),
       ]),
-    ]).start()
-  }, [])
+    ).start()
 
   useEffect(() => {
     const scan = async () => {
+      anim()
       await scanForHotspots(6000)
       navigation.replace('HotspotSetupBluetoothScreen', params)
     }
@@ -58,46 +45,38 @@ const HotspotScanningScreen = () => {
   }, [])
 
   return (
-    <SafeAreaBox backgroundColor="primaryBackground" flex={1}>
-      <Box
-        overflow="hidden"
-        position="absolute"
-        height={hp(100)}
-        width={hp(100)}
+    <SafeAreaBox
+      backgroundColor="primaryBackground"
+      flex={1}
+      alignItems="center"
+    >
+      <Box flex={1} />
+
+      <Animated.Image
+        source={require('../../../assets/images/loading.png')}
+        style={{
+          transform: [
+            {
+              rotate: rotateAnim.current.interpolate({
+                inputRange: [0, 1],
+                outputRange: ['0deg', '360deg'],
+              }),
+            },
+          ],
+        }}
+      />
+      <Text
+        marginTop="xl"
+        variant="body2Light"
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        textAlign="center"
       >
-        <Animated.Image
-          source={require('../../../assets/images/scanning-bg.png')}
-          style={{
-            opacity: opacityAnim.current,
-            position: 'absolute',
-            height: hp(120),
-            width: hp(120),
-            top: -hp(10),
-            left: wp(60) - hp(65),
-            transform: [
-              {
-                rotate: rotateAnim.current.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: ['0deg', '360deg'],
-                }),
-              },
-            ],
-          }}
-        />
-      </Box>
-      <Box flex={1} justifyContent="flex-end">
-        <Text
-          variant="body2Light"
-          numberOfLines={1}
-          adjustsFontSizeToFit
-          textAlign="center"
-        >
-          {t('hotspot_setup.ble_scan.title')}
-        </Text>
-      </Box>
+        {t('hotspot_setup.ble_scan.title')}
+      </Text>
+      <Box flex={1} />
       <Button
         marginBottom="m"
-        flex={1}
         justifyContent="flex-end"
         onPress={navigation.goBack}
         variant="primary"
