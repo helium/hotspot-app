@@ -32,8 +32,10 @@ const ActivityCard = ({ animatedValue }: Props) => {
   return (
     <SlidingUpPanel
       animatedValue={animatedValue}
-      draggableRange={{ top: 600, bottom: 280 }}
+      draggableRange={{ top: 600, bottom: 40 }}
+      snappingPoints={[280]}
       showBackdrop={false}
+      friction={2}
     >
       {(dragHandler) => (
         <Box flex={1} backgroundColor="white" borderRadius="l">

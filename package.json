@@ -57,6 +57,7 @@
   "dependencies": {
     "@helium/crypto-react-native": "^3.5.0",
     "@helium/http": "^3.8.0",
+    "@react-native-community/art": "^1.2.0",
     "@react-native-community/async-storage": "^1.12.1",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-native-community/picker": "^1.8.1",
@@ -103,6 +104,7 @@
     "react-native-sodium": "^0.3.9",
     "react-native-svg": "^12.1.0",
     "react-native-unimodules": "^0.11.0",
+    "react-qr-code": "^1.0.3",
     "react-redux": "^7.2.2",
     "redux-thunk": "^2.3.0",
     "rn-sliding-up-panel": "^2.4.4",

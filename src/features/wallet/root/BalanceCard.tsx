@@ -1,6 +1,7 @@
 import React from 'react'
 import { Animated } from 'react-native'
 import Haptic from 'react-native-haptic-feedback'
+import QRCode from 'react-qr-code'
 import Box from '../../../components/Box'
 import AnimatedBox from '../../../components/AnimatedBox'
 import Text from '../../../components/Text'
@@ -10,9 +11,10 @@ import WalletButton from './WalletButton'
 type Props = {
   translateY: Animated.AnimatedInterpolation
   scale: Animated.AnimatedInterpolation
+  onReceivePress: () => void
 }
 
-const BalanceCard = ({ translateY, scale }: Props) => {
+const BalanceCard = ({ translateY, scale, onReceivePress }: Props) => {
   const handlePress = () => {
     Haptic.trigger('notificationWarning')
   }
@@ -46,7 +48,7 @@ const BalanceCard = ({ translateY, scale }: Props) => {
         </Box>
 
         <Box flexDirection="row" justifyContent="space-between" width={130}>
-          <WalletButton variant="receive" onPress={handlePress} />
+          <WalletButton variant="receive" onPress={onReceivePress} />
           <WalletButton variant="send" onPress={handlePress} />
         </Box>
       </AnimatedBox>
@@ -54,6 +56,15 @@ const BalanceCard = ({ translateY, scale }: Props) => {
       <Box flexDirection="row" marginTop="m">
         <CurrencyBadge variant="dc" amount={1032935734} />
         <CurrencyBadge variant="hst" amount={20} />
+      </Box>
+
+      <Box justifyContent="center" alignItems="center" flex={1}>
+        <Box backgroundColor="white" padding="s" borderRadius="m">
+          <QRCode
+            value="2398hL9HESZHEIjVtaLAH5fdg2vrUeZEs2B92tGTzeQQtugr8di"
+            size={128}
+          />
+        </Box>
       </Box>
     </Box>
   )

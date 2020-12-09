@@ -22,7 +22,7 @@ const WalletView = () => {
     Haptic.trigger('notificationWarning')
   }
 
-  const animatedValue = useRef(new Animated.Value(0)).current
+  const animatedValue = useRef(new Animated.Value(280)).current
   animatedValue.addListener(({ value }) => console.log(value))
 
   const balanceTranslateY = animatedValue.interpolate({
@@ -42,6 +42,15 @@ const WalletView = () => {
     outputRange: [1, 0.85],
     extrapolate: 'clamp',
   })
+
+  const animateActivityToBottom = () => {
+    Animated.timing(animatedValue, {
+      toValue: 40,
+      duration: 200,
+      useNativeDriver: true,
+    }).start()
+    Haptic.trigger('notificationSuccess')
+  }
 
   return (
     <Box flex={1}>
@@ -82,6 +91,7 @@ const WalletView = () => {
         <BalanceCard
           translateY={balanceInnerTranslateY}
           scale={balanceInnerScale}
+          onReceivePress={animateActivityToBottom}
         />
       </AnimatedBox>
 
