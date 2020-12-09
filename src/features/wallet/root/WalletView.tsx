@@ -33,13 +33,13 @@ const WalletView = () => {
 
   const balanceInnerTranslateY = animatedValue.interpolate({
     inputRange: [400, 600],
-    outputRange: [0, -20],
+    outputRange: [0, -35],
     extrapolate: 'clamp',
   })
 
   const balanceInnerScale = animatedValue.interpolate({
     inputRange: [400, 600],
-    outputRange: [1, 0.9],
+    outputRange: [1, 0.85],
     extrapolate: 'clamp',
   })
 
