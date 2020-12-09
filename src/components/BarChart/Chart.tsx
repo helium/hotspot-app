@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Svg, { Text, Rect } from 'react-native-svg'
 import { PanResponder, Animated } from 'react-native'
-import { maxBy, clamp } from 'lodash'
+import { maxBy, clamp, max } from 'lodash'
 import Haptic from 'react-native-haptic-feedback'
 import { ChartData } from './types'
 
@@ -16,7 +16,7 @@ type Props = {
   width: number
   height: number
   data: ChartData[]
-  onFocus: () => void
+  onFocus: (data: ChartData | null) => void
 }
 
 const BarChart = ({ width, height, data, onFocus }: Props) => {
@@ -36,6 +36,12 @@ const BarChart = ({ width, height, data, onFocus }: Props) => {
   const maxDown = maxBy(data, 'down')?.down || 0
   const maxBarHeight = maxUp + barWidth / 1.5 + maxDown
   const vScale = (height - 20) / maxBarHeight
+  const minBarHeight = barWidth
+
+  const barHeight = (value: number | undefined): number => {
+    if (value === 0 || value === undefined) return 0
+    return max([value * vScale, minBarHeight])
+  }
 
   // maps x coordinates to elements in our data
   const findDataIndex = (xCoord: number): number =>
@@ -53,18 +59,16 @@ const BarChart = ({ width, height, data, onFocus }: Props) => {
   }
 
   // pan responder is responsible for the slide interaction
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderMove: (evt) => {
-        const dataIndex = findDataIndex(evt.nativeEvent.locationX)
-        setFocusedBar(data[dataIndex])
-      },
-      onPanResponderRelease: () => {
-        setFocusedBar(null)
-      },
-    }),
-  ).current
+  const panResponder = PanResponder.create({
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderMove: (evt) => {
+      const dataIndex = findDataIndex(evt.nativeEvent.locationX)
+      setFocusedBar(data[dataIndex])
+    },
+    onPanResponderRelease: () => {
+      setFocusedBar(null)
+    },
+  })
 
   return (
     <Animated.View
@@ -83,10 +87,10 @@ const BarChart = ({ width, height, data, onFocus }: Props) => {
           <React.Fragment key={`frag-${v.id}`}>
             <Rect
               x={barWidth * (2 * i)}
-              y={maxUp * vScale - v.up * vScale}
+              y={maxUp * vScale - barHeight(v?.up)}
               rx={barWidth / 2}
               width={barWidth}
-              height={v.up * vScale}
+              height={barHeight(v?.up)}
               fill="#29D391"
               opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
             />
@@ -96,7 +100,7 @@ const BarChart = ({ width, height, data, onFocus }: Props) => {
               y={maxUp * vScale + barWidth / 1.5}
               rx={barWidth / 2}
               width={barWidth}
-              height={v.down * vScale}
+              height={barHeight(v?.down)}
               fill="#1D91F8"
               opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
             />

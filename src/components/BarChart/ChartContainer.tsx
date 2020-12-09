@@ -6,7 +6,7 @@ import { ChartData } from './types'
 type Props = {
   height: number
   data: ChartData[]
-  onFocus: () => void
+  onFocus: (data: ChartData | null) => void
 }
 
 const ChartContainer = ({ height, data, onFocus }: Props) => {

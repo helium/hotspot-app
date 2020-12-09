@@ -7,6 +7,7 @@ import CarotLeft from '../../assets/images/carot-left.svg'
 import CarotRight from '../../assets/images/carot-right.svg'
 import Box from '../Box'
 import Text from '../Text'
+import { ChartData } from './types'
 
 type Props = {
   height: number
@@ -19,6 +20,10 @@ const WalletChart = ({ height }: Props) => {
   const changeTimeframe = (t) => {
     setTimeframe(t)
     Haptic.trigger('impactMedium')
+  }
+
+  const handleFocusData = (data: ChartData | null): void => {
+    setFocusedData(data)
   }
 
   return (
@@ -75,7 +80,7 @@ const WalletChart = ({ height }: Props) => {
       <ChartContainer
         height={height}
         data={data[timeframe]}
-        onFocus={setFocusedData}
+        onFocus={handleFocusData}
       />
     </Box>
   )
@@ -84,177 +89,23 @@ const WalletChart = ({ height }: Props) => {
 const weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 
 const data = {
-  0: [
-    {
-      up: 52,
-      down: 0,
-      day: 'T',
-      id: 0,
-    },
-    {
-      up: 28,
-      down: 0,
-      day: 'W',
-      id: 1,
-    },
-    {
-      up: 20,
-      down: 12,
-      // down: 0,
-      day: 'T',
-      id: 2,
-    },
-    {
-      up: 70,
-      down: 0,
-      day: 'F',
-      id: 3,
-    },
-    {
-      up: 50,
-      down: 0,
-      day: 'S',
-      id: 4,
-    },
-    {
-      up: 63,
-      down: 0,
-      day: 'S',
-      id: 5,
-    },
-    {
-      up: 28,
-      down: 0,
-      day: 'M',
-      id: 6,
-    },
-    {
-      up: 72,
-      down: 29,
-      // down: 0,
-      day: 'T',
-      id: 7,
-    },
-    {
-      up: 40,
-      down: 0,
-      day: 'W',
-      id: 8,
-    },
-    {
-      up: 70,
-      down: 0,
-      day: 'T',
-      id: 9,
-    },
-    {
-      up: 42,
-      down: 0,
-      day: 'F',
-      id: 10,
-    },
-    {
-      up: 63,
-      down: 16,
-      // down: 0,
-      day: 'S',
-      id: 11,
-    },
-    {
-      up: 20,
-      down: 0,
-      day: 'S',
-      id: 12,
-    },
-    {
-      up: 42,
-      down: 0,
-      day: 'M',
-      id: 13,
-    },
-  ],
-  1: [
-    {
-      up: 52,
-      down: 0,
-      day: 'T',
-      id: 0,
-    },
-    {
-      up: 28,
-      down: 0,
-      day: 'W',
-      id: 1,
-    },
-    {
-      up: 20,
-      down: 12,
-      // down: 0,
-      day: 'T',
-      id: 2,
-    },
-    {
-      up: 70,
-      down: 0,
-      day: 'F',
-      id: 3,
-    },
-    {
-      up: 50,
-      down: 0,
-      day: 'S',
-      id: 4,
-    },
-    {
-      up: 63,
-      down: 0,
-      day: 'S',
-      id: 5,
-    },
-    {
-      up: 28,
-      down: 0,
-      day: 'M',
-      id: 6,
-    },
-    {
-      up: 72,
-      down: 29,
-      // down: 0,
-      day: 'T',
-      id: 7,
-    },
-    {
-      up: 40,
-      down: 0,
-      day: 'W',
-      id: 8,
-    },
-    {
-      up: 70,
-      down: 0,
-      day: 'T',
-      id: 9,
-    },
-    {
-      up: 42,
-      down: 0,
-      day: 'F',
-      id: 10,
-    },
-    {
-      up: 63,
-      down: 16,
-      // down: 0,
-      day: 'S',
-      id: 11,
-    },
-  ],
+  0: times(12).map((v, i) => ({
+    up: random(0, 100),
+    down: random(0, 1) ? random(0, 40) : 0,
+    day: weekdays[i % 7],
+    id: [0, i].join('-'),
+  })),
+  1: times(12).map((v, i) => ({
+    up: random(0, 100),
+    down: random(0, 1) ? random(0, 40) : 0,
+    day: weekdays[i % 7],
+    id: [1, i].join('-'),
+  })),
   2: times(12).map((v, i) => ({
     up: random(0, 100),
     down: random(0, 1) ? random(0, 40) : 0,
     day: weekdays[i % 7],
-    id: i,
+    id: [2, i].join('-'),
   })),
 }
 
