@@ -1,1 +1,1 @@
-export { default } from './BarChartContainer'
+export { default } from './WalletChart'
