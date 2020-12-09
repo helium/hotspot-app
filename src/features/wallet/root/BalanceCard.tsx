@@ -1,4 +1,5 @@
 import React from 'react'
+import { Animated } from 'react-native'
 import Haptic from 'react-native-haptic-feedback'
 import Box from '../../../components/Box'
 import AnimatedBox from '../../../components/AnimatedBox'
@@ -7,8 +8,8 @@ import CurrencyBadge from './CurrencyBadge'
 import WalletButton from './WalletButton'
 
 type Props = {
-  translateY: number
-  scale: number
+  translateY: Animated.AnimatedInterpolation
+  scale: Animated.AnimatedInterpolation
 }
 
 const BalanceCard = ({ translateY, scale }: Props) => {
