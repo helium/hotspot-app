@@ -89,7 +89,7 @@ const WalletChart = ({ height }: Props) => {
 const weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 
 const data = {
-  0: times(12).map((v, i) => ({
+  0: times(14).map((v, i) => ({
     up: random(0, 100),
     down: random(0, 1) ? random(0, 40) : 0,
     day: weekdays[i % 7],

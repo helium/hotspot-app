@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
-import WalletScreen from './WalletScreen'
+import WalletScreen from './root/WalletScreen'
 
 const WalletStack = createStackNavigator()
 
