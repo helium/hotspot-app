@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Haptic from 'react-native-haptic-feedback'
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
+import { TouchableWithoutFeedback } from 'react-native'
 import { random, times } from 'lodash'
 import ChartContainer from './ChartContainer'
 import CarotLeft from '../../assets/images/carot-left.svg'

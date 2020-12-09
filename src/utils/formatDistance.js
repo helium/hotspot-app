@@ -1,24 +1,28 @@
+// modified version of the date-fns en-us locale
+// https://github.com/date-fns/date-fns/blob/master/src/locale/en-US/_lib/formatDistance/index.js
+// modified to be less verbose
+
 const formatDistanceLocale = {
   lessThanXSeconds: {
-    one: 'less than a second',
-    other: 'less than {{count}} seconds',
+    one: 'just now',
+    other: 'just now',
   },
 
   xSeconds: {
-    one: '1 second',
-    other: '{{count}} seconds',
+    one: 'just now',
+    other: 'just now',
   },
 
-  halfAMinute: 'half a minute',
+  halfAMinute: '1m',
 
   lessThanXMinutes: {
-    one: 'less than a minute',
-    other: 'less than {{count}} minutes',
+    one: '1m',
+    other: '{{count}}m',
   },
 
   xMinutes: {
-    one: '1 minute',
-    other: '{{count}} minutes',
+    one: '1m',
+    other: '{{count}}m',
   },
 
   aboutXHours: {

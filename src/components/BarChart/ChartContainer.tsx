@@ -19,10 +19,7 @@ const ChartContainer = ({ height, data, onFocus }: Props) => {
   }
 
   return (
-    <View
-      onLayout={handleLayout}
-      style={{ backgroundColor: 'rgba(255,0,0,0)', height }}
-    >
+    <View onLayout={handleLayout} style={{ height }}>
       {width > 0 && (
         <Chart width={width} height={height} data={data} onFocus={onFocus} />
       )}
