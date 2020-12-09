@@ -1,4 +1,5 @@
 import React from 'react'
+import { useAsync } from 'react-async-hook'
 import { Animated } from 'react-native'
 import Haptic from 'react-native-haptic-feedback'
 import QRCode from 'react-qr-code'
@@ -7,6 +8,7 @@ import AnimatedBox from '../../../components/AnimatedBox'
 import Text from '../../../components/Text'
 import CurrencyBadge from './CurrencyBadge'
 import WalletButton from './WalletButton'
+import { getAddress } from '../../../utils/account'
 
 type Props = {
   translateY: Animated.AnimatedInterpolation
@@ -15,9 +17,12 @@ type Props = {
 }
 
 const BalanceCard = ({ translateY, scale, onReceivePress }: Props) => {
+  const { result: address, loading: loadingAddress } = useAsync(getAddress, [])
+
   const handlePress = () => {
     Haptic.trigger('notificationWarning')
   }
+
   return (
     <Box
       flex={1}
@@ -60,10 +65,7 @@ const BalanceCard = ({ translateY, scale, onReceivePress }: Props) => {
 
       <Box justifyContent="center" alignItems="center" flex={1}>
         <Box backgroundColor="white" padding="s" borderRadius="m">
-          <QRCode
-            value="2398hL9HESZHEIjVtaLAH5fdg2vrUeZEs2B92tGTzeQQtugr8di"
-            size={128}
-          />
+          {!loadingAddress && <QRCode value={address?.b58} size={128} />}
         </Box>
       </Box>
     </Box>
