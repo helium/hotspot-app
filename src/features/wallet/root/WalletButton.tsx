@@ -3,6 +3,7 @@ import { TouchableOpacity } from 'react-native'
 import Box from '../../../components/Box'
 import Send from '../../../assets/images/send.svg'
 import Receive from '../../../assets/images/receive.svg'
+import { wp } from '../../../utils/layout'
 
 type Props = {
   variant: 'send' | 'receive'
@@ -13,14 +14,14 @@ const WalletButton = ({ variant, onPress }: Props) => (
   <TouchableOpacity onPress={onPress}>
     <Box
       backgroundColor="purple300"
-      width={55}
-      height={55}
+      width={wp(13)}
+      height={wp(13)}
       borderRadius="round"
       alignItems="center"
       justifyContent="center"
     >
-      {variant === 'send' && <Send width={25} />}
-      {variant === 'receive' && <Receive width={25} />}
+      {variant === 'send' && <Send width={wp(5.5)} />}
+      {variant === 'receive' && <Receive width={wp(5.5)} />}
     </Box>
   </TouchableOpacity>
 )

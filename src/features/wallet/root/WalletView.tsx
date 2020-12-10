@@ -10,10 +10,7 @@ import Search from '../../../assets/images/search.svg'
 import Add from '../../../assets/images/add.svg'
 import BalanceCard from './BalanceCard'
 import ActivityCard from './ActivityCard'
-
-// TODO
-// need to do device size math to make sure these values
-// are compatible across devices
+import { walletAnimationPoints, walletLayout } from './walletLayout'
 
 const WalletView = () => {
   const { t } = useTranslation()
@@ -23,29 +20,32 @@ const WalletView = () => {
   }
 
   const animatedValue = useRef(new Animated.Value(280)).current
-  animatedValue.addListener(({ value }) => console.log(value))
+  // for debugging
+  // animatedValue.addListener(({ value }) => console.log(value))
+
+  const { dragMax, dragMid, dragMin } = walletAnimationPoints
 
   const balanceTranslateY = animatedValue.interpolate({
-    inputRange: [280, 600],
-    outputRange: [0, -210],
+    inputRange: [dragMid, dragMax],
+    outputRange: [0, -walletLayout.chartHeight],
     extrapolate: 'clamp',
   })
 
   const balanceInnerTranslateY = animatedValue.interpolate({
-    inputRange: [400, 600],
-    outputRange: [0, -35],
+    inputRange: [dragMid, dragMax],
+    outputRange: [0, -walletLayout.balanceInnerTranslate],
     extrapolate: 'clamp',
   })
 
   const balanceInnerScale = animatedValue.interpolate({
-    inputRange: [400, 600],
+    inputRange: [dragMid, dragMax],
     outputRange: [1, 0.85],
     extrapolate: 'clamp',
   })
 
   const animateActivityToBottom = () => {
     Animated.timing(animatedValue, {
-      toValue: 40,
+      toValue: dragMin,
       duration: 200,
       useNativeDriver: true,
     }).start()
@@ -53,7 +53,7 @@ const WalletView = () => {
   }
 
   return (
-    <Box flex={1}>
+    <Box flex={1} style={{ paddingTop: walletLayout.notchHeight }}>
       <Box
         flexDirection="row"
         justifyContent="space-between"
@@ -61,6 +61,7 @@ const WalletView = () => {
         paddingHorizontal="l"
         backgroundColor="primaryBackground"
         zIndex={1}
+        height={walletLayout.headerHeight}
       >
         <Text variant="header" fontSize={22}>
           {t('wallet.title')}
@@ -81,7 +82,7 @@ const WalletView = () => {
       </Box>
 
       <Box paddingHorizontal="l">
-        <BarChart height={150} />
+        <BarChart height={walletLayout.chartHeight} />
       </Box>
 
       <AnimatedBox
@@ -95,7 +96,10 @@ const WalletView = () => {
         />
       </AnimatedBox>
 
-      <ActivityCard animatedValue={animatedValue} />
+      <ActivityCard
+        animatedValue={animatedValue}
+        animationPoints={walletAnimationPoints}
+      />
     </Box>
   )
 }

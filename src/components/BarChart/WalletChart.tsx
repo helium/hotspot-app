@@ -17,6 +17,10 @@ const WalletChart = ({ height }: Props) => {
   const [focusedData, setFocusedData] = useState(null)
   const [timeframe, setTimeframe] = useState(0)
 
+  const headerHeight = 30
+  const padding = 20
+  const chartHeight = height - headerHeight - padding
+
   const changeTimeframe = (t) => {
     setTimeframe(t)
     Haptic.trigger('impactMedium')
@@ -27,12 +31,11 @@ const WalletChart = ({ height }: Props) => {
   }
 
   return (
-    <Box marginVertical="m">
+    <Box justifyContent="space-around" style={{ paddingVertical: padding / 2 }}>
       <Box
         flexDirection="row"
         justifyContent="space-between"
-        height={20}
-        marginBottom="m"
+        height={headerHeight}
       >
         <Box flexDirection="row" flex={1.5}>
           {focusedData && (
@@ -78,7 +81,7 @@ const WalletChart = ({ height }: Props) => {
         </Box>
       </Box>
       <ChartContainer
-        height={height}
+        height={chartHeight}
         data={data[timeframe]}
         onFocus={handleFocusData}
       />

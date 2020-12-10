@@ -9,12 +9,14 @@ import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import ActivityItem from './ActivityItem'
 import CarotDown from '../../../assets/images/carot-down.svg'
+import { WalletAnimationPoints } from './walletLayout'
 
 type Props = {
   animatedValue: Animated.Value
+  animationPoints: WalletAnimationPoints
 }
 
-const ActivityCard = ({ animatedValue }: Props) => {
+const ActivityCard = ({ animatedValue, animationPoints }: Props) => {
   const renderItem = ({ item, index }) => (
     <ActivityItem
       type={item.type}
@@ -29,11 +31,13 @@ const ActivityCard = ({ animatedValue }: Props) => {
     Haptic.trigger('notificationWarning')
   }
 
+  const { dragMax, dragMid, dragMin } = animationPoints
+
   return (
     <SlidingUpPanel
       animatedValue={animatedValue}
-      draggableRange={{ top: 600, bottom: 40 }}
-      snappingPoints={[280]}
+      draggableRange={{ top: dragMax, bottom: dragMin }}
+      snappingPoints={[dragMid]}
       showBackdrop={false}
       friction={2}
     >

@@ -9,6 +9,7 @@ import Text from '../../../components/Text'
 import CurrencyBadge from './CurrencyBadge'
 import WalletButton from './WalletButton'
 import { getAddress } from '../../../utils/account'
+import { hp, wp } from '../../../utils/layout'
 
 type Props = {
   translateY: Animated.AnimatedInterpolation
@@ -27,45 +28,65 @@ const BalanceCard = ({ translateY, scale, onReceivePress }: Props) => {
     <Box
       flex={1}
       backgroundColor="purple200"
-      paddingVertical="xl"
+      paddingVertical="xs"
       paddingHorizontal="l"
       borderRadius="l"
     >
-      <AnimatedBox
-        flexDirection="row"
-        justifyContent="space-between"
-        alignItems="center"
-        style={[{ transform: [{ translateY }, { scale }] }]}
+      <Box
+        height={hp(18)}
+        //  backgroundColor="redMain"
+        justifyContent="center"
       >
-        <Box>
-          <Text color="white" fontSize={40} fontWeight="300">
-            23,987
-          </Text>
-          <Text
-            color="white"
-            fontSize={16}
-            fontWeight="300"
-            opacity={0.4}
-            lineHeight={25}
+        <AnimatedBox
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+          style={[{ transform: [{ translateY }, { scale }] }]}
+        >
+          <Box>
+            <Text
+              adjustsFontSizeToFit
+              color="white"
+              fontSize={hp(4.5)}
+              fontWeight="300"
+            >
+              23,987
+            </Text>
+            <Text
+              color="white"
+              fontSize={hp(1.8)}
+              fontWeight="300"
+              opacity={0.4}
+              lineHeight={25}
+            >
+              .45876891 HNT
+            </Text>
+          </Box>
+
+          <Box
+            flexDirection="row"
+            justifyContent="space-between"
+            width={wp(30)}
           >
-            .45876891 HNT
-          </Text>
-        </Box>
+            <WalletButton variant="receive" onPress={onReceivePress} />
+            <WalletButton variant="send" onPress={handlePress} />
+          </Box>
+        </AnimatedBox>
 
-        <Box flexDirection="row" justifyContent="space-between" width={130}>
-          <WalletButton variant="receive" onPress={onReceivePress} />
-          <WalletButton variant="send" onPress={handlePress} />
+        <Box flexDirection="row" marginTop="m">
+          <CurrencyBadge variant="dc" amount={1032935734} />
+          <CurrencyBadge variant="hst" amount={20} />
         </Box>
-      </AnimatedBox>
-
-      <Box flexDirection="row" marginTop="m">
-        <CurrencyBadge variant="dc" amount={1032935734} />
-        <CurrencyBadge variant="hst" amount={20} />
       </Box>
 
-      <Box justifyContent="center" alignItems="center" flex={1}>
+      <Box
+        flex={1}
+        justifyContent="flex-start"
+        alignItems="center"
+        paddingTop="m"
+      >
         <Box backgroundColor="white" padding="s" borderRadius="m">
-          {!loadingAddress && <QRCode value={address?.b58} size={128} />}
+          {!loadingAddress && <QRCode value={address?.b58} size={hp(14)} />}
         </Box>
       </Box>
     </Box>
