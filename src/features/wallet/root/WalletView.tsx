@@ -1,7 +1,6 @@
 import React, { useRef } from 'react'
-import { TouchableOpacity, Animated } from 'react-native'
+import { Animated } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import Haptic from 'react-native-haptic-feedback'
 import Box from '../../../components/Box'
 import AnimatedBox from '../../../components/AnimatedBox'
 import Text from '../../../components/Text'
@@ -10,30 +9,40 @@ import Search from '../../../assets/images/search.svg'
 import Add from '../../../assets/images/add.svg'
 import BalanceCard from './BalanceCard'
 import ActivityCard from './ActivityCard'
-import { walletAnimationPoints, walletLayout } from './walletLayout'
+import {
+  withWalletLayout,
+  WalletAnimationPoints,
+  WalletLayout,
+} from './walletLayout'
+import { triggerNotification } from '../../../utils/haptic'
+import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 
-const WalletView = () => {
+type Props = {
+  layout: WalletLayout
+  animationPoints: WalletAnimationPoints
+}
+
+const WalletView = ({ layout, animationPoints }: Props) => {
   const { t } = useTranslation()
 
   const handlePress = () => {
-    Haptic.trigger('notificationWarning')
+    triggerNotification()
   }
 
-  const animatedValue = useRef(new Animated.Value(280)).current
+  const { dragMax, dragMid, dragMin } = animationPoints
+  const animatedValue = useRef(new Animated.Value(dragMin)).current
   // for debugging
   // animatedValue.addListener(({ value }) => console.log(value))
 
-  const { dragMax, dragMid, dragMin } = walletAnimationPoints
-
   const balanceTranslateY = animatedValue.interpolate({
     inputRange: [dragMid, dragMax],
-    outputRange: [0, -walletLayout.chartHeight],
+    outputRange: [0, -layout.chartHeight],
     extrapolate: 'clamp',
   })
 
   const balanceInnerTranslateY = animatedValue.interpolate({
     inputRange: [dragMid, dragMax],
-    outputRange: [0, -walletLayout.balanceInnerTranslate],
+    outputRange: [0, -layout.balanceInnerTranslate],
     extrapolate: 'clamp',
   })
 
@@ -49,11 +58,11 @@ const WalletView = () => {
       duration: 200,
       useNativeDriver: true,
     }).start()
-    Haptic.trigger('notificationSuccess')
+    triggerNotification()
   }
 
   return (
-    <Box flex={1} style={{ paddingTop: walletLayout.notchHeight }}>
+    <Box flex={1} style={{ paddingTop: layout.notchHeight }}>
       <Box
         flexDirection="row"
         justifyContent="space-between"
@@ -61,28 +70,24 @@ const WalletView = () => {
         paddingHorizontal="l"
         backgroundColor="primaryBackground"
         zIndex={1}
-        height={walletLayout.headerHeight}
+        height={layout.headerHeight}
       >
         <Text variant="header" fontSize={22}>
           {t('wallet.title')}
         </Text>
 
         <Box flexDirection="row" justifyContent="space-between" width={85}>
-          <TouchableOpacity onPress={handlePress}>
-            <Box padding="s">
-              <Search width={22} height={22} />
-            </Box>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handlePress}>
-            <Box padding="s">
-              <Add width={22} height={22} />
-            </Box>
-          </TouchableOpacity>
+          <TouchableOpacityBox onPress={handlePress} padding="s">
+            <Search width={22} height={22} />
+          </TouchableOpacityBox>
+          <TouchableOpacityBox onPress={handlePress} padding="s">
+            <Add width={22} height={22} />
+          </TouchableOpacityBox>
         </Box>
       </Box>
 
       <Box paddingHorizontal="l">
-        <BarChart height={walletLayout.chartHeight} />
+        <BarChart height={layout.chartHeight} />
       </Box>
 
       <AnimatedBox
@@ -98,10 +103,10 @@ const WalletView = () => {
 
       <ActivityCard
         animatedValue={animatedValue}
-        animationPoints={walletAnimationPoints}
+        animationPoints={animationPoints}
       />
     </Box>
   )
 }
 
-export default WalletView
+export default withWalletLayout(WalletView)

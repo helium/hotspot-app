@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import Haptic from 'react-native-haptic-feedback'
 import { TouchableWithoutFeedback } from 'react-native'
 import { random, times } from 'lodash'
 import ChartContainer from './ChartContainer'
@@ -8,22 +7,23 @@ import CarotRight from '../../assets/images/carot-right.svg'
 import Box from '../Box'
 import Text from '../Text'
 import { ChartData } from './types'
+import { triggerImpact } from '../../utils/haptic'
 
 type Props = {
   height: number
 }
 
 const WalletChart = ({ height }: Props) => {
-  const [focusedData, setFocusedData] = useState(null)
+  const [focusedData, setFocusedData] = useState<ChartData | null>(null)
   const [timeframe, setTimeframe] = useState(0)
 
   const headerHeight = 30
   const padding = 20
   const chartHeight = height - headerHeight - padding
 
-  const changeTimeframe = (t) => {
+  const changeTimeframe = (t: number) => {
     setTimeframe(t)
-    Haptic.trigger('impactMedium')
+    triggerImpact()
   }
 
   const handleFocusData = (data: ChartData | null): void => {
@@ -91,7 +91,7 @@ const WalletChart = ({ height }: Props) => {
 
 const weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 
-const data = {
+const data: Record<string, ChartData[]> = {
   0: times(14).map((v, i) => ({
     up: random(0, 100),
     down: random(0, 1) ? random(0, 40) : 0,

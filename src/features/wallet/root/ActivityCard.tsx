@@ -1,15 +1,16 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react'
-import { Animated, TouchableOpacity } from 'react-native'
+import { Animated } from 'react-native'
 import SlidingUpPanel from 'rn-sliding-up-panel'
 import { orderBy, random, times } from 'lodash'
-import Haptic from 'react-native-haptic-feedback'
 import CardHandle from './CardHandle'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import ActivityItem from './ActivityItem'
 import CarotDown from '../../../assets/images/carot-down.svg'
 import { WalletAnimationPoints } from './walletLayout'
+import { triggerNotification } from '../../../utils/haptic'
+import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 
 type Props = {
   animatedValue: Animated.Value
@@ -17,7 +18,7 @@ type Props = {
 }
 
 const ActivityCard = ({ animatedValue, animationPoints }: Props) => {
-  const renderItem = ({ item, index }) => (
+  const renderItem = ({ item, index }: { item: TxnData; index: number }) => (
     <ActivityItem
       type={item.type}
       time={item.time}
@@ -28,7 +29,7 @@ const ActivityCard = ({ animatedValue, animationPoints }: Props) => {
   )
 
   const handlePress = () => {
-    Haptic.trigger('notificationWarning')
+    triggerNotification()
   }
 
   const { dragMax, dragMid, dragMin } = animationPoints
@@ -51,16 +52,18 @@ const ActivityCard = ({ animatedValue, animationPoints }: Props) => {
               <Text color="grayDark" fontSize={20} fontWeight="600">
                 View
               </Text>
-              <TouchableOpacity onPress={handlePress}>
-                <Box flexDirection="row" marginHorizontal="xs">
-                  <Text color="purpleMain" fontSize={20} fontWeight="600">
-                    All Activity
-                  </Text>
-                  <Box padding="xs" paddingTop="ms">
-                    <CarotDown />
-                  </Box>
+              <TouchableOpacityBox
+                flexDirection="row"
+                marginHorizontal="xs"
+                onPress={handlePress}
+              >
+                <Text color="purpleMain" fontSize={20} fontWeight="600">
+                  All Activity
+                </Text>
+                <Box padding="xs" paddingTop="ms">
+                  <CarotDown />
                 </Box>
-              </TouchableOpacity>
+              </TouchableOpacityBox>
             </Box>
           </Box>
           <Box paddingHorizontal="m">
@@ -80,9 +83,14 @@ const ActivityCard = ({ animatedValue, animationPoints }: Props) => {
   )
 }
 
-const types = ['rewards', 'sent', 'received', 'add']
+// this is just for filler data, the actual activity txn
+// handlers will be more complex
+const types: TxnType[] = ['rewards', 'sent', 'received', 'add']
 
-const data = orderBy(
+type TxnType = 'rewards' | 'sent' | 'received' | 'add'
+type TxnData = { id: string; type: TxnType; time: number; amount: number }
+
+const data: TxnData[] = orderBy(
   times(50).map((i) => ({
     id: i.toString(),
     type: types[random(0, types.length - 1)],

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import Svg, { Text, Rect } from 'react-native-svg'
-import { PanResponder, Animated } from 'react-native'
+import { PanResponder, Animated, GestureResponderEvent } from 'react-native'
 import { maxBy, clamp, max } from 'lodash'
-import Haptic from 'react-native-haptic-feedback'
+import { triggerImpact } from '../../utils/haptic'
 import { ChartData } from './types'
 
 // TODO
@@ -20,12 +20,12 @@ type Props = {
 }
 
 const BarChart = ({ width, height, data, onFocus }: Props) => {
-  const [focusedBar, setFocusedBar] = useState(null)
+  const [focusedBar, setFocusedBar] = useState<ChartData | null>(null)
 
   // trigger haptic feedback when the focused bar changes
   useEffect(() => {
     if (focusedBar) {
-      Haptic.trigger('impactMedium')
+      triggerImpact()
     }
     onFocus(focusedBar)
   }, [focusedBar, onFocus])
@@ -40,7 +40,7 @@ const BarChart = ({ width, height, data, onFocus }: Props) => {
 
   const barHeight = (value: number | undefined): number => {
     if (value === 0 || value === undefined) return 0
-    return max([value * vScale, minBarHeight])
+    return max([value * vScale, minBarHeight]) || 0
   }
 
   // maps x coordinates to elements in our data
@@ -49,7 +49,7 @@ const BarChart = ({ width, height, data, onFocus }: Props) => {
 
   // handle initial touch events to the chart that haven't
   // yet been registered by the pan responder
-  const handleTouchStart = (evt) => {
+  const handleTouchStart = (evt: GestureResponderEvent) => {
     const dataIndex = findDataIndex(evt.nativeEvent.locationX)
     setFocusedBar(data[dataIndex])
   }

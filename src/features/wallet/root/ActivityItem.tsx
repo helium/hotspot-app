@@ -3,11 +3,11 @@ import { TouchableWithoutFeedback } from 'react-native'
 import { formatDistanceToNow } from 'date-fns'
 import { round } from 'lodash'
 import animalHash from 'angry-purple-tiger'
-import Haptic from 'react-native-haptic-feedback'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import shortLocale from '../../../utils/formatDistance'
 import Rewards from '../../../assets/images/rewards.svg'
+import { triggerNotification } from '../../../utils/haptic'
 
 type Props = {
   type: string
@@ -17,23 +17,29 @@ type Props = {
   isLast: boolean
 }
 
-const titles = {
+const titles: Record<string, string> = {
   rewards: 'Mining Rewards',
   sent: 'Sent HNT',
   received: 'Received HNT',
   add: 'Hotspot Added to Blockchain',
 }
 
-const colors = {
+const colors: Record<string, string> = {
   rewards: '#A667F6',
   sent: '#1D91F8',
   received: '#32C48D',
   add: '#383A6F',
 }
 
-const ActivityItem = ({ type, time, amount, isFirst, isLast }: Props) => {
+const ActivityItem = ({
+  type,
+  time,
+  amount = 0,
+  isFirst = false,
+  isLast = false,
+}: Props) => {
   const handlePress = () => {
-    Haptic.trigger('notificationWarning')
+    triggerNotification()
   }
 
   return (
