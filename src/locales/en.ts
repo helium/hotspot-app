@@ -1,10 +1,4 @@
 export default {
-  navigation: {
-    wallet: 'Wallet',
-    hotspots: 'Hotspots',
-    notifications: 'Notifications',
-    more: 'More',
-  },
   back: 'Back',
   ordinals: [
     '1st',
