@@ -30,7 +30,7 @@ const WalletView = ({ layout, animationPoints }: Props) => {
   }
 
   const { dragMax, dragMid, dragMin } = animationPoints
-  const animatedValue = useRef(new Animated.Value(dragMin)).current
+  const animatedValue = useRef(new Animated.Value(dragMid)).current
   // for debugging
   // animatedValue.addListener(({ value }) => console.log(value))
 
