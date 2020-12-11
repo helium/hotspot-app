@@ -14,10 +14,15 @@ import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 
 type Props = {
   animatedValue: Animated.Value
+  scrollOffset: Animated.Value
   animationPoints: WalletAnimationPoints
 }
 
-const ActivityCard = ({ animatedValue, animationPoints }: Props) => {
+const ActivityCard = ({
+  animatedValue,
+  scrollOffset,
+  animationPoints,
+}: Props) => {
   const renderItem = ({ item, index }: { item: TxnData; index: number }) => (
     <ActivityItem
       type={item.type}
@@ -72,6 +77,16 @@ const ActivityCard = ({ animatedValue, animationPoints }: Props) => {
               renderItem={renderItem}
               keyExtractor={(item) => item.id}
               showsVerticalScrollIndicator={false}
+              onScroll={Animated.event(
+                [
+                  {
+                    nativeEvent: { contentOffset: { y: scrollOffset } },
+                  },
+                ],
+                {
+                  useNativeDriver: true,
+                },
+              )}
               contentContainerStyle={{
                 paddingBottom: 400,
               }}

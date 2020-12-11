@@ -31,8 +31,16 @@ const WalletView = ({ layout, animationPoints }: Props) => {
 
   const { dragMax, dragMid, dragMin } = animationPoints
   const animatedValue = useRef(new Animated.Value(dragMid)).current
+  const scrollOffset = useRef(new Animated.Value(0)).current
   // for debugging
   // animatedValue.addListener(({ value }) => console.log(value))
+
+  // this isn't perfect and probably not very performant,
+  // but it gets kind of close to the interaction i'm trying
+  // to acheive, will continue to work on it
+  scrollOffset.addListener(({ value }) => {
+    animatedValue.setValue(value + dragMid)
+  })
 
   const balanceTranslateY = animatedValue.interpolate({
     inputRange: [dragMid, dragMax],
@@ -103,6 +111,7 @@ const WalletView = ({ layout, animationPoints }: Props) => {
 
       <ActivityCard
         animatedValue={animatedValue}
+        scrollOffset={scrollOffset}
         animationPoints={animationPoints}
       />
     </Box>
