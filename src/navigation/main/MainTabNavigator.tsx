@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { useNavigation } from '@react-navigation/native'
 import { useSelector } from 'react-redux'
+import { StyleSheet } from 'react-native'
 import Hotspots from '../../features/hotspots/root/HotspotsNavigator'
 import { TabBarIconType, MainTabType, RootNavigationProp } from './tabTypes'
 import TabBarIcon from './TabBarIcon'
@@ -13,11 +14,12 @@ import StatsScreen from '../../features/stats/StatsScreen'
 import { useAppDispatch } from '../../store/store'
 import userSlice from '../../store/user/userSlice'
 import WalletNavigator from '../../features/wallet/WalletNavigator'
+import { wp } from '../../utils/layout'
 
 const MainTab = createBottomTabNavigator()
 
 const MainTabs = () => {
-  const { primaryBackground } = useColors()
+  const { white, grayLight } = useColors()
   const navigation = useNavigation<RootNavigationProp>()
   const {
     user: { isLocked, isSettingUpHotspot },
@@ -44,8 +46,10 @@ const MainTabs = () => {
       tabBarOptions={{
         showLabel: false,
         style: {
-          backgroundColor: primaryBackground,
-          borderTopWidth: 0,
+          backgroundColor: white,
+          borderTopWidth: StyleSheet.hairlineWidth,
+          borderTopColor: grayLight,
+          paddingHorizontal: wp(12),
         },
       }}
       screenOptions={({ route }) => ({
