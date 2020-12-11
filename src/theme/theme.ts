@@ -1,11 +1,15 @@
 import { createTheme } from '@shopify/restyle'
 import { TextProps } from 'react-native'
 
+// TODO restructure this color palatte like material or ant
+
 const palette = {
   black: '#000',
   white: '#FFF',
 
+  blueGrayLight: '#CDD7E5',
   blueGray: '#33414E',
+  blueBright: '#1D91F8',
   blueLight: '#51AEFF',
   blueMain: '#4BABFF',
   blueDark: '#232E39',
@@ -20,10 +24,15 @@ const palette = {
   redMain: '#F97570',
 
   purple: '#B377FF',
+  purpleBright: '#A667F6',
   purpleLight: '#6C71A3',
   purpleMain: '#474DFF',
+  purple300: '#343964',
+  purple200: '#23264b',
+  purple100: '#383A6F',
   purpleDark: '#13162E',
 
+  greenBright: '#29D391',
   greenMain: '#32C48D',
   greenDark: '#13162E',
 }

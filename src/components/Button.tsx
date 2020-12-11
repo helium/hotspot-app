@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react'
-import { TouchableOpacity, TextStyle } from 'react-native'
+import { TextStyle } from 'react-native'
 import {
   useRestyle,
   spacing,
@@ -11,7 +11,7 @@ import {
 
 import Text from './Text'
 import { Colors, Theme } from '../theme/theme'
-import Box from './Box'
+import TouchableOpacityBox from './TouchableOpacityBox'
 
 const restyleFunctions = [spacing, border, backgroundColor]
 type Props = BoxProps<Theme> & {
@@ -62,18 +62,21 @@ const Button = ({
   }
 
   return (
-    <Box backgroundColor={getBackground()} borderRadius="m" {...props}>
-      <TouchableOpacity onPress={onPress}>
-        <Text
-          paddingVertical="m"
-          variant={getTextVariant()}
-          color={getTextColor()}
-          style={textStyle}
-        >
-          {title}
-        </Text>
-      </TouchableOpacity>
-    </Box>
+    <TouchableOpacityBox
+      backgroundColor={getBackground()}
+      borderRadius="m"
+      onPress={onPress}
+      {...props}
+    >
+      <Text
+        paddingVertical="m"
+        variant={getTextVariant()}
+        color={getTextColor()}
+        style={textStyle}
+      >
+        {title}
+      </Text>
+    </TouchableOpacityBox>
   )
 }
 
