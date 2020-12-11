@@ -3,11 +3,13 @@ import { TouchableWithoutFeedback } from 'react-native'
 import { formatDistanceToNow } from 'date-fns'
 import { round } from 'lodash'
 import animalHash from 'angry-purple-tiger'
+import { useTheme } from '@shopify/restyle'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import shortLocale from '../../../utils/formatDistance'
 import Rewards from '../../../assets/images/rewards.svg'
 import { triggerNotification } from '../../../utils/haptic'
+import { Theme } from '../../../theme/theme'
 
 type Props = {
   type: string
@@ -24,13 +26,6 @@ const titles: Record<string, string> = {
   add: 'Hotspot Added to Blockchain',
 }
 
-const colors: Record<string, string> = {
-  rewards: '#A667F6',
-  sent: '#1D91F8',
-  received: '#32C48D',
-  add: '#383A6F',
-}
-
 const ActivityItem = ({
   type,
   time,
@@ -40,6 +35,15 @@ const ActivityItem = ({
 }: Props) => {
   const handlePress = () => {
     triggerNotification()
+  }
+
+  const theme = useTheme<Theme>()
+
+  const colors: Record<string, string> = {
+    rewards: theme.colors.purpleBright,
+    sent: theme.colors.blueBright,
+    received: theme.colors.greenMain,
+    add: theme.colors.purple100,
   }
 
   return (

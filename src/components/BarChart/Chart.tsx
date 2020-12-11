@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react'
 import Svg, { Text, Rect } from 'react-native-svg'
 import { PanResponder, Animated, GestureResponderEvent } from 'react-native'
 import { maxBy, clamp, max } from 'lodash'
+import { useTheme } from '@shopify/restyle'
 import { triggerImpact } from '../../utils/haptic'
 import { ChartData } from './types'
+import { Theme } from '../../theme/theme'
 
 // TODO
 // scale gap between bars
@@ -21,6 +23,7 @@ type Props = {
 
 const BarChart = ({ width, height, data, onFocus }: Props) => {
   const [focusedBar, setFocusedBar] = useState<ChartData | null>(null)
+  const theme = useTheme<Theme>()
 
   // trigger haptic feedback when the focused bar changes
   useEffect(() => {
@@ -91,7 +94,7 @@ const BarChart = ({ width, height, data, onFocus }: Props) => {
               rx={barWidth / 2}
               width={barWidth}
               height={barHeight(v?.up)}
-              fill="#29D391"
+              fill={theme.colors.greenBright}
               opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
             />
 
@@ -101,12 +104,12 @@ const BarChart = ({ width, height, data, onFocus }: Props) => {
               rx={barWidth / 2}
               width={barWidth}
               height={barHeight(v?.down)}
-              fill="#1D91F8"
+              fill={theme.colors.blueBright}
               opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
             />
 
             <Text
-              fill="#fff"
+              fill={theme.colors.white}
               stroke="none"
               fontSize="12"
               fontWeight={300}
