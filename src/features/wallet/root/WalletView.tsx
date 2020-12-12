@@ -7,6 +7,7 @@ import Animated, {
   Extrapolate,
   useAnimatedStyle,
 } from 'react-native-reanimated'
+import { useNavigation } from '@react-navigation/native'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import BarChart from '../../../components/BarChart'
@@ -32,12 +33,19 @@ const WalletView = ({ layout, animationPoints }: Props) => {
 
   const { t } = useTranslation()
 
+  const navigation = useNavigation()
+
   const handlePress = () => {
     triggerNotification()
   }
 
   type ActivityCardHandle = ElementRef<typeof ActivityCard>
   const card = useRef<ActivityCardHandle>(null)
+
+  const handleSendPress = () => {
+    triggerNotification()
+    navigation.navigate('Send')
+  }
 
   const snapProgress = useSharedValue(dragMid / dragMax)
 
@@ -95,7 +103,10 @@ const WalletView = ({ layout, animationPoints }: Props) => {
       </Box>
 
       <Animated.View style={[{ flex: 1 }, animatedStyles]}>
-        <BalanceCard onReceivePress={animateActivityToBottom} />
+        <BalanceCard
+          onReceivePress={animateActivityToBottom}
+          onSendPress={handleSendPress}
+        />
       </Animated.View>
 
       <ActivityCard

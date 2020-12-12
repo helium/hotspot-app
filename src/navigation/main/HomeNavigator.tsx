@@ -5,6 +5,7 @@ import LockScreen from '../../features/lock/LockScreen'
 import defaultScreenOptions from '../defaultScreenOptions'
 import HotspotSetup from '../../features/hotspots/setup/HotspotSetupNavigator'
 import MainTabs from './MainTabNavigator'
+import SendScreen from '../../features/wallet/send/SendScreen'
 
 const HomeStack = createStackNavigator()
 
@@ -28,6 +29,11 @@ const HomeStackScreen = () => {
       <HomeStack.Screen
         name="HotspotSetup"
         component={HotspotSetup}
+        options={{ headerShown: false }}
+      />
+      <HomeStack.Screen
+        name="Send"
+        component={SendScreen}
         options={{ headerShown: false }}
       />
       <HomeStack.Screen

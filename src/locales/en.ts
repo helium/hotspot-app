@@ -409,6 +409,9 @@ export default {
   wallet: {
     title: 'My Wallet',
   },
+  send: {
+    title: 'Send HNT',
+  },
   more: {
     sections: {
       security: {
