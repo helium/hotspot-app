@@ -10,14 +10,7 @@ const HotspotsScreen = () => {
     account: { hotspots },
   } = useSelector((state: RootState) => state)
   return (
-    <SafeAreaBox
-      backgroundColor="primaryBackground"
-      flex={1}
-      padding="lx"
-      justifyContent="space-evenly"
-      alignContent="center"
-      flexDirection="column"
-    >
+    <SafeAreaBox backgroundColor="primaryBackground" flex={1} edges="top">
       {hotspots.length > 0 && <HotspotsList />}
       {hotspots.length === 0 && <HotspotsEmpty />}
     </SafeAreaBox>
