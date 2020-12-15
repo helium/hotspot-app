@@ -2,15 +2,17 @@
 import React from 'react'
 import { orderBy, random, times } from 'lodash'
 import BottomSheet from 'react-native-holy-sheet'
+import Animated from 'react-native-reanimated'
 import ActivityItem from './ActivityItem'
 import { WalletAnimationPoints } from './walletLayout'
 import ActivityCardHeader from './ActivityCardHeader'
 
 type Props = {
   animationPoints: WalletAnimationPoints
+  snapProgress?: Animated.SharedValue<number>
 }
 
-const ActivityCard = ({ animationPoints }: Props) => {
+const ActivityCard = ({ animationPoints, snapProgress }: Props) => {
   const renderItem = ({ item, index }: { item: TxnData; index: number }) => (
     <ActivityItem
       type={item.type}
@@ -27,6 +29,7 @@ const ActivityCard = ({ animationPoints }: Props) => {
     <BottomSheet
       snapPoints={[dragMin, dragMid, dragMax]}
       initialSnapIndex={1}
+      snapProgress={snapProgress}
       renderHeader={() => <ActivityCardHeader />}
       flatListProps={{
         data,
