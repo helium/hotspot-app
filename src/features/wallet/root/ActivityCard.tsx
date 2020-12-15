@@ -1,5 +1,4 @@
-/* eslint-disable react/jsx-props-no-spreading */
-import React from 'react'
+import React, { useRef } from 'react'
 import { orderBy, random, times } from 'lodash'
 import BottomSheet from 'react-native-holy-sheet'
 import Animated from 'react-native-reanimated'
@@ -12,33 +11,51 @@ type Props = {
   snapProgress?: Animated.SharedValue<number>
 }
 
-const ActivityCard = ({ animationPoints, snapProgress }: Props) => {
-  const renderItem = ({ item, index }: { item: TxnData; index: number }) => (
-    <ActivityItem
-      type={item.type}
-      time={item.time}
-      amount={item.amount}
-      isFirst={index === 0}
-      isLast={index === data.length - 1}
-    />
-  )
-
-  const { dragMax, dragMid, dragMin } = animationPoints
-
-  return (
-    <BottomSheet
-      snapPoints={[dragMin, dragMid, dragMax]}
-      initialSnapIndex={1}
-      snapProgress={snapProgress}
-      renderHeader={() => <ActivityCardHeader />}
-      flatListProps={{
-        data,
-        keyExtractor: (item) => item.id,
-        renderItem,
-      }}
-    />
-  )
+type ActivityCardHandle = {
+  snapTo: (index?: number) => void
 }
+
+const ActivityCard = React.forwardRef(
+  (props: Props, ref: React.Ref<ActivityCardHandle>) => {
+    const { animationPoints, snapProgress } = props
+
+    type BottomSheetHandle = React.ElementRef<typeof BottomSheet>
+    const sheet = useRef<BottomSheetHandle>(null)
+
+    React.useImperativeHandle(ref, () => ({
+      snapTo(index?: number): void {
+        sheet.current?.snapTo(index)
+      },
+    }))
+
+    const renderItem = ({ item, index }: { item: TxnData; index: number }) => (
+      <ActivityItem
+        type={item.type}
+        time={item.time}
+        amount={item.amount}
+        isFirst={index === 0}
+        isLast={index === data.length - 1}
+      />
+    )
+
+    const { dragMax, dragMid, dragMin } = animationPoints
+
+    return (
+      <BottomSheet
+        ref={sheet}
+        snapPoints={[dragMin, dragMid, dragMax]}
+        initialSnapIndex={1}
+        snapProgress={snapProgress}
+        renderHeader={() => <ActivityCardHeader />}
+        flatListProps={{
+          data,
+          keyExtractor: (item) => item.id,
+          renderItem,
+        }}
+      />
+    )
+  },
+)
 
 // this is just for filler data, the actual activity txn
 // handlers will be more complex
