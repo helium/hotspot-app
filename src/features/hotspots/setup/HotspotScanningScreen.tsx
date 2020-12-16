@@ -14,7 +14,7 @@ import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotP
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotScanningScreen'>
 
-const SCAN_DURATION = 4_000
+const SCAN_DURATION = 4000
 const HotspotScanningScreen = () => {
   const rotateAnim = useRef(new Animated.Value(0))
   const { t } = useTranslation()
