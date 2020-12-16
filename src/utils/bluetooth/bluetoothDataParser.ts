@@ -9,11 +9,6 @@ import { util } from 'protobufjs'
 import { HotspotCharacteristic, FirmwareCharacteristic } from './bluetoothTypes'
 
 const parseWifi = (value: string): string[] => {
-  // TODO: Find out if this is needed
-  // const decoded = decode(value)
-  // if (decoded[0] === '[') {
-  //   return JSON.parse(decode(value)).map((name: string) => ({ name }))
-  // }
   const buffer = util.newBuffer(util.base64.length(value))
   util.base64.decode(value, buffer, 0)
   return WifiServicesV1.decode(buffer).services

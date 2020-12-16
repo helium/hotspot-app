@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
@@ -8,17 +8,27 @@ import ImageBox from '../../../components/ImageBox'
 import Map from '../../../components/Map'
 import Text from '../../../components/Text'
 import { reverseGeocode } from '../../../utils/location'
+import sleep from '../../../utils/sleep'
 import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
 
 const ConfirmLocationScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
+  const [disabled, setDisabled] = useState(true)
   const [mapCenter, setMapCenter] = useState([122.419, 37.775])
   const [markerCenter, setMarkerCenter] = useState([0, 0])
   const [mapMoving, setMapMoving] = useState(false)
   const [hasGPSLocation, setHasGPSLocation] = useState(false)
   const [locationName, setLocationName] = useState('')
   const [zoomLevel, setZoomLevel] = useState(2)
+
+  useEffect(() => {
+    const sleepThenEnable = async () => {
+      await sleep(3000)
+      setDisabled(false)
+    }
+    sleepThenEnable()
+  }, [])
 
   const onMapMoved = async (newCoords: number[]) => {
     setMarkerCenter(newCoords)
@@ -111,7 +121,7 @@ const ConfirmLocationScreen = () => {
             onPress={navNext}
             variant="primary"
             mode="contained"
-            // disabled={this.state.disabled || this.state.submitting}
+            disabled={disabled}
             title={t('hotspot_setup.location.next')}
           />
         </Box>
