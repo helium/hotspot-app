@@ -21,17 +21,22 @@ const boolKeys = [
 ] as const
 type BooleanKey = typeof boolKeys[number]
 
-export const setItem = async (key: AccountStoreKey, val: string | boolean) =>
-  SecureStore.setItemAsync(key, String(val))
+export const setSecureItem = async (
+  key: AccountStoreKey,
+  val: string | boolean,
+) => SecureStore.setItemAsync(key, String(val))
 
-export const getBoolean = async (key: BooleanKey) => {
-  const val = await SecureStore.getItemAsync(key)
-  return val === 'true'
+export async function getSecureItem(key: BooleanKey): Promise<boolean>
+export async function getSecureItem(key: StringKey): Promise<string>
+export async function getSecureItem(key: AccountStoreKey) {
+  const item = await SecureStore.getItemAsync(key)
+  if (boolKeys.find((bk) => key === bk)) {
+    return item === 'true'
+  }
+  return item
 }
 
-export const getString = async (key: StringKey) => SecureStore.getItemAsync(key)
-
-export const deleteItem = async (key: AccountStoreKey) =>
+export const deleteSecureItem = async (key: AccountStoreKey) =>
   SecureStore.deleteItemAsync(key)
 
 export const createKeypair = async (
@@ -48,21 +53,21 @@ export const createKeypair = async (
   const { keypair: keypairRaw, address } = await Keypair.fromMnemonic(mnemonic)
 
   await Promise.all([
-    setItem('mnemonic', JSON.stringify(mnemonic.words)),
-    setItem('keypair', JSON.stringify(keypairRaw)),
-    setItem('address', address.b58),
+    setSecureItem('mnemonic', JSON.stringify(mnemonic.words)),
+    setSecureItem('keypair', JSON.stringify(keypairRaw)),
+    setSecureItem('address', address.b58),
   ])
 }
 
 export const getAddress = async (): Promise<Address | undefined> => {
-  const addressB58 = await getString('address')
+  const addressB58 = await getSecureItem('address')
   if (addressB58) {
     return Address.fromB58(addressB58)
   }
 }
 
 export const getMnemonic = async (): Promise<Mnemonic | undefined> => {
-  const wordsStr = await getString('mnemonic')
+  const wordsStr = await getSecureItem('mnemonic')
   if (wordsStr) {
     const words = JSON.parse(wordsStr)
     return new Mnemonic(words)
@@ -70,7 +75,7 @@ export const getMnemonic = async (): Promise<Mnemonic | undefined> => {
 }
 
 export const getKeypair = async (): Promise<Keypair | undefined> => {
-  const keypairStr = await getString('keypair')
+  const keypairStr = await getSecureItem('keypair')
   if (keypairStr) {
     const keypairRaw = JSON.parse(keypairStr)
     return new Keypair(keypairRaw)
@@ -78,4 +83,4 @@ export const getKeypair = async (): Promise<Keypair | undefined> => {
 }
 
 export const signOut = async () =>
-  Promise.all([...stringKeys, ...boolKeys].map((key) => deleteItem(key)))
+  Promise.all([...stringKeys, ...boolKeys].map((key) => deleteSecureItem(key)))

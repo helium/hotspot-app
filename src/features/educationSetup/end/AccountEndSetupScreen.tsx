@@ -5,7 +5,7 @@ import HotspotFront from '../../../assets/images/hotspot-front.svg'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Button from '../../../components/Button'
 import Box from '../../../components/Box'
-import userSlice from '../../../store/user/userSlice'
+import appSlice from '../../../store/user/appSlice'
 import { useAppDispatch } from '../../../store/store'
 
 const AccountEndSetupScreen = () => {
@@ -35,14 +35,14 @@ const AccountEndSetupScreen = () => {
           mode="contained"
           variant="secondary"
           onPress={() => {
-            dispatch(userSlice.actions.setupHotspot())
+            dispatch(appSlice.actions.setupHotspot())
           }}
           title={t('hotspot_setup.start.next')}
         />
         <Button
           variant="secondary"
           onPress={() => {
-            dispatch(userSlice.actions.finishEducation())
+            dispatch(appSlice.actions.finishEducation())
           }}
           title={t('generic.go_to_account')}
         />

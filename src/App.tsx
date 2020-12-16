@@ -7,10 +7,11 @@ import OneSignal from 'react-native-onesignal'
 import Config from 'react-native-config'
 import { useSelector } from 'react-redux'
 import { getUnixTime } from 'date-fns'
+import MapboxGL from '@react-native-mapbox-gl/maps'
 import { theme } from './theme/theme'
 import NavigationRoot from './navigation/NavigationRoot'
 import { useAppDispatch } from './store/store'
-import userSlice from './store/user/userSlice'
+import appSlice from './store/user/appSlice'
 import { RootState } from './store/rootReducer'
 import { fetchData } from './store/account/accountSlice'
 import BluetoothProvider from './providers/BluetoothProvider'
@@ -20,7 +21,7 @@ const App = () => {
   const dispatch = useAppDispatch()
 
   const {
-    user: {
+    app: {
       lastIdle,
       isPinRequired,
       authInterval,
@@ -33,7 +34,7 @@ const App = () => {
   const handleChange = useCallback(
     (newState: AppStateStatus) => {
       if (newState === 'background') {
-        dispatch(userSlice.actions.updateLastIdle())
+        dispatch(appSlice.actions.updateLastIdle())
         return
       }
 
@@ -45,7 +46,7 @@ const App = () => {
         lastIdle &&
         lastIdle < getUnixTime(Date.now()) - authInterval
       ) {
-        dispatch(userSlice.actions.lock(true))
+        dispatch(appSlice.actions.lock(true))
       }
     },
     [dispatch, isPinRequired, lastIdle, authInterval, isRequestingPermission],
@@ -59,6 +60,7 @@ const App = () => {
 
   useEffect(() => {
     OneSignal.setAppId(Config.ONE_SIGNAL_APP_ID)
+    MapboxGL.setAccessToken(Config.MAPBOX_ACCESS_TOKEN)
   }, [])
 
   useEffect(() => {

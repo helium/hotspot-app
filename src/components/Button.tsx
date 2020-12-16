@@ -18,6 +18,7 @@ type Props = BoxProps<Theme> & {
   mode?: 'text' | 'contained'
   variant?: ButtonVariant
   onPress?: () => void
+  disabled?: boolean
   title: string
   textStyle?: TextStyle
 }
@@ -30,11 +31,13 @@ const Button = ({
   mode = 'text',
   variant = 'primary',
   textStyle,
+  disabled,
   ...rest
 }: Props) => {
   const props = useRestyle(restyleFunctions, rest)
 
   const getBackground = (): Colors | undefined => {
+    if (disabled) return 'disabled'
     if (mode === 'contained') {
       if (variant === 'secondary') {
         return 'secondaryMain'
@@ -66,6 +69,7 @@ const Button = ({
       backgroundColor={getBackground()}
       borderRadius="m"
       onPress={onPress}
+      disabled={disabled}
       {...props}
     >
       <Text

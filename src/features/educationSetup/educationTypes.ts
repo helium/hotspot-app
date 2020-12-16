@@ -6,6 +6,4 @@ export type EducationStackParamList = {
   AccountEndSetupScreen: undefined
 }
 
-export type EducationNavigationProp = StackNavigationProp<
-  EducationStackParamList
->
+export type EducationNavigationProp = StackNavigationProp<EducationStackParamList>

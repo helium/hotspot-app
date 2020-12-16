@@ -6,7 +6,7 @@ import AnimatedBox from '../../../components/AnimatedBox'
 import Text from '../../../components/Text'
 import CurrencyBadge from './CurrencyBadge'
 import WalletButton from './WalletButton'
-import { getAddress } from '../../../utils/account'
+import { getAddress } from '../../../utils/secureAccount'
 import { hp, wp } from '../../../utils/layout'
 import { triggerNotification } from '../../../utils/haptic'
 

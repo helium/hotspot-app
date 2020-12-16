@@ -48,19 +48,24 @@
     "setupFilesAfterEnv": [
       "./node_modules/react-native-gesture-handler/jestSetup.js",
       "@testing-library/jest-native/extend-expect",
-      "./jestSetup"
+      "./jestSetup",
+      "@react-native-mapbox-gl/maps/setup-jest"
     ],
     "transformIgnorePatterns": [
       "node_modules/(?!@helium)/"
     ]
   },
   "dependencies": {
-    "@helium/crypto-react-native": "^3.5.0",
+    "@helium/crypto-react-native": "^3.9.0",
+    "@helium/currency": "^3.0.0",
     "@helium/http": "^3.8.0",
+    "@helium/proto-ble": "3.10.0",
+    "@helium/transactions": "^3.11.0",
     "@react-native-community/art": "^1.2.0",
     "@react-native-community/async-storage": "^1.12.1",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-native-community/picker": "^1.8.1",
+    "@react-native-mapbox-gl/maps": "^8.0.0",
     "@react-native-picker/picker": "^1.9.4",
     "@react-navigation/bottom-tabs": "^5.11.1",
     "@react-navigation/native": "^5.8.4",
@@ -71,7 +76,9 @@
     "@types/lodash": "^4.14.165",
     "@types/validator": "^13.1.1",
     "angry-purple-tiger": "^1.0.5",
+    "babel-plugin-module-resolver": "^3.2.0",
     "base-64": "^1.0.0",
+    "compare-versions": "^3.6.0",
     "date-fns": "^2.16.1",
     "expo-haptics": "^8.3.0",
     "expo-local-authentication": "^9.3.0",
@@ -83,6 +90,7 @@
     "lodash": "^4.17.20",
     "lottie-ios": "3.1.8",
     "lottie-react-native": "^3.5.0",
+    "protobufjs": "^6.10.2",
     "react": "16.13.1",
     "react-async-hook": "^3.6.2",
     "react-i18next": "^11.7.3",

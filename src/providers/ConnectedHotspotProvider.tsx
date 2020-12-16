@@ -7,9 +7,18 @@ const initialState = {
   enable: async () => {},
   scanForHotspots: async () => {},
   connectAndConfigHotspot: async () => {},
-  hotspotDetails: undefined,
-  connectedHotspot: undefined,
   availableHotspots: {},
+  scanForWifiNetworks: async () => undefined,
+  removeConfiguredWifi: async () => undefined,
+  setWifiCredentials: async () => undefined,
+  checkFirmwareCurrent: async () => undefined,
+  updateHotspotStatus: async () => undefined,
+  addGatewayTxn: async () => false,
+  loadLocationFeeData: async () => ({
+    isFree: false,
+    hasSufficientBalance: false,
+    totalStakingAmount: 0,
+  }),
 }
 
 const ConnectedHotspotContext = createContext<ReturnType<typeof useHotspot>>(

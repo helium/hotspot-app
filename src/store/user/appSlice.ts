@@ -1,14 +1,16 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import getUnixTime from 'date-fns/getUnixTime'
 import {
-  getBoolean,
-  setItem,
-  deleteItem,
+  getSecureItem,
+  setSecureItem,
+  deleteSecureItem,
   signOut,
-  getString,
-} from '../../utils/account'
+} from '../../utils/secureAccount'
+import { getCurrentPosition } from '../../utils/location'
 
-export type UserState = {
+type Location = { latitude: number; longitude: number }
+
+export type AppState = {
   isBackedUp: boolean
   isEducated: boolean
   isSettingUpHotspot: boolean
@@ -19,8 +21,10 @@ export type UserState = {
   lastIdle: number | null
   isLocked: boolean
   isRequestingPermission: boolean
+  currentLocation?: Location
+  isLoadingLocation: boolean
 }
-const initialState: UserState = {
+const initialState: AppState = {
   isBackedUp: false,
   isEducated: false,
   isSettingUpHotspot: false,
@@ -31,6 +35,7 @@ const initialState: UserState = {
   lastIdle: null,
   isLocked: false,
   isRequestingPermission: false,
+  isLoadingLocation: false,
 }
 
 type Restore = {
@@ -43,14 +48,14 @@ type Restore = {
 }
 
 export const restoreUser = createAsyncThunk<Restore>(
-  'user/restore',
+  'app/restoreUser',
   async () => {
     const vals = await Promise.all([
-      getBoolean('accountBackedUp'),
-      getBoolean('isEducated'),
-      getBoolean('requirePin'),
-      getBoolean('requirePinForPayment'),
-      getString('authInterval'),
+      getSecureItem('accountBackedUp'),
+      getSecureItem('isEducated'),
+      getSecureItem('requirePin'),
+      getSecureItem('requirePinForPayment'),
+      getSecureItem('authInterval'),
     ])
     return {
       isBackedUp: vals[0],
@@ -63,23 +68,29 @@ export const restoreUser = createAsyncThunk<Restore>(
   },
 )
 
-const userSlice = createSlice({
-  name: 'user',
+export const getLocation = createAsyncThunk<Location>(
+  'app/location',
+  async () => getCurrentPosition(),
+)
+
+// This slice contains data related to the state of the app
+const appSlice = createSlice({
+  name: 'app',
   initialState,
   reducers: {
     backupAccount: (state, action: PayloadAction<string>) => {
-      setItem('accountBackedUp', true)
-      setItem('requirePin', true)
-      setItem('userPin', action.payload)
+      setSecureItem('accountBackedUp', true)
+      setSecureItem('requirePin', true)
+      setSecureItem('userPin', action.payload)
       state.isBackedUp = true
       state.isPinRequired = true
     },
     finishEducation: (state) => {
-      setItem('isEducated', true)
+      setSecureItem('isEducated', true)
       state.isEducated = true
     },
     setupHotspot: (state) => {
-      setItem('isEducated', true)
+      setSecureItem('isEducated', true)
       state.isEducated = true
       state.isSettingUpHotspot = true
     },
@@ -92,16 +103,16 @@ const userSlice = createSlice({
     },
     requirePinForPayment: (state, action: PayloadAction<boolean>) => {
       state.isPinRequiredForPayment = action.payload
-      setItem('requirePinForPayment', action.payload)
+      setSecureItem('requirePinForPayment', action.payload)
     },
     updateAuthInterval: (state, action: PayloadAction<number>) => {
       state.authInterval = action.payload
-      setItem('authInterval', action.payload.toString())
+      setSecureItem('authInterval', action.payload.toString())
     },
     disablePin: (state) => {
-      deleteItem('requirePin')
-      deleteItem('requirePinForPayment')
-      deleteItem('userPin')
+      deleteSecureItem('requirePin')
+      deleteSecureItem('requirePinForPayment')
+      deleteSecureItem('userPin')
       state.isPinRequired = false
       state.isPinRequiredForPayment = false
     },
@@ -122,7 +133,17 @@ const userSlice = createSlice({
     builder.addCase(restoreUser.fulfilled, (state, { payload }) => {
       return { ...state, ...payload, isRestored: true }
     })
+    builder.addCase(getLocation.pending, (state) => {
+      state.isLoadingLocation = true
+    })
+    builder.addCase(getLocation.rejected, (state) => {
+      state.isLoadingLocation = false
+    })
+    builder.addCase(getLocation.fulfilled, (state, { payload }) => {
+      state.currentLocation = payload
+      state.isLoadingLocation = false
+    })
   },
 })
 
-export default userSlice
+export default appSlice
