@@ -21,8 +21,7 @@ module.exports = (api) => {
 
   if (isInTesting) return baseConfig
 
-  return {
-    ...baseConfig,
-    plugins: [...baseConfig.plugins, 'react-native-reanimated/plugin'],
-  }
+  return Object.assign(baseConfig, {
+    plugins: [].concat(baseConfig.plugins, 'react-native-reanimated/plugin'),
+  })
 }
