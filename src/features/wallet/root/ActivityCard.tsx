@@ -1,4 +1,10 @@
-import React, { useRef } from 'react'
+import React, {
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  ElementRef,
+  Ref,
+} from 'react'
 import { orderBy, random, times } from 'lodash'
 import BottomSheet from 'react-native-holy-sheet'
 import Animated from 'react-native-reanimated'
@@ -15,14 +21,14 @@ type ActivityCardHandle = {
   snapTo: (index?: number) => void
 }
 
-const ActivityCard = React.forwardRef(
-  (props: Props, ref: React.Ref<ActivityCardHandle>) => {
+const ActivityCard = forwardRef(
+  (props: Props, ref: Ref<ActivityCardHandle>) => {
     const { animationPoints, snapProgress } = props
 
-    type BottomSheetHandle = React.ElementRef<typeof BottomSheet>
+    type BottomSheetHandle = ElementRef<typeof BottomSheet>
     const sheet = useRef<BottomSheetHandle>(null)
 
-    React.useImperativeHandle(ref, () => ({
+    useImperativeHandle(ref, () => ({
       snapTo(index?: number): void {
         sheet.current?.snapTo(index)
       },

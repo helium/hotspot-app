@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, ElementRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import Animated, {
   useSharedValue,
@@ -36,7 +36,7 @@ const WalletView = ({ layout, animationPoints }: Props) => {
     triggerNotification()
   }
 
-  type ActivityCardHandle = React.ElementRef<typeof ActivityCard>
+  type ActivityCardHandle = ElementRef<typeof ActivityCard>
   const card = useRef<ActivityCardHandle>(null)
 
   const snapProgress = useSharedValue(dragMid / dragMax)
