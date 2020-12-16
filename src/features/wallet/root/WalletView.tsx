@@ -28,6 +28,8 @@ type Props = {
 }
 
 const WalletView = ({ layout, animationPoints }: Props) => {
+  const { dragMax, dragMid } = animationPoints
+
   const { t } = useTranslation()
 
   const handlePress = () => {
@@ -37,9 +39,8 @@ const WalletView = ({ layout, animationPoints }: Props) => {
   type ActivityCardHandle = React.ElementRef<typeof ActivityCard>
   const card = useRef<ActivityCardHandle>(null)
 
-  const { dragMax, dragMid } = animationPoints
-
   const snapProgress = useSharedValue(dragMid / dragMax)
+
   const balanceTranslateY = useDerivedValue(() => {
     return interpolate(
       snapProgress.value,
@@ -48,6 +49,7 @@ const WalletView = ({ layout, animationPoints }: Props) => {
       Extrapolate.CLAMP,
     )
   })
+
   const animatedStyles = useAnimatedStyle(() => {
     return {
       transform: [
