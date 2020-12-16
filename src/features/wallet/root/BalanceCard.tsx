@@ -1,6 +1,5 @@
 import React from 'react'
 import { useAsync } from 'react-async-hook'
-import { Animated } from 'react-native'
 import QRCode from 'react-qr-code'
 import Box from '../../../components/Box'
 import AnimatedBox from '../../../components/AnimatedBox'
@@ -12,12 +11,10 @@ import { hp, wp } from '../../../utils/layout'
 import { triggerNotification } from '../../../utils/haptic'
 
 type Props = {
-  translateY: Animated.AnimatedInterpolation
-  scale: Animated.AnimatedInterpolation
   onReceivePress: () => void
 }
 
-const BalanceCard = ({ translateY, scale, onReceivePress }: Props) => {
+const BalanceCard = ({ onReceivePress }: Props) => {
   const { result: address, loading: loadingAddress } = useAsync(getAddress, [])
 
   const handlePress = () => {
@@ -32,16 +29,11 @@ const BalanceCard = ({ translateY, scale, onReceivePress }: Props) => {
       paddingHorizontal="l"
       borderRadius="l"
     >
-      <Box
-        height={hp(18)}
-        //  backgroundColor="redMain"
-        justifyContent="center"
-      >
+      <Box height={hp(18)} justifyContent="center">
         <AnimatedBox
           flexDirection="row"
           justifyContent="space-between"
           alignItems="center"
-          style={[{ transform: [{ translateY }, { scale }] }]}
         >
           <Box>
             <Text
