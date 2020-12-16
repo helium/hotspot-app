@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import BackScreen from '../../../components/BackScreen'
@@ -8,23 +8,21 @@ import Button from '../../../components/Button'
 import Text from '../../../components/Text'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import { RootState } from '../../../store/rootReducer'
-import { currencyFormat } from '../../../utils/currency'
-import { calculatePaymentTxnFee } from '../../../utils/transactions'
 import usePermissionManager from '../../../utils/usePermissionManager'
 import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
 
+const FEE = 40
 const HotspotSetupAddTxnScreen = () => {
   const navigation = useNavigation<HotspotSetupNavigationProp>()
   const { t } = useTranslation()
-  const [fee, setFee] = useState(0)
   const [submitting, setSubmitting] = useState(false)
   const { updateHotspotStatus, addGatewayTxn } = useConnectedHotspotContext()
-
   const {
     account: { account },
     connectedHotspot: { mac, freeAddHotspot, status: hotspotStatus },
   } = useSelector((state: RootState) => state)
   const { hasLocationPermission } = usePermissionManager()
+  console.log(freeAddHotspot)
 
   const navNext = async () => {
     if (hotspotStatus === 'global') {
@@ -52,27 +50,6 @@ const HotspotSetupAddTxnScreen = () => {
       navNext()
     }
   }
-
-  useEffect(() => {
-    // TODO: Verify this is correct
-    if (freeAddHotspot) {
-      setFee(0)
-      return
-    }
-
-    const calc = async () => {
-      const nonce = account?.nonce ? account.nonce + 1 : 0
-      // TODO:                                            ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-      const val = await calculatePaymentTxnFee(0, nonce, 'what should this be?')
-      setFee(val || 0)
-    }
-
-    calc()
-  }, [account?.nonce, freeAddHotspot])
-
-  const dcIntBalance = useMemo(() => account?.dcBalance?.integerBalance || 0, [
-    account?.dcBalance?.integerBalance,
-  ])
 
   useEffect(() => {
     updateHotspotStatus()
@@ -111,20 +88,12 @@ const HotspotSetupAddTxnScreen = () => {
             textDecorationLine: freeAddHotspot ? 'line-through' : 'none',
           }}
         >
-          $40.00
+          {`$${FEE}.00`}
         </Text>
-        {freeAddHotspot && (
-          <Text variant="body1">{`${currencyFormat(fee)}`}</Text>
-        )}
-        {dcIntBalance >= fee ? (
-          <Text variant="body1">
-            {`${t('generic.balance')}: ${currencyFormat(dcIntBalance)}`}
-          </Text>
-        ) : (
-          <Text style={{ color: '#ED5C5C', marginBottom: 20 }}>
-            {`${t('generic.balance')}: ${currencyFormat(dcIntBalance)}`}
-          </Text>
-        )}
+        {freeAddHotspot && <Text variant="body1">$0</Text>}
+        <Text variant="body1">
+          {`${t('generic.balance')}: ${account?.dcBalance?.toString() || 0}`}
+        </Text>
       </>
     )
   }
@@ -154,7 +123,11 @@ const HotspotSetupAddTxnScreen = () => {
       <Button
         onPress={act}
         mode="contained"
-        disabled={!freeAddHotspot || dcIntBalance < fee || submitting}
+        disabled={
+          (!freeAddHotspot &&
+            (account?.dcBalance?.integerBalance || 0) < FEE) ||
+          submitting
+        }
         title={
           hotspotStatus === 'global'
             ? t('hotspot_setup.add_hotspot.back')

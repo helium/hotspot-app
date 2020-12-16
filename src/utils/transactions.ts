@@ -1,9 +1,6 @@
-/* eslint-disable import/prefer-default-export */
-import { Address, Keypair } from '@helium/crypto-react-native'
+import { Address } from '@helium/crypto-react-native'
 import { PaymentV2, AddGatewayV1, Transaction } from '@helium/transactions'
-import { cloneDeep } from 'lodash'
-import { getSecureItem } from './secureAccount'
-import { sign } from './crypto'
+import { getKeypair } from './secureAccount'
 
 const emptyB58Address = () =>
   Address.fromB58('13PuqyWXzPYeXcF1B9ZRx7RLkEygeL374ZABiQdwRSNzASdA1sn')
@@ -13,11 +10,8 @@ export const calculatePaymentTxnFee = async (
   nonce: number,
   payeeB58?: string,
 ) => {
-  const rawKeypair = await getSecureItem('keypair')
-  if (!rawKeypair) return
-
-  const parsedKeypair = JSON.parse(rawKeypair)
-  const keypair = new Keypair(parsedKeypair)
+  const keypair = await getKeypair()
+  if (!keypair) return
 
   // if a payee isn't supplied, we use a dummy address
   let payee: Address
@@ -55,25 +49,14 @@ export const calculateAddGatewayFee = (ownerB58: string, payerB58: string) => {
 
 export const stakingFee = Transaction.stakingFeeTxnAddGatewayV1
 
-const makeSignature = async (unsignedTxn: AddGatewayV1) => {
-  const txn = unsignedTxn.serialize()
-  const stringTxn = Buffer.from(txn).toString('base64')
-  const signature = await sign(stringTxn)
-  if (!signature) return
-
-  return Buffer.from(signature, 'base64')
-}
-
 export const makeAddGatewayTxn = async (partialTxnBin: string) => {
   const addGatewayTxn = AddGatewayV1.fromString(partialTxnBin)
+  const keypair = await getKeypair()
 
-  const unsignedTxn = cloneDeep(addGatewayTxn)
-  unsignedTxn.ownerSignature = undefined
-  unsignedTxn.gatewaySignature = undefined
+  const signedTxn = await addGatewayTxn.sign({
+    owner: keypair,
+  })
 
-  const signature = await makeSignature(unsignedTxn)
-  addGatewayTxn.ownerSignature = signature
-
-  const serialized = addGatewayTxn.serialize()
+  const serialized = signedTxn.serialize()
   return Buffer.from(serialized).toString('base64')
 }

@@ -92,12 +92,6 @@ const useBluetooth = () => {
   ): Promise<Characteristic> => {
     try {
       const value = await characteristic.read()
-      console.log(
-        'readCharacteristic',
-        characteristic.uuid,
-        ' - read response - ',
-        value.value,
-      )
       if (!value.value) return value
 
       const parsedValue = decode(value.value)
