@@ -14,6 +14,7 @@ import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotP
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotScanningScreen'>
 
+const SCAN_DURATION = 4000
 const HotspotScanningScreen = () => {
   const rotateAnim = useRef(new Animated.Value(0))
   const { t } = useTranslation()
@@ -26,8 +27,8 @@ const HotspotScanningScreen = () => {
     Animated.loop(
       Animated.sequence([
         Animated.timing(rotateAnim.current, {
-          toValue: -3,
-          duration: 6000,
+          toValue: -2,
+          duration: SCAN_DURATION,
           useNativeDriver: true,
           easing: Easing.linear,
         }),
@@ -37,7 +38,7 @@ const HotspotScanningScreen = () => {
   useEffect(() => {
     const scan = async () => {
       anim()
-      await scanForHotspots(6000)
+      await scanForHotspots(SCAN_DURATION)
       navigation.replace('HotspotSetupBluetoothScreen', params)
     }
     scan()

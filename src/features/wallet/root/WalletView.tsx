@@ -1,8 +1,13 @@
-import React, { useRef } from 'react'
-import { Animated } from 'react-native'
+import React, { useRef, ElementRef } from 'react'
 import { useTranslation } from 'react-i18next'
+import Animated, {
+  useSharedValue,
+  useDerivedValue,
+  interpolate,
+  Extrapolate,
+  useAnimatedStyle,
+} from 'react-native-reanimated'
 import Box from '../../../components/Box'
-import AnimatedBox from '../../../components/AnimatedBox'
 import Text from '../../../components/Text'
 import BarChart from '../../../components/BarChart'
 import Search from '../../../assets/images/search.svg'
@@ -23,49 +28,40 @@ type Props = {
 }
 
 const WalletView = ({ layout, animationPoints }: Props) => {
+  const { dragMax, dragMid } = animationPoints
+
   const { t } = useTranslation()
 
   const handlePress = () => {
     triggerNotification()
   }
 
-  const { dragMax, dragMid, dragMin } = animationPoints
-  const animatedValue = useRef(new Animated.Value(dragMid)).current
-  const scrollOffset = useRef(new Animated.Value(0)).current
-  // for debugging
-  // animatedValue.addListener(({ value }) => console.log(value))
+  type ActivityCardHandle = ElementRef<typeof ActivityCard>
+  const card = useRef<ActivityCardHandle>(null)
 
-  // this isn't perfect and probably not very performant,
-  // but it gets kind of close to the interaction i'm trying
-  // to acheive, will continue to work on it
-  scrollOffset.addListener(({ value }) => {
-    animatedValue.setValue(value + dragMid)
+  const snapProgress = useSharedValue(dragMid / dragMax)
+
+  const balanceTranslateY = useDerivedValue(() => {
+    return interpolate(
+      snapProgress.value,
+      [dragMid / dragMax, 1],
+      [0, -layout.chartHeight],
+      Extrapolate.CLAMP,
+    )
   })
 
-  const balanceTranslateY = animatedValue.interpolate({
-    inputRange: [dragMid, dragMax],
-    outputRange: [0, -layout.chartHeight],
-    extrapolate: 'clamp',
-  })
-
-  const balanceInnerTranslateY = animatedValue.interpolate({
-    inputRange: [dragMid, dragMax],
-    outputRange: [0, -layout.balanceInnerTranslate],
-    extrapolate: 'clamp',
-  })
-
-  const balanceInnerScale = animatedValue.interpolate({
-    inputRange: [dragMid, dragMax],
-    outputRange: [1, 0.85],
-    extrapolate: 'clamp',
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateY: balanceTranslateY.value,
+        },
+      ],
+    }
   })
 
   const animateActivityToBottom = () => {
-    Animated.timing(animatedValue, {
-      toValue: dragMin,
-      duration: 200,
-      useNativeDriver: true,
-    }).start()
+    card.current?.snapTo(0)
     triggerNotification()
   }
 
@@ -98,21 +94,14 @@ const WalletView = ({ layout, animationPoints }: Props) => {
         <BarChart height={layout.chartHeight} />
       </Box>
 
-      <AnimatedBox
-        flex={1}
-        style={[{ transform: [{ translateY: balanceTranslateY }] }]}
-      >
-        <BalanceCard
-          translateY={balanceInnerTranslateY}
-          scale={balanceInnerScale}
-          onReceivePress={animateActivityToBottom}
-        />
-      </AnimatedBox>
+      <Animated.View style={[{ flex: 1 }, animatedStyles]}>
+        <BalanceCard onReceivePress={animateActivityToBottom} />
+      </Animated.View>
 
       <ActivityCard
-        animatedValue={animatedValue}
-        scrollOffset={scrollOffset}
+        ref={card}
         animationPoints={animationPoints}
+        snapProgress={snapProgress}
       />
     </Box>
   )

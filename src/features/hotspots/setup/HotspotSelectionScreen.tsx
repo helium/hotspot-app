@@ -10,7 +10,7 @@ import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
 import Hotspot from '../../../assets/images/hotspot.svg'
 import RAK from '../../../assets/images/rak.svg'
 import { useColors } from '../../../theme/themeHooks'
-import { HotspotType } from '../../../utils/useHotspot'
+import { HotspotType } from '../../../store/connectedHotspot/connectedHotspotSlice'
 
 const HotspotSetupSelectionScreen = () => {
   const { t } = useTranslation()

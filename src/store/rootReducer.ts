@@ -1,12 +1,14 @@
 import { combineReducers } from '@reduxjs/toolkit'
 import accountSlice from './account/accountSlice'
 import statsSlice from './stats/statsSlice'
-import userSlice from './user/userSlice'
+import appSlice from './user/appSlice'
+import connectedHotspotSlice from './connectedHotspot/connectedHotspotSlice'
 
 const rootReducer = combineReducers({
-  user: userSlice.reducer,
+  app: appSlice.reducer,
   account: accountSlice.reducer,
   stats: statsSlice.reducer,
+  connectedHotspot: connectedHotspotSlice.reducer,
 })
 
 export type RootState = ReturnType<typeof rootReducer>

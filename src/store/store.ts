@@ -1,4 +1,4 @@
-import { configureStore, Action } from '@reduxjs/toolkit'
+import { configureStore, Action, getDefaultMiddleware } from '@reduxjs/toolkit'
 import { ThunkAction } from 'redux-thunk'
 import { useDispatch, useStore } from 'react-redux'
 import rootReducer, { RootState } from './rootReducer'
@@ -12,6 +12,10 @@ if (Reactotron.createEnhancer) {
 const store = configureStore({
   reducer: rootReducer,
   enhancers,
+  middleware: getDefaultMiddleware({
+    serializableCheck: false,
+    // TODO: The BigNumber type in some models is not serializable. Ignoring the warning for now.
+  }),
 })
 
 export type AppDispatch = typeof store.dispatch

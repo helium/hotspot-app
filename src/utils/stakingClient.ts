@@ -8,10 +8,10 @@ export const getStaking = async (url: string) => {
         Authorization: Config.STAKING_TOKEN,
       },
     })
-
     const json = await response.json()
-    return json.data
+    return json.data || json
   } catch (error) {
+    console.log(error)
     return null
   }
 }
@@ -29,7 +29,7 @@ export const postStaking = async (url: string, data: unknown) => {
       body: JSON.stringify(data),
     })
     const json = await response.json()
-    return json.data
+    return json.data || json
   } catch (error) {
     return null
   }

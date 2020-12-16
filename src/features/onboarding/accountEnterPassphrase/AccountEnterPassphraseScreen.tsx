@@ -9,7 +9,7 @@ import wordlist from '../../../constants/wordlists/english.json'
 import PhraseChip from './PhraseChip'
 import Button from '../../../components/Button'
 import { OnboardingNavigationProp } from '../onboardingTypes'
-import { getMnemonic } from '../../../utils/account'
+import { getMnemonic } from '../../../utils/secureAccount'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 
 const testIndices = __DEV__

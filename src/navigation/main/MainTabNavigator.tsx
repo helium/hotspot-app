@@ -12,9 +12,9 @@ import { useColors } from '../../theme/themeHooks'
 import Box from '../../components/Box'
 import StatsScreen from '../../features/stats/StatsScreen'
 import { useAppDispatch } from '../../store/store'
-import userSlice from '../../store/user/userSlice'
 import WalletNavigator from '../../features/wallet/WalletNavigator'
 import { wp } from '../../utils/layout'
+import appSlice from '../../store/user/appSlice'
 
 const MainTab = createBottomTabNavigator()
 
@@ -22,7 +22,7 @@ const MainTabs = () => {
   const { white, grayLight } = useColors()
   const navigation = useNavigation<RootNavigationProp>()
   const {
-    user: { isLocked, isSettingUpHotspot },
+    app: { isLocked, isSettingUpHotspot },
   } = useSelector((state: RootState) => state)
   const dispatch = useAppDispatch()
 
@@ -34,7 +34,7 @@ const MainTabs = () => {
   useEffect(() => {
     if (!isSettingUpHotspot) return
 
-    dispatch(userSlice.actions.startHotspotSetup())
+    dispatch(appSlice.actions.startHotspotSetup())
     navigation.push('HotspotSetup')
   }, [isSettingUpHotspot, dispatch, navigation])
 

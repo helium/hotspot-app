@@ -264,7 +264,7 @@ export default {
     },
     disconnect_dialog: {
       title: 'Forget Network?',
-      body: 'The Hotspot will no longer automatically connect to %{wifiName}.',
+      body: 'The Hotspot will no longer automatically connect to {{wifiName}}.',
     },
     wifi_password: {
       join_title: 'Join Wi-Fi',
@@ -293,8 +293,8 @@ export default {
     firmware_update: {
       title: 'Firmware Update Required',
       subtitle: 'This Hotspot needs a firmware update before it can continue',
-      current_version: 'Current Version:',
-      required_version: 'Required Version:',
+      current_version: 'Current Version: {{version}}',
+      required_version: 'Required Version: {{minVersion}}',
       explanation:
         'This Hotspot will check for updates automatically. This can take about 10 minutes. Leave it plugged in and check back later.',
       next: 'Got it',
@@ -314,13 +314,13 @@ export default {
         'You already added this hotspot to your wallet. Continue to the next screen to assert its location.',
       not_owned:
         'You do not own this hotspot and cannot add it to your wallet.',
-      label: 'CURRENT ADD HOTSPOT FEE (PAID IN %{dc})',
+      label: 'CURRENT ADD HOTSPOT FEE (PAID IN DATA CREDITS)',
       help_link: 'What are Data Credits?',
-      support_title: 'What are Data Credits (%{dc})?',
+      support_title: 'What are Data Credits?',
       support_answer:
         'Data Credits are required to send data over the Helium Network.',
       error:
-        'Cannot proceed with Add Hotspot. If you purchased the Hotspot from Helium, please contact support@helium.com and include mac address %{mac}',
+        'Cannot proceed with Add Hotspot. If you purchased the Hotspot from Helium, please contact support@helium.com and include mac address {{mac}}',
       back: 'Back to Hotspot Pairing',
       wait_error_title: 'Please Try Again',
       wait_error_body:

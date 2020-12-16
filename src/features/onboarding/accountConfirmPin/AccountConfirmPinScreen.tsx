@@ -6,7 +6,7 @@ import {
   OnboardingNavigationProp,
   OnboardingStackParamList,
 } from '../onboardingTypes'
-import userSlice from '../../../store/user/userSlice'
+import appSlice from '../../../store/user/appSlice'
 import { useAppDispatch } from '../../../store/store'
 import ConfirmPinView from '../../../components/ConfirmPinView'
 import { MoreNavigationProp } from '../../moreTab/moreTypes'
@@ -24,7 +24,7 @@ const AccountConfirmPinScreen = () => {
 
   const pinSuccess = useCallback(
     (pin: string) => {
-      dispatch(userSlice.actions.backupAccount(pin))
+      dispatch(appSlice.actions.backupAccount(pin))
       if (pinReset) {
         // TODO: Handle pin reset complete
         navigation.navigate('MoreScreen')

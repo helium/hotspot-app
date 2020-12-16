@@ -1,102 +1,67 @@
-/* eslint-disable react/jsx-props-no-spreading */
-import React from 'react'
-import { Animated } from 'react-native'
-import SlidingUpPanel from 'rn-sliding-up-panel'
+import React, {
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  ElementRef,
+  Ref,
+} from 'react'
 import { orderBy, random, times } from 'lodash'
-import CardHandle from './CardHandle'
-import Box from '../../../components/Box'
-import Text from '../../../components/Text'
+import BottomSheet from 'react-native-holy-sheet'
+import Animated from 'react-native-reanimated'
 import ActivityItem from './ActivityItem'
-import CarotDown from '../../../assets/images/carot-down.svg'
 import { WalletAnimationPoints } from './walletLayout'
-import { triggerNotification } from '../../../utils/haptic'
-import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import ActivityCardHeader from './ActivityCardHeader'
 
 type Props = {
-  animatedValue: Animated.Value
-  scrollOffset: Animated.Value
   animationPoints: WalletAnimationPoints
+  snapProgress?: Animated.SharedValue<number>
 }
 
-const ActivityCard = ({
-  animatedValue,
-  scrollOffset,
-  animationPoints,
-}: Props) => {
-  const renderItem = ({ item, index }: { item: TxnData; index: number }) => (
-    <ActivityItem
-      type={item.type}
-      time={item.time}
-      amount={item.amount}
-      isFirst={index === 0}
-      isLast={index === data.length - 1}
-    />
-  )
-
-  const handlePress = () => {
-    triggerNotification()
-  }
-
-  const { dragMax, dragMid, dragMin } = animationPoints
-
-  return (
-    <SlidingUpPanel
-      animatedValue={animatedValue}
-      draggableRange={{ top: dragMax, bottom: dragMin }}
-      snappingPoints={[dragMid]}
-      showBackdrop={false}
-      friction={2}
-    >
-      {(dragHandler) => (
-        <Box flex={1} backgroundColor="white" borderRadius="l">
-          <Box {...dragHandler} padding="m">
-            <Box alignItems="center" padding="s">
-              <CardHandle />
-            </Box>
-            <Box flexDirection="row" alignItems="center">
-              <Text color="grayDark" fontSize={20} fontWeight="600">
-                View
-              </Text>
-              <TouchableOpacityBox
-                flexDirection="row"
-                marginHorizontal="xs"
-                onPress={handlePress}
-              >
-                <Text color="purpleMain" fontSize={20} fontWeight="600">
-                  All Activity
-                </Text>
-                <Box padding="xs" paddingTop="ms">
-                  <CarotDown />
-                </Box>
-              </TouchableOpacityBox>
-            </Box>
-          </Box>
-          <Box paddingHorizontal="m">
-            <Animated.FlatList
-              data={data}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.id}
-              showsVerticalScrollIndicator={false}
-              onScroll={Animated.event(
-                [
-                  {
-                    nativeEvent: { contentOffset: { y: scrollOffset } },
-                  },
-                ],
-                {
-                  useNativeDriver: true,
-                },
-              )}
-              contentContainerStyle={{
-                paddingBottom: 400,
-              }}
-            />
-          </Box>
-        </Box>
-      )}
-    </SlidingUpPanel>
-  )
+type ActivityCardHandle = {
+  snapTo: (index?: number) => void
 }
+
+const ActivityCard = forwardRef(
+  (props: Props, ref: Ref<ActivityCardHandle>) => {
+    const { animationPoints, snapProgress } = props
+
+    type BottomSheetHandle = ElementRef<typeof BottomSheet>
+    const sheet = useRef<BottomSheetHandle>(null)
+
+    useImperativeHandle(ref, () => ({
+      snapTo(index?: number): void {
+        sheet.current?.snapTo(index)
+      },
+    }))
+
+    const renderItem = ({ item, index }: { item: TxnData; index: number }) => (
+      <ActivityItem
+        type={item.type}
+        time={item.time}
+        amount={item.amount}
+        isFirst={index === 0}
+        isLast={index === data.length - 1}
+      />
+    )
+
+    const { dragMax, dragMid, dragMin } = animationPoints
+
+    return (
+      <BottomSheet
+        ref={sheet}
+        snapPoints={[dragMin, dragMid, dragMax]}
+        initialSnapIndex={1}
+        snapProgress={snapProgress}
+        renderHeader={() => <ActivityCardHeader />}
+        flatListProps={{
+          data,
+          keyExtractor: (item) => item.id,
+          renderItem,
+        }}
+      />
+    )
+  },
+)
 
 // this is just for filler data, the actual activity txn
 // handlers will be more complex

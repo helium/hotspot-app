@@ -10,7 +10,7 @@ import Text from '../../../components/Text'
 import { OnboardingNavigationProp } from '../onboardingTypes'
 import TextTransform from '../../../components/TextTransform'
 import Button from '../../../components/Button'
-import { getMnemonic } from '../../../utils/account'
+import { getMnemonic } from '../../../utils/secureAccount'
 import WordList from '../../../components/WordList'
 
 const AccountCreatePassphraseScreen = () => {

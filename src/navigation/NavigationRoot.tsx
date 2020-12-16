@@ -6,7 +6,7 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color'
 import Onboarding from '../features/onboarding/OnboardingNavigator'
 import Education from '../features/educationSetup/EducationNavigator'
 import SplashScreen from '../features/splash/SplashScreen'
-import { restoreUser } from '../store/user/userSlice'
+import { restoreUser } from '../store/user/appSlice'
 import { useAppDispatch } from '../store/store'
 import { RootState } from '../store/rootReducer'
 import defaultScreenOptions from './defaultScreenOptions'
@@ -18,7 +18,7 @@ const RootStack = createStackNavigator()
 const NavigationRoot = () => {
   const [showSplash, setShowSplash] = useState(true)
   const { isBackedUp, isEducated, isRestored } = useSelector(
-    (state: RootState) => state.user,
+    (state: RootState) => state.app,
   )
   const dispatch = useAppDispatch()
   const colors = useColors()
