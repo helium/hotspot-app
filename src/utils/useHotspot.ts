@@ -23,7 +23,7 @@ import {
   getHotspotDetails,
   submitTransaction,
 } from './appDataClient'
-import { getString } from './account'
+import { getSecureItem } from './secureAccount'
 import {
   calculateAddGatewayFee,
   makeAddGatewayTxn,
@@ -313,7 +313,7 @@ const useHotspot = () => {
     )
     if (!characteristic) return false
 
-    const owner = await getString('address')
+    const owner = await getSecureItem('address')
     if (!owner) return false
     const data = await getStaking('address')
     const payer = data?.address || ''

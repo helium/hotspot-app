@@ -2,7 +2,7 @@
 import { Address, Keypair } from '@helium/crypto-react-native'
 import { PaymentV2, AddGatewayV1, Transaction } from '@helium/transactions'
 import { cloneDeep } from 'lodash'
-import { getString } from './account'
+import { getSecureItem } from './secureAccount'
 import { sign } from './crypto'
 
 const emptyB58Address = () =>
@@ -13,7 +13,7 @@ export const calculatePaymentTxnFee = async (
   nonce: number,
   payeeB58?: string,
 ) => {
-  const rawKeypair = await getString('keypair')
+  const rawKeypair = await getSecureItem('keypair')
   if (!rawKeypair) return
 
   const parsedKeypair = JSON.parse(rawKeypair)

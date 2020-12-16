@@ -1,10 +1,10 @@
 import Client from '@helium/http'
-import { getString } from './account'
+import { getSecureItem } from './secureAccount'
 
 const client = new Client()
 
 export const getHotspots = async () => {
-  const address = await getString('address')
+  const address = await getSecureItem('address')
   if (!address) return []
 
   const newHotspotList = await client.account(address).hotspots.list()
@@ -17,7 +17,7 @@ export const getHotspotDetails = async (address: string) => {
 }
 
 export const getAccount = async () => {
-  const address = await getString('address')
+  const address = await getSecureItem('address')
   if (!address) return
 
   const { data } = await client.accounts.get(address)
@@ -30,14 +30,14 @@ export const submitTransaction = async (serializedTxn: string) =>
 export const getCurrentOraclePrice = async () => client.oracle.getCurrentPrice()
 
 export const getPendingTxnList = async () => {
-  const address = await getString('address')
+  const address = await getSecureItem('address')
   if (!address) return []
   const list = await client.account(address).pendingTransactions.list()
   return list.takeJSON(1000)
 }
 
 export const getAccountActivityList = async () => {
-  const address = await getString('address')
+  const address = await getSecureItem('address')
   if (!address) return []
   const list = await client.account(address).activity.list()
   return list.takeJSON(1000)

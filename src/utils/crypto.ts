@@ -1,9 +1,9 @@
 /* eslint-disable import/prefer-default-export */
 import Sodium from 'react-native-sodium'
-import { getString } from './account'
+import { getSecureItem } from './secureAccount'
 
 export const sign = async (message: string) => {
-  const keypair = await getString('keypair')
+  const keypair = await getSecureItem('keypair')
   if (!keypair) return
 
   const { sk } = JSON.parse(keypair)

@@ -6,7 +6,7 @@ import SafeAreaBox from '../../../components/SafeAreaBox'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import { OnboardingNavigationProp } from '../onboardingTypes'
-import { createKeypair } from '../../../utils/account'
+import { createKeypair } from '../../../utils/secureAccount'
 
 const AccountPassphraseGenerationScreen = () => {
   const { t } = useTranslation()

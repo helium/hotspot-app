@@ -1,12 +1,11 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import getUnixTime from 'date-fns/getUnixTime'
 import {
-  getBoolean,
-  setItem,
-  deleteItem,
+  getSecureItem,
+  setSecureItem,
+  deleteSecureItem,
   signOut,
-  getString,
-} from '../../utils/account'
+} from '../../utils/secureAccount'
 import { getCurrentPosition } from '../../utils/location'
 
 type Location = { latitude: number; longitude: number }
@@ -52,11 +51,11 @@ export const restoreUser = createAsyncThunk<Restore>(
   'app/restoreUser',
   async () => {
     const vals = await Promise.all([
-      getBoolean('accountBackedUp'),
-      getBoolean('isEducated'),
-      getBoolean('requirePin'),
-      getBoolean('requirePinForPayment'),
-      getString('authInterval'),
+      getSecureItem('accountBackedUp'),
+      getSecureItem('isEducated'),
+      getSecureItem('requirePin'),
+      getSecureItem('requirePinForPayment'),
+      getSecureItem('authInterval'),
     ])
     return {
       isBackedUp: vals[0],
@@ -80,18 +79,18 @@ const appSlice = createSlice({
   initialState,
   reducers: {
     backupAccount: (state, action: PayloadAction<string>) => {
-      setItem('accountBackedUp', true)
-      setItem('requirePin', true)
-      setItem('userPin', action.payload)
+      setSecureItem('accountBackedUp', true)
+      setSecureItem('requirePin', true)
+      setSecureItem('userPin', action.payload)
       state.isBackedUp = true
       state.isPinRequired = true
     },
     finishEducation: (state) => {
-      setItem('isEducated', true)
+      setSecureItem('isEducated', true)
       state.isEducated = true
     },
     setupHotspot: (state) => {
-      setItem('isEducated', true)
+      setSecureItem('isEducated', true)
       state.isEducated = true
       state.isSettingUpHotspot = true
     },
@@ -104,16 +103,16 @@ const appSlice = createSlice({
     },
     requirePinForPayment: (state, action: PayloadAction<boolean>) => {
       state.isPinRequiredForPayment = action.payload
-      setItem('requirePinForPayment', action.payload)
+      setSecureItem('requirePinForPayment', action.payload)
     },
     updateAuthInterval: (state, action: PayloadAction<number>) => {
       state.authInterval = action.payload
-      setItem('authInterval', action.payload.toString())
+      setSecureItem('authInterval', action.payload.toString())
     },
     disablePin: (state) => {
-      deleteItem('requirePin')
-      deleteItem('requirePinForPayment')
-      deleteItem('userPin')
+      deleteSecureItem('requirePin')
+      deleteSecureItem('requirePinForPayment')
+      deleteSecureItem('userPin')
       state.isPinRequired = false
       state.isPinRequiredForPayment = false
     },

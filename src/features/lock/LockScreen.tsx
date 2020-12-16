@@ -10,7 +10,7 @@ import {
   RootNavigationProp,
   RootStackParamList,
 } from '../../navigation/main/tabTypes'
-import { getString } from '../../utils/account'
+import { getSecureItem } from '../../utils/secureAccount'
 import ConfirmPinView from '../../components/ConfirmPinView'
 import { MoreNavigationProp } from '../moreTab/moreTypes'
 import { useAppDispatch } from '../../store/store'
@@ -28,7 +28,7 @@ const LockScreen = () => {
   const [locked, setLocked] = useStateWithCallbackLazy(shouldLock)
   const dispatch = useAppDispatch()
 
-  const { result: pin } = useAsync(getString, ['userPin'])
+  const { result: pin } = useAsync(getSecureItem, ['userPin'])
 
   const handleSuccess = useCallback(() => {
     if (shouldLock) {

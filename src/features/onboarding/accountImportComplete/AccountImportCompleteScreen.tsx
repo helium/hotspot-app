@@ -10,7 +10,7 @@ import {
   OnboardingNavigationProp,
   OnboardingStackParamList,
 } from '../onboardingTypes'
-import { createKeypair } from '../../../utils/account'
+import { createKeypair } from '../../../utils/secureAccount'
 
 type Route = RouteProp<OnboardingStackParamList, 'AccountImportCompleteScreen'>
 
