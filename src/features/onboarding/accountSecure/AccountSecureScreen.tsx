@@ -15,7 +15,7 @@ const AccountSecureScreen = () => {
     <Box backgroundColor="primaryBackground" flex={1} padding="l">
       <Box flex={1} justifyContent="center" alignItems="center">
         <Secure />
-        <Text variant="header" marginTop="xxl">
+        <Text variant="h1" marginTop="xxl">
           {t('account_setup.success.title')}
         </Text>
         <Text variant="body2Light" marginTop="s" textAlign="center">

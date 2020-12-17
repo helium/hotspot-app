@@ -49,7 +49,7 @@ const EnableNotificationsScreen = () => {
         <EnableNotif />
       </Box>
       <Box flex={1} marginTop="n_xl" width="100%">
-        <Text variant="header" textAlign="center">
+        <Text variant="h1" textAlign="center">
           {t('account_setup.enable_notifications.title')}
         </Text>
         <Text variant="body2Light" textAlign="center">

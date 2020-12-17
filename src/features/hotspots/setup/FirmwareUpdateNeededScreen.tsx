@@ -23,7 +23,7 @@ const FirmwareUpdateNeededScreen = () => {
 
   return (
     <BackScreen>
-      <Text variant="header">{t('hotspot_setup.firmware_update.title')}</Text>
+      <Text variant="h1">{t('hotspot_setup.firmware_update.title')}</Text>
       <Text variant="body1">{t('hotspot_setup.firmware_update.subtitle')}</Text>
       <Text variant="body1">
         {t('hotspot_setup.firmware_update.current_version', {

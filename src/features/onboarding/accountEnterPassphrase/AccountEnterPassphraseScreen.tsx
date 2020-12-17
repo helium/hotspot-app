@@ -93,7 +93,7 @@ const AccountEnterPassphraseScreen = () => {
         padding="l"
       >
         <Box flex={1} justifyContent="center" alignItems="center">
-          <Text variant="header" numberOfLines={1} adjustsFontSizeToFit>
+          <Text variant="h1" numberOfLines={1} adjustsFontSizeToFit>
             {t('account_setup.confirm.title')}
           </Text>
           <Text variant="body2Light">
@@ -140,9 +140,7 @@ const AccountEnterPassphraseScreen = () => {
           justifyContent="center"
           paddingHorizontal="l"
         >
-          <Text variant="header">
-            {t('account_setup.confirm.failed.title')}
-          </Text>
+          <Text variant="h1">{t('account_setup.confirm.failed.title')}</Text>
           <Text variant="body2Light" marginTop="l">
             {t('account_setup.confirm.failed.subtitle_1')}
           </Text>
