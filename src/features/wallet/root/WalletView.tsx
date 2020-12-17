@@ -39,6 +39,10 @@ const WalletView = ({ layout, animationPoints }: Props) => {
     triggerNotification()
   }
 
+  const navScan = () => {
+    navigation.navigate('Scan')
+  }
+
   type ActivityCardHandle = ElementRef<typeof ActivityCard>
   const card = useRef<ActivityCardHandle>(null)
 
@@ -92,7 +96,7 @@ const WalletView = ({ layout, animationPoints }: Props) => {
           <TouchableOpacityBox onPress={handlePress} padding="s">
             <Search width={22} height={22} />
           </TouchableOpacityBox>
-          <TouchableOpacityBox onPress={handlePress} padding="s">
+          <TouchableOpacityBox onPress={navScan} padding="s">
             <Qr width={22} height={22} color="white" />
           </TouchableOpacityBox>
         </Box>
