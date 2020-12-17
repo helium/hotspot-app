@@ -1,5 +1,6 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigation } from '@react-navigation/native'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import SendInput from './SendInput'
@@ -8,19 +9,34 @@ import SendCircle from '../../../assets/images/send-circle.svg'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { triggerNotification } from '../../../utils/haptic'
 import QrCode from '../../../assets/images/qr.svg'
+import Close from '../../../assets/images/close.svg'
+import { useColors } from '../../../theme/themeHooks'
 
 const SendView = () => {
   const { t } = useTranslation()
+  const navigation = useNavigation()
+
+  const navBack = () => {
+    navigation.goBack()
+    triggerNotification()
+  }
+
+  const { primaryMain } = useColors()
 
   return (
     <Box flex={1}>
       <Box
-        flex={1}
+        flex={1.3}
         backgroundColor="primaryBackground"
         justifyContent="flex-start"
         alignItems="center"
         padding="l"
       >
+        <Box flexDirection="row" justifyContent="flex-end" width="100%">
+          <TouchableOpacityBox padding="m" onPress={navBack}>
+            <Close color="white" width={22} height={22} />
+          </TouchableOpacityBox>
+        </Box>
         <Box marginBottom="m">
           <SendCircle />
         </Box>
@@ -43,7 +59,7 @@ const SendView = () => {
                   paddingVertical="xs"
                   paddingHorizontal="s"
                 >
-                  <QrCode width={16} />
+                  <QrCode width={16} color={primaryMain} />
                 </TouchableOpacityBox>
               }
             />

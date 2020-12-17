@@ -1,6 +1,9 @@
 import React from 'react'
 import { Platform } from 'react-native'
-import { createStackNavigator } from '@react-navigation/stack'
+import {
+  createStackNavigator,
+  TransitionPresets,
+} from '@react-navigation/stack'
 import LockScreen from '../../features/lock/LockScreen'
 import defaultScreenOptions from '../defaultScreenOptions'
 import HotspotSetup from '../../features/hotspots/setup/HotspotSetupNavigator'
@@ -34,7 +37,11 @@ const HomeStackScreen = () => {
       <HomeStack.Screen
         name="Send"
         component={SendScreen}
-        options={{ headerShown: false }}
+        options={{
+          headerShown: false,
+          cardOverlayEnabled: true,
+          ...TransitionPresets.ModalPresentationIOS,
+        }}
       />
       <HomeStack.Screen
         name="LockScreen"

@@ -12,7 +12,7 @@ import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import BarChart from '../../../components/BarChart'
 import Search from '../../../assets/images/search.svg'
-import Add from '../../../assets/images/add.svg'
+import Qr from '../../../assets/images/qr.svg'
 import BalanceCard from './BalanceCard'
 import ActivityCard from './ActivityCard'
 import {
@@ -93,7 +93,7 @@ const WalletView = ({ layout, animationPoints }: Props) => {
             <Search width={22} height={22} />
           </TouchableOpacityBox>
           <TouchableOpacityBox onPress={handlePress} padding="s">
-            <Add width={22} height={22} />
+            <Qr width={22} height={22} color="white" />
           </TouchableOpacityBox>
         </Box>
       </Box>
