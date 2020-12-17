@@ -4,10 +4,10 @@ import Text from '../../components/Text'
 import BellBubble from '../../assets/images/bellBubble.svg'
 import Box from '../../components/Box'
 
-const NoNotifications = () => {
+const EmptyNotifications = () => {
   const { t } = useTranslation()
   return (
-    <Box justifyContent="center" flex={1}>
+    <Box justifyContent="center" flex={1} paddingHorizontal="l">
       <BellBubble />
       <Text variant="h2" marginVertical="m">
         {t('notifications.none.title')}
@@ -17,4 +17,4 @@ const NoNotifications = () => {
   )
 }
 
-export default NoNotifications
+export default EmptyNotifications

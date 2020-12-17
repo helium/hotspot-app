@@ -459,6 +459,7 @@ export default {
     },
   },
   notifications: {
+    share: 'SHARE',
     list: { title: 'Notifications' },
     none: {
       title: 'You have no\nNotifications',

@@ -33,6 +33,8 @@ const App = () => {
 
   const handleChange = useCallback(
     (newState: AppStateStatus) => {
+      dispatch(appSlice.actions.updateAppStateStatus(newState))
+
       if (newState === 'background') {
         dispatch(appSlice.actions.updateLastIdle())
         return
