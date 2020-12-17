@@ -1,6 +1,5 @@
 import { Keypair, Mnemonic, Address } from '@helium/crypto-react-native'
 import * as SecureStore from 'expo-secure-store'
-import Sodium from 'react-native-sodium'
 
 type AccountStoreKey = BooleanKey | StringKey
 
@@ -83,19 +82,13 @@ export const getKeypair = async (): Promise<Keypair | undefined> => {
   }
 }
 
-const sign = async (message: string) => {
-  // TODO: is there a better way to sign?
-  const keypair = await getSecureItem('keypair')
-  if (!keypair) return
-
-  const { sk } = JSON.parse(keypair)
-  return Sodium.crypto_sign_detached(message, sk)
-}
-
 const makeSignature = async (token: { address: string; time: number }) => {
-  const stringifiedToken = Buffer.from(JSON.stringify(token)).toString('base64')
-  const signature = await sign(stringifiedToken)
-  return signature
+  const stringifiedToken = JSON.stringify(token)
+  const keypair = await getKeypair()
+  if (!keypair) return
+  const buffer = await keypair.sign(stringifiedToken)
+
+  return buffer.toString('base64')
 }
 
 const makeWalletApiToken = async (address: string) => {
