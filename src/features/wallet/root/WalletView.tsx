@@ -84,7 +84,7 @@ const WalletView = ({ layout, animationPoints }: Props) => {
         zIndex={1}
         height={layout.headerHeight}
       >
-        <Text variant="header" fontSize={22}>
+        <Text variant="h1" fontSize={22}>
           {t('wallet.title')}
         </Text>
 

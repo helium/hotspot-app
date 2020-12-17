@@ -29,7 +29,7 @@ const HotspotSetupBluetoothSuccess = () => {
   return (
     <Box>
       <Text
-        variant="header"
+        variant="h1"
         textAlign="center"
         numberOfLines={1}
         adjustsFontSizeToFit

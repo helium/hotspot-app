@@ -84,7 +84,7 @@ const HotspotEducationScreen = () => {
       justifyContent="space-evenly"
     >
       <Text
-        variant="header"
+        variant="h1"
         textAlign="center"
         numberOfLines={2}
         adjustsFontSizeToFit

@@ -1,10 +1,15 @@
 import Config from 'react-native-config'
 
-export const getStaking = async (url: string) => {
+const makeRequest = async (url: string, opts: RequestInit = {}) => {
   try {
-    const endpoint = [Config.STAKING_ENDPOINT, url].join('/')
-    const response = await fetch(endpoint, {
+    const route = [Config.STAKING_API_BASE_URL, url].join('/')
+
+    const response = await fetch(route, {
+      ...opts,
       headers: {
+        ...opts.headers,
+        'Cache-Control': 'no-cache',
+        'Content-Type': 'application/json',
         Authorization: Config.STAKING_TOKEN,
       },
     })
@@ -12,25 +17,11 @@ export const getStaking = async (url: string) => {
     return json.data || json
   } catch (error) {
     console.log(error)
-    return null
+    throw error
   }
 }
 
-export const postStaking = async (url: string, data: unknown) => {
-  try {
-    const endpoint = Config.STAKING_ENDPOINT
-    const response = await fetch([endpoint, url].join('/'), {
-      method: 'POST',
-      headers: {
-        'Cache-Control': 'no-cache',
-        'Content-Type': 'application/json',
-        Authorization: Config.STAKING_TOKEN,
-      },
-      body: JSON.stringify(data),
-    })
-    const json = await response.json()
-    return json.data || json
-  } catch (error) {
-    return null
-  }
-}
+export const getStaking = async (url: string) => makeRequest(url)
+
+export const postStaking = async (url: string, data: unknown) =>
+  makeRequest(url, { method: 'POST', body: JSON.stringify(data) })

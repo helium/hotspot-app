@@ -100,7 +100,7 @@ const HotspotSetupAddTxnScreen = () => {
 
   return (
     <BackScreen>
-      <Text variant="header" numberOfLines={1} adjustsFontSizeToFit>
+      <Text variant="h1" numberOfLines={1} adjustsFontSizeToFit>
         {t('hotspot_setup.add_hotspot.title')}
       </Text>
       <Text variant="subtitle" marginVertical="l">

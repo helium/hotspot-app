@@ -72,7 +72,7 @@ const HotspotEducationScreen = () => {
       justifyContent="space-evenly"
     >
       <Text
-        variant="header"
+        variant="h1"
         numberOfLines={2}
         paddingHorizontal="lx"
         marginVertical={{ smallPhone: 's', phone: 'lx' }}

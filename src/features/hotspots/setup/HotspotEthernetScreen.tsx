@@ -31,7 +31,7 @@ const HotspotEthernetScreen = () => {
 
   return (
     <BackScreen>
-      <Text variant="header" numberOfLines={1} adjustsFontSizeToFit>
+      <Text variant="h1" numberOfLines={1} adjustsFontSizeToFit>
         {t('hotspot_setup.ethernet.title')}
       </Text>
       <Text variant="subtitle" marginVertical="l">

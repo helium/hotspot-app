@@ -14,9 +14,6 @@ export default {
     '11th',
     '12th',
   ],
-  stats: {
-    title: 'Stats:',
-  },
   account_setup: {
     welcome: {
       title: 'Welcome to Helium',
@@ -462,6 +459,14 @@ export default {
       title: 'Location Permission',
       message:
         'Helium Wallet needs access to your location for Bluetooth LE discovery.',
+    },
+  },
+  notifications: {
+    list: { title: 'Notifications' },
+    none: {
+      title: 'You have no\nNotifications',
+      subtitle:
+        'Here you’ll get news, updates and alerts about your Hotspots and The People’s Network.',
     },
   },
 }

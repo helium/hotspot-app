@@ -10,11 +10,11 @@ import More from '../../features/moreTab/MoreNavigator'
 import { RootState } from '../../store/rootReducer'
 import { useColors } from '../../theme/themeHooks'
 import Box from '../../components/Box'
-import StatsScreen from '../../features/stats/StatsScreen'
 import { useAppDispatch } from '../../store/store'
 import WalletNavigator from '../../features/wallet/WalletNavigator'
 import { wp } from '../../utils/layout'
 import appSlice from '../../store/user/appSlice'
+import NotificationsScreen from '../../features/notifications/NotificationsScreen'
 
 const MainTab = createBottomTabNavigator()
 
@@ -67,7 +67,7 @@ const MainTabs = () => {
     >
       <MainTab.Screen name="Hotspots" component={Hotspots} />
       <MainTab.Screen name="Wallet" component={WalletNavigator} />
-      <MainTab.Screen name="Notifications" component={StatsScreen} />
+      <MainTab.Screen name="Notifications" component={NotificationsScreen} />
       <MainTab.Screen name="More" component={More} />
     </MainTab.Navigator>
   )

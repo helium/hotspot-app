@@ -37,7 +37,7 @@ const HotspotSetupScanWifiSuccess = ({
 
   return (
     <>
-      <Text variant="header" marginBottom="l">
+      <Text variant="h1" marginBottom="l">
         {t('hotspot_setup.wifi_scan.settings_title')}
       </Text>
 

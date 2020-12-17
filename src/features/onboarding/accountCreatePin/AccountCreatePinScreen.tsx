@@ -51,7 +51,7 @@ const AccountCreatePinScreen = () => {
       <EnterPin />
       <Text
         marginBottom="m"
-        variant="header"
+        variant="h1"
         marginTop={{ smallPhone: 'none', phone: 'xl' }}
       >
         {t('account_setup.create_pin.title')}
