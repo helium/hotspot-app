@@ -30,7 +30,7 @@ const HotspotSetupDiagnosticsScreen = () => {
       <ScrollView>
         <Clipboard />
         <Text
-          variant="header"
+          variant="h1"
           numberOfLines={1}
           adjustsFontSizeToFit
           marginVertical="l"

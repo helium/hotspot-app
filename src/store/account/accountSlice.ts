@@ -6,9 +6,27 @@ import {
   getAccount,
   getPendingTxnList,
 } from '../../utils/appDataClient'
+import { getWallet } from '../../utils/walletClient'
+
+export type Notification = {
+  account_address: string
+  body: string
+  color?: string | null
+  footer?: string | null
+  hotspot_address?: string | null
+  hotspot_name?: string | null
+  icon: string
+  id: number
+  share_text?: string | null
+  style: string
+  time: number
+  title: string
+  viewed_at?: string | null
+}
 
 export type AccountState = {
   hotspots: Hotspot[]
+  notifications: Notification[]
   account?: Account
   mainDataLoading: 'idle' | 'pending' | 'succeeded' | 'failed'
   pendingTransactions: PendingTransaction[]
@@ -16,20 +34,30 @@ export type AccountState = {
 
 const initialState: AccountState = {
   hotspots: [],
+  notifications: [],
   mainDataLoading: 'idle',
   pendingTransactions: [],
 }
 
-type AccountData = { hotspots: Hotspot[]; account?: Account }
+type AccountData = {
+  hotspots: Hotspot[]
+  account?: Account
+  notifications: Notification[]
+}
 export const fetchData = createAsyncThunk<AccountData>(
   'account/fetchData',
   async () => {
-    try {
-      const data = await Promise.all([getHotspots(), getAccount()])
-      return { hotspots: data[0] || [], account: data[1] }
-    } catch (e) {
-      console.log(e)
-      return { hotspots: [] }
+    const data = await Promise.all(
+      [getHotspots(), getAccount(), getWallet('notifications')].map((p) =>
+        p.catch((e) => {
+          console.log('fetchDataError:', e)
+        }),
+      ),
+    )
+    return {
+      hotspots: data[0] || [],
+      account: data[1],
+      notifications: data[2] || [],
     }
   },
 )
@@ -56,8 +84,10 @@ const accountSlice = createSlice({
       state.mainDataLoading = 'pending'
     })
     builder.addCase(fetchData.fulfilled, (state, { payload }) => {
+      state.mainDataLoading = 'succeeded'
       state.hotspots = payload.hotspots
       state.account = payload.account
+      state.notifications = payload.notifications
     })
     builder.addCase(fetchData.rejected, (state, _action) => {
       state.mainDataLoading = 'failed'

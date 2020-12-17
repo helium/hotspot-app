@@ -20,7 +20,7 @@ const EnableLocationScreen = () => {
 
   return (
     <BackScreen justifyContent="space-between">
-      <Text variant="header">{t('hotspot_setup.enable_location.title')}</Text>
+      <Text variant="h1">{t('hotspot_setup.enable_location.title')}</Text>
       <Text variant="subtitle">
         {t('hotspot_setup.enable_location.subtitle')}
       </Text>

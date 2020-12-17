@@ -56,7 +56,7 @@ const HotspotSetupWifiScreen = () => {
 
   return (
     <BackScreen>
-      <Text variant="header">{network}</Text>
+      <Text variant="h1">{network}</Text>
       <TextInput
         marginVertical="lx"
         padding="m"

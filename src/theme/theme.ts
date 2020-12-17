@@ -51,10 +51,20 @@ export const Font = {
 }
 
 const textVariants = {
-  header: {
+  h1: {
     fontFamily: Font.main.semiBold,
     fontSize: 40,
     lineHeight: 45.5,
+    color: 'primaryText',
+  },
+  h2: {
+    fontFamily: Font.main.semiBold,
+    fontSize: 27,
+    color: 'primaryText',
+  },
+  h3: {
+    fontFamily: Font.main.semiBold,
+    fontSize: 22,
     color: 'primaryText',
   },
   regular: {
@@ -79,7 +89,7 @@ const textVariants = {
   },
   subtitle: {
     fontFamily: Font.main.light,
-    fontSize: 19,
+    fontSize: 20,
     lineHeight: 26,
     color: 'purpleLight',
   },
@@ -212,7 +222,7 @@ export const theme = createTheme({
 })
 
 const darkTextVariants = {
-  header: { ...textVariants.header, color: 'black' },
+  h1: { ...textVariants.h1, color: 'black' },
   body2: { ...textVariants.body2, color: 'black' },
   input: { ...textVariants.input },
   button: { ...textVariants.button, color: 'black' },

@@ -22,7 +22,7 @@ const HotspotSetupSelectionScreen = () => {
   return (
     <BackScreen backgroundColor="primaryBackground" padding="lx">
       <Box flex={1} />
-      <Text variant="header">{t('hotspot_setup.selection.title')}</Text>
+      <Text variant="h1">{t('hotspot_setup.selection.title')}</Text>
       <Text
         variant="subtitle"
         numberOfLines={2}

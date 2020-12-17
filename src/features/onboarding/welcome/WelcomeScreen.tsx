@@ -40,7 +40,7 @@ const WelcomeScreen = () => {
           flex={4}
           justifyContent="center"
         >
-          <Text variant="header" numberOfLines={1} adjustsFontSizeToFit>
+          <Text variant="h1" numberOfLines={1} adjustsFontSizeToFit>
             {t('account_setup.welcome.title')}
           </Text>
           <Text variant="body2Light" textAlign="center" marginVertical="m">

@@ -9,6 +9,7 @@ const stringKeys = [
   'address',
   'userPin',
   'authInterval',
+  'walletApiToken',
 ] as const
 type StringKey = typeof stringKeys[number]
 
@@ -27,7 +28,7 @@ export const setSecureItem = async (
 ) => SecureStore.setItemAsync(key, String(val))
 
 export async function getSecureItem(key: BooleanKey): Promise<boolean>
-export async function getSecureItem(key: StringKey): Promise<string>
+export async function getSecureItem(key: StringKey): Promise<string | null>
 export async function getSecureItem(key: AccountStoreKey) {
   const item = await SecureStore.getItemAsync(key)
   if (boolKeys.find((bk) => key === bk)) {
@@ -61,17 +62,16 @@ export const createKeypair = async (
 
 export const getAddress = async (): Promise<Address | undefined> => {
   const addressB58 = await getSecureItem('address')
-  if (addressB58) {
-    return Address.fromB58(addressB58)
-  }
+  if (!addressB58) return
+  return Address.fromB58(addressB58)
 }
 
 export const getMnemonic = async (): Promise<Mnemonic | undefined> => {
   const wordsStr = await getSecureItem('mnemonic')
-  if (wordsStr) {
-    const words = JSON.parse(wordsStr)
-    return new Mnemonic(words)
-  }
+  if (!wordsStr) return
+
+  const words = JSON.parse(wordsStr)
+  return new Mnemonic(words)
 }
 
 export const getKeypair = async (): Promise<Keypair | undefined> => {
@@ -80,6 +80,41 @@ export const getKeypair = async (): Promise<Keypair | undefined> => {
     const keypairRaw = JSON.parse(keypairStr)
     return new Keypair(keypairRaw)
   }
+}
+
+const makeSignature = async (token: { address: string; time: number }) => {
+  const stringifiedToken = JSON.stringify(token)
+  const keypair = await getKeypair()
+  if (!keypair) return
+  const buffer = await keypair.sign(stringifiedToken)
+
+  return buffer.toString('base64')
+}
+
+const makeWalletApiToken = async (address: string) => {
+  const time = Math.floor(Date.now() / 1000)
+
+  const token = {
+    address,
+    time,
+  }
+
+  const signature = await makeSignature(token)
+
+  const signedToken = { ...token, signature }
+  return Buffer.from(JSON.stringify(signedToken)).toString('base64')
+}
+
+export const getWalletApiToken = async () => {
+  const existingToken = await getSecureItem('walletApiToken')
+  if (existingToken) return existingToken
+
+  const address = await getSecureItem('address')
+  if (!address) return
+
+  const apiToken = await makeWalletApiToken(address)
+  await setSecureItem('walletApiToken', apiToken)
+  return apiToken
 }
 
 export const signOut = async () =>
