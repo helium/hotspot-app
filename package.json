@@ -80,6 +80,7 @@
     "base-64": "^1.0.0",
     "compare-versions": "^3.6.0",
     "date-fns": "^2.16.1",
+    "expo-barcode-scanner": "^9.1.0",
     "expo-haptics": "^8.3.0",
     "expo-local-authentication": "^9.3.0",
     "expo-location": "^9.0.1",
