@@ -3,12 +3,12 @@ import CardHandle from './CardHandle'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import CarotDown from '../../../assets/images/carot-down.svg'
-import { triggerNotification } from '../../../utils/haptic'
+import { triggerNavHaptic } from '../../../utils/haptic'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 
 const ActivityCardHeader = () => {
   const handlePress = () => {
-    triggerNotification()
+    triggerNavHaptic()
   }
 
   return (

@@ -8,7 +8,7 @@ import LockScreen from '../../features/lock/LockScreen'
 import defaultScreenOptions from '../defaultScreenOptions'
 import HotspotSetup from '../../features/hotspots/setup/HotspotSetupNavigator'
 import MainTabs from './MainTabNavigator'
-import SendScreen from '../../features/wallet/send/SendScreen'
+import SendNavigator from '../../features/wallet/send/SendNavigator'
 import ScanScreen from '../../features/wallet/scan/ScanScreen'
 
 const HomeStack = createStackNavigator()
@@ -40,11 +40,13 @@ const HomeStackScreen = () => {
         component={ScanScreen}
         options={{
           headerShown: false,
+          cardOverlayEnabled: true,
+          // ...TransitionPresets.ModalPresentationIOS,
         }}
       />
       <HomeStack.Screen
         name="Send"
-        component={SendScreen}
+        component={SendNavigator}
         options={{
           headerShown: false,
           cardOverlayEnabled: true,

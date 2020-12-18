@@ -7,7 +7,7 @@ import SendInput from './SendInput'
 import Button from '../../../components/Button'
 import SendCircle from '../../../assets/images/send-circle.svg'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import { triggerNotification } from '../../../utils/haptic'
+import { triggerNavHaptic } from '../../../utils/haptic'
 import QrCode from '../../../assets/images/qr.svg'
 import Close from '../../../assets/images/close.svg'
 import { useColors } from '../../../theme/themeHooks'
@@ -18,7 +18,12 @@ const SendView = () => {
 
   const navBack = () => {
     navigation.goBack()
-    triggerNotification()
+    triggerNavHaptic()
+  }
+
+  const navScan = () => {
+    navigation.navigate('SendScan', { fromSend: true })
+    triggerNavHaptic()
   }
 
   const { primaryMain } = useColors()
@@ -40,7 +45,7 @@ const SendView = () => {
         <Box marginBottom="m">
           <SendCircle />
         </Box>
-        <Text variant="header">{t('send.title')}</Text>
+        <Text variant="h1">{t('send.title')}</Text>
       </Box>
       <Box backgroundColor="purple200" padding="m">
         <Text variant="mono" color="blueGrayLight" textAlign="center">
@@ -55,7 +60,7 @@ const SendView = () => {
               placeholder="Enter Address..."
               extra={
                 <TouchableOpacityBox
-                  onPress={() => triggerNotification()}
+                  onPress={navScan}
                   paddingVertical="xs"
                   paddingHorizontal="s"
                 >
@@ -66,7 +71,7 @@ const SendView = () => {
             <SendInput
               label="Amount (HNT)"
               extra={
-                <TouchableOpacityBox onPress={() => triggerNotification()}>
+                <TouchableOpacityBox onPress={() => triggerNavHaptic()}>
                   <Text fontSize={12} color="primaryMain">
                     Send Max
                   </Text>

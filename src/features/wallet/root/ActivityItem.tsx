@@ -8,7 +8,7 @@ import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import shortLocale from '../../../utils/formatDistance'
 import Rewards from '../../../assets/images/rewards.svg'
-import { triggerNotification } from '../../../utils/haptic'
+import { triggerNavHaptic } from '../../../utils/haptic'
 import { Theme } from '../../../theme/theme'
 
 type Props = {
@@ -34,7 +34,7 @@ const ActivityItem = ({
   isLast = false,
 }: Props) => {
   const handlePress = () => {
-    triggerNotification()
+    triggerNavHaptic()
   }
 
   const theme = useTheme<Theme>()

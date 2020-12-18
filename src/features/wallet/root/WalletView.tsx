@@ -20,7 +20,7 @@ import {
   WalletAnimationPoints,
   WalletLayout,
 } from './walletLayout'
-import { triggerNotification } from '../../../utils/haptic'
+import { triggerNavHaptic } from '../../../utils/haptic'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 
 type Props = {
@@ -36,10 +36,11 @@ const WalletView = ({ layout, animationPoints }: Props) => {
   const navigation = useNavigation()
 
   const handlePress = () => {
-    triggerNotification()
+    triggerNavHaptic()
   }
 
   const navScan = () => {
+    triggerNavHaptic()
     navigation.navigate('Scan')
   }
 
@@ -47,7 +48,7 @@ const WalletView = ({ layout, animationPoints }: Props) => {
   const card = useRef<ActivityCardHandle>(null)
 
   const handleSendPress = () => {
-    triggerNotification()
+    triggerNavHaptic()
     navigation.navigate('Send')
   }
 
@@ -74,7 +75,7 @@ const WalletView = ({ layout, animationPoints }: Props) => {
 
   const animateActivityToBottom = () => {
     card.current?.snapTo(0)
-    triggerNotification()
+    triggerNavHaptic()
   }
 
   return (
