@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import getUnixTime from 'date-fns/getUnixTime'
+import { AppStateStatus } from 'react-native'
 import {
   getSecureItem,
   setSecureItem,
@@ -23,6 +24,7 @@ export type AppState = {
   isRequestingPermission: boolean
   currentLocation?: Location
   isLoadingLocation: boolean
+  appStateStatus: AppStateStatus
 }
 const initialState: AppState = {
   isBackedUp: false,
@@ -36,6 +38,7 @@ const initialState: AppState = {
   isLocked: false,
   isRequestingPermission: false,
   isLoadingLocation: false,
+  appStateStatus: 'unknown',
 }
 
 type Restore = {
@@ -124,6 +127,9 @@ const appSlice = createSlice({
       if (!state.isLocked) {
         state.lastIdle = null
       }
+    },
+    updateAppStateStatus: (state, action: PayloadAction<AppStateStatus>) => {
+      state.appStateStatus = action.payload
     },
     requestingPermission: (state, action: PayloadAction<boolean>) => {
       state.isRequestingPermission = action.payload

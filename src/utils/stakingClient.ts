@@ -13,8 +13,13 @@ const makeRequest = async (url: string, opts: RequestInit = {}) => {
         Authorization: Config.STAKING_TOKEN,
       },
     })
-    const json = await response.json()
-    return json.data || json
+    const text = await response.text()
+    try {
+      const json = JSON.parse(text)
+      return json.data || json
+    } catch (err) {
+      return text
+    }
   } catch (error) {
     console.log(error)
     throw error
@@ -24,4 +29,4 @@ const makeRequest = async (url: string, opts: RequestInit = {}) => {
 export const getStaking = async (url: string) => makeRequest(url)
 
 export const postStaking = async (url: string, data: unknown) =>
-  makeRequest(url, { method: 'POST', body: JSON.stringify(data) })
+  makeRequest(url, { method: 'POST', body: data ? JSON.stringify(data) : null })

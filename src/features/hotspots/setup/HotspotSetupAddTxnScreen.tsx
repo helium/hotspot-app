@@ -22,7 +22,6 @@ const HotspotSetupAddTxnScreen = () => {
     connectedHotspot: { mac, freeAddHotspot, status: hotspotStatus },
   } = useSelector((state: RootState) => state)
   const { hasLocationPermission } = usePermissionManager()
-  console.log(freeAddHotspot)
 
   const navNext = async () => {
     if (hotspotStatus === 'global') {
