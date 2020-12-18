@@ -126,6 +126,9 @@ const accountSlice = createSlice({
     builder.addCase(markNotificationsViewed.rejected, (state, _action) => {
       state.markNotificationStatus = 'rejected'
     })
+    builder.addCase(fetchNotifications.fulfilled, (state, { payload }) => {
+      state.notifications = payload
+    })
   },
 })
 
