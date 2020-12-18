@@ -5,6 +5,7 @@ import { StyleSheet } from 'react-native'
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner'
 import BottomSheet from 'react-native-holy-sheet'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Address } from '@helium/crypto-react-native'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import Crosshair from './Crosshair'
@@ -35,18 +36,30 @@ const ScanView = ({ fromSend = false }: Props) => {
   const handleBarCodeScanned = async ({ data }: BarCodeScannerResult) => {
     if (scanned) return
 
+    // TODO validate other types of qr codes
+    if (!Address.isValid(data)) {
+      setScanned(true)
+      setTimeout(() => setScanned(false), 1000)
+      triggerNotification('error')
+      return
+    }
+
+    const scanResult = {
+      type: 'payment',
+      address: data,
+    }
+
     setScanned(true)
     triggerNotification('success')
 
-    // TODO validate qr code contents and pass to send screen as props
-    const address = data
-
     if (fromSend) {
-      navigation.navigate('Send', { address })
+      navigation.navigate('Send', { scanResult })
     } else {
       navigation.navigate('Wallet')
       await sleep(200)
-      navigation.navigate('Send', { address })
+      // TODO this doesn't work here to pass the params
+      // might need to use redux or restructure the nav stack
+      navigation.navigate('Send', { scanResult })
     }
   }
 
@@ -78,10 +91,62 @@ const ScanView = ({ fromSend = false }: Props) => {
       <Box flex={0.7} justifyContent="center" alignItems="center">
         <Crosshair width={wp(65)} height={wp(65)} color="white" />
       </Box>
-      <BottomSheet snapPoints={[300]} initialSnapIndex={0}>
+      <BottomSheet snapPoints={[300, 500]} initialSnapIndex={0}>
         <Box>
-          <Text>Find a code to scan</Text>
-          <Text>Put some more instructions here</Text>
+          <Text color="black" fontSize={18} fontWeight="600" marginBottom="s">
+            Find a QR Code to scan
+          </Text>
+          <Box marginBottom="s">
+            <Text
+              color="black"
+              fontSize={16}
+              fontWeight="600"
+              marginBottom="xxs"
+            >
+              Send HNT
+            </Text>
+            <Text marginBottom="xs">
+              HNT can be burned into Data Credits to pay for device network
+              connectivity
+            </Text>
+            <Text color="blueMain" fontWeight="600">
+              Learn More
+            </Text>
+          </Box>
+          <Box marginBottom="s">
+            <Text
+              color="black"
+              fontSize={16}
+              fontWeight="600"
+              marginBottom="xxs"
+            >
+              Burn HNT to DC
+            </Text>
+            <Text marginBottom="xs">
+              HNT can be burned into Data Credits to pay for device network
+              connectivity
+            </Text>
+            <Text color="blueMain" fontWeight="600">
+              Learn More
+            </Text>
+          </Box>
+          <Box marginBottom="s">
+            <Text
+              color="black"
+              fontSize={16}
+              fontWeight="600"
+              marginBottom="xxs"
+            >
+              View my QR code
+            </Text>
+            <Text marginBottom="xs">
+              HNT can be burned into Data Credits to pay for device network
+              connectivity
+            </Text>
+            <Text color="blueMain" fontWeight="600">
+              Learn More
+            </Text>
+          </Box>
         </Box>
       </BottomSheet>
     </Box>

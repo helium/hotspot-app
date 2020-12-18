@@ -2,7 +2,11 @@ import React from 'react'
 import Box from '../../../components/Box'
 import SendView from './SendView'
 
-const SendScreen = () => {
+const SendScreen = ({ route }) => {
+  // TODO I might end up restructuring this concept or using redux
+  // so not bothering with the types rn
+  const scanResult = route?.params?.scanResult
+
   return (
     <>
       <Box
@@ -12,7 +16,7 @@ const SendScreen = () => {
         alignContent="center"
         flexDirection="column"
       >
-        <SendView />
+        <SendView scanResult={scanResult} />
       </Box>
     </>
   )
