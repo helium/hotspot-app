@@ -20,6 +20,7 @@ const palette = {
   graySteel: '#74869A',
   grayDark: '#202B37',
   grayBlue: '#3D5A73',
+  grayBox: '#F6F7FE',
 
   redMain: '#F97570',
 

@@ -6,5 +6,5 @@ declare module '*.svg' {
 }
 
 declare module 'angry-purple-tiger' {
-  export default function fn(value: number): string
+  export default function fn(value: string): string
 }
