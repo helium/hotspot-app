@@ -32,14 +32,13 @@ const NotificationItem = ({
   const prevViewed = usePrevious(!!notification.viewed_at)
   const offset = isLast ? BOTTOM_SECTION_HEIGHT : 0
 
-  const height = (viewed ? COLLAPSED_HEIGHT : EXPANDED_HEIGHT) + offset
+  const heightWithOffset = (hasViewed: boolean) =>
+    (hasViewed ? COLLAPSED_HEIGHT : EXPANDED_HEIGHT) + offset
 
-  // TODO: cleanup this ugly logic
+  const height = heightWithOffset(viewed)
+
   const heightPrev =
-    // eslint-disable-next-line no-nested-ternary
-    prevViewed === undefined
-      ? height
-      : (prevViewed ? COLLAPSED_HEIGHT : EXPANDED_HEIGHT) + offset
+    prevViewed === undefined ? height : heightWithOffset(prevViewed)
 
   const heightSharedVal = useSharedValue(heightPrev)
 
