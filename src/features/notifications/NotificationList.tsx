@@ -45,8 +45,6 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
     setGroupedNotifications(arr)
   }, [notifications])
 
-  // TODO: Pull to refresh or polling updates??
-
   return (
     <Box flex={1} alignContent="space-between">
       <Text variant="h3" marginVertical="m" flexGrow={1} paddingHorizontal="l">
@@ -54,6 +52,7 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
       </Text>
 
       <FlatList
+        inverted
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -65,9 +64,8 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
         style={{ flexGrow: 0 }}
         data={groupedNotifications}
         keyExtractor={(item, idx) => `${item[0].id}.${idx}`}
-        renderItem={({ item, index }) => (
+        renderItem={({ item }) => (
           <NotificationGroup
-            index={Math.min(groupedNotifications.length - 1, 10) - index}
             notifications={item}
             onNotificationSelected={setSelectedNotification}
           />
