@@ -69,9 +69,12 @@ export const fetchNotifications = createAsyncThunk<Notification[]>(
   'account/fetchNotifications',
   async () => getWallet('notifications'),
 )
-export const markNotificationsViewed = createAsyncThunk(
+export const markNotificationsViewed = createAsyncThunk<Notification[]>(
   'account/markNotificationsViewed',
-  async () => postWallet('notifications/view'),
+  async () => {
+    await postWallet('notifications/view')
+    return getWallet('notifications')
+  },
 )
 
 export const fetchPendingTransactions = createAsyncThunk(
@@ -120,8 +123,9 @@ const accountSlice = createSlice({
     builder.addCase(markNotificationsViewed.pending, (state, _action) => {
       state.markNotificationStatus = 'pending'
     })
-    builder.addCase(markNotificationsViewed.fulfilled, (state, _action) => {
+    builder.addCase(markNotificationsViewed.fulfilled, (state, { payload }) => {
       state.markNotificationStatus = 'fulfilled'
+      state.notifications = payload
     })
     builder.addCase(markNotificationsViewed.rejected, (state, _action) => {
       state.markNotificationStatus = 'rejected'
