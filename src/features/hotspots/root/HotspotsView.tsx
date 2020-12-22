@@ -1,107 +1,35 @@
 import React, { useEffect, useState } from 'react'
-// import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 import { Hotspot } from '@helium/http'
 import BottomSheet from 'react-native-holy-sheet/src/index'
-import Carousel from 'react-native-snap-carousel'
-import animalName from 'angry-purple-tiger'
 import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Search from '../../../assets/images/search.svg'
 import Add from '../../../assets/images/add.svg'
-import CheckCircle from '../../../assets/images/check-circle.svg'
-import { hp, wp } from '../../../utils/layout'
-import CircleProgress from '../../../components/CircleProgress'
+import { hp } from '../../../utils/layout'
 import { getHotspotRewards } from '../../../utils/appDataClient'
+import HotspotsCarousel from '../../../components/HotspotsCarousel'
 
 type Props = {
   ownedHotspots: Hotspot[]
 }
 
-const getTimeOfDay = (date: Date) => {
+const TimeOfDayHeader = ({ date }: { date: Date }) => {
+  const { t } = useTranslation()
   const hours = date.getHours()
+  let timeOfDay = t('time.afternoon')
   if (hours >= 4 && hours < 12) {
-    return 'Morning'
+    timeOfDay = t('time.morning')
   }
   if (hours >= 17 || hours < 4) {
-    return 'Evening'
+    timeOfDay = t('time.evening')
   }
-  return 'Afternoon'
-}
-
-type HotspotsCarouselProps = {
-  hotspots: Hotspot[]
-  rewards: any
-}
-
-type HotspotsItemProps = {
-  hotspot: Hotspot
-  rewards: any
-}
-
-const HotspotItem = ({
-  hotspot,
-  rewards = { total: 0 },
-}: HotspotsItemProps) => {
-  return (
-    <Box
-      backgroundColor="grayBox"
-      flexDirection="row"
-      justifyContent="space-between"
-      alignItems="center"
-      padding="m"
-      borderRadius="m"
-      marginStart="l"
-      height={75}
-    >
-      <Box flexDirection="column">
-        <Box flexDirection="row">
-          <CheckCircle width={17} height={17} />
-          <Text variant="body2" color="black" fontWeight="500" paddingStart="s">
-            {animalName(hotspot.address)}
-          </Text>
-        </Box>
-        <Text variant="body2" color="purpleMain" paddingTop="s">
-          {`+${rewards.total.toFixed(2)} HNT`}
-        </Text>
-      </Box>
-      <CircleProgress percentage={50} centerColor="#F6F7FE" />
-    </Box>
-  )
-}
-
-const HotspotsCarousel = ({ hotspots, rewards }: HotspotsCarouselProps) => {
-  const renderItem = ({ item }: { item: Hotspot }) => (
-    <HotspotItem hotspot={item} rewards={rewards[item.address]} />
-  )
-
-  return (
-    <Box>
-      <Text
-        variant="body1"
-        color="black"
-        fontWeight="600"
-        paddingBottom="m"
-        paddingStart="l"
-      >
-        Your Hotspots
-      </Text>
-      <Carousel
-        layout="default"
-        activeSlideAlignment="start"
-        vertical={false}
-        data={hotspots}
-        renderItem={renderItem}
-        sliderWidth={wp(100)}
-        itemWidth={wp(75)}
-        inactiveSlideScale={1}
-        onSnapToItem={(i) => console.log(i)}
-      />
-    </Box>
-  )
+  return <Text variant="header">{t('time.day_header', { timeOfDay })}</Text>
 }
 
 const HotspotsView = ({ ownedHotspots }: Props) => {
+  const { t } = useTranslation()
   const [date, setDate] = useState(new Date())
   useEffect(() => {
     const dateTimer = setInterval(() => setDate(new Date()), 300000) // update every 5 min
@@ -111,20 +39,27 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
   const [hotspotRewards, setHotspotRewards] = useState({})
   const [totalRewards, setTotalRewards] = useState(0)
   useEffect(() => {
-    const today = new Date()
-    const yesterday = new Date(today)
-    yesterday.setDate(yesterday.getDate() - 1)
-
-    ownedHotspots.forEach(async (hotspot) => {
-      hotspotRewards[hotspot.address] = await getHotspotRewards(
-        hotspot.address,
-        yesterday,
-        today,
+    const fetchRewards = async () => {
+      const today = date
+      const yesterday = new Date(today)
+      yesterday.setDate(yesterday.getDate() - 1)
+      let total = 0
+      const rewards = {}
+      const results = await Promise.all(
+        ownedHotspots.map((hotspot) =>
+          getHotspotRewards(hotspot.address, yesterday, today),
+        ),
       )
-      setHotspotRewards(hotspotRewards)
-      setTotalRewards(totalRewards)
-    })
-  }, [ownedHotspots])
+      results.forEach((reward, i) => {
+        const { address } = ownedHotspots[i]
+        rewards[address] = reward
+        total += reward.total
+      })
+      setHotspotRewards(rewards)
+      setTotalRewards(total)
+    }
+    fetchRewards()
+  }, [ownedHotspots, date])
 
   return (
     <Box flex={1} flexDirection="column" justifyContent="space-between">
@@ -136,7 +71,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         paddingHorizontal="m"
       >
         <Text variant="header" fontSize={22}>
-          My Hotspots
+          {t('hotspots.owned.title')}
         </Text>
 
         <Box flexDirection="row" justifyContent="space-between">
@@ -150,11 +85,12 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
       </Box>
 
       <Box padding="l" style={{ marginBottom: hp(40) }}>
-        <Text variant="header">{`Good\n${getTimeOfDay(date)}.`}</Text>
+        <TimeOfDayHeader date={date} />
         <Text variant="body1" paddingTop="m">
-          {`Your ${ownedHotspots.length} Hotspots mined ${totalRewards.toFixed(
-            2,
-          )} HNT in the past 24 hours.`}
+          {t('hotspots.owned.reward_summary', {
+            count: ownedHotspots.length,
+            hntAmount: totalRewards.toFixed(2),
+          })}
         </Text>
       </Box>
 

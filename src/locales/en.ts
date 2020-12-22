@@ -453,6 +453,14 @@ export default {
       setup: 'Set up Hotspot',
       explorer: 'Global Hotspot Explorer',
     },
+    owned: {
+      title: 'My Hotspots',
+      reward_summary:
+        'Your Hotspot mined {{hntAmount}} HNT in the past 24 hours.',
+      reward_summary_plural:
+        'Your {{count}} Hotspots mined {{hntAmount}} HNT in the past 24 hours.',
+      your_hotspots: 'Your Hotspots',
+    },
   },
   permissions: {
     location: {
@@ -460,5 +468,11 @@ export default {
       message:
         'Helium Wallet needs access to your location for Bluetooth LE discovery.',
     },
+  },
+  time: {
+    morning: 'Morning',
+    evening: 'Evening',
+    afternoon: 'Afternoon',
+    day_header: 'Good\n{{timeOfDay}}.',
   },
 }
