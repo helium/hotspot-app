@@ -2,6 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Hotspot } from '@helium/http'
 import BottomSheet from 'react-native-holy-sheet/src/index'
+import Animated, {
+  Extrapolate,
+  interpolate,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+} from 'react-native-reanimated'
 import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
@@ -29,6 +36,9 @@ const TimeOfDayHeader = ({ date }: { date: Date }) => {
 }
 
 const HotspotsView = ({ ownedHotspots }: Props) => {
+  const dragMid = hp(40)
+  const dragMax = hp(75)
+  const dragMin = 40
   const { t } = useTranslation()
   const [date, setDate] = useState(new Date())
   useEffect(() => {
@@ -61,6 +71,37 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
     fetchRewards()
   }, [ownedHotspots, date])
 
+  const snapProgress = useSharedValue(dragMid / dragMax)
+
+  const opacity = useDerivedValue(() => {
+    return interpolate(
+      snapProgress.value,
+      [dragMid / dragMax, dragMin / dragMax],
+      [1, 0],
+      Extrapolate.CLAMP,
+    )
+  })
+
+  const translateY = useDerivedValue(() => {
+    return interpolate(
+      snapProgress.value,
+      [dragMid / dragMax, dragMin / dragMax],
+      [0, dragMid - dragMin],
+      Extrapolate.CLAMP,
+    )
+  })
+
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+      transform: [
+        {
+          translateY: translateY.value,
+        },
+      ],
+    }
+  })
+
   return (
     <Box flex={1} flexDirection="column" justifyContent="space-between">
       <Box
@@ -84,20 +125,23 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         </Box>
       </Box>
 
-      <Box padding="l" style={{ marginBottom: hp(40) }}>
-        <TimeOfDayHeader date={date} />
-        <Text variant="body1" paddingTop="m">
-          {t('hotspots.owned.reward_summary', {
-            count: ownedHotspots.length,
-            hntAmount: totalRewards.toFixed(2),
-          })}
-        </Text>
-      </Box>
+      <Animated.View style={animatedStyles}>
+        <Box padding="l" style={{ marginBottom: dragMid }}>
+          <TimeOfDayHeader date={date} />
+          <Text variant="body1" paddingTop="m">
+            {t('hotspots.owned.reward_summary', {
+              count: ownedHotspots.length,
+              hntAmount: totalRewards.toFixed(2),
+            })}
+          </Text>
+        </Box>
+      </Animated.View>
 
       <BottomSheet
         containerStyle={{ paddingLeft: 0, paddingRight: 0 }}
-        snapPoints={[40, hp(40), hp(75)]}
+        snapPoints={[dragMin, dragMid, dragMax]}
         initialSnapIndex={1}
+        snapProgress={snapProgress}
         flatListProps={{
           data: [ownedHotspots],
           keyExtractor: (item: Hotspot[]) => item[0].address,
