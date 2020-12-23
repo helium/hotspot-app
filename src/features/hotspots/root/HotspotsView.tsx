@@ -14,9 +14,10 @@ import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Search from '../../../assets/images/search.svg'
 import Add from '../../../assets/images/add.svg'
-import { hp } from '../../../utils/layout'
+import { hp, wh, ww } from '../../../utils/layout'
 import { getHotspotRewards } from '../../../utils/appDataClient'
 import HotspotsCarousel from '../../../components/HotspotsCarousel'
+import Map from '../../../components/Map'
 
 type Props = {
   ownedHotspots: Hotspot[]
@@ -104,6 +105,16 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
 
   return (
     <Box flex={1} flexDirection="column" justifyContent="space-between">
+      <Box
+        position="absolute"
+        height="100%"
+        width="100%"
+        borderTopLeftRadius="xl"
+        borderTopRightRadius="xl"
+        style={{ marginTop: 60 }}
+      >
+        <Map />
+      </Box>
       <Box
         flexDirection="row"
         justifyContent="space-between"

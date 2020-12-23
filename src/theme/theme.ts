@@ -155,6 +155,7 @@ export const theme = createTheme({
     s: 4,
     m: 8,
     l: 12,
+    xl: 20,
     round: 1000,
   },
   breakpoints: {
