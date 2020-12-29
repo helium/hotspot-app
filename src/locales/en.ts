@@ -28,7 +28,7 @@ export default {
         'Helium accounts are protected by\n<b><purple>12 unique words</purple></b>, that act as\na password for signing in or\nrecovering accounts.',
       generate: 'Generate my 12 words',
     },
-    generating: 'GENERATING YOUR 12 UNIQUE WORDS',
+    generating: 'GENERATING YOUR 12 WORDS...',
     passphrase: {
       title1: 'Write These',
       title2: '12 Words Down',
