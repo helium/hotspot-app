@@ -11,6 +11,8 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
 import Carousel from 'react-native-snap-carousel'
+import { LayoutAnimation } from 'react-native'
+import { FlatList } from 'react-native-gesture-handler'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import wordlist from '../../../constants/wordlists/english.json'
@@ -67,6 +69,7 @@ const AccountEnterPassphraseScreen = () => {
       triggerNotification('error')
       await sleep(1000)
       setWord(null)
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
       setChallengeWords(generateChallengeWords(findTargetWord(step)))
     }
   }
@@ -79,6 +82,7 @@ const AccountEnterPassphraseScreen = () => {
         carouselRef.current?.snapToItem(step + 1)
         setStep(step + 1)
         setWord(null)
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
         setChallengeWords(generateChallengeWords(findTargetWord(step + 1)))
       }
     }, 1000)
@@ -165,19 +169,25 @@ const AccountEnterPassphraseScreen = () => {
       </Box>
       <Box flex={1} />
       <Box flexDirection="row" flexWrap="wrap">
-        {challengeWords.map((w) => (
-          <PhraseChip
-            maxWidth="33%"
-            fail={word === w && !correct}
-            success={word === w && correct}
-            disabled={!!word}
-            marginRight="s"
-            marginBottom="s"
-            key={w}
-            title={w}
-            onPress={() => !word && onPressWord(w)}
-          />
-        ))}
+        <FlatList
+          data={challengeWords}
+          scrollEnabled={false}
+          keyExtractor={(item) => item}
+          numColumns={3}
+          renderItem={({ item: w }) => (
+            <PhraseChip
+              maxWidth="33%"
+              fail={word === w && !correct}
+              success={word === w && correct}
+              disabled={!!word}
+              marginRight="s"
+              marginBottom="s"
+              key={w}
+              title={w}
+              onPress={() => !word && onPressWord(w)}
+            />
+          )}
+        />
       </Box>
       <Box flex={2} />
       <Button

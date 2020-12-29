@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from 'react'
+import React, { useState, memo } from 'react'
 import { upperFirst } from 'lodash'
 import Text from '../../../components/Text'
 import TouchableHighlightBox, {
@@ -81,4 +81,4 @@ const PhraseChip = ({
   )
 }
 
-export default PhraseChip
+export default memo(PhraseChip)
