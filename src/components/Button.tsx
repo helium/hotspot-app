@@ -73,7 +73,7 @@ const Button = ({
       {...props}
     >
       <Text
-        paddingVertical="m"
+        paddingVertical="lm"
         variant={getTextVariant()}
         color={getTextColor()}
         style={textStyle}

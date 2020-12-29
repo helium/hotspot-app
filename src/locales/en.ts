@@ -16,10 +16,9 @@ export default {
   ],
   account_setup: {
     welcome: {
-      title: 'Welcome to Helium',
+      title: 'Welcome\nto Helium',
       subtitle:
-        "Host a Hotspot and earn Helium tokens, a new cryptocurrency, for building the world's first peer-to-peer wireless network, The People's Network.",
-      get_started: "Let's get started.",
+        'Host a Hotspot and earn <b><purple>$HNT</purple></b>,\na new cryptocurrency,\nfor building The People’s Network.',
       create_account: 'Create an Account',
       import_account: 'Import Existing Account',
     },
@@ -187,7 +186,7 @@ export default {
     diagnostics: {
       title: 'Diagnostics',
       p_1:
-        '<b><white>Diagnostic support allows Helium to identify issues with your Hotspot in a secure way.</white></b>\n\nHelium will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purpleMain><b>support@helium.com</b></purpleMain> from the email used to purchase the Hotspot.',
+        '<b><white>Diagnostic support allows Helium to identify issues with your Hotspot in a secure way.</white></b>\n\nHelium will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@helium.com</b></purple> from the email used to purchase the Hotspot.',
     },
     power: {
       title: 'Power Up',

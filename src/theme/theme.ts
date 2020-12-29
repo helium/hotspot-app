@@ -28,7 +28,7 @@ const palette = {
 
   purple: '#B377FF',
   purpleBright: '#A667F6',
-  purpleLight: '#6C71A3',
+  purpleLight: '#A0A5DA',
   purpleMain: '#474DFF',
   purple300: '#343964',
   purple200: '#23264b',
@@ -116,8 +116,8 @@ const textVariants = {
     color: 'primaryText',
   },
   subtitle: {
-    fontFamily: Font.main.light,
-    fontSize: 20,
+    fontFamily: Font.main.regular,
+    fontSize: 19,
     lineHeight: 26,
     color: 'purpleLight',
   },
