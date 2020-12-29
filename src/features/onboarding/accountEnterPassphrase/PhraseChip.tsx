@@ -6,35 +6,75 @@ import TouchableHighlightBox, {
   TouchableHighlightBoxProps,
 } from '../../../components/TouchableHighlightBox'
 import { useColors } from '../../../theme/themeHooks'
+import CheckMark from '../../../assets/images/checkmark.svg'
+import Fail from '../../../assets/images/fail.svg'
+import Box from '../../../components/Box'
 
 type Props = Omit<TouchableHighlightBoxProps, 'children'> & {
   title: string
   selected?: boolean
+  fail: boolean
+  success: boolean
 }
 
-const PhraseChip = ({ title, selected, ...props }: Props) => {
-  const { blueLight } = useColors()
+const PhraseChip = ({
+  title,
+  selected,
+  fail,
+  success,
+  disabled,
+  ...props
+}: Props) => {
+  const { purpleMain } = useColors()
   const [underlayShowing, setUnderlayShowing] = useState(false)
+
+  const getBackgroundColor = () => {
+    if (selected) return 'purpleMain'
+    if (fail) return 'redMedium'
+    if (success) return 'greenMain'
+    return 'purple200'
+  }
+
+  const getIcon = () => {
+    if (success) return <CheckMark />
+
+    if (fail) return <Fail />
+
+    return null
+  }
 
   return (
     <TouchableHighlightBox
-      backgroundColor={selected ? 'blueLight' : 'disabled'}
+      backgroundColor={getBackgroundColor()}
       onPress={() => {}}
-      borderRadius="s"
-      underlayColor={blueLight}
-      disabled={selected}
+      borderRadius="l"
+      padding="m"
+      underlayColor={purpleMain}
+      disabled={selected || disabled}
       onHideUnderlay={() => setUnderlayShowing(false)}
       onShowUnderlay={() => setUnderlayShowing(true)}
       {...props}
     >
-      <Text
-        paddingVertical="s"
-        paddingHorizontal="m"
-        variant="body2Mono"
-        color={selected || underlayShowing ? 'primaryBackground' : 'grayMain'}
-      >
-        {upperFirst(title)}
-      </Text>
+      <>
+        <Box
+          position="absolute"
+          justifyContent="center"
+          alignItems="center"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+        >
+          {getIcon()}
+        </Box>
+        <Text
+          opacity={fail || success ? 0 : 1}
+          variant="body1Medium"
+          color={selected || underlayShowing ? 'white' : 'purpleLight'}
+        >
+          {upperFirst(title)}
+        </Text>
+      </>
     </TouchableHighlightBox>
   )
 }

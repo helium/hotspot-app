@@ -1,8 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { random, shuffle, uniq, take, reject, sampleSize } from 'lodash'
+import {
+  random,
+  shuffle,
+  uniq,
+  take,
+  reject,
+  sampleSize,
+  upperFirst,
+} from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
-import { Modal } from 'react-native'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import wordlist from '../../../constants/wordlists/english.json'
@@ -11,6 +18,9 @@ import Button from '../../../components/Button'
 import { OnboardingNavigationProp } from '../onboardingTypes'
 import { getMnemonic } from '../../../utils/secureAccount'
 import SafeAreaBox from '../../../components/SafeAreaBox'
+import TextTransform from '../../../components/TextTransform'
+import Card from '../../../components/Card'
+import sleep from '../../../utils/sleep'
 
 const testIndices = __DEV__
   ? [0, 1, 2]
@@ -25,8 +35,8 @@ const generateChallengeWords = (targetWord: string) =>
 
 const AccountEnterPassphraseScreen = () => {
   const [step, setStep] = useState(0)
-  const [correctWord, setCorrectWord] = useState<string | null>(null)
-  const [failed, setFailed] = useState(false)
+  const [word, setWord] = useState<string | null>(null)
+  const [correct, setCorrect] = useState(false)
   const [mnemonic, setMnemonic] = useState<Array<string>>([])
   const [challengeWords, setChallengeWords] = useState<Array<string>>([])
 
@@ -40,12 +50,16 @@ const AccountEnterPassphraseScreen = () => {
     [mnemonic],
   )
 
-  const onPressWord = (word: string) => {
-    if (word === findTargetWord(step)) {
-      setCorrectWord(word)
+  const onPressWord = async (w: string) => {
+    setWord(w)
+
+    if (w === findTargetWord(step)) {
+      setCorrect(true)
       nextStep()
     } else {
-      setFailed(true)
+      setCorrect(false)
+      await sleep(2000)
+      setWord(null)
       setChallengeWords(generateChallengeWords(findTargetWord(step)))
     }
   }
@@ -56,7 +70,7 @@ const AccountEnterPassphraseScreen = () => {
         navigation.push('AccountSecureScreen')
       } else {
         setStep(step + 1)
-        setCorrectWord(null)
+        setWord(null)
         setChallengeWords(generateChallengeWords(findTargetWord(step + 1)))
       }
     }, 1000)
@@ -67,8 +81,8 @@ const AccountEnterPassphraseScreen = () => {
     const nextMnemonic = wordStr?.words || []
     setMnemonic(nextMnemonic)
     setStep(0)
-    setCorrectWord(null)
-    setFailed(false)
+    setWord(null)
+    setCorrect(false)
     setChallengeWords(
       generateChallengeWords(findTargetWord(step, nextMnemonic)),
     )
@@ -85,79 +99,63 @@ const AccountEnterPassphraseScreen = () => {
   }, [navigation])
 
   return (
-    <>
-      <SafeAreaBox
-        backgroundColor="primaryBackground"
-        flex={1}
-        alignItems="center"
+    <SafeAreaBox
+      backgroundColor="primaryBackground"
+      flex={1}
+      paddingHorizontal="lx"
+    >
+      <Box flex={2} />
+      <Text variant="h1" numberOfLines={2} adjustsFontSizeToFit>
+        {t('account_setup.confirm.title')}
+      </Text>
+      <Box flex={0.5} />
+      <TextTransform
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        values={{
+          ordinal: t(`ordinals.${testIndices[step]}`),
+        }}
+        variant="subtitle"
+        i18nKey="account_setup.confirm.subtitle"
+      />
+      <Box flex={1} />
+      <Card
+        height={114}
+        variant="elevated"
+        overflow="hidden"
+        backgroundColor="white"
         padding="l"
+        alignItems="center"
+        flexDirection="row"
       >
-        <Box flex={1} justifyContent="center" alignItems="center">
-          <Text variant="h1" numberOfLines={1} adjustsFontSizeToFit>
-            {t('account_setup.confirm.title')}
-          </Text>
-          <Text variant="body2Light">
-            {t('account_setup.confirm.subtitle', {
-              ordinal: t(`ordinals.${testIndices[step]}`),
-            })}
-          </Text>
-          <Box height={100}>
-            {correctWord && (
-              <PhraseChip marginTop="xl" selected title={correctWord} />
-            )}
-          </Box>
-        </Box>
-        <Box flex={1} flexDirection="row" flexWrap="wrap">
-          {challengeWords.map((word) => (
-            <PhraseChip
-              marginRight="s"
-              marginBottom="s"
-              key={word}
-              title={word}
-              onPress={() => !correctWord && onPressWord(word)}
-            />
-          ))}
-        </Box>
-        <Button
-          title={t('account_setup.confirm.forgot')}
-          marginTop="m"
-          onPress={navigation.goBack}
-        />
-        <Box />
-      </SafeAreaBox>
-      <Modal
-        presentationStyle="overFullScreen"
-        transparent
-        visible={failed}
-        onRequestClose={resetState}
-        animationType="fade"
-      >
-        <Box
-          backgroundColor="primaryBackground"
-          opacity={0.95}
-          flex={1}
-          alignItems="center"
-          justifyContent="center"
-          paddingHorizontal="l"
-        >
-          <Text variant="h1">{t('account_setup.confirm.failed.title')}</Text>
-          <Text variant="body2Light" marginTop="l">
-            {t('account_setup.confirm.failed.subtitle_1')}
-          </Text>
-          <Text variant="body2Light">
-            {t('account_setup.confirm.failed.subtitle_2')}
-          </Text>
-          <Button
-            marginTop="l"
-            mode="contained"
-            width="100%"
-            onPress={resetState}
-            variant="secondary"
-            title={t('account_setup.confirm.failed.try_again')}
+        <Text variant="h1" color="purpleLight">
+          {`${testIndices[step] + 1}. `}
+        </Text>
+        <Text variant="h1" color="purpleDark">
+          {word ? upperFirst(word) : '?????'}
+        </Text>
+      </Card>
+      <Box flex={1} />
+      <Box flexDirection="row" flexWrap="wrap">
+        {challengeWords.map((w) => (
+          <PhraseChip
+            fail={word === w && !correct}
+            success={word === w && correct}
+            disabled={!!word}
+            marginRight="s"
+            marginBottom="s"
+            key={w}
+            title={w}
+            onPress={() => !word && onPressWord(w)}
           />
-        </Box>
-      </Modal>
-    </>
+        ))}
+      </Box>
+      <Box flex={2} />
+      <Button
+        title={t('account_setup.confirm.forgot')}
+        onPress={navigation.goBack}
+      />
+    </SafeAreaBox>
   )
 }
 

@@ -13,11 +13,16 @@ const components = {
   purple: <Text color="purpleMain" />,
 }
 
-type Props = TextProps<Theme> & { i18nKey: string }
-const TextTransform = ({ i18nKey, ...props }: Props) => {
+type Props = TextProps<Theme> & {
+  i18nKey: string
+  values?: Record<string, unknown>
+  numberOfLines?: number
+  adjustsFontSizeToFit?: boolean
+}
+const TextTransform = ({ i18nKey, values, ...props }: Props) => {
   return (
     <Text {...props}>
-      <Trans i18nKey={i18nKey} components={components} />
+      <Trans i18nKey={i18nKey} components={components} values={values} />
     </Text>
   )
 }

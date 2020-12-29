@@ -37,8 +37,9 @@ export default {
       next: 'I have written these down',
     },
     confirm: {
-      title: 'Confirm Your Words',
-      subtitle: 'Select the {{ordinal}} word',
+      title: 'Confirm\nYour Words',
+      subtitle:
+        'Which word below was your <b><purple>{{ordinal}} word?</purple></b>',
       forgot: 'I forgot my words',
       failed: {
         title: 'Sorry...',

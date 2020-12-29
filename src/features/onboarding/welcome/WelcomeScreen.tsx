@@ -32,7 +32,7 @@ const WelcomeScreen = () => {
         <TextTransform
           variant="subtitle"
           marginVertical="lx"
-          i18nKey={t('account_setup.welcome.subtitle')}
+          i18nKey="account_setup.welcome.subtitle"
         />
         <Button
           mode="contained"

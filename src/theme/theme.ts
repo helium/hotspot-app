@@ -25,6 +25,7 @@ const palette = {
   grayText: '#667394',
 
   redMain: '#F97570',
+  redMedium: '#FF6666',
 
   purple: '#B377FF',
   purpleBright: '#A667F6',
