@@ -23,11 +23,10 @@ export default {
       import_account: 'Import Existing Account',
     },
     warning: {
-      title: 'An account that is completely yours',
+      title: 'Creating\nSecure Account.',
       subtitle:
-        'Your Helium account belongs only to you and is protected by <b>12 unique words</b>.',
-      recover:
-        "You'll need these words if you need to recover your account or move it to a different phone",
+        'Helium accounts are protected by\n<b><purple>12 unique words</purple></b>, that act as\na password for signing in or\nrecovering accounts.',
+      generate: 'Generate my 12 words',
     },
     generating: 'GENERATING YOUR 12 UNIQUE WORDS',
     passphrase: {
