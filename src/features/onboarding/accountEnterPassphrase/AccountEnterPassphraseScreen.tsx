@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import {
   random,
   shuffle,
@@ -10,6 +10,7 @@ import {
 } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
+import Carousel from 'react-native-snap-carousel'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import wordlist from '../../../constants/wordlists/english.json'
@@ -21,6 +22,8 @@ import SafeAreaBox from '../../../components/SafeAreaBox'
 import TextTransform from '../../../components/TextTransform'
 import Card from '../../../components/Card'
 import sleep from '../../../utils/sleep'
+import { wp } from '../../../utils/layout'
+import { triggerNotification } from '../../../utils/haptic'
 
 const testIndices = __DEV__
   ? [0, 1, 2]
@@ -33,13 +36,15 @@ const generateChallengeWords = (targetWord: string) =>
     ),
   )
 
+type CarouselItemData = number
+
 const AccountEnterPassphraseScreen = () => {
   const [step, setStep] = useState(0)
   const [word, setWord] = useState<string | null>(null)
   const [correct, setCorrect] = useState(false)
   const [mnemonic, setMnemonic] = useState<Array<string>>([])
   const [challengeWords, setChallengeWords] = useState<Array<string>>([])
-
+  const carouselRef = useRef<Carousel<CarouselItemData>>(null)
   const { t } = useTranslation()
   const navigation = useNavigation<OnboardingNavigationProp>()
 
@@ -55,10 +60,12 @@ const AccountEnterPassphraseScreen = () => {
 
     if (w === findTargetWord(step)) {
       setCorrect(true)
+      triggerNotification()
       nextStep()
     } else {
       setCorrect(false)
-      await sleep(2000)
+      triggerNotification('error')
+      await sleep(1000)
       setWord(null)
       setChallengeWords(generateChallengeWords(findTargetWord(step)))
     }
@@ -69,6 +76,7 @@ const AccountEnterPassphraseScreen = () => {
       if (step === 2) {
         navigation.push('AccountSecureScreen')
       } else {
+        carouselRef.current?.snapToItem(step + 1)
         setStep(step + 1)
         setWord(null)
         setChallengeWords(generateChallengeWords(findTargetWord(step + 1)))
@@ -98,6 +106,28 @@ const AccountEnterPassphraseScreen = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigation])
 
+  const renderItem = ({ item: index }: { item: CarouselItemData }) => {
+    return (
+      <Card
+        marginHorizontal="s"
+        height={114}
+        variant="elevated"
+        overflow="hidden"
+        backgroundColor="white"
+        padding="l"
+        alignItems="center"
+        flexDirection="row"
+      >
+        <Text variant="h1" color="purpleLight">
+          {`${index + 1}. `}
+        </Text>
+        <Text variant="h1" color="purpleDark">
+          {step === index && word ? upperFirst(word) : '?????'}
+        </Text>
+      </Card>
+    )
+  }
+
   return (
     <SafeAreaBox
       backgroundColor="primaryBackground"
@@ -119,26 +149,25 @@ const AccountEnterPassphraseScreen = () => {
         i18nKey="account_setup.confirm.subtitle"
       />
       <Box flex={1} />
-      <Card
-        height={114}
-        variant="elevated"
-        overflow="hidden"
-        backgroundColor="white"
-        padding="l"
-        alignItems="center"
-        flexDirection="row"
-      >
-        <Text variant="h1" color="purpleLight">
-          {`${testIndices[step] + 1}. `}
-        </Text>
-        <Text variant="h1" color="purpleDark">
-          {word ? upperFirst(word) : '?????'}
-        </Text>
-      </Card>
+
+      <Box marginHorizontal="n_lx" height={114} marginVertical="l">
+        <Carousel
+          ref={carouselRef}
+          layout="default"
+          vertical={false}
+          data={testIndices}
+          renderItem={renderItem}
+          sliderWidth={wp(100)}
+          itemWidth={wp(90)}
+          inactiveSlideScale={1}
+          scrollEnabled={false}
+        />
+      </Box>
       <Box flex={1} />
       <Box flexDirection="row" flexWrap="wrap">
         {challengeWords.map((w) => (
           <PhraseChip
+            maxWidth="33%"
             fail={word === w && !correct}
             success={word === w && correct}
             disabled={!!word}

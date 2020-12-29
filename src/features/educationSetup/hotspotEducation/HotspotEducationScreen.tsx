@@ -20,7 +20,6 @@ import CarouselItem, {
 } from '../../../components/CarouselItem'
 
 type Route = RouteProp<EducationStackParamList, 'HotspotEducationScreen'>
-
 const HotspotEducationScreen = () => {
   const { t } = useTranslation()
   const { params: { showButton } = { showButton: true } } = useRoute<Route>()

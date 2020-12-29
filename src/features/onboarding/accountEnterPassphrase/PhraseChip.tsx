@@ -68,6 +68,8 @@ const PhraseChip = ({
           {getIcon()}
         </Box>
         <Text
+          numberOfLines={1}
+          adjustsFontSizeToFit
           opacity={fail || success ? 0 : 1}
           variant="body1Medium"
           color={selected || underlayShowing ? 'white' : 'purpleLight'}
