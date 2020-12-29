@@ -30,12 +30,11 @@ export default {
     },
     generating: 'GENERATING YOUR 12 WORDS...',
     passphrase: {
-      title1: 'Write These',
-      title2: '12 Words Down',
-      warning_1:
-        'Helium Inc <red>cannot help recover your account</red>, so make sure to write these down and store them securely.',
-      warning_2: "<red>Don't lose these 12 words!</red>",
-      next: "OK, they're written down",
+      title: 'Your 12 Word\nPassword',
+      subtitle:
+        'It is crucial you <b>write all of these\n12 words down, in order</b>.\n\n<red>Helium cannot recover these words.</red>',
+      warning: 'Helium cannot recover these words',
+      next: 'I have written these down',
     },
     confirm: {
       title: 'Confirm Your Words',

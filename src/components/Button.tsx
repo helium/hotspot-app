@@ -12,6 +12,7 @@ import {
 import Text from './Text'
 import { Colors, Theme } from '../theme/theme'
 import TouchableOpacityBox from './TouchableOpacityBox'
+import Box from './Box'
 
 const restyleFunctions = [spacing, border, backgroundColor]
 type Props = BoxProps<Theme> & {
@@ -37,7 +38,6 @@ const Button = ({
   const props = useRestyle(restyleFunctions, rest)
 
   const getBackground = (): Colors | undefined => {
-    if (disabled) return 'disabled'
     if (mode === 'contained') {
       if (variant === 'secondary') {
         return 'secondaryMain'
@@ -65,22 +65,24 @@ const Button = ({
   }
 
   return (
-    <TouchableOpacityBox
-      backgroundColor={getBackground()}
-      borderRadius="m"
-      onPress={onPress}
-      disabled={disabled}
-      {...props}
-    >
-      <Text
-        paddingVertical="lm"
-        variant={getTextVariant()}
-        color={getTextColor()}
-        style={textStyle}
+    <Box style={{ opacity: disabled ? 0.2 : 1 }}>
+      <TouchableOpacityBox
+        backgroundColor={getBackground()}
+        borderRadius="m"
+        onPress={onPress}
+        disabled={disabled}
+        {...props}
       >
-        {title}
-      </Text>
-    </TouchableOpacityBox>
+        <Text
+          paddingVertical="lm"
+          variant={getTextVariant()}
+          color={getTextColor()}
+          style={textStyle}
+        >
+          {title}
+        </Text>
+      </TouchableOpacityBox>
+    </Box>
   )
 }
 
