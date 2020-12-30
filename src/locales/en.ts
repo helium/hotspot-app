@@ -66,32 +66,28 @@ export default {
     },
   },
   learn: {
-    title: 'How do I earn\n HNT?',
+    title: 'How do I earn\nHNT?',
     slides: [
       {
-        title: 'Earning by Issuing Challenges',
-        body:
-          'Encrypted messages are sent from Hotspots over the internet to target areas, creating a challenge in the process.',
+        topTitle: 'Listen for Beacons',
+        topBody: 'Your Hotspot will listen for beacons from nearby Hotspots',
+        bottomTitle: 'How do Beacons work?',
+        bottomBody:
+          'Beacons are special packets, transmitted by Hotspots, that can be heard by any other neighbouring Hotspots.\n\nThese signals allow the Network to determine which Hotspots are within receiving range of each other. These neighbours are called ‘witnesses’ and Hotspots that hear your beacon are added to your Witness List.',
       },
       {
-        title: 'Earn with Proof-of-Coverage',
-        body:
-          "Hotspots earn Helium when they validate their peer's wireless coverage. Amount earned depends on how often it is directly involved in Proof-of-Coverage activity.",
+        topTitle: 'Listen for Beacons',
+        topBody: 'Your Hotspot will listen for beacons from nearby Hotspots',
+        bottomTitle: 'How do Beacons work?',
+        bottomBody:
+          'Beacons are special packets, transmitted by Hotspots, that can be heard by any other neighbouring Hotspots.\n\nThese signals allow the Network to determine which Hotspots are within receiving range of each other. These neighbours are called ‘witnesses’ and Hotspots that hear your beacon are added to your Witness List.',
       },
       {
-        title: 'Earn by Witnessing',
-        body:
-          'Hotspots that hear Proof-of-Coverage that were not intended for them can "witness" those challenges and submit them to the blockchain.',
-      },
-      {
-        title: 'Earn by Transferring Data',
-        body:
-          'Hotspots that transfer data from LongFi devices on the network earn Helium proportional to the amount sent.',
-      },
-      {
-        title: 'Earn with Consensus Group',
-        body:
-          'The highest scoring Hotspots are elected to a consensus group which forms transactions into blocks and adds them to the blockchain. Hotspots earn Helium when participating in Consensus.',
+        topTitle: 'Listen for Beacons',
+        topBody: 'Your Hotspot will listen for beacons from nearby Hotspots',
+        bottomTitle: 'How do Beacons work?',
+        bottomBody:
+          'Beacons are special packets, transmitted by Hotspots, that can be heard by any other neighbouring Hotspots.\n\nThese signals allow the Network to determine which Hotspots are within receiving range of each other. These neighbours are called ‘witnesses’ and Hotspots that hear your beacon are added to your Witness List.',
       },
     ],
     next: "I've read the guide",
