@@ -15,12 +15,13 @@ const palette = {
   blueDark: '#232E39',
 
   grayLight: '#DADADA',
-  grayExtraLight: '#465666',
+  grayExtraLight: '#788AB4',
   grayMain: '#81909F',
   graySteel: '#74869A',
   grayDark: '#202B37',
   grayBlue: '#3D5A73',
   grayBox: '#F6F7FE',
+  grayBlack: '#1C1C1C',
 
   redMain: '#F97570',
 
@@ -36,6 +37,11 @@ const palette = {
   greenBright: '#29D391',
   greenMain: '#32C48D',
   greenDark: '#13162E',
+
+  orange: '#FF852F',
+  yellow: '#FFCB46',
+  gold: '#FFC769',
+  gray: '#687A8C',
 }
 
 export const Font = {
@@ -52,10 +58,40 @@ export const Font = {
 }
 
 const textVariants = {
-  header: {
+  h1: {
     fontFamily: Font.main.semiBold,
     fontSize: 40,
     lineHeight: 45.5,
+    color: 'primaryText',
+  },
+  h2: {
+    fontFamily: Font.main.semiBold,
+    fontSize: 27,
+    color: 'primaryText',
+  },
+  h3: {
+    fontFamily: Font.main.semiBold,
+    fontSize: 22,
+    color: 'primaryText',
+  },
+  h4: {
+    fontFamily: Font.main.semiBold,
+    fontSize: 20,
+    color: 'primaryText',
+  },
+  h5: {
+    fontFamily: Font.main.semiBold,
+    fontSize: 17,
+    color: 'primaryText',
+  },
+  h6: {
+    fontFamily: Font.main.semiBold,
+    fontSize: 13,
+    color: 'primaryText',
+  },
+  h7: {
+    fontFamily: Font.main.semiBold,
+    fontSize: 11,
     color: 'primaryText',
   },
   regular: {
@@ -80,7 +116,7 @@ const textVariants = {
   },
   subtitle: {
     fontFamily: Font.main.light,
-    fontSize: 19,
+    fontSize: 20,
     lineHeight: 26,
     color: 'purpleLight',
   },
@@ -92,6 +128,11 @@ const textVariants = {
   body2: {
     fontFamily: Font.main.regular,
     fontSize: 14,
+    color: 'primaryText',
+  },
+  body3: {
+    fontFamily: Font.main.regular,
+    fontSize: 11,
     color: 'primaryText',
   },
   input: {
@@ -152,6 +193,7 @@ export const theme = createTheme({
     xxl: 60,
   },
   borderRadii: {
+    none: 0,
     s: 4,
     m: 8,
     l: 12,
@@ -177,6 +219,10 @@ export const theme = createTheme({
       shadowOpacity: 0.3,
       shadowRadius: 6,
       elevation: 9,
+    },
+    modal: {
+      backgroundColor: 'white',
+      borderRadius: 'xl',
     },
   },
   textVariants: {
@@ -214,7 +260,7 @@ export const theme = createTheme({
 })
 
 const darkTextVariants = {
-  header: { ...textVariants.header, color: 'black' },
+  h1: { ...textVariants.h1, color: 'black' },
   body2: { ...textVariants.body2, color: 'black' },
   input: { ...textVariants.input },
   button: { ...textVariants.button, color: 'black' },

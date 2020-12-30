@@ -22,7 +22,7 @@ const AccountEndSetupScreen = () => {
       <Box height={{ phone: 300, smallPhone: 200 }}>
         <HotspotFront height="100%" />
       </Box>
-      <Text variant="header">{t('hotspot_setup.start.title')}</Text>
+      <Text variant="h1">{t('hotspot_setup.start.title')}</Text>
       <Text variant="body2Light" textAlign="center" marginVertical="m">
         {t('hotspot_setup.start.subtitle_1')}
       </Text>

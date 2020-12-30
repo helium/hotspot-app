@@ -35,7 +35,7 @@ const PassphraseAutocomplete = ({ onSelectWord, wordIdx }: Props) => {
   return (
     <Box marginTop="m">
       <Text
-        variant="header"
+        variant="h1"
         numberOfLines={1}
         adjustsFontSizeToFit
         textAlign="center"

@@ -13,7 +13,7 @@ const HotspotGenesisScreen = () => {
   const navigation = useNavigation<HotspotSetupNavigationProp>()
   return (
     <BackScreen>
-      <Text variant="header" numberOfLines={1} adjustsFontSizeToFit>
+      <Text variant="h1" numberOfLines={1} adjustsFontSizeToFit>
         {t('hotspot_setup.genesis.title')}
       </Text>
       <Text variant="subtitle" marginVertical="l">

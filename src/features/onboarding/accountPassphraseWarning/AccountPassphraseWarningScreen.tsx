@@ -24,7 +24,7 @@ const AccountPassphraseWarningScreen = () => {
         <BackButton onPress={navigation.goBack} paddingHorizontal="none" />
         <Text
           marginTop={{ smallPhone: 's', phone: 'xl' }}
-          variant="header"
+          variant="h1"
           numberOfLines={2}
           adjustsFontSizeToFit
         >

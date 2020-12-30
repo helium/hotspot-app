@@ -49,8 +49,8 @@ const AccountCreatePassphraseScreen = () => {
 
       <Box flex={1} flexDirection="column" justifyContent="space-around">
         <Box paddingHorizontal="lx">
-          <Text variant="header">{t('account_setup.passphrase.title1')}</Text>
-          <Text variant="header">{t('account_setup.passphrase.title2')}</Text>
+          <Text variant="h1">{t('account_setup.passphrase.title1')}</Text>
+          <Text variant="h1">{t('account_setup.passphrase.title2')}</Text>
         </Box>
         <WordList words={words} />
         <Box paddingHorizontal="l">

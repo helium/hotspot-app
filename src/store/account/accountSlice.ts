@@ -6,32 +6,72 @@ import {
   getAccount,
   getPendingTxnList,
 } from '../../utils/appDataClient'
+import { getWallet, postWallet } from '../../utils/walletClient'
+
+export type Notification = {
+  account_address: string
+  body: string
+  color?: string | null
+  footer?: string | null
+  hotspot_address?: string | null
+  hotspot_name?: string | null
+  icon: string
+  id: number
+  share_text?: string | null
+  style: string
+  time: number
+  title: string
+  viewed_at?: string | null
+}
 
 export type AccountState = {
   hotspots: Hotspot[]
+  notifications: Notification[]
   account?: Account
-  mainDataLoading: 'idle' | 'pending' | 'succeeded' | 'failed'
+  mainDataStatus: 'idle' | 'pending' | 'fulfilled' | 'rejected'
+  markNotificationStatus: 'idle' | 'pending' | 'fulfilled' | 'rejected'
   pendingTransactions: PendingTransaction[]
 }
 
 const initialState: AccountState = {
   hotspots: [],
-  mainDataLoading: 'idle',
+  notifications: [],
+  mainDataStatus: 'idle',
+  markNotificationStatus: 'idle',
   pendingTransactions: [],
 }
 
-type AccountData = { hotspots: Hotspot[]; account?: Account }
+type AccountData = {
+  hotspots: Hotspot[]
+  account?: Account
+  notifications: Notification[]
+}
+
 export const fetchData = createAsyncThunk<AccountData>(
   'account/fetchData',
   async () => {
-    try {
-      const data = await Promise.all([getHotspots(), getAccount()])
-      return { hotspots: data[0] || [], account: data[1] }
-    } catch (e) {
-      console.log(e)
-      return { hotspots: [] }
+    const data = await Promise.all(
+      [getHotspots(), getAccount(), getWallet('notifications')].map((p) =>
+        p.catch((e) => {
+          console.log('fetchDataError:', e)
+        }),
+      ),
+    )
+    return {
+      hotspots: data[0] || [],
+      account: data[1],
+      notifications: data[2] || [],
     }
   },
+)
+
+export const fetchNotifications = createAsyncThunk<Notification[]>(
+  'account/fetchNotifications',
+  async () => getWallet('notifications'),
+)
+export const markNotificationsViewed = createAsyncThunk(
+  'account/markNotificationsViewed',
+  async () => postWallet('notifications/view'),
 )
 
 export const fetchPendingTransactions = createAsyncThunk(
@@ -53,14 +93,19 @@ const accountSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchData.pending, (state, _action) => {
-      state.mainDataLoading = 'pending'
+      state.mainDataStatus = 'pending'
+      state.markNotificationStatus = 'pending'
     })
     builder.addCase(fetchData.fulfilled, (state, { payload }) => {
+      state.mainDataStatus = 'fulfilled'
+      state.markNotificationStatus = 'fulfilled'
       state.hotspots = payload.hotspots
       state.account = payload.account
+      state.notifications = payload.notifications
     })
     builder.addCase(fetchData.rejected, (state, _action) => {
-      state.mainDataLoading = 'failed'
+      state.mainDataStatus = 'rejected'
+      state.markNotificationStatus = 'rejected'
     })
     builder.addCase(
       fetchPendingTransactions.fulfilled,
@@ -72,6 +117,18 @@ const accountSlice = createSlice({
         )
       },
     )
+    builder.addCase(markNotificationsViewed.pending, (state, _action) => {
+      state.markNotificationStatus = 'pending'
+    })
+    builder.addCase(markNotificationsViewed.fulfilled, (state, _action) => {
+      state.markNotificationStatus = 'fulfilled'
+    })
+    builder.addCase(markNotificationsViewed.rejected, (state, _action) => {
+      state.markNotificationStatus = 'rejected'
+    })
+    builder.addCase(fetchNotifications.fulfilled, (state, { payload }) => {
+      state.notifications = payload
+    })
   },
 })
 

@@ -34,7 +34,7 @@ const TimeOfDayHeader = ({ date }: { date: Date }) => {
   if (hours >= 17 || hours < 4) {
     timeOfDay = t('time.evening')
   }
-  return <Text variant="header">{t('time.day_header', { timeOfDay })}</Text>
+  return <Text variant="h1">{t('time.day_header', { timeOfDay })}</Text>
 }
 
 const HotspotsView = ({ ownedHotspots }: Props) => {
@@ -123,7 +123,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         backgroundColor="primaryBackground"
         paddingHorizontal="m"
       >
-        <Text variant="header" fontSize={22}>
+        <Text variant="h1" fontSize={22}>
           {t('hotspots.owned.title')}
         </Text>
 

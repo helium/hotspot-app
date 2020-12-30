@@ -6,7 +6,7 @@ const HotspotLocationFeePending = () => {
   const { t } = useTranslation()
   return (
     <>
-      <Text variant="header" numberOfLines={1} adjustsFontSizeToFit>
+      <Text variant="h1" numberOfLines={1} adjustsFontSizeToFit>
         {t('hotspot_setup.location_fee.title')}
       </Text>
       <Text variant="body1Light" marginTop="l">

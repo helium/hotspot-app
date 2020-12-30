@@ -14,9 +14,6 @@ export default {
     '11th',
     '12th',
   ],
-  stats: {
-    title: 'Stats:',
-  },
   account_setup: {
     welcome: {
       title: 'Welcome to Helium',
@@ -474,5 +471,14 @@ export default {
     evening: 'Evening',
     afternoon: 'Afternoon',
     day_header: 'Good\n{{timeOfDay}}.',
+  },
+  notifications: {
+    share: 'SHARE',
+    list: { title: 'Notifications' },
+    none: {
+      title: 'You have no\nNotifications',
+      subtitle:
+        'Here you’ll get news, updates and alerts about your Hotspots and The People’s Network.',
+    },
   },
 }

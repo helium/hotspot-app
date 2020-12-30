@@ -107,7 +107,7 @@ const ConfirmLocationScreen = () => {
         <Text
           numberOfLines={1}
           adjustsFontSizeToFit
-          variant="header"
+          variant="h1"
           textAlign="center"
           marginTop="m"
         >

@@ -13,7 +13,7 @@ const SplashScreen = () => {
       flexDirection="row"
     >
       <HeliumLogo />
-      <Text marginLeft="s" variant="header">
+      <Text marginLeft="s" variant="h1">
         Helium
       </Text>
     </SafeAreaBox>

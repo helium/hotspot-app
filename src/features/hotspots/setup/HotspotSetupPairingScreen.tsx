@@ -79,7 +79,7 @@ const HotspotSetupPairingScreen = () => {
       <Bluetooth />
       <Text
         marginTop="xl"
-        variant="header"
+        variant="h1"
         numberOfLines={2}
         adjustsFontSizeToFit
         marginBottom="l"
