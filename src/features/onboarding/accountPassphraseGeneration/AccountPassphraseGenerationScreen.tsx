@@ -74,7 +74,6 @@ const AccountPassphraseGenerationScreen = () => {
         />
         <Animated.Image
           source={require('../../../assets/images/generateLoaderInner.png')}
-          resizeMode="center"
           style={{
             height: IMAGE_SIZE,
             width: IMAGE_SIZE,
