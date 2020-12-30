@@ -9,12 +9,13 @@ import Animated, {
   useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated'
+import { HotspotRewardsData } from '@helium/http/build/models/HotspotReward'
 import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Search from '../../../assets/images/search.svg'
 import Add from '../../../assets/images/add.svg'
-import { hp, wh, ww } from '../../../utils/layout'
+import { hp } from '../../../utils/layout'
 import { getHotspotRewards } from '../../../utils/appDataClient'
 import HotspotsCarousel from '../../../components/HotspotsCarousel'
 import Map from '../../../components/Map'
@@ -55,7 +56,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
       const yesterday = new Date(today)
       yesterday.setDate(yesterday.getDate() - 1)
       let total = 0
-      const rewards = {}
+      const rewards: Record<string, HotspotRewardsData> = {}
       const results = await Promise.all(
         ownedHotspots.map((hotspot) =>
           getHotspotRewards(hotspot.address, yesterday, today),

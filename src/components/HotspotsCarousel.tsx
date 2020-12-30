@@ -20,7 +20,10 @@ type HotspotsItemProps = {
   reward: HotspotRewardData
 }
 
-const HotspotItem = ({ hotspot, reward = { total: 0 } }: HotspotsItemProps) => {
+const HotspotItem = ({
+  hotspot,
+  reward = { total: 0 } as HotspotRewardData,
+}: HotspotsItemProps) => {
   return (
     <Box
       backgroundColor="grayBox"
