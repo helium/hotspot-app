@@ -77,7 +77,7 @@ const AccountEnterPassphraseScreen = () => {
   const nextStep = () => {
     setTimeout(() => {
       if (step === 2) {
-        navigation.push('AccountSecureScreen')
+        navigation.push('AccountCreatePinScreen')
       } else {
         carouselRef.current?.snapToItem(step + 1)
         setStep(step + 1)

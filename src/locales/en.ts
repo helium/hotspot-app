@@ -48,18 +48,10 @@ export default {
         try_again: 'Try Again',
       },
     },
-    success: {
-      title: "You're all set!",
-      subtitle_1:
-        "You've confirmed your account. Please remember to keep it safe.",
-      subtitle_2:
-        "Now let's secure your new account on this phone with a PIN code.",
-      next: 'Secure account with PIN',
-    },
     create_pin: {
-      title: 'Create PIN',
-      subtitle: 'Create a PIN to secure your account',
-      failed: 'Your PIN did not match. Please try again.',
+      title: 'Set PIN Code',
+      subtitle:
+        'As a final secure step, let’s secure your account with a PIN Code.',
     },
     confirm_pin: {
       title: 'Repeat PIN',
@@ -74,30 +66,30 @@ export default {
     },
   },
   learn: {
-    title: 'How does a Hotspot earn Tokens?',
+    title: 'How do I earn\n HNT?',
     slides: [
       {
-        title: '1. Earning by Issuing Challenges',
+        title: 'Earning by Issuing Challenges',
         body:
           'Encrypted messages are sent from Hotspots over the internet to target areas, creating a challenge in the process.',
       },
       {
-        title: '2. Earn with Proof-of-Coverage',
+        title: 'Earn with Proof-of-Coverage',
         body:
           "Hotspots earn Helium when they validate their peer's wireless coverage. Amount earned depends on how often it is directly involved in Proof-of-Coverage activity.",
       },
       {
-        title: '3. Earn by Witnessing',
+        title: 'Earn by Witnessing',
         body:
           'Hotspots that hear Proof-of-Coverage that were not intended for them can "witness" those challenges and submit them to the blockchain.',
       },
       {
-        title: '4. Earn by Transferring Data',
+        title: 'Earn by Transferring Data',
         body:
           'Hotspots that transfer data from LongFi devices on the network earn Helium proportional to the amount sent.',
       },
       {
-        title: '5. Earn with Consensus Group',
+        title: 'Earn with Consensus Group',
         body:
           'The highest scoring Hotspots are elected to a consensus group which forms transactions into blocks and adds them to the blockchain. Hotspots earn Helium when participating in Consensus.',
       },

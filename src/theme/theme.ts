@@ -150,8 +150,8 @@ const textVariants = {
     fontSize: 17,
   } as TextProps,
   keypad: {
-    fontFamily: Font.mono.light,
-    fontSize: 34,
+    fontFamily: Font.main.medium,
+    fontSize: 40,
     color: 'primaryText',
   },
 }
