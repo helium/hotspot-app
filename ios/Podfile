@@ -10,30 +10,26 @@ target 'Helium' do
 
   use_react_native!(:path => config["reactNativePath"])
 
-  target 'HeliumTests' do
-    inherit! :complete
+    target 'HeliumTests' do
+      inherit! :complete
     # Pods for testing
-  end
+    end
 
   # Enables Flipper.
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
   # you should disable these next few lines.
   use_flipper!
+  
   post_install do |installer|
     flipper_post_install(installer)
+     
+    installer.pods_project.build_configurations.each do |config|
+      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+    end
   end
 end
-
-target 'Helium-tvOS' do
-  # Pods for Helium-tvOS
-
-  target 'Helium-tvOSTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
-  target 'OneSignalNotificationServiceExtension' do
+  
+target 'OneSignalNotificationServiceExtension' do
   pod 'OneSignal', '>= 3.0.0-beta', '< 4.0'
-  end
 end
