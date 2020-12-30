@@ -139,10 +139,11 @@ export default {
     },
     start: {
       title: 'Set up Hotspot',
-      subtitle_1:
-        'Helium Hotspot enables anyone to earn cryptocurrency, Helium (HNT), for providing wireless coverage for low power Internet of Things devices.',
-      subtitle_2: 'Would you like to set up your hotspot now?',
-      next: 'Set up Hotspot',
+      subtitle:
+        'Hotspots allow you to earn HNT by building out The People’s Network.',
+      info: 'How does this work? ⓘ',
+      next: "Let's get started",
+      not_now: 'Not right now',
     },
     education: {
       title: 'Placing\nyour Hotspot.',

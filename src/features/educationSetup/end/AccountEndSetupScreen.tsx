@@ -1,12 +1,13 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import Text from '../../../components/Text'
-import HotspotFront from '../../../assets/images/hotspot-front.svg'
+import Miner from '../../../assets/images/miner.svg'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Button from '../../../components/Button'
 import Box from '../../../components/Box'
 import appSlice from '../../../store/user/appSlice'
 import { useAppDispatch } from '../../../store/store'
+import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 
 const AccountEndSetupScreen = () => {
   const { t } = useTranslation()
@@ -17,23 +18,34 @@ const AccountEndSetupScreen = () => {
       flex={1}
       backgroundColor="primaryBackground"
       alignItems="center"
-      paddingHorizontal="l"
+      paddingHorizontal="lx"
     >
-      <Box height={{ phone: 300, smallPhone: 200 }}>
-        <HotspotFront height="100%" />
-      </Box>
-      <Text variant="h1">{t('hotspot_setup.start.title')}</Text>
-      <Text variant="body2Light" textAlign="center" marginVertical="m">
-        {t('hotspot_setup.start.subtitle_1')}
+      <Box flex={1} />
+      <Miner />
+      <Text variant="h1" marginTop="xl">
+        {t('hotspot_setup.start.title')}
       </Text>
-      <Text textAlign="center" width={260} variant="body2Light">
-        {t('hotspot_setup.start.subtitle_2')}
+      <Text
+        variant="subtitle"
+        textAlign="center"
+        marginVertical="m"
+        numberOfLines={2}
+        adjustsFontSizeToFit
+      >
+        {t('hotspot_setup.start.subtitle')}
       </Text>
+      {/* TODO: Figure out what this button should do */}
+      <TouchableOpacityBox>
+        <Text variant="subtitleBold" textAlign="center" marginVertical="xs">
+          {t('hotspot_setup.start.info')}
+        </Text>
+      </TouchableOpacityBox>
 
-      <Box width="100%" flex={1} justifyContent="flex-end">
+      <Box flex={1} />
+      <Box width="100%">
         <Button
           mode="contained"
-          variant="secondary"
+          variant="primary"
           onPress={() => {
             dispatch(appSlice.actions.setupHotspot())
           }}
@@ -44,7 +56,7 @@ const AccountEndSetupScreen = () => {
           onPress={() => {
             dispatch(appSlice.actions.finishEducation())
           }}
-          title={t('generic.go_to_account')}
+          title={t('hotspot_setup.start.not_now')}
         />
       </Box>
     </SafeAreaBox>
