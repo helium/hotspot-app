@@ -1,10 +1,20 @@
-import React, { memo } from 'react'
+import React, { memo, useEffect } from 'react'
 import { formatDistance, fromUnixTime } from 'date-fns'
+import Animated, {
+  withSpring,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated'
 import Box from '../../components/Box'
 import HeliumBubble from '../../assets/images/heliumBubble.svg'
 import Text from '../../components/Text'
 import { Notification } from '../../store/account/accountSlice'
 import TouchableOpacityBox from '../../components/TouchableOpacityBox'
+import usePrevious from '../../utils/usePrevious'
+
+const COLLAPSED_HEIGHT = 61
+const EXPANDED_HEIGHT = 81
+const BOTTOM_SECTION_HEIGHT = 20
 
 type Props = {
   notification: Notification
@@ -18,13 +28,38 @@ const NotificationItem = ({
   isLast,
   onNotificationSelected,
 }: Props) => {
-  const isNew = !notification.viewed_at
+  const viewed = !!notification.viewed_at
+  const prevViewed = usePrevious(!!notification.viewed_at)
+  const offset = isLast ? BOTTOM_SECTION_HEIGHT : 0
+
+  const heightWithOffset = (hasViewed: boolean) =>
+    (hasViewed ? COLLAPSED_HEIGHT : EXPANDED_HEIGHT) + offset
+
+  const height = heightWithOffset(viewed)
+
+  const heightPrev =
+    prevViewed === undefined ? height : heightWithOffset(prevViewed)
+
+  const heightSharedVal = useSharedValue(heightPrev)
+
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      height: heightSharedVal.value,
+    }
+  })
 
   // Stripping tags from the body text preview. (Not sure if this is necessary)
   const strippedBody = notification.body.replace(/(<([^>]+)>)/gi, '')
 
+  useEffect(() => {
+    if (heightPrev !== height && prevViewed !== undefined) {
+      heightSharedVal.value = withSpring(height)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [height, heightPrev])
+
   return (
-    <Box>
+    <Animated.View style={animatedStyles}>
       <Box
         flexDirection="row"
         alignItems="flex-end"
@@ -42,12 +77,12 @@ const NotificationItem = ({
           borderTopLeftRadius={isFirst ? 'm' : 'none'}
           borderTopRightRadius={isFirst ? 'm' : 'none'}
           borderBottomWidth={!isLast ? 1 : 0}
-          borderBottomColor="black"
+          borderBottomColor="primaryBackground"
         >
           <Text variant="body1Medium" color="black">
             {notification.title}
           </Text>
-          {isNew && (
+          {!viewed && (
             <Text
               variant="body2Light"
               color="black"
@@ -62,7 +97,7 @@ const NotificationItem = ({
       <Box flexDirection="row" alignItems="center" marginLeft="xxl">
         {isLast && (
           <>
-            {isNew && (
+            {!viewed && (
               <Text variant="h7" marginRight="xs">
                 NEW
               </Text>
@@ -75,8 +110,12 @@ const NotificationItem = ({
           </>
         )}
       </Box>
-    </Box>
+    </Animated.View>
   )
 }
 
-export default memo(NotificationItem)
+const areEqual = (prev: Props, next: Props) =>
+  prev.notification.id === next.notification.id &&
+  prev.notification.viewed_at === next.notification.viewed_at
+
+export default memo(NotificationItem, areEqual)
