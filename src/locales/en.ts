@@ -458,6 +458,9 @@ export default {
         'Your {{count}} Hotspots mined {{hntAmount}} HNT in the past 24 hours.',
       your_hotspots: 'Your Hotspots',
     },
+    empty: {
+      body: "You haven't added or followed any Hotspots yet.",
+    },
   },
   permissions: {
     location: {
