@@ -16,7 +16,7 @@ const HotspotsEmpty = () => {
       <Text variant="h2" paddingVertical="l">
         {t('hotspots.owned.title')}
       </Text>
-      <Text variant="body2" paddingBottom="l" color="grayText" fontSize={20}>
+      <Text variant="subtitleRegular" paddingBottom="l" color="grayText">
         {t('hotspots.empty.body')}
       </Text>
       <Button

@@ -1,29 +1,27 @@
-import { Hotspot } from '@helium/http'
+import { Hotspot, HotspotReward } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import React from 'react'
 import Carousel from 'react-native-snap-carousel'
-import { HotspotRewardData } from '@helium/http/build/models/HotspotReward'
 import { useTranslation } from 'react-i18next'
 import Box from './Box'
 import CheckCircle from '../assets/images/check-circle.svg'
 import Text from './Text'
 import CircleProgress from './CircleProgress'
 import { wp } from '../utils/layout'
+import { useColors } from '../theme/themeHooks'
 
 type HotspotsCarouselProps = {
   hotspots: Hotspot[]
-  rewards: Record<string, HotspotRewardData>
+  rewards: Record<string, HotspotReward>
 }
 
 type HotspotsItemProps = {
   hotspot: Hotspot
-  reward: HotspotRewardData
+  totalReward: number
 }
 
-const HotspotItem = ({
-  hotspot,
-  reward = { total: 0 } as HotspotRewardData,
-}: HotspotsItemProps) => {
+const HotspotItem = ({ hotspot, totalReward }: HotspotsItemProps) => {
+  const { grayBox } = useColors()
   return (
     <Box
       backgroundColor="grayBox"
@@ -38,15 +36,21 @@ const HotspotItem = ({
       <Box flexDirection="column">
         <Box flexDirection="row">
           <CheckCircle width={17} height={17} />
-          <Text variant="body2" color="black" fontWeight="500" paddingStart="s">
+          <Text
+            variant="body2Medium"
+            color="black"
+            paddingStart="s"
+            width="80%"
+          >
             {animalName(hotspot.address)}
           </Text>
         </Box>
         <Text variant="body2" color="purpleMain" paddingTop="s">
-          {`+${reward.total.toFixed(2)} HNT`}
+          {`+${totalReward.toFixed(2)} HNT`}
         </Text>
       </Box>
-      <CircleProgress percentage={50} centerColor="#F6F7FE" />
+      {/* TODO: Update percentage to use hotspot on-boarding progress */}
+      <CircleProgress percentage={50} centerColor={grayBox} />
     </Box>
   )
 }
@@ -55,15 +59,17 @@ const HotspotsCarousel = ({ hotspots, rewards }: HotspotsCarouselProps) => {
   const { t } = useTranslation()
 
   const renderItem = ({ item }: { item: Hotspot }) => (
-    <HotspotItem hotspot={item} reward={rewards[item.address]} />
+    <HotspotItem
+      hotspot={item}
+      totalReward={rewards[item.address]?.total || 0}
+    />
   )
 
   return (
     <Box>
       <Text
-        variant="body1"
+        variant="subtitleBold"
         color="black"
-        fontWeight="600"
         paddingBottom="m"
         paddingStart="l"
       >
@@ -76,7 +82,7 @@ const HotspotsCarousel = ({ hotspots, rewards }: HotspotsCarouselProps) => {
         data={hotspots}
         renderItem={renderItem}
         sliderWidth={wp(100)}
-        itemWidth={wp(75)}
+        itemWidth={wp(80)}
         inactiveSlideScale={1}
         onSnapToItem={(i) => console.log(i)}
       />

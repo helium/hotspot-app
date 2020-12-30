@@ -112,7 +112,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         width="100%"
         borderTopLeftRadius="xl"
         borderTopRightRadius="xl"
-        style={{ marginTop: 60 }}
+        marginTop="xxl"
       >
         <Map />
       </Box>
@@ -121,11 +121,9 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         justifyContent="space-between"
         alignItems="center"
         backgroundColor="primaryBackground"
-        paddingHorizontal="m"
+        padding="m"
       >
-        <Text variant="h1" fontSize={22}>
-          {t('hotspots.owned.title')}
-        </Text>
+        <Text variant="h3">{t('hotspots.owned.title')}</Text>
 
         <Box flexDirection="row" justifyContent="space-between">
           <TouchableOpacityBox onPress={() => {}} padding="s">
