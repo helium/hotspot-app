@@ -20,7 +20,7 @@ const MatchingWord = ({ fullWord, matchingText, onPress }: Props) => (
     marginRight="s"
     paddingHorizontal={{ smallPhone: 'm', phone: 'ms' }}
     borderRadius="m"
-    backgroundColor="grayExtraLight"
+    backgroundColor="purple200"
     onPress={() => onPress(fullWord)}
     height={44}
   >

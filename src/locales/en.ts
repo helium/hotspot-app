@@ -370,7 +370,7 @@ export default {
   },
   account_import: {
     word_entry: {
-      title: 'Enter Recovery Seed Phrase',
+      title: 'Enter Recovery\nSeed Phrase',
       directions: 'Enter the <b>{{ordinal}}</b> Word',
       placeholder: '{{ordinal}} word',
       subtitle: 'Recovery Seed Phrases are not case-sensitive',

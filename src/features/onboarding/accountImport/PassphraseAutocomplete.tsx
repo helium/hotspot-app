@@ -36,26 +36,24 @@ const PassphraseAutocomplete = ({ onSelectWord, wordIdx }: Props) => {
     <Box marginTop="m">
       <Text
         variant="h1"
-        numberOfLines={1}
+        numberOfLines={2}
         adjustsFontSizeToFit
-        textAlign="center"
-        marginBottom="s"
+        marginBottom="m"
       >
         {t('account_import.word_entry.title')}
       </Text>
+      <Text variant="body1Light" color="grayLight">
+        {t('account_import.word_entry.subtitle')}
+      </Text>
       <TextTransform
-        textAlign="center"
+        marginTop="lx"
         variant="body2Light"
         color="greenMain"
-        marginBottom="s"
         values={{ ordinal }}
         i18nKey="account_import.word_entry.directions"
       />
-      <Text variant="body2Light" textAlign="center" color="grayLight">
-        {t('account_import.word_entry.subtitle')}
-      </Text>
+
       <TextInput
-        marginVertical="lx"
         padding="m"
         variant="regular"
         placeholder={t('account_import.word_entry.placeholder', {
@@ -68,6 +66,7 @@ const PassphraseAutocomplete = ({ onSelectWord, wordIdx }: Props) => {
         autoCompleteType="off"
         blurOnSubmit={false}
         returnKeyType="next"
+        marginVertical="ms"
         autoFocus
       />
       <ScrollView
