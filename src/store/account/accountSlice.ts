@@ -1,10 +1,16 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import { Account, Hotspot, PendingTransaction } from '@helium/http'
+import {
+  Account,
+  Hotspot,
+  PendingTransaction,
+  AnyTransaction,
+} from '@helium/http'
 import { unionBy } from 'lodash'
 import {
   getHotspots,
   getAccount,
   getPendingTxnList,
+  getAccountActivityList,
 } from '../../utils/appDataClient'
 import { getWallet, postWallet } from '../../utils/walletClient'
 
@@ -31,6 +37,7 @@ export type AccountState = {
   mainDataStatus: 'idle' | 'pending' | 'fulfilled' | 'rejected'
   markNotificationStatus: 'idle' | 'pending' | 'fulfilled' | 'rejected'
   pendingTransactions: PendingTransaction[]
+  accountActivity: AnyTransaction[]
 }
 
 const initialState: AccountState = {
@@ -39,6 +46,7 @@ const initialState: AccountState = {
   mainDataStatus: 'idle',
   markNotificationStatus: 'idle',
   pendingTransactions: [],
+  accountActivity: [],
 }
 
 type AccountData = {
@@ -82,6 +90,11 @@ export const fetchPendingTransactions = createAsyncThunk(
   async () => getPendingTxnList(),
 )
 
+export const fetchAccountActivity = createAsyncThunk<AnyTransaction[]>(
+  'account/fetchAccountActivity',
+  async () => getAccountActivityList(),
+)
+
 // This slice contains data related to the user account
 const accountSlice = createSlice({
   name: 'account',
@@ -120,6 +133,9 @@ const accountSlice = createSlice({
         )
       },
     )
+    builder.addCase(fetchAccountActivity.fulfilled, (state, { payload }) => {
+      state.accountActivity = payload
+    })
     builder.addCase(markNotificationsViewed.pending, (state, _action) => {
       state.markNotificationStatus = 'pending'
     })
