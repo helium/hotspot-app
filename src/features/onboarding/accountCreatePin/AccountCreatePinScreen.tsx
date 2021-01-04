@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import Text from '../../../components/Text'
-import EnterPin from '../../../assets/images/enter-pin.svg'
-import SafeAreaBox from '../../../components/SafeAreaBox'
 import PinDisplay from '../../../components/PinDisplay'
 import Keypad from '../../../components/Keypad'
 import {
   OnboardingNavigationProp,
   OnboardingStackParamList,
 } from '../onboardingTypes'
+import Box from '../../../components/Box'
 
 type Route = RouteProp<OnboardingStackParamList, 'AccountCreatePinScreen'>
 const AccountCreatePinScreen = () => {
@@ -40,30 +39,20 @@ const AccountCreatePinScreen = () => {
   }, [navigation])
 
   return (
-    <SafeAreaBox
+    <Box
       backgroundColor="primaryBackground"
       flex={1}
-      padding="l"
-      paddingBottom="none"
+      paddingHorizontal="lx"
       justifyContent="center"
       alignItems="center"
     >
-      <EnterPin />
-      <Text
-        marginBottom="m"
-        variant="h1"
-        marginTop={{ smallPhone: 'none', phone: 'xl' }}
-      >
+      <Box flex={1} />
+      <Text marginBottom="m" variant="h1">
         {t('account_setup.create_pin.title')}
       </Text>
 
-      <Text
-        variant="body2Light"
-        marginBottom={{ smallPhone: 'm', phone: 'xl' }}
-      >
-        {t('account_setup.create_pin.subtitle')}
-      </Text>
-      <PinDisplay length={pin.length} />
+      <Text variant="body1">{t('account_setup.create_pin.subtitle')}</Text>
+      <PinDisplay length={pin.length} marginVertical="xl" />
       <Keypad
         onBackspacePress={() => {
           setPin((val) => val.slice(0, -1))
@@ -72,7 +61,8 @@ const AccountCreatePinScreen = () => {
           setPin((val) => (val.length < 6 ? val + num : val))
         }}
       />
-    </SafeAreaBox>
+      <Box flex={1} />
+    </Box>
   )
 }
 

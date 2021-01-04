@@ -5,7 +5,6 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useAsync } from 'react-async-hook'
 import { useStateWithCallbackLazy } from 'use-state-with-callback'
 import * as LocalAuthentication from 'expo-local-authentication'
-import SafeAreaBox from '../../components/SafeAreaBox'
 import {
   RootNavigationProp,
   RootStackParamList,
@@ -15,6 +14,7 @@ import ConfirmPinView from '../../components/ConfirmPinView'
 import { MoreNavigationProp } from '../moreTab/moreTypes'
 import { useAppDispatch } from '../../store/store'
 import appSlice from '../../store/user/appSlice'
+import Box from '../../components/Box'
 
 type Route = RouteProp<RootStackParamList, 'LockScreen'>
 
@@ -86,22 +86,15 @@ const LockScreen = () => {
   }, [])
 
   return (
-    <SafeAreaBox
-      backgroundColor="primaryBackground"
-      flex={1}
-      padding="l"
-      paddingBottom="none"
-    >
-      {pin && (
-        <ConfirmPinView
-          originalPin={pin}
-          title={t('auth.title')}
-          subtitle={t('auth.enter_current')}
-          pinSuccess={handleSuccess}
-          onCancel={shouldLock ? handleSignOut : moreNav.goBack}
-        />
-      )}
-    </SafeAreaBox>
+    <Box backgroundColor="primaryMain" flex={1}>
+      <ConfirmPinView
+        originalPin={pin || ''}
+        title={t('auth.title')}
+        subtitle={t('auth.enter_current')}
+        pinSuccess={handleSuccess}
+        onCancel={shouldLock ? handleSignOut : moreNav.goBack}
+      />
+    </Box>
   )
 }
 

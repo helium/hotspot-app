@@ -48,7 +48,7 @@ static void InitializeFlipper(UIApplication *application) {
                                                    moduleName:@"Helium"
                                             initialProperties:nil];
 
-  rootView.backgroundColor = [[UIColor alloc] initWithRed:0.0f green:0.0f blue:0.0f alpha:1];
+  rootView.backgroundColor = [UIColor colorWithRed: 0.07 green: 0.09 blue: 0.18 alpha: 1.00];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];

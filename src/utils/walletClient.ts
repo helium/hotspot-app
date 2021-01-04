@@ -20,8 +20,13 @@ const makeRequest = async (url: string, opts: RequestInit) => {
         Authorization: token,
       },
     })
-    const json = await response.json()
-    return json.data || json
+    const text = await response.text()
+    try {
+      const json = JSON.parse(text)
+      return json.data || json
+    } catch (err) {
+      return text
+    }
   } catch (error) {
     console.log(error)
     throw error
@@ -33,8 +38,8 @@ export const getWallet = async (url: string) =>
     method: 'GET',
   })
 
-export const postWallet = async (url: string, data: unknown) =>
+export const postWallet = async (url: string, data?: unknown) =>
   makeRequest(url, {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: data ? JSON.stringify(data) : null,
   })

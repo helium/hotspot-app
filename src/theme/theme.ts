@@ -16,17 +16,21 @@ const palette = {
   blueDark: '#232E39',
 
   grayLight: '#DADADA',
-  grayExtraLight: '#465666',
+  grayExtraLight: '#788AB4',
   grayMain: '#81909F',
   graySteel: '#74869A',
   grayDark: '#202B37',
   grayBlue: '#3D5A73',
+  grayBox: '#F6F7FE',
+  grayBlack: '#1C1C1C',
+  grayText: '#667394',
 
   redMain: '#F97570',
+  redMedium: '#FF6666',
 
   purple: '#B377FF',
   purpleBright: '#A667F6',
-  purpleLight: '#6C71A3',
+  purpleLight: '#A0A5DA',
   purpleMain: '#474DFF',
   purple300: '#343964',
   purple200: '#23264b',
@@ -36,6 +40,11 @@ const palette = {
   greenBright: '#29D391',
   greenMain: '#32C48D',
   greenDark: '#13162E',
+
+  orange: '#FF852F',
+  yellow: '#FFCB46',
+  gold: '#FFC769',
+  gray: '#687A8C',
 }
 
 export const Font = {
@@ -68,6 +77,26 @@ const textVariants = {
     fontSize: 22,
     color: 'primaryText',
   },
+  h4: {
+    fontFamily: Font.main.semiBold,
+    fontSize: 20,
+    color: 'primaryText',
+  },
+  h5: {
+    fontFamily: Font.main.semiBold,
+    fontSize: 17,
+    color: 'primaryText',
+  },
+  h6: {
+    fontFamily: Font.main.semiBold,
+    fontSize: 13,
+    color: 'primaryText',
+  },
+  h7: {
+    fontFamily: Font.main.semiBold,
+    fontSize: 11,
+    color: 'primaryText',
+  },
   regular: {
     fontFamily: Font.main.regular,
     color: 'primaryText',
@@ -89,8 +118,8 @@ const textVariants = {
     color: 'primaryText',
   },
   subtitle: {
-    fontFamily: Font.main.light,
-    fontSize: 20,
+    fontFamily: Font.main.regular,
+    fontSize: 19,
     lineHeight: 26,
     color: 'purpleLight',
   },
@@ -102,6 +131,11 @@ const textVariants = {
   body2: {
     fontFamily: Font.main.regular,
     fontSize: 14,
+    color: 'primaryText',
+  },
+  body3: {
+    fontFamily: Font.main.regular,
+    fontSize: 11,
     color: 'primaryText',
   },
   input: {
@@ -117,8 +151,8 @@ const textVariants = {
     fontSize: 17,
   } as TextProps,
   keypad: {
-    fontFamily: Font.mono.light,
-    fontSize: 34,
+    fontFamily: Font.main.medium,
+    fontSize: 40,
     color: 'primaryText',
   },
 }
@@ -162,9 +196,11 @@ export const theme = createTheme({
     xxl: 60,
   },
   borderRadii: {
+    none: 0,
     s: 4,
     m: 8,
     l: 12,
+    xl: 20,
     round: 1000,
   },
   breakpoints: {
@@ -186,6 +222,10 @@ export const theme = createTheme({
       shadowOpacity: 0.3,
       shadowRadius: 6,
       elevation: 9,
+    },
+    modal: {
+      backgroundColor: 'white',
+      borderRadius: 'xl',
     },
   },
   textVariants: {

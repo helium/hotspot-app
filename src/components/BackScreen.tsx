@@ -22,7 +22,7 @@ const BackScreen = ({
       backgroundColor={backgroundColor || 'primaryBackground'}
       flex={1}
     >
-      <BackButton paddingHorizontal="lx" onPress={navigation.goBack} />
+      <BackButton marginHorizontal="n_s" onPress={navigation.goBack} />
       <Box padding={padding || 'lx'} flex={flex || 1} {...rest}>
         {children}
       </Box>

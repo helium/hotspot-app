@@ -1,31 +1,46 @@
-import React, { useEffect } from 'react'
-import LottieView from 'lottie-react-native'
+import React, { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
+import { Animated, Easing } from 'react-native'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import { OnboardingNavigationProp } from '../onboardingTypes'
 import { createKeypair } from '../../../utils/secureAccount'
 
+const DURATION = 4000
+const IMAGE_SIZE = 212
+
 const AccountPassphraseGenerationScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<OnboardingNavigationProp>()
+
+  const rotateAnim = useRef(new Animated.Value(0))
+
+  const anim = () =>
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(rotateAnim.current, {
+          toValue: 2,
+          duration: DURATION,
+          useNativeDriver: true,
+          easing: Easing.linear,
+        }),
+      ]),
+    ).start()
 
   useEffect(() => {
     const genKeypair = async () => {
       await createKeypair()
     }
 
-    genKeypair()
-  }, [])
-
-  useEffect(() => {
     const timer = setTimeout(
       () => navigation.replace('AccountCreatePassphraseScreen'),
-      3000,
+      DURATION,
     )
 
+    genKeypair()
+    anim()
     return () => {
       clearTimeout(timer)
     }
@@ -33,25 +48,49 @@ const AccountPassphraseGenerationScreen = () => {
 
   return (
     <SafeAreaBox
-      height="100%"
-      width="100%"
+      flex={1}
       paddingVertical={{ phone: 'xxl', smallPhone: 'l' }}
       paddingHorizontal="l"
       backgroundColor="primaryBackground"
       alignItems="center"
+      justifyContent="center"
     >
-      <Box width="100%" aspectRatio={1}>
-        <LottieView
-          source={require('../../../assets/animations/accountGenerationAnimation.json')}
-          autoPlay
-          loop
+      <Box>
+        <Animated.Image
+          source={require('../../../assets/images/generateLoader.png')}
+          style={{
+            position: 'absolute',
+            height: IMAGE_SIZE,
+            width: IMAGE_SIZE,
+            transform: [
+              {
+                rotate: rotateAnim.current.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ['0deg', '-360deg'],
+                }),
+              },
+            ],
+          }}
+        />
+        <Animated.Image
+          source={require('../../../assets/images/generateLoaderInner.png')}
+          style={{
+            height: IMAGE_SIZE,
+            width: IMAGE_SIZE,
+            transform: [
+              {
+                rotate: rotateAnim.current.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ['0deg', '360deg'],
+                }),
+              },
+            ],
+          }}
         />
       </Box>
-      <Box width={180} alignItems="center" justifyContent="flex-end" flex={1}>
-        <Text textAlign="center" variant="body2Light">
-          {t('account_setup.generating')}
-        </Text>
-      </Box>
+      <Text textAlign="center" variant="body2Light" marginTop="xl">
+        {t('account_setup.generating')}
+      </Text>
     </SafeAreaBox>
   )
 }

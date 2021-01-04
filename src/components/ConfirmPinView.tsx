@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { Animated } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import EnterPin from '../assets/images/enter-pin.svg'
 import Text from './Text'
 import PinDisplay from './PinDisplay'
 import Keypad from './Keypad'
@@ -71,24 +70,21 @@ const ConfirmPinView = ({
   }, [navigation])
 
   return (
-    <Box flex={1} justifyContent="center" alignItems="center">
-      <EnterPin />
-      <Text
-        marginBottom="m"
-        variant="h1"
-        marginTop={{ smallPhone: 'none', phone: 'xl' }}
-      >
+    <Box
+      backgroundColor="primaryBackground"
+      flex={1}
+      paddingHorizontal="lx"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <Box flex={1} />
+      <Text marginBottom="m" variant="h1">
         {title}
       </Text>
 
-      <Text
-        variant="body2Light"
-        marginBottom={{ smallPhone: 'm', phone: 'xl' }}
-      >
-        {subtitle}
-      </Text>
+      <Text variant="body1">{subtitle}</Text>
       <Animated.View style={{ transform: [{ translateX: shakeAnim.current }] }}>
-        <PinDisplay length={pin.length} />
+        <PinDisplay length={pin.length} marginVertical="xl" />
       </Animated.View>
       <Keypad
         onCancel={onCancel}
@@ -99,6 +95,7 @@ const ConfirmPinView = ({
           setPin((val) => (val.length < 6 ? val + num : val))
         }}
       />
+      <Box flex={1} />
     </Box>
   )
 }

@@ -19,7 +19,7 @@ const HotspotGenesisScreen = () => {
       <Text variant="subtitle" marginVertical="l">
         {t('hotspot_setup.genesis.subtitle')}
       </Text>
-      <TextTransform variant="body1" i18nKey={t('hotspot_setup.genesis.p')} />
+      <TextTransform variant="body1" i18nKey="hotspot_setup.genesis.p" />
 
       <Box flex={1} />
 

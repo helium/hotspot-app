@@ -1,19 +1,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react'
 import { TextStyle } from 'react-native'
-import {
-  useRestyle,
-  spacing,
-  border,
-  backgroundColor,
-  BoxProps,
-} from '@shopify/restyle'
+import { BoxProps } from '@shopify/restyle'
 
 import Text from './Text'
 import { Colors, Theme } from '../theme/theme'
 import TouchableOpacityBox from './TouchableOpacityBox'
+import Box from './Box'
 
-const restyleFunctions = [spacing, border, backgroundColor]
 type Props = BoxProps<Theme> & {
   mode?: 'text' | 'contained'
   variant?: ButtonVariant
@@ -34,10 +28,7 @@ const Button = ({
   disabled,
   ...rest
 }: Props) => {
-  const props = useRestyle(restyleFunctions, rest)
-
   const getBackground = (): Colors | undefined => {
-    if (disabled) return 'disabled'
     if (mode === 'contained') {
       if (variant === 'secondary') {
         return 'secondaryMain'
@@ -65,22 +56,23 @@ const Button = ({
   }
 
   return (
-    <TouchableOpacityBox
-      backgroundColor={getBackground()}
-      borderRadius="m"
-      onPress={onPress}
-      disabled={disabled}
-      {...props}
-    >
-      <Text
-        paddingVertical="m"
-        variant={getTextVariant()}
-        color={getTextColor()}
-        style={textStyle}
+    <Box style={{ opacity: disabled ? 0.2 : 1 }} {...rest}>
+      <TouchableOpacityBox
+        backgroundColor={getBackground()}
+        borderRadius="m"
+        onPress={onPress}
+        disabled={disabled}
       >
-        {title}
-      </Text>
-    </TouchableOpacityBox>
+        <Text
+          paddingVertical="lm"
+          variant={getTextVariant()}
+          color={getTextColor()}
+          style={textStyle}
+        >
+          {title}
+        </Text>
+      </TouchableOpacityBox>
+    </Box>
   )
 }
 

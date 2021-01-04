@@ -2,7 +2,13 @@ import 'react-native-gesture-handler'
 import React, { useEffect, useCallback } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { ThemeProvider } from '@shopify/restyle'
-import { Platform, StatusBar, AppState, AppStateStatus } from 'react-native'
+import {
+  Platform,
+  StatusBar,
+  AppState,
+  AppStateStatus,
+  UIManager,
+} from 'react-native'
 import OneSignal from 'react-native-onesignal'
 import Config from 'react-native-config'
 import { useSelector } from 'react-redux'
@@ -18,6 +24,12 @@ import BluetoothProvider from './providers/BluetoothProvider'
 import ConnectedHotspotProvider from './providers/ConnectedHotspotProvider'
 
 const App = () => {
+  if (Platform.OS === 'android') {
+    if (UIManager.setLayoutAnimationEnabledExperimental) {
+      UIManager.setLayoutAnimationEnabledExperimental(true)
+    }
+  }
+
   const dispatch = useAppDispatch()
 
   const {
@@ -33,6 +45,8 @@ const App = () => {
 
   const handleChange = useCallback(
     (newState: AppStateStatus) => {
+      dispatch(appSlice.actions.updateAppStateStatus(newState))
+
       if (newState === 'background') {
         dispatch(appSlice.actions.updateLastIdle())
         return

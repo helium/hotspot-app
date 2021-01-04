@@ -16,6 +16,17 @@ export const getHotspotDetails = async (address: string) => {
   return data
 }
 
+export const getHotspotRewards = async (
+  address: string,
+  minTime: Date,
+  maxTime: Date,
+) => {
+  const { data } = await client
+    .hotspot(address)
+    .rewards.getSum(minTime, maxTime)
+  return data
+}
+
 export const getAccount = async () => {
   const address = await getSecureItem('address')
   if (!address) return
