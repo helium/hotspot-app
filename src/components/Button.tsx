@@ -1,20 +1,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react'
 import { TextStyle } from 'react-native'
-import {
-  useRestyle,
-  spacing,
-  border,
-  backgroundColor,
-  BoxProps,
-} from '@shopify/restyle'
+import { BoxProps } from '@shopify/restyle'
 
 import Text from './Text'
 import { Colors, Theme } from '../theme/theme'
 import TouchableOpacityBox from './TouchableOpacityBox'
 import Box from './Box'
 
-const restyleFunctions = [spacing, border, backgroundColor]
 type Props = BoxProps<Theme> & {
   mode?: 'text' | 'contained'
   variant?: ButtonVariant
@@ -35,8 +28,6 @@ const Button = ({
   disabled,
   ...rest
 }: Props) => {
-  const props = useRestyle(restyleFunctions, rest)
-
   const getBackground = (): Colors | undefined => {
     if (mode === 'contained') {
       if (variant === 'secondary') {
@@ -65,13 +56,12 @@ const Button = ({
   }
 
   return (
-    <Box style={{ opacity: disabled ? 0.2 : 1 }}>
+    <Box style={{ opacity: disabled ? 0.2 : 1 }} {...rest}>
       <TouchableOpacityBox
         backgroundColor={getBackground()}
         borderRadius="m"
         onPress={onPress}
         disabled={disabled}
-        {...props}
       >
         <Text
           paddingVertical="lm"

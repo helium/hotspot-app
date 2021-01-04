@@ -35,8 +35,8 @@ const AccountCreatePassphraseScreen = () => {
   }
 
   useEffect(() => {
-    // const viewedAll = viewedWords.every((w) => w)
-    // if (!viewedAll) return
+    const viewedAll = viewedWords.every((w) => w)
+    if (!viewedAll) return
 
     setDisabled(false)
   }, [viewedWords])
@@ -94,7 +94,6 @@ const AccountCreatePassphraseScreen = () => {
       />
       <Box flex={1} />
       <Button
-        marginHorizontal="l"
         mode="contained"
         disabled={disabled}
         variant="primary"
