@@ -12,7 +12,6 @@ import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
 import Carousel from 'react-native-snap-carousel'
 import { LayoutAnimation } from 'react-native'
-import { FlatList } from 'react-native-gesture-handler'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import wordlist from '../../../constants/wordlists/english.json'
@@ -169,25 +168,17 @@ const AccountEnterPassphraseScreen = () => {
       </Box>
       <Box flex={1} />
       <Box flexDirection="row" flexWrap="wrap">
-        <FlatList
-          data={challengeWords}
-          scrollEnabled={false}
-          keyExtractor={(item) => item}
-          numColumns={3}
-          renderItem={({ item: w }) => (
-            <PhraseChip
-              maxWidth="33%"
-              fail={word === w && !correct}
-              success={word === w && correct}
-              disabled={!!word}
-              marginRight="s"
-              marginBottom="s"
-              key={w}
-              title={w}
-              onPress={() => !word && onPressWord(w)}
-            />
-          )}
-        />
+        {challengeWords.map((w) => (
+          <PhraseChip
+            marginRight="s"
+            marginBottom="s"
+            key={w}
+            title={w}
+            fail={word === w && !correct}
+            success={word === w && correct}
+            onPress={() => !word && onPressWord(w)}
+          />
+        ))}
       </Box>
       <Box flex={2} />
       <Button
