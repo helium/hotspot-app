@@ -85,16 +85,16 @@ const LockScreen = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  if (!pin) return <Box backgroundColor="primaryMain" flex={1} />
-
   return (
-    <ConfirmPinView
-      originalPin={pin}
-      title={t('auth.title')}
-      subtitle={t('auth.enter_current')}
-      pinSuccess={handleSuccess}
-      onCancel={shouldLock ? handleSignOut : moreNav.goBack}
-    />
+    <Box backgroundColor="primaryMain" flex={1}>
+      <ConfirmPinView
+        originalPin={pin || ''}
+        title={t('auth.title')}
+        subtitle={t('auth.enter_current')}
+        pinSuccess={handleSuccess}
+        onCancel={shouldLock ? handleSignOut : moreNav.goBack}
+      />
+    </Box>
   )
 }
 
