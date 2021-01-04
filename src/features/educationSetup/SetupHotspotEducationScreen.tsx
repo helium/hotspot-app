@@ -1,17 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import Text from '../../../components/Text'
-import Miner from '../../../assets/images/miner.svg'
-import SafeAreaBox from '../../../components/SafeAreaBox'
-import Button from '../../../components/Button'
-import Box from '../../../components/Box'
-import appSlice from '../../../store/user/appSlice'
-import { useAppDispatch } from '../../../store/store'
-import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import Text from '../../components/Text'
+import Miner from '../../assets/images/miner.svg'
+import SafeAreaBox from '../../components/SafeAreaBox'
+import Button from '../../components/Button'
+import Box from '../../components/Box'
+import appSlice from '../../store/user/appSlice'
+import { useAppDispatch } from '../../store/store'
+import TouchableOpacityBox from '../../components/TouchableOpacityBox'
+import GlobalHelpModal from '../../components/GlobalHelpModal'
 
-const AccountEndSetupScreen = () => {
+const SetupHotspotEducationScreen = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
+  const [showHelpModal, setShowHelpModal] = useState(false)
 
   return (
     <SafeAreaBox
@@ -34,8 +36,7 @@ const AccountEndSetupScreen = () => {
       >
         {t('hotspot_setup.start.subtitle')}
       </Text>
-      {/* TODO: Figure out what this button should do */}
-      <TouchableOpacityBox>
+      <TouchableOpacityBox onPress={() => setShowHelpModal(true)}>
         <Text variant="subtitleBold" textAlign="center" marginVertical="xs">
           {t('hotspot_setup.start.info')}
         </Text>
@@ -59,8 +60,12 @@ const AccountEndSetupScreen = () => {
           title={t('hotspot_setup.start.not_now')}
         />
       </Box>
+      <GlobalHelpModal
+        onClose={() => setShowHelpModal(false)}
+        visible={showHelpModal}
+      />
     </SafeAreaBox>
   )
 }
 
-export default AccountEndSetupScreen
+export default SetupHotspotEducationScreen
