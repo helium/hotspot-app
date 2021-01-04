@@ -40,7 +40,7 @@ const HotspotSetupDiagnosticsScreen = () => {
         <TextTransform
           variant="subtitle"
           marginTop="m"
-          i18nKey={t('hotspot_setup.diagnostics.p_1')}
+          i18nKey="hotspot_setup.diagnostics.p_1"
         />
       </ScrollView>
       <Button

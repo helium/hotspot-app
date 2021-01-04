@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native'
-import SafeAreaBox from '../../../components/SafeAreaBox'
 import {
   OnboardingNavigationProp,
   OnboardingStackParamList,
@@ -34,20 +33,13 @@ const AccountConfirmPinScreen = () => {
   )
 
   return (
-    <SafeAreaBox
-      backgroundColor="primaryBackground"
-      flex={1}
-      padding="l"
-      paddingBottom="none"
-    >
-      <ConfirmPinView
-        originalPin={originalPin}
-        title={t('account_setup.confirm_pin.title')}
-        subtitle={t('account_setup.confirm_pin.subtitle')}
-        pinSuccess={pinSuccess}
-        onCancel={navigation.goBack}
-      />
-    </SafeAreaBox>
+    <ConfirmPinView
+      originalPin={originalPin}
+      title={t('account_setup.confirm_pin.title')}
+      subtitle={t('account_setup.confirm_pin.subtitle')}
+      pinSuccess={pinSuccess}
+      onCancel={navigation.goBack}
+    />
   )
 }
 

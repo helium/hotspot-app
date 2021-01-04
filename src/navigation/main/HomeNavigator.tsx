@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Platform } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack'
+import OneSignal from 'react-native-onesignal'
 import LockScreen from '../../features/lock/LockScreen'
 import defaultScreenOptions from '../defaultScreenOptions'
 import HotspotSetup from '../../features/hotspots/setup/HotspotSetupNavigator'
@@ -9,6 +10,10 @@ import MainTabs from './MainTabNavigator'
 const HomeStack = createStackNavigator()
 
 const HomeStackScreen = () => {
+  useEffect(() => {
+    OneSignal.promptForPushNotificationsWithUserResponse(() => {})
+  }, [])
+
   return (
     <HomeStack.Navigator
       mode="modal"

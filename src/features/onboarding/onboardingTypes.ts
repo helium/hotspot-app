@@ -6,7 +6,6 @@ export type OnboardingStackParamList = {
   AccountPassphraseGeneration: undefined
   AccountCreatePassphraseScreen: undefined
   AccountEnterPassphraseScreen: undefined
-  AccountSecureScreen: undefined
   AccountCreatePinScreen:
     | { fromImport?: boolean; pinReset?: boolean }
     | undefined

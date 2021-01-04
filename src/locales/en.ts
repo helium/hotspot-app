@@ -16,32 +16,30 @@ export default {
   ],
   account_setup: {
     welcome: {
-      title: 'Welcome to Helium',
+      title: 'Welcome\nto Helium',
       subtitle:
-        "Host a Hotspot and earn Helium tokens, a new cryptocurrency, for building the world's first peer-to-peer wireless network, The People's Network.",
-      get_started: "Let's get started.",
+        'Host a Hotspot and earn <b><purple>$HNT</purple></b>,\na new cryptocurrency,\nfor building The People’s Network.',
       create_account: 'Create an Account',
       import_account: 'Import Existing Account',
     },
     warning: {
-      title: 'An account that is completely yours',
+      title: 'Creating\nSecure Account.',
       subtitle:
-        'Your Helium account belongs only to you and is protected by <b>12 unique words</b>.',
-      recover:
-        "You'll need these words if you need to recover your account or move it to a different phone",
+        'Helium accounts are protected by\n<b><purple>12 unique words</purple></b>, that act as\na password for signing in or\nrecovering accounts.',
+      generate: 'Generate my 12 words',
     },
-    generating: 'GENERATING YOUR 12 UNIQUE WORDS',
+    generating: 'GENERATING YOUR 12 WORDS...',
     passphrase: {
-      title1: 'Write These',
-      title2: '12 Words Down',
-      warning_1:
-        'Helium Inc <red>cannot help recover your account</red>, so make sure to write these down and store them securely.',
-      warning_2: "<red>Don't lose these 12 words!</red>",
-      next: "OK, they're written down",
+      title: 'Your 12 Word\nPassword',
+      subtitle:
+        'It is crucial you <b>write all of these\n12 words down, in order</b>.\n\n<red>Helium cannot recover these words.</red>',
+      warning: 'Helium cannot recover these words',
+      next: 'I have written these down',
     },
     confirm: {
-      title: 'Confirm Your Words',
-      subtitle: 'Select the {{ordinal}} word',
+      title: 'Confirm\nYour Words',
+      subtitle:
+        'Which word below was your <b><purple>{{ordinal}} word?</purple></b>',
       forgot: 'I forgot my words',
       failed: {
         title: 'Sorry...',
@@ -50,18 +48,10 @@ export default {
         try_again: 'Try Again',
       },
     },
-    success: {
-      title: "You're all set!",
-      subtitle_1:
-        "You've confirmed your account. Please remember to keep it safe.",
-      subtitle_2:
-        "Now let's secure your new account on this phone with a PIN code.",
-      next: 'Secure account with PIN',
-    },
     create_pin: {
-      title: 'Create PIN',
-      subtitle: 'Create a PIN to secure your account',
-      failed: 'Your PIN did not match. Please try again.',
+      title: 'Set PIN Code',
+      subtitle:
+        'As a final secure step, let’s secure your account with a PIN Code.',
     },
     confirm_pin: {
       title: 'Repeat PIN',
@@ -76,32 +66,28 @@ export default {
     },
   },
   learn: {
-    title: 'How does a Hotspot earn Tokens?',
+    title: 'How do I earn\nHNT?',
     slides: [
       {
-        title: '1. Earning by Issuing Challenges',
-        body:
-          'Encrypted messages are sent from Hotspots over the internet to target areas, creating a challenge in the process.',
+        topTitle: 'Listen for Beacons',
+        topBody: 'Your Hotspot will listen for beacons from nearby Hotspots',
+        bottomTitle: 'How do Beacons work?',
+        bottomBody:
+          'Beacons are special packets, transmitted by Hotspots, that can be heard by any other neighbouring Hotspots.\n\nThese signals allow the Network to determine which Hotspots are within receiving range of each other. These neighbours are called ‘witnesses’ and Hotspots that hear your beacon are added to your Witness List.',
       },
       {
-        title: '2. Earn with Proof-of-Coverage',
-        body:
-          "Hotspots earn Helium when they validate their peer's wireless coverage. Amount earned depends on how often it is directly involved in Proof-of-Coverage activity.",
+        topTitle: 'Listen for Beacons',
+        topBody: 'Your Hotspot will listen for beacons from nearby Hotspots',
+        bottomTitle: 'How do Beacons work?',
+        bottomBody:
+          'Beacons are special packets, transmitted by Hotspots, that can be heard by any other neighbouring Hotspots.\n\nThese signals allow the Network to determine which Hotspots are within receiving range of each other. These neighbours are called ‘witnesses’ and Hotspots that hear your beacon are added to your Witness List.',
       },
       {
-        title: '3. Earn by Witnessing',
-        body:
-          'Hotspots that hear Proof-of-Coverage that were not intended for them can "witness" those challenges and submit them to the blockchain.',
-      },
-      {
-        title: '4. Earn by Transferring Data',
-        body:
-          'Hotspots that transfer data from LongFi devices on the network earn Helium proportional to the amount sent.',
-      },
-      {
-        title: '5. Earn with Consensus Group',
-        body:
-          'The highest scoring Hotspots are elected to a consensus group which forms transactions into blocks and adds them to the blockchain. Hotspots earn Helium when participating in Consensus.',
+        topTitle: 'Listen for Beacons',
+        topBody: 'Your Hotspot will listen for beacons from nearby Hotspots',
+        bottomTitle: 'How do Beacons work?',
+        bottomBody:
+          'Beacons are special packets, transmitted by Hotspots, that can be heard by any other neighbouring Hotspots.\n\nThese signals allow the Network to determine which Hotspots are within receiving range of each other. These neighbours are called ‘witnesses’ and Hotspots that hear your beacon are added to your Witness List.',
       },
     ],
     next: "I've read the guide",
@@ -153,10 +139,11 @@ export default {
     },
     start: {
       title: 'Set up Hotspot',
-      subtitle_1:
-        'Helium Hotspot enables anyone to earn cryptocurrency, Helium (HNT), for providing wireless coverage for low power Internet of Things devices.',
-      subtitle_2: 'Would you like to set up your hotspot now?',
-      next: 'Set up Hotspot',
+      subtitle:
+        'Hotspots allow you to earn HNT by building out The People’s Network.',
+      info: 'How does this work? ⓘ',
+      next: "Let's get started",
+      not_now: 'Not right now',
     },
     education: {
       title: 'Placing\nyour Hotspot.',
@@ -187,7 +174,7 @@ export default {
     diagnostics: {
       title: 'Diagnostics',
       p_1:
-        '<b><white>Diagnostic support allows Helium to identify issues with your Hotspot in a secure way.</white></b>\n\nHelium will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purpleMain><b>support@helium.com</b></purpleMain> from the email used to purchase the Hotspot.',
+        '<b><white>Diagnostic support allows Helium to identify issues with your Hotspot in a secure way.</white></b>\n\nHelium will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@helium.com</b></purple> from the email used to purchase the Hotspot.',
     },
     power: {
       title: 'Power Up',
@@ -383,7 +370,7 @@ export default {
   },
   account_import: {
     word_entry: {
-      title: 'Enter Recovery Seed Phrase',
+      title: 'Enter Recovery\nSeed Phrase',
       directions: 'Enter the <b>{{ordinal}}</b> Word',
       placeholder: '{{ordinal}} word',
       subtitle: 'Recovery Seed Phrases are not case-sensitive',

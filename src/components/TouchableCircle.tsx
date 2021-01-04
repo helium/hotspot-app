@@ -39,6 +39,7 @@ const TouchableCircle = ({ children, onPressIn, ...rest }: Props) => {
           justifyContent="center"
           alignItems="center"
           position="relative"
+          aspectRatio={1}
           height={{ phone: 80, smallPhone: 60 }}
           width={{ phone: 80, smallPhone: 60 }}
         >
