@@ -424,7 +424,7 @@ export default {
         },
       },
       learn: { title: 'learn' },
-      advanced: { title: 'advanced' },
+      advanced: { title: 'advanced', revealWords: 'Reveal Words' },
       account: {
         title: 'account',
         signOut: 'Sign out',
