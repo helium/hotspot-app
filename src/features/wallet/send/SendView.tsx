@@ -16,9 +16,6 @@ import Check from '../../../assets/images/check.svg'
 import { useColors } from '../../../theme/themeHooks'
 import { QrScanResult } from '../scan/scanTypes'
 
-// burn
-// {"type":"dc_burn","address":"112qB3YaH5bZkCnKA5uRH7tBtGNv2Y5B4smv1jsmvGUzgKT71QpE","amount":"0.72474797","memo":"qX3/BGt6yQE="}
-
 const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
   const { t } = useTranslation()
   const navigation = useNavigation()
@@ -52,6 +49,13 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
     triggerNavHaptic()
   }
 
+  const submitTxn = () => {
+    // eslint-disable-next-line no-console
+    console.log('address', address)
+    // eslint-disable-next-line no-console
+    console.log('amount', amount)
+  }
+
   return (
     <Box flex={1}>
       <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
@@ -74,7 +78,9 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
         </Box>
         <Box backgroundColor="purple200" padding="m">
           <Text variant="mono" color="blueGrayLight" textAlign="center">
-            {(123455.12345678).toLocaleString()} HNT Available
+            {t('send.available', {
+              amount: (123455.12345678).toLocaleString(),
+            })}
           </Text>
         </Box>
         <Box flex={3} backgroundColor="white" padding="l">
@@ -84,8 +90,8 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
                 type="address"
                 defaultValue={address}
                 onChange={handleAddressChange}
-                label="Recipient Address"
-                placeholder="Enter Address..."
+                label={t('send.address.label')}
+                placeholder={t('send.address.placeholder')}
                 extra={
                   isValidAddress ? (
                     <Box padding="s" position="absolute" right={0}>
@@ -106,21 +112,23 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
               <SendInput
                 type="amount"
                 onChange={handleAmountChange}
-                label="Amount (HNT)"
-                placeholder="0"
+                label={t('send.amount.label')}
+                placeholder={t('send.amount.placeholder')}
                 extra={
                   <TouchableOpacityBox onPress={() => triggerNavHaptic()}>
                     <Text fontSize={12} color="primaryMain">
-                      Send Max
+                      {t('send.sendMax')}
                     </Text>
                   </TouchableOpacityBox>
                 }
               />
             </Box>
             <Button
-              title="Send HNT"
+              onPress={submitTxn}
+              title={t('send.button')}
               variant="primary"
-              backgroundColor="primaryMain"
+              mode="contained"
+              disabled={false}
             />
           </Box>
         </Box>

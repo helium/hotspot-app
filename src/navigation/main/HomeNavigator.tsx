@@ -46,7 +46,7 @@ const HomeStackScreen = () => {
         options={{
           headerShown: false,
           cardOverlayEnabled: true,
-          // ...TransitionPresets.ModalPresentationIOS,
+          ...TransitionPresets.ModalPresentationIOS,
         }}
       />
       <HomeStack.Screen

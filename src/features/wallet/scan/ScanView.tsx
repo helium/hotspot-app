@@ -20,7 +20,7 @@ type Props = {
 }
 
 const ScanView = ({ fromSend = false }: Props) => {
-  const [scanned, setScanned] = useState<boolean>(false)
+  const [scanned, setScanned] = useState(false)
   const navigation = useNavigation()
 
   const { result: permissions } = useAsync(
@@ -93,14 +93,19 @@ const ScanView = ({ fromSend = false }: Props) => {
       </Box>
       <BottomSheet snapPoints={[300, 500]} initialSnapIndex={0}>
         <Box>
-          <Text color="black" fontSize={18} fontWeight="600" marginBottom="s">
+          <Text
+            variant="subtitleBold"
+            color="black"
+            fontSize={18}
+            marginBottom="s"
+          >
             Find a QR Code to scan
           </Text>
           <Box marginBottom="s">
             <Text
+              variant="subtitleBold"
               color="black"
               fontSize={16}
-              fontWeight="600"
               marginBottom="xxs"
             >
               Send HNT
@@ -109,15 +114,15 @@ const ScanView = ({ fromSend = false }: Props) => {
               HNT can be burned into Data Credits to pay for device network
               connectivity
             </Text>
-            <Text color="blueMain" fontWeight="600">
+            <Text variant="body2Bold" color="blueMain">
               Learn More
             </Text>
           </Box>
           <Box marginBottom="s">
             <Text
+              variant="subtitleBold"
               color="black"
               fontSize={16}
-              fontWeight="600"
               marginBottom="xxs"
             >
               Burn HNT to DC
@@ -126,15 +131,15 @@ const ScanView = ({ fromSend = false }: Props) => {
               HNT can be burned into Data Credits to pay for device network
               connectivity
             </Text>
-            <Text color="blueMain" fontWeight="600">
+            <Text variant="body2Bold" color="blueMain">
               Learn More
             </Text>
           </Box>
           <Box marginBottom="s">
             <Text
+              variant="subtitleBold"
               color="black"
               fontSize={16}
-              fontWeight="600"
               marginBottom="xxs"
             >
               View my QR code
@@ -143,7 +148,7 @@ const ScanView = ({ fromSend = false }: Props) => {
               HNT can be burned into Data Credits to pay for device network
               connectivity
             </Text>
-            <Text color="blueMain" fontWeight="600">
+            <Text variant="body2Bold" color="blueMain">
               Learn More
             </Text>
           </Box>

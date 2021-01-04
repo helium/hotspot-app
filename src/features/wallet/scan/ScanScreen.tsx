@@ -14,17 +14,15 @@ const ScanScreen = ({ route }: Props) => {
   const fromSend = route?.params?.fromSend || false
 
   return (
-    <>
-      <Box
-        backgroundColor="white"
-        flex={1}
-        justifyContent="flex-start"
-        alignContent="center"
-        flexDirection="column"
-      >
-        <ScanView fromSend={fromSend} />
-      </Box>
-    </>
+    <Box
+      backgroundColor="white"
+      flex={1}
+      justifyContent="flex-start"
+      alignContent="center"
+      flexDirection="column"
+    >
+      <ScanView fromSend={fromSend} />
+    </Box>
   )
 }
 
