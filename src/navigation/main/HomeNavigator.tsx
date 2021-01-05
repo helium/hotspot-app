@@ -10,7 +10,7 @@ import defaultScreenOptions from '../defaultScreenOptions'
 import HotspotSetup from '../../features/hotspots/setup/HotspotSetupNavigator'
 import MainTabs from './MainTabNavigator'
 import SendNavigator from '../../features/wallet/send/SendNavigator'
-import ScanScreen from '../../features/wallet/scan/ScanScreen'
+import ScanNavigator from '../../features/wallet/scan/ScanNavigator'
 
 const HomeStack = createStackNavigator()
 
@@ -42,7 +42,7 @@ const HomeStackScreen = () => {
       />
       <HomeStack.Screen
         name="Scan"
-        component={ScanScreen}
+        component={ScanNavigator}
         options={{
           headerShown: false,
           cardOverlayEnabled: true,

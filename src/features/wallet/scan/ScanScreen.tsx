@@ -1,18 +1,8 @@
-import { RouteProp } from '@react-navigation/native'
 import React from 'react'
 import Box from '../../../components/Box'
-import { ScanStackParamList } from './scanTypes'
 import ScanView from './ScanView'
 
-type Route = RouteProp<ScanStackParamList, 'Scan'>
-
-type Props = {
-  route?: Route
-}
-
-const ScanScreen = ({ route }: Props) => {
-  const fromSend = route?.params?.fromSend || false
-
+const ScanScreen = () => {
   return (
     <Box
       backgroundColor="white"
@@ -21,7 +11,7 @@ const ScanScreen = ({ route }: Props) => {
       alignContent="center"
       flexDirection="column"
     >
-      <ScanView fromSend={fromSend} />
+      <ScanView />
     </Box>
   )
 }

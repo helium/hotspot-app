@@ -23,7 +23,7 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
 
   const [address, setAddress] = useState<string>(scanResult?.address || '')
   const [amount, setAmount] = useState<string>('')
-  const [isValidAddress, setIsValidAddress] = useState<boolean>(false)
+  const [isValidAddress, setIsValidAddress] = useState(false)
   // const [isLocked, setIsLocked] = useState<boolean>(scanResult)
 
   useEffect(() => {

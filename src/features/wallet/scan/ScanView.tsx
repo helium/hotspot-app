@@ -4,7 +4,6 @@ import { useAsync } from 'react-async-hook'
 import { StyleSheet } from 'react-native'
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner'
 import BottomSheet from 'react-native-holy-sheet'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Address } from '@helium/crypto-react-native'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -13,13 +12,8 @@ import { wp } from '../../../utils/layout'
 import Close from '../../../assets/images/close.svg'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { triggerNavHaptic, triggerNotification } from '../../../utils/haptic'
-import sleep from '../../../utils/sleep'
 
-type Props = {
-  fromSend: boolean
-}
-
-const ScanView = ({ fromSend = false }: Props) => {
+const ScanView = () => {
   const [scanned, setScanned] = useState(false)
   const navigation = useNavigation()
 
@@ -52,15 +46,7 @@ const ScanView = ({ fromSend = false }: Props) => {
     setScanned(true)
     triggerNotification('success')
 
-    if (fromSend) {
-      navigation.navigate('Send', { scanResult })
-    } else {
-      navigation.navigate('Wallet')
-      await sleep(200)
-      // TODO this doesn't work here to pass the params
-      // might need to use redux or restructure the nav stack
-      navigation.navigate('Send', { scanResult })
-    }
+    navigation.navigate('Send', { scanResult })
   }
 
   if (!permissions) {
@@ -70,7 +56,7 @@ const ScanView = ({ fromSend = false }: Props) => {
   if (!permissions.granted) {
     return (
       <Box flex={1} backgroundColor="black">
-        <CloseButton safeOffset={!fromSend} onPress={navBack} />
+        <CloseButton onPress={navBack} />
         <Box flex={1} justifyContent="center" alignItems="center">
           <Text color="white" textAlign="center">
             No access to camera
@@ -87,7 +73,7 @@ const ScanView = ({ fromSend = false }: Props) => {
         barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
         style={StyleSheet.absoluteFillObject}
       />
-      <CloseButton safeOffset={!fromSend} onPress={navBack} />
+      <CloseButton onPress={navBack} />
       <Box flex={0.7} justifyContent="center" alignItems="center">
         <Crosshair width={wp(65)} height={wp(65)} color="white" />
       </Box>
@@ -158,15 +144,7 @@ const ScanView = ({ fromSend = false }: Props) => {
   )
 }
 
-const CloseButton = ({
-  safeOffset = false,
-  onPress,
-}: {
-  safeOffset: boolean
-  onPress?: () => void
-}) => {
-  const insets = useSafeAreaInsets()
-
+const CloseButton = ({ onPress }: { onPress?: () => void }) => {
   return (
     <TouchableOpacityBox
       onPress={onPress}
@@ -174,7 +152,7 @@ const CloseButton = ({
       height={50}
       position="absolute"
       right={30}
-      top={safeOffset ? insets.top + 30 : 30}
+      top={30}
       justifyContent="center"
       alignItems="center"
       zIndex={1}
