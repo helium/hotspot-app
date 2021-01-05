@@ -7,11 +7,12 @@ import Animated, {
   Extrapolate,
   useAnimatedStyle,
 } from 'react-native-reanimated'
+import { useNavigation } from '@react-navigation/native'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import BarChart from '../../../components/BarChart'
 import Search from '../../../assets/images/search.svg'
-import Add from '../../../assets/images/add.svg'
+import Qr from '../../../assets/images/qr.svg'
 import BalanceCard from './BalanceCard'
 import ActivityCard from './ActivityCard'
 import {
@@ -19,7 +20,7 @@ import {
   WalletAnimationPoints,
   WalletLayout,
 } from './walletLayout'
-import { triggerNotification } from '../../../utils/haptic'
+import { triggerNavHaptic } from '../../../utils/haptic'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 
 type Props = {
@@ -32,12 +33,24 @@ const WalletView = ({ layout, animationPoints }: Props) => {
 
   const { t } = useTranslation()
 
+  const navigation = useNavigation()
+
   const handlePress = () => {
-    triggerNotification()
+    triggerNavHaptic()
+  }
+
+  const navScan = () => {
+    triggerNavHaptic()
+    navigation.navigate('Scan')
   }
 
   type ActivityCardHandle = ElementRef<typeof ActivityCard>
   const card = useRef<ActivityCardHandle>(null)
+
+  const handleSendPress = () => {
+    triggerNavHaptic()
+    navigation.navigate('Send')
+  }
 
   const snapProgress = useSharedValue(dragMid / dragMax)
 
@@ -62,7 +75,7 @@ const WalletView = ({ layout, animationPoints }: Props) => {
 
   const animateActivityToBottom = () => {
     card.current?.snapTo(0)
-    triggerNotification()
+    triggerNavHaptic()
   }
 
   return (
@@ -84,8 +97,8 @@ const WalletView = ({ layout, animationPoints }: Props) => {
           <TouchableOpacityBox onPress={handlePress} padding="s">
             <Search width={22} height={22} />
           </TouchableOpacityBox>
-          <TouchableOpacityBox onPress={handlePress} padding="s">
-            <Add width={22} height={22} />
+          <TouchableOpacityBox onPress={navScan} padding="s">
+            <Qr width={22} height={22} color="white" />
           </TouchableOpacityBox>
         </Box>
       </Box>
@@ -95,7 +108,10 @@ const WalletView = ({ layout, animationPoints }: Props) => {
       </Box>
 
       <Animated.View style={[{ flex: 1 }, animatedStyles]}>
-        <BalanceCard onReceivePress={animateActivityToBottom} />
+        <BalanceCard
+          onReceivePress={animateActivityToBottom}
+          onSendPress={handleSendPress}
+        />
       </Animated.View>
 
       <ActivityCard

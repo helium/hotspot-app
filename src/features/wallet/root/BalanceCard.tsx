@@ -8,18 +8,14 @@ import CurrencyBadge from './CurrencyBadge'
 import WalletButton from './WalletButton'
 import { getAddress } from '../../../utils/secureAccount'
 import { hp, wp } from '../../../utils/layout'
-import { triggerNotification } from '../../../utils/haptic'
 
 type Props = {
   onReceivePress: () => void
+  onSendPress: () => void
 }
 
-const BalanceCard = ({ onReceivePress }: Props) => {
+const BalanceCard = ({ onReceivePress, onSendPress }: Props) => {
   const { result: address, loading: loadingAddress } = useAsync(getAddress, [])
-
-  const handlePress = () => {
-    triggerNotification()
-  }
 
   return (
     <Box
@@ -61,7 +57,7 @@ const BalanceCard = ({ onReceivePress }: Props) => {
             width={wp(30)}
           >
             <WalletButton variant="receive" onPress={onReceivePress} />
-            <WalletButton variant="send" onPress={handlePress} />
+            <WalletButton variant="send" onPress={onSendPress} />
           </Box>
         </AnimatedBox>
 

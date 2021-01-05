@@ -5040,6 +5040,13 @@ expo-asset@~8.2.0:
     path-browserify "^1.0.0"
     url-parse "^1.4.4"
 
+expo-barcode-scanner@^9.1.0:
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/expo-barcode-scanner/-/expo-barcode-scanner-9.1.0.tgz#c699c2ef99478b0ea484a1ccc1f60562f60a3663"
+  integrity sha512-gf2MGw9Hs8cH0Xz+JdPSHg9mHxR46acENg3eh1dMsXbJyGCbmLIzvlQhBW7f2Cuqcx7Q30kGF91wzaK+VVUEoQ==
+  dependencies:
+    lodash "^4.6.0"
+
 expo-blur@^8.2.2:
   version "8.2.2"
   resolved "https://registry.yarnpkg.com/expo-blur/-/expo-blur-8.2.2.tgz#a7643d893afb7aed5512b25d5df22ee6083832c1"
@@ -7233,7 +7240,7 @@ lodash.throttle@^4.1.1:
   resolved "https://registry.yarnpkg.com/lodash.throttle/-/lodash.throttle-4.1.1.tgz#c23e91b710242ac70c37f1e1cda9274cc39bf2f4"
   integrity sha1-wj6RtxAkKscMN/HhzaknTMOb8vQ=
 
-lodash@^4.17.10, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.4, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.1:
+lodash@^4.17.10, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.4, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.0, lodash@^4.6.1:
   version "4.17.20"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
   integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==

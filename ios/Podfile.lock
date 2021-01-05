@@ -4,6 +4,12 @@ PODS:
   - CocoaAsyncSocket (7.6.5)
   - CocoaLibEvent (1.0.0)
   - DoubleConversion (1.1.6)
+  - EXBarCodeScanner (9.1.0):
+    - UMCore
+    - UMImageLoaderInterface
+    - UMPermissionsInterface
+    - ZXingObjC/OneD
+    - ZXingObjC/PDF417
   - EXBlur (8.2.2):
     - UMCore
   - EXConstants (9.2.0):
@@ -374,7 +380,7 @@ PODS:
     - React-Core
   - RNLocalize (1.4.3):
     - React-Core
-  - RNReanimated (2.0.0-alpha.9.2):
+  - RNReanimated (2.0.0-rc.1):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -427,9 +433,15 @@ PODS:
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
+  - ZXingObjC/Core (3.6.5)
+  - ZXingObjC/OneD (3.6.5):
+    - ZXingObjC/Core
+  - ZXingObjC/PDF417 (3.6.5):
+    - ZXingObjC/Core
 
 DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
+  - EXBarCodeScanner (from `../node_modules/expo-barcode-scanner/ios`)
   - EXBlur (from `../node_modules/expo-blur/ios`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
   - EXFileSystem (from `../node_modules/expo-file-system/ios`)
@@ -537,10 +549,13 @@ SPEC REPOS:
     - OneSignal
     - OpenSSL-Universal
     - YogaKit
+    - ZXingObjC
 
 EXTERNAL SOURCES:
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
+  EXBarCodeScanner:
+    :path: "../node_modules/expo-barcode-scanner/ios"
   EXBlur:
     :path: "../node_modules/expo-blur/ios"
   EXConstants:
@@ -678,6 +693,7 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   DoubleConversion: cde416483dac037923206447da6e1454df403714
+  EXBarCodeScanner: aa1eda7595b8258471ff733acdb18f62cfd85813
   EXBlur: 569d38c2b0b7b000866d928bc36acadfdc02ea8e
   EXConstants: f486f6b4a36b86e47ab258d4d2b7b2699786fdce
   EXFileSystem: afe9b1fd937d30270bf5108ba44e2f4a1d1ad694
@@ -696,8 +712,8 @@ SPEC CHECKSUMS:
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: 64e7431a55835eb953b0bf984ef3b90ae9fdddd7
   FlipperKit: ab353d41aea8aae2ea6daaf813e67496642f3d7d
-  Folly: b73c3869541e86821df3c387eb0af5f65addfab4
-  glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
+  Folly: aeb27d02cdff07ca01f8a8a5a6dd5bcaf6be6f70
+  glog: 2ad46e202fbaa5641fceb4b2af37dcd88fd8762d
   lottie-ios: 48fac6be217c76937e36e340e2d09cf7b10b7f5f
   lottie-react-native: 1fb4ce21d6ad37dab8343eaff8719df76035bd93
   Mapbox-iOS-SDK: a5915700ec84bc1a7f8b3e746d474789e35b7956
@@ -738,7 +754,7 @@ SPEC CHECKSUMS:
   RNDeviceInfo: 6ecb1d1c87d20e4c62354be0348de23362824dcd
   RNGestureHandler: 9b7e605a741412e20e13c512738a31bd1611759b
   RNLocalize: 7c7aeda16c01db7a0918981c14875c0a53be9b79
-  RNReanimated: 174b2c7890664aeb522640bd5b86b464f0abf0ca
+  RNReanimated: b2d6785c8fc1f61e1c81179c64c9b6b1a00e6ab5
   RNScreens: 45c457af3d2ee9e08fc01e70da87e653d46b1198
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   UMAppLoader: 5db5dc03176c6238da9c8b3657a370137882a4ad
@@ -756,6 +772,7 @@ SPEC CHECKSUMS:
   UMTaskManagerInterface: 6cad5929dbc0a5b986ad4d77caac497d4de730a7
   Yoga: 7d13633d129fd179e01b8953d38d47be90db185a
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
+  ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
 PODFILE CHECKSUM: cb0b1503fafdfd47c00196486ddb9af228e8c1da
 

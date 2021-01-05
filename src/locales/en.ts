@@ -393,6 +393,20 @@ export default {
   wallet: {
     title: 'My Wallet',
   },
+  send: {
+    title: 'Send HNT',
+    available: '{{ amount }} HNT Available',
+    address: {
+      label: 'Recipient Address',
+      placeholder: 'Enter Address...',
+    },
+    amount: {
+      label: 'Amount (HNT)',
+      placeholder: '0',
+    },
+    sendMax: 'Send Max',
+    button: 'Send HNT',
+  },
   more: {
     sections: {
       security: {
