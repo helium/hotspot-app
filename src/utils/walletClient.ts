@@ -4,7 +4,6 @@ import { getWalletApiToken } from './secureAccount'
 const makeRequest = async (url: string, opts: RequestInit) => {
   try {
     const token = await getWalletApiToken()
-    console.log({ token })
     if (!token) {
       console.log('no token')
       throw new Error('no token')

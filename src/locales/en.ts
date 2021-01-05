@@ -500,4 +500,11 @@ export default {
         'Here you’ll get news, updates and alerts about your Hotspots and The People’s Network.',
     },
   },
+  transactions: {
+    mining: 'Mining Rewards',
+    sent: 'Sent HNT',
+    received: 'Received HNT',
+    added: 'Hotspot Added to Blockchain',
+    location: 'Location Confirmed',
+  },
 }

@@ -1,5 +1,11 @@
 import { Address } from '@helium/crypto-react-native'
-import { PaymentV2, AddGatewayV1, Transaction } from '@helium/transactions'
+import { PendingTransaction, AnyTransaction } from '@helium/http'
+import {
+  PaymentV2,
+  AddGatewayV1,
+  Transaction,
+  PaymentV1,
+} from '@helium/transactions'
 import { getKeypair } from './secureAccount'
 
 const emptyB58Address = () =>
@@ -59,4 +65,19 @@ export const makeAddGatewayTxn = async (partialTxnBin: string) => {
 
   const serialized = signedTxn.serialize()
   return Buffer.from(serialized).toString('base64')
+}
+
+export const getPayer = (txn: AnyTransaction | PendingTransaction) => {
+  if (txn instanceof PaymentV2) return (txn as PaymentV2).payer?.b58
+  if (txn instanceof PaymentV1) return (txn as PaymentV1).payer?.b58
+  return (txn as PendingTransaction).txn?.payer?.b58
+}
+
+export const isPayer = (address: string | null = null, txn: AnyTransaction) => {
+  if (!address) return false
+
+  const payer = getPayer(txn)
+  if (!payer) return false
+
+  return payer === address
 }

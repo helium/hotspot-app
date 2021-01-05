@@ -37,7 +37,7 @@ export type AccountState = {
   mainDataStatus: 'idle' | 'pending' | 'fulfilled' | 'rejected'
   markNotificationStatus: 'idle' | 'pending' | 'fulfilled' | 'rejected'
   pendingTransactions: PendingTransaction[]
-  accountActivity: AnyTransaction[]
+  transactions: AnyTransaction[]
 }
 
 const initialState: AccountState = {
@@ -46,7 +46,7 @@ const initialState: AccountState = {
   mainDataStatus: 'idle',
   markNotificationStatus: 'idle',
   pendingTransactions: [],
-  accountActivity: [],
+  transactions: [],
 }
 
 type AccountData = {
@@ -126,15 +126,16 @@ const accountSlice = createSlice({
     builder.addCase(
       fetchPendingTransactions.fulfilled,
       (state, { payload }) => {
+        const filtered = payload.filter((txn) => txn.status === 'pending')
         state.pendingTransactions = unionBy(
-          payload,
+          filtered,
           state.pendingTransactions,
           'hash',
         )
       },
     )
     builder.addCase(fetchAccountActivity.fulfilled, (state, { payload }) => {
-      state.accountActivity = payload
+      state.transactions = payload
     })
     builder.addCase(markNotificationsViewed.pending, (state, _action) => {
       state.markNotificationStatus = 'pending'
