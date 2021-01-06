@@ -52,7 +52,7 @@ const ActivityCardHeader = ({ filter, onFilterChanged }: Props) => {
         </Text>
         <TouchableOpacityBox
           flexDirection="row"
-          marginHorizontal="xs"
+          paddingHorizontal="xs"
           onPress={onOpenActionSheet}
         >
           <Text color="purpleMain" variant="h4">

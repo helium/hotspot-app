@@ -4,6 +4,7 @@ import {
   Hotspot,
   PendingTransaction,
   AnyTransaction,
+  ResourceList,
 } from '@helium/http'
 import { unionBy } from 'lodash'
 import {
@@ -13,6 +14,7 @@ import {
   getAccountActivityList,
 } from '../../utils/appDataClient'
 import { getWallet, postWallet } from '../../utils/walletClient'
+import { FilterType } from '../../features/wallet/root/walletTypes'
 
 export type Notification = {
   account_address: string
@@ -30,14 +32,24 @@ export type Notification = {
   viewed_at?: string | null
 }
 
+type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
+
 export type AccountState = {
   hotspots: Hotspot[]
   notifications: Notification[]
   account?: Account
-  mainDataStatus: 'idle' | 'pending' | 'fulfilled' | 'rejected'
-  markNotificationStatus: 'idle' | 'pending' | 'fulfilled' | 'rejected'
-  pendingTransactions: PendingTransaction[]
-  transactions: AnyTransaction[]
+  mainDataStatus: Loading
+  markNotificationStatus: Loading
+  txnStatus: Loading
+
+  // TODO: Is there a dynamic way to create this?
+  txns: {
+    all: AnyTransaction[]
+    hotspot: AnyTransaction[]
+    mining: AnyTransaction[]
+    payment: AnyTransaction[]
+    pending: PendingTransaction[]
+  }
 }
 
 const initialState: AccountState = {
@@ -45,8 +57,8 @@ const initialState: AccountState = {
   notifications: [],
   mainDataStatus: 'idle',
   markNotificationStatus: 'idle',
-  pendingTransactions: [],
-  transactions: [],
+  txnStatus: 'idle',
+  txns: { all: [], hotspot: [], mining: [], payment: [], pending: [] },
 }
 
 type AccountData = {
@@ -54,6 +66,12 @@ type AccountData = {
   account?: Account
   notifications: Notification[]
 }
+
+// TODO: Make getAccountActivityList accept 'pending', then make this dynamic
+const txnFetchers = {} as Record<
+  FilterType,
+  ResourceList<AnyTransaction | PendingTransaction>
+>
 
 export const fetchData = createAsyncThunk<AccountData>(
   'account/fetchData',
@@ -85,15 +103,29 @@ export const markNotificationsViewed = createAsyncThunk<Notification[]>(
   },
 )
 
-export const fetchPendingTransactions = createAsyncThunk(
-  'account/fetchPendingTransactions',
-  async () => getPendingTxnList(),
-)
+export const fetchTxns = createAsyncThunk<
+  AnyTransaction[] | PendingTransaction[],
+  FilterType
+>('account/fetchAccountActivity', async (filterType) => {
+  const isPending = filterType === 'pending'
+  let list = txnFetchers[filterType]
+  if (!list) {
+    if (isPending) {
+      const pendingList = await getPendingTxnList()
+      if (pendingList) {
+        list = pendingList
+      }
+    } else {
+      list = await getAccountActivityList(filterType)
+    }
+  }
+  txnFetchers[filterType] = list
 
-export const fetchAccountActivity = createAsyncThunk<AnyTransaction[]>(
-  'account/fetchAccountActivity',
-  async () => getAccountActivityList(),
-)
+  if (isPending) {
+    return list.takeJSON(1000)
+  }
+  return list.takeJSON(10)
+})
 
 // This slice contains data related to the user account
 const accountSlice = createSlice({
@@ -104,7 +136,7 @@ const accountSlice = createSlice({
       state,
       action: PayloadAction<PendingTransaction>,
     ) => {
-      state.pendingTransactions.push(action.payload)
+      state.txns.pending.push(action.payload)
     },
   },
   extraReducers: (builder) => {
@@ -123,20 +155,29 @@ const accountSlice = createSlice({
       state.mainDataStatus = 'rejected'
       state.markNotificationStatus = 'rejected'
     })
+    builder.addCase(fetchTxns.pending, (state, _action) => {
+      state.txnStatus = 'pending'
+    })
+    builder.addCase(fetchTxns.rejected, (state, _action) => {
+      state.txnStatus = 'rejected'
+    })
     builder.addCase(
-      fetchPendingTransactions.fulfilled,
-      (state, { payload }) => {
-        const filtered = payload.filter((txn) => txn.status === 'pending')
-        state.pendingTransactions = unionBy(
-          filtered,
-          state.pendingTransactions,
-          'hash',
-        )
+      fetchTxns.fulfilled,
+      (state, { payload, meta: { arg } }) => {
+        state.txnStatus = 'fulfilled'
+        if (arg === 'pending') {
+          const pending = payload as PendingTransaction[]
+          const filtered = pending.filter((txn) => txn.status === 'pending')
+          const joined = unionBy(filtered, state.txns.pending, 'hash')
+          state.txns.pending = joined
+        } else {
+          state.txns[arg] = [
+            ...state.txns[arg],
+            ...(payload as AnyTransaction[]),
+          ]
+        }
       },
     )
-    builder.addCase(fetchAccountActivity.fulfilled, (state, { payload }) => {
-      state.transactions = payload
-    })
     builder.addCase(markNotificationsViewed.pending, (state, _action) => {
       state.markNotificationStatus = 'pending'
     })

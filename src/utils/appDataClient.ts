@@ -1,4 +1,5 @@
 import Client from '@helium/http'
+import { FilterType, Filters } from '../features/wallet/root/walletTypes'
 import { getSecureItem } from './secureAccount'
 
 const client = new Client()
@@ -42,16 +43,15 @@ export const getCurrentOraclePrice = async () => client.oracle.getCurrentPrice()
 
 export const getPendingTxnList = async () => {
   const address = await getSecureItem('address')
-  if (!address) return []
-  const list = await client.account(address).pendingTransactions.list()
-  return list.takeJSON(1000)
+  return client.account(address || '').pendingTransactions.list()
 }
 
-export const getAccountActivityList = async () => {
+export const getAccountActivityList = async (filterType: FilterType) => {
+  console.log({ filterType })
   const address = await getSecureItem('address')
-  if (!address) return []
-  const list = await client.account(address).activity.list()
-  return list.takeJSON(1000)
+
+  const params = { filterTypes: Filters[filterType] }
+  return client.account(address || '').activity.list(params)
 }
 
 export default client

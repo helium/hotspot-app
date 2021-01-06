@@ -6,13 +6,14 @@ import React, {
   Ref,
   useEffect,
   useState,
+  useCallback,
 } from 'react'
 import BottomSheet from 'react-native-holy-sheet'
 import Animated from 'react-native-reanimated'
 import { useSelector } from 'react-redux'
 import { AnyTransaction, AddGatewayV1, PendingTransaction } from '@helium/http'
 import { useAsync } from 'react-async-hook'
-import { LayoutAnimation } from 'react-native'
+import { LayoutAnimation, RefreshControl } from 'react-native'
 import ActivityItem from './ActivityItem'
 import { WalletAnimationPoints } from './walletLayout'
 import ActivityCardHeader from './ActivityCardHeader'
@@ -20,6 +21,9 @@ import { RootState } from '../../../store/rootReducer'
 import { getSecureItem } from '../../../utils/secureAccount'
 import { isPendingTransaction } from '../../../utils/transactions'
 import { FilterType } from './walletTypes'
+import { fetchTxns } from '../../../store/account/accountSlice'
+import { useAppDispatch } from '../../../store/store'
+import { useColors } from '../../../theme/themeHooks'
 
 type Props = {
   animationPoints: WalletAnimationPoints
@@ -38,16 +42,35 @@ const ActivityCard = forwardRef(
     >([])
     const [filter, setFilter] = useState<FilterType>('all')
     const { result: address } = useAsync(getSecureItem, ['address'])
+    const { purpleMuted } = useColors()
 
+    const dispatch = useAppDispatch()
     const {
-      account: { transactions, pendingTransactions },
+      account: { txns, txnStatus },
     } = useSelector((state: RootState) => state)
 
+    const loadData = useCallback(() => {
+      dispatch(fetchTxns(filter))
+
+      if (!txns.pending) {
+        dispatch(fetchTxns('pending'))
+      }
+    }, [dispatch, filter, txns.pending])
+
     useEffect(() => {
-      const data = [...transactions, ...pendingTransactions]
+      loadData()
+    }, [filter, loadData])
+
+    useEffect(() => {
+      let data = []
+      if (filter === 'all') {
+        data = [...txns[filter], ...txns.pending]
+      } else {
+        data = txns[filter]
+      }
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
       setTransactionData(data)
-    }, [transactions, pendingTransactions])
+    }, [filter, txns])
 
     type BottomSheetHandle = ElementRef<typeof BottomSheet>
     const sheet = useRef<BottomSheetHandle>(null)
@@ -104,6 +127,15 @@ const ActivityCard = forwardRef(
             return `${(item as AddGatewayV1).time}.${item.type}`
           },
           renderItem,
+          refreshControl: (
+            <RefreshControl
+              refreshing={txnStatus === 'pending'}
+              onRefresh={loadData}
+              tintColor={purpleMuted}
+            />
+          ),
+
+          onEndReached: loadData,
         }}
       />
     )
