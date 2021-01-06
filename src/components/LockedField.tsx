@@ -1,7 +1,7 @@
 import React from 'react'
-import Box from '../../../components/Box'
-import Text from '../../../components/Text'
-import InputLock from '../../../assets/images/input-lock.svg'
+import Box from './Box'
+import Text from './Text'
+import InputLock from '../assets/images/input-lock.svg'
 
 type Props = {
   label: string
@@ -9,7 +9,7 @@ type Props = {
   bottom?: boolean
 }
 
-const SendLockedField = ({ label, value, bottom = false }: Props) => {
+const LockedField = ({ label, value, bottom = false }: Props) => {
   return (
     <Box
       backgroundColor="offwhite"
@@ -31,4 +31,4 @@ const SendLockedField = ({ label, value, bottom = false }: Props) => {
   )
 }
 
-export default SendLockedField
+export default LockedField

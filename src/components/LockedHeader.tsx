@@ -1,9 +1,9 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import Box from '../../../components/Box'
-import Close from '../../../assets/images/close.svg'
-import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import Text from '../../../components/Text'
+import Box from './Box'
+import Close from '../assets/images/close.svg'
+import TouchableOpacityBox from './TouchableOpacityBox'
+import Text from './Text'
 
 type Props = {
   onClosePress: () => void

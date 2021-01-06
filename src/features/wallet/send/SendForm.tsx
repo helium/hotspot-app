@@ -2,7 +2,7 @@ import React from 'react'
 import { ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Address } from '@helium/crypto-react-native'
-import SendInput from './SendInput'
+import InputField from '../../../components/InputField'
 import Button from '../../../components/Button'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Box from '../../../components/Box'
@@ -10,8 +10,8 @@ import Text from '../../../components/Text'
 import QrCode from '../../../assets/images/qr.svg'
 import Check from '../../../assets/images/check.svg'
 import { useColors } from '../../../theme/themeHooks'
-import SendLockedHeader from './SendLockedHeader'
-import SendLockedField from './SendLockedField'
+import LockedHeader from '../../../components/LockedHeader'
+import LockedField from '../../../components/LockedField'
 import { SendType } from './sendTypes'
 
 type Props = {
@@ -54,26 +54,25 @@ const SendForm = ({
 
   const renderLockedPaymentForm = () => (
     <Box>
-      <SendLockedHeader onClosePress={onUnlock} />
-      <SendLockedField label={t('send.address.label')} value={address} />
-      <SendLockedField label={t('send.amount.label')} value={amount} bottom />
+      <LockedHeader onClosePress={onUnlock} />
+      <LockedField label={t('send.address.label')} value={address} />
+      <LockedField label={t('send.amount.label')} value={amount} bottom />
     </Box>
   )
 
   const renderLockedBurnForm = () => (
     <Box>
-      <SendLockedHeader onClosePress={onUnlock} />
-      <SendLockedField label={t('send.address.label')} value={address} />
-      <SendLockedField label={t('send.amount.label')} value={amount} />
-      <SendLockedField label={t('send.dcAmount.label')} value={dcAmount} />
-      <SendLockedField label={t('send.memo.label')} value={memo} bottom />
+      <LockedHeader onClosePress={onUnlock} />
+      <LockedField label={t('send.address.label')} value={address} />
+      <LockedField label={t('send.amount.label')} value={amount} />
+      <LockedField label={t('send.dcAmount.label')} value={dcAmount} />
+      <LockedField label={t('send.memo.label')} value={memo} bottom />
     </Box>
   )
 
   const renderPaymentForm = () => (
     <Box>
-      <SendInput
-        type="address"
+      <InputField
         defaultValue={address}
         onChange={onAddressChange}
         label={t('send.address.label')}
@@ -95,8 +94,8 @@ const SendForm = ({
           )
         }
       />
-      <SendInput
-        type="amount"
+      <InputField
+        type="numeric"
         defaultValue={amount}
         onChange={onAmountChange}
         label={t('send.amount.label')}
@@ -114,8 +113,7 @@ const SendForm = ({
 
   const renderBurnForm = () => (
     <Box>
-      <SendInput
-        type="address"
+      <InputField
         defaultValue={address}
         onChange={onAddressChange}
         label={t('send.address.label')}
@@ -137,22 +135,21 @@ const SendForm = ({
           )
         }
       />
-      <SendInput
-        type="amount"
+      <InputField
+        type="numeric"
         defaultValue={amount}
         onChange={onAmountChange}
         label={t('send.amount.label')}
         placeholder={t('send.amount.placeholder')}
       />
-      <SendInput
-        type="amount"
+      <InputField
+        type="numeric"
         defaultValue={dcAmount}
         onChange={onDcAmountChange}
         label={t('send.dcAmount.label')}
         placeholder={t('send.dcAmount.placeholder')}
       />
-      <SendInput
-        type="amount"
+      <InputField
         defaultValue={memo}
         onChange={onMemoChange}
         label={t('send.memo.label')}
