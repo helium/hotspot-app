@@ -13,9 +13,6 @@ const SendLockedField = ({ label, value, bottom = false }: Props) => {
   return (
     <Box
       backgroundColor="offwhite"
-      // flexDirection="row"
-      // justifyContent="space-between"
-      // alignItems="center"
       padding="m"
       marginBottom="xs"
       borderBottomLeftRadius={bottom ? 'm' : 'none'}
