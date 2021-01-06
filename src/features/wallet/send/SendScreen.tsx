@@ -1,10 +1,16 @@
+import { RouteProp } from '@react-navigation/native'
 import React from 'react'
 import Box from '../../../components/Box'
+import { SendStackParamList } from './sendTypes'
 import SendView from './SendView'
 
-const SendScreen = ({ route }) => {
-  // TODO I might end up restructuring this concept or using redux
-  // so not bothering with the types rn
+type Route = RouteProp<SendStackParamList, 'Send'>
+
+type Props = {
+  route?: Route
+}
+
+const SendScreen = ({ route }: Props) => {
   const scanResult = route?.params?.scanResult
 
   return (

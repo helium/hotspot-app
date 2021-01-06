@@ -394,7 +394,10 @@ export default {
     title: 'My Wallet',
   },
   send: {
-    title: 'Send HNT',
+    title: {
+      payment: 'Send HNT',
+      dcBurn: 'Burn HNT',
+    },
     available: '{{ amount }} HNT Available',
     address: {
       label: 'Recipient Address',
@@ -404,8 +407,20 @@ export default {
       label: 'Amount (HNT)',
       placeholder: '0',
     },
+    dcAmount: {
+      label: 'Equivalent To (DC)',
+      placeholder: '0',
+    },
+    memo: {
+      label: 'Memo',
+      placeholder: 'Enter Memo... (optional)',
+    },
     sendMax: 'Send Max',
-    button: 'Send HNT',
+    button: {
+      payment: 'Send HNT',
+      dcBurn: 'Burn HNT',
+    },
+    qrInfo: 'QR INFO',
   },
   more: {
     sections: {

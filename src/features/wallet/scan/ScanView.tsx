@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useAsync } from 'react-async-hook'
 import { StyleSheet } from 'react-native'
@@ -12,10 +12,19 @@ import { wp } from '../../../utils/layout'
 import Close from '../../../assets/images/close.svg'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { triggerNavHaptic, triggerNotification } from '../../../utils/haptic'
+import { QrScanResult } from './scanTypes'
 
 const ScanView = () => {
   const [scanned, setScanned] = useState(false)
   const navigation = useNavigation()
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setScanned(false)
+    })
+
+    return unsubscribe
+  }, [navigation])
 
   const { result: permissions } = useAsync(
     BarCodeScanner.requestPermissionsAsync,
@@ -30,23 +39,47 @@ const ScanView = () => {
   const handleBarCodeScanned = async ({ data }: BarCodeScannerResult) => {
     if (scanned) return
 
-    // TODO validate other types of qr codes
-    if (!Address.isValid(data)) {
+    try {
+      const scanResult = parseBarCodeData(data)
+
       setScanned(true)
-      setTimeout(() => setScanned(false), 1000)
-      triggerNotification('error')
-      return
+      triggerNotification('success')
+
+      navigation.navigate('Send', { scanResult })
+    } catch (error) {
+      handleFailedScan()
+    }
+  }
+
+  const parseBarCodeData = (data: string): QrScanResult => {
+    if (Address.isValid(data)) {
+      return {
+        type: 'payment',
+        address: data,
+      }
     }
 
-    const scanResult = {
-      type: 'payment',
-      address: data,
-    }
+    try {
+      const scanResult: QrScanResult = JSON.parse(data)
 
+      if (
+        !['payment', 'dc_burn'].includes(scanResult.type) ||
+        !scanResult.address ||
+        !Address.isValid(scanResult.address)
+      ) {
+        throw new Error('Invalid transaction encoding')
+      }
+
+      return scanResult
+    } catch (error) {
+      throw new Error('Invalid transaction encoding')
+    }
+  }
+
+  const handleFailedScan = () => {
     setScanned(true)
-    triggerNotification('success')
-
-    navigation.navigate('Send', { scanResult })
+    setTimeout(() => setScanned(false), 1000)
+    triggerNotification('error')
   }
 
   if (!permissions) {

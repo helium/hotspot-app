@@ -1,8 +1,8 @@
 import React, { useRef } from 'react'
 import { TouchableWithoutFeedback, TextInput } from 'react-native'
-import Box from '../../../components/Box'
-import Text from '../../../components/Text'
-import InputLock from '../../../assets/images/input-lock.svg'
+import Box from './Box'
+import Text from './Text'
+import InputLock from '../assets/images/input-lock.svg'
 
 // TODO want to use this but need to forward refs
 // import TextInput from '../../../components/TextInput'
@@ -11,17 +11,17 @@ type Props = {
   label: string
   placeholder?: string
   extra?: any
-  type?: 'address' | 'amount'
+  type?: 'default' | 'numeric'
   onChange: (text: string) => void
   locked?: boolean
   defaultValue?: string
 }
 
-const SendInput = ({
+const InputField = ({
   label,
   placeholder,
   extra,
-  type = 'address',
+  type = 'default',
   onChange,
   locked = false,
   defaultValue,
@@ -60,13 +60,15 @@ const SendInput = ({
             defaultValue={defaultValue}
             editable={!locked}
             multiline
+            blurOnSubmit
             autoCompleteType="off"
             autoCapitalize="none"
             autoCorrect={false}
             dataDetectorTypes="none"
             keyboardAppearance="dark"
-            keyboardType={type === 'amount' ? 'numeric' : 'default'}
+            keyboardType={type}
             style={{ fontFamily: 'InputMono-Regular', fontSize: 15 }}
+            returnKeyType="done"
           />
         </Box>
       </Box>
@@ -74,4 +76,4 @@ const SendInput = ({
   )
 }
 
-export default SendInput
+export default InputField
