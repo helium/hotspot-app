@@ -12,7 +12,6 @@ import {
 import OneSignal from 'react-native-onesignal'
 import Config from 'react-native-config'
 import { useSelector } from 'react-redux'
-import { getUnixTime } from 'date-fns'
 import MapboxGL from '@react-native-mapbox-gl/maps'
 import { theme } from './theme/theme'
 import NavigationRoot from './navigation/NavigationRoot'
@@ -41,30 +40,37 @@ const App = () => {
       isRestored,
       isBackedUp,
       isRequestingPermission,
+      isLocked,
+      appStateStatus,
     },
   } = useSelector((state: RootState) => state)
+
+  useEffect(() => {
+    if (appStateStatus === 'background' && !isLocked) {
+      dispatch(appSlice.actions.updateLastIdle())
+      return
+    }
+
+    const isActive = appStateStatus === 'active'
+    const now = Date.now()
+    const expiration = now - authInterval
+    const lastIdleExpired = lastIdle && expiration > lastIdle
+
+    // pin is required and last idle is past user interval, lock the screen
+    const shouldLock =
+      isActive && isPinRequired && !isRequestingPermission && lastIdleExpired
+
+    if (shouldLock) {
+      dispatch(appSlice.actions.lock(true))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appStateStatus])
 
   const handleChange = useCallback(
     (newState: AppStateStatus) => {
       dispatch(appSlice.actions.updateAppStateStatus(newState))
-
-      if (newState === 'background') {
-        dispatch(appSlice.actions.updateLastIdle())
-        return
-      }
-
-      if (
-        // pin is required and last idle is past user interval, lock the screen
-        newState === 'active' &&
-        isPinRequired &&
-        !isRequestingPermission &&
-        lastIdle &&
-        lastIdle < getUnixTime(Date.now()) - authInterval
-      ) {
-        dispatch(appSlice.actions.lock(true))
-      }
     },
-    [dispatch, isPinRequired, lastIdle, authInterval, isRequestingPermission],
+    [dispatch],
   )
 
   useEffect(() => {

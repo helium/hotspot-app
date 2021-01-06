@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import getUnixTime from 'date-fns/getUnixTime'
 import { AppStateStatus } from 'react-native'
 import {
   getSecureItem,
@@ -120,7 +119,7 @@ const appSlice = createSlice({
       state.isPinRequiredForPayment = false
     },
     updateLastIdle: (state) => {
-      state.lastIdle = getUnixTime(Date.now())
+      state.lastIdle = Date.now()
     },
     lock: (state, action: PayloadAction<boolean>) => {
       state.isLocked = action.payload
