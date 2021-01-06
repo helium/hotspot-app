@@ -1,13 +1,13 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import RNPickerSelect from 'react-native-picker-select'
-import { Platform } from 'react-native'
+import { useActionSheet } from '@expo/react-native-action-sheet'
 import CardHandle from './CardHandle'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import CarotDown from '../../../assets/images/carot-down.svg'
-import { useColors, useTextVariants } from '../../../theme/themeHooks'
 import { FilterKeys, FilterType } from './walletTypes'
+import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import { Font } from '../../../theme/theme'
 
 type Props = {
   filter: FilterType
@@ -15,15 +15,31 @@ type Props = {
 }
 
 const ActivityCardHeader = ({ filter, onFilterChanged }: Props) => {
+  const { showActionSheetWithOptions } = useActionSheet()
   const { t } = useTranslation()
-  const { h4 } = useTextVariants()
-  const { purpleMain } = useColors()
   const filters = t('transactions.filter', { returnObjects: true }) as Record<
     string,
     string
   >
 
-  const inputStyle = { ...h4, color: purpleMain, paddingRight: 12 }
+  const onOpenActionSheet = () => {
+    const options = [...FilterKeys.map((k) => filters[k]), t('generic.cancel')]
+    const cancelButtonIndex = FilterKeys.length
+
+    showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex,
+        useModal: true,
+      },
+      (buttonIndex) => {
+        const key = FilterKeys[buttonIndex]
+        if (!key) return
+
+        onFilterChanged(key)
+      },
+    )
+  }
 
   return (
     <Box padding="m">
@@ -31,28 +47,21 @@ const ActivityCardHeader = ({ filter, onFilterChanged }: Props) => {
         <CardHandle />
       </Box>
       <Box flexDirection="row" alignItems="center">
-        <Text color="grayDark" fontSize={20} fontWeight="600">
+        <Text color="grayDark" variant="h4" fontFamily={Font.main.medium}>
           {t('transactions.view')}
         </Text>
-        <RNPickerSelect
-          placeholder={{}}
-          onValueChange={onFilterChanged}
-          useNativeAndroidPickerStyle={false}
-          items={FilterKeys.map((option) => ({
-            label: filters[option],
-            value: option,
-            displayValue: true,
-          }))}
-          style={{
-            inputIOS: inputStyle,
-            inputAndroid: inputStyle,
-            iconContainer: {
-              top: Platform.OS === 'ios' ? 12 : 26,
-            },
-          }}
-          value={filter}
-          Icon={() => <CarotDown />}
-        />
+        <TouchableOpacityBox
+          flexDirection="row"
+          marginHorizontal="xs"
+          onPress={onOpenActionSheet}
+        >
+          <Text color="purpleMain" variant="h4">
+            {filters[filter]}
+          </Text>
+          <Box padding="xs" paddingTop="ms">
+            <CarotDown />
+          </Box>
+        </TouchableOpacityBox>
       </Box>
     </Box>
   )

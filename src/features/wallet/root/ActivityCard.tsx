@@ -77,6 +77,11 @@ const ActivityCard = forwardRef(
 
     const { dragMax, dragMid, dragMin } = animationPoints
 
+    const onFilterChanged = (f: FilterType) => {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+      setFilter(f)
+    }
+
     return (
       <BottomSheet
         ref={sheet}
@@ -84,7 +89,10 @@ const ActivityCard = forwardRef(
         initialSnapIndex={1}
         snapProgress={snapProgress}
         renderHeader={() => (
-          <ActivityCardHeader filter={filter} onFilterChanged={setFilter} />
+          <ActivityCardHeader
+            filter={filter}
+            onFilterChanged={onFilterChanged}
+          />
         )}
         flatListProps={{
           data: transactionData,

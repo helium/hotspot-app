@@ -33,6 +33,7 @@
     ]
   },
   "dependencies": {
+    "@expo/react-native-action-sheet": "^3.8.0",
     "@helium/crypto-react-native": "^3.9.0",
     "@helium/currency": "^3.0.0",
     "@helium/http": "^3.13.3",
