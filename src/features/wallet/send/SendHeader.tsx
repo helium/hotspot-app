@@ -46,7 +46,7 @@ const SendHeader = ({ type, onClosePress }: Props) => {
 
   const animatedOptions = {
     duration: 300,
-    easing: Easing.bezier(0.1, 0.76, 0.55, 0.9),
+    easing: Easing.bezier(0.17, 0.59, 0.4, 0.77),
   }
 
   const containerStyles = useAnimatedStyle(() => {
