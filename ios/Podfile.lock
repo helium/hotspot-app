@@ -374,7 +374,7 @@ PODS:
     - React-Core
   - RNLocalize (1.4.3):
     - React-Core
-  - RNReanimated (2.0.0-alpha.9.2):
+  - RNReanimated (2.0.0-rc.1):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -696,8 +696,8 @@ SPEC CHECKSUMS:
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: 64e7431a55835eb953b0bf984ef3b90ae9fdddd7
   FlipperKit: ab353d41aea8aae2ea6daaf813e67496642f3d7d
-  Folly: b73c3869541e86821df3c387eb0af5f65addfab4
-  glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
+  Folly: aeb27d02cdff07ca01f8a8a5a6dd5bcaf6be6f70
+  glog: 2ad46e202fbaa5641fceb4b2af37dcd88fd8762d
   lottie-ios: 48fac6be217c76937e36e340e2d09cf7b10b7f5f
   lottie-react-native: 1fb4ce21d6ad37dab8343eaff8719df76035bd93
   Mapbox-iOS-SDK: a5915700ec84bc1a7f8b3e746d474789e35b7956
@@ -738,7 +738,7 @@ SPEC CHECKSUMS:
   RNDeviceInfo: 6ecb1d1c87d20e4c62354be0348de23362824dcd
   RNGestureHandler: 9b7e605a741412e20e13c512738a31bd1611759b
   RNLocalize: 7c7aeda16c01db7a0918981c14875c0a53be9b79
-  RNReanimated: 174b2c7890664aeb522640bd5b86b464f0abf0ca
+  RNReanimated: b2d6785c8fc1f61e1c81179c64c9b6b1a00e6ab5
   RNScreens: 45c457af3d2ee9e08fc01e70da87e653d46b1198
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   UMAppLoader: 5db5dc03176c6238da9c8b3657a370137882a4ad

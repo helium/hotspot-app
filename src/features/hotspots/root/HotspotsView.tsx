@@ -19,6 +19,7 @@ import { hp } from '../../../utils/layout'
 import { getHotspotRewards } from '../../../utils/appDataClient'
 import HotspotsCarousel from '../../../components/HotspotsCarousel'
 import Map from '../../../components/Map'
+import { hotspotsToFeatures } from '../../../utils/mapUtils'
 
 type Props = {
   ownedHotspots: Hotspot[]
@@ -104,6 +105,8 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
     }
   })
 
+  const ownedHotspotFeatures = hotspotsToFeatures(ownedHotspots)
+
   return (
     <Box flex={1} flexDirection="column" justifyContent="space-between">
       <Box
@@ -112,9 +115,10 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         width="100%"
         borderTopLeftRadius="xl"
         borderTopRightRadius="xl"
-        marginTop="xxl"
+        style={{ marginTop: 70 }}
+        overflow="hidden"
       >
-        <Map />
+        <Map ownedHotspots={ownedHotspotFeatures} zoomLevel={12} />
       </Box>
       <Box
         flexDirection="row"
