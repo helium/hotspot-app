@@ -1,5 +1,12 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { Keyboard } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated'
 import Box from '../../../components/Box'
 import SendCircle from '../../../assets/images/send-circle.svg'
 import Close from '../../../assets/images/close.svg'
@@ -7,36 +14,106 @@ import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Text from '../../../components/Text'
 import { SendType } from './sendTypes'
 
+const ReanimatedBox = Animated.createAnimatedComponent(Box)
+
 type Props = {
   type: SendType
   onClosePress: () => void
-  flex?: number
 }
 
-const SendHeader = ({ type, onClosePress, flex }: Props) => {
+const SendHeader = ({ type, onClosePress }: Props) => {
   const { t } = useTranslation()
 
+  const keyboardState = useSharedValue(0)
+
+  useEffect(() => {
+    Keyboard.addListener('keyboardWillShow', keyboardShow)
+    Keyboard.addListener('keyboardWillHide', keyboardHide)
+
+    return () => {
+      Keyboard.removeListener('keyboardWillShow', keyboardShow)
+      Keyboard.removeListener('keyboardWillHide', keyboardHide)
+    }
+  })
+
+  const keyboardShow = () => {
+    keyboardState.value = 1
+  }
+
+  const keyboardHide = () => {
+    keyboardState.value = 0
+  }
+
+  const animatedOptions = {
+    duration: 300,
+    easing: Easing.bezier(0.1, 0.76, 0.55, 0.9),
+  }
+
+  const containerStyles = useAnimatedStyle(() => {
+    return {
+      height: withTiming(
+        keyboardState.value === 1 ? 100 : 250,
+        animatedOptions,
+      ),
+    }
+  })
+
+  const miniHeaderStyles = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateY: withTiming(
+            (1 - keyboardState.value) * -50,
+            animatedOptions,
+          ),
+        },
+      ],
+      opacity: withTiming(keyboardState.value, animatedOptions),
+    }
+  })
+
+  const mainHeaderStyles = useAnimatedStyle(() => {
+    return {
+      opacity: withTiming(1 - keyboardState.value, animatedOptions),
+    }
+  })
+
   return (
-    <Box
-      flex={flex}
+    <ReanimatedBox
+      style={containerStyles}
       backgroundColor="primaryBackground"
-      justifyContent="flex-start"
-      alignItems="center"
       padding="l"
     >
-      <Box flexDirection="row" justifyContent="flex-end" width="100%">
+      <Box flexDirection="row" justifyContent="space-between" width="100%">
+        <ReanimatedBox
+          style={miniHeaderStyles}
+          flexDirection="row"
+          alignItems="center"
+        >
+          <SendCircle width={30} />
+          <Text variant="h1" marginLeft="s" fontSize={24}>
+            {type === 'payment' && t('send.title.payment')}
+            {type === 'dc_burn' && t('send.title.dcBurn')}
+          </Text>
+        </ReanimatedBox>
         <TouchableOpacityBox padding="m" onPress={onClosePress}>
           <Close color="white" width={22} height={22} />
         </TouchableOpacityBox>
       </Box>
-      <Box marginBottom="m">
-        <SendCircle />
-      </Box>
-      <Text variant="h1">
-        {type === 'payment' && t('send.title.payment')}
-        {type === 'dc_burn' && t('send.title.dcBurn')}
-      </Text>
-    </Box>
+      <ReanimatedBox
+        style={mainHeaderStyles}
+        justifyContent="flex-start"
+        alignItems="center"
+      >
+        <Box marginBottom="m">
+          <SendCircle />
+        </Box>
+        <Text variant="h1">
+          {type === 'payment' && t('send.title.payment')}
+          {type === 'dc_burn' && t('send.title.dcBurn')}
+        </Text>
+      </ReanimatedBox>
+    </ReanimatedBox>
   )
 }
 

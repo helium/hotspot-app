@@ -60,6 +60,7 @@ const SendInput = ({
             defaultValue={defaultValue}
             editable={!locked}
             multiline
+            blurOnSubmit
             autoCompleteType="off"
             autoCapitalize="none"
             autoCorrect={false}
@@ -67,6 +68,7 @@ const SendInput = ({
             keyboardAppearance="dark"
             keyboardType={type === 'amount' ? 'numeric' : 'default'}
             style={{ fontFamily: 'InputMono-Regular', fontSize: 15 }}
+            returnKeyType="done"
           />
         </Box>
       </Box>

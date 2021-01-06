@@ -1,4 +1,5 @@
 import React from 'react'
+import { ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Address } from '@helium/crypto-react-native'
 import SendInput from './SendInput'
@@ -161,12 +162,13 @@ const SendForm = ({
   )
 
   return (
-    <Box height="100%" justifyContent="space-between">
-      {isLocked && type === 'payment' && renderLockedPaymentForm()}
-      {isLocked && type === 'dc_burn' && renderLockedBurnForm()}
-      {!isLocked && type === 'payment' && renderPaymentForm()}
-      {!isLocked && type === 'dc_burn' && renderBurnForm()}
-
+    <Box height="100%" justifyContent="space-between" paddingBottom="xl">
+      <ScrollView contentInset={{ top: 16 }}>
+        {isLocked && type === 'payment' && renderLockedPaymentForm()}
+        {isLocked && type === 'dc_burn' && renderLockedBurnForm()}
+        {!isLocked && type === 'payment' && renderPaymentForm()}
+        {!isLocked && type === 'dc_burn' && renderBurnForm()}
+      </ScrollView>
       <Button
         onPress={onSubmit}
         title={

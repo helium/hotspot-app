@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { KeyboardAvoidingView } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import Box from '../../../components/Box'
 import { triggerNavHaptic } from '../../../utils/haptic'
@@ -60,28 +59,26 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
 
   return (
     <Box flex={1}>
-      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
-        <SendHeader flex={1.3} type={type} onClosePress={navBack} />
-        <SendAmountAvailableBanner amount={123455.12345678} />
-        <Box flex={3} backgroundColor="white" padding="l">
-          <SendForm
-            type={type}
-            isLocked={isLocked}
-            address={address}
-            amount={amount}
-            dcAmount={dcAmount}
-            memo={memo}
-            onAddressChange={setAddress}
-            onAmountChange={setAmount}
-            onDcAmountChange={setDcAmount}
-            onMemoChange={setMemo}
-            onScanPress={navScan}
-            onSendMaxPress={setMaxAmount}
-            onSubmit={submitTxn}
-            onUnlock={unlockForm}
-          />
-        </Box>
-      </KeyboardAvoidingView>
+      <SendHeader type={type} onClosePress={navBack} />
+      <SendAmountAvailableBanner amount={123455.12345678} />
+      <Box flex={3} backgroundColor="white" paddingHorizontal="l">
+        <SendForm
+          type={type}
+          isLocked={isLocked}
+          address={address}
+          amount={amount}
+          dcAmount={dcAmount}
+          memo={memo}
+          onAddressChange={setAddress}
+          onAmountChange={setAmount}
+          onDcAmountChange={setDcAmount}
+          onMemoChange={setMemo}
+          onScanPress={navScan}
+          onSendMaxPress={setMaxAmount}
+          onSubmit={submitTxn}
+          onUnlock={unlockForm}
+        />
+      </Box>
     </Box>
   )
 }
