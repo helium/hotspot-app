@@ -14,7 +14,7 @@ const store = configureStore({
   enhancers,
   middleware: getDefaultMiddleware({
     serializableCheck: false,
-    immutableCheck: { warnAfter: 250 },
+    immutableCheck: false,
     // TODO: The BigNumber type in some models is not serializable. Ignoring the warning for now.
   }),
 })

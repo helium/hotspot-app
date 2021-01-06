@@ -1,15 +1,29 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
+import RNPickerSelect from 'react-native-picker-select'
+import { Platform } from 'react-native'
 import CardHandle from './CardHandle'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import CarotDown from '../../../assets/images/carot-down.svg'
-import { triggerNavHaptic } from '../../../utils/haptic'
-import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import { useColors, useTextVariants } from '../../../theme/themeHooks'
+import { FilterKeys, FilterType } from './walletTypes'
 
-const ActivityCardHeader = () => {
-  const handlePress = () => {
-    triggerNavHaptic()
-  }
+type Props = {
+  filter: FilterType
+  onFilterChanged: (filter: FilterType) => void
+}
+
+const ActivityCardHeader = ({ filter, onFilterChanged }: Props) => {
+  const { t } = useTranslation()
+  const { h4 } = useTextVariants()
+  const { purpleMain } = useColors()
+  const filters = t('transactions.filter', { returnObjects: true }) as Record<
+    string,
+    string
+  >
+
+  const inputStyle = { ...h4, color: purpleMain, paddingRight: 12 }
 
   return (
     <Box padding="m">
@@ -18,20 +32,27 @@ const ActivityCardHeader = () => {
       </Box>
       <Box flexDirection="row" alignItems="center">
         <Text color="grayDark" fontSize={20} fontWeight="600">
-          View
+          {t('transactions.view')}
         </Text>
-        <TouchableOpacityBox
-          flexDirection="row"
-          marginHorizontal="xs"
-          onPress={handlePress}
-        >
-          <Text color="purpleMain" fontSize={20} fontWeight="600">
-            All Activity
-          </Text>
-          <Box padding="xs" paddingTop="ms">
-            <CarotDown />
-          </Box>
-        </TouchableOpacityBox>
+        <RNPickerSelect
+          placeholder={{}}
+          onValueChange={onFilterChanged}
+          useNativeAndroidPickerStyle={false}
+          items={FilterKeys.map((option) => ({
+            label: filters[option],
+            value: option,
+            displayValue: true,
+          }))}
+          style={{
+            inputIOS: inputStyle,
+            inputAndroid: inputStyle,
+            iconContainer: {
+              top: Platform.OS === 'ios' ? 12 : 26,
+            },
+          }}
+          value={filter}
+          Icon={() => <CarotDown />}
+        />
       </Box>
     </Box>
   )

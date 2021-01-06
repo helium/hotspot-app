@@ -73,7 +73,10 @@ export const getPayer = (txn: AnyTransaction | PendingTransaction) => {
   return (txn as PendingTransaction).txn?.payer?.b58
 }
 
-export const isPayer = (address: string | null = null, txn: AnyTransaction) => {
+export const isPayer = (
+  address: string | null = null,
+  txn: AnyTransaction | PendingTransaction,
+) => {
   if (!address) return false
 
   const payer = getPayer(txn)
@@ -81,3 +84,6 @@ export const isPayer = (address: string | null = null, txn: AnyTransaction) => {
 
   return payer === address
 }
+
+export const isPendingTransaction = (item: unknown) =>
+  !!(item as PendingTransaction).createdAt

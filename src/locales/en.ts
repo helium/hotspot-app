@@ -506,5 +506,13 @@ export default {
     received: 'Received HNT',
     added: 'Hotspot Added to Blockchain',
     location: 'Location Confirmed',
+    view: 'View',
+    filter: {
+      all: 'All Activity',
+      mining: 'Mining Rewards',
+      payment: 'Payment Transactions',
+      hotspot: 'Hotspot Transactions',
+      pending: 'Pending Transactions',
+    },
   },
 }

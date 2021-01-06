@@ -12,7 +12,6 @@ import {
   PaymentV2,
   PaymentV1,
   PendingTransaction,
-  GenericDataModel,
 } from '@helium/http'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -96,17 +95,9 @@ const ActivityItem = ({
     return undefined
   }, [item])
 
-  // TODO: Use i18next
-  // const titles: Record<string, string> = {
-  //   rewards_v1: 'Mining Rewards',
-  //   sent: 'Sent HNT',
-  //   received: 'Received HNT',
-  //   add_gateway_v1: 'Hotspot Added to Blockchain',
-  //   assert_location_v1: 'Hotspot Location Confirmation',
-  // }
   const titles = (type: string) => {
     if (!TxnTypeKeys.find((k) => k === type)) {
-      return ''
+      return type
     }
 
     switch (type as TxnType) {
@@ -124,7 +115,7 @@ const ActivityItem = ({
 
   const colors = (type: string) => {
     if (!TxnTypeKeys.find((k) => k === type)) {
-      return undefined
+      return theme.colors.primaryBackground
     }
 
     switch (type as TxnType) {
@@ -166,8 +157,6 @@ const ActivityItem = ({
   const handlePress = () => {
     triggerNotification()
   }
-
-  if (item instanceof GenericDataModel) return null
 
   return (
     <TouchableWithoutFeedback onPress={handlePress}>

@@ -10,12 +10,7 @@ import React, {
 import BottomSheet from 'react-native-holy-sheet'
 import Animated from 'react-native-reanimated'
 import { useSelector } from 'react-redux'
-import {
-  AnyTransaction,
-  AddGatewayV1,
-  PendingTransaction,
-  GenericDataModel,
-} from '@helium/http'
+import { AnyTransaction, AddGatewayV1, PendingTransaction } from '@helium/http'
 import { useAsync } from 'react-async-hook'
 import { LayoutAnimation } from 'react-native'
 import ActivityItem from './ActivityItem'
@@ -23,6 +18,8 @@ import { WalletAnimationPoints } from './walletLayout'
 import ActivityCardHeader from './ActivityCardHeader'
 import { RootState } from '../../../store/rootReducer'
 import { getSecureItem } from '../../../utils/secureAccount'
+import { isPendingTransaction } from '../../../utils/transactions'
+import { FilterType } from './walletTypes'
 
 type Props = {
   animationPoints: WalletAnimationPoints
@@ -39,6 +36,7 @@ const ActivityCard = forwardRef(
     const [transactionData, setTransactionData] = useState<
       (AnyTransaction | PendingTransaction)[]
     >([])
+    const [filter, setFilter] = useState<FilterType>('all')
     const { result: address } = useAsync(getSecureItem, ['address'])
 
     const {
@@ -67,8 +65,6 @@ const ActivityCard = forwardRef(
       item: AnyTransaction | PendingTransaction
       index: number
     }) => {
-      if (item instanceof GenericDataModel) return null
-
       return (
         <ActivityItem
           item={item}
@@ -87,25 +83,17 @@ const ActivityCard = forwardRef(
         snapPoints={[dragMin, dragMid, dragMax]}
         initialSnapIndex={1}
         snapProgress={snapProgress}
-        renderHeader={() => <ActivityCardHeader />}
+        renderHeader={() => (
+          <ActivityCardHeader filter={filter} onFilterChanged={setFilter} />
+        )}
         flatListProps={{
           data: transactionData,
           keyExtractor: (item: AnyTransaction | PendingTransaction) => {
-            if (item instanceof GenericDataModel) {
-              // Just return a random number.
-              return (
-                Math.random().toString(36).substring(2, 15) +
-                Math.random().toString(36).substring(2, 15)
-              )
+            if (isPendingTransaction(item)) {
+              return `${(item as PendingTransaction).createdAt}.${item.type}`
             }
 
-            const pending = item as PendingTransaction
-            if (pending.createdAt !== undefined) {
-              return `${pending.createdAt}.${item.type}`
-            }
-
-            const key = `${(item as AddGatewayV1).time}.${item.type}`
-            return key
+            return `${(item as AddGatewayV1).time}.${item.type}`
           },
           renderItem,
         }}
