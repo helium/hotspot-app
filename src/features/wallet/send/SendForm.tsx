@@ -163,7 +163,7 @@ const SendForm = ({
 
   return (
     <Box height="100%" justifyContent="space-between" paddingBottom="xl">
-      <ScrollView contentInset={{ top: 16 }}>
+      <ScrollView contentContainerStyle={{ marginTop: 16 }}>
         {isLocked && type === 'payment' && renderLockedPaymentForm()}
         {isLocked && type === 'dc_burn' && renderLockedBurnForm()}
         {!isLocked && type === 'payment' && renderPaymentForm()}

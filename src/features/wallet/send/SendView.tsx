@@ -20,7 +20,7 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
 
   useEffect(() => {
     if (scanResult) {
-      setIsLocked(true)
+      setIsLocked(!!scanResult?.amount)
       setType(scanResult.type)
       setAddress(scanResult.address)
       if (scanResult?.amount) setAmount(scanResult?.amount)
