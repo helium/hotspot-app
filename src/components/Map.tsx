@@ -77,9 +77,9 @@ const Map = ({
     setLoaded(true)
   }
 
-  const flyTo = (lat?: number, lng?: number, duration = 500) => {
+  const flyTo = (lat?: number, lng?: number) => {
     if (!lat || !lng) return
-    camera.current?.flyTo([lng, lat - centerOffset], duration)
+    camera.current?.flyTo([lng, lat - centerOffset], animationDuration)
   }
 
   const onShapeSourcePress = (event: OnPressEvent) => {
