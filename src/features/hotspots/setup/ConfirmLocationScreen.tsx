@@ -1,6 +1,7 @@
 import { useNavigation } from '@react-navigation/native'
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Position } from 'geojson'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
@@ -30,21 +31,23 @@ const ConfirmLocationScreen = () => {
     sleepThenEnable()
   }, [])
 
-  const onMapMoved = async (newCoords: number[]) => {
-    setMarkerCenter(newCoords)
-    setMapMoving(false)
+  const onMapMoved = async (newCoords?: Position) => {
+    if (newCoords) {
+      setMarkerCenter(newCoords)
+      setMapMoving(false)
 
-    const [longitude, latitude] = newCoords
-    const [{ street, city }] = await reverseGeocode(latitude, longitude)
-    const name = street && city ? [street, city].join(', ') : 'Loading...'
-    setLocationName(name)
+      const [longitude, latitude] = newCoords
+      const [{ street, city }] = await reverseGeocode(latitude, longitude)
+      const name = street && city ? [street, city].join(', ') : 'Loading...'
+      setLocationName(name)
 
-    // TODO: What is this here for?
-    // if (moment().diff(this.state.didMountAt, 'seconds') >= 3) {
-    //   this.setState({
-    //     disabled: false,
-    //   })
-    // }
+      // TODO: What is this here for?
+      // if (moment().diff(this.state.didMountAt, 'seconds') >= 3) {
+      //   this.setState({
+      //     disabled: false,
+      //   })
+      // }
+    }
   }
 
   const navNext = () => {

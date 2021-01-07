@@ -13,6 +13,7 @@ import { useColors } from '../theme/themeHooks'
 type HotspotsCarouselProps = {
   hotspots: Hotspot[]
   rewards: Record<string, HotspotReward>
+  onHotspotFocused: (hotspot: Hotspot) => void
 }
 
 type HotspotsItemProps = {
@@ -55,7 +56,11 @@ const HotspotItem = ({ hotspot, totalReward }: HotspotsItemProps) => {
   )
 }
 
-const HotspotsCarousel = ({ hotspots, rewards }: HotspotsCarouselProps) => {
+const HotspotsCarousel = ({
+  hotspots,
+  rewards,
+  onHotspotFocused,
+}: HotspotsCarouselProps) => {
   const { t } = useTranslation()
 
   const renderItem = ({ item }: { item: Hotspot }) => (
@@ -84,7 +89,7 @@ const HotspotsCarousel = ({ hotspots, rewards }: HotspotsCarouselProps) => {
         sliderWidth={wp(100)}
         itemWidth={wp(80)}
         inactiveSlideScale={1}
-        onSnapToItem={(i) => console.log(i)}
+        onSnapToItem={(i) => onHotspotFocused(hotspots[i])}
       />
     </Box>
   )

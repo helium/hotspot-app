@@ -19,6 +19,7 @@ import { hp } from '../../../utils/layout'
 import { getHotspotRewards } from '../../../utils/appDataClient'
 import HotspotsCarousel from '../../../components/HotspotsCarousel'
 import Map from '../../../components/Map'
+import { hotspotsToFeatures } from '../../../utils/mapUtils'
 
 type Props = {
   ownedHotspots: Hotspot[]
@@ -42,6 +43,8 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
   const dragMax = hp(75)
   const dragMin = 40
   const { t } = useTranslation()
+  const [focusedHotspot, setFocusedHotspot] = useState(ownedHotspots[0])
+
   const [date, setDate] = useState(new Date())
   useEffect(() => {
     const dateTimer = setInterval(() => setDate(new Date()), 300000) // update every 5 min
@@ -104,6 +107,12 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
     }
   })
 
+  const onHotspotFocused = (hotspot: Hotspot) => {
+    setFocusedHotspot(hotspot)
+  }
+
+  const ownedHotspotFeatures = hotspotsToFeatures(ownedHotspots)
+
   return (
     <Box flex={1} flexDirection="column" justifyContent="space-between">
       <Box
@@ -112,9 +121,16 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         width="100%"
         borderTopLeftRadius="xl"
         borderTopRightRadius="xl"
-        marginTop="xxl"
+        style={{ marginTop: 70 }}
+        overflow="hidden"
       >
-        <Map />
+        <Map
+          ownedHotspots={ownedHotspotFeatures}
+          zoomLevel={14}
+          mapCenter={[focusedHotspot.lng || 0, focusedHotspot.lat || 0]}
+          animationMode="flyTo"
+          offsetMapCenter
+        />
       </Box>
       <Box
         flexDirection="row"
@@ -156,7 +172,11 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
           data: [ownedHotspots],
           keyExtractor: (item: Hotspot[]) => item[0].address,
           renderItem: ({ item }: { item: Hotspot[] }) => (
-            <HotspotsCarousel hotspots={item} rewards={hotspotRewards} />
+            <HotspotsCarousel
+              hotspots={item}
+              rewards={hotspotRewards}
+              onHotspotFocused={onHotspotFocused}
+            />
           ),
         }}
       />
