@@ -10,6 +10,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated'
 import { HotspotRewardsData } from '@helium/http/build/models/HotspotReward'
+import { useNavigation } from '@react-navigation/native'
 import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
@@ -20,6 +21,7 @@ import { getHotspotRewards } from '../../../utils/appDataClient'
 import HotspotsCarousel from '../../../components/HotspotsCarousel'
 import Map from '../../../components/Map'
 import { hotspotsToFeatures } from '../../../utils/mapUtils'
+import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
 type Props = {
   ownedHotspots: Hotspot[]
@@ -39,6 +41,7 @@ const TimeOfDayHeader = ({ date }: { date: Date }) => {
 }
 
 const HotspotsView = ({ ownedHotspots }: Props) => {
+  const navigation = useNavigation<RootNavigationProp>()
   const dragMid = hp(40)
   const dragMax = hp(75)
   const dragMin = 40
@@ -142,10 +145,13 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         <Text variant="h3">{t('hotspots.owned.title')}</Text>
 
         <Box flexDirection="row" justifyContent="space-between">
-          <TouchableOpacityBox onPress={() => {}} padding="s">
+          <TouchableOpacityBox padding="s">
             <Search width={22} height={22} />
           </TouchableOpacityBox>
-          <TouchableOpacityBox onPress={() => {}} padding="s">
+          <TouchableOpacityBox
+            onPress={() => navigation.push('HotspotSetup')}
+            padding="s"
+          >
             <Add width={22} height={22} />
           </TouchableOpacityBox>
         </Box>
