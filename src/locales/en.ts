@@ -506,6 +506,7 @@ export default {
     received: 'Received HNT',
     added: 'Hotspot Added to Blockchain',
     location: 'Location Confirmed',
+    transfer: 'Hotspot Transfer',
     view: 'View',
     filter: {
       all: 'All Activity',

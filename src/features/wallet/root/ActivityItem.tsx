@@ -11,6 +11,7 @@ import {
   PaymentV2,
   PaymentV1,
   PendingTransaction,
+  TransferHotspotV1,
 } from '@helium/http'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -37,6 +38,7 @@ const TxnTypeKeys = [
   'payment_v2',
   'add_gateway_v1',
   'assert_location_v1',
+  'transfer_hotspot_v1',
 ] as const
 type TxnType = typeof TxnTypeKeys[number]
 
@@ -55,8 +57,8 @@ const ActivityItem = ({
     if (item instanceof AddGatewayV1) {
       return animalHash(item.gateway)
     }
-    if (item instanceof AssertLocationV1) {
-      return `-${item.fee.toLocaleString()}`
+    if (item instanceof AssertLocationV1 || item instanceof TransferHotspotV1) {
+      return `-${item.fee?.toLocaleString()}`
     }
     if (item instanceof RewardsV1 || item instanceof PaymentV2) {
       return `+${item.totalAmount.toString()}`
@@ -108,6 +110,8 @@ const ActivityItem = ({
           return isSending ? t('transactions.sent') : t('transactions.received')
         case 'assert_location_v1':
           return t('transactions.location')
+        case 'transfer_hotspot_v1':
+          return t('transactions.transfer')
         case 'rewards_v1':
           return t('transactions.mining')
       }
@@ -122,6 +126,7 @@ const ActivityItem = ({
       }
 
       switch (type as TxnType) {
+        case 'transfer_hotspot_v1':
         case 'add_gateway_v1':
           return colors.purple100
         case 'payment_v1':
@@ -144,6 +149,7 @@ const ActivityItem = ({
 
       const size = 24
       switch (type as TxnType) {
+        case 'transfer_hotspot_v1':
         case 'add_gateway_v1':
           return <HotspotAdded width={size} height={size} />
         case 'payment_v1':
