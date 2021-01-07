@@ -1,11 +1,16 @@
 import React, { useEffect } from 'react'
 import { Platform } from 'react-native'
-import { createStackNavigator } from '@react-navigation/stack'
+import {
+  createStackNavigator,
+  TransitionPresets,
+} from '@react-navigation/stack'
 import OneSignal from 'react-native-onesignal'
 import LockScreen from '../../features/lock/LockScreen'
 import defaultScreenOptions from '../defaultScreenOptions'
 import HotspotSetup from '../../features/hotspots/setup/HotspotSetupNavigator'
 import MainTabs from './MainTabNavigator'
+import SendNavigator from '../../features/wallet/send/SendNavigator'
+import ScanNavigator from '../../features/wallet/scan/ScanNavigator'
 
 const HomeStack = createStackNavigator()
 
@@ -34,6 +39,24 @@ const HomeStackScreen = () => {
         name="HotspotSetup"
         component={HotspotSetup}
         options={{ headerShown: false }}
+      />
+      <HomeStack.Screen
+        name="Scan"
+        component={ScanNavigator}
+        options={{
+          headerShown: false,
+          cardOverlayEnabled: true,
+          ...TransitionPresets.ModalPresentationIOS,
+        }}
+      />
+      <HomeStack.Screen
+        name="Send"
+        component={SendNavigator}
+        options={{
+          headerShown: false,
+          cardOverlayEnabled: true,
+          ...TransitionPresets.ModalPresentationIOS,
+        }}
       />
       <HomeStack.Screen
         name="LockScreen"

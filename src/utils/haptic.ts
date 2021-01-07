@@ -26,6 +26,10 @@ export const triggerNotification = (
   Haptics.notificationAsync(notificationStyles[notificationStyle])
 }
 
+export const triggerNavHaptic = () => {
+  triggerImpact('light')
+}
+
 export default () => {
   if (Platform.OS === 'ios') {
     Haptics.impactAsync()
