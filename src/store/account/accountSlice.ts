@@ -124,7 +124,7 @@ export const fetchTxns = createAsyncThunk<
   if (isPending) {
     return list.takeJSON(1000)
   }
-  return list.takeJSON(10)
+  return list.takeJSON(50)
 })
 
 // This slice contains data related to the user account

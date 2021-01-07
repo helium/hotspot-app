@@ -1,8 +1,7 @@
-import React, { useMemo, memo } from 'react'
+import React, { useMemo, memo, useCallback } from 'react'
 import { TouchableWithoutFeedback } from 'react-native'
 import { formatDistanceToNow, fromUnixTime } from 'date-fns'
 import animalHash from 'angry-purple-tiger'
-import { useTheme } from '@shopify/restyle'
 import { useTranslation } from 'react-i18next'
 import {
   AnyTransaction,
@@ -22,8 +21,8 @@ import HotspotAdded from '../../../assets/images/hotspotAdded.svg'
 import ReceivedHnt from '../../../assets/images/receivedHNT.svg'
 import Location from '../../../assets/images/location.svg'
 import { triggerNotification } from '../../../utils/haptic'
-import { Theme } from '../../../theme/theme'
 import { isPayer } from '../../../utils/transactions'
+import { useColors } from '../../../theme/themeHooks'
 
 type Props = {
   item: AnyTransaction | PendingTransaction
@@ -47,7 +46,7 @@ const ActivityItem = ({
   isLast = false,
   address = '',
 }: Props) => {
-  const theme = useTheme<Theme>()
+  const colors = useColors()
   const { t } = useTranslation()
 
   const isSending = useMemo(() => isPayer(address, item), [address, item])
@@ -95,64 +94,73 @@ const ActivityItem = ({
     return undefined
   }, [item])
 
-  const titles = (type: string) => {
-    if (!TxnTypeKeys.find((k) => k === type)) {
-      return type
-    }
+  const titles = useCallback(
+    (type: string) => {
+      if (!TxnTypeKeys.find((k) => k === type)) {
+        return type
+      }
 
-    switch (type as TxnType) {
-      case 'add_gateway_v1':
-        return t('transactions.added')
-      case 'payment_v1':
-      case 'payment_v2':
-        return isSending ? t('transactions.sent') : t('transactions.received')
-      case 'assert_location_v1':
-        return t('transactions.location')
-      case 'rewards_v1':
-        return t('transactions.mining')
-    }
-  }
+      switch (type as TxnType) {
+        case 'add_gateway_v1':
+          return t('transactions.added')
+        case 'payment_v1':
+        case 'payment_v2':
+          return isSending ? t('transactions.sent') : t('transactions.received')
+        case 'assert_location_v1':
+          return t('transactions.location')
+        case 'rewards_v1':
+          return t('transactions.mining')
+      }
+    },
+    [isSending, t],
+  )
 
-  const colors = (type: string) => {
-    if (!TxnTypeKeys.find((k) => k === type)) {
-      return theme.colors.primaryBackground
-    }
+  const iconBackgroundColor = useCallback(
+    (type: string) => {
+      if (!TxnTypeKeys.find((k) => k === type)) {
+        return colors.primaryBackground
+      }
 
-    switch (type as TxnType) {
-      case 'add_gateway_v1':
-        return theme.colors.purple100
-      case 'payment_v1':
-      case 'payment_v2':
-        return isSending ? theme.colors.blueBright : theme.colors.greenMain
-      case 'assert_location_v1':
-        return theme.colors.purpleMuted
-      case 'rewards_v1':
-        return theme.colors.purpleBright
-    }
-  }
+      switch (type as TxnType) {
+        case 'add_gateway_v1':
+          return colors.purple100
+        case 'payment_v1':
+        case 'payment_v2':
+          return isSending ? colors.blueBright : colors.greenMain
+        case 'assert_location_v1':
+          return colors.purpleMuted
+        case 'rewards_v1':
+          return colors.purpleBright
+      }
+    },
+    [isSending, colors],
+  )
 
-  const icon = (type: string) => {
-    if (!TxnTypeKeys.find((k) => k === type)) {
-      return null
-    }
+  const icon = useCallback(
+    (type: string) => {
+      if (!TxnTypeKeys.find((k) => k === type)) {
+        return null
+      }
 
-    const size = 24
-    switch (type as TxnType) {
-      case 'add_gateway_v1':
-        return <HotspotAdded width={size} height={size} />
-      case 'payment_v1':
-      case 'payment_v2':
-        return isSending ? (
-          <SentHnt width={size} height={size} />
-        ) : (
-          <ReceivedHnt width={size} height={size} />
-        )
-      case 'assert_location_v1':
-        return <Location width={size} height={size} />
-      case 'rewards_v1':
-        return <Rewards width={size} height={size} />
-    }
-  }
+      const size = 24
+      switch (type as TxnType) {
+        case 'add_gateway_v1':
+          return <HotspotAdded width={size} height={size} />
+        case 'payment_v1':
+        case 'payment_v2':
+          return isSending ? (
+            <SentHnt width={size} height={size} />
+          ) : (
+            <ReceivedHnt width={size} height={size} />
+          )
+        case 'assert_location_v1':
+          return <Location width={size} height={size} />
+        case 'rewards_v1':
+          return <Rewards width={size} height={size} />
+      }
+    },
+    [isSending],
+  )
 
   const handlePress = () => {
     triggerNotification()
@@ -175,7 +183,7 @@ const ActivityItem = ({
         <Box
           width={50}
           height={50}
-          style={{ backgroundColor: colors(item.type) }}
+          style={{ backgroundColor: iconBackgroundColor(item.type) }}
           justifyContent="center"
           alignItems="center"
           borderTopLeftRadius={isFirst ? 'm' : undefined}

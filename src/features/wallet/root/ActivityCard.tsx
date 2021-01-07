@@ -7,13 +7,14 @@ import React, {
   useEffect,
   useState,
   useCallback,
+  memo,
 } from 'react'
 import BottomSheet from 'react-native-holy-sheet'
 import Animated from 'react-native-reanimated'
 import { useSelector } from 'react-redux'
 import { AnyTransaction, AddGatewayV1, PendingTransaction } from '@helium/http'
 import { useAsync } from 'react-async-hook'
-import { LayoutAnimation, RefreshControl } from 'react-native'
+import { LayoutAnimation, RefreshControl, FlatList } from 'react-native'
 import ActivityItem from './ActivityItem'
 import { WalletAnimationPoints } from './walletLayout'
 import ActivityCardHeader from './ActivityCardHeader'
@@ -23,7 +24,7 @@ import { isPendingTransaction } from '../../../utils/transactions'
 import { FilterType } from './walletTypes'
 import { fetchTxns } from '../../../store/account/accountSlice'
 import { useAppDispatch } from '../../../store/store'
-import { useColors } from '../../../theme/themeHooks'
+import { useColors, useSpacing } from '../../../theme/themeHooks'
 
 type Props = {
   animationPoints: WalletAnimationPoints
@@ -40,10 +41,11 @@ const ActivityCard = forwardRef(
     const [transactionData, setTransactionData] = useState<
       (AnyTransaction | PendingTransaction)[]
     >([])
+    const flatListRef = useRef<FlatList<any>>(null)
     const [filter, setFilter] = useState<FilterType>('all')
     const { result: address } = useAsync(getSecureItem, ['address'])
     const { purpleMuted } = useColors()
-
+    const { m } = useSpacing()
     const dispatch = useAppDispatch()
     const {
       account: { txns, txnStatus },
@@ -68,9 +70,11 @@ const ActivityCard = forwardRef(
       } else {
         data = txns[filter]
       }
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+      if (!transactionData.length) {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+      }
       setTransactionData(data)
-    }, [filter, txns])
+    }, [filter, txns, transactionData.length])
 
     type BottomSheetHandle = ElementRef<typeof BottomSheet>
     const sheet = useRef<BottomSheetHandle>(null)
@@ -103,7 +107,14 @@ const ActivityCard = forwardRef(
     const onFilterChanged = (f: FilterType) => {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
       setFilter(f)
+      setTransactionData([])
     }
+
+    useEffect(() => {
+      if (!transactionData.length) {
+        flatListRef?.current?.scrollToOffset({ animated: false, offset: 0 })
+      }
+    }, [transactionData.length])
 
     return (
       <BottomSheet
@@ -117,24 +128,26 @@ const ActivityCard = forwardRef(
             onFilterChanged={onFilterChanged}
           />
         )}
+        containerStyle={{ paddingHorizontal: m }}
         flatListProps={{
           data: transactionData,
+          ref: flatListRef,
+          maxToRenderPerBatch: 50,
           keyExtractor: (item: AnyTransaction | PendingTransaction) => {
             if (isPendingTransaction(item)) {
-              return `${(item as PendingTransaction).createdAt}.${item.type}`
+              return (item as PendingTransaction).hash
             }
 
-            return `${(item as AddGatewayV1).time}.${item.type}`
+            return (item as AddGatewayV1).hash
           },
           renderItem,
           refreshControl: (
             <RefreshControl
-              refreshing={txnStatus === 'pending'}
+              refreshing={txnStatus === 'pending' && !transactionData.length}
               onRefresh={loadData}
               tintColor={purpleMuted}
             />
           ),
-
           onEndReached: loadData,
         }}
       />
@@ -142,4 +155,4 @@ const ActivityCard = forwardRef(
   },
 )
 
-export default ActivityCard
+export default memo(ActivityCard)

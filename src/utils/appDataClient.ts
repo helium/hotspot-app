@@ -47,7 +47,6 @@ export const getPendingTxnList = async () => {
 }
 
 export const getAccountActivityList = async (filterType: FilterType) => {
-  console.log({ filterType })
   const address = await getSecureItem('address')
 
   const params = { filterTypes: Filters[filterType] }
