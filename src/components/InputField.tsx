@@ -11,6 +11,7 @@ type Props = {
   label: string
   placeholder?: string
   extra?: any
+  footer?: any
   type?: 'default' | 'numeric'
   onChange: (text: string) => void
   locked?: boolean
@@ -21,6 +22,7 @@ const InputField = ({
   label,
   placeholder,
   extra,
+  footer,
   type = 'default',
   onChange,
   locked = false,
@@ -71,6 +73,7 @@ const InputField = ({
             returnKeyType="done"
           />
         </Box>
+        {footer !== undefined && footer}
       </Box>
     </TouchableWithoutFeedback>
   )

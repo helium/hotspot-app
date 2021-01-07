@@ -6,10 +6,11 @@ import InputLock from '../assets/images/input-lock.svg'
 type Props = {
   label: string
   value: string
+  footer?: any
   bottom?: boolean
 }
 
-const LockedField = ({ label, value, bottom = false }: Props) => {
+const LockedField = ({ label, value, footer, bottom = false }: Props) => {
   return (
     <Box
       backgroundColor="offwhite"
@@ -27,6 +28,7 @@ const LockedField = ({ label, value, bottom = false }: Props) => {
       <Text color="blueMain" variant="subtitleMono" fontSize={15}>
         {value}
       </Text>
+      {footer !== undefined && footer}
     </Box>
   )
 }

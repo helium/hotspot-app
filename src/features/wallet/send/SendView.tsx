@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
+import Balance, {
+  NetworkTokens,
+  CurrencyType,
+  DataCredits,
+} from '@helium/currency'
+import { useAsync } from 'react-async-hook'
 import Box from '../../../components/Box'
 import { triggerNavHaptic } from '../../../utils/haptic'
 import { QrScanResult } from '../scan/scanTypes'
@@ -7,6 +13,11 @@ import SendHeader from './SendHeader'
 import { SendType } from './sendTypes'
 import SendAmountAvailableBanner from './SendAmountAvailableBanner'
 import SendForm from './SendForm'
+import {
+  calculateBurnTxnFee,
+  calculatePaymentTxnFee,
+  convertFeeToNetworkTokens,
+} from '../../../utils/fees'
 
 const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
   const navigation = useNavigation()
@@ -17,6 +28,9 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
   const [dcAmount, setDcAmount] = useState<string>('')
   const [memo, setMemo] = useState<string>('')
   const [isLocked, setIsLocked] = useState(false)
+  const [fee, setFee] = useState<Balance<NetworkTokens>>(
+    new Balance(0, CurrencyType.networkToken),
+  )
 
   useEffect(() => {
     if (scanResult) {
@@ -30,6 +44,29 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
       }
     }
   }, [scanResult])
+
+  const calculateFee = async (): Promise<Balance<DataCredits>> => {
+    // TODO safer/more centralized way of doing this?
+    const integerAmount = parseFloat(amount) * 100000000
+
+    if (type === 'payment') {
+      // TODO use actual nonce here
+      return calculatePaymentTxnFee(integerAmount, 1, address)
+    }
+
+    if (type === 'dc_burn') {
+      // TODO use actual nonce here
+      return calculateBurnTxnFee(integerAmount, address, 1, memo)
+    }
+
+    throw new Error('Unsupported transaction type')
+  }
+
+  useAsync(async () => {
+    const dcFee = await calculateFee()
+    const hntFee = await convertFeeToNetworkTokens(dcFee)
+    setFee(hntFee)
+  }, [amount])
 
   const navBack = () => {
     navigation.navigate('Wallet')
@@ -69,6 +106,7 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
           amount={amount}
           dcAmount={dcAmount}
           memo={memo}
+          fee={fee}
           onAddressChange={setAddress}
           onAmountChange={setAmount}
           onDcAmountChange={setDcAmount}

@@ -14,6 +14,9 @@ import Config from 'react-native-config'
 import { useSelector } from 'react-redux'
 import { getUnixTime } from 'date-fns'
 import MapboxGL from '@react-native-mapbox-gl/maps'
+import { Transaction } from '@helium/transactions'
+import Client from '@helium/http'
+import { useAsync } from 'react-async-hook'
 import { theme } from './theme/theme'
 import NavigationRoot from './navigation/NavigationRoot'
 import { useAppDispatch } from './store/store'
@@ -84,6 +87,12 @@ const App = () => {
       AppState.removeEventListener('change', handleChange)
     }
   }, [handleChange])
+
+  useAsync(async () => {
+    const client = new Client()
+    const vars = await client.vars.get()
+    Transaction.config(vars)
+  }, [])
 
   return (
     <ThemeProvider theme={theme}>

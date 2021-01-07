@@ -2,6 +2,7 @@ import React from 'react'
 import { ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Address } from '@helium/crypto-react-native'
+import Balance, { NetworkTokens } from '@helium/currency'
 import InputField from '../../../components/InputField'
 import Button from '../../../components/Button'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
@@ -21,6 +22,7 @@ type Props = {
   amount: string
   dcAmount: string
   memo: string
+  fee: Balance<NetworkTokens>
   onAddressChange: (text: string) => void
   onAmountChange: (text: string) => void
   onDcAmountChange: (text: string) => void
@@ -38,6 +40,7 @@ const SendForm = ({
   amount,
   dcAmount,
   memo,
+  fee,
   onAddressChange,
   onAmountChange,
   onDcAmountChange,
@@ -47,6 +50,8 @@ const SendForm = ({
   onSubmit,
   onUnlock,
 }: Props) => {
+  console.log('form fee', fee.toString(8))
+
   const { t } = useTranslation()
   const { primaryMain } = useColors()
 
@@ -56,7 +61,12 @@ const SendForm = ({
     <Box>
       <LockedHeader onClosePress={onUnlock} />
       <LockedField label={t('send.address.label')} value={address} />
-      <LockedField label={t('send.amount.label')} value={amount} bottom />
+      <LockedField
+        label={t('send.amount.label')}
+        value={amount}
+        footer={amount ? <FeeFooter fee={fee} /> : undefined}
+        bottom
+      />
     </Box>
   )
 
@@ -64,7 +74,11 @@ const SendForm = ({
     <Box>
       <LockedHeader onClosePress={onUnlock} />
       <LockedField label={t('send.address.label')} value={address} />
-      <LockedField label={t('send.amount.label')} value={amount} />
+      <LockedField
+        label={t('send.amount.label')}
+        value={amount}
+        footer={amount ? <FeeFooter fee={fee} /> : undefined}
+      />
       <LockedField label={t('send.dcAmount.label')} value={dcAmount} />
       <LockedField label={t('send.memo.label')} value={memo} bottom />
     </Box>
@@ -107,6 +121,7 @@ const SendForm = ({
             </Text>
           </TouchableOpacityBox>
         }
+        footer={amount ? <FeeFooter fee={fee} /> : undefined}
       />
     </Box>
   )
@@ -141,6 +156,7 @@ const SendForm = ({
         onChange={onAmountChange}
         label={t('send.amount.label')}
         placeholder={t('send.amount.placeholder')}
+        footer={amount ? <FeeFooter fee={fee} /> : undefined}
       />
       <InputField
         type="numeric"
@@ -177,6 +193,16 @@ const SendForm = ({
         mode="contained"
         disabled={!isValidAddress} // TODO more validation
       />
+    </Box>
+  )
+}
+
+const FeeFooter = ({ fee }: { fee: Balance<NetworkTokens> }) => {
+  return (
+    <Box marginTop="xs">
+      <Text variant="mono" color="grayText" fontSize={11}>
+        +{fee.toString(8)} FEE
+      </Text>
     </Box>
   )
 }
