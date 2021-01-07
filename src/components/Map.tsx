@@ -21,6 +21,11 @@ type Props = {
   zoomLevel?: number
   mapCenter?: number[]
   ownedHotspots?: Feature[]
+  animationMode?: 'flyTo' | 'easeTo' | 'moveTo'
+  animationDuration?: number
+  offsetMapCenter?: boolean
+  maxZoomLevel?: number
+  minZoomLevel?: number
 }
 const Map = ({
   onMapMoved,
@@ -28,8 +33,13 @@ const Map = ({
   onMapMoving,
   currentLocationEnabled,
   zoomLevel,
-  mapCenter,
+  mapCenter = [0, 0],
+  animationMode = 'moveTo',
+  animationDuration = 500,
   ownedHotspots,
+  offsetMapCenter,
+  maxZoomLevel = 16,
+  minZoomLevel = 0,
 }: Props) => {
   const map = useRef<MapboxGL.MapView>(null)
   const camera = useRef<MapboxGL.Camera>(null)
@@ -69,8 +79,7 @@ const Map = ({
 
   const flyTo = (lat?: number, lng?: number, duration = 500) => {
     if (!lat || !lng) return
-    console.log(lat, lng)
-    camera.current?.flyTo([lng, lat], duration)
+    camera.current?.flyTo([lng, lat - centerOffset], duration)
   }
 
   const onShapeSourcePress = (event: OnPressEvent) => {
@@ -78,6 +87,7 @@ const Map = ({
     flyTo(properties?.lat, properties?.lng)
   }
 
+  const [centerOffset, setCenterOffset] = useState(0)
   useEffect(() => {
     if (loaded && currentLocation) {
       onDidFinishLoadingMap?.(
@@ -85,10 +95,22 @@ const Map = ({
         currentLocation.longitude,
       )
     }
+    const calculateOffset = async () => {
+      const bounds = await map?.current?.getVisibleBounds()
+      const center = await map?.current?.getCenter()
+      if (bounds && center) {
+        const topLat = bounds[0][1]
+        const centerLat = center[1]
+        setCenterOffset((topLat - centerLat) / 1.5)
+      }
+    }
+    if (offsetMapCenter) {
+      setTimeout(calculateOffset, animationDuration)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentLocation, loaded])
+  }, [currentLocation, loaded, offsetMapCenter])
 
-  const markerImages = {
+  const mapImages = {
     markerOwned: require('../assets/images/owned-hotspot-marker.png'),
   }
 
@@ -109,11 +131,13 @@ const Map = ({
         <MapboxGL.Camera
           ref={camera}
           zoomLevel={zoomLevel}
-          maxZoomLevel={16}
-          animationMode="moveTo"
-          centerCoordinate={mapCenter}
+          maxZoomLevel={maxZoomLevel}
+          minZoomLevel={minZoomLevel}
+          animationMode={animationMode}
+          animationDuration={animationDuration}
+          centerCoordinate={[mapCenter[0], mapCenter[1] - centerOffset]}
         />
-        <MapboxGL.Images images={markerImages} />
+        <MapboxGL.Images images={mapImages} />
         {ownedHotspots && (
           <MapboxGL.ShapeSource
             id="ownedHotspots"
