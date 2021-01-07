@@ -4,15 +4,9 @@ import {
   Hotspot,
   PendingTransaction,
   AnyTransaction,
-  ResourceList,
 } from '@helium/http'
 import { unionBy } from 'lodash'
-import {
-  getHotspots,
-  getAccount,
-  getPendingTxnList,
-  getAccountActivityList,
-} from '../../utils/appDataClient'
+import { getHotspots, getAccount, txnFetchers } from '../../utils/appDataClient'
 import { getWallet, postWallet } from '../../utils/walletClient'
 import { FilterType } from '../../features/wallet/root/walletTypes'
 
@@ -41,8 +35,6 @@ export type AccountState = {
   mainDataStatus: Loading
   markNotificationStatus: Loading
   txnStatus: Loading
-
-  // TODO: Is there a dynamic way to create this?
   txns: {
     all: AnyTransaction[]
     hotspot: AnyTransaction[]
@@ -66,12 +58,6 @@ type AccountData = {
   account?: Account
   notifications: Notification[]
 }
-
-// TODO: Make getAccountActivityList accept 'pending', then make this dynamic
-const txnFetchers = {} as Record<
-  FilterType,
-  ResourceList<AnyTransaction | PendingTransaction>
->
 
 export const fetchData = createAsyncThunk<AccountData>(
   'account/fetchData',
@@ -107,24 +93,8 @@ export const fetchTxns = createAsyncThunk<
   AnyTransaction[] | PendingTransaction[],
   FilterType
 >('account/fetchAccountActivity', async (filterType) => {
-  const isPending = filterType === 'pending'
-  let list = txnFetchers[filterType]
-  if (!list) {
-    if (isPending) {
-      const pendingList = await getPendingTxnList()
-      if (pendingList) {
-        list = pendingList
-      }
-    } else {
-      list = await getAccountActivityList(filterType)
-    }
-  }
-  txnFetchers[filterType] = list
-
-  if (isPending) {
-    return list.takeJSON(1000)
-  }
-  return list.takeJSON(50)
+  const list = txnFetchers[filterType]
+  return list.takeJSON(filterType === 'pending' ? 1000 : 50)
 })
 
 // This slice contains data related to the user account
@@ -137,6 +107,9 @@ const accountSlice = createSlice({
       action: PayloadAction<PendingTransaction>,
     ) => {
       state.txns.pending.push(action.payload)
+    },
+    signOut: () => {
+      return { ...initialState }
     },
   },
   extraReducers: (builder) => {

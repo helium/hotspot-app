@@ -23,6 +23,7 @@ import { fetchData } from './store/account/accountSlice'
 import BluetoothProvider from './providers/BluetoothProvider'
 import ConnectedHotspotProvider from './providers/ConnectedHotspotProvider'
 import * as Logger from './utils/logger'
+import { initFetchers } from './utils/appDataClient'
 
 const App = () => {
   if (Platform.OS === 'android') {
@@ -79,6 +80,12 @@ const App = () => {
 
     dispatch(fetchData())
   }, [isRestored, isBackedUp, dispatch])
+
+  useEffect(() => {
+    if (isBackedUp) {
+      initFetchers()
+    }
+  }, [isBackedUp])
 
   useEffect(() => {
     OneSignal.setAppId(Config.ONE_SIGNAL_APP_ID)

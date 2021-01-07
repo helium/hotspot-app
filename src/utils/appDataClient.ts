@@ -1,5 +1,13 @@
-import Client from '@helium/http'
-import { FilterType, Filters } from '../features/wallet/root/walletTypes'
+import Client, {
+  AnyTransaction,
+  PendingTransaction,
+  ResourceList,
+} from '@helium/http'
+import {
+  FilterType,
+  Filters,
+  FilterKeys,
+} from '../features/wallet/root/walletTypes'
 import { getSecureItem } from './secureAccount'
 
 const client = new Client()
@@ -41,16 +49,32 @@ export const submitTransaction = async (serializedTxn: string) =>
 
 export const getCurrentOraclePrice = async () => client.oracle.getCurrentPrice()
 
-export const getPendingTxnList = async () => {
+export const getAccountTxnsList = async (filterType: FilterType) => {
   const address = await getSecureItem('address')
-  return client.account(address || '').pendingTransactions.list()
-}
+  if (!address) return
 
-export const getAccountActivityList = async (filterType: FilterType) => {
-  const address = await getSecureItem('address')
+  if (filterType === 'pending') {
+    return client.account(address).pendingTransactions.list()
+  }
 
   const params = { filterTypes: Filters[filterType] }
-  return client.account(address || '').activity.list(params)
+  return client.account(address).activity.list(params)
+}
+
+export const txnFetchers = {} as Record<
+  FilterType,
+  ResourceList<AnyTransaction | PendingTransaction>
+>
+
+export const initFetchers = async () => {
+  const lists = await Promise.all(
+    FilterKeys.map((key) => getAccountTxnsList(key)),
+  )
+  FilterKeys.forEach((key, index) => {
+    const fetcher = lists[index]
+    if (!fetcher) return
+    txnFetchers[key] = fetcher
+  })
 }
 
 export default client

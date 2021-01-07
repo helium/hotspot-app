@@ -41,7 +41,10 @@ const ActivityCard = forwardRef(
     const [transactionData, setTransactionData] = useState<
       (AnyTransaction | PendingTransaction)[]
     >([])
-    const flatListRef = useRef<FlatList<any>>(null)
+    const flatListRef = useRef<FlatList<PendingTransaction | AnyTransaction>>(
+      null,
+    )
+    const [hasFetchedPending, setHasFetchedPending] = useState(false)
     const [filter, setFilter] = useState<FilterType>('all')
     const { result: address } = useAsync(getSecureItem, ['address'])
     const { purpleMuted } = useColors()
@@ -54,21 +57,20 @@ const ActivityCard = forwardRef(
     const loadData = useCallback(() => {
       dispatch(fetchTxns(filter))
 
-      if (!txns.pending) {
+      if (!hasFetchedPending) {
+        setHasFetchedPending(true)
         dispatch(fetchTxns('pending'))
       }
-    }, [dispatch, filter, txns.pending])
+    }, [dispatch, filter, hasFetchedPending])
 
     useEffect(() => {
       loadData()
     }, [filter, loadData])
 
     useEffect(() => {
-      let data = []
+      let data: (PendingTransaction | AnyTransaction)[] = txns[filter]
       if (filter === 'all') {
-        data = [...txns[filter], ...txns.pending]
-      } else {
-        data = txns[filter]
+        data = [...txns.pending, ...data]
       }
       if (!transactionData.length) {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import WalletView from './WalletView'
 import Box from '../../../components/Box'
 
@@ -10,4 +10,4 @@ const WalletScreen = () => {
   )
 }
 
-export default WalletScreen
+export default memo(WalletScreen)
