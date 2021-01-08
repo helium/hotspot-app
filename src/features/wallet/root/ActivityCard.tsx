@@ -137,10 +137,10 @@ const ActivityCard = forwardRef(
           maxToRenderPerBatch: 50,
           keyExtractor: (item: AnyTransaction | PendingTransaction) => {
             if (isPendingTransaction(item)) {
-              return (item as PendingTransaction).hash
+              return `${filter}.${(item as PendingTransaction).hash}`
             }
 
-            return (item as AddGatewayV1).hash
+            return `${filter}.${(item as AddGatewayV1).hash}`
           },
           renderItem,
           refreshControl: (

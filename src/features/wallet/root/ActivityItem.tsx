@@ -58,13 +58,20 @@ const ActivityItem = ({
       return animalHash(item.gateway)
     }
     if (item instanceof AssertLocationV1 || item instanceof TransferHotspotV1) {
-      return `-${item.fee?.toLocaleString()}`
+      return `${
+        item.fee && item.fee !== 0 ? '-' : ''
+      }${item.fee?.toLocaleString()}`
     }
-    if (item instanceof RewardsV1 || item instanceof PaymentV2) {
+    if (item instanceof RewardsV1) {
       return `+${item.totalAmount.toString()}`
     }
     if (item instanceof PaymentV1) {
-      return `+${item.amount.floatBalance.toString()}`
+      return `${isSending ? '-' : '+'}${item.amount.floatBalance.toString()}`
+    }
+    if (item instanceof PaymentV2) {
+      return `${
+        isSending ? '-' : '+'
+      }${item.totalAmount.floatBalance.toString()}`
     }
     const pendingTxn = item as PendingTransaction
     if (pendingTxn.txn !== undefined) {
@@ -75,7 +82,7 @@ const ActivityItem = ({
     }
 
     return ''
-  }, [item])
+  }, [item, isSending])
 
   const time = useMemo(() => {
     let val: Date
