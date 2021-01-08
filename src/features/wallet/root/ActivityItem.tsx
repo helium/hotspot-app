@@ -205,10 +205,20 @@ const ActivityItem = ({
           {icon(item.type)}
         </Box>
         <Box flex={1} paddingHorizontal="m">
-          <Text variant="body2Medium" color="black">
+          <Text
+            variant="body2Medium"
+            color="black"
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
             {titles(item.type)}
           </Text>
-          <Text color="grayExtraLight" variant="body2">
+          <Text
+            color="grayExtraLight"
+            variant="body2"
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
             {amount}
           </Text>
         </Box>

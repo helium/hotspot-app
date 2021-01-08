@@ -46,13 +46,14 @@ const ActivityCardHeader = ({ filter, onFilterChanged }: Props) => {
       <Box alignItems="center" padding="s">
         <CardHandle />
       </Box>
-      <Box flexDirection="row" alignItems="center">
+      <Box marginTop="n_s" flexDirection="row" alignItems="center">
         <Text color="grayDark" variant="h4" fontFamily={Font.main.medium}>
           {t('transactions.view')}
         </Text>
         <TouchableOpacityBox
           flexDirection="row"
           paddingHorizontal="xs"
+          paddingVertical="s"
           onPress={onOpenActionSheet}
         >
           <Text color="purpleMain" variant="h4">

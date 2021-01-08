@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import React, {
   useRef,
   forwardRef,
@@ -48,7 +49,7 @@ const ActivityCard = forwardRef(
     const [filter, setFilter] = useState<FilterType>('all')
     const { result: address } = useAsync(getSecureItem, ['address'])
     const { purpleMuted } = useColors()
-    const { m } = useSpacing()
+    const { m, n_m } = useSpacing()
     const dispatch = useAppDispatch()
     const {
       account: { txns, txnStatus },
@@ -132,6 +133,7 @@ const ActivityCard = forwardRef(
         )}
         containerStyle={{ paddingHorizontal: m }}
         flatListProps={{
+          style: { marginTop: n_m },
           data: transactionData,
           ref: flatListRef,
           maxToRenderPerBatch: 50,
