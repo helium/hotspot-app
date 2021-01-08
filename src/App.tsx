@@ -22,6 +22,7 @@ import { RootState } from './store/rootReducer'
 import { fetchData } from './store/account/accountSlice'
 import BluetoothProvider from './providers/BluetoothProvider'
 import ConnectedHotspotProvider from './providers/ConnectedHotspotProvider'
+import * as Logger from './utils/logger'
 
 const App = () => {
   if (Platform.OS === 'android') {
@@ -75,6 +76,7 @@ const App = () => {
   useEffect(() => {
     OneSignal.setAppId(Config.ONE_SIGNAL_APP_ID)
     MapboxGL.setAccessToken(Config.MAPBOX_ACCESS_TOKEN)
+    Logger.init()
   }, [])
 
   useEffect(() => {
