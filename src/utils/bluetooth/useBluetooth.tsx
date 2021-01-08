@@ -5,7 +5,6 @@ import {
   Characteristic,
   Device,
   LogLevel,
-  State,
 } from 'react-native-ble-plx'
 import { decode } from 'base-64'
 import sleep from '../sleep'
@@ -14,6 +13,7 @@ import {
   HotspotCharacteristic,
   Service,
 } from './bluetoothTypes'
+import * as Logger from '../logger'
 
 const useBluetooth = () => {
   const instanceRef = useRef<BleManager | null>(null)
@@ -36,25 +36,36 @@ const useBluetooth = () => {
 
   const getState = async () => getBleManager().state()
 
-  const subscribeToState = (callback: (state: State) => void) =>
-    getBleManager().onStateChange(callback, true)
-
   const enable = async () => {
     getBleManager().enable()
   }
 
-  const connect = async (hotspotDevice: Device): Promise<Device | undefined> =>
-    hotspotDevice.connect({
-      refreshGatt: 'OnConnected',
-    })
+  const connect = async (
+    hotspotDevice: Device,
+  ): Promise<Device | undefined> => {
+    Logger.breadcrumb('Connect hotspot requested')
+
+    try {
+      const device = await hotspotDevice.connect({
+        refreshGatt: 'OnConnected',
+        timeout: 10000,
+      })
+      Logger.breadcrumb('Hotspot Connected')
+      return device
+    } catch (e) {
+      Logger.error(e)
+      return hotspotDevice
+    }
+  }
 
   const scan = async (ms: number, callback: (device: Device) => void) => {
+    Logger.breadcrumb('Scan for hotspots')
     getBleManager().startDeviceScan(
       [Service.MAIN_UUID],
       { allowDuplicates: false },
       (error, device) => {
         if (error) {
-          // Logger.sendError(error)
+          Logger.error(error)
           return
         }
 
@@ -71,25 +82,58 @@ const useBluetooth = () => {
 
   const discoverAllServicesAndCharacteristics = async (
     hotspotDevice: Device,
-  ): Promise<Device | undefined> =>
-    hotspotDevice.discoverAllServicesAndCharacteristics()
+  ): Promise<Device | undefined> => {
+    Logger.breadcrumb(
+      `Discover All Services and Characteristics for device: ${hotspotDevice.id}`,
+    )
+
+    try {
+      const device = await hotspotDevice.discoverAllServicesAndCharacteristics()
+      Logger.breadcrumb(
+        `Successfully discovered All Services and Characteristics for device: ${device.id}`,
+      )
+      return device
+    } catch (e) {
+      Logger.error(e)
+      return hotspotDevice
+    }
+  }
 
   const findCharacteristic = async (
     characteristicUuid: HotspotCharacteristic | FirmwareCharacteristic,
     hotspotDevice: Device,
     service: Service = Service.MAIN_UUID,
   ) => {
-    const characteristics = await hotspotDevice.characteristicsForService(
-      service,
+    Logger.breadcrumb(
+      `Find Characteristic: ${characteristicUuid} for service: ${service}`,
     )
-
-    return characteristics.find((c) => c.uuid === characteristicUuid)
+    try {
+      const characteristics = await hotspotDevice.characteristicsForService(
+        service,
+      )
+      const characteristic = characteristics.find(
+        (c) => c.uuid === characteristicUuid,
+      )
+      Logger.breadcrumb(
+        `${
+          characteristic
+            ? 'Found characteristic'
+            : 'Did not find characteristic'
+        } for service: ${service}`,
+      )
+      return characteristic
+    } catch (e) {
+      Logger.error(e)
+    }
   }
 
   const readCharacteristic = async (
     characteristic: Characteristic,
     tries = 1,
   ): Promise<Characteristic> => {
+    Logger.breadcrumb(
+      `Read Characteristic: ${characteristic.uuid} for service: ${characteristic.serviceUUID}`,
+    )
     try {
       const value = await characteristic.read()
       if (!value.value) return value
@@ -97,11 +141,10 @@ const useBluetooth = () => {
       const parsedValue = decode(value.value)
 
       if (parsedValue === 'wait') {
-        console.log('WAIT!')
         if (tries - 1 === 0) {
-          // Logger.sendError(
-          //   new Error(`Got wait from hotspot: parsedValue = ${parsedValue}`),
-          // )
+          Logger.error(
+            new Error(`Got wait from hotspot: parsedValue = ${parsedValue}`),
+          )
           return value
         }
 
@@ -110,11 +153,33 @@ const useBluetooth = () => {
         return await readCharacteristic(characteristic, tries - 1)
       }
 
+      Logger.breadcrumb(
+        `Successfully read Characteristic: ${characteristic.uuid} for service: ${characteristic.serviceUUID}`,
+      )
+
       return value
     } catch (e) {
-      console.log('readCharacteristic ***** ERROR ***** - ', e)
+      Logger.error(e)
     }
     return characteristic
+  }
+
+  const writeCharacteristic = async (
+    characteristic: Characteristic,
+    payload: Base64,
+  ) => {
+    Logger.breadcrumb(
+      `Write Characteristic: ${characteristic.uuid} for service: ${characteristic.serviceUUID}`,
+    )
+    try {
+      const c = await characteristic.writeWithResponse(payload)
+      Logger.breadcrumb(
+        `Successfully wrote Characteristic: ${c.uuid} for service: ${c.serviceUUID}`,
+      )
+      return c
+    } catch (e) {
+      Logger.error(e)
+    }
   }
 
   const findAndReadCharacteristic = async (
@@ -132,17 +197,6 @@ const useBluetooth = () => {
 
     const readChar = await readCharacteristic(characteristic, tries)
     return readChar?.value || undefined
-  }
-
-  const writeCharacteristic = async (
-    characteristic: Characteristic,
-    payload: Base64,
-  ) => {
-    try {
-      return characteristic.writeWithResponse(payload)
-    } catch (e) {
-      console.log('writeCharacteristic ***** ERROR ***** - ', e)
-    }
   }
 
   const findAndWriteCharacteristic = async (
@@ -163,7 +217,6 @@ const useBluetooth = () => {
 
   return {
     getState,
-    subscribeToState,
     enable,
     scan,
     connect,

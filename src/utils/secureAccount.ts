@@ -1,5 +1,6 @@
 import { Keypair, Mnemonic, Address } from '@helium/crypto-react-native'
 import * as SecureStore from 'expo-secure-store'
+import * as Logger from './logger'
 
 type AccountStoreKey = BooleanKey | StringKey
 
@@ -53,6 +54,8 @@ export const createKeypair = async (
   }
   const { keypair: keypairRaw, address } = await Keypair.fromMnemonic(mnemonic)
 
+  Logger.setUser(address.b58)
+
   await Promise.all([
     setSecureItem('mnemonic', JSON.stringify(mnemonic.words)),
     setSecureItem('keypair', JSON.stringify(keypairRaw)),
@@ -63,6 +66,8 @@ export const createKeypair = async (
 export const getAddress = async (): Promise<Address | undefined> => {
   const addressB58 = await getSecureItem('address')
   if (!addressB58) return
+
+  Logger.setUser(addressB58)
   return Address.fromB58(addressB58)
 }
 
