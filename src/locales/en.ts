@@ -517,5 +517,17 @@ export default {
       pending: 'Pending Transactions',
     },
     no_results: 'No Results',
+  hotspot_settings: {
+    title: 'Hotspot Settings',
+    pairing: {
+      title: 'Hotspot Pairing Required',
+      subtitle:
+        'Press the button on your Helium Hotspot, or power-cycle your RAK Hotspot Miner.',
+    },
+    transfer: {
+      title: 'Transfer Hotspot',
+      subtitle: 'Transfer Hotspot to another Helium Wallet Account.',
+      action: 'Begin Hotspot Transfer',
+    },
   },
 }

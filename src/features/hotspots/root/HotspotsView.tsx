@@ -22,6 +22,8 @@ import HotspotsCarousel from '../../../components/HotspotsCarousel'
 import Map from '../../../components/Map'
 import { hotspotsToFeatures } from '../../../utils/mapUtils'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
+import Settings from '../../../assets/images/settings.svg'
+import HotspotSettings from '../settings/HotspotSettings'
 
 type Props = {
   ownedHotspots: Hotspot[]
@@ -47,6 +49,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
   const dragMin = 40
   const { t } = useTranslation()
   const [focusedHotspot, setFocusedHotspot] = useState(ownedHotspots[0])
+  const [showSettings, setShowSettings] = useState(false)
 
   const [date, setDate] = useState(new Date())
   useEffect(() => {
@@ -172,6 +175,14 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
       <BottomSheet
         containerStyle={{ paddingLeft: 0, paddingRight: 0 }}
         snapPoints={[dragMin, dragMid, dragMax]}
+        renderHeader={() => (
+          <TouchableOpacityBox
+            padding="l"
+            onPress={() => setShowSettings(true)}
+          >
+            <Settings />
+          </TouchableOpacityBox>
+        )}
         initialSnapIndex={1}
         snapProgress={snapProgress}
       >
