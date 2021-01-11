@@ -515,5 +515,6 @@ export default {
       hotspot: 'Hotspot Transactions',
       pending: 'Pending Transactions',
     },
+    no_results: 'No Results',
   },
 }

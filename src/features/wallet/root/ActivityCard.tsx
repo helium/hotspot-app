@@ -15,7 +15,13 @@ import Animated from 'react-native-reanimated'
 import { useSelector } from 'react-redux'
 import { AnyTransaction, AddGatewayV1, PendingTransaction } from '@helium/http'
 import { useAsync } from 'react-async-hook'
-import { LayoutAnimation, RefreshControl, FlatList } from 'react-native'
+import {
+  LayoutAnimation,
+  RefreshControl,
+  FlatList,
+  ActivityIndicator,
+} from 'react-native'
+import { useTranslation } from 'react-i18next'
 import ActivityItem from './ActivityItem'
 import { WalletAnimationPoints } from './walletLayout'
 import ActivityCardHeader from './ActivityCardHeader'
@@ -26,6 +32,7 @@ import { FilterType } from './walletTypes'
 import { fetchTxns } from '../../../store/account/accountSlice'
 import { useAppDispatch } from '../../../store/store'
 import { useColors, useSpacing } from '../../../theme/themeHooks'
+import Text from '../../../components/Text'
 
 type Props = {
   animationPoints: WalletAnimationPoints
@@ -51,6 +58,7 @@ const ActivityCard = forwardRef(
     const { purpleMuted } = useColors()
     const { m, n_m } = useSpacing()
     const dispatch = useAppDispatch()
+    const { t } = useTranslation()
     const {
       account: { txns, txnStatus },
     } = useSelector((state: RootState) => state)
@@ -119,6 +127,8 @@ const ActivityCard = forwardRef(
       }
     }, [transactionData.length])
 
+    // TODO: Figure out why there is a delay after setting the filter
+
     return (
       <BottomSheet
         ref={sheet}
@@ -152,6 +162,27 @@ const ActivityCard = forwardRef(
               tintColor={purpleMuted}
             />
           ),
+          ListHeaderComponent: () => {
+            if (txnStatus === 'pending' && !transactionData.length) {
+              return <ActivityIndicator />
+            }
+
+            if (txnStatus === 'fulfilled' && !transactionData.length) {
+              return (
+                <Text
+                  padding="l"
+                  variant="body1"
+                  color="black"
+                  width="100%"
+                  textAlign="center"
+                >
+                  {t('transactions.no_results')}
+                </Text>
+              )
+            }
+
+            return null
+          },
           onEndReached: loadData,
         }}
       />
