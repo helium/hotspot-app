@@ -523,11 +523,12 @@ export default {
       title: 'Hotspot Pairing Required',
       subtitle:
         'Press the button on your Helium Hotspot, or power-cycle your RAK Hotspot Miner.',
+      scan: 'Scan for my Hotspot',
     },
     transfer: {
       title: 'Transfer Hotspot',
       subtitle: 'Transfer Hotspot to another Helium Wallet Account.',
-      action: 'Begin Hotspot Transfer',
+      begin: 'Begin Hotspot Transfer',
     },
   },
 }

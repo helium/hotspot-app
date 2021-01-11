@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react'
-import { Modal, Animated, Easing } from 'react-native'
+import React, { useEffect, memo, useRef, useState } from 'react'
+import { Modal, Animated, Easing, LayoutAnimation } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import BlurBox from '../../../components/BlurBox'
 import Card from '../../../components/Card'
@@ -9,23 +9,76 @@ import CloseModal from '../../../assets/images/closeModal.svg'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import { useSpacing } from '../../../theme/themeHooks'
 import AnimatedBox from '../../../components/AnimatedBox'
-import Button from '../../../components/Button'
+import HotspotSettingsOption from './HotspotSettingsOption'
+import HotspotDiagnostics from './HotspotDiagnostics'
+import Box from '../../../components/Box'
+import HotspotTransfer from './HotspotTransfer'
 
-type Props = { visible: boolean; onClose: () => void }
+type Props = {
+  visible: boolean
+  onClose: () => void
+}
+
+type State = 'init' | 'scan' | 'transfer'
+
 const HotspotSettings = ({ visible, onClose }: Props) => {
+  const [state, setState] = useState<State>('init')
   const { m } = useSpacing()
+  const slideUpAnimRef = useRef(new Animated.Value(1000))
   const { t } = useTranslation()
-
-  const slideUpAnimRef = useRef(new Animated.Value(120))
 
   useEffect(() => {
     Animated.timing(slideUpAnimRef.current, {
-      toValue: visible ? m : 500,
-      duration: 300,
+      toValue: visible ? m : 1000,
+      duration: 500,
       useNativeDriver: true,
-      easing: Easing.elastic(0.7),
+      easing: Easing.elastic(0.8),
+      delay: visible ? 100 : 0,
     }).start()
-  }, [visible, m])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible])
+
+  const setNextState = (s: State) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+    setState(s)
+  }
+
+  useEffect(() => {
+    if (!visible) {
+      setNextState('init')
+    }
+  }, [visible])
+
+  const getFirstCard = () => {
+    if (state === 'scan') {
+      return <HotspotDiagnostics onClose={onClose} />
+    }
+    return (
+      <HotspotSettingsOption
+        title={t('hotspot_settings.pairing.title')}
+        subtitle={t('hotspot_settings.pairing.subtitle')}
+        buttonLabel={t('hotspot_settings.pairing.scan')}
+        variant="primary"
+        onPress={() => setNextState('scan')}
+      />
+    )
+  }
+
+  const getSecondCard = () => {
+    if (state === 'transfer') {
+      return <HotspotTransfer onClose={onClose} />
+    }
+
+    return (
+      <HotspotSettingsOption
+        title={t('hotspot_settings.transfer.title')}
+        subtitle={t('hotspot_settings.transfer.subtitle')}
+        buttonLabel={t('hotspot_settings.transfer.begin')}
+        variant="secondary"
+        onPress={() => setNextState('transfer')}
+      />
+    )
+  }
 
   return (
     <Modal
@@ -45,71 +98,48 @@ const HotspotSettings = ({ visible, onClose }: Props) => {
         intensity={97}
         onTouchStart={onClose}
       />
+
       <SafeAreaBox
         flex={1}
         flexDirection="column"
         justifyContent="space-between"
       >
-        <TouchableOpacityBox
-          alignSelf="flex-end"
-          height={22}
-          padding="l"
-          onPress={onClose}
-        >
-          <CloseModal color="white" />
-        </TouchableOpacityBox>
+        {state === 'init' && (
+          <TouchableOpacityBox
+            alignSelf="flex-end"
+            height={22}
+            padding="l"
+            onPress={onClose}
+          >
+            <CloseModal color="white" />
+          </TouchableOpacityBox>
+        )}
+        <Box flex={1} />
         <AnimatedBox
           margin="ms"
           style={{ transform: [{ translateY: slideUpAnimRef.current }] }}
         >
-          <Text variant="h2" color="white" marginBottom="ms">
-            {t('hotspot_settings.title')}
-          </Text>
-          <Card
-            variant="modal"
-            backgroundColor="white"
-            minHeight={40}
-            padding="l"
-          >
-            <Text variant="h4" color="black" marginBottom="ms">
-              {t('hotspot_settings.pairing.title')}
+          {state === 'init' && (
+            <Text variant="h2" color="white" marginBottom="ms">
+              {t('hotspot_settings.title')}
             </Text>
-            <Text variant="body2" color="grayText">
-              {t('hotspot_settings.pairing.subtitle')}
-            </Text>
-            <Button
-              marginTop="l"
-              width="100%"
-              variant="primary"
-              mode="contained"
-              title={t('hotspot_setup.pair.scan')}
-            />
-          </Card>
-          <Card
-            variant="modal"
-            backgroundColor="white"
-            minHeight={40}
-            marginTop="l"
-            padding="l"
-          >
-            <Text variant="h4" color="black" marginBottom="ms">
-              {t('hotspot_settings.transfer.title')}
-            </Text>
-            <Text variant="body2" color="grayText">
-              {t('hotspot_settings.transfer.subtitle')}
-            </Text>
-            <Button
-              marginTop="l"
-              width="100%"
-              variant="secondary"
-              mode="contained"
-              title={t('hotspot_settings.transfer.action')}
-            />
-          </Card>
+          )}
+
+          {state !== 'transfer' && (
+            <Card variant="modal" backgroundColor="white">
+              {getFirstCard()}
+            </Card>
+          )}
+
+          {state !== 'scan' && (
+            <Card variant="modal" backgroundColor="white" marginTop="l">
+              {getSecondCard()}
+            </Card>
+          )}
         </AnimatedBox>
       </SafeAreaBox>
     </Modal>
   )
 }
 
-export default HotspotSettings
+export default memo(HotspotSettings)
