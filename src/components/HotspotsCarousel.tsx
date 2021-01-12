@@ -3,12 +3,14 @@ import animalName from 'angry-purple-tiger'
 import React from 'react'
 import Carousel from 'react-native-snap-carousel'
 import { useTranslation } from 'react-i18next'
+import { useNavigation } from '@react-navigation/native'
 import Box from './Box'
 import CheckCircle from '../assets/images/check-circle.svg'
 import Text from './Text'
 import CircleProgress from './CircleProgress'
 import { wp } from '../utils/layout'
 import { useColors } from '../theme/themeHooks'
+import TouchableOpacityBox from './TouchableOpacityBox'
 
 type HotspotsCarouselProps = {
   hotspots: Hotspot[]
@@ -23,8 +25,9 @@ type HotspotsItemProps = {
 
 const HotspotItem = ({ hotspot, totalReward }: HotspotsItemProps) => {
   const { grayBox } = useColors()
+  const navigation = useNavigation()
   return (
-    <Box
+    <TouchableOpacityBox
       backgroundColor="grayBox"
       flexDirection="row"
       justifyContent="space-between"
@@ -33,26 +36,29 @@ const HotspotItem = ({ hotspot, totalReward }: HotspotsItemProps) => {
       borderRadius="m"
       marginStart="l"
       height={75}
+      onPress={() => navigation.navigate('HotspotDetails', { hotspot })}
     >
-      <Box flexDirection="column">
-        <Box flexDirection="row">
-          <CheckCircle width={17} height={17} />
-          <Text
-            variant="body2Medium"
-            color="black"
-            paddingStart="s"
-            width="80%"
-          >
-            {animalName(hotspot.address)}
+      <Box flexDirection="row">
+        <Box flexDirection="column">
+          <Box flexDirection="row">
+            <CheckCircle width={17} height={17} />
+            <Text
+              variant="body2Medium"
+              color="black"
+              paddingStart="s"
+              width="80%"
+            >
+              {animalName(hotspot.address)}
+            </Text>
+          </Box>
+          <Text variant="body2" color="purpleMain" paddingTop="s">
+            {`+${totalReward.toFixed(2)} HNT`}
           </Text>
         </Box>
-        <Text variant="body2" color="purpleMain" paddingTop="s">
-          {`+${totalReward.toFixed(2)} HNT`}
-        </Text>
+        {/* TODO: Update percentage to use hotspot on-boarding progress */}
+        <CircleProgress percentage={50} centerColor={grayBox} />
       </Box>
-      {/* TODO: Update percentage to use hotspot on-boarding progress */}
-      <CircleProgress percentage={50} centerColor={grayBox} />
-    </Box>
+    </TouchableOpacityBox>
   )
 }
 

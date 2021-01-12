@@ -21,6 +21,7 @@ type Props = {
   zoomLevel?: number
   mapCenter?: number[]
   ownedHotspots?: Feature[]
+  selectedHotspots?: Feature[]
   animationMode?: 'flyTo' | 'easeTo' | 'moveTo'
   animationDuration?: number
   offsetMapCenter?: boolean
@@ -37,6 +38,7 @@ const Map = ({
   animationMode = 'moveTo',
   animationDuration = 500,
   ownedHotspots,
+  selectedHotspots,
   offsetMapCenter,
   maxZoomLevel = 16,
   minZoomLevel = 0,
@@ -112,6 +114,7 @@ const Map = ({
 
   const mapImages = {
     markerOwned: require('../assets/images/owned-hotspot-marker.png'),
+    markerSelected: require('../assets/images/selected-hotspot-marker.png'),
   }
 
   return (
@@ -148,6 +151,22 @@ const Map = ({
               id="markerOwned"
               style={{
                 iconImage: 'markerOwned',
+                iconAllowOverlap: true,
+                iconSize: 1,
+              }}
+            />
+          </MapboxGL.ShapeSource>
+        )}
+        {selectedHotspots && (
+          <MapboxGL.ShapeSource
+            id="selectedHotspots"
+            shape={{ type: 'FeatureCollection', features: selectedHotspots }}
+            onPress={onShapeSourcePress}
+          >
+            <MapboxGL.SymbolLayer
+              id="markerSelected"
+              style={{
+                iconImage: 'markerSelected',
                 iconAllowOverlap: true,
                 iconSize: 1,
               }}
