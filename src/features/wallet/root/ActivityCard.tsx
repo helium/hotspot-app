@@ -45,6 +45,7 @@ import SentHnt from '../../../assets/images/sentHNT.svg'
 import HotspotAdded from '../../../assets/images/hotspotAdded.svg'
 import ReceivedHnt from '../../../assets/images/receivedHNT.svg'
 import Location from '../../../assets/images/location.svg'
+import usePrevious from '../../../utils/usePrevious'
 
 const TxnTypeKeys = [
   'rewards_v1',
@@ -74,40 +75,41 @@ const ActivityCard = forwardRef(
     const flatListRef = useRef<FlatList<PendingTransaction | AnyTransaction>>(
       null,
     )
-    const [hasFetchedPending, setHasFetchedPending] = useState(false)
     const [filter, setFilter] = useState<FilterType>('all')
+    const prevFilter = usePrevious(filter)
     const { result: address } = useAsync(getSecureItem, ['address'])
     const colors = useColors()
     const { m, n_m } = useSpacing()
     const dispatch = useAppDispatch()
     const { t } = useTranslation()
     const {
-      account: { txns, txnStatus },
+      account: { txns },
     } = useSelector((state: RootState) => state)
+    const prevStatus = usePrevious(txns[filter].status)
 
-    const loadData = useCallback(() => {
+    useEffect(() => {
       dispatch(fetchTxns(filter))
+      dispatch(fetchTxns('pending'))
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
-      if (!hasFetchedPending) {
-        setHasFetchedPending(true)
-        dispatch(fetchTxns('pending'))
+    useEffect(() => {
+      if (prevFilter !== filter) {
+        dispatch(fetchTxns(filter))
       }
-    }, [dispatch, filter, hasFetchedPending])
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [prevFilter, filter])
 
     useEffect(() => {
-      loadData()
-    }, [filter, loadData])
-
-    useEffect(() => {
-      let data: (PendingTransaction | AnyTransaction)[] = txns[filter]
+      let data: (PendingTransaction | AnyTransaction)[]
+      data = txns[filter].data
       if (filter === 'all') {
-        data = [...txns.pending, ...data]
+        data = [...txns.pending.data, ...data]
       }
-      if (!transactionData.length) {
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
-      }
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
       setTransactionData(data)
-    }, [filter, txns, transactionData.length])
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [txns[filter]])
 
     type BottomSheetHandle = ElementRef<typeof BottomSheet>
     const sheet = useRef<BottomSheetHandle>(null)
@@ -261,34 +263,26 @@ const ActivityCard = forwardRef(
       item: AnyTransaction | PendingTransaction
       index: number
     }
-    const renderItem = useCallback(
-      ({ item, index }: Item) => {
-        return (
-          <ActivityItem
-            isFirst={index === 0}
-            isLast={index === transactionData.length - 1}
-            backgroundColor={iconBackgroundColor(item)}
-            icon={icon(item)}
-            title={titles(item)}
-            amount={amount(item)}
-            time={time(item)}
-          />
-        )
-      },
-      [amount, icon, iconBackgroundColor, time, titles, transactionData.length],
-    )
+    const renderItem = ({ item, index }: Item) => {
+      return (
+        <ActivityItem
+          isFirst={index === 0}
+          isLast={!!transactionData && index === transactionData.length - 1}
+          backgroundColor={iconBackgroundColor(item)}
+          icon={icon(item)}
+          title={titles(item)}
+          amount={amount(item)}
+          time={time(item)}
+        />
+      )
+    }
 
     const { dragMax, dragMid, dragMin } = animationPoints
 
-    const onFilterChanged = (f: FilterType) => {
-      flatListRef?.current?.scrollToOffset({ animated: false, offset: 0 })
+    const onFilterChanged = useCallback((f: FilterType) => {
+      setTransactionData([])
       setFilter(f)
-    }
-
-    useEffect(() => {
-      if (!transactionData.length) {
-      }
-    }, [transactionData.length])
+    }, [])
 
     return (
       <BottomSheet
@@ -307,7 +301,8 @@ const ActivityCard = forwardRef(
           style: { marginTop: n_m },
           data: transactionData,
           ref: flatListRef,
-          maxToRenderPerBatch: 50,
+          maxToRenderPerBatch: 30,
+          initialNumToRender: 30,
           keyExtractor: (item: AnyTransaction | PendingTransaction) => {
             if (isPendingTransaction(item)) {
               return `${filter}.${(item as PendingTransaction).hash}`
@@ -317,11 +312,16 @@ const ActivityCard = forwardRef(
           },
           renderItem,
           ListFooterComponent: () => {
-            if (txnStatus === 'pending' && !transactionData.length) {
+            if (txns[filter].status === 'pending' && !transactionData?.length) {
               return <ActivityIndicator />
             }
-
-            if (txnStatus === 'fulfilled' && !transactionData.length) {
+            if (
+              txns[filter].status === 'fulfilled' &&
+              transactionData &&
+              transactionData.length === 0 &&
+              prevStatus === 'fulfilled' &&
+              prevFilter === filter
+            ) {
               return (
                 <Text
                   padding="l"
@@ -337,7 +337,9 @@ const ActivityCard = forwardRef(
 
             return null
           },
-          onEndReached: loadData,
+          onEndReached: () => {
+            dispatch(fetchTxns(filter))
+          },
         }}
       />
     )

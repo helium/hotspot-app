@@ -34,13 +34,12 @@ export type AccountState = {
   account?: Account
   mainDataStatus: Loading
   markNotificationStatus: Loading
-  txnStatus: Loading
   txns: {
-    all: AnyTransaction[]
-    hotspot: AnyTransaction[]
-    mining: AnyTransaction[]
-    payment: AnyTransaction[]
-    pending: PendingTransaction[]
+    all: { data: AnyTransaction[]; status: Loading }
+    hotspot: { data: AnyTransaction[]; status: Loading }
+    mining: { data: AnyTransaction[]; status: Loading }
+    payment: { data: AnyTransaction[]; status: Loading }
+    pending: { data: PendingTransaction[]; status: Loading }
   }
 }
 
@@ -49,8 +48,13 @@ const initialState: AccountState = {
   notifications: [],
   mainDataStatus: 'idle',
   markNotificationStatus: 'idle',
-  txnStatus: 'idle',
-  txns: { all: [], hotspot: [], mining: [], payment: [], pending: [] },
+  txns: {
+    all: { data: [], status: 'idle' },
+    hotspot: { data: [], status: 'idle' },
+    mining: { data: [], status: 'idle' },
+    payment: { data: [], status: 'idle' },
+    pending: { data: [], status: 'idle' },
+  },
 }
 
 type AccountData = {
@@ -94,7 +98,7 @@ export const fetchTxns = createAsyncThunk<
   FilterType
 >('account/fetchAccountActivity', async (filterType) => {
   const list = txnFetchers[filterType]
-  return list.takeJSON(filterType === 'pending' ? 1000 : 50)
+  return list.takeJSON(filterType === 'pending' ? 1000 : 30)
 })
 
 // This slice contains data related to the user account
@@ -106,7 +110,7 @@ const accountSlice = createSlice({
       state,
       action: PayloadAction<PendingTransaction>,
     ) => {
-      state.txns.pending.push(action.payload)
+      state.txns.pending.data.push(action.payload)
     },
     signOut: () => {
       return { ...initialState }
@@ -128,24 +132,24 @@ const accountSlice = createSlice({
       state.mainDataStatus = 'rejected'
       state.markNotificationStatus = 'rejected'
     })
-    builder.addCase(fetchTxns.pending, (state, _action) => {
-      state.txnStatus = 'pending'
+    builder.addCase(fetchTxns.pending, (state, { meta: { arg } }) => {
+      state.txns[arg].status = 'pending'
     })
-    builder.addCase(fetchTxns.rejected, (state, _action) => {
-      state.txnStatus = 'rejected'
+    builder.addCase(fetchTxns.rejected, (state, { meta: { arg } }) => {
+      state.txns[arg].status = 'rejected'
     })
     builder.addCase(
       fetchTxns.fulfilled,
       (state, { payload, meta: { arg } }) => {
-        state.txnStatus = 'fulfilled'
+        state.txns[arg].status = 'fulfilled'
         if (arg === 'pending') {
           const pending = payload as PendingTransaction[]
           const filtered = pending.filter((txn) => txn.status === 'pending')
-          const joined = unionBy(filtered, state.txns.pending, 'hash')
-          state.txns.pending = joined
+          const joined = unionBy(filtered, state.txns.pending.data, 'hash')
+          state.txns.pending.data = joined
         } else {
-          state.txns[arg] = [
-            ...state.txns[arg],
+          state.txns[arg].data = [
+            ...state.txns[arg].data,
             ...(payload as AnyTransaction[]),
           ]
         }

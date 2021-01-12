@@ -1,4 +1,4 @@
-import React, { memo, ReactText } from 'react'
+import React, { memo, ReactText, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Picker } from '@react-native-picker/picker'
 import { Modal } from 'react-native'
@@ -24,6 +24,10 @@ const ModalPicker = ({
 }: Props) => {
   const { grayLight } = useColors()
   const { t } = useTranslation()
+  const [selection, setSelection] = useState<{
+    itemIndex: number | undefined
+    itemValue: ReactText
+  }>({ itemValue: selectedValue, itemIndex: undefined })
   return (
     <Modal
       visible={visible}
@@ -47,19 +51,24 @@ const ModalPicker = ({
               variant="body1Medium"
               paddingVertical="ms"
               paddingHorizontal="m"
-              onPress={handleClose}
+              onPress={() => {
+                if (selection.itemIndex !== undefined) {
+                  onValueChanged(selection.itemValue, selection.itemIndex)
+                }
+                handleClose()
+              }}
             >
               {t('generic.done')}
             </Text>
           </TouchableOpacityBox>
           <Picker
-            selectedValue={selectedValue}
+            selectedValue={selection.itemValue}
             style={{
               width: '100%',
               backgroundColor: grayLight,
             }}
             onValueChange={(itemValue, itemIndex) =>
-              onValueChanged(itemValue, itemIndex)
+              setSelection({ itemValue, itemIndex })
             }
           >
             {data.map(({ label, value }) => (
