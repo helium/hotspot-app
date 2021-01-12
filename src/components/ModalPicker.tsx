@@ -63,7 +63,7 @@ const ModalPicker = ({
             }
           >
             {data.map(({ label, value }) => (
-              <Picker.Item label={label} value={value} />
+              <Picker.Item key={value} label={label} value={value} />
             ))}
           </Picker>
         </Box>

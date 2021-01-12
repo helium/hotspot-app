@@ -13,21 +13,48 @@ import React, {
 import BottomSheet from 'react-native-holy-sheet'
 import Animated from 'react-native-reanimated'
 import { useSelector } from 'react-redux'
-import { AnyTransaction, AddGatewayV1, PendingTransaction } from '@helium/http'
 import { useAsync } from 'react-async-hook'
 import { LayoutAnimation, FlatList, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import animalHash from 'angry-purple-tiger'
+import {
+  AnyTransaction,
+  RewardsV1,
+  AddGatewayV1,
+  AssertLocationV1,
+  PaymentV2,
+  PaymentV1,
+  PendingTransaction,
+  TransferHotspotV1,
+} from '@helium/http'
+import { formatDistanceToNow, fromUnixTime } from 'date-fns'
 import ActivityItem from './ActivityItem'
 import { WalletAnimationPoints } from './walletLayout'
 import ActivityCardHeader from './ActivityCardHeader'
 import { RootState } from '../../../store/rootReducer'
 import { getSecureItem } from '../../../utils/secureAccount'
-import { isPendingTransaction } from '../../../utils/transactions'
+import { isPayer, isPendingTransaction } from '../../../utils/transactions'
 import { FilterType } from './walletTypes'
 import { fetchTxns } from '../../../store/account/accountSlice'
 import { useAppDispatch } from '../../../store/store'
-import { useSpacing } from '../../../theme/themeHooks'
+import { useColors, useSpacing } from '../../../theme/themeHooks'
 import Text from '../../../components/Text'
+import shortLocale from '../../../utils/formatDistance'
+import Rewards from '../../../assets/images/rewards.svg'
+import SentHnt from '../../../assets/images/sentHNT.svg'
+import HotspotAdded from '../../../assets/images/hotspotAdded.svg'
+import ReceivedHnt from '../../../assets/images/receivedHNT.svg'
+import Location from '../../../assets/images/location.svg'
+
+const TxnTypeKeys = [
+  'rewards_v1',
+  'payment_v1',
+  'payment_v2',
+  'add_gateway_v1',
+  'assert_location_v1',
+  'transfer_hotspot_v1',
+] as const
+type TxnType = typeof TxnTypeKeys[number]
 
 type Props = {
   animationPoints: WalletAnimationPoints
@@ -50,6 +77,7 @@ const ActivityCard = forwardRef(
     const [hasFetchedPending, setHasFetchedPending] = useState(false)
     const [filter, setFilter] = useState<FilterType>('all')
     const { result: address } = useAsync(getSecureItem, ['address'])
+    const colors = useColors()
     const { m, n_m } = useSpacing()
     const dispatch = useAppDispatch()
     const { t } = useTranslation()
@@ -90,36 +118,177 @@ const ActivityCard = forwardRef(
       },
     }))
 
-    const renderItem = ({
-      item,
-      index,
-    }: {
+    const isSending = useCallback(
+      (item: AnyTransaction | PendingTransaction) => {
+        return isPayer(address, item)
+      },
+      [address],
+    )
+
+    const amount = useCallback(
+      (item: AnyTransaction | PendingTransaction) => {
+        if (item instanceof AddGatewayV1) {
+          return animalHash(item.gateway)
+        }
+        if (
+          item instanceof AssertLocationV1 ||
+          item instanceof TransferHotspotV1
+        ) {
+          return `${
+            item.fee && item.fee !== 0 ? '-' : ''
+          }${item.fee?.toLocaleString()}`
+        }
+        if (item instanceof RewardsV1) {
+          return `+${item.totalAmount.toString()}`
+        }
+        if (item instanceof PaymentV1) {
+          return `${
+            isSending(item) ? '-' : '+'
+          }${item.amount.floatBalance.toString()}`
+        }
+        if (item instanceof PaymentV2) {
+          return `${
+            isSending(item) ? '-' : '+'
+          }${item.totalAmount.floatBalance.toString()}`
+        }
+        const pendingTxn = item as PendingTransaction
+        if (pendingTxn.txn !== undefined) {
+          if (pendingTxn.txn.type === 'add_gateway_v1') {
+            return animalHash((pendingTxn.txn as AddGatewayV1).gateway)
+          }
+          return `-${pendingTxn.txn.fee.toLocaleString()}`
+        }
+
+        return ''
+      },
+      [isSending],
+    )
+
+    const time = useCallback((item: AnyTransaction | PendingTransaction) => {
+      let val: Date
+      const pending = item as PendingTransaction
+      if (pending.txn !== undefined) {
+        val = new Date(pending.createdAt)
+      } else {
+        val = fromUnixTime((item as AddGatewayV1).time)
+      }
+
+      if (val) {
+        return formatDistanceToNow(val, {
+          locale: shortLocale,
+          addSuffix: true,
+        })
+      }
+
+      return undefined
+    }, [])
+
+    const titles = useCallback(
+      (item: AnyTransaction | PendingTransaction) => {
+        if (!TxnTypeKeys.find((k) => k === item.type)) {
+          return item.type
+        }
+
+        switch (item.type as TxnType) {
+          case 'add_gateway_v1':
+            return t('transactions.added')
+          case 'payment_v1':
+          case 'payment_v2':
+            return isSending(item)
+              ? t('transactions.sent')
+              : t('transactions.received')
+          case 'assert_location_v1':
+            return t('transactions.location')
+          case 'transfer_hotspot_v1':
+            return t('transactions.transfer')
+          case 'rewards_v1':
+            return t('transactions.mining')
+        }
+      },
+      [isSending, t],
+    )
+
+    const iconBackgroundColor = useCallback(
+      (item: AnyTransaction | PendingTransaction) => {
+        if (!TxnTypeKeys.find((k) => k === item.type)) {
+          return colors.primaryBackground
+        }
+
+        switch (item.type as TxnType) {
+          case 'transfer_hotspot_v1':
+          case 'add_gateway_v1':
+            return colors.purple100
+          case 'payment_v1':
+          case 'payment_v2':
+            return isSending(item) ? colors.blueBright : colors.greenMain
+          case 'assert_location_v1':
+            return colors.purpleMuted
+          case 'rewards_v1':
+            return colors.purpleBright
+        }
+      },
+      [isSending, colors],
+    )
+
+    const icon = useCallback(
+      (item: AnyTransaction | PendingTransaction) => {
+        if (!TxnTypeKeys.find((k) => k === item.type)) {
+          return null
+        }
+
+        const size = 24
+        switch (item.type as TxnType) {
+          case 'transfer_hotspot_v1':
+          case 'add_gateway_v1':
+            return <HotspotAdded width={size} height={size} />
+          case 'payment_v1':
+          case 'payment_v2':
+            return isSending(item) ? (
+              <SentHnt width={size} height={size} />
+            ) : (
+              <ReceivedHnt width={size} height={size} />
+            )
+          case 'assert_location_v1':
+            return <Location width={size} height={size} />
+          case 'rewards_v1':
+            return <Rewards width={size} height={size} />
+        }
+      },
+      [isSending],
+    )
+
+    type Item = {
       item: AnyTransaction | PendingTransaction
       index: number
-    }) => {
-      return (
-        <ActivityItem
-          item={item}
-          isFirst={index === 0}
-          isLast={index === transactionData.length - 1}
-          address={address}
-        />
-      )
     }
+    const renderItem = useCallback(
+      ({ item, index }: Item) => {
+        return (
+          <ActivityItem
+            isFirst={index === 0}
+            isLast={index === transactionData.length - 1}
+            backgroundColor={iconBackgroundColor(item)}
+            icon={icon(item)}
+            title={titles(item)}
+            amount={amount(item)}
+            time={time(item)}
+          />
+        )
+      },
+      [amount, icon, iconBackgroundColor, time, titles, transactionData.length],
+    )
 
     const { dragMax, dragMid, dragMin } = animationPoints
 
     const onFilterChanged = (f: FilterType) => {
+      flatListRef?.current?.scrollToOffset({ animated: false, offset: 0 })
       setFilter(f)
     }
 
     useEffect(() => {
       if (!transactionData.length) {
-        flatListRef?.current?.scrollToOffset({ animated: false, offset: 0 })
       }
     }, [transactionData.length])
-
-    // TODO: Figure out why there is a delay after setting the filter
 
     return (
       <BottomSheet
