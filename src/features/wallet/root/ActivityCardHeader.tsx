@@ -1,6 +1,5 @@
-import React from 'react'
+import React, { memo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useActionSheet } from '@expo/react-native-action-sheet'
 import CardHandle from './CardHandle'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -8,6 +7,7 @@ import CarotDown from '../../../assets/images/carot-down.svg'
 import { FilterKeys, FilterType } from './walletTypes'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { Font } from '../../../theme/theme'
+import ModalPicker from '../../../components/ModalPicker'
 
 type Props = {
   filter: FilterType
@@ -15,31 +15,12 @@ type Props = {
 }
 
 const ActivityCardHeader = ({ filter, onFilterChanged }: Props) => {
-  const { showActionSheetWithOptions } = useActionSheet()
+  const [showPicker, setShowPicker] = useState(false)
   const { t } = useTranslation()
   const filters = t('transactions.filter', { returnObjects: true }) as Record<
     string,
     string
   >
-
-  const onOpenActionSheet = () => {
-    const options = [...FilterKeys.map((k) => filters[k]), t('generic.cancel')]
-    const cancelButtonIndex = FilterKeys.length
-
-    showActionSheetWithOptions(
-      {
-        options,
-        cancelButtonIndex,
-        useModal: true,
-      },
-      (buttonIndex) => {
-        const key = FilterKeys[buttonIndex]
-        if (!key) return
-
-        onFilterChanged(key)
-      },
-    )
-  }
 
   return (
     <Box padding="m">
@@ -54,7 +35,9 @@ const ActivityCardHeader = ({ filter, onFilterChanged }: Props) => {
           flexDirection="row"
           paddingHorizontal="xs"
           paddingVertical="s"
-          onPress={onOpenActionSheet}
+          onPress={() => {
+            setShowPicker(true)
+          }}
         >
           <Text color="purpleMain" variant="h4">
             {filters[filter]}
@@ -64,8 +47,17 @@ const ActivityCardHeader = ({ filter, onFilterChanged }: Props) => {
           </Box>
         </TouchableOpacityBox>
       </Box>
+      <ModalPicker
+        data={FilterKeys.map((value) => ({ label: filters[value], value }))}
+        selectedValue={filter}
+        onValueChanged={(_itemValue, itemIndex) =>
+          onFilterChanged(FilterKeys[itemIndex])
+        }
+        handleClose={() => setShowPicker(false)}
+        visible={showPicker}
+      />
     </Box>
   )
 }
 
-export default ActivityCardHeader
+export default memo(ActivityCardHeader)

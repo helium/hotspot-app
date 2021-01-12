@@ -2,7 +2,6 @@ import 'react-native-gesture-handler'
 import React, { useEffect, useCallback } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { ThemeProvider } from '@shopify/restyle'
-import { ActionSheetProvider } from '@expo/react-native-action-sheet'
 import {
   Platform,
   StatusBar,
@@ -105,16 +104,14 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <BluetoothProvider>
         <ConnectedHotspotProvider>
-          <ActionSheetProvider>
-            <SafeAreaProvider>
-              {/* TODO: Will need to adapt status bar for light/dark modes */}
-              {Platform.OS === 'ios' && <StatusBar barStyle="light-content" />}
-              {Platform.OS === 'android' && (
-                <StatusBar translucent backgroundColor="transparent" />
-              )}
-              <NavigationRoot />
-            </SafeAreaProvider>
-          </ActionSheetProvider>
+          <SafeAreaProvider>
+            {/* TODO: Will need to adapt status bar for light/dark modes */}
+            {Platform.OS === 'ios' && <StatusBar barStyle="light-content" />}
+            {Platform.OS === 'android' && (
+              <StatusBar translucent backgroundColor="transparent" />
+            )}
+            <NavigationRoot />
+          </SafeAreaProvider>
         </ConnectedHotspotProvider>
       </BluetoothProvider>
     </ThemeProvider>

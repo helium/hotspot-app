@@ -93,6 +93,7 @@ export default {
     next: "I've read the guide",
   },
   generic: {
+    done: 'Done',
     understand: 'I understand',
     blocks: 'Blocks',
     active: 'Active',

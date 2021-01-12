@@ -15,12 +15,7 @@ import Animated from 'react-native-reanimated'
 import { useSelector } from 'react-redux'
 import { AnyTransaction, AddGatewayV1, PendingTransaction } from '@helium/http'
 import { useAsync } from 'react-async-hook'
-import {
-  LayoutAnimation,
-  RefreshControl,
-  FlatList,
-  ActivityIndicator,
-} from 'react-native'
+import { LayoutAnimation, FlatList, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import ActivityItem from './ActivityItem'
 import { WalletAnimationPoints } from './walletLayout'
@@ -31,7 +26,7 @@ import { isPendingTransaction } from '../../../utils/transactions'
 import { FilterType } from './walletTypes'
 import { fetchTxns } from '../../../store/account/accountSlice'
 import { useAppDispatch } from '../../../store/store'
-import { useColors, useSpacing } from '../../../theme/themeHooks'
+import { useSpacing } from '../../../theme/themeHooks'
 import Text from '../../../components/Text'
 
 type Props = {
@@ -55,7 +50,6 @@ const ActivityCard = forwardRef(
     const [hasFetchedPending, setHasFetchedPending] = useState(false)
     const [filter, setFilter] = useState<FilterType>('all')
     const { result: address } = useAsync(getSecureItem, ['address'])
-    const { purpleMuted } = useColors()
     const { m, n_m } = useSpacing()
     const dispatch = useAppDispatch()
     const { t } = useTranslation()
@@ -116,9 +110,7 @@ const ActivityCard = forwardRef(
     const { dragMax, dragMid, dragMin } = animationPoints
 
     const onFilterChanged = (f: FilterType) => {
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
       setFilter(f)
-      setTransactionData([])
     }
 
     useEffect(() => {
@@ -155,14 +147,7 @@ const ActivityCard = forwardRef(
             return `${filter}.${(item as AddGatewayV1).hash}`
           },
           renderItem,
-          refreshControl: (
-            <RefreshControl
-              refreshing={txnStatus === 'pending' && !transactionData.length}
-              onRefresh={loadData}
-              tintColor={purpleMuted}
-            />
-          ),
-          ListHeaderComponent: () => {
+          ListFooterComponent: () => {
             if (txnStatus === 'pending' && !transactionData.length) {
               return <ActivityIndicator />
             }
