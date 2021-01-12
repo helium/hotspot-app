@@ -108,7 +108,7 @@ PODS:
     - MapboxMobileEvents (= 0.10.2)
   - MapboxMobileEvents (0.10.2)
   - MultiplatformBleAdapter (0.1.7)
-  - OneSignal (3.0.0)
+  - OneSignal (3.1.0)
   - OpenSSL-Universal (1.0.2.20):
     - OpenSSL-Universal/Static (= 1.0.2.20)
   - OpenSSL-Universal/Static (1.0.2.20)
@@ -285,22 +285,25 @@ PODS:
     - react-native-config/App (= 1.4.1)
   - react-native-config/App (1.4.1):
     - React-Core
-  - react-native-mapbox-gl (8.0.0):
-    - "@react-native-mapbox-gl-mapbox-static (~> 5.7)"
-    - Mapbox-iOS-SDK (~> 5.7)
+  - react-native-mapbox-gl (8.1.0):
+    - "@react-native-mapbox-gl-mapbox-static (~> 5.9.0)"
+    - Mapbox-iOS-SDK (~> 5.9.0)
     - React
-    - react-native-mapbox-gl/DynamicLibrary (= 8.0.0)
-    - react-native-mapbox-gl/StaticLibraryFixer (= 8.0.0)
-  - react-native-mapbox-gl/DynamicLibrary (8.0.0):
-    - "@react-native-mapbox-gl-mapbox-static (~> 5.7)"
-    - Mapbox-iOS-SDK (~> 5.7)
+    - React-Core
+    - react-native-mapbox-gl/DynamicLibrary (= 8.1.0)
+    - react-native-mapbox-gl/StaticLibraryFixer (= 8.1.0)
+  - react-native-mapbox-gl/DynamicLibrary (8.1.0):
+    - "@react-native-mapbox-gl-mapbox-static (~> 5.9.0)"
+    - Mapbox-iOS-SDK (~> 5.9.0)
     - React
-  - react-native-mapbox-gl/StaticLibraryFixer (8.0.0):
-    - "@react-native-mapbox-gl-mapbox-static (~> 5.7)"
-    - Mapbox-iOS-SDK (~> 5.7)
+    - React-Core
+  - react-native-mapbox-gl/StaticLibraryFixer (8.1.0):
+    - "@react-native-mapbox-gl-mapbox-static (~> 5.9.0)"
+    - Mapbox-iOS-SDK (~> 5.9.0)
     - React
-  - react-native-onesignal (4.0.0-beta.5):
-    - OneSignal (= 3.0.0)
+    - React-Core
+  - react-native-onesignal (4.0.3):
+    - OneSignal (= 3.1.0)
     - React (< 1.0.0, >= 0.13.0)
   - react-native-safe-area-context (3.1.9):
     - React-Core
@@ -374,7 +377,7 @@ PODS:
     - React
   - RNCPicker (1.8.1):
     - React-Core
-  - RNDeviceInfo (7.3.1):
+  - RNDeviceInfo (7.4.0):
     - React-Core
   - RNGestureHandler (1.9.0):
     - React-Core
@@ -722,14 +725,14 @@ SPEC CHECKSUMS:
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: 64e7431a55835eb953b0bf984ef3b90ae9fdddd7
   FlipperKit: ab353d41aea8aae2ea6daaf813e67496642f3d7d
-  Folly: b73c3869541e86821df3c387eb0af5f65addfab4
-  glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
+  Folly: aeb27d02cdff07ca01f8a8a5a6dd5bcaf6be6f70
+  glog: 2ad46e202fbaa5641fceb4b2af37dcd88fd8762d
   lottie-ios: 48fac6be217c76937e36e340e2d09cf7b10b7f5f
   lottie-react-native: 1fb4ce21d6ad37dab8343eaff8719df76035bd93
   Mapbox-iOS-SDK: a5915700ec84bc1a7f8b3e746d474789e35b7956
   MapboxMobileEvents: 2bc0ca2eedb627b73cf403258dce2b2fa98074a6
   MultiplatformBleAdapter: 975cfb2a333b2c42b7a11628bd100ccb61872da2
-  OneSignal: e291067823e1f35d57bcafafc7327d2b514ae69d
+  OneSignal: a5853b3c7f7bce791353a15db019b5ccd5b8585b
   OpenSSL-Universal: ff34003318d5e1163e9529b08470708e389ffcdd
   RCTRequired: 082f10cd3f905d6c124597fd1c14f6f2655ff65e
   RCTTypeSafety: 8c9c544ecbf20337d069e4ae7fd9a377aadf504b
@@ -743,8 +746,8 @@ SPEC CHECKSUMS:
   React-jsinspector: 58aef7155bc9a9683f5b60b35eccea8722a4f53a
   react-native-ble-plx: caac53ee98151ec81198239d591c203809a1ed6e
   react-native-config: d8b45133fd13d4f23bd2064b72f6e2c08b2763ed
-  react-native-mapbox-gl: 77b87a1dd2d7b41b6b77018c0f3bed5f8ee55c81
-  react-native-onesignal: 53ca7f0a4c8bedaf21d89deefd323dd0fc39314b
+  react-native-mapbox-gl: eec7e5be5b874cfceb79fcfe24d595411015153a
+  react-native-onesignal: a69eeb12486e7739ed8f180e6ddd915be77721ba
   react-native-safe-area-context: b6e0e284002381d2ff29fa4fff42b4d8282e3c94
   react-native-sodium: be31e3fd97b1e9abd0853d7623fbec4b390b6615
   React-RCTActionSheet: 89a0ca9f4a06c1f93c26067af074ccdce0f40336
@@ -761,7 +764,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: b03032fdbdb725bea0bd9e5ec5a7272865ae7398
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNCPicker: 914b557e20b3b8317b084aca9ff4b4edb95f61e4
-  RNDeviceInfo: 6ecb1d1c87d20e4c62354be0348de23362824dcd
+  RNDeviceInfo: 9538a884f862fe4aa0d7cead9f34e292d41ba8f6
   RNGestureHandler: 9b7e605a741412e20e13c512738a31bd1611759b
   RNLocalize: 7c7aeda16c01db7a0918981c14875c0a53be9b79
   RNReanimated: b2d6785c8fc1f61e1c81179c64c9b6b1a00e6ab5

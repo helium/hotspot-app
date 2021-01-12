@@ -29,6 +29,9 @@ const connectedHotspotSlice = createSlice({
   name: 'connectedHotspot',
   initialState,
   reducers: {
+    signOut: () => {
+      return { ...initialState }
+    },
     initConnectedHotspot: (state, action: PayloadAction<HotspotDetails>) => {
       Object.assign(state, action.payload)
       state.status = 'initial'
