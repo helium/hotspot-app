@@ -534,5 +534,12 @@ export default {
       no_hotspots: 'No Hotspots Found',
       scan_again: 'Scan again',
     },
+    options: {
+      paired: 'Paired with Hotspot',
+      diagnostic: 'Diagnostics',
+      wifi: 'Wi-Fi Network',
+      reassert: 'Reassert Hotspot',
+      firmware: 'Hotspot Firmware',
+    },
   },
 }

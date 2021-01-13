@@ -57,7 +57,7 @@ const HotspotSettings = ({ visible, onClose }: Props) => {
 
   const getFirstCard = () => {
     if (state === 'scan') {
-      return <HotspotDiagnostics onClose={onClose} />
+      return <HotspotDiagnostics />
     }
     return (
       <HotspotSettingsOption
@@ -110,26 +110,22 @@ const HotspotSettings = ({ visible, onClose }: Props) => {
         flexDirection="column"
         justifyContent="space-between"
       >
-        {state === 'init' && (
-          <TouchableOpacityBox
-            alignSelf="flex-end"
-            height={22}
-            padding="l"
-            onPress={onClose}
-          >
-            <CloseModal color="white" />
-          </TouchableOpacityBox>
-        )}
+        <TouchableOpacityBox
+          alignSelf="flex-end"
+          height={22}
+          padding="l"
+          onPress={onClose}
+        >
+          <CloseModal color="white" />
+        </TouchableOpacityBox>
         <Box flex={1} />
         <AnimatedBox
           margin="ms"
           style={{ transform: [{ translateY: slideUpAnimRef.current }] }}
         >
-          {state === 'init' && (
-            <Text variant="h2" color="white" marginBottom="ms">
-              {t('hotspot_settings.title')}
-            </Text>
-          )}
+          <Text variant="h2" color="white" marginBottom="ms">
+            {t('hotspot_settings.title')}
+          </Text>
 
           {state !== 'transfer' && (
             <Card variant="modal" backgroundColor="white">
