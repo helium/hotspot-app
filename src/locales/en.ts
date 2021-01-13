@@ -517,6 +517,7 @@ export default {
       pending: 'Pending Transactions',
     },
     no_results: 'No Results',
+  },
   hotspot_settings: {
     title: 'Hotspot Settings',
     pairing: {

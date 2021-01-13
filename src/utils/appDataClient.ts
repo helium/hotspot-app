@@ -4,6 +4,10 @@ import Client, {
   ResourceList,
 } from '@helium/http'
 import {
+  HotspotActivityFilters,
+  HotspotActivityType,
+} from '../features/hotspots/root/hotspotTypes'
+import {
   FilterType,
   Filters,
   FilterKeys,
@@ -59,6 +63,17 @@ export const getAccountTxnsList = async (filterType: FilterType) => {
 
   const params = { filterTypes: Filters[filterType] }
   return client.account(address).activity.list(params)
+}
+
+export const getHotspotActivityList = async (
+  gateway: string,
+  filterType: HotspotActivityType,
+) => {
+  const address = await getSecureItem('address')
+  if (!address) return
+
+  const params = { filterTypes: HotspotActivityFilters[filterType] }
+  return client.hotspot(gateway).activity.list(params)
 }
 
 export const txnFetchers = {} as Record<

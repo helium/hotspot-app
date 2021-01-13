@@ -177,7 +177,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         snapPoints={[dragMin, dragMid, dragMax]}
         renderHeader={() => (
           <TouchableOpacityBox
-            padding="m"
+            padding="l"
             onPress={() => setShowSettings(true)}
           >
             <Settings />
@@ -192,6 +192,10 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
           onHotspotFocused={onHotspotFocused}
         />
       </BottomSheet>
+      <HotspotSettings
+        visible={showSettings}
+        onClose={() => setShowSettings(false)}
+      />
     </Box>
   )
 }
