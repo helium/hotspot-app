@@ -530,5 +530,9 @@ export default {
       subtitle: 'Transfer Hotspot to another Helium Wallet Account.',
       begin: 'Begin Hotspot Transfer',
     },
+    diagnostics: {
+      no_hotspots: 'No Hotspots Found',
+      scan_again: 'Scan again',
+    },
   },
 }

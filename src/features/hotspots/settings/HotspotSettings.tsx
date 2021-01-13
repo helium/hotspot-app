@@ -13,6 +13,7 @@ import HotspotSettingsOption from './HotspotSettingsOption'
 import HotspotDiagnostics from './HotspotDiagnostics'
 import Box from '../../../components/Box'
 import HotspotTransfer from './HotspotTransfer'
+import { useBluetoothContext } from '../../../providers/BluetoothProvider'
 
 type Props = {
   visible: boolean
@@ -26,6 +27,7 @@ const HotspotSettings = ({ visible, onClose }: Props) => {
   const { m } = useSpacing()
   const slideUpAnimRef = useRef(new Animated.Value(1000))
   const { t } = useTranslation()
+  const { getState } = useBluetoothContext()
 
   useEffect(() => {
     Animated.timing(slideUpAnimRef.current, {
@@ -48,6 +50,10 @@ const HotspotSettings = ({ visible, onClose }: Props) => {
       setNextState('init')
     }
   }, [visible])
+
+  useEffect(() => {
+    getState()
+  }, [getState])
 
   const getFirstCard = () => {
     if (state === 'scan') {
