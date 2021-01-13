@@ -387,6 +387,19 @@ const useHotspot = () => {
     return { isFree, hasSufficientBalance, totalStakingAmount }
   }
 
+  const getDiagnosticInfo = async () => {
+    if (!connectedHotspot.current) return
+
+    const charVal = await findAndReadCharacteristic(
+      HotspotCharacteristic.DIAGNOSTIC_UUID,
+      connectedHotspot.current,
+    )
+
+    if (charVal) {
+      return parseChar(charVal, HotspotCharacteristic.DIAGNOSTIC_UUID)
+    }
+  }
+
   return {
     scanForHotspots,
     connectAndConfigHotspot,
@@ -398,6 +411,7 @@ const useHotspot = () => {
     updateHotspotStatus,
     addGatewayTxn,
     loadLocationFeeData,
+    getDiagnosticInfo,
   }
 }
 

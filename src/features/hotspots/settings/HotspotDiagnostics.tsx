@@ -3,6 +3,7 @@ import { LayoutAnimation } from 'react-native'
 import { Device } from 'react-native-ble-plx'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
+import HotspotDiagnosticReport from './HotspotDiagnosticReport'
 import HotspotDiagnosticsConnection from './HotspotDiagnosticsConnection'
 import HotspotDiagnosticOptions from './HotspotsDiagnosticOptions'
 import { HotspotOptions } from './HotspotSettingsTypes'
@@ -32,6 +33,9 @@ const HotspotDiagnostics = () => {
         optionSelected={(opt) => setState(opt)}
       />
     )
+
+  if (state === 'diagnostic' && connectedHotspot)
+    return <HotspotDiagnosticReport />
 
   return (
     <Box height={412} padding="l">

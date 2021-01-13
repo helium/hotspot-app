@@ -12,11 +12,13 @@ import Wifi from '../../../assets/images/wifi.svg'
 import Reassert from '../../../assets/images/reassert.svg'
 import Firmware from '../../../assets/images/firmware.svg'
 import Chevron from '../../../assets/images/chevron-right.svg'
+import { useColors } from '../../../theme/themeHooks'
 
 type Opts = 'scan' | HotspotOptions
 type Props = { hotspot: Device; optionSelected: (option: Opts) => void }
 const HotspotDiagnosticOptions = ({ hotspot, optionSelected }: Props) => {
   const { t } = useTranslation()
+  const { purpleMain } = useColors()
 
   const selectOption = (opt: Opts) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
@@ -26,7 +28,7 @@ const HotspotDiagnosticOptions = ({ hotspot, optionSelected }: Props) => {
   return (
     <Box padding="l">
       <Box flexDirection="row" alignItems="center" marginBottom="l">
-        <Paired />
+        <Paired color={purpleMain} />
         <Box marginLeft="ms">
           <Text variant="h4" color="black">
             {t('hotspot_settings.options.paired')}

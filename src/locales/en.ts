@@ -533,6 +533,34 @@ export default {
     diagnostics: {
       no_hotspots: 'No Hotspots Found',
       scan_again: 'Scan again',
+      title: 'Diagnostic Report',
+      p2p: 'Peer-to-Peer Connections',
+      no_connection: 'No Connection',
+      outbound: 'Outbound',
+      outbound_help:
+        'Hotspot unable to connect to peers on the blockchain. This can be due to router issues, no internet connection, or a firewall blocking incoming connections.',
+      inbound: 'Inbound',
+      inbound_help:
+        'Blockchain peers cannot to reach Hotspot. This can be due to router issues, no internet connection, or a firewall blocking incoming connections.',
+      blockchain_height: 'Blockchain Height',
+      synced: '{{percent}} Synced',
+      blockchain_height_help:
+        'Hotspot must be 100% synced before it can start mining. This can take several hours or more depending on your internet speed. Keep the Hotspot powered on and connected to the internet.',
+      last_challenged: 'Last Challenged',
+      last_challenged_help:
+        'Neighboring Hotspots have not been able to verify your Hotspot location. In most cases, this is because the antenna is in an area where radio signals can’t reach (buildings blocking, antenna pointed down, antenna indoors).',
+      firmware: 'Hotspot Firmware',
+      hotspot_type: 'Hotspot Type',
+      app_version: 'App Version',
+      wifi_mac: 'Wi-Fi MAC',
+      eth_mac: 'Ethernet MAC',
+      nat_type: 'NAT Type',
+      ip: 'IP Address',
+      report_generated: 'Report Generated',
+      send_to_support: 'Send Report to Support',
+      help_link: 'Read more for possible solutions',
+      email_client_missing:
+        'Could not find a compatible email client installed',
     },
     options: {
       paired: 'Paired with Hotspot',
