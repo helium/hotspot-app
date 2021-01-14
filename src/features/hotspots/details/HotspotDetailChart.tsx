@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ChartData } from '../../../components/BarChart/types'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -20,6 +20,10 @@ const HotspotDetailChart = ({
   data,
   color,
 }: Props) => {
+  const [focusedData, setFocusedData] = useState<ChartData | null>()
+  const onFocus = (chartData: ChartData | null) => {
+    setFocusedData(chartData)
+  }
   return (
     <Box marginBottom="m">
       <Text fontSize={16} color="black" marginVertical="s">
@@ -39,13 +43,13 @@ const HotspotDetailChart = ({
               PASS RATE
             </Text>
             <Text variant="light" fontSize={34} color="black" marginBottom="s">
-              {`${percentage}%`}
+              {`${focusedData ? focusedData.up : percentage}%`}
             </Text>
           </Box>
         ) : (
           <Box>
             <Text variant="light" fontSize={34} color="black" marginBottom="s">
-              {number}
+              {focusedData ? focusedData.up : number}
             </Text>
             <Box
               style={{ backgroundColor: color }}
@@ -63,7 +67,7 @@ const HotspotDetailChart = ({
           <ChartContainer
             height={75}
             data={data}
-            onFocus={() => {}}
+            onFocus={onFocus}
             showDays={false}
             upColor={color}
           />

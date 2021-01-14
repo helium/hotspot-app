@@ -26,6 +26,7 @@ import { useColors } from '../../../theme/themeHooks'
 import HotspotDetailChart from './HotspotDetailChart'
 import StatusBadge from './StatusBadge'
 import TimelinePicker from './TimelinePicker'
+import HotspotDetailCardHeader from './HotspotDetailCardHeader'
 
 type HotspotDetailsRouteProp = RouteProp<
   HotspotStackParamList,
@@ -38,14 +39,24 @@ const shortAddress = (address?: string) =>
     address?.length,
   )}`
 
+const onFollowHotspot = () => {
+  // TODO: follow hotspot
+  console.log('onFollowHotspot')
+}
+
+const onMoreMenuSelected = () => {
+  // TODO: more menu
+  console.log('onMoreMenuSelected')
+}
+
 const HotspotDetails = () => {
   const route = useRoute<HotspotDetailsRouteProp>()
   const { hotspot } = route.params
   const navigation = useNavigation()
 
-  const dragMid = hp(30)
+  const dragMid = hp(25)
   const dragMax = hp(75)
-  const dragMin = 40
+  const dragMin = 50
   const snapProgress = useSharedValue(dragMid / dragMax)
 
   const opacity = useDerivedValue(() => {
@@ -97,7 +108,7 @@ const HotspotDetails = () => {
             mapCenter={[hotspot.lng || 0, hotspot.lat || 0]}
             animationDuration={0}
             selectedHotspots={selectedHotspots}
-            offsetMapCenter
+            offsetCenterRatio={2}
           />
         </Box>
         <Box
@@ -139,6 +150,12 @@ const HotspotDetails = () => {
           snapPoints={[dragMin, dragMid, dragMax]}
           initialSnapIndex={1}
           snapProgress={snapProgress}
+          renderHeader={() => (
+            <HotspotDetailCardHeader
+              onFollowSelected={onFollowHotspot}
+              onMoreSelected={onMoreMenuSelected}
+            />
+          )}
         >
           <Box padding="l">
             <Text variant="h2" color="black" marginBottom="m">

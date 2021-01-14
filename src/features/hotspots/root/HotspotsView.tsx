@@ -131,7 +131,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
           zoomLevel={14}
           mapCenter={[focusedHotspot.lng || 0, focusedHotspot.lat || 0]}
           animationMode="flyTo"
-          offsetMapCenter
+          offsetCenterRatio={1.5}
         />
       </Box>
       <Box

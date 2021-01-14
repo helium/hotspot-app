@@ -24,7 +24,7 @@ type Props = {
   selectedHotspots?: Feature[]
   animationMode?: 'flyTo' | 'easeTo' | 'moveTo'
   animationDuration?: number
-  offsetMapCenter?: boolean
+  offsetCenterRatio?: number
   maxZoomLevel?: number
   minZoomLevel?: number
 }
@@ -39,7 +39,7 @@ const Map = ({
   animationDuration = 500,
   ownedHotspots,
   selectedHotspots,
-  offsetMapCenter,
+  offsetCenterRatio,
   maxZoomLevel = 16,
   minZoomLevel = 0,
 }: Props) => {
@@ -103,14 +103,15 @@ const Map = ({
       if (bounds && center) {
         const topLat = bounds[0][1]
         const centerLat = center[1]
-        setCenterOffset((topLat - centerLat) / 1.5)
+        const scale = offsetCenterRatio || 1
+        setCenterOffset((topLat - centerLat) / scale)
       }
     }
-    if (offsetMapCenter) {
+    if (offsetCenterRatio) {
       setTimeout(calculateOffset, animationDuration)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentLocation, loaded, offsetMapCenter])
+  }, [currentLocation, loaded, offsetCenterRatio])
 
   const mapImages = {
     markerOwned: require('../assets/images/owned-hotspot-marker.png'),
