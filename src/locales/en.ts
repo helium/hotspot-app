@@ -399,7 +399,7 @@ export default {
       payment: 'Send HNT',
       dcBurn: 'Burn HNT',
     },
-    available: '{{ amount }} HNT Available',
+    available: '{{ amount }} Available',
     address: {
       label: 'Recipient Address',
       placeholder: 'Enter Address...',

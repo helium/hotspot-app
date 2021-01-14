@@ -1,6 +1,8 @@
 import React from 'react'
 import { useAsync } from 'react-async-hook'
 import QRCode from 'react-qr-code'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../../store/rootReducer'
 import Box from '../../../components/Box'
 import AnimatedBox from '../../../components/AnimatedBox'
 import Text from '../../../components/Text'
@@ -16,6 +18,12 @@ type Props = {
 
 const BalanceCard = ({ onReceivePress, onSendPress }: Props) => {
   const { result: address, loading: loadingAddress } = useAsync(getAddress, [])
+  const {
+    account: { account },
+  } = useSelector((state: RootState) => state)
+
+  const [integerPart, decimalPart] =
+    account?.balance?.toString().split('.') || []
 
   return (
     <Box
@@ -38,7 +46,7 @@ const BalanceCard = ({ onReceivePress, onSendPress }: Props) => {
               fontSize={hp(4.5)}
               fontWeight="300"
             >
-              23,987
+              {integerPart}
             </Text>
             <Text
               color="white"
@@ -47,7 +55,7 @@ const BalanceCard = ({ onReceivePress, onSendPress }: Props) => {
               opacity={0.4}
               lineHeight={25}
             >
-              .45876891 HNT
+              .{decimalPart}
             </Text>
           </Box>
 

@@ -6,6 +6,8 @@ import Balance, {
   DataCredits,
 } from '@helium/currency'
 import { useAsync } from 'react-async-hook'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../../store/rootReducer'
 import Box from '../../../components/Box'
 import { triggerNavHaptic } from '../../../utils/haptic'
 import { QrScanResult } from '../scan/scanTypes'
@@ -31,6 +33,9 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
   const [fee, setFee] = useState<Balance<NetworkTokens>>(
     new Balance(0, CurrencyType.networkToken),
   )
+  const {
+    account: { account },
+  } = useSelector((state: RootState) => state)
 
   useEffect(() => {
     if (scanResult) {
@@ -97,7 +102,7 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
   return (
     <Box flex={1}>
       <SendHeader type={type} onClosePress={navBack} />
-      <SendAmountAvailableBanner amount={123455.12345678} />
+      <SendAmountAvailableBanner amount={account?.balance} />
       <Box flex={3} backgroundColor="white" paddingHorizontal="l">
         <SendForm
           type={type}
