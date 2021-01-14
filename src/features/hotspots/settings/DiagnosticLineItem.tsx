@@ -6,10 +6,10 @@ type Props = { attribute: string; value?: string }
 const DiagnosticLineItem = ({ attribute, value }: Props) => {
   return (
     <Box flexDirection="row" alignItems="center" marginBottom="s">
-      <Text variant="subtitle" color="black" flex={1}>
+      <Text variant="body2Medium" color="black" flex={1}>
         {attribute}
       </Text>
-      <Text variant="subtitle" color="black" marginLeft="ms">
+      <Text variant="body2Medium" color="black" marginLeft="ms">
         {value}
       </Text>
     </Box>

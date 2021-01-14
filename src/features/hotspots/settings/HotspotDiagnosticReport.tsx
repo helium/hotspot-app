@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { useAsync } from 'react-async-hook'
 import { useTranslation } from 'react-i18next'
 import { ActivityIndicator, LayoutAnimation } from 'react-native'
-import { capitalize, round, times } from 'lodash'
+import { capitalize, round, times, kebabCase } from 'lodash'
 import { useSelector } from 'react-redux'
 import { formatDistance, fromUnixTime, getUnixTime, format } from 'date-fns'
+import animalHash from 'angry-purple-tiger'
+import { ScrollView } from 'react-native-gesture-handler'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
@@ -16,6 +18,8 @@ import { useAppDispatch } from '../../../store/store'
 import { fetchBlockHeight } from '../../../store/helium/heliumDataSlice'
 import DiagnosticLineItem from './DiagnosticLineItem'
 import useDevice from '../../../utils/useDevice'
+import Button from '../../../components/Button'
+import sendReport from './sendReport'
 
 const blockTimeErrorLimit = 24 * 60 * 60 // 24 hours
 const initialInfo = {
@@ -36,6 +40,8 @@ const formatMac = (mac: string) =>
         .join(''),
     )
     .join(':')
+
+const DF = 'yyyy-MM-dd hh:mm a'
 
 const HotspotDiagnosticReport = () => {
   const {
@@ -58,6 +64,7 @@ const HotspotDiagnosticReport = () => {
       },
       type,
       firmware,
+      address,
     },
     heliumData: { blockHeight },
   } = useSelector((state: RootState) => state)
@@ -95,7 +102,7 @@ const HotspotDiagnosticReport = () => {
       },
       {
         attribute: t('hotspot_settings.diagnostics.report_generated'),
-        value: format(fromUnixTime(info.currentTime), 'yyyy-MM-dd hh:mm a'),
+        value: format(fromUnixTime(info.currentTime), DF),
       },
     ])
   }, [diagnostics, firmware, t, type, version, info.currentTime])
@@ -150,60 +157,94 @@ const HotspotDiagnosticReport = () => {
     )
   }
 
+  const handleSendReport = () => {
+    sendReport({
+      eth: diagnostics?.eth ? formatMac(diagnostics.eth) : '',
+      wifi: diagnostics?.wifi ? formatMac(diagnostics.wifi) : '',
+      fw: firmware?.version || '',
+      connected: diagnostics?.connected || '',
+      dialable: diagnostics?.dialable || '',
+      natType: capitalize(diagnostics?.nat_type || ''),
+      ip: capitalize(diagnostics?.ip || ''),
+      height: info.height.toString(),
+      lastChallengeDate: format(fromUnixTime(info.lastChallengeTime), DF),
+      reportGenerated: format(fromUnixTime(info.currentTime), DF),
+      gateway: address || '',
+      hotspotType: type || '',
+      appVersion: version,
+    })
+  }
+
   return (
-    <Box padding="l" minHeight={413}>
-      <Text variant="h4" color="black" marginBottom="m">
-        {t('hotspot_settings.diagnostics.p2p')}
-      </Text>
-      <DiagnosticAttribute
-        text={t('hotspot_settings.diagnostics.outbound')}
-        success={diagnostics?.connected === 'yes'}
-      />
-      <DiagnosticAttribute
-        text={t('hotspot_settings.diagnostics.inbound')}
-        success={diagnostics?.dialable === 'yes'}
-      />
+    <ScrollView>
+      <Box padding="l" minHeight={413}>
+        <Text variant="h4" color="black" marginBottom="xxs">
+          {t('hotspot_settings.diagnostics.p2p')}
+        </Text>
+        <Text variant="subtitle" color="black" marginBottom="m">
+          {kebabCase(animalHash(address || ''))}
+        </Text>
+        <DiagnosticAttribute
+          text={t('hotspot_settings.diagnostics.outbound')}
+          success={diagnostics?.connected === 'yes'}
+        />
+        <DiagnosticAttribute
+          text={t('hotspot_settings.diagnostics.inbound')}
+          success={diagnostics?.dialable === 'yes'}
+        />
 
-      <Text variant="h4" color="black" marginVertical="m">
-        {t('hotspot_settings.diagnostics.blockchain_height')}
-      </Text>
-      <DiagnosticAttribute
-        text={t('hotspot_settings.diagnostics.synced', {
-          percent: info.fullySynced ? 100 : info.percentSynced,
-        })}
-        success={info.fullySynced}
-      />
+        <Text variant="h4" color="black" marginVertical="m">
+          {t('hotspot_settings.diagnostics.blockchain_height')}
+        </Text>
+        <DiagnosticAttribute
+          text={t('hotspot_settings.diagnostics.synced', {
+            percent: info.fullySynced ? 100 : info.percentSynced,
+          })}
+          success={info.fullySynced}
+        />
 
-      <Text variant="h4" color="black" marginVertical="m">
-        {t('hotspot_settings.diagnostics.last_challenged')}
-      </Text>
-      <DiagnosticAttribute
-        text={
-          info.hasLastChallenge
-            ? formatDistance(fromUnixTime(info.lastChallengeTime), new Date(), {
-                addSuffix: true,
-              })
-            : t('generic.unknown')
-        }
-        success={
-          info.hasLastChallenge &&
-          info.currentTime - info.lastChallengeTime < blockTimeErrorLimit
-        }
-      />
+        <Text variant="h4" color="black" marginVertical="m">
+          {t('hotspot_settings.diagnostics.last_challenged')}
+        </Text>
+        <DiagnosticAttribute
+          text={
+            info.hasLastChallenge
+              ? formatDistance(
+                  fromUnixTime(info.lastChallengeTime),
+                  new Date(),
+                  {
+                    addSuffix: true,
+                  },
+                )
+              : t('generic.unknown')
+          }
+          success={
+            info.hasLastChallenge &&
+            info.currentTime - info.lastChallengeTime < blockTimeErrorLimit
+          }
+        />
 
-      <Text variant="h4" color="black" marginVertical="m">
-        {t('hotspot_settings.diagnostics.etc')}
-      </Text>
-      {[
-        lineItems.map(({ attribute, value }) => (
-          <DiagnosticLineItem
-            attribute={attribute}
-            value={value}
-            key={attribute}
-          />
-        )),
-      ]}
-    </Box>
+        <Text variant="h4" color="black" marginVertical="m">
+          {t('hotspot_settings.diagnostics.etc')}
+        </Text>
+        {[
+          lineItems.map(({ attribute, value }) => (
+            <DiagnosticLineItem
+              attribute={attribute}
+              value={value}
+              key={attribute}
+            />
+          )),
+        ]}
+        <Button
+          marginTop="m"
+          onPress={handleSendReport}
+          variant="primary"
+          mode="contained"
+          title={t('hotspot_settings.diagnostics.send_to_support')}
+        />
+      </Box>
+    </ScrollView>
   )
 }
 

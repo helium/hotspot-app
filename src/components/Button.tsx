@@ -52,7 +52,7 @@ const Button = ({
 
   const getTextVariant = () => {
     if (mode === 'contained') return 'buttonBold'
-    return 'buttonLight'
+    return 'buttonMedium'
   }
 
   return (

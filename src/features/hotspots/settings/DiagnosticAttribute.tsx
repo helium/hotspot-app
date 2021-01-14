@@ -13,7 +13,7 @@ const DiagnosticAttribute = ({ success, text }: Props) => {
     <Box flexDirection="row" alignItems="center" marginBottom="s">
       {success && <Paired height={32} width={32} color={greenMain} />}
       {!success && <Fail height={32} width={32} />}
-      <Text variant="subtitle" color="black" marginLeft="ms">
+      <Text variant="body2Medium" color="black" marginLeft="ms">
         {text}
       </Text>
     </Box>
