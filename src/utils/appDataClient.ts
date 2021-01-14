@@ -48,6 +48,8 @@ export const getAccount = async () => {
   return data
 }
 
+export const getBlockHeight = () => client.blocks.getHeight()
+
 export const submitTransaction = async (serializedTxn: string) =>
   client.transactions.submit(serializedTxn)
 

@@ -26,6 +26,9 @@ export type HotspotDetails = {
   }
   nonce?: number
   status?: HotspotStatus
+}
+
+export type HotspotActivity = {
   activity: {
     all: { data: AnyTransaction[]; status: Loading }
     rewards: { data: AnyTransaction[]; status: Loading }
@@ -36,7 +39,7 @@ export type HotspotDetails = {
   }
 }
 
-const initialState: HotspotDetails = {
+const initialState: HotspotDetails & HotspotActivity = {
   status: 'initial',
   activity: {
     all: { data: [], status: 'idle' },
@@ -66,7 +69,7 @@ const initHotspotActivityFetchers = async (address: string) => {
 export const fetchHotspotActivity = createAsyncThunk<
   AnyTransaction[],
   { filter: HotspotActivityType; fetchCount?: number }
->('account/fetchAccountActivity', async (opts) => {
+>('connectedHotspot/fetchHotspotActivity', async (opts) => {
   const list = hotspotActivityFetchers[opts.filter]
   return list.takeJSON(opts.fetchCount || 10)
 })

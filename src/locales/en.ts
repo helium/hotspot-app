@@ -562,6 +562,7 @@ export default {
       help_link: 'Read more for possible solutions',
       email_client_missing:
         'Could not find a compatible email client installed',
+      etc: 'Etc',
     },
     options: {
       paired: 'Paired with Hotspot',
