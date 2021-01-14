@@ -11,7 +11,7 @@ import { RootState } from '../store/rootReducer'
 import { useAppDispatch } from '../store/store'
 import { getLocation } from '../store/user/appSlice'
 
-const styleURL = 'mapbox://styles/petermain/cjsdsbmjb1h7c1grzv4clr7y7'
+const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
 
 type Props = {
   onMapMoved?: (coords?: Position) => void

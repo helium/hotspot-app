@@ -24,6 +24,7 @@ const palette = {
   grayBox: '#F6F7FE',
   grayBlack: '#1C1C1C',
   grayText: '#667394',
+  grayLightText: '#A7AACD',
 
   redMain: '#F97570',
   redMedium: '#FF6666',
@@ -40,6 +41,7 @@ const palette = {
   greenBright: '#29D391',
   greenMain: '#32C48D',
   greenDark: '#13162E',
+  greenOnline: '#29D344',
 
   orange: '#FF852F',
   yellow: '#FFCB46',

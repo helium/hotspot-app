@@ -14,7 +14,6 @@ import { useNavigation } from '@react-navigation/native'
 import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import Search from '../../../assets/images/search.svg'
 import Add from '../../../assets/images/add.svg'
 import { hp } from '../../../utils/layout'
 import { getHotspotRewards } from '../../../utils/appDataClient'
@@ -145,9 +144,10 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         <Text variant="h3">{t('hotspots.owned.title')}</Text>
 
         <Box flexDirection="row" justifyContent="space-between">
-          <TouchableOpacityBox padding="s">
-            <Search width={22} height={22} />
-          </TouchableOpacityBox>
+          {/* TODO: Hotspot Search */}
+          {/* <TouchableOpacityBox padding="s"> */}
+          {/*  <Search width={22} height={22} /> */}
+          {/* </TouchableOpacityBox> */}
           <TouchableOpacityBox
             onPress={() => navigation.push('HotspotSetup')}
             padding="s"
