@@ -39,6 +39,7 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
     account: { account },
   } = useSelector((state: RootState) => state)
 
+  // process scan results
   useEffect(() => {
     if (scanResult) {
       setIsLocked(!!scanResult?.amount)
@@ -52,6 +53,7 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
     }
   }, [scanResult])
 
+  // validate transaction
   useEffect(() => {
     const isValidAddress = Address.isValid(address)
     // TODO Balance.fromString(amount: string, currencyType: CurrencyType)
@@ -61,7 +63,10 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
     // TODO balance compare/greater than/less than
     const hasSufficientBalance =
       totalTxnAmount.integerBalance <= (account?.balance?.integerBalance || 0)
-    setIsValid(isValidAddress && hasSufficientBalance)
+
+    setIsValid(
+      isValidAddress && hasSufficientBalance && address !== account?.address,
+    )
   }, [address, amount, fee, account])
 
   const calculateFee = async (): Promise<Balance<DataCredits>> => {
@@ -106,6 +111,14 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
 
   const setMaxAmount = () => {
     triggerNavHaptic()
+
+    const balance = account?.balance
+    if (!balance) return
+
+    const maxAmount = balance.minus(fee)
+
+    // TODO option to not return currency ticker in balance
+    setAmount(maxAmount.toString(8).slice(0, -4))
   }
 
   const unlockForm = () => {
