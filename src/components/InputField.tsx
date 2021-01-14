@@ -39,14 +39,14 @@ const InputField = ({
       <Box
         backgroundColor="offwhite"
         borderRadius="m"
-        padding="m"
+        paddingHorizontal="m"
+        paddingVertical="m"
         marginBottom="s"
       >
         <Box
           flexDirection="row"
           justifyContent="space-between"
           alignItems="center"
-          marginBottom="s"
         >
           <Text letterSpacing={0.92} fontSize={13}>
             {label.toUpperCase()}
@@ -69,7 +69,12 @@ const InputField = ({
             dataDetectorTypes="none"
             keyboardAppearance="dark"
             keyboardType={type}
-            style={{ fontFamily: 'InputMono-Regular', fontSize: 15 }}
+            style={{
+              fontFamily: 'InputMono-Regular',
+              fontSize: 15,
+              lineHeight: 20,
+              letterSpacing: 0.7,
+            }}
             returnKeyType="done"
           />
         </Box>

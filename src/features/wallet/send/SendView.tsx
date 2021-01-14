@@ -21,6 +21,7 @@ import {
   calculatePaymentTxnFee,
   convertFeeToNetworkTokens,
 } from '../../../utils/fees'
+import { networkTokensToDataCredits } from '../../../utils/currency'
 
 const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
   const navigation = useNavigation()
@@ -47,11 +48,23 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
       setAddress(scanResult.address)
       if (scanResult?.amount) setAmount(scanResult?.amount)
       if (scanResult?.memo) setMemo(scanResult?.memo)
-      if (scanResult?.amount && scanResult.type === 'dc_burn') {
-        setDcAmount('12345678')
-      }
     }
   }, [scanResult])
+
+  useAsync(async () => {
+    if (type === 'dc_burn') {
+      // TODO doing this in a few places...
+      const integerAmount = parseFloat(amount) * 100000000
+      const amountBalance = new Balance(
+        integerAmount,
+        CurrencyType.networkToken,
+      )
+      const balanceDc = await networkTokensToDataCredits(amountBalance)
+      // TODO option to not return currency ticker in balance
+      // TODO might need to round up in DC conversion in he-js
+      setDcAmount(balanceDc.toString(0).slice(0, -3))
+    }
+  }, [type, amount])
 
   // validate transaction
   useEffect(() => {
