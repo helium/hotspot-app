@@ -174,18 +174,13 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         snapPoints={[dragMin, dragMid, dragMax]}
         initialSnapIndex={1}
         snapProgress={snapProgress}
-        flatListProps={{
-          data: [ownedHotspots],
-          keyExtractor: (item: Hotspot[]) => item[0].address,
-          renderItem: ({ item }: { item: Hotspot[] }) => (
-            <HotspotsCarousel
-              hotspots={item}
-              rewards={hotspotRewards}
-              onHotspotFocused={onHotspotFocused}
-            />
-          ),
-        }}
-      />
+      >
+        <HotspotsCarousel
+          hotspots={ownedHotspots}
+          rewards={hotspotRewards}
+          onHotspotFocused={onHotspotFocused}
+        />
+      </BottomSheet>
     </Box>
   )
 }

@@ -1,4 +1,4 @@
-import React, { useRef, ElementRef } from 'react'
+import React, { useRef, ElementRef, memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import Animated, {
   useSharedValue,
@@ -123,4 +123,4 @@ const WalletView = ({ layout, animationPoints }: Props) => {
   )
 }
 
-export default withWalletLayout(WalletView)
+export default memo(withWalletLayout(WalletView))
