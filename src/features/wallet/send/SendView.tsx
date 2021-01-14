@@ -5,6 +5,7 @@ import Balance, {
   CurrencyType,
   DataCredits,
 } from '@helium/currency'
+import { Address } from '@helium/crypto-react-native'
 import { useAsync } from 'react-async-hook'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../../store/rootReducer'
@@ -30,6 +31,7 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
   const [dcAmount, setDcAmount] = useState<string>('')
   const [memo, setMemo] = useState<string>('')
   const [isLocked, setIsLocked] = useState(false)
+  const [isValid, setIsValid] = useState(false)
   const [fee, setFee] = useState<Balance<NetworkTokens>>(
     new Balance(0, CurrencyType.networkToken),
   )
@@ -50,18 +52,37 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
     }
   }, [scanResult])
 
+  useEffect(() => {
+    const isValidAddress = Address.isValid(address)
+    // TODO Balance.fromString(amount: string, currencyType: CurrencyType)
+    const integerAmount = parseFloat(amount) * 100000000
+    const balanceAmount = new Balance(integerAmount, CurrencyType.networkToken)
+    const totalTxnAmount = balanceAmount.plus(fee)
+    // TODO balance compare/greater than/less than
+    const hasSufficientBalance =
+      totalTxnAmount.integerBalance <= (account?.balance?.integerBalance || 0)
+    setIsValid(isValidAddress && hasSufficientBalance)
+  }, [address, amount, fee, account])
+
   const calculateFee = async (): Promise<Balance<DataCredits>> => {
-    // TODO safer/more centralized way of doing this?
+    // TODO Balance.fromString(amount: string, currencyType: CurrencyType)
     const integerAmount = parseFloat(amount) * 100000000
 
     if (type === 'payment') {
-      // TODO use actual nonce here
-      return calculatePaymentTxnFee(integerAmount, 1, address)
+      return calculatePaymentTxnFee(
+        integerAmount,
+        account?.speculativeNonce || 1,
+        address,
+      )
     }
 
     if (type === 'dc_burn') {
-      // TODO use actual nonce here
-      return calculateBurnTxnFee(integerAmount, address, 1, memo)
+      return calculateBurnTxnFee(
+        integerAmount,
+        address,
+        account?.speculativeNonce || 1,
+        memo,
+      )
     }
 
     throw new Error('Unsupported transaction type')
@@ -106,6 +127,7 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
       <Box flex={3} backgroundColor="white" paddingHorizontal="l">
         <SendForm
           type={type}
+          isValid={isValid}
           isLocked={isLocked}
           address={address}
           amount={amount}

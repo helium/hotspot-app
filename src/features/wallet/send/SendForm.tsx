@@ -16,6 +16,7 @@ import LockedField from '../../../components/LockedField'
 import { SendType } from './sendTypes'
 
 type Props = {
+  isValid: boolean
   isLocked: boolean
   type: SendType
   address: string
@@ -34,6 +35,7 @@ type Props = {
 }
 
 const SendForm = ({
+  isValid,
   isLocked,
   type,
   address,
@@ -50,8 +52,6 @@ const SendForm = ({
   onSubmit,
   onUnlock,
 }: Props) => {
-  console.log('form fee', fee.toString(8))
-
   const { t } = useTranslation()
   const { primaryMain } = useColors()
 
@@ -191,7 +191,7 @@ const SendForm = ({
         }
         variant="primary"
         mode="contained"
-        disabled={!isValidAddress} // TODO more validation
+        disabled={!isValid}
       />
     </Box>
   )
