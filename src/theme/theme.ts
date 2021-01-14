@@ -4,8 +4,8 @@ import { TextProps } from 'react-native'
 // TODO restructure this color palatte like material or ant
 
 const palette = {
-  black: '#000',
-  white: '#FFF',
+  black: '#000000',
+  white: '#FFFFFF',
   offwhite: '#F9FAFC',
 
   blueGrayLight: '#CDD7E5',
@@ -36,6 +36,7 @@ const palette = {
   purple200: '#23264b',
   purple100: '#383A6F',
   purpleDark: '#13162E',
+  purpleMuted: '#666995',
 
   greenBright: '#29D391',
   greenMain: '#32C48D',

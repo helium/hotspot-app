@@ -10,7 +10,7 @@ const makeRequest = async (url: string, opts: RequestInit = {}) => {
         ...opts.headers,
         'Cache-Control': 'no-cache',
         'Content-Type': 'application/json',
-        Authorization: Config.STAKING_TOKEN,
+        Authorization: `Basic ${Config.STAKING_TOKEN}`,
       },
     })
     const text = await response.text()

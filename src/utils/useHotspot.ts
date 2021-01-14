@@ -34,6 +34,7 @@ import connectedHotspotSlice, {
 } from '../store/connectedHotspot/connectedHotspotSlice'
 import { useAppDispatch } from '../store/store'
 import { RootState } from '../store/rootReducer'
+import * as Logger from './logger'
 
 type HotspotStaking = {
   batch: string
@@ -139,11 +140,11 @@ const useHotspot = () => {
     const name = getHotspotName(type)
     const mac = hotspotDevice.localName?.slice(15)
 
-    // if (onboardingAddress.length < 20) {
-    // Logger.sendError(
-    //   new Error(`Invalid onboarding address: ${onboardingAddress}`),
-    // )
-    // }
+    if (!onboardingAddress || onboardingAddress.length < 20) {
+      Logger.error(
+        new Error(`Invalid onboarding address: ${onboardingAddress}`),
+      )
+    }
 
     const stakingAddress = `hotspots/${onboardingAddress}`
     const feesStatus = (await getStaking(stakingAddress)) as HotspotStaking
@@ -278,7 +279,7 @@ const useHotspot = () => {
         status = 'global'
       }
     } catch (error) {
-      console.log({ error })
+      Logger.error(error)
       const notFound = error?.response?.status === 404
       if (!notFound) {
         status = 'error'
@@ -331,7 +332,7 @@ const useHotspot = () => {
     //   } else {
     //     alertError(`Got error code ${decodedValue} from add_gw`)
     //   }
-    //   Logger.sendError(
+    //   Logger.error(
     //     new Error(`Got error code ${decodedValue} from add_gw`),
     //   )
     //   return null
@@ -352,7 +353,7 @@ const useHotspot = () => {
       dispatch(accountSlice.actions.addPendingTransaction(pendingTransaction))
       return !!pendingTransaction
     } catch (error) {
-      console.log({ error })
+      Logger.error(error)
       return false
     }
   }

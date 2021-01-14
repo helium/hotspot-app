@@ -1,49 +1,30 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { TouchableWithoutFeedback } from 'react-native'
-import { formatDistanceToNow } from 'date-fns'
-import { round } from 'lodash'
-import animalHash from 'angry-purple-tiger'
-import { useTheme } from '@shopify/restyle'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
-import shortLocale from '../../../utils/formatDistance'
-import Rewards from '../../../assets/images/rewards.svg'
-import { triggerNavHaptic } from '../../../utils/haptic'
-import { Theme } from '../../../theme/theme'
+import { triggerNotification } from '../../../utils/haptic'
 
 type Props = {
-  type: string
-  time: number
-  amount?: number
   isFirst: boolean
   isLast: boolean
-}
-
-const titles: Record<string, string> = {
-  rewards: 'Mining Rewards',
-  sent: 'Sent HNT',
-  received: 'Received HNT',
-  add: 'Hotspot Added to Blockchain',
+  backgroundColor: string
+  icon: React.ReactNode
+  title: string
+  amount: string
+  time?: string
 }
 
 const ActivityItem = ({
-  type,
-  time,
-  amount = 0,
   isFirst = false,
   isLast = false,
+  backgroundColor,
+  icon,
+  amount,
+  time,
+  title,
 }: Props) => {
   const handlePress = () => {
-    triggerNavHaptic()
-  }
-
-  const theme = useTheme<Theme>()
-
-  const colors: Record<string, string> = {
-    rewards: theme.colors.purpleBright,
-    sent: theme.colors.blueBright,
-    received: theme.colors.greenMain,
-    add: theme.colors.purple100,
+    triggerNotification()
   }
 
   return (
@@ -63,34 +44,38 @@ const ActivityItem = ({
         <Box
           width={50}
           height={50}
-          style={{ backgroundColor: colors[type] }}
+          style={{ backgroundColor }}
           justifyContent="center"
           alignItems="center"
           borderTopLeftRadius={isFirst ? 'm' : undefined}
           borderBottomLeftRadius={isLast ? 'm' : undefined}
         >
-          <Rewards width={26} height={26} />
+          {icon}
         </Box>
         <Box flex={1} paddingHorizontal="m">
-          <Text fontSize={14} lineHeight={20} fontWeight="500">
-            {titles[type]}
+          <Text
+            variant="body2Medium"
+            color="black"
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
+            {title}
           </Text>
-          <Text color="grayExtraLight" fontSize={14} lineHeight={20}>
-            {type === 'add' && animalHash(amount)}
-            {type !== 'add' && <>{round(amount, 2)} HNT</>}
+          <Text
+            color="grayExtraLight"
+            variant="body2"
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
+            {amount}
           </Text>
         </Box>
         <Box paddingHorizontal="m">
-          <Text color="graySteel">
-            {formatDistanceToNow(time, {
-              locale: shortLocale,
-              addSuffix: true,
-            })}
-          </Text>
+          {time && <Text color="graySteel">{time}</Text>}
         </Box>
       </Box>
     </TouchableWithoutFeedback>
   )
 }
 
-export default ActivityItem
+export default memo(ActivityItem)

@@ -3,10 +3,7 @@ import { useSelector } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
 import BackScreen from '../../../components/BackScreen'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
-import {
-  fetchData,
-  fetchPendingTransactions,
-} from '../../../store/account/accountSlice'
+import { fetchData, fetchTxns } from '../../../store/account/accountSlice'
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
 import HotspotLocationFeePending from './HotspotLocationFeePending'
@@ -23,7 +20,10 @@ const HotspotLocationFeeScreen = () => {
 
   const navigation = useNavigation<HotspotSetupNavigationProp>()
   const {
-    account: { account, pendingTransactions },
+    account: {
+      account,
+      txns: { pending },
+    },
     connectedHotspot: { nonce: locationNonce, freeAddHotspot },
   } = useSelector((state: RootState) => state)
 
@@ -37,17 +37,17 @@ const HotspotLocationFeeScreen = () => {
   >()
 
   useEffect(() => {
-    dispatch(fetchPendingTransactions())
+    dispatch(fetchTxns('pending'))
     dispatch(getLocation())
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const pendingAssertTxn = useMemo(() => {
     // check if there are any existing pending location transactions
-    return pendingTransactions?.find(
+    return pending?.find(
       (txn) => txn.type === 'location' && txn.status === 'pending',
     )
-  }, [pendingTransactions])
+  }, [pending])
 
   useEffect(() => {
     const load = async () => {

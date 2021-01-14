@@ -93,6 +93,7 @@ export default {
     next: "I've read the guide",
   },
   generic: {
+    done: 'Done',
     understand: 'I understand',
     blocks: 'Blocks',
     active: 'Active',
@@ -499,5 +500,22 @@ export default {
       subtitle:
         'Here you’ll get news, updates and alerts about your Hotspots and The People’s Network.',
     },
+  },
+  transactions: {
+    mining: 'Mining Rewards',
+    sent: 'Sent HNT',
+    received: 'Received HNT',
+    added: 'Hotspot Added to Blockchain',
+    location: 'Location Confirmed',
+    transfer: 'Hotspot Transfer',
+    view: 'View',
+    filter: {
+      all: 'All Activity',
+      mining: 'Mining Rewards',
+      payment: 'Payment Transactions',
+      hotspot: 'Hotspot Transactions',
+      pending: 'Pending Transactions',
+    },
+    no_results: 'No Results',
   },
 }

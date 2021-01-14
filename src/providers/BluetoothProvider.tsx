@@ -16,7 +16,6 @@ const initialState = {
   writeCharacteristic: () =>
     new Promise<Characteristic>((resolve) => resolve()),
   findCharacteristic: async () => undefined,
-  subscribeToState: () => ({ remove: () => {} }),
 }
 
 const BleContext = createContext<ReturnType<typeof useBluetooth>>(initialState)

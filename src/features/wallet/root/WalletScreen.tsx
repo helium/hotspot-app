@@ -1,21 +1,13 @@
-import React from 'react'
-import { View } from 'react-native'
-import { useTheme } from '@shopify/restyle'
-import { Theme } from '../../../theme/theme'
+import React, { memo } from 'react'
 import WalletView from './WalletView'
+import Box from '../../../components/Box'
 
 const WalletScreen = () => {
-  const theme = useTheme<Theme>()
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: theme.colors.primaryBackground,
-      }}
-    >
+    <Box flex={1} backgroundColor="primaryBackground">
       <WalletView />
-    </View>
+    </Box>
   )
 }
 
-export default WalletScreen
+export default memo(WalletScreen)

@@ -1,12 +1,14 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import { Account, Hotspot, PendingTransaction } from '@helium/http'
-import { unionBy } from 'lodash'
 import {
-  getHotspots,
-  getAccount,
-  getPendingTxnList,
-} from '../../utils/appDataClient'
+  Account,
+  Hotspot,
+  PendingTransaction,
+  AnyTransaction,
+} from '@helium/http'
+import { unionBy } from 'lodash'
+import { getHotspots, getAccount, txnFetchers } from '../../utils/appDataClient'
 import { getWallet, postWallet } from '../../utils/walletClient'
+import { FilterType } from '../../features/wallet/root/walletTypes'
 
 export type Notification = {
   account_address: string
@@ -24,13 +26,21 @@ export type Notification = {
   viewed_at?: string | null
 }
 
+type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
+
 export type AccountState = {
   hotspots: Hotspot[]
   notifications: Notification[]
   account?: Account
-  mainDataStatus: 'idle' | 'pending' | 'fulfilled' | 'rejected'
-  markNotificationStatus: 'idle' | 'pending' | 'fulfilled' | 'rejected'
-  pendingTransactions: PendingTransaction[]
+  mainDataStatus: Loading
+  markNotificationStatus: Loading
+  txns: {
+    all: { data: AnyTransaction[]; status: Loading }
+    hotspot: { data: AnyTransaction[]; status: Loading }
+    mining: { data: AnyTransaction[]; status: Loading }
+    payment: { data: AnyTransaction[]; status: Loading }
+    pending: { data: PendingTransaction[]; status: Loading }
+  }
 }
 
 const initialState: AccountState = {
@@ -38,7 +48,13 @@ const initialState: AccountState = {
   notifications: [],
   mainDataStatus: 'idle',
   markNotificationStatus: 'idle',
-  pendingTransactions: [],
+  txns: {
+    all: { data: [], status: 'idle' },
+    hotspot: { data: [], status: 'idle' },
+    mining: { data: [], status: 'idle' },
+    payment: { data: [], status: 'idle' },
+    pending: { data: [], status: 'idle' },
+  },
 }
 
 type AccountData = {
@@ -77,10 +93,13 @@ export const markNotificationsViewed = createAsyncThunk<Notification[]>(
   },
 )
 
-export const fetchPendingTransactions = createAsyncThunk(
-  'account/fetchPendingTransactions',
-  async () => getPendingTxnList(),
-)
+export const fetchTxns = createAsyncThunk<
+  AnyTransaction[] | PendingTransaction[],
+  FilterType
+>('account/fetchAccountActivity', async (filterType) => {
+  const list = txnFetchers[filterType]
+  return list.takeJSON(filterType === 'pending' ? 1000 : 30)
+})
 
 // This slice contains data related to the user account
 const accountSlice = createSlice({
@@ -91,7 +110,10 @@ const accountSlice = createSlice({
       state,
       action: PayloadAction<PendingTransaction>,
     ) => {
-      state.pendingTransactions.push(action.payload)
+      state.txns.pending.data.push(action.payload)
+    },
+    signOut: () => {
+      return { ...initialState }
     },
   },
   extraReducers: (builder) => {
@@ -110,14 +132,27 @@ const accountSlice = createSlice({
       state.mainDataStatus = 'rejected'
       state.markNotificationStatus = 'rejected'
     })
+    builder.addCase(fetchTxns.pending, (state, { meta: { arg } }) => {
+      state.txns[arg].status = 'pending'
+    })
+    builder.addCase(fetchTxns.rejected, (state, { meta: { arg } }) => {
+      state.txns[arg].status = 'rejected'
+    })
     builder.addCase(
-      fetchPendingTransactions.fulfilled,
-      (state, { payload }) => {
-        state.pendingTransactions = unionBy(
-          payload,
-          state.pendingTransactions,
-          'hash',
-        )
+      fetchTxns.fulfilled,
+      (state, { payload, meta: { arg } }) => {
+        state.txns[arg].status = 'fulfilled'
+        if (arg === 'pending') {
+          const pending = payload as PendingTransaction[]
+          const filtered = pending.filter((txn) => txn.status === 'pending')
+          const joined = unionBy(filtered, state.txns.pending.data, 'hash')
+          state.txns.pending.data = joined
+        } else {
+          state.txns[arg].data = [
+            ...state.txns[arg].data,
+            ...(payload as AnyTransaction[]),
+          ]
+        }
       },
     )
     builder.addCase(markNotificationsViewed.pending, (state, _action) => {

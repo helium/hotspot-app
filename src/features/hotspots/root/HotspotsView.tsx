@@ -10,6 +10,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated'
 import { HotspotRewardsData } from '@helium/http/build/models/HotspotReward'
+import { useNavigation } from '@react-navigation/native'
 import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
@@ -19,6 +20,8 @@ import { hp } from '../../../utils/layout'
 import { getHotspotRewards } from '../../../utils/appDataClient'
 import HotspotsCarousel from '../../../components/HotspotsCarousel'
 import Map from '../../../components/Map'
+import { hotspotsToFeatures } from '../../../utils/mapUtils'
+import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
 type Props = {
   ownedHotspots: Hotspot[]
@@ -38,10 +41,13 @@ const TimeOfDayHeader = ({ date }: { date: Date }) => {
 }
 
 const HotspotsView = ({ ownedHotspots }: Props) => {
+  const navigation = useNavigation<RootNavigationProp>()
   const dragMid = hp(40)
   const dragMax = hp(75)
   const dragMin = 40
   const { t } = useTranslation()
+  const [focusedHotspot, setFocusedHotspot] = useState(ownedHotspots[0])
+
   const [date, setDate] = useState(new Date())
   useEffect(() => {
     const dateTimer = setInterval(() => setDate(new Date()), 300000) // update every 5 min
@@ -104,6 +110,12 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
     }
   })
 
+  const onHotspotFocused = (hotspot: Hotspot) => {
+    setFocusedHotspot(hotspot)
+  }
+
+  const ownedHotspotFeatures = hotspotsToFeatures(ownedHotspots)
+
   return (
     <Box flex={1} flexDirection="column" justifyContent="space-between">
       <Box
@@ -112,9 +124,16 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         width="100%"
         borderTopLeftRadius="xl"
         borderTopRightRadius="xl"
-        marginTop="xxl"
+        style={{ marginTop: 70 }}
+        overflow="hidden"
       >
-        <Map />
+        <Map
+          ownedHotspots={ownedHotspotFeatures}
+          zoomLevel={14}
+          mapCenter={[focusedHotspot.lng || 0, focusedHotspot.lat || 0]}
+          animationMode="flyTo"
+          offsetMapCenter
+        />
       </Box>
       <Box
         flexDirection="row"
@@ -126,10 +145,13 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         <Text variant="h3">{t('hotspots.owned.title')}</Text>
 
         <Box flexDirection="row" justifyContent="space-between">
-          <TouchableOpacityBox onPress={() => {}} padding="s">
+          <TouchableOpacityBox padding="s">
             <Search width={22} height={22} />
           </TouchableOpacityBox>
-          <TouchableOpacityBox onPress={() => {}} padding="s">
+          <TouchableOpacityBox
+            onPress={() => navigation.push('HotspotSetup')}
+            padding="s"
+          >
             <Add width={22} height={22} />
           </TouchableOpacityBox>
         </Box>
@@ -152,14 +174,13 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         snapPoints={[dragMin, dragMid, dragMax]}
         initialSnapIndex={1}
         snapProgress={snapProgress}
-        flatListProps={{
-          data: [ownedHotspots],
-          keyExtractor: (item: Hotspot[]) => item[0].address,
-          renderItem: ({ item }: { item: Hotspot[] }) => (
-            <HotspotsCarousel hotspots={item} rewards={hotspotRewards} />
-          ),
-        }}
-      />
+      >
+        <HotspotsCarousel
+          hotspots={ownedHotspots}
+          rewards={hotspotRewards}
+          onHotspotFocused={onHotspotFocused}
+        />
+      </BottomSheet>
     </Box>
   )
 }
