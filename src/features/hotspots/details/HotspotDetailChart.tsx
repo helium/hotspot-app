@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ChartData } from '../../../components/BarChart/types'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -20,6 +21,7 @@ const HotspotDetailChart = ({
   data,
   color,
 }: Props) => {
+  const { t } = useTranslation()
   const [focusedData, setFocusedData] = useState<ChartData | null>()
   const onFocus = (chartData: ChartData | null) => {
     setFocusedData(chartData)
@@ -40,7 +42,7 @@ const HotspotDetailChart = ({
         {percentage ? (
           <Box>
             <Text fontSize={12} color="grayLightText" marginBottom="s">
-              PASS RATE
+              {t('hotspot_details.pass_rate')}
             </Text>
             <Text variant="light" fontSize={34} color="black" marginBottom="s">
               {`${focusedData ? focusedData.up : percentage}%`}

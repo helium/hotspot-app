@@ -518,4 +518,17 @@ export default {
     },
     no_results: 'No Results',
   },
+  hotspot_details: {
+    title: 'Hotspot Details',
+    owner: 'Owned by {{address}}',
+    pass_rate: 'PASS RATE',
+    reward_title: 'HNT Rewards',
+    witness_title: 'Witnesses',
+    challenge_title: 'Challenges',
+    picker_title: 'Past',
+    picker_option_0: '24 Hours',
+    picker_option_1: '7 Days',
+    picker_option_2: '14 Days',
+    picker_option_3: '30 Days',
+  },
 }

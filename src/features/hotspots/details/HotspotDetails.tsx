@@ -10,6 +10,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import BottomSheet from 'react-native-holy-sheet/src/index'
 import { random, times } from 'lodash'
+import { useTranslation } from 'react-i18next'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { HotspotStackParamList } from '../root/hotspotTypes'
@@ -41,18 +42,23 @@ const shortAddress = (address?: string) =>
 
 const onFollowHotspot = () => {
   // TODO: follow hotspot
-  console.log('onFollowHotspot')
 }
 
 const onMoreMenuSelected = () => {
   // TODO: more menu
-  console.log('onMoreMenuSelected')
+}
+
+const onTimelineChanged = (_value: string, _index: number) => {
+  // TODO: load different timelines
 }
 
 const HotspotDetails = () => {
   const route = useRoute<HotspotDetailsRouteProp>()
   const { hotspot } = route.params
   const navigation = useNavigation()
+  const { t } = useTranslation()
+  const selectedHotspots = hotspotsToFeatures([hotspot])
+  const { purpleMain, greenOnline } = useColors()
 
   const dragMid = hp(25)
   const dragMax = hp(75)
@@ -88,9 +94,6 @@ const HotspotDetails = () => {
     }
   })
 
-  const selectedHotspots = hotspotsToFeatures([hotspot])
-  const { purpleMain, greenOnline } = useColors()
-
   return (
     <SafeAreaBox backgroundColor="primaryBackground" flex={1} edges={['top']}>
       <Box flex={1} flexDirection="column" justifyContent="space-between">
@@ -125,7 +128,7 @@ const HotspotDetails = () => {
           >
             <CarotLeft width={22} height={22} stroke="white" strokeWidth={2} />
             <Text variant="h3" marginStart="xs">
-              Hotspot Details
+              {t('hotspot_details.title')}
             </Text>
           </TouchableOpacityBox>
         </Box>
@@ -169,29 +172,31 @@ const HotspotDetails = () => {
             >
               <StatusBadge online={hotspot.status?.online} />
               <Text color="grayLightText">
-                {`Owned by ${shortAddress(hotspot.owner)}`}
+                {t('hotspot_details.owner', {
+                  address: shortAddress(hotspot.owner),
+                })}
               </Text>
             </Box>
-            <TimelinePicker />
+            <TimelinePicker onTimelineChanged={onTimelineChanged} />
             <HotspotDetailChart
-              title="HNT Rewards"
+              title={t('hotspot_details.reward_title')}
               number="12,345"
               change="+3.4%"
               color={greenOnline}
               data={data[0]}
             />
             <HotspotDetailChart
-              title="Witnesses"
+              title={t('hotspot_details.witness_title')}
               number="12"
               change="-1.2%"
               color={purpleMain}
-              data={data[0]}
+              data={data[1]}
             />
             <HotspotDetailChart
-              title="Challenges"
+              title={t('hotspot_details.challenge_title')}
               percentage={78}
               color={purpleMain}
-              data={data[0]}
+              data={data[2]}
             />
           </Box>
         </BottomSheet>
@@ -209,13 +214,13 @@ const data: Record<string, ChartData[]> = {
     day: weekdays[i % 7],
     id: [0, i].join('-'),
   })),
-  1: times(12).map((v, i) => ({
+  1: times(14).map((v, i) => ({
     up: random(0, 100),
     down: 0,
     day: weekdays[i % 7],
     id: [1, i].join('-'),
   })),
-  2: times(12).map((v, i) => ({
+  2: times(14).map((v, i) => ({
     up: random(0, 100),
     down: 0,
     day: weekdays[i % 7],
