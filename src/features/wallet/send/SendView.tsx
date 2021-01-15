@@ -22,6 +22,8 @@ import {
   convertFeeToNetworkTokens,
 } from '../../../utils/fees'
 import { networkTokensToDataCredits } from '../../../utils/currency'
+import { makeBurnTxn, makePaymentTxn } from '../../../utils/transactions'
+import { submitTransaction } from '../../../utils/appDataClient'
 
 const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
   const navigation = useNavigation()
@@ -51,6 +53,7 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
     }
   }, [scanResult])
 
+  // compute equivalent dc amount for burn txns
   useAsync(async () => {
     if (type === 'dc_burn') {
       // TODO doing this in a few places...
@@ -85,35 +88,32 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
     )
   }, [address, amount, fee, account])
 
-  const calculateFee = async (): Promise<Balance<DataCredits>> => {
-    // TODO Balance.fromString(amount: string, currencyType: CurrencyType)
-    const integerAmount = parseFloat(amount) * 100000000
-
-    if (type === 'payment') {
-      return calculatePaymentTxnFee(
-        integerAmount,
-        account?.speculativeNonce || 1,
-        address,
-      )
-    }
-
-    if (type === 'dc_burn') {
-      return calculateBurnTxnFee(
-        integerAmount,
-        address,
-        account?.speculativeNonce || 1,
-        memo,
-      )
-    }
-
-    throw new Error('Unsupported transaction type')
-  }
-
+  // compute fee
   useAsync(async () => {
     const dcFee = await calculateFee()
     const hntFee = await convertFeeToNetworkTokens(dcFee)
     setFee(hntFee)
   }, [amount])
+
+  const getNonce = (): number => {
+    if (!account?.speculativeNonce) return 1
+    return account.speculativeNonce + 1
+  }
+
+  const calculateFee = async (): Promise<Balance<DataCredits>> => {
+    // TODO Balance.fromString(amount: string, currencyType: CurrencyType)
+    const integerAmount = parseFloat(amount) * 100000000
+
+    if (type === 'payment') {
+      return calculatePaymentTxnFee(integerAmount, getNonce(), address)
+    }
+
+    if (type === 'dc_burn') {
+      return calculateBurnTxnFee(integerAmount, address, getNonce(), memo)
+    }
+
+    throw new Error('Unsupported transaction type')
+  }
 
   const navBack = () => {
     navigation.navigate('Wallet')
@@ -142,11 +142,23 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
     triggerNavHaptic()
   }
 
-  const submitTxn = () => {
-    // eslint-disable-next-line no-console
-    console.log('address', address)
-    // eslint-disable-next-line no-console
-    console.log('amount', amount)
+  const constructTxn = async (): Promise<string> => {
+    const integerAmount = parseFloat(amount) * 100000000
+
+    if (type === 'payment') {
+      return makePaymentTxn(integerAmount, address, getNonce())
+    }
+
+    if (type === 'dc_burn') {
+      return makeBurnTxn(integerAmount, address, getNonce(), memo)
+    }
+
+    throw new Error('Unsupported transaction type')
+  }
+
+  const handleSubmit = async () => {
+    const txn = await constructTxn()
+    await submitTransaction(txn)
     triggerNavHaptic()
     navigation.navigate('SendComplete')
   }
@@ -171,7 +183,7 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
           onMemoChange={setMemo}
           onScanPress={navScan}
           onSendMaxPress={setMaxAmount}
-          onSubmit={submitTxn}
+          onSubmit={handleSubmit}
           onUnlock={unlockForm}
         />
       </Box>

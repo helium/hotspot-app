@@ -1,13 +1,13 @@
 import { Address } from '@helium/crypto-react-native'
 import { PendingTransaction, AnyTransaction } from '@helium/http'
-import { PaymentV2, AddGatewayV1 } from '@helium/transactions'
+import { PaymentV2, AddGatewayV1, TokenBurnV1 } from '@helium/transactions'
 import { getKeypair } from './secureAccount'
 
 export const makePaymentTxn = async (
   amount: number,
   payeeB58: string,
   nonce: number,
-) => {
+): Promise<string> => {
   const keypair = await getKeypair()
   const payee = Address.fromB58(payeeB58)
 
@@ -38,6 +38,29 @@ export const makeAddGatewayTxn = async (partialTxnBin: string) => {
 
   const serialized = signedTxn.serialize()
   return Buffer.from(serialized).toString('base64')
+}
+
+export const makeBurnTxn = async (
+  amount: number,
+  payeeB58: string,
+  nonce: number,
+  memo: string,
+): Promise<string> => {
+  const keypair = await getKeypair()
+  const payee = Address.fromB58(payeeB58)
+
+  if (!keypair) throw new Error('missing keypair')
+
+  const tokenBurnTxn = new TokenBurnV1({
+    payer: keypair.address,
+    payee,
+    amount,
+    nonce,
+    memo,
+  })
+
+  const signedTxn = await tokenBurnTxn.sign({ payer: keypair })
+  return signedTxn.toString()
 }
 
 export const getPayer = (txn: AnyTransaction | PendingTransaction) => {
