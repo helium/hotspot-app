@@ -147,6 +147,7 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
     console.log('address', address)
     // eslint-disable-next-line no-console
     console.log('amount', amount)
+    navigation.navigate('SendComplete')
   }
 
   return (
