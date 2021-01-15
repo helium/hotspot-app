@@ -5,7 +5,6 @@ import {
   Transaction,
   TokenBurnV1,
 } from '@helium/transactions'
-import Client from '@helium/http'
 import Balance, {
   DataCredits,
   CurrencyType,
@@ -13,15 +12,15 @@ import Balance, {
 } from '@helium/currency'
 import { minBy } from 'lodash'
 import { getKeypair } from './secureAccount'
+import { getCurrentOraclePrice, getPredictedOraclePrice } from './appDataClient'
 
 export const stakingFee = Transaction.stakingFeeTxnAddGatewayV1
 
 export const convertFeeToNetworkTokens = async (
   balance: Balance<DataCredits>,
 ): Promise<Balance<NetworkTokens>> => {
-  const client = new Client()
-  const currentPrice = await client.oracle.getCurrentPrice()
-  const predictedPrices = await client.oracle.getPredictedPrice()
+  const currentPrice = await getCurrentOraclePrice()
+  const predictedPrices = await getPredictedOraclePrice()
   const prices = [currentPrice, ...predictedPrices]
   const oraclePrice = minBy(prices, (p) => p.price.integerBalance)
   return balance.toNetworkTokens(oraclePrice?.price)

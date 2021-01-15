@@ -1,11 +1,10 @@
 /* eslint-disable import/prefer-default-export */
 import Balance, { DataCredits, NetworkTokens } from '@helium/currency'
-import Client from '@helium/http'
+import { getCurrentOraclePrice } from './appDataClient'
 
 export const networkTokensToDataCredits = async (
   amount: Balance<NetworkTokens>,
 ): Promise<Balance<DataCredits>> => {
-  const client = new Client()
-  const { price: oraclePrice } = await client.oracle.getCurrentPrice()
+  const { price: oraclePrice } = await getCurrentOraclePrice()
   return amount.toDataCredits(oraclePrice)
 }

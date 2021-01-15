@@ -13,8 +13,6 @@ import OneSignal from 'react-native-onesignal'
 import Config from 'react-native-config'
 import { useSelector } from 'react-redux'
 import MapboxGL from '@react-native-mapbox-gl/maps'
-import { Transaction } from '@helium/transactions'
-import Client from '@helium/http'
 import { useAsync } from 'react-async-hook'
 import Portal from '@burstware/react-native-portal'
 import { theme } from './theme/theme'
@@ -26,7 +24,7 @@ import { fetchData } from './store/account/accountSlice'
 import BluetoothProvider from './providers/BluetoothProvider'
 import ConnectedHotspotProvider from './providers/ConnectedHotspotProvider'
 import * as Logger from './utils/logger'
-import { initFetchers } from './utils/appDataClient'
+import { configChainVars, initFetchers } from './utils/appDataClient'
 
 const App = () => {
   if (Platform.OS === 'android') {
@@ -104,11 +102,7 @@ const App = () => {
     }
   }, [handleChange])
 
-  useAsync(async () => {
-    const client = new Client()
-    const vars = await client.vars.get()
-    Transaction.config(vars)
-  }, [])
+  useAsync(configChainVars, [])
 
   return (
     <ThemeProvider theme={theme}>

@@ -3,6 +3,7 @@ import Client, {
   PendingTransaction,
   ResourceList,
 } from '@helium/http'
+import { Transaction } from '@helium/transactions'
 import {
   FilterType,
   Filters,
@@ -11,6 +12,11 @@ import {
 import { getSecureItem } from './secureAccount'
 
 const client = new Client()
+
+export const configChainVars = async () => {
+  const vars = await client.vars.get()
+  Transaction.config(vars)
+}
 
 export const getHotspots = async () => {
   const address = await getSecureItem('address')
@@ -48,6 +54,9 @@ export const submitTransaction = async (serializedTxn: string) =>
   client.transactions.submit(serializedTxn)
 
 export const getCurrentOraclePrice = async () => client.oracle.getCurrentPrice()
+
+export const getPredictedOraclePrice = async () =>
+  client.oracle.getPredictedPrice()
 
 export const getAccountTxnsList = async (filterType: FilterType) => {
   const address = await getSecureItem('address')
