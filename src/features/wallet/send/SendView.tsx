@@ -42,6 +42,12 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
     account: { account },
   } = useSelector((state: RootState) => state)
 
+  // TODO Balance.fromString(amount: string, currencyType: CurrencyType)
+  const getIntegerAmount = (): number => parseFloat(amount) * 100000000
+  const getBalanceAmount = (): Balance<NetworkTokens> => {
+    return new Balance(getIntegerAmount(), CurrencyType.networkToken)
+  }
+
   // process scan results
   useEffect(() => {
     if (scanResult) {
@@ -56,13 +62,7 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
   // compute equivalent dc amount for burn txns
   useAsync(async () => {
     if (type === 'dc_burn') {
-      // TODO doing this in a few places...
-      const integerAmount = parseFloat(amount) * 100000000
-      const amountBalance = new Balance(
-        integerAmount,
-        CurrencyType.networkToken,
-      )
-      const balanceDc = await networkTokensToDataCredits(amountBalance)
+      const balanceDc = await networkTokensToDataCredits(getBalanceAmount())
       // TODO option to not return currency ticker in balance
       // TODO might need to round up in DC conversion in he-js
       setDcAmount(balanceDc.toString(0).slice(0, -3))
@@ -72,9 +72,7 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
   // validate transaction
   useEffect(() => {
     const isValidAddress = Address.isValid(address)
-    // TODO Balance.fromString(amount: string, currencyType: CurrencyType)
-    const integerAmount = parseFloat(amount) * 100000000
-    const balanceAmount = new Balance(integerAmount, CurrencyType.networkToken)
+    const balanceAmount = getBalanceAmount()
     const totalTxnAmount = balanceAmount.plus(fee)
     // TODO balance compare/greater than/less than
     const hasSufficientBalance =
@@ -84,8 +82,9 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
       isValidAddress &&
         hasSufficientBalance &&
         address !== account?.address &&
-        integerAmount > 0,
+        balanceAmount.integerBalance > 0,
     )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, amount, fee, account])
 
   // compute fee
@@ -101,15 +100,12 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
   }
 
   const calculateFee = async (): Promise<Balance<DataCredits>> => {
-    // TODO Balance.fromString(amount: string, currencyType: CurrencyType)
-    const integerAmount = parseFloat(amount) * 100000000
-
     if (type === 'payment') {
-      return calculatePaymentTxnFee(integerAmount, getNonce(), address)
+      return calculatePaymentTxnFee(getIntegerAmount(), getNonce(), address)
     }
 
     if (type === 'dc_burn') {
-      return calculateBurnTxnFee(integerAmount, address, getNonce(), memo)
+      return calculateBurnTxnFee(getIntegerAmount(), address, getNonce(), memo)
     }
 
     throw new Error('Unsupported transaction type')
@@ -143,14 +139,12 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
   }
 
   const constructTxn = async (): Promise<string> => {
-    const integerAmount = parseFloat(amount) * 100000000
-
     if (type === 'payment') {
-      return makePaymentTxn(integerAmount, address, getNonce())
+      return makePaymentTxn(getIntegerAmount(), address, getNonce())
     }
 
     if (type === 'dc_burn') {
-      return makeBurnTxn(integerAmount, address, getNonce(), memo)
+      return makeBurnTxn(getIntegerAmount(), address, getNonce(), memo)
     }
 
     throw new Error('Unsupported transaction type')

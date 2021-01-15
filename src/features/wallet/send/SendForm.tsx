@@ -198,10 +198,11 @@ const SendForm = ({
 }
 
 const FeeFooter = ({ fee }: { fee: Balance<NetworkTokens> }) => {
+  const { t } = useTranslation()
   return (
     <Box marginTop="xs">
       <Text variant="mono" color="grayText" fontSize={11}>
-        +{fee.toString(8)} FEE
+        +{fee.toString(8)} {t('generic.fee').toUpperCase()}
       </Text>
     </Box>
   )
