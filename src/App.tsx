@@ -16,6 +16,7 @@ import MapboxGL from '@react-native-mapbox-gl/maps'
 import { Transaction } from '@helium/transactions'
 import Client from '@helium/http'
 import { useAsync } from 'react-async-hook'
+import Portal from '@burstware/react-native-portal'
 import { theme } from './theme/theme'
 import NavigationRoot from './navigation/NavigationRoot'
 import { useAppDispatch } from './store/store'
@@ -119,7 +120,9 @@ const App = () => {
             {Platform.OS === 'android' && (
               <StatusBar translucent backgroundColor="transparent" />
             )}
-            <NavigationRoot />
+            <Portal.Host>
+              <NavigationRoot />
+            </Portal.Host>
           </SafeAreaProvider>
         </ConnectedHotspotProvider>
       </BluetoothProvider>

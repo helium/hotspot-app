@@ -10,6 +10,8 @@ import CurrencyBadge from './CurrencyBadge'
 import WalletButton from './WalletButton'
 import { getAddress } from '../../../utils/secureAccount'
 import { hp, wp } from '../../../utils/layout'
+import CopyAddressButton from './AddressCopyButton'
+import ShareButton from './ShareButton'
 
 type Props = {
   onReceivePress: () => void
@@ -82,7 +84,13 @@ const BalanceCard = ({ onReceivePress, onSendPress }: Props) => {
         paddingTop="m"
       >
         <Box backgroundColor="white" padding="s" borderRadius="m">
-          {!loadingAddress && <QRCode value={address?.b58} size={hp(14)} />}
+          {!loadingAddress && (
+            <QRCode value={address?.b58 || ''} size={hp(14)} />
+          )}
+        </Box>
+        <Box width="100%" marginTop="m" alignItems="center">
+          <CopyAddressButton address={address?.b58} />
+          <ShareButton address={address?.b58 || ''} />
         </Box>
       </Box>
     </Box>

@@ -393,6 +393,8 @@ export default {
   },
   wallet: {
     title: 'My Wallet',
+    copiedToClipboard: 'Copied {{address}} to clipboard',
+    share: 'Share',
   },
   send: {
     title: {

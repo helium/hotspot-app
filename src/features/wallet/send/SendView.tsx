@@ -78,7 +78,10 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
       totalTxnAmount.integerBalance <= (account?.balance?.integerBalance || 0)
 
     setIsValid(
-      isValidAddress && hasSufficientBalance && address !== account?.address,
+      isValidAddress &&
+        hasSufficientBalance &&
+        address !== account?.address &&
+        integerAmount > 0,
     )
   }, [address, amount, fee, account])
 
