@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  ActivityIndicator,
-  LayoutAnimation,
-  Linking,
-  Platform,
-} from 'react-native'
+import { LayoutAnimation, Linking, Platform } from 'react-native'
 import { Device } from 'react-native-ble-plx'
 import { useSelector } from 'react-redux'
 import Text from '../../../components/Text'
@@ -17,6 +12,7 @@ import { RootState } from '../../../store/rootReducer'
 import { useBluetoothContext } from '../../../providers/BluetoothProvider'
 import useAlert from '../../../utils/useAlert'
 import sleep from '../../../utils/sleep'
+import CircleLoader from '../../../components/CircleLoader'
 
 type Props = { onConnected: (hotspot: Device) => void }
 const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
@@ -133,11 +129,7 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
           {t('hotspot_settings.diagnostics.no_hotspots')}
         </Text>
       )}
-      {!scanComplete && (
-        <Box marginTop="l">
-          <ActivityIndicator color="black" />
-        </Box>
-      )}
+      {!scanComplete && <CircleLoader marginTop="l" />}
       {scanComplete && (
         <TouchableOpacityBox
           marginLeft="n_m"

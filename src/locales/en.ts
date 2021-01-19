@@ -535,6 +535,7 @@ export default {
       title: 'Diagnostic Report',
       no_hotspots: 'No Hotspots Found',
       scan_again: 'Scan again',
+      generating_report: 'Generating Report',
       p2p: 'Peer-to-Peer Connections',
       no_connection: 'No Connection',
       outbound: 'Outbound',

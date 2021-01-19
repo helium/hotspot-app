@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useAsync } from 'react-async-hook'
 import { useTranslation } from 'react-i18next'
-import { ActivityIndicator, LayoutAnimation } from 'react-native'
+import { LayoutAnimation } from 'react-native'
 import { capitalize, round, times } from 'lodash'
 import { useSelector } from 'react-redux'
 import { formatDistance, fromUnixTime, getUnixTime, format } from 'date-fns'
@@ -11,7 +11,6 @@ import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import { RootState } from '../../../store/rootReducer'
-import { useColors } from '../../../theme/themeHooks'
 import DiagnosticAttribute from './DiagnosticAttribute'
 import { fetchHotspotActivity } from '../../../store/connectedHotspot/connectedHotspotSlice'
 import { useAppDispatch } from '../../../store/store'
@@ -21,6 +20,7 @@ import useDevice from '../../../utils/useDevice'
 import Button from '../../../components/Button'
 import sendReport from './sendReport'
 import Card from '../../../components/Card'
+import CircleLoader from '../../../components/CircleLoader'
 
 type Info = {
   percentSynced: number
@@ -56,7 +56,6 @@ const HotspotDiagnosticReport = () => {
     getDiagnosticInfo,
     checkFirmwareCurrent,
   } = useConnectedHotspotContext()
-  const { purpleMain } = useColors()
   const [loading, setLoading] = useState(true)
   const [info, setInfo] = useState(initialInfo)
   const [lineItems, setLineItems] = useState<
@@ -165,9 +164,12 @@ const HotspotDiagnosticReport = () => {
 
   if (loading) {
     return (
-      <Box minHeight={413} justifyContent="center">
-        <ActivityIndicator color={purpleMain} />
-      </Box>
+      <CircleLoader
+        minHeight={363}
+        justifyContent="center"
+        alignItems="center"
+        text={t('hotspot_settings.diagnostics.generating_report')}
+      />
     )
   }
 
