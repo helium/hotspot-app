@@ -24,11 +24,8 @@ import {
   submitTransaction,
 } from './appDataClient'
 import { getSecureItem } from './secureAccount'
-import {
-  calculateAddGatewayFee,
-  makeAddGatewayTxn,
-  stakingFee,
-} from './transactions'
+import { makeAddGatewayTxn } from './transactions'
+import { calculateAddGatewayFee, stakingFee } from './fees'
 import accountSlice from '../store/account/accountSlice'
 import connectedHotspotSlice, {
   HotspotName,

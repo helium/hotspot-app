@@ -13,6 +13,8 @@ import OneSignal from 'react-native-onesignal'
 import Config from 'react-native-config'
 import { useSelector } from 'react-redux'
 import MapboxGL from '@react-native-mapbox-gl/maps'
+import { useAsync } from 'react-async-hook'
+import Portal from '@burstware/react-native-portal'
 import { theme } from './theme/theme'
 import NavigationRoot from './navigation/NavigationRoot'
 import { useAppDispatch } from './store/store'
@@ -22,7 +24,7 @@ import { fetchData } from './store/account/accountSlice'
 import BluetoothProvider from './providers/BluetoothProvider'
 import ConnectedHotspotProvider from './providers/ConnectedHotspotProvider'
 import * as Logger from './utils/logger'
-import { initFetchers } from './utils/appDataClient'
+import { configChainVars, initFetchers } from './utils/appDataClient'
 
 const App = () => {
   if (Platform.OS === 'android') {
@@ -100,6 +102,8 @@ const App = () => {
     }
   }, [handleChange])
 
+  useAsync(configChainVars, [])
+
   return (
     <ThemeProvider theme={theme}>
       <BluetoothProvider>
@@ -110,7 +114,9 @@ const App = () => {
             {Platform.OS === 'android' && (
               <StatusBar translucent backgroundColor="transparent" />
             )}
-            <NavigationRoot />
+            <Portal.Host>
+              <NavigationRoot />
+            </Portal.Host>
           </SafeAreaProvider>
         </ConnectedHotspotProvider>
       </BluetoothProvider>

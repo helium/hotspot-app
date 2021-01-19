@@ -11,6 +11,7 @@ type Props = {
   label: string
   placeholder?: string
   extra?: any
+  footer?: any
   type?: 'default' | 'numeric'
   onChange: (text: string) => void
   locked?: boolean
@@ -21,6 +22,7 @@ const InputField = ({
   label,
   placeholder,
   extra,
+  footer,
   type = 'default',
   onChange,
   locked = false,
@@ -37,14 +39,14 @@ const InputField = ({
       <Box
         backgroundColor="offwhite"
         borderRadius="m"
-        padding="m"
+        paddingHorizontal="m"
+        paddingVertical="m"
         marginBottom="s"
       >
         <Box
           flexDirection="row"
           justifyContent="space-between"
           alignItems="center"
-          marginBottom="s"
         >
           <Text letterSpacing={0.92} fontSize={13}>
             {label.toUpperCase()}
@@ -67,10 +69,16 @@ const InputField = ({
             dataDetectorTypes="none"
             keyboardAppearance="dark"
             keyboardType={type}
-            style={{ fontFamily: 'InputMono-Regular', fontSize: 15 }}
+            style={{
+              fontFamily: 'InputMono-Regular',
+              fontSize: 15,
+              lineHeight: 20,
+              letterSpacing: 0.7,
+            }}
             returnKeyType="done"
           />
         </Box>
+        {footer !== undefined && footer}
       </Box>
     </TouchableWithoutFeedback>
   )
