@@ -393,13 +393,15 @@ export default {
   },
   wallet: {
     title: 'My Wallet',
+    copiedToClipboard: 'Copied {{address}} to clipboard',
+    share: 'Share',
   },
   send: {
     title: {
       payment: 'Send HNT',
       dcBurn: 'Burn HNT',
     },
-    available: '{{ amount }} HNT Available',
+    available: '{{ amount }} Available',
     address: {
       label: 'Recipient Address',
       placeholder: 'Enter Address...',
@@ -422,6 +424,7 @@ export default {
       dcBurn: 'Burn HNT',
     },
     qrInfo: 'QR INFO',
+    error: 'There was an error submitting this transaction. Please try again.',
   },
   more: {
     sections: {

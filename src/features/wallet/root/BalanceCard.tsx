@@ -1,6 +1,8 @@
 import React from 'react'
 import { useAsync } from 'react-async-hook'
 import QRCode from 'react-qr-code'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../../store/rootReducer'
 import Box from '../../../components/Box'
 import AnimatedBox from '../../../components/AnimatedBox'
 import Text from '../../../components/Text'
@@ -8,6 +10,8 @@ import CurrencyBadge from './CurrencyBadge'
 import WalletButton from './WalletButton'
 import { getAddress } from '../../../utils/secureAccount'
 import { hp, wp } from '../../../utils/layout'
+import CopyAddressButton from './AddressCopyButton'
+import ShareButton from './ShareButton'
 
 type Props = {
   onReceivePress: () => void
@@ -16,6 +20,12 @@ type Props = {
 
 const BalanceCard = ({ onReceivePress, onSendPress }: Props) => {
   const { result: address, loading: loadingAddress } = useAsync(getAddress, [])
+  const {
+    account: { account },
+  } = useSelector((state: RootState) => state)
+
+  const [integerPart, decimalPart] =
+    account?.balance?.toString().split('.') || []
 
   return (
     <Box
@@ -38,7 +48,7 @@ const BalanceCard = ({ onReceivePress, onSendPress }: Props) => {
               fontSize={hp(4.5)}
               fontWeight="300"
             >
-              23,987
+              {integerPart}
             </Text>
             <Text
               color="white"
@@ -47,7 +57,7 @@ const BalanceCard = ({ onReceivePress, onSendPress }: Props) => {
               opacity={0.4}
               lineHeight={25}
             >
-              .45876891 HNT
+              .{decimalPart}
             </Text>
           </Box>
 
@@ -74,7 +84,13 @@ const BalanceCard = ({ onReceivePress, onSendPress }: Props) => {
         paddingTop="m"
       >
         <Box backgroundColor="white" padding="s" borderRadius="m">
-          {!loadingAddress && <QRCode value={address?.b58} size={hp(14)} />}
+          {!loadingAddress && (
+            <QRCode value={address?.b58 || ''} size={hp(14)} />
+          )}
+        </Box>
+        <Box width="100%" marginTop="m" alignItems="center">
+          <CopyAddressButton address={address?.b58} />
+          <ShareButton address={address?.b58 || ''} />
         </Box>
       </Box>
     </Box>
