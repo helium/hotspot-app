@@ -40,10 +40,10 @@ const HotspotSetupScanWifiScreen = () => {
 
   const scanWifi = async () => {
     const wifiNetworks = await scanForWifiNetworks()
-    const configuredWifiNetworkds = await scanForWifiNetworks(true)
+    const configuredWifiNetworks = await scanForWifiNetworks(true)
 
     setNetworks(wifiNetworks)
-    setConfiguredNetworks(configuredWifiNetworkds)
+    setConfiguredNetworks(configuredWifiNetworks)
   }
 
   useEffect(() => {
