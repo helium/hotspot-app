@@ -581,6 +581,7 @@ export default {
     wifi: {
       title: 'Wi-Fi Network',
       connected_via: 'Connected via',
+      not_connected: 'Not Connected',
       available_wifi: 'Available Wi-Fi Networks',
     },
     options: {

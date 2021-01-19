@@ -40,6 +40,10 @@ export function parseChar(
 ): string[]
 export function parseChar(
   characteristicValue: string,
+  uuid: typeof HotspotCharacteristic.ETHERNET_ONLINE_UUID,
+): boolean
+export function parseChar(
+  characteristicValue: string,
   uuid:
     | typeof HotspotCharacteristic.WIFI_SSID_UUID
     | typeof HotspotCharacteristic.PUBKEY_UUID
@@ -60,6 +64,10 @@ export function parseChar(characteristicValue: string, uuid: string) {
     case HotspotCharacteristic.WIFI_CONFIGURED_SERVICES:
     case HotspotCharacteristic.AVAILABLE_SSIDS_UUID:
       return parseWifi(characteristicValue)
+    case HotspotCharacteristic.ETHERNET_ONLINE_UUID: {
+      const retVal = decode(characteristicValue)
+      return retVal === 'true'
+    }
   }
 
   return decode(characteristicValue)
