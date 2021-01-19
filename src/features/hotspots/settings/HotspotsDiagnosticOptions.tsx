@@ -18,7 +18,7 @@ import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotP
 import { RootState } from '../../../store/rootReducer'
 
 type Opts = 'scan' | HotspotOptions
-type Props = { hotspot: Device; optionSelected: (option: Opts) => void }
+type Props = { hotspot?: Device; optionSelected: (option: Opts) => void }
 const HotspotDiagnosticOptions = ({ hotspot, optionSelected }: Props) => {
   const { t } = useTranslation()
   const {
@@ -48,7 +48,7 @@ const HotspotDiagnosticOptions = ({ hotspot, optionSelected }: Props) => {
             {t('hotspot_settings.options.paired')}
           </Text>
           <Text variant="body2" color="purpleMain">
-            {hotspot.localName}
+            {hotspot?.localName || ''}
           </Text>
         </Box>
       </Box>

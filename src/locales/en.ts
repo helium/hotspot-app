@@ -578,6 +578,11 @@ export default {
         'Could not find a compatible email client installed',
       other_info: 'Other Information',
     },
+    wifi: {
+      title: 'Wi-Fi Network',
+      connected_via: 'Connected via',
+      available_wifi: 'Available Wi-Fi Networks',
+    },
     options: {
       paired: 'Paired with Hotspot',
       diagnostic: 'Diagnostics',

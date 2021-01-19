@@ -8,6 +8,7 @@ import HotspotDiagnosticReport from './HotspotDiagnosticReport'
 import HotspotDiagnosticsConnection from './HotspotDiagnosticsConnection'
 import HotspotDiagnosticOptions from './HotspotsDiagnosticOptions'
 import { HotspotOptions } from './HotspotSettingsTypes'
+import WifiSettings from './WifiSettings'
 
 type State = 'scan' | 'options' | HotspotOptions
 
@@ -24,29 +25,38 @@ const HotspotDiagnostics = ({ updateTitle }: Props) => {
     setState('options')
   }
 
-  if (state === 'scan')
-    return (
-      <HotspotDiagnosticsConnection
-        onConnected={(hotspot) => onConnected(hotspot)}
-      />
-    )
+  const handleOptionSelected = (opt: 'scan' | HotspotOptions) => {
+    switch (opt) {
+      case 'diagnostic':
+        updateTitle(t('hotspot_settings.diagnostics.title'))
+        break
+      case 'wifi':
+        updateTitle(t('hotspot_settings.wifi.title'))
+        break
+    }
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+    setState(opt)
+  }
 
-  if (state === 'options' && connectedHotspot)
-    return (
-      <HotspotDiagnosticOptions
-        hotspot={connectedHotspot}
-        optionSelected={(opt) => {
-          if (opt === 'diagnostic') {
-            updateTitle(t('hotspot_settings.diagnostics.title'))
-          }
-          LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
-          setState(opt)
-        }}
-      />
-    )
-
-  if (state === 'diagnostic' && connectedHotspot)
-    return <HotspotDiagnosticReport />
+  switch (state) {
+    case 'scan':
+      return (
+        <HotspotDiagnosticsConnection
+          onConnected={(hotspot) => onConnected(hotspot)}
+        />
+      )
+    case 'options':
+      return (
+        <HotspotDiagnosticOptions
+          hotspot={connectedHotspot}
+          optionSelected={handleOptionSelected}
+        />
+      )
+    case 'diagnostic':
+      return <HotspotDiagnosticReport />
+    case 'wifi':
+      return <WifiSettings />
+  }
 
   return (
     <Box height={412} padding="l">
