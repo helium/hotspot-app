@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Device } from 'react-native-ble-plx'
 import { LayoutAnimation } from 'react-native'
+import { useSelector } from 'react-redux'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import Paired from '../../../assets/images/paired.svg'
@@ -13,12 +14,25 @@ import Reassert from '../../../assets/images/reassert.svg'
 import Firmware from '../../../assets/images/firmware.svg'
 import Chevron from '../../../assets/images/chevron-right.svg'
 import { useColors } from '../../../theme/themeHooks'
+import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
+import { RootState } from '../../../store/rootReducer'
 
 type Opts = 'scan' | HotspotOptions
 type Props = { hotspot: Device; optionSelected: (option: Opts) => void }
 const HotspotDiagnosticOptions = ({ hotspot, optionSelected }: Props) => {
   const { t } = useTranslation()
+  const {
+    connectedHotspot: { firmware },
+  } = useSelector((state: RootState) => state)
+
   const { purpleMain } = useColors()
+  const { checkFirmwareCurrent } = useConnectedHotspotContext()
+
+  useEffect(() => {
+    if (!firmware?.version) {
+      checkFirmwareCurrent()
+    }
+  }, [firmware, checkFirmwareCurrent])
 
   const selectOption = (opt: Opts) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
@@ -67,7 +81,12 @@ const HotspotDiagnosticOptions = ({ hotspot, optionSelected }: Props) => {
             <Text variant="body1" color="black" marginLeft="ms" flex={1}>
               {t(`hotspot_settings.options.${k}`)}
             </Text>
-            <Chevron />
+            {k === 'firmware' && (
+              <Text variant="body1" color="purpleMain">
+                {firmware?.version}
+              </Text>
+            )}
+            {k !== 'firmware' && <Chevron />}
           </TouchableOpacityBox>
         )
       })}
