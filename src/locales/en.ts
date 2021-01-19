@@ -518,4 +518,60 @@ export default {
     },
     no_results: 'No Results',
   },
+  hotspot_settings: {
+    title: 'Hotspot Settings',
+    pairing: {
+      title: 'Hotspot Pairing Required',
+      subtitle:
+        'Press the button on your Helium Hotspot, or power-cycle your RAK Hotspot Miner.',
+      scan: 'Scan for my Hotspot',
+    },
+    transfer: {
+      title: 'Transfer Hotspot',
+      subtitle: 'Transfer Hotspot to another Helium Wallet Account.',
+      begin: 'Begin Hotspot Transfer',
+    },
+    diagnostics: {
+      title: 'Diagnostic Report',
+      no_hotspots: 'No Hotspots Found',
+      scan_again: 'Scan again',
+      generating_report: 'Generating Report',
+      p2p: 'Peer-to-Peer Connections',
+      no_connection: 'No Connection',
+      outbound: 'Outbound',
+      outbound_help:
+        'Hotspot unable to connect to peers on the blockchain. This can be due to router issues, no internet connection, or a firewall blocking incoming connections.',
+      inbound: 'Inbound',
+      inbound_help:
+        'Blockchain peers cannot to reach Hotspot. This can be due to router issues, no internet connection, or a firewall blocking incoming connections.',
+      activity: 'Activity',
+      blockchain_sync: 'Blockchain Sync',
+      synced: '{{percent}} Synced',
+      blockchain_height_help:
+        'Hotspot must be 100% synced before it can start mining. This can take several hours or more depending on your internet speed. Keep the Hotspot powered on and connected to the internet.',
+      last_challenged: 'Last Challenged',
+      last_challenged_help:
+        'Neighboring Hotspots have not been able to verify your Hotspot location. In most cases, this is because the antenna is in an area where radio signals can’t reach (buildings blocking, antenna pointed down, antenna indoors).',
+      firmware: 'Hotspot Firmware',
+      hotspot_type: 'Hotspot Type',
+      app_version: 'App Version',
+      wifi_mac: 'Wi-Fi MAC',
+      eth_mac: 'Ethernet MAC',
+      nat_type: 'NAT Type',
+      ip: 'IP Address',
+      report_generated: 'Report Generated',
+      send_to_support: 'Send Report to Support',
+      help_link: 'Read more for possible solutions',
+      email_client_missing:
+        'Could not find a compatible email client installed',
+      other_info: 'Other Information',
+    },
+    options: {
+      paired: 'Paired with Hotspot',
+      diagnostic: 'Diagnostics',
+      wifi: 'Wi-Fi Network',
+      reassert: 'Reassert Hotspot',
+      firmware: 'Hotspot Firmware',
+    },
+  },
 }

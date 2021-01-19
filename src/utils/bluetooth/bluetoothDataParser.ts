@@ -4,14 +4,32 @@ import {
   wifi_remove_v1 as WifiRemoveV1,
   wifi_connect_v1 as WifiConnectV1,
   add_gateway_v1 as AddGatewayV1,
+  diagnostics_v1 as DiagnosticsV1,
 } from '@helium/proto-ble'
 import { util } from 'protobufjs'
 import { HotspotCharacteristic, FirmwareCharacteristic } from './bluetoothTypes'
+
+export type DiagnosticInfo = {
+  connected: string
+  dialable: string
+  eth: string
+  fw: string
+  height: string
+  ip: string
+  nat_type: string
+  wifi: string
+}
 
 const parseWifi = (value: string): string[] => {
   const buffer = util.newBuffer(util.base64.length(value))
   util.base64.decode(value, buffer, 0)
   return WifiServicesV1.decode(buffer).services
+}
+
+const parseDiagnostics = (value: string) => {
+  const buffer = util.newBuffer(util.base64.length(value))
+  util.base64.decode(value, buffer, 0)
+  return DiagnosticsV1.decode(buffer).diagnostics
 }
 
 export function parseChar(
@@ -31,8 +49,14 @@ export function parseChar(
     | typeof HotspotCharacteristic.ADD_GATEWAY_UUID
     | typeof FirmwareCharacteristic.FIRMWAREVERSION_UUID,
 ): string
+export function parseChar(
+  characteristicValue: string,
+  uuid: typeof HotspotCharacteristic.DIAGNOSTIC_UUID,
+): DiagnosticInfo
 export function parseChar(characteristicValue: string, uuid: string) {
   switch (uuid) {
+    case HotspotCharacteristic.DIAGNOSTIC_UUID:
+      return parseDiagnostics(characteristicValue) as DiagnosticInfo
     case HotspotCharacteristic.WIFI_CONFIGURED_SERVICES:
     case HotspotCharacteristic.AVAILABLE_SSIDS_UUID:
       return parseWifi(characteristicValue)

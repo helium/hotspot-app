@@ -30,6 +30,7 @@ const palette = {
 
   purple: '#B377FF',
   purpleBright: '#A667F6',
+  whitePurple: '#F7F8FF',
   purpleLight: '#A0A5DA',
   purpleMain: '#474DFF',
   purple300: '#343964',
@@ -199,6 +200,7 @@ export const theme = createTheme({
   borderRadii: {
     none: 0,
     s: 4,
+    ms: 6,
     m: 8,
     l: 12,
     xl: 20,
@@ -211,7 +213,9 @@ export const theme = createTheme({
   },
   cardVariants: {
     regular: {
-      padding: 's',
+      padding: 'ms',
+      borderRadius: 'ms',
+      backgroundColor: 'grayBox',
     },
     elevated: {
       shadowColor: 'blueDark',
