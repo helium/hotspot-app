@@ -200,6 +200,7 @@ export const theme = createTheme({
   borderRadii: {
     none: 0,
     s: 4,
+    ms: 6,
     m: 8,
     l: 12,
     xl: 20,
@@ -212,7 +213,9 @@ export const theme = createTheme({
   },
   cardVariants: {
     regular: {
-      padding: 's',
+      padding: 'ms',
+      borderRadius: 'ms',
+      backgroundColor: 'grayBox',
     },
     elevated: {
       shadowColor: 'blueDark',

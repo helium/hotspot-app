@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { LayoutAnimation } from 'react-native'
 import { Device } from 'react-native-ble-plx'
 import Box from '../../../components/Box'
@@ -10,9 +11,13 @@ import { HotspotOptions } from './HotspotSettingsTypes'
 
 type State = 'scan' | 'options' | HotspotOptions
 
-const HotspotDiagnostics = () => {
+type Props = {
+  updateTitle: (nextTitle: string) => void
+}
+const HotspotDiagnostics = ({ updateTitle }: Props) => {
   const [state, setState] = useState<State>('scan')
   const [connectedHotspot, setConnectedHotspot] = useState<Device | undefined>()
+  const { t } = useTranslation()
   const onConnected = (hotspot: Device) => {
     setConnectedHotspot(hotspot)
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
@@ -30,7 +35,13 @@ const HotspotDiagnostics = () => {
     return (
       <HotspotDiagnosticOptions
         hotspot={connectedHotspot}
-        optionSelected={(opt) => setState(opt)}
+        optionSelected={(opt) => {
+          if (opt === 'diagnostic') {
+            updateTitle(t('hotspot_settings.diagnostics.title'))
+          }
+          LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+          setState(opt)
+        }}
       />
     )
 

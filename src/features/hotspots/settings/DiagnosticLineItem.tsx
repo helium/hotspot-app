@@ -9,7 +9,7 @@ const DiagnosticLineItem = ({ attribute, value }: Props) => {
       <Text variant="body2Medium" color="black" flex={1}>
         {attribute}
       </Text>
-      <Text variant="body2Medium" color="black" marginLeft="ms">
+      <Text variant="body2" color="black" marginLeft="ms">
         {value}
       </Text>
     </Box>

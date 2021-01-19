@@ -532,9 +532,9 @@ export default {
       begin: 'Begin Hotspot Transfer',
     },
     diagnostics: {
+      title: 'Diagnostic Report',
       no_hotspots: 'No Hotspots Found',
       scan_again: 'Scan again',
-      title: 'Diagnostic Report',
       p2p: 'Peer-to-Peer Connections',
       no_connection: 'No Connection',
       outbound: 'Outbound',
@@ -543,7 +543,8 @@ export default {
       inbound: 'Inbound',
       inbound_help:
         'Blockchain peers cannot to reach Hotspot. This can be due to router issues, no internet connection, or a firewall blocking incoming connections.',
-      blockchain_height: 'Blockchain Height',
+      activity: 'Activity',
+      blockchain_sync: 'Blockchain Sync',
       synced: '{{percent}} Synced',
       blockchain_height_help:
         'Hotspot must be 100% synced before it can start mining. This can take several hours or more depending on your internet speed. Keep the Hotspot powered on and connected to the internet.',
@@ -562,7 +563,7 @@ export default {
       help_link: 'Read more for possible solutions',
       email_client_missing:
         'Could not find a compatible email client installed',
-      etc: 'Etc',
+      other_info: 'Other Information',
     },
     options: {
       paired: 'Paired with Hotspot',

@@ -23,10 +23,11 @@ type Props = {
 type State = 'init' | 'scan' | 'transfer'
 
 const HotspotSettings = ({ visible, onClose }: Props) => {
+  const { t } = useTranslation()
   const [state, setState] = useState<State>('init')
+  const [title, setTitle] = useState<string>(t('hotspot_settings.title'))
   const { m } = useSpacing()
   const slideUpAnimRef = useRef(new Animated.Value(1000))
-  const { t } = useTranslation()
   const { getState } = useBluetoothContext()
 
   useEffect(() => {
@@ -37,6 +38,10 @@ const HotspotSettings = ({ visible, onClose }: Props) => {
       easing: Easing.elastic(0.8),
       delay: visible ? 100 : 0,
     }).start()
+
+    if (visible) {
+      setTitle(t('hotspot_settings.title'))
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible])
 
@@ -57,7 +62,11 @@ const HotspotSettings = ({ visible, onClose }: Props) => {
 
   const getFirstCard = () => {
     if (state === 'scan') {
-      return <HotspotDiagnostics />
+      return (
+        <HotspotDiagnostics
+          updateTitle={(nextTitle: string) => setTitle(nextTitle)}
+        />
+      )
     }
     return (
       <HotspotSettingsOption
@@ -124,7 +133,7 @@ const HotspotSettings = ({ visible, onClose }: Props) => {
           style={{ transform: [{ translateY: slideUpAnimRef.current }] }}
         >
           <Text variant="h2" color="white" marginBottom="ms">
-            {t('hotspot_settings.title')}
+            {title}
           </Text>
 
           {state !== 'transfer' && (
