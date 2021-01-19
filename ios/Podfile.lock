@@ -375,7 +375,7 @@ PODS:
     - React-Core
   - RNCMaskedView (0.1.10):
     - React
-  - RNCPicker (1.8.1):
+  - RNCPicker (1.9.10):
     - React-Core
   - RNDeviceInfo (7.4.0):
     - React-Core
@@ -517,7 +517,7 @@ DEPENDENCIES:
   - "ReactNativeART (from `../node_modules/@react-native-community/art`)"
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
-  - "RNCPicker (from `../node_modules/@react-native-community/picker`)"
+  - "RNCPicker (from `../node_modules/@react-native-picker/picker`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNLocalize (from `../node_modules/react-native-localize`)
@@ -656,7 +656,7 @@ EXTERNAL SOURCES:
   RNCMaskedView:
     :path: "../node_modules/@react-native-community/masked-view"
   RNCPicker:
-    :path: "../node_modules/@react-native-community/picker"
+    :path: "../node_modules/@react-native-picker/picker"
   RNDeviceInfo:
     :path: "../node_modules/react-native-device-info"
   RNGestureHandler:
@@ -763,7 +763,7 @@ SPEC CHECKSUMS:
   ReactNativeART: 78edc68dd4a1e675338cd0cd113319cf3a65f2ab
   RNCAsyncStorage: b03032fdbdb725bea0bd9e5ec5a7272865ae7398
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
-  RNCPicker: 914b557e20b3b8317b084aca9ff4b4edb95f61e4
+  RNCPicker: 77183d9b1cd80ae55505322f8ad09ba0036e29ba
   RNDeviceInfo: 9538a884f862fe4aa0d7cead9f34e292d41ba8f6
   RNGestureHandler: 9b7e605a741412e20e13c512738a31bd1611759b
   RNLocalize: 7c7aeda16c01db7a0918981c14875c0a53be9b79
