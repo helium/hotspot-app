@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { Device } from 'react-native-ble-plx'
 import { ActivityIndicator, LayoutAnimation } from 'react-native'
 import Text from '../../../components/Text'
@@ -25,6 +25,12 @@ const HotspotItem = ({
 }: Props) => {
   const [state, setState] = useState<State>('init')
   const { whitePurple, white, purpleMain } = useColors()
+
+  const formatName = useCallback(
+    () =>
+      (hotspot.localName || hotspot.name || '').replace('Helium', '').trim(),
+    [hotspot.localName, hotspot.name],
+  )
 
   useEffect(() => {
     let nextState: State = 'init'
@@ -56,7 +62,7 @@ const HotspotItem = ({
         marginLeft="ms"
         flex={1}
       >
-        {hotspot.localName || hotspot.name}
+        {formatName()}
       </Text>
       {state === 'init' && <HotspotNotSelected />}
       {state === 'connected' && <HotspotConnected />}
