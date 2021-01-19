@@ -424,6 +424,7 @@ export default {
       dcBurn: 'Burn HNT',
     },
     qrInfo: 'QR INFO',
+    error: 'There was an error submitting this transaction. Please try again.',
   },
   more: {
     sections: {

@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react'
+import { Alert } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
 import Balance, {
   NetworkTokens,
@@ -24,9 +26,11 @@ import {
 import { networkTokensToDataCredits } from '../../../utils/currency'
 import { makeBurnTxn, makePaymentTxn } from '../../../utils/transactions'
 import { submitTransaction } from '../../../utils/appDataClient'
+import * as Logger from '../../../utils/logger'
 
 const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
   const navigation = useNavigation()
+  const { t } = useTranslation()
 
   const [type, setType] = useState<SendType>('payment')
   const [address, setAddress] = useState<string>('')
@@ -151,10 +155,15 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
   }
 
   const handleSubmit = async () => {
-    const txn = await constructTxn()
-    await submitTransaction(txn)
-    triggerNavHaptic()
-    navigation.navigate('SendComplete')
+    try {
+      const txn = await constructTxn()
+      await submitTransaction(txn)
+      triggerNavHaptic()
+      navigation.navigate('SendComplete')
+    } catch (error) {
+      Logger.error(error)
+      Alert.alert(t('generic.error'), t('send.error'))
+    }
   }
 
   return (
