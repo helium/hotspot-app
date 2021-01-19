@@ -6,6 +6,7 @@ const initialState = {
   getState: async () => State.Unknown,
   enable: async () => {},
   scanForHotspots: async () => {},
+  getDiagnosticInfo: async () => undefined,
   connectAndConfigHotspot: async () => {},
   availableHotspots: {},
   scanForWifiNetworks: async () => undefined,
