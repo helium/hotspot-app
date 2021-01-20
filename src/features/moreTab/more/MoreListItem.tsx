@@ -1,9 +1,11 @@
 import React from 'react'
-import { Switch } from 'react-native'
+import { Linking, Switch } from 'react-native'
 import RNPickerSelect, { Item } from 'react-native-picker-select'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { useColors, useTextVariants } from '../../../theme/themeHooks'
+import CarotRight from '../../../assets/images/carot-right.svg'
+import LinkImg from '../../../assets/images/link.svg'
 
 export type SelectProps = {
   onDonePress?: () => void
@@ -18,38 +20,67 @@ export type MoreListItemType = {
   onToggle?: (value: boolean) => void
   value?: boolean | string | number
   select?: SelectProps
+  openUrl?: string
 }
 
 const MoreListItem = ({
-  item: { title, value, destructive, onToggle, onPress, select },
+  item: { title, value, destructive, onToggle, onPress, select, openUrl },
+  isTop = false,
+  isBottom = false,
 }: {
   item: MoreListItemType
+  isTop?: boolean
+  isBottom?: boolean
 }) => {
-  const { secondaryText } = useColors()
+  const colors = useColors()
   const { body2 } = useTextVariants()
 
   const style = {
     ...body2,
-    color: secondaryText,
+    color: colors.purpleMuted,
     height: '100%',
+  }
+
+  const handlePress = () => {
+    if (openUrl) {
+      Linking.openURL(openUrl)
+    }
+
+    if (onPress) {
+      onPress()
+    }
   }
 
   return (
     <TouchableOpacityBox
       flexDirection="row"
       justifyContent="space-between"
-      backgroundColor="grayDark"
+      backgroundColor="purple400"
       alignItems="center"
-      height={64}
-      paddingHorizontal="m"
-      marginBottom="s"
-      onPress={onPress}
-      disabled={!onPress}
+      height={48}
+      paddingHorizontal="ms"
+      marginBottom="xxxs"
+      onPress={handlePress}
+      disabled={!(onPress || openUrl)}
+      borderTopLeftRadius={isTop ? 'm' : 'none'}
+      borderTopRightRadius={isTop ? 'm' : 'none'}
+      borderBottomLeftRadius={isBottom ? 'm' : 'none'}
+      borderBottomRightRadius={isBottom ? 'm' : 'none'}
     >
       <Text variant="body2" color={destructive ? 'redMain' : 'primaryText'}>
         {title}
       </Text>
-      {onToggle && <Switch value={value as boolean} onValueChange={onToggle} />}
+      {!onToggle && !select && onPress && (
+        <CarotRight color={colors.purpleMuted} />
+      )}
+      {openUrl && <LinkImg />}
+      {onToggle && (
+        <Switch
+          value={value as boolean}
+          onValueChange={onToggle}
+          trackColor={{ false: colors.purpleMain, true: colors.purpleMain }}
+        />
+      )}
       {select && (
         <RNPickerSelect
           placeholder={{}}

@@ -20,6 +20,12 @@ import { useSpacing } from '../../../theme/themeHooks'
 import accountSlice from '../../../store/account/accountSlice'
 import connectedHotspotSlice from '../../../store/connectedHotspot/connectedHotspotSlice'
 import heliumDataSlice from '../../../store/helium/heliumDataSlice'
+import Security from '../../../assets/images/security.svg'
+import Learn from '../../../assets/images/learn.svg'
+import Account from '../../../assets/images/account.svg'
+import Box from '../../../components/Box'
+import DiscordItem from './DiscordItem'
+import AppInfoItem from './AppInfoItem'
 
 type Route = RouteProp<RootStackParamList & MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
@@ -31,7 +37,7 @@ const MoreScreen = () => {
   const authIntervals = useAuthIntervals()
 
   const navigation = useNavigation<MoreNavigationProp & RootNavigationProp>()
-  const { l } = useSpacing()
+  const spacing = useSpacing()
 
   useEffect(() => {
     if (!params?.pinVerifiedFor) return
@@ -164,35 +170,68 @@ const MoreScreen = () => {
         },
       ]
     }
+
+    pin = [
+      ...pin,
+      {
+        title: t('more.sections.security.revealWords'),
+        onPress: handleRevealWords,
+      },
+    ]
     return [
       {
         title: t('more.sections.security.title'),
+        icon: <Security />,
         data: pin,
       },
-      // { title: t('more.sections.learn.title'), data: [] },
-      // { title: t('more.sections.advanced.title'), data: [] },
+      {
+        title: t('more.sections.learn.title'),
+        icon: <Learn />,
+        data: [
+          {
+            title: t('more.sections.learn.tokenEarnings'),
+            openUrl: 'https://docs.helium.com',
+          },
+          {
+            title: t('more.sections.learn.hotspotPlacement'),
+            openUrl: 'https://docs.helium.com',
+          },
+          {
+            title: t('more.sections.learn.support'),
+            openUrl: 'https://docs.helium.com',
+          },
+          {
+            title: t('more.sections.learn.troubleshooting'),
+            openUrl: 'https://docs.helium.com',
+          },
+        ],
+        footer: <DiscordItem />,
+      },
       {
         title: t('more.sections.account.title'),
+        icon: <Account />,
         data: [
+          {
+            title: t('more.sections.account.language'),
+            select: {
+              items: [{ label: 'English', value: 'English' }],
+              onValueSelect: () => {},
+            },
+          },
+          {
+            title: t('more.sections.account.units'),
+            select: {
+              items: [{ label: 'Metric', value: 'Metric' }],
+              onValueSelect: () => {},
+            },
+          },
           {
             title: t('more.sections.account.signOut'),
             onPress: handleSignOut,
             destructive: true,
           },
         ],
-      },
-      {
-        title: t('more.sections.app.title'),
-        data: [{ title: `v${version}` }],
-      },
-      {
-        title: t('more.sections.advanced.title'),
-        data: [
-          {
-            title: t('more.sections.advanced.revealWords'),
-            onPress: handleRevealWords,
-          },
-        ],
+        footer: <AppInfoItem version={version} />,
       },
     ]
   }, [
@@ -209,22 +248,40 @@ const MoreScreen = () => {
   ])
 
   return (
-    <SafeAreaBox backgroundColor="primaryBackground" flex={1}>
+    <SafeAreaBox backgroundColor="primaryBackground">
+      <Text variant="h3" marginVertical="m" paddingHorizontal="l">
+        {t('more.title')}
+      </Text>
       <SectionList
-        contentContainerStyle={{ paddingTop: l }}
+        contentContainerStyle={{
+          paddingHorizontal: spacing.m,
+          paddingBottom: spacing.xxl,
+        }}
         sections={SectionData}
         keyExtractor={(item, index) => item.title + index}
-        renderItem={({ item }) => <MoreListItem item={item} />}
-        renderSectionHeader={({ section: { title } }) => (
-          <Text
-            variant="body2"
-            fontSize={12}
-            paddingHorizontal="m"
-            paddingVertical="s"
-          >
-            {title.toUpperCase()}
-          </Text>
+        renderItem={({ item, index, section }) => (
+          <MoreListItem
+            item={item}
+            isTop={index === 0}
+            isBottom={index === section.data.length - 1}
+          />
         )}
+        renderSectionHeader={({ section: { title, icon } }) => (
+          <Box
+            flexDirection="row"
+            alignItems="center"
+            paddingTop="l"
+            paddingBottom="s"
+            paddingHorizontal="xs"
+            backgroundColor="primaryBackground"
+          >
+            {icon !== undefined && icon}
+            <Text variant="body1Bold" marginLeft="s">
+              {title}
+            </Text>
+          </Box>
+        )}
+        renderSectionFooter={({ section: { footer } }) => footer}
       />
     </SafeAreaBox>
   )
