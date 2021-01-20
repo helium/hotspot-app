@@ -11,6 +11,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { HotspotRewardsData } from '@helium/http/build/models/HotspotReward'
 import { useNavigation } from '@react-navigation/native'
+import Balance, { CurrencyType } from '@helium/currency'
 import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
@@ -57,13 +58,15 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
   })
 
   const [hotspotRewards, setHotspotRewards] = useState({})
-  const [totalRewards, setTotalRewards] = useState(0)
+  const [totalRewards, setTotalRewards] = useState(
+    new Balance(0, CurrencyType.networkToken),
+  )
   useEffect(() => {
     const fetchRewards = async () => {
       const today = date
       const yesterday = new Date(today)
       yesterday.setDate(yesterday.getDate() - 1)
-      let total = 0
+      let total = new Balance(0, CurrencyType.networkToken)
       const rewards: Record<string, HotspotRewardsData> = {}
       const results = await Promise.all(
         ownedHotspots.map((hotspot) =>
@@ -73,7 +76,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
       results.forEach((reward, i) => {
         const { address } = ownedHotspots[i]
         rewards[address] = reward
-        total += reward.total
+        total = total.plus(reward.total)
       })
       setHotspotRewards(rewards)
       setTotalRewards(total)
@@ -166,7 +169,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
           <Text variant="body1" paddingTop="m">
             {t('hotspots.owned.reward_summary', {
               count: ownedHotspots.length,
-              hntAmount: totalRewards.toFixed(2),
+              hntAmount: totalRewards.toString(2),
             })}
           </Text>
         </Box>

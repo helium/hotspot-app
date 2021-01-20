@@ -481,10 +481,9 @@ export default {
     },
     owned: {
       title: 'My Hotspots',
-      reward_summary:
-        'Your Hotspot mined {{hntAmount}} HNT in the past 24 hours.',
+      reward_summary: 'Your Hotspot mined {{hntAmount}} in the past 24 hours.',
       reward_summary_plural:
-        'Your {{count}} Hotspots mined {{hntAmount}} HNT in the past 24 hours.',
+        'Your {{count}} Hotspots mined {{hntAmount}} in the past 24 hours.',
       your_hotspots: 'Your Hotspots',
     },
     empty: {

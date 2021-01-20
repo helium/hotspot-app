@@ -4,6 +4,7 @@ import React from 'react'
 import Carousel from 'react-native-snap-carousel'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
+import Balance, { NetworkTokens } from '@helium/currency'
 import Box from './Box'
 import CheckCircle from '../assets/images/check-circle.svg'
 import Text from './Text'
@@ -20,7 +21,7 @@ type HotspotsCarouselProps = {
 
 type HotspotsItemProps = {
   hotspot: Hotspot
-  totalReward: number
+  totalReward: Balance<NetworkTokens>
 }
 
 const HotspotItem = ({ hotspot, totalReward }: HotspotsItemProps) => {
@@ -52,7 +53,7 @@ const HotspotItem = ({ hotspot, totalReward }: HotspotsItemProps) => {
             </Text>
           </Box>
           <Text variant="body2" color="purpleMain" paddingTop="s">
-            {`+${totalReward.toFixed(2)} HNT`}
+            {`+${totalReward.toString(2)}`}
           </Text>
         </Box>
         {/* TODO: Update percentage to use hotspot on-boarding progress */}
