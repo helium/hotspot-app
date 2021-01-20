@@ -253,6 +253,10 @@ export const theme = createTheme({
     body2Bold: { ...textVariants.body2, ...textVariants.bold },
     body2Mono: { ...textVariants.body2, ...textVariants.mono },
 
+    subtitleLight: {
+      ...textVariants.subtitle,
+      fontFamily: textVariants.light.fontFamily,
+    },
     subtitleRegular: { ...textVariants.subtitle, ...textVariants.regular },
     subtitleMedium: { ...textVariants.subtitle, ...textVariants.medium },
     subtitleBold: { ...textVariants.subtitle, ...textVariants.bold },

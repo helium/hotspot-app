@@ -213,9 +213,8 @@ export default {
       cancel: 'Cancel Scan',
     },
     ble_select: {
-      title: 'Nearby Hotspots',
       hotspots_found: '{{count}} Hotspot found.',
-      hotspots_found_plural: '{{count}} Hotspots found.',
+      hotspots_found_plural: '{{count}} Hotspots found',
       subtitle: 'Select your Hotspot to continue.',
     },
     ble_error: {
