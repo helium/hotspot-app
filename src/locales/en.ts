@@ -481,10 +481,9 @@ export default {
     },
     owned: {
       title: 'My Hotspots',
-      reward_summary:
-        'Your Hotspot mined {{hntAmount}} HNT in the past 24 hours.',
+      reward_summary: 'Your Hotspot mined {{hntAmount}} in the past 24 hours.',
       reward_summary_plural:
-        'Your {{count}} Hotspots mined {{hntAmount}} HNT in the past 24 hours.',
+        'Your {{count}} Hotspots mined {{hntAmount}} in the past 24 hours.',
       your_hotspots: 'Your Hotspots',
     },
     empty: {
@@ -594,5 +593,17 @@ export default {
       reassert: 'Reassert Hotspot',
       firmware: 'Hotspot Firmware',
     },
+  },
+  hotspot_details: {
+    title: 'Hotspot Details',
+    owner: 'Owned by {{address}}',
+    pass_rate: 'PASS RATE',
+    reward_title: 'HNT Rewards',
+    witness_title: 'Witnesses',
+    challenge_title: 'Challenges',
+    picker_title: 'Past',
+    picker_options: ['24 Hours', '7 Days', '14 Days', '30 Days'],
+    status_online: 'Online',
+    status_offline: 'Needs Attention',
   },
 }

@@ -7,9 +7,19 @@ type Props = {
   height: number
   data: ChartData[]
   onFocus: (data: ChartData | null) => void
+  showXAxisLabel?: boolean
+  upColor?: string
+  downColor?: string
 }
 
-const ChartContainer = ({ height, data, onFocus }: Props) => {
+const ChartContainer = ({
+  height,
+  data,
+  onFocus,
+  showXAxisLabel,
+  upColor,
+  downColor,
+}: Props) => {
   const [width, setWidth] = useState(0)
 
   const handleLayout = (event: {
@@ -21,7 +31,15 @@ const ChartContainer = ({ height, data, onFocus }: Props) => {
   return (
     <View onLayout={handleLayout} style={{ height }}>
       {width > 0 && (
-        <Chart width={width} height={height} data={data} onFocus={onFocus} />
+        <Chart
+          width={width}
+          height={height}
+          data={data}
+          onFocus={onFocus}
+          showXAxisLabel={showXAxisLabel}
+          upColor={upColor}
+          downColor={downColor}
+        />
       )}
     </View>
   )

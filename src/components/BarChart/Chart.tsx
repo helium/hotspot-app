@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react'
 import Svg, { Text, Rect } from 'react-native-svg'
 import { PanResponder, Animated, GestureResponderEvent } from 'react-native'
 import { maxBy, clamp, max } from 'lodash'
-import { useTheme } from '@shopify/restyle'
 import { triggerImpact } from '../../utils/haptic'
 import { ChartData } from './types'
-import { Theme } from '../../theme/theme'
+import { useColors } from '../../theme/themeHooks'
 
 // TODO
 // scale gap between bars
@@ -19,11 +18,23 @@ type Props = {
   height: number
   data: ChartData[]
   onFocus: (data: ChartData | null) => void
+  showXAxisLabel?: boolean
+  upColor?: string
+  downColor?: string
 }
 
-const BarChart = ({ width, height, data, onFocus }: Props) => {
+const BarChart = ({
+  width,
+  height,
+  data,
+  onFocus,
+  showXAxisLabel = true,
+  upColor,
+  downColor,
+}: Props) => {
   const [focusedBar, setFocusedBar] = useState<ChartData | null>(null)
-  const theme = useTheme<Theme>()
+  const { greenBright, blueBright, white } = useColors()
+  const barOffset = showXAxisLabel ? 20 : 0
 
   // trigger haptic feedback when the focused bar changes
   useEffect(() => {
@@ -38,7 +49,7 @@ const BarChart = ({ width, height, data, onFocus }: Props) => {
   const maxUp = maxBy(data, 'up')?.up || 0
   const maxDown = maxBy(data, 'down')?.down || 0
   const maxBarHeight = maxUp + barWidth / 1.5 + maxDown
-  const vScale = (height - 20) / maxBarHeight
+  const vScale = (height - barOffset) / maxBarHeight
   const minBarHeight = barWidth
 
   const barHeight = (value: number | undefined): number => {
@@ -94,7 +105,7 @@ const BarChart = ({ width, height, data, onFocus }: Props) => {
               rx={barWidth / 2}
               width={barWidth}
               height={barHeight(v?.up)}
-              fill={theme.colors.greenBright}
+              fill={upColor || greenBright}
               opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
             />
 
@@ -104,22 +115,24 @@ const BarChart = ({ width, height, data, onFocus }: Props) => {
               rx={barWidth / 2}
               width={barWidth}
               height={barHeight(v?.down)}
-              fill={theme.colors.blueBright}
+              fill={downColor || blueBright}
               opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
             />
 
-            <Text
-              fill={theme.colors.white}
-              stroke="none"
-              fontSize="12"
-              fontWeight={300}
-              x={barWidth * (2 * i) + barWidth / 2}
-              y={height - 4}
-              textAnchor="middle"
-              opacity={focusedBar && focusedBar?.id === v.id ? 1 : 0.4}
-            >
-              {v.day}
-            </Text>
+            {showXAxisLabel && (
+              <Text
+                fill={white}
+                stroke="none"
+                fontSize="12"
+                fontWeight={300}
+                x={barWidth * (2 * i) + barWidth / 2}
+                y={height - 4}
+                textAnchor="middle"
+                opacity={focusedBar && focusedBar?.id === v.id ? 1 : 0.4}
+              >
+                {v.day}
+              </Text>
+            )}
           </React.Fragment>
         ))}
       </Svg>

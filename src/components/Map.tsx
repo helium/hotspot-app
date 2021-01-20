@@ -11,7 +11,7 @@ import { RootState } from '../store/rootReducer'
 import { useAppDispatch } from '../store/store'
 import { getLocation } from '../store/user/appSlice'
 
-const styleURL = 'mapbox://styles/petermain/cjsdsbmjb1h7c1grzv4clr7y7'
+const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
 
 type Props = {
   onMapMoved?: (coords?: Position) => void
@@ -21,9 +21,10 @@ type Props = {
   zoomLevel?: number
   mapCenter?: number[]
   ownedHotspots?: Feature[]
+  selectedHotspots?: Feature[]
   animationMode?: 'flyTo' | 'easeTo' | 'moveTo'
   animationDuration?: number
-  offsetMapCenter?: boolean
+  offsetCenterRatio?: number
   maxZoomLevel?: number
   minZoomLevel?: number
 }
@@ -37,7 +38,8 @@ const Map = ({
   animationMode = 'moveTo',
   animationDuration = 500,
   ownedHotspots,
-  offsetMapCenter,
+  selectedHotspots,
+  offsetCenterRatio,
   maxZoomLevel = 16,
   minZoomLevel = 0,
 }: Props) => {
@@ -101,17 +103,19 @@ const Map = ({
       if (bounds && center) {
         const topLat = bounds[0][1]
         const centerLat = center[1]
-        setCenterOffset((topLat - centerLat) / 1.5)
+        const scale = offsetCenterRatio || 1
+        setCenterOffset((topLat - centerLat) / scale)
       }
     }
-    if (offsetMapCenter) {
+    if (offsetCenterRatio) {
       setTimeout(calculateOffset, animationDuration)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentLocation, loaded, offsetMapCenter])
+  }, [currentLocation, loaded, offsetCenterRatio])
 
   const mapImages = {
     markerOwned: require('../assets/images/owned-hotspot-marker.png'),
+    markerSelected: require('../assets/images/selected-hotspot-marker.png'),
   }
 
   return (
@@ -148,6 +152,22 @@ const Map = ({
               id="markerOwned"
               style={{
                 iconImage: 'markerOwned',
+                iconAllowOverlap: true,
+                iconSize: 1,
+              }}
+            />
+          </MapboxGL.ShapeSource>
+        )}
+        {selectedHotspots && (
+          <MapboxGL.ShapeSource
+            id="selectedHotspots"
+            shape={{ type: 'FeatureCollection', features: selectedHotspots }}
+            onPress={onShapeSourcePress}
+          >
+            <MapboxGL.SymbolLayer
+              id="markerSelected"
+              style={{
+                iconImage: 'markerSelected',
                 iconAllowOverlap: true,
                 iconSize: 1,
               }}

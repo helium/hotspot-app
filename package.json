@@ -35,8 +35,8 @@
   "dependencies": {
     "@burstware/react-native-portal": "^1.0.2",
     "@helium/crypto-react-native": "^3.9.0",
-    "@helium/currency": "^3.0.0",
-    "@helium/http": "^3.13.4",
+    "@helium/currency": "^3.16.0",
+    "@helium/http": "^3.16.0",
     "@helium/proto-ble": "3.10.0",
     "@helium/transactions": "^3.11.0",
     "@react-native-community/art": "^1.2.0",

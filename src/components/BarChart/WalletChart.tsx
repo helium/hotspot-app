@@ -8,6 +8,7 @@ import Box from '../Box'
 import Text from '../Text'
 import { ChartData } from './types'
 import { triggerImpact } from '../../utils/haptic'
+import { useColors } from '../../theme/themeHooks'
 
 type Props = {
   height: number
@@ -30,6 +31,8 @@ const WalletChart = ({ height }: Props) => {
     setFocusedData(data)
   }
 
+  const { greenBright } = useColors()
+
   return (
     <Box justifyContent="space-around" style={{ paddingVertical: padding / 2 }}>
       <Box
@@ -41,7 +44,12 @@ const WalletChart = ({ height }: Props) => {
           {focusedData && (
             <>
               <Box flexDirection="row" alignItems="center" width={50}>
-                <CarotLeft width={12} height={12} />
+                <CarotLeft
+                  width={12}
+                  height={12}
+                  stroke={greenBright}
+                  strokeWidth={2}
+                />
                 <Text variant="body2" marginLeft="xs">
                   {focusedData?.up}
                 </Text>
