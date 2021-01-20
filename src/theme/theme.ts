@@ -34,11 +34,13 @@ const palette = {
   whitePurple: '#F7F8FF',
   purpleLight: '#A0A5DA',
   purpleMain: '#474DFF',
+  purple400: '#292E56',
   purple300: '#343964',
   purple200: '#23264b',
   purple100: '#383A6F',
   purpleDark: '#13162E',
   purpleMuted: '#666995',
+  purpleBrightMuted: '#7788D4',
 
   greenBright: '#29D391',
   greenMain: '#32C48D',

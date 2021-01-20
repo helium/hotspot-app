@@ -11,27 +11,27 @@ export default () => {
   const { t } = useTranslation()
   return [
     {
-      label: t('more.sections.security.auth_intervals.immediately'),
+      label: t('more.sections.security.authIntervals.immediately'),
       value: 0,
     },
     {
-      label: t('more.sections.security.auth_intervals.after_1_min'),
+      label: t('more.sections.security.authIntervals.after_1_min'),
       value: ONE_MINUTE,
     },
     {
-      label: t('more.sections.security.auth_intervals.after_5_min'),
+      label: t('more.sections.security.authIntervals.after_5_min'),
       value: 5 * ONE_MINUTE,
     },
     {
-      label: t('more.sections.security.auth_intervals.after_15_min'),
+      label: t('more.sections.security.authIntervals.after_15_min'),
       value: 15 * ONE_MINUTE,
     },
     {
-      label: t('more.sections.security.auth_intervals.after_1_hr'),
+      label: t('more.sections.security.authIntervals.after_1_hr'),
       value: ONE_HOUR,
     },
     {
-      label: t('more.sections.security.auth_intervals.after_4_hr'),
+      label: t('more.sections.security.authIntervals.after_4_hr'),
       value: 4 * ONE_HOUR,
     },
   ] as Item[]

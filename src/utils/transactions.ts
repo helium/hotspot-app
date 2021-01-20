@@ -1,26 +1,18 @@
 import { Address } from '@helium/crypto-react-native'
 import { PendingTransaction, AnyTransaction } from '@helium/http'
-import { PaymentV2, AddGatewayV1, Transaction } from '@helium/transactions'
+import { PaymentV2, AddGatewayV1, TokenBurnV1 } from '@helium/transactions'
 import { getKeypair } from './secureAccount'
 
-const emptyB58Address = () =>
-  Address.fromB58('13PuqyWXzPYeXcF1B9ZRx7RLkEygeL374ZABiQdwRSNzASdA1sn')
-
-export const calculatePaymentTxnFee = async (
+export const makePaymentTxn = async (
   amount: number,
+  payeeB58: string,
   nonce: number,
-  payeeB58?: string,
-) => {
+): Promise<string> => {
   const keypair = await getKeypair()
-  if (!keypair) return
+  const payee = Address.fromB58(payeeB58)
 
-  // if a payee isn't supplied, we use a dummy address
-  let payee: Address
-  if (payeeB58 && Address.isValid(payeeB58)) {
-    payee = Address.fromB58(payeeB58)
-  } else {
-    payee = emptyB58Address()
-  }
+  if (!keypair) throw new Error('missing keypair')
+
   const paymentTxn = new PaymentV2({
     payer: keypair.address,
     payments: [
@@ -32,23 +24,9 @@ export const calculatePaymentTxnFee = async (
     nonce,
   })
 
-  return paymentTxn.fee
+  const signedPaymentTxn = await paymentTxn.sign({ payer: keypair })
+  return signedPaymentTxn.toString()
 }
-
-export const calculateAddGatewayFee = (ownerB58: string, payerB58: string) => {
-  const owner = Address.fromB58(ownerB58)
-  const payer = Address.fromB58(payerB58)
-
-  const txn = new AddGatewayV1({
-    owner,
-    gateway: emptyB58Address(),
-    payer,
-  })
-
-  return txn.fee
-}
-
-export const stakingFee = Transaction.stakingFeeTxnAddGatewayV1
 
 export const makeAddGatewayTxn = async (partialTxnBin: string) => {
   const addGatewayTxn = AddGatewayV1.fromString(partialTxnBin)
@@ -60,6 +38,29 @@ export const makeAddGatewayTxn = async (partialTxnBin: string) => {
 
   const serialized = signedTxn.serialize()
   return Buffer.from(serialized).toString('base64')
+}
+
+export const makeBurnTxn = async (
+  amount: number,
+  payeeB58: string,
+  nonce: number,
+  memo: string,
+): Promise<string> => {
+  const keypair = await getKeypair()
+  const payee = Address.fromB58(payeeB58)
+
+  if (!keypair) throw new Error('missing keypair')
+
+  const tokenBurnTxn = new TokenBurnV1({
+    payer: keypair.address,
+    payee,
+    amount,
+    nonce,
+    memo,
+  })
+
+  const signedTxn = await tokenBurnTxn.sign({ payer: keypair })
+  return signedTxn.toString()
 }
 
 export const getPayer = (txn: AnyTransaction | PendingTransaction) => {
