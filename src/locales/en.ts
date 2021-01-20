@@ -427,14 +427,15 @@ export default {
     error: 'There was an error submitting this transaction. Please try again.',
   },
   more: {
+    title: 'Settings',
     sections: {
       security: {
-        title: 'security',
+        title: 'Security',
         enablePin: 'Enable PIN',
         requirePin: 'Require PIN',
         resetPin: 'Reset PIN',
         requirePinForPayments: 'Require PIN for Payments',
-        auth_intervals: {
+        authIntervals: {
           immediately: 'Immediately',
           after_1_min: 'After 1 minute',
           after_5_min: 'After 5 minutes',
@@ -442,19 +443,27 @@ export default {
           after_1_hr: 'After 1 hour',
           after_4_hr: 'After 4 hours',
         },
+        revealWords: 'Reveal Words',
       },
-      learn: { title: 'learn' },
-      advanced: { title: 'advanced', revealWords: 'Reveal Words' },
+      learn: {
+        title: 'Learn',
+        tokenEarnings: 'Token Earnings',
+        hotspotPlacement: 'Hotspot Placement',
+        support: 'Support',
+        troubleshooting: 'Troubleshooting',
+        joinDiscord: 'Join Helium Discord',
+      },
       account: {
-        title: 'account',
-        signOut: 'Sign out',
+        title: 'Account',
+        language: 'Language',
+        units: 'Units',
+        signOut: 'Sign Out',
         signOutAlert: {
           title: 'Warning!',
           body:
             'This will remove all account info from this device. The only way to restore access to your account and Hotspots will be by using your 12 word recovery seed phrase.',
         },
       },
-      app: { title: 'app' },
     },
   },
   auth: {
