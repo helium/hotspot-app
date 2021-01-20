@@ -585,6 +585,7 @@ export default {
       available_wifi: 'Available Wi-Fi Networks',
       show_password: 'Show Password',
       hide_password: 'Hide Password',
+      ethernet: 'Ethernet',
     },
     options: {
       paired: 'Paired with Hotspot',

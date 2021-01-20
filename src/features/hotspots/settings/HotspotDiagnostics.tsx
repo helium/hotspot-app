@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { LayoutAnimation } from 'react-native'
 import { Device } from 'react-native-ble-plx'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -22,7 +21,7 @@ const HotspotDiagnostics = ({ updateTitle }: Props) => {
   const { t } = useTranslation()
   const onConnected = (hotspot: Device) => {
     setConnectedHotspot(hotspot)
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+    animateTransition()
     setState('options')
   }
 
