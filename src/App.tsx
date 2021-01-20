@@ -8,6 +8,7 @@ import {
   AppState,
   AppStateStatus,
   UIManager,
+  LogBox,
 } from 'react-native'
 import OneSignal from 'react-native-onesignal'
 import Config from 'react-native-config'
@@ -31,6 +32,7 @@ const App = () => {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
       UIManager.setLayoutAnimationEnabledExperimental(true)
     }
+    LogBox.ignoreLogs(['Setting a timer'])
   }
 
   const dispatch = useAppDispatch()

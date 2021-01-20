@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { LayoutAnimation, Linking, Platform } from 'react-native'
+import { Linking, Platform } from 'react-native'
 import { Device } from 'react-native-ble-plx'
 import { useSelector } from 'react-redux'
 import Text from '../../../components/Text'
@@ -13,11 +13,14 @@ import { useBluetoothContext } from '../../../providers/BluetoothProvider'
 import useAlert from '../../../utils/useAlert'
 import sleep from '../../../utils/sleep'
 import CircleLoader from '../../../components/CircleLoader'
+import usePermissionManager from '../../../utils/usePermissionManager'
+import animateTransition from '../../../utils/animateTransition'
 
 type Props = { onConnected: (hotspot: Device) => void }
 const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
   const [scanComplete, setScanComplete] = useState(false)
-  const [enabled, setEnabled] = useState(false)
+  const [bleEnabled, setBleEnabled] = useState(false)
+  const [locationEnabled, setLocationEnabled] = useState(false)
   const [selectedHotspot, setSelectedHotspot] = useState<Device | undefined>()
   const {
     scanForHotspots,
@@ -26,12 +29,28 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
   } = useConnectedHotspotContext()
   const { enable, getState } = useBluetoothContext()
   const { showOKCancelAlert } = useAlert()
-
+  const { requestLocationPermission } = usePermissionManager()
   const hotspotCount = Object.keys(availableHotspots).length
   const keys = Object.keys(availableHotspots)
   const { t } = useTranslation()
 
   const { connectedHotspot } = useSelector((state: RootState) => state)
+
+  const checkLocation = async () => {
+    if (Platform.OS === 'android') {
+      const hasPermission = await requestLocationPermission()
+      setLocationEnabled(hasPermission)
+    } else {
+      setLocationEnabled(true)
+    }
+  }
+
+  useEffect(() => {
+    if (locationEnabled) {
+      checkBluetooth()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locationEnabled])
 
   useEffect(() => {
     const handleConnect = async () => {
@@ -48,7 +67,7 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
     const state = await getState()
 
     if (state === 'PoweredOn') {
-      setEnabled(true)
+      setBleEnabled(true)
       return
     }
 
@@ -72,25 +91,25 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
     if (Platform.OS === 'android') {
       await enable()
     }
-    setEnabled(true)
+    setBleEnabled(true)
   }
 
   useEffect(() => {
-    checkBluetooth()
+    checkLocation()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
     const scan = async () => {
       await scanForHotspots(2000)
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+      animateTransition()
       setScanComplete(true)
     }
-    if (!scanComplete && enabled) {
+    if (!scanComplete && bleEnabled && locationEnabled) {
       scan()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scanComplete, enabled])
+  }, [scanComplete, bleEnabled, locationEnabled])
 
   const handleConnect = (hotspot: Device) => () => {
     setSelectedHotspot(hotspot)
@@ -134,7 +153,7 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
         <TouchableOpacityBox
           marginLeft="n_m"
           onPress={() => {
-            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+            animateTransition()
             setScanComplete(false)
           }}
         >

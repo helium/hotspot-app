@@ -266,7 +266,7 @@ export default {
       forget_network: 'Forget Network',
       forget_alert_title: 'Forget Network?',
       forget_alert_message:
-        'The Hotspot will no longer automatically connect to ',
+        'This Hotspot will no longer automatically connect to ',
     },
     ethernet: {
       title: "Let's use Ethernet",
@@ -577,6 +577,15 @@ export default {
       email_client_missing:
         'Could not find a compatible email client installed',
       other_info: 'Other Information',
+    },
+    wifi: {
+      title: 'Wi-Fi Network',
+      connected_via: 'Connected via',
+      not_connected: 'Not Connected',
+      available_wifi: 'Available Wi-Fi Networks',
+      show_password: 'Show Password',
+      hide_password: 'Hide Password',
+      ethernet: 'Ethernet',
     },
     options: {
       paired: 'Paired with Hotspot',

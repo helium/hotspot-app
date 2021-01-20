@@ -24,6 +24,7 @@ export type HotspotDetails = {
     version: string
     minVersion: string
   }
+  ethernetOnline?: boolean
   nonce?: number
   status?: HotspotStatus
 }

@@ -119,6 +119,23 @@ const useHotspot = () => {
     return retVal
   }
 
+  const getDecodedBoolVal = async (
+    characteristic: HotspotCharacteristic.ETHERNET_ONLINE_UUID,
+  ) => {
+    if (!connectedHotspot.current) return
+
+    const charVal = await findAndReadCharacteristic(
+      characteristic,
+      connectedHotspot.current,
+    )
+
+    let retVal = false
+    if (charVal) {
+      retVal = parseChar(charVal, characteristic)
+    }
+    return retVal
+  }
+
   const connectAndConfigHotspot = async (hotspotDevice: Device) => {
     const connectedDevice = await connect(hotspotDevice)
     if (!connectedDevice) return
@@ -131,6 +148,9 @@ const useHotspot = () => {
     connectedHotspot.current = deviceWithServices
 
     const wifi = await getDecodedStringVal(HotspotCharacteristic.WIFI_SSID_UUID)
+    const ethernetOnline = await getDecodedBoolVal(
+      HotspotCharacteristic.ETHERNET_ONLINE_UUID,
+    )
     const address = await getDecodedStringVal(HotspotCharacteristic.PUBKEY_UUID)
     const onboardingAddress = await getDecodedStringVal(
       HotspotCharacteristic.ONBOARDING_KEY_UUID,
@@ -155,6 +175,7 @@ const useHotspot = () => {
       type,
       name,
       wifi,
+      ethernetOnline,
       freeAddHotspot: !!feesStatus,
       onboardingAddress,
     }

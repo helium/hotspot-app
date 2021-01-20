@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { LayoutAnimation } from 'react-native'
 import { Device } from 'react-native-ble-plx'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
+import animateTransition from '../../../utils/animateTransition'
 import HotspotDiagnosticReport from './HotspotDiagnosticReport'
 import HotspotDiagnosticsConnection from './HotspotDiagnosticsConnection'
 import HotspotDiagnosticOptions from './HotspotsDiagnosticOptions'
 import { HotspotOptions } from './HotspotSettingsTypes'
+import WifiSettingsContainer from './WifiSettingsContainer'
 
 type State = 'scan' | 'options' | HotspotOptions
 
@@ -20,33 +21,49 @@ const HotspotDiagnostics = ({ updateTitle }: Props) => {
   const { t } = useTranslation()
   const onConnected = (hotspot: Device) => {
     setConnectedHotspot(hotspot)
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+    animateTransition()
     setState('options')
   }
 
-  if (state === 'scan')
-    return (
-      <HotspotDiagnosticsConnection
-        onConnected={(hotspot) => onConnected(hotspot)}
-      />
-    )
+  const handleOptionSelected = (opt: 'scan' | 'options' | HotspotOptions) => {
+    switch (opt) {
+      case 'diagnostic':
+        updateTitle(t('hotspot_settings.diagnostics.title'))
+        break
+      case 'wifi':
+        updateTitle(t('hotspot_settings.wifi.title'))
+        break
+      default:
+        updateTitle(t('hotspot_settings.title'))
+        break
+    }
+    animateTransition()
+    setState(opt)
+  }
 
-  if (state === 'options' && connectedHotspot)
-    return (
-      <HotspotDiagnosticOptions
-        hotspot={connectedHotspot}
-        optionSelected={(opt) => {
-          if (opt === 'diagnostic') {
-            updateTitle(t('hotspot_settings.diagnostics.title'))
-          }
-          LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
-          setState(opt)
-        }}
-      />
-    )
-
-  if (state === 'diagnostic' && connectedHotspot)
-    return <HotspotDiagnosticReport />
+  switch (state) {
+    case 'scan':
+      return (
+        <HotspotDiagnosticsConnection
+          onConnected={(hotspot) => onConnected(hotspot)}
+        />
+      )
+    case 'options':
+      return (
+        <HotspotDiagnosticOptions
+          hotspot={connectedHotspot}
+          optionSelected={handleOptionSelected}
+        />
+      )
+    case 'diagnostic':
+      return <HotspotDiagnosticReport />
+    case 'wifi':
+      return (
+        <WifiSettingsContainer
+          onFinished={() => handleOptionSelected('options')}
+        />
+      )
+  }
 
   return (
     <Box height={412} padding="l">

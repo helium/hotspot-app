@@ -11,7 +11,6 @@ import { useSpacing } from '../../../theme/themeHooks'
 import AnimatedBox from '../../../components/AnimatedBox'
 import HotspotSettingsOption from './HotspotSettingsOption'
 import HotspotDiagnostics from './HotspotDiagnostics'
-import Box from '../../../components/Box'
 import HotspotTransfer from './HotspotTransfer'
 import { useBluetoothContext } from '../../../providers/BluetoothProvider'
 
@@ -111,7 +110,6 @@ const HotspotSettings = ({ visible, onClose }: Props) => {
         tint="dark"
         position="absolute"
         intensity={97}
-        onTouchStart={onClose}
       />
 
       <SafeAreaBox
@@ -122,12 +120,14 @@ const HotspotSettings = ({ visible, onClose }: Props) => {
         <TouchableOpacityBox
           alignSelf="flex-end"
           height={22}
+          flex={1}
           padding="l"
+          width="100%"
+          alignItems="flex-end"
           onPress={onClose}
         >
           <CloseModal color="white" />
         </TouchableOpacityBox>
-        <Box flex={1} />
         <AnimatedBox
           margin="ms"
           style={{ transform: [{ translateY: slideUpAnimRef.current }] }}
