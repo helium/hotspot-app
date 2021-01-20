@@ -266,6 +266,13 @@ export const theme = createTheme({
       color: 'white',
       borderRadius: 'm',
     },
+    light: {
+      backgroundColor: 'grayBox',
+      fontFamily: Font.main.regular,
+      fontSize: 18,
+      color: 'black',
+      borderRadius: 'm',
+    },
   },
 })
 

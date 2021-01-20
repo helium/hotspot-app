@@ -4,11 +4,12 @@ import { LayoutAnimation } from 'react-native'
 import { Device } from 'react-native-ble-plx'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
+import animateTransition from '../../../utils/animateTransition'
 import HotspotDiagnosticReport from './HotspotDiagnosticReport'
 import HotspotDiagnosticsConnection from './HotspotDiagnosticsConnection'
 import HotspotDiagnosticOptions from './HotspotsDiagnosticOptions'
 import { HotspotOptions } from './HotspotSettingsTypes'
-import WifiSettings from './WifiSettings'
+import WifiSettingsContainer from './WifiSettingsContainer'
 
 type State = 'scan' | 'options' | HotspotOptions
 
@@ -25,7 +26,7 @@ const HotspotDiagnostics = ({ updateTitle }: Props) => {
     setState('options')
   }
 
-  const handleOptionSelected = (opt: 'scan' | HotspotOptions) => {
+  const handleOptionSelected = (opt: 'scan' | 'options' | HotspotOptions) => {
     switch (opt) {
       case 'diagnostic':
         updateTitle(t('hotspot_settings.diagnostics.title'))
@@ -33,8 +34,11 @@ const HotspotDiagnostics = ({ updateTitle }: Props) => {
       case 'wifi':
         updateTitle(t('hotspot_settings.wifi.title'))
         break
+      default:
+        updateTitle(t('hotspot_settings.title'))
+        break
     }
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+    animateTransition()
     setState(opt)
   }
 
@@ -55,7 +59,11 @@ const HotspotDiagnostics = ({ updateTitle }: Props) => {
     case 'diagnostic':
       return <HotspotDiagnosticReport />
     case 'wifi':
-      return <WifiSettings />
+      return (
+        <WifiSettingsContainer
+          onFinished={() => handleOptionSelected('options')}
+        />
+      )
   }
 
   return (

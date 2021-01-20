@@ -13,8 +13,11 @@ import { useColors } from '../../../theme/themeHooks'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import { hp } from '../../../utils/layout'
 import Chevron from '../../../assets/images/chevron-right.svg'
+import useAlert from '../../../utils/useAlert'
+import animateTransition from '../../../utils/animateTransition'
 
-const WifiSettings = () => {
+type Props = { onNetworkSelected: (wifi: string) => void }
+const WifiSettings = ({ onNetworkSelected }: Props) => {
   const [networkStatus, setNetworkStatus] = useState<
     'ethernet' | 'wifi' | 'notConnected'
   >('notConnected')
@@ -22,22 +25,37 @@ const WifiSettings = () => {
   const {
     connectedHotspot: { address, ethernetOnline, wifi },
   } = useSelector((state: RootState) => state)
-  const { scanForWifiNetworks } = useConnectedHotspotContext()
-
+  const {
+    scanForWifiNetworks,
+    removeConfiguredWifi,
+  } = useConnectedHotspotContext()
+  const { showOKCancelAlert } = useAlert()
   const [networks, setNetworks] = useState<null | undefined | string[]>(null)
-  const [, setConfiguredNetworks] = useState<null | undefined | string[]>(null)
 
   const scanWifi = async () => {
     const wifiNetworks = await scanForWifiNetworks()
-    const configuredWifiNetworks = await scanForWifiNetworks(true)
-
+    animateTransition()
     setNetworks(wifiNetworks)
-    setConfiguredNetworks(configuredWifiNetworks)
+  }
+
+  const handleNetworkSelected = async (nextWifi: string) => {
+    if (wifi) {
+      const decision = await showOKCancelAlert({
+        titleKey: 'hotspot_setup.disconnect_dialog.title',
+        messageKey: 'hotspot_setup.disconnect_dialog.body',
+        messageOptions: { wifiName: wifi },
+        okKey: 'generic.forget',
+      })
+      if (!decision) {
+        return
+      }
+      await removeConfiguredWifi(wifi)
+    }
+    onNetworkSelected(nextWifi)
   }
 
   useEffect(() => {
     scanWifi()
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -61,7 +79,7 @@ const WifiSettings = () => {
     const isFirst = index === 0
     const isLast = index === networks?.length ? networks.length - 1 : 0
     return (
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => handleNetworkSelected(item)}>
         <Card
           variant="regular"
           flexDirection="row"
