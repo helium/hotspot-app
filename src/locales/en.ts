@@ -451,6 +451,7 @@ export default {
         hotspotPlacement: 'Hotspot Placement',
         support: 'Support',
         troubleshooting: 'Troubleshooting',
+        joinDiscord: 'Join Helium Discord',
       },
       account: {
         title: 'Account',
