@@ -582,9 +582,8 @@ export default {
     witness_title: 'Witnesses',
     challenge_title: 'Challenges',
     picker_title: 'Past',
-    picker_option_0: '24 Hours',
-    picker_option_1: '7 Days',
-    picker_option_2: '14 Days',
-    picker_option_3: '30 Days',
+    picker_options: ['24 Hours', '7 Days', '14 Days', '30 Days'],
+    status_online: 'Online',
+    status_offline: 'Needs Attention',
   },
 }

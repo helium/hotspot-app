@@ -28,7 +28,7 @@ const HotspotDetailChart = ({
   }
   return (
     <Box marginBottom="m">
-      <Text fontSize={16} color="black" marginVertical="s">
+      <Text variant="body1" color="black" marginVertical="s">
         {title}
       </Text>
       <Box
@@ -41,7 +41,7 @@ const HotspotDetailChart = ({
       >
         {percentage ? (
           <Box>
-            <Text fontSize={12} color="grayLightText" marginBottom="s">
+            <Text variant="body3" color="grayLightText" marginBottom="s">
               {t('hotspot_details.pass_rate')}
             </Text>
             <Text variant="light" fontSize={34} color="black" marginBottom="s">
@@ -59,7 +59,7 @@ const HotspotDetailChart = ({
               borderRadius="s"
               alignSelf="baseline"
             >
-              <Text color="white" fontWeight="bold">
+              <Text color="white" variant="body2Bold">
                 {change}
               </Text>
             </Box>
@@ -70,7 +70,7 @@ const HotspotDetailChart = ({
             height={75}
             data={data}
             onFocus={onFocus}
-            showDays={false}
+            showXAxisLabel={false}
             upColor={color}
           />
         </Box>

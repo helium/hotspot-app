@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react'
 import Svg, { Text, Rect } from 'react-native-svg'
 import { PanResponder, Animated, GestureResponderEvent } from 'react-native'
 import { maxBy, clamp, max } from 'lodash'
-import { useTheme } from '@shopify/restyle'
 import { triggerImpact } from '../../utils/haptic'
 import { ChartData } from './types'
-import { Theme } from '../../theme/theme'
+import { useColors } from '../../theme/themeHooks'
 
 // TODO
 // scale gap between bars
@@ -19,7 +18,7 @@ type Props = {
   height: number
   data: ChartData[]
   onFocus: (data: ChartData | null) => void
-  showDays?: boolean
+  showXAxisLabel?: boolean
   upColor?: string
   downColor?: string
 }
@@ -29,13 +28,13 @@ const BarChart = ({
   height,
   data,
   onFocus,
-  showDays = true,
+  showXAxisLabel = true,
   upColor,
   downColor,
 }: Props) => {
   const [focusedBar, setFocusedBar] = useState<ChartData | null>(null)
-  const theme = useTheme<Theme>()
-  const barOffset = showDays ? 20 : 0
+  const { greenBright, blueBright, white } = useColors()
+  const barOffset = showXAxisLabel ? 20 : 0
 
   // trigger haptic feedback when the focused bar changes
   useEffect(() => {
@@ -106,7 +105,7 @@ const BarChart = ({
               rx={barWidth / 2}
               width={barWidth}
               height={barHeight(v?.up)}
-              fill={upColor || theme.colors.greenBright}
+              fill={upColor || greenBright}
               opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
             />
 
@@ -116,13 +115,13 @@ const BarChart = ({
               rx={barWidth / 2}
               width={barWidth}
               height={barHeight(v?.down)}
-              fill={downColor || theme.colors.blueBright}
+              fill={downColor || blueBright}
               opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
             />
 
-            {showDays && (
+            {showXAxisLabel && (
               <Text
-                fill={theme.colors.white}
+                fill={white}
                 stroke="none"
                 fontSize="12"
                 fontWeight={300}

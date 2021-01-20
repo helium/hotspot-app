@@ -13,12 +13,9 @@ type Props = {
 
 const TimelinePicker = ({ onTimelineChanged }: Props) => {
   const { t } = useTranslation()
-  const options = [
-    t('hotspot_details.picker_option_0'),
-    t('hotspot_details.picker_option_1'),
-    t('hotspot_details.picker_option_2'),
-    t('hotspot_details.picker_option_3'),
-  ]
+  const options: Array<string> = t('hotspot_details.picker_options', {
+    returnObjects: true,
+  })
   const [showPicker, setShowPicker] = useState(false)
   const [selectedValue, setSelectedValue] = useState(options[0])
   return (

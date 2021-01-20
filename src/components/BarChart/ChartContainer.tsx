@@ -7,7 +7,7 @@ type Props = {
   height: number
   data: ChartData[]
   onFocus: (data: ChartData | null) => void
-  showDays?: boolean
+  showXAxisLabel?: boolean
   upColor?: string
   downColor?: string
 }
@@ -16,7 +16,7 @@ const ChartContainer = ({
   height,
   data,
   onFocus,
-  showDays,
+  showXAxisLabel,
   upColor,
   downColor,
 }: Props) => {
@@ -36,7 +36,7 @@ const ChartContainer = ({
           height={height}
           data={data}
           onFocus={onFocus}
-          showDays={showDays}
+          showXAxisLabel={showXAxisLabel}
           upColor={upColor}
           downColor={downColor}
         />
