@@ -175,7 +175,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         snapProgress={snapProgress}
       >
         <HotspotsCarousel
-          hotspots={ownedHotspots}
+          hotspots={[...ownedHotspots, ...ownedHotspots]}
           rewards={hotspotRewards}
           onHotspotFocused={onHotspotFocused}
         />
