@@ -496,6 +496,7 @@ export default {
   transactions: {
     mining: 'Mining Rewards',
     sent: 'Sent HNT',
+    burnHNT: 'Burn HNT',
     received: 'Received HNT',
     added: 'Hotspot Added to Blockchain',
     location: 'Location Confirmed',

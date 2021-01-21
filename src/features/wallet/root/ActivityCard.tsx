@@ -26,6 +26,7 @@ import {
   PaymentV1,
   PendingTransaction,
   TransferHotspotV1,
+  TokenBurnV1,
 } from '@helium/http'
 import { formatDistanceToNow, fromUnixTime } from 'date-fns'
 import ActivityItem from './ActivityItem'
@@ -46,6 +47,7 @@ import HotspotAdded from '../../../assets/images/hotspotAdded.svg'
 import ReceivedHnt from '../../../assets/images/receivedHNT.svg'
 import Location from '../../../assets/images/location.svg'
 import usePrevious from '../../../utils/usePrevious'
+import Burn from '../../../assets/images/burn.svg'
 
 const TxnTypeKeys = [
   'rewards_v1',
@@ -54,6 +56,7 @@ const TxnTypeKeys = [
   'add_gateway_v1',
   'assert_location_v1',
   'transfer_hotspot_v1',
+  'token_burn_v1',
 ] as const
 type TxnType = typeof TxnTypeKeys[number]
 
@@ -134,24 +137,23 @@ const ActivityCard = forwardRef(
         }
         if (
           item instanceof AssertLocationV1 ||
-          item instanceof TransferHotspotV1
+          item instanceof TransferHotspotV1 ||
+          item instanceof TokenBurnV1
         ) {
+          if (!item.fee) return ''
+
           return `${
-            item.fee && item.fee !== 0 ? '-' : ''
-          }${item.fee?.toLocaleString()}`
+            item.fee.integerBalance !== 0 ? '-' : ''
+          }${item.fee?.toString()}`
         }
         if (item instanceof RewardsV1) {
           return `+${item.totalAmount.toString()}`
         }
         if (item instanceof PaymentV1) {
-          return `${
-            isSending(item) ? '-' : '+'
-          }${item.amount.floatBalance.toString()}`
+          return `${isSending(item) ? '-' : '+'}${item.amount.toString()}`
         }
         if (item instanceof PaymentV2) {
-          return `${
-            isSending(item) ? '-' : '+'
-          }${item.totalAmount.floatBalance.toString()}`
+          return `${isSending(item) ? '-' : '+'}${item.totalAmount.toString()}`
         }
         const pendingTxn = item as PendingTransaction
         if (pendingTxn.txn !== undefined) {
@@ -167,22 +169,15 @@ const ActivityCard = forwardRef(
     )
 
     const time = useCallback((item: AnyTransaction | PendingTransaction) => {
-      let val: Date
       const pending = item as PendingTransaction
-      if (pending.txn !== undefined) {
-        val = new Date(pending.createdAt)
-      } else {
-        val = fromUnixTime((item as AddGatewayV1).time)
+      if (pending.status === 'pending') {
+        return 'pending'
       }
-
-      if (val) {
-        return formatDistanceToNow(val, {
-          locale: shortLocale,
-          addSuffix: true,
-        })
-      }
-
-      return undefined
+      const val = fromUnixTime((item as AddGatewayV1).time)
+      return formatDistanceToNow(val, {
+        locale: shortLocale,
+        addSuffix: true,
+      })
     }, [])
 
     const titles = useCallback(
@@ -205,6 +200,8 @@ const ActivityCard = forwardRef(
             return t('transactions.transfer')
           case 'rewards_v1':
             return t('transactions.mining')
+          case 'token_burn_v1':
+            return t('transactions.burnHNT')
         }
       },
       [isSending, t],
@@ -227,6 +224,8 @@ const ActivityCard = forwardRef(
             return colors.purpleMuted
           case 'rewards_v1':
             return colors.purpleBright
+          case 'token_burn_v1':
+            return colors.orange
         }
       },
       [isSending, colors],
@@ -254,6 +253,8 @@ const ActivityCard = forwardRef(
             return <Location width={size} height={size} />
           case 'rewards_v1':
             return <Rewards width={size} height={size} />
+          case 'token_burn_v1':
+            return <Burn width={size} height={size} />
         }
       },
       [isSending],
