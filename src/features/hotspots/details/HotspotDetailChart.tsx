@@ -4,6 +4,7 @@ import { ChartData } from '../../../components/BarChart/types'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import ChartContainer from '../../../components/BarChart/ChartContainer'
+import { useColors } from '../../../theme/themeHooks'
 
 type Props = {
   title: string
@@ -22,6 +23,7 @@ const HotspotDetailChart = ({
   color,
 }: Props) => {
   const { t } = useTranslation()
+  const { redMedium } = useColors()
   const [focusedData, setFocusedData] = useState<ChartData | null>()
   const onFocus = (chartData: ChartData | null) => {
     setFocusedData(chartData)
@@ -40,27 +42,29 @@ const HotspotDetailChart = ({
         alignItems="center"
       >
         {percentage ? (
-          <Box>
+          <Box width="35%">
             <Text variant="body3" color="grayLightText" marginBottom="s">
               {t('hotspot_details.pass_rate')}
             </Text>
-            <Text variant="light" fontSize={34} color="black" marginBottom="s">
+            <Text variant="light" fontSize={32} color="black" marginBottom="s">
               {`${focusedData ? focusedData.up : percentage}%`}
             </Text>
           </Box>
         ) : (
-          <Box>
-            <Text variant="light" fontSize={34} color="black" marginBottom="s">
+          <Box width="35%">
+            <Text variant="light" fontSize={32} color="black" marginBottom="s">
               {focusedData ? focusedData.up : number}
             </Text>
             <Box
-              style={{ backgroundColor: color }}
+              style={{
+                backgroundColor: change?.includes('-') ? redMedium : color,
+              }}
               padding="xs"
               borderRadius="s"
               alignSelf="baseline"
             >
               <Text color="white" variant="body2Bold">
-                {change}
+                {change?.includes('-') ? change : `+${change}`}
               </Text>
             </Box>
           </Box>

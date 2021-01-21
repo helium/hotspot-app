@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import animalName from 'angry-purple-tiger'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import Animated, {
@@ -11,6 +11,7 @@ import Animated, {
 import BottomSheet from 'react-native-holy-sheet/src/index'
 import { random, times } from 'lodash'
 import { useTranslation } from 'react-i18next'
+import { HotspotRewardsData } from '@helium/http/build/models/HotspotReward'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { HotspotStackParamList } from '../root/hotspotTypes'
@@ -28,6 +29,7 @@ import HotspotDetailChart from './HotspotDetailChart'
 import StatusBadge from './StatusBadge'
 import TimelinePicker from './TimelinePicker'
 import HotspotDetailCardHeader from './HotspotDetailCardHeader'
+import { getHotspotRewards } from '../../../utils/appDataClient'
 
 type HotspotDetailsRouteProp = RouteProp<
   HotspotStackParamList,
@@ -48,8 +50,13 @@ const onMoreMenuSelected = () => {
   // TODO: more menu
 }
 
-const onTimelineChanged = (_value: string, _index: number) => {
-  // TODO: load different timelines
+export const calculatePercentChange = (
+  value: number,
+  previousValue: number,
+) => {
+  return (value === 0 && previousValue === 0) || previousValue === 0
+    ? 0
+    : ((value - previousValue) / previousValue) * 100
 }
 
 const HotspotDetails = () => {
@@ -93,6 +100,53 @@ const HotspotDetails = () => {
       ],
     }
   })
+
+  const [timelineIndex, setTimelineIndex] = useState(0)
+  const [totalRewards, setTotalRewards] = useState<HotspotRewardsData>()
+  const [rewardChange, setRewardChange] = useState<number>()
+  useEffect(() => {
+    const fetchRewards = async () => {
+      const now = new Date()
+      const endDate = new Date(now)
+      let dateOffset
+      switch (timelineIndex) {
+        default:
+        case 0:
+          dateOffset = 1
+          break
+        case 1:
+          dateOffset = 7
+          break
+        case 2:
+          dateOffset = 14
+          break
+        case 3:
+          dateOffset = 30
+          break
+      }
+      endDate.setDate(now.getDate() - dateOffset)
+      const rewards = await getHotspotRewards(hotspot.address, endDate, now)
+      now.setDate(now.getDate() - dateOffset)
+      endDate.setDate(now.getDate() - dateOffset)
+      const rewardsPastPeriod = await getHotspotRewards(
+        hotspot.address,
+        endDate,
+        now,
+      )
+      setTotalRewards(rewards)
+      setRewardChange(
+        calculatePercentChange(
+          rewards.total.floatBalance,
+          rewardsPastPeriod.total.floatBalance,
+        ),
+      )
+    }
+    fetchRewards()
+  }, [hotspot.address, timelineIndex])
+
+  const onTimelineChanged = (_value: string, index: number) => {
+    setTimelineIndex(index)
+  }
 
   return (
     <SafeAreaBox backgroundColor="primaryBackground" flex={1} edges={['top']}>
@@ -180,8 +234,11 @@ const HotspotDetails = () => {
             <TimelinePicker onTimelineChanged={onTimelineChanged} />
             <HotspotDetailChart
               title={t('hotspot_details.reward_title')}
-              number="12,345"
-              change="+3.4%"
+              number={totalRewards?.total
+                ?.toString(0)
+                ?.replace('HNT', '')
+                ?.trim()}
+              change={`${rewardChange?.toFixed(2)?.toString()}%`}
               color={greenOnline}
               data={data[0]}
             />
