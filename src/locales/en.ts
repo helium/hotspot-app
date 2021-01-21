@@ -605,6 +605,10 @@ export default {
     picker_options: ['24 Hours', '7 Days', '14 Days', '30 Days'],
     status_online: 'Online',
     status_offline: 'Needs Attention',
-    more: ['Settings', 'View on Explorer', 'Share'],
+    options: {
+      settings: 'Settings',
+      viewExplorer: 'View on Explorer',
+      share: 'Share',
+    },
   },
 }

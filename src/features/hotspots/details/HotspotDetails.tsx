@@ -60,25 +60,33 @@ const HotspotDetails = () => {
   const { showActionSheetWithOptions } = useActionSheet()
   const [showSettings, setShowSettings] = useState(false)
 
+  type SettingsOption = { label: string; action?: () => void }
   const onMoreMenuSelected = () => {
-    const options: string[] = [
-      ...t('hotspot_details.more', { returnObjects: true }),
-      t('generic.cancel'),
+    const opts: SettingsOption[] = [
+      {
+        label: t('hotspot_details.options.settings'),
+        action: () => setShowSettings(true),
+      },
+      {
+        label: t('hotspot_details.options.viewExplorer'),
+        action: () => setShowSettings(true),
+      },
+      {
+        label: t('hotspot_details.options.share'),
+        action: () => setShowSettings(true),
+      },
+      {
+        label: t('generic.cancel'),
+      },
     ]
+
     showActionSheetWithOptions(
       {
-        options,
-        destructiveButtonIndex: options.length - 1,
+        options: opts.map(({ label }) => label),
+        destructiveButtonIndex: opts.length - 1,
       },
       (buttonIndex) => {
-        switch (buttonIndex) {
-          case 0:
-            setShowSettings(true)
-            break
-
-          default:
-            break
-        }
+        opts[buttonIndex].action?.()
       },
     )
   }
