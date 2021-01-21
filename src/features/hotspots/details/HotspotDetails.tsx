@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import animalName from 'angry-purple-tiger'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import Animated, {
@@ -11,6 +11,7 @@ import Animated, {
 import BottomSheet from 'react-native-holy-sheet/src/index'
 import { random, times } from 'lodash'
 import { useTranslation } from 'react-i18next'
+import { useActionSheet } from '@expo/react-native-action-sheet'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { HotspotStackParamList } from '../root/hotspotTypes'
@@ -28,6 +29,7 @@ import HotspotDetailChart from './HotspotDetailChart'
 import StatusBadge from './StatusBadge'
 import TimelinePicker from './TimelinePicker'
 import HotspotDetailCardHeader from './HotspotDetailCardHeader'
+import HotspotSettings from '../settings/HotspotSettings'
 
 type HotspotDetailsRouteProp = RouteProp<
   HotspotStackParamList,
@@ -44,10 +46,6 @@ const onFollowHotspot = () => {
   // TODO: follow hotspot
 }
 
-const onMoreMenuSelected = () => {
-  // TODO: more menu
-}
-
 const onTimelineChanged = (_value: string, _index: number) => {
   // TODO: load different timelines
 }
@@ -59,6 +57,31 @@ const HotspotDetails = () => {
   const { t } = useTranslation()
   const selectedHotspots = hotspotsToFeatures([hotspot])
   const { purpleMain, greenOnline } = useColors()
+  const { showActionSheetWithOptions } = useActionSheet()
+  const [showSettings, setShowSettings] = useState(false)
+
+  const onMoreMenuSelected = () => {
+    const options: string[] = [
+      ...t('hotspot_details.more', { returnObjects: true }),
+      t('generic.cancel'),
+    ]
+    showActionSheetWithOptions(
+      {
+        options,
+        destructiveButtonIndex: options.length - 1,
+      },
+      (buttonIndex) => {
+        switch (buttonIndex) {
+          case 0:
+            setShowSettings(true)
+            break
+
+          default:
+            break
+        }
+      },
+    )
+  }
 
   const dragMid = hp(25)
   const dragMax = hp(75)
@@ -201,6 +224,11 @@ const HotspotDetails = () => {
           </Box>
         </BottomSheet>
       </Box>
+
+      <HotspotSettings
+        visible={showSettings}
+        onClose={() => setShowSettings(false)}
+      />
     </SafeAreaBox>
   )
 }

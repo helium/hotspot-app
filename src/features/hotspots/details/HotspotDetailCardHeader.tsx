@@ -20,7 +20,7 @@ const HotspotDetailCardHeader = ({
         <Heart />
       </TouchableOpacityBox>
       <CardHandle />
-      <TouchableOpacityBox onPress={onMoreSelected}>
+      <TouchableOpacityBox onPress={onMoreSelected} padding="m" margin="n_m">
         <MoreMenu />
       </TouchableOpacityBox>
     </Box>
