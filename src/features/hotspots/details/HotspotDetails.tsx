@@ -12,6 +12,7 @@ import BottomSheet from 'react-native-holy-sheet/src/index'
 import { random, times } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { useActionSheet } from '@expo/react-native-action-sheet'
+import { Linking, Share } from 'react-native'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { HotspotStackParamList } from '../root/hotspotTypes'
@@ -62,6 +63,7 @@ const HotspotDetails = () => {
 
   type SettingsOption = { label: string; action?: () => void }
   const onMoreMenuSelected = () => {
+    const explorerUrl = `https://explorer.helium.com/hotspots/${hotspot.address}`
     const opts: SettingsOption[] = [
       {
         label: t('hotspot_details.options.settings'),
@@ -69,11 +71,11 @@ const HotspotDetails = () => {
       },
       {
         label: t('hotspot_details.options.viewExplorer'),
-        action: () => setShowSettings(true),
+        action: () => Linking.openURL(explorerUrl),
       },
       {
         label: t('hotspot_details.options.share'),
-        action: () => setShowSettings(true),
+        action: () => Share.share({ message: explorerUrl }),
       },
       {
         label: t('generic.cancel'),
