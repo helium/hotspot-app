@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react'
-import { formatDistanceToNow, fromUnixTime } from 'date-fns'
+import { format, formatDistanceToNow, fromUnixTime } from 'date-fns'
 import {
   RewardsV1,
   AddGatewayV1,
@@ -46,28 +46,33 @@ const useActivityItem = (address: string) => {
     [address],
   )
 
-  const backgroundColor = useCallback(
+  const backgroundColorKey = useCallback(
     (item: AnyTransaction | PendingTransaction) => {
       if (!TxnTypeKeys.find((k) => k === item.type)) {
-        return colors.primaryBackground
+        return 'primaryBackground'
       }
 
       switch (item.type as TxnType) {
         case 'transfer_hotspot_v1':
         case 'add_gateway_v1':
-          return colors.purple100
+          return 'purple100'
         case 'payment_v1':
         case 'payment_v2':
-          return isSending(item) ? colors.blueBright : colors.greenMain
+          return isSending(item) ? 'blueBright' : 'greenMain'
         case 'assert_location_v1':
-          return colors.purpleMuted
+          return 'purpleMuted'
         case 'rewards_v1':
-          return colors.purpleBright
+          return 'purpleBright'
         case 'token_burn_v1':
-          return colors.orange
+          return 'orange'
       }
     },
-    [colors, isSending],
+    [isSending],
+  )
+  const backgroundColor = useCallback(
+    (item: AnyTransaction | PendingTransaction) =>
+      colors[backgroundColorKey(item)],
+    [colors, backgroundColorKey],
   )
 
   const title = useCallback(
@@ -192,16 +197,19 @@ const useActivityItem = (address: string) => {
   )
 
   const time = useCallback(
-    (item: AnyTransaction | PendingTransaction) => {
+    (item: AnyTransaction | PendingTransaction, dateFormat?: string) => {
       const pending = item as PendingTransaction
       if (pending.status === 'pending') {
         return t('transations.pending')
       }
       const val = fromUnixTime((item as AddGatewayV1).time)
-      return formatDistanceToNow(val, {
-        locale: shortLocale,
-        addSuffix: true,
-      })
+
+      if (!dateFormat)
+        return formatDistanceToNow(val, {
+          locale: shortLocale,
+          addSuffix: true,
+        })
+      return format(val, dateFormat)
     },
     [t],
   )
@@ -231,7 +239,16 @@ const useActivityItem = (address: string) => {
     [isSending],
   )
 
-  return { backgroundColor, title, icon, amount, time, snapHeight, isFee }
+  return {
+    backgroundColor,
+    backgroundColorKey,
+    title,
+    icon,
+    amount,
+    time,
+    snapHeight,
+    isFee,
+  }
 }
 
 export default useActivityItem

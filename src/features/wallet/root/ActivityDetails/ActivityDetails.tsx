@@ -1,14 +1,17 @@
-import { AnyTransaction, PendingTransaction } from '@helium/http'
+import { AnyTransaction, PendingTransaction, PaymentV1 } from '@helium/http'
 import React, { ElementRef, useEffect, useRef } from 'react'
-import { Animated, Modal } from 'react-native'
+import { Animated, Linking, Modal } from 'react-native'
 import BottomSheet from 'react-native-holy-sheet'
+import { useTranslation } from 'react-i18next'
 import { AnimatedBlurBox } from '../../../../components/BlurBox'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
 import ActivityDetailsHeader from './ActivityDetailsHeader'
 import useActivityItem from '../useActivityItem'
 import Rewards from './Rewards'
-import SentHNT from './SentHNT'
+import Payment from './Payment'
+import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
+import LinkImg from '../../../../assets/images/link.svg'
 
 type Props = {
   item?: AnyTransaction | PendingTransaction
@@ -16,11 +19,14 @@ type Props = {
   onClose: () => void
 }
 
+const DF = 'MM/dd/yyyy hh:mm a'
 const ActivityDetails = ({ item, onClose, address }: Props) => {
   type BottomSheetHandle = ElementRef<typeof BottomSheet>
   const sheet = useRef<BottomSheetHandle>(null)
+  const { t } = useTranslation()
   const {
     backgroundColor,
+    backgroundColorKey,
     title,
     icon,
     amount,
@@ -30,6 +36,11 @@ const ActivityDetails = ({ item, onClose, address }: Props) => {
   } = useActivityItem(address || '')
 
   const opacityAnim = useRef(new Animated.Value(0))
+  let block = ''
+  if (item) {
+    const asPayment = item as PaymentV1
+    block = asPayment.height?.toString() || ''
+  }
 
   const anim = () => {
     if (!item) return
@@ -83,7 +94,7 @@ const ActivityDetails = ({ item, onClose, address }: Props) => {
                 backgroundColor={backgroundColor(item)}
                 icon={icon(item)}
                 title={title(item)}
-                date={time(item)}
+                date={time(item, DF)}
               />
             )}
           >
@@ -97,7 +108,29 @@ const ActivityDetails = ({ item, onClose, address }: Props) => {
                 {amount(item)}
               </Text>
               <Rewards item={item} />
-              <SentHNT item={item} address={address} />
+              <Payment item={item} address={address} />
+              <TouchableOpacityBox
+                backgroundColor={backgroundColorKey(item)}
+                height={63}
+                width="100%"
+                borderRadius="ms"
+                flexDirection="row"
+                alignItems="center"
+                justifyContent="center"
+                onPress={() => {
+                  Linking.openURL(`https://explorer.helium.com/blocks/${block}`)
+                }}
+              >
+                <Text
+                  variant="medium"
+                  fontSize={16}
+                  color="white"
+                  marginRight="s"
+                >
+                  {`${t('activity_details.view_block')} ${block}`}
+                </Text>
+                <LinkImg />
+              </TouchableOpacityBox>
             </Box>
           </BottomSheet>
         </Box>

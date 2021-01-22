@@ -10,12 +10,14 @@ type Props = {
   isFirst?: boolean
   isLast?: boolean
   isPayer: boolean
+  isMyAccount: boolean
 }
 const PaymentItem = ({
   address,
   isFirst = true,
   isLast = false,
   isPayer,
+  isMyAccount,
 }: Props) => {
   const { t } = useTranslation()
 
@@ -57,14 +59,14 @@ const PaymentItem = ({
         >
           {address}
         </Text>
-        {isPayer && (
+        {isMyAccount && (
           <Text variant="light" fontSize={12} color="black" marginLeft="s">
             {t('activity_details.my_account')}
           </Text>
         )}
       </Box>
-      {isPayer && <MyAccount />}
-      {!isPayer && <TheirAccount />}
+      {isMyAccount && <MyAccount />}
+      {!isMyAccount && <TheirAccount />}
     </Box>
   )
 }

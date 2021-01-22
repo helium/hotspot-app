@@ -600,6 +600,7 @@ export default {
     from: 'From',
     to: 'To',
     my_account: 'My Account',
+    view_block: 'View Block',
     rewardTypes: {
       poc_challengees: 'PoC',
       poc_challengers: 'Challenger',
