@@ -3,7 +3,14 @@ import React, { ElementRef, useEffect, useRef } from 'react'
 import { Animated, Linking, Modal } from 'react-native'
 import BottomSheet from 'react-native-holy-sheet'
 import { useTranslation } from 'react-i18next'
-import { AnimatedBlurBox } from '../../../../components/BlurBox'
+import {
+  useDerivedValue,
+  useSharedValue,
+  interpolate,
+  Extrapolate,
+  useAnimatedStyle,
+} from 'react-native-reanimated'
+import { ReAnimatedBlurBox } from '../../../../components/BlurBox'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
 import ActivityDetailsHeader from './ActivityDetailsHeader'
@@ -12,6 +19,7 @@ import Rewards from './Rewards'
 import Payment from './Payment'
 import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
 import LinkImg from '../../../../assets/images/link.svg'
+import sleep from '../../../../utils/sleep'
 
 type Props = {
   item?: AnyTransaction | PendingTransaction
@@ -46,7 +54,7 @@ const ActivityDetails = ({ item, onClose, address }: Props) => {
     if (!item) return
 
     Animated.timing(opacityAnim.current, {
-      duration: 300,
+      duration: 200,
       toValue: 90,
       useNativeDriver: false,
     }).start()
@@ -59,9 +67,28 @@ const ActivityDetails = ({ item, onClose, address }: Props) => {
 
   useEffect(() => {
     if (item) {
-      sheet.current?.snapTo(1)
+      const snap = async () => {
+        await sleep(300)
+        sheet.current?.snapTo(2)
+      }
+      snap()
     }
   }, [item])
+
+  const dragMax = item ? snapHeight(item) : 100
+  const dragMid = 143
+  const dragMin = 0
+  const snapPoints = [dragMin, dragMid, dragMax]
+  const snapProgress = useSharedValue(dragMax)
+
+  const intensity = useDerivedValue(() => {
+    return interpolate(snapProgress.value, [1, 0], [1, 0], Extrapolate.CLAMP)
+  })
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      opacity: intensity.value,
+    }
+  })
 
   return (
     <Modal
@@ -69,24 +96,25 @@ const ActivityDetails = ({ item, onClose, address }: Props) => {
       transparent
       visible={!!item}
       onRequestClose={onClose}
-      animationType="fade"
     >
       {item && (
         <Box flex={1} justifyContent="flex-end" flexDirection="column">
-          <AnimatedBlurBox
+          <ReAnimatedBlurBox
             top={0}
             left={0}
             bottom={0}
+            style={animatedStyles}
             right={0}
             tint="dark"
             position="absolute"
-            intensity={opacityAnim.current}
+            intensity={85}
             onTouchStart={onClose}
           />
           <BottomSheet
+            snapProgress={snapProgress}
             containerStyle={{ paddingHorizontal: 0 }}
             ref={sheet}
-            snapPoints={[0, snapHeight(item)]}
+            snapPoints={snapPoints}
             initialSnapIndex={0}
             onClose={onClose}
             renderHeader={() => (
