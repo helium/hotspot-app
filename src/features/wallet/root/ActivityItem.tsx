@@ -1,8 +1,7 @@
 import React, { memo } from 'react'
-import { TouchableWithoutFeedback } from 'react-native'
+import { TouchableOpacity } from 'react-native'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
-import { triggerNotification } from '../../../utils/haptic'
 
 type Props = {
   isFirst: boolean
@@ -12,6 +11,7 @@ type Props = {
   title: string
   amount: string
   time?: string
+  handlePress: () => void
 }
 
 const ActivityItem = ({
@@ -22,13 +22,10 @@ const ActivityItem = ({
   amount,
   time,
   title,
+  handlePress,
 }: Props) => {
-  const handlePress = () => {
-    triggerNotification()
-  }
-
   return (
-    <TouchableWithoutFeedback onPress={handlePress}>
+    <TouchableOpacity onPress={handlePress}>
       <Box
         flexDirection="row"
         justifyContent="space-between"
@@ -74,7 +71,7 @@ const ActivityItem = ({
           {time && <Text color="graySteel">{time}</Text>}
         </Box>
       </Box>
-    </TouchableWithoutFeedback>
+    </TouchableOpacity>
   )
 }
 

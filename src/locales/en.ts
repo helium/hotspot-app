@@ -494,6 +494,7 @@ export default {
     },
   },
   transactions: {
+    pending: 'Pending',
     mining: 'Mining Rewards',
     sent: 'Sent HNT',
     burnHNT: 'Burn HNT',
