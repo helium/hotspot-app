@@ -1,18 +1,20 @@
 import { AnyTransaction, PendingTransaction } from '@helium/http'
 import React, { ElementRef, useEffect, useRef } from 'react'
-import { Modal } from 'react-native'
+import { Animated, Modal } from 'react-native'
 import BottomSheet from 'react-native-holy-sheet'
-import BlurBox from '../../../components/BlurBox'
-import Box from '../../../components/Box'
-import Text from '../../../components/Text'
+import { AnimatedBlurBox } from '../../../../components/BlurBox'
+import Box from '../../../../components/Box'
+import Text from '../../../../components/Text'
 import ActivityDetailsHeader from './ActivityDetailsHeader'
-import useActivityItem from './useActivityItem'
+import useActivityItem from '../useActivityItem'
+import ActivityRewards from './ActivityRewards'
 
 type Props = {
   item?: AnyTransaction | PendingTransaction
   address: string
   onClose: () => void
 }
+
 const ActivityDetails = ({ item, onClose, address }: Props) => {
   type BottomSheetHandle = ElementRef<typeof BottomSheet>
   const sheet = useRef<BottomSheetHandle>(null)
@@ -25,6 +27,23 @@ const ActivityDetails = ({ item, onClose, address }: Props) => {
     snapHeight,
     isFee,
   } = useActivityItem(address || '')
+
+  const opacityAnim = useRef(new Animated.Value(0))
+
+  const anim = () => {
+    if (!item) return
+
+    Animated.timing(opacityAnim.current, {
+      duration: 300,
+      toValue: 90,
+      useNativeDriver: false,
+    }).start()
+  }
+
+  useEffect(() => {
+    anim()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item])
 
   useEffect(() => {
     if (item) {
@@ -42,17 +61,18 @@ const ActivityDetails = ({ item, onClose, address }: Props) => {
     >
       {item && (
         <Box flex={1} justifyContent="flex-end" flexDirection="column">
-          <BlurBox
+          <AnimatedBlurBox
             top={0}
             left={0}
             bottom={0}
             right={0}
             tint="dark"
             position="absolute"
-            intensity={80}
+            intensity={opacityAnim.current}
             onTouchStart={onClose}
           />
           <BottomSheet
+            containerStyle={{ paddingHorizontal: 0 }}
             ref={sheet}
             snapPoints={[0, snapHeight(item)]}
             initialSnapIndex={0}
@@ -72,9 +92,11 @@ const ActivityDetails = ({ item, onClose, address }: Props) => {
                 fontSize={32}
                 color={isFee(item) ? 'blueMain' : 'greenMain'}
                 alignSelf="flex-end"
+                marginBottom="lx"
               >
                 {amount(item)}
               </Text>
+              <ActivityRewards item={item} />
             </Box>
           </BottomSheet>
         </Box>

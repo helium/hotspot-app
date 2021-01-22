@@ -1,7 +1,7 @@
 import React from 'react'
-import Box from '../../../components/Box'
-import Handle from '../../../assets/images/handle.svg'
-import Text from '../../../components/Text'
+import Box from '../../../../components/Box'
+import Handle from '../../../../assets/images/handle.svg'
+import Text from '../../../../components/Text'
 
 type Props = {
   backgroundColor: string
@@ -18,6 +18,7 @@ const ActivityDetailsHeader = ({
   return (
     <Box
       height={143}
+      paddingHorizontal="l"
       padding="m"
       style={{ backgroundColor }}
       borderTopRightRadius="m"

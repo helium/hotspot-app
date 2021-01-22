@@ -29,7 +29,7 @@ import { useAppDispatch } from '../../../store/store'
 import { useSpacing } from '../../../theme/themeHooks'
 import Text from '../../../components/Text'
 import usePrevious from '../../../utils/usePrevious'
-import ActivityDetails from './ActivityDetails'
+import ActivityDetails from './ActivityDetails/ActivityDetails'
 import useActivityItem from './useActivityItem'
 
 type Props = {

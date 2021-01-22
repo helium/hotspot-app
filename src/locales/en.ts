@@ -594,4 +594,16 @@ export default {
       share: 'Share',
     },
   },
+  activity_details: {
+    security_tokens: 'Security Tokens',
+    reward: 'Reward',
+    rewardTypes: {
+      poc_challengees: 'PoC',
+      poc_challengers: 'Challenger',
+      poc_witnesses: 'Witness',
+      consensus: 'Consensus',
+      data_credits: 'Packet Transfer',
+      securities: 'Security Tokens',
+    },
+  },
 }
