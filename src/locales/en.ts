@@ -597,6 +597,9 @@ export default {
   activity_details: {
     security_tokens: 'Security Tokens',
     reward: 'Reward',
+    from: 'From',
+    to: 'To',
+    my_account: 'My Account',
     rewardTypes: {
       poc_challengees: 'PoC',
       poc_challengers: 'Challenger',

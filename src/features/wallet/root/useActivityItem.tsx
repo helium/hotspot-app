@@ -217,7 +217,7 @@ const useActivityItem = (address: string) => {
           return 300
         case 'payment_v1':
         case 'payment_v2':
-          return 300
+          return isSending(item) ? 509 : 480
         case 'assert_location_v1':
           return 300
         case 'transfer_hotspot_v1':
@@ -228,7 +228,7 @@ const useActivityItem = (address: string) => {
           return 300
       }
     },
-    [],
+    [isSending],
   )
 
   return { backgroundColor, title, icon, amount, time, snapHeight, isFee }

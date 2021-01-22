@@ -2,9 +2,10 @@ import { AnyTransaction, PendingTransaction, RewardsV1 } from '@helium/http'
 import React from 'react'
 import { groupBy } from 'lodash'
 import ActivityRewardItem from './ActivityRewardItem'
+import Box from '../../../../components/Box'
 
 type Props = { item: AnyTransaction | PendingTransaction }
-const ActivityRewards = ({ item }: Props) => {
+const Rewards = ({ item }: Props) => {
   if (item.type !== 'rewards_v1') return null
 
   const rewards = item as RewardsV1
@@ -12,7 +13,7 @@ const ActivityRewards = ({ item }: Props) => {
   const grouped = groupBy(rewards.rewards, (reward) => reward.type)
 
   return (
-    <>
+    <Box marginTop="lx">
       {Object.keys(grouped).map((k, idx) =>
         grouped[k].map((r, index) => (
           <ActivityRewardItem
@@ -24,8 +25,8 @@ const ActivityRewards = ({ item }: Props) => {
           />
         )),
       )}
-    </>
+    </Box>
   )
 }
 
-export default ActivityRewards
+export default Rewards

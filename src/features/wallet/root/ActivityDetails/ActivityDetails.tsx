@@ -7,7 +7,8 @@ import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
 import ActivityDetailsHeader from './ActivityDetailsHeader'
 import useActivityItem from '../useActivityItem'
-import ActivityRewards from './ActivityRewards'
+import Rewards from './Rewards'
+import SentHNT from './SentHNT'
 
 type Props = {
   item?: AnyTransaction | PendingTransaction
@@ -86,17 +87,17 @@ const ActivityDetails = ({ item, onClose, address }: Props) => {
               />
             )}
           >
-            <Box padding="l">
+            <Box padding="l" flex={1}>
               <Text
                 variant="medium"
                 fontSize={32}
                 color={isFee(item) ? 'blueMain' : 'greenMain'}
                 alignSelf="flex-end"
-                marginBottom="lx"
               >
                 {amount(item)}
               </Text>
-              <ActivityRewards item={item} />
+              <Rewards item={item} />
+              <SentHNT item={item} address={address} />
             </Box>
           </BottomSheet>
         </Box>
