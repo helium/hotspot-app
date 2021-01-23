@@ -109,20 +109,33 @@ const ActivityCard = forwardRef(
       item: AnyTransaction | PendingTransaction
       index: number
     }
-    const renderItem = ({ item, index }: Item) => {
-      return (
-        <ActivityItem
-          handlePress={handleActivityItemPressed(item)}
-          isFirst={index === 0}
-          isLast={!!transactionData && index === transactionData.length - 1}
-          backgroundColor={backgroundColor(item)}
-          icon={icon(item)}
-          title={title(item)}
-          amount={amount(item)}
-          time={time(item)}
-        />
-      )
-    }
+
+    const renderItem = useCallback(
+      ({ item, index }: Item) => {
+        return (
+          <ActivityItem
+            hash={item.hash}
+            handlePress={handleActivityItemPressed(item)}
+            isFirst={index === 0}
+            isLast={!!transactionData && index === transactionData.length - 1}
+            backgroundColor={backgroundColor(item)}
+            icon={icon(item)}
+            title={title(item)}
+            amount={amount(item)}
+            time={time(item)}
+          />
+        )
+      },
+      [
+        amount,
+        backgroundColor,
+        handleActivityItemPressed,
+        icon,
+        time,
+        title,
+        transactionData,
+      ],
+    )
 
     const { dragMax, dragMid, dragMin } = animationPoints
 
@@ -131,69 +144,78 @@ const ActivityCard = forwardRef(
       setFilter(f)
     }, [])
 
+    const flatListProps = useCallback(() => {
+      return {
+        style: { marginTop: n_m },
+        data: transactionData,
+        ref: flatListRef,
+        maxToRenderPerBatch: 30,
+        initialNumToRender: 30,
+        keyExtractor: (item: AnyTransaction | PendingTransaction) => {
+          if (isPendingTransaction(item)) {
+            return `${filter}.${(item as PendingTransaction).hash}`
+          }
+
+          return `${filter}.${(item as AddGatewayV1).hash}`
+        },
+        renderItem,
+        ListFooterComponent: () => {
+          if (txns[filter].status === 'pending' && !transactionData?.length) {
+            return <ActivityIndicator />
+          }
+          if (
+            txns[filter].status === 'fulfilled' &&
+            transactionData &&
+            transactionData.length === 0 &&
+            prevStatus === 'fulfilled' &&
+            prevFilter === filter
+          ) {
+            return (
+              <Text
+                padding="l"
+                variant="body1"
+                color="black"
+                width="100%"
+                textAlign="center"
+              >
+                {t('transactions.no_results')}
+              </Text>
+            )
+          }
+
+          return null
+        },
+        onEndReached: () => {
+          dispatch(fetchTxns(filter))
+        },
+      }
+    }, [
+      dispatch,
+      filter,
+      n_m,
+      prevFilter,
+      prevStatus,
+      renderItem,
+      t,
+      transactionData,
+      txns,
+    ])
+
     return (
-      <>
-        <BottomSheet
-          ref={sheet}
-          snapPoints={[dragMin, dragMid, dragMax]}
-          initialSnapIndex={1}
-          snapProgress={snapProgress}
-          renderHeader={() => (
-            <ActivityCardHeader
-              filter={filter}
-              onFilterChanged={onFilterChanged}
-            />
-          )}
-          containerStyle={{ paddingHorizontal: m }}
-          flatListProps={{
-            style: { marginTop: n_m },
-            data: transactionData,
-            ref: flatListRef,
-            maxToRenderPerBatch: 30,
-            initialNumToRender: 30,
-            keyExtractor: (item: AnyTransaction | PendingTransaction) => {
-              if (isPendingTransaction(item)) {
-                return `${filter}.${(item as PendingTransaction).hash}`
-              }
-
-              return `${filter}.${(item as AddGatewayV1).hash}`
-            },
-            renderItem,
-            ListFooterComponent: () => {
-              if (
-                txns[filter].status === 'pending' &&
-                !transactionData?.length
-              ) {
-                return <ActivityIndicator />
-              }
-              if (
-                txns[filter].status === 'fulfilled' &&
-                transactionData &&
-                transactionData.length === 0 &&
-                prevStatus === 'fulfilled' &&
-                prevFilter === filter
-              ) {
-                return (
-                  <Text
-                    padding="l"
-                    variant="body1"
-                    color="black"
-                    width="100%"
-                    textAlign="center"
-                  >
-                    {t('transactions.no_results')}
-                  </Text>
-                )
-              }
-
-              return null
-            },
-            onEndReached: () => {
-              dispatch(fetchTxns(filter))
-            },
-          }}
-        />
-      </>
+      <BottomSheet
+        ref={sheet}
+        snapPoints={[dragMin, dragMid, dragMax]}
+        initialSnapIndex={1}
+        snapProgress={snapProgress}
+        renderHeader={() => (
+          <ActivityCardHeader
+            filter={filter}
+            onFilterChanged={onFilterChanged}
+          />
+        )}
+        containerStyle={{ paddingHorizontal: m }}
+        flatListProps={flatListProps()}
+      />
     )
   },
 )

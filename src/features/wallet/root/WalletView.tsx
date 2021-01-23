@@ -1,4 +1,4 @@
-import React, { useRef, ElementRef, memo } from 'react'
+import React, { useRef, ElementRef, memo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import Animated, {
   useSharedValue,
@@ -35,22 +35,22 @@ const WalletView = ({ layout, animationPoints }: Props) => {
 
   const navigation = useNavigation()
 
-  const handlePress = () => {
+  const handlePress = useCallback(() => {
     triggerNavHaptic()
-  }
+  }, [])
 
-  const navScan = () => {
+  const navScan = useCallback(() => {
     triggerNavHaptic()
     navigation.navigate('Scan')
-  }
+  }, [navigation])
 
   type ActivityCardHandle = ElementRef<typeof ActivityCard>
   const card = useRef<ActivityCardHandle>(null)
 
-  const handleSendPress = () => {
+  const handleSendPress = useCallback(() => {
     triggerNavHaptic()
     navigation.navigate('Send')
-  }
+  }, [navigation])
 
   const snapProgress = useSharedValue(dragMid / dragMax)
 
@@ -73,10 +73,10 @@ const WalletView = ({ layout, animationPoints }: Props) => {
     }
   })
 
-  const animateActivityToBottom = () => {
+  const animateActivityToBottom = useCallback(() => {
     card.current?.snapTo(0)
     triggerNavHaptic()
-  }
+  }, [])
 
   return (
     <Box flex={1} style={{ paddingTop: layout.notchHeight }}>

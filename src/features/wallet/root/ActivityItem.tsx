@@ -11,6 +11,8 @@ type Props = {
   title: string
   amount: string
   time?: string
+  // eslint-disable-next-line react/no-unused-prop-types
+  hash: string // used for memoization
   handlePress: () => void
 }
 
@@ -75,4 +77,4 @@ const ActivityItem = ({
   )
 }
 
-export default memo(ActivityItem)
+export default memo(ActivityItem, (prev, next) => prev.hash === next.hash)
