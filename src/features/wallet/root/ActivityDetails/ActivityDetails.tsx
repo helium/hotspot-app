@@ -1,6 +1,6 @@
-import { AnyTransaction, PendingTransaction, PaymentV1 } from '@helium/http'
-import React, { ElementRef, useEffect, useRef } from 'react'
-import { Animated, Linking, Modal } from 'react-native'
+import { PaymentV1 } from '@helium/http'
+import React, { ElementRef, useEffect, useRef, memo } from 'react'
+import { Linking } from 'react-native'
 import BottomSheet from 'react-native-holy-sheet'
 import { useTranslation } from 'react-i18next'
 import {
@@ -10,6 +10,7 @@ import {
   Extrapolate,
   useAnimatedStyle,
 } from 'react-native-reanimated'
+import { useAsync } from 'react-async-hook'
 import { ReAnimatedBlurBox } from '../../../../components/BlurBox'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
@@ -19,19 +20,16 @@ import Rewards from './Rewards'
 import Payment from './Payment'
 import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
 import LinkImg from '../../../../assets/images/link.svg'
-import sleep from '../../../../utils/sleep'
-
-type Props = {
-  item?: AnyTransaction | PendingTransaction
-  address: string
-  onClose: () => void
-}
+import { useWalletContext } from './WalletProvider'
+import { getSecureItem } from '../../../../utils/secureAccount'
 
 const DF = 'MM/dd/yyyy hh:mm a'
-const ActivityDetails = ({ item, onClose, address }: Props) => {
+const ActivityDetails = () => {
   type BottomSheetHandle = ElementRef<typeof BottomSheet>
   const sheet = useRef<BottomSheetHandle>(null)
+  const { result: address } = useAsync(getSecureItem, ['address'])
   const { t } = useTranslation()
+  const { activityItem, setActivityItem } = useWalletContext()
   const {
     backgroundColor,
     backgroundColorKey,
@@ -43,39 +41,26 @@ const ActivityDetails = ({ item, onClose, address }: Props) => {
     isFee,
   } = useActivityItem(address || '')
 
-  const opacityAnim = useRef(new Animated.Value(0))
   let block = ''
-  if (item) {
-    const asPayment = item as PaymentV1
+  if (activityItem) {
+    const asPayment = activityItem as PaymentV1
     block = asPayment.height?.toString() || ''
   }
 
-  const anim = () => {
-    if (!item) return
-
-    Animated.timing(opacityAnim.current, {
-      duration: 200,
-      toValue: 90,
-      useNativeDriver: false,
-    }).start()
-  }
-
   useEffect(() => {
-    anim()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [item])
-
-  useEffect(() => {
-    if (item) {
+    if (activityItem) {
       const snap = async () => {
-        await sleep(300)
         sheet.current?.snapTo(2)
       }
       snap()
     }
-  }, [item])
+  }, [activityItem])
 
-  const dragMax = item ? snapHeight(item) : 100
+  const onClose = () => {
+    setActivityItem(null)
+  }
+
+  const dragMax = activityItem ? snapHeight(activityItem) : 100
   const dragMid = 143
   const dragMin = 0
   const snapPoints = [dragMin, dragMid, dragMax]
@@ -90,81 +75,83 @@ const ActivityDetails = ({ item, onClose, address }: Props) => {
     }
   })
 
+  const handleClose = () => {
+    sheet.current?.snapTo(0)
+    setActivityItem(null)
+  }
+
+  if (!activityItem) return null
   return (
-    <Modal
-      presentationStyle="overFullScreen"
-      transparent
-      visible={!!item}
-      onRequestClose={onClose}
+    <Box
+      flex={1}
+      justifyContent="flex-end"
+      flexDirection="column"
+      position="absolute"
+      top={activityItem ? 0 : -1000}
+      left={0}
+      bottom={activityItem ? 0 : 1000}
+      right={0}
+      zIndex={1000}
     >
-      {item && (
-        <Box flex={1} justifyContent="flex-end" flexDirection="column">
-          <ReAnimatedBlurBox
-            top={0}
-            left={0}
-            bottom={0}
-            style={animatedStyles}
-            right={0}
-            tint="dark"
-            position="absolute"
-            intensity={85}
-            onTouchStart={onClose}
+      <ReAnimatedBlurBox
+        style={animatedStyles}
+        top={0}
+        bottom={0}
+        right={0}
+        left={0}
+        tint="dark"
+        position="absolute"
+        intensity={95}
+        onTouchStart={handleClose}
+      />
+      <BottomSheet
+        snapProgress={snapProgress}
+        containerStyle={{ paddingHorizontal: 0 }}
+        ref={sheet}
+        snapPoints={snapPoints}
+        initialSnapIndex={0}
+        onClose={onClose}
+        renderHeader={() => (
+          <ActivityDetailsHeader
+            backgroundColor={backgroundColor(activityItem)}
+            icon={icon(activityItem)}
+            title={title(activityItem)}
+            date={time(activityItem, DF)}
           />
-          <BottomSheet
-            snapProgress={snapProgress}
-            containerStyle={{ paddingHorizontal: 0 }}
-            ref={sheet}
-            snapPoints={snapPoints}
-            initialSnapIndex={0}
-            onClose={onClose}
-            renderHeader={() => (
-              <ActivityDetailsHeader
-                backgroundColor={backgroundColor(item)}
-                icon={icon(item)}
-                title={title(item)}
-                date={time(item, DF)}
-              />
-            )}
+        )}
+      >
+        <Box padding="l" flex={1}>
+          <Text
+            variant="medium"
+            fontSize={32}
+            color={isFee(activityItem) ? 'blueMain' : 'greenMain'}
+            alignSelf="flex-end"
           >
-            <Box padding="l" flex={1}>
-              <Text
-                variant="medium"
-                fontSize={32}
-                color={isFee(item) ? 'blueMain' : 'greenMain'}
-                alignSelf="flex-end"
-              >
-                {amount(item)}
-              </Text>
-              <Rewards item={item} />
-              <Payment item={item} address={address} />
-              <TouchableOpacityBox
-                backgroundColor={backgroundColorKey(item)}
-                height={63}
-                width="100%"
-                borderRadius="ms"
-                flexDirection="row"
-                alignItems="center"
-                justifyContent="center"
-                onPress={() => {
-                  Linking.openURL(`https://explorer.helium.com/blocks/${block}`)
-                }}
-              >
-                <Text
-                  variant="medium"
-                  fontSize={16}
-                  color="white"
-                  marginRight="s"
-                >
-                  {`${t('activity_details.view_block')} ${block}`}
-                </Text>
-                <LinkImg />
-              </TouchableOpacityBox>
-            </Box>
-          </BottomSheet>
+            {amount(activityItem)}
+          </Text>
+          <Rewards item={activityItem} />
+          <Payment item={activityItem} address={address || ''} />
+          <TouchableOpacityBox
+            backgroundColor={backgroundColorKey(activityItem)}
+            height={63}
+            width="100%"
+            borderRadius="ms"
+            flexDirection="row"
+            alignItems="center"
+            justifyContent="center"
+            onPress={() => {
+              Linking.openURL(`https://explorer.helium.com/blocks/${block}`)
+            }}
+          >
+            <Text variant="medium" fontSize={16} color="white" marginRight="s">
+              {`${t('activity_details.view_block')} ${block}`}
+            </Text>
+            <LinkImg />
+          </TouchableOpacityBox>
         </Box>
-      )}
-    </Modal>
+      </BottomSheet>
+    </Box>
   )
 }
 
-export default ActivityDetails
+export default memo(ActivityDetails)

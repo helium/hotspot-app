@@ -29,8 +29,8 @@ import { useAppDispatch } from '../../../store/store'
 import { useSpacing } from '../../../theme/themeHooks'
 import Text from '../../../components/Text'
 import usePrevious from '../../../utils/usePrevious'
-import ActivityDetails from './ActivityDetails/ActivityDetails'
 import useActivityItem from './useActivityItem'
+import { useWalletContext } from './ActivityDetails/WalletProvider'
 
 type Props = {
   animationPoints: WalletAnimationPoints
@@ -50,10 +50,8 @@ const ActivityCard = forwardRef(
     const flatListRef = useRef<FlatList<PendingTransaction | AnyTransaction>>(
       null,
     )
+    const { setActivityItem } = useWalletContext()
     const [filter, setFilter] = useState<FilterType>('all')
-    const [selectedItem, setSelectedItem] = useState<
-      AnyTransaction | PendingTransaction | undefined
-    >()
     const prevFilter = usePrevious(filter)
     const { result: address } = useAsync(getSecureItem, ['address'])
     const { backgroundColor, title, icon, amount, time } = useActivityItem(
@@ -103,7 +101,7 @@ const ActivityCard = forwardRef(
     const handleActivityItemPressed = (
       item: AnyTransaction | PendingTransaction,
     ) => () => {
-      setSelectedItem(item)
+      setActivityItem(item)
     }
 
     type Item = {
@@ -193,11 +191,6 @@ const ActivityCard = forwardRef(
               dispatch(fetchTxns(filter))
             },
           }}
-        />
-        <ActivityDetails
-          address={address || ''}
-          item={selectedItem}
-          onClose={() => setSelectedItem(undefined)}
         />
       </>
     )

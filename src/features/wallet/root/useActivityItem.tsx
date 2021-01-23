@@ -152,7 +152,7 @@ const useActivityItem = (address: string) => {
     if (!amount) return ''
 
     if (typeof amount === 'number') {
-      if (amount === 0) return amount
+      if (amount === 0) return '0'
       return `${fee ? '-' : '+'}${amount.toLocaleString()}`
     }
 

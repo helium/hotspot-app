@@ -200,6 +200,7 @@ export const theme = createTheme({
     lx: 32,
     xl: 40,
     xxl: 60,
+    xxxl: 120,
   },
   borderRadii: {
     none: 0,
