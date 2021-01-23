@@ -22,6 +22,7 @@ import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
 import LinkImg from '../../../../assets/images/link.svg'
 import { useWalletContext } from './WalletProvider'
 import { getSecureItem } from '../../../../utils/secureAccount'
+import animateTransition from '../../../../utils/animateTransition'
 
 const DF = 'MM/dd/yyyy hh:mm a'
 const ActivityDetails = () => {
@@ -61,22 +62,20 @@ const ActivityDetails = () => {
   }
 
   const dragMax = activityItem ? snapHeight(activityItem) : 100
-  const dragMid = 143
   const dragMin = 0
-  const snapPoints = [dragMin, dragMid, dragMax]
-  const snapProgress = useSharedValue(dragMax)
+  const snapPoints = [dragMin, dragMax]
+  const snapProgress = useSharedValue(0)
 
-  const intensity = useDerivedValue(() => {
-    return interpolate(snapProgress.value, [1, 0], [1, 0], Extrapolate.CLAMP)
+  const opacity = useDerivedValue(() => {
+    return interpolate(snapProgress.value, [1, 0], [1, 0.5], Extrapolate.CLAMP)
   })
-  const animatedStyles = useAnimatedStyle(() => {
-    return {
-      opacity: intensity.value,
-    }
-  })
+  const animatedStyles = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }))
 
   const handleClose = () => {
     sheet.current?.snapTo(0)
+    animateTransition()
     setActivityItem(null)
   }
 
@@ -101,7 +100,7 @@ const ActivityDetails = () => {
         left={0}
         tint="dark"
         position="absolute"
-        intensity={95}
+        intensity={90}
         onTouchStart={handleClose}
       />
       <BottomSheet
@@ -110,7 +109,10 @@ const ActivityDetails = () => {
         ref={sheet}
         snapPoints={snapPoints}
         initialSnapIndex={0}
-        onClose={onClose}
+        onClose={() => {
+          animateTransition()
+          onClose()
+        }}
         renderHeader={() => (
           <ActivityDetailsHeader
             backgroundColor={backgroundColor(activityItem)}
