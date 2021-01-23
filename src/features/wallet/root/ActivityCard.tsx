@@ -98,11 +98,12 @@ const ActivityCard = forwardRef(
       },
     }))
 
-    const handleActivityItemPressed = (
-      item: AnyTransaction | PendingTransaction,
-    ) => () => {
-      setActivityItem(item)
-    }
+    const handleActivityItemPressed = useCallback(
+      (item: AnyTransaction | PendingTransaction) => () => {
+        setActivityItem(item)
+      },
+      [setActivityItem],
+    )
 
     type Item = {
       item: AnyTransaction | PendingTransaction
