@@ -10,6 +10,7 @@ type Props = {
   showXAxisLabel?: boolean
   upColor?: string
   downColor?: string
+  labelColor?: string
 }
 
 const ChartContainer = ({
@@ -19,6 +20,7 @@ const ChartContainer = ({
   showXAxisLabel,
   upColor,
   downColor,
+  labelColor,
 }: Props) => {
   const [width, setWidth] = useState(0)
 
@@ -39,6 +41,7 @@ const ChartContainer = ({
           showXAxisLabel={showXAxisLabel}
           upColor={upColor}
           downColor={downColor}
+          labelColor={labelColor}
         />
       )}
     </View>

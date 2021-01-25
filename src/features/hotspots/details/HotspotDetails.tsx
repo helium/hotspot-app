@@ -11,7 +11,7 @@ import Animated, {
 import BottomSheet from 'react-native-holy-sheet/src/index'
 import { random, times } from 'lodash'
 import { useTranslation } from 'react-i18next'
-import { HotspotRewardsData } from '@helium/http/build/models/HotspotReward'
+import { HotspotSumReward } from '@helium/http'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { HotspotStackParamList } from '../root/hotspotTypes'
@@ -29,7 +29,8 @@ import HotspotDetailChart from './HotspotDetailChart'
 import StatusBadge from './StatusBadge'
 import TimelinePicker from './TimelinePicker'
 import HotspotDetailCardHeader from './HotspotDetailCardHeader'
-import { getHotspotRewards } from '../../../utils/appDataClient'
+import { getHotspotRewardsSum } from '../../../utils/appDataClient'
+import { calculatePercentChange, getRewardChartData } from './RewardsHelper'
 
 type HotspotDetailsRouteProp = RouteProp<
   HotspotStackParamList,
@@ -48,15 +49,6 @@ const onFollowHotspot = () => {
 
 const onMoreMenuSelected = () => {
   // TODO: more menu
-}
-
-export const calculatePercentChange = (
-  value: number,
-  previousValue: number,
-) => {
-  return (value === 0 && previousValue === 0) || previousValue === 0
-    ? 0
-    : ((value - previousValue) / previousValue) * 100
 }
 
 const HotspotDetails = () => {
@@ -102,44 +94,44 @@ const HotspotDetails = () => {
   })
 
   const [timelineIndex, setTimelineIndex] = useState(0)
-  const [totalRewards, setTotalRewards] = useState<HotspotRewardsData>()
+  const [totalRewards, setTotalRewards] = useState<HotspotSumReward>()
   const [rewardChange, setRewardChange] = useState<number>()
+  const [rewardChatData, setRewardChatData] = useState<ChartData[]>([])
   useEffect(() => {
     const fetchRewards = async () => {
-      const now = new Date()
-      const endDate = new Date(now)
-      let dateOffset
+      let numDays
       switch (timelineIndex) {
         default:
         case 0:
-          dateOffset = 1
+          numDays = 1
           break
         case 1:
-          dateOffset = 7
+          numDays = 7
           break
         case 2:
-          dateOffset = 14
+          numDays = 14
           break
         case 3:
-          dateOffset = 30
+          numDays = 30
           break
       }
-      endDate.setDate(now.getDate() - dateOffset)
-      const rewards = await getHotspotRewards(hotspot.address, endDate, now)
-      now.setDate(now.getDate() - dateOffset)
-      endDate.setDate(now.getDate() - dateOffset)
-      const rewardsPastPeriod = await getHotspotRewards(
+      const rewardsSum = await getHotspotRewardsSum(hotspot.address, numDays)
+      const previousStart = new Date()
+      previousStart.setDate(previousStart.getDate() - numDays)
+      const rewardsSumPastPeriod = await getHotspotRewardsSum(
         hotspot.address,
-        endDate,
-        now,
+        numDays,
+        previousStart,
       )
-      setTotalRewards(rewards)
+      setTotalRewards(rewardsSum)
       setRewardChange(
         calculatePercentChange(
-          rewards.total.floatBalance,
-          rewardsPastPeriod.total.floatBalance,
+          rewardsSum.total.floatBalance,
+          rewardsSumPastPeriod.total.floatBalance,
         ),
       )
+      const rewardChartData = await getRewardChartData(hotspot.address, numDays)
+      setRewardChatData(rewardChartData)
     }
     fetchRewards()
   }, [hotspot.address, timelineIndex])
@@ -238,14 +230,14 @@ const HotspotDetails = () => {
                 ?.toString(0)
                 ?.replace('HNT', '')
                 ?.trim()}
-              change={`${rewardChange?.toFixed(2)?.toString()}%`}
+              change={rewardChange}
               color={greenOnline}
-              data={data[0]}
+              data={rewardChatData}
             />
             <HotspotDetailChart
               title={t('hotspot_details.witness_title')}
               number="12"
-              change="-1.2%"
+              change={-1.2}
               color={purpleMain}
               data={data[1]}
             />
@@ -271,7 +263,7 @@ const data: Record<string, ChartData[]> = {
     day: weekdays[i % 7],
     id: [0, i].join('-'),
   })),
-  1: times(14).map((v, i) => ({
+  1: times(30).map((v, i) => ({
     up: random(0, 100),
     down: 0,
     day: weekdays[i % 7],

@@ -9,9 +9,9 @@ import {
   HotspotActivityType,
 } from '../features/hotspots/root/hotspotTypes'
 import {
-  FilterType,
-  Filters,
   FilterKeys,
+  Filters,
+  FilterType,
 } from '../features/wallet/root/walletTypes'
 import { getSecureItem } from './secureAccount'
 
@@ -35,15 +35,28 @@ export const getHotspotDetails = async (address: string) => {
   return data
 }
 
+export const getHotspotRewardsSum = async (
+  address: string,
+  numDaysBack: number,
+  date: Date = new Date(),
+) => {
+  const endDate = new Date(date)
+  endDate.setDate(date.getDate() - numDaysBack)
+  const { data } = await client.hotspot(address).rewards.getSum(endDate, date)
+  return data
+}
+
 export const getHotspotRewards = async (
   address: string,
-  minTime: Date,
-  maxTime: Date,
+  numDaysBack: number,
+  date: Date = new Date(),
 ) => {
-  const { data } = await client
+  const endDate = new Date(date)
+  endDate.setDate(date.getDate() - numDaysBack)
+  const list = await client
     .hotspot(address)
-    .rewards.getSum(minTime, maxTime)
-  return data
+    .rewards.list({ minTime: endDate, maxTime: date })
+  return list.take(100000)
 }
 
 export const getAccount = async () => {

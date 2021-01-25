@@ -1140,10 +1140,9 @@
   dependencies:
     bignumber.js "^9.0.0"
 
-"@helium/http@^3.16.0":
-  version "3.16.0"
-  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.16.0.tgz#261a8330981af9d48863a457143969e386639dcd"
-  integrity sha512-/6znGTysvYuUoSChlXhxFf2R9LE+R+2g/5SKSiwzi23tBRFHAT5L/j1FrjKkBrlrdg8POJVf3TKv/R28vQEgrg==
+"@helium/http@file:../helium-js/packages/http/helium-http-3.17.0-test.2.tgz":
+  version "3.17.0-test.2"
+  resolved "file:../helium-js/packages/http/helium-http-3.17.0-test.2.tgz#649433d39a23c2ebd3b001ef08f7c9777f3c8395"
   dependencies:
     "@helium/currency" "^3.16.0"
     axios "^0.21.1"

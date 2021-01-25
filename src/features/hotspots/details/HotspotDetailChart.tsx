@@ -9,7 +9,7 @@ import { useColors } from '../../../theme/themeHooks'
 type Props = {
   title: string
   number?: string
-  change?: string
+  change?: number
   percentage?: number
   data: ChartData[]
   color: string
@@ -23,7 +23,7 @@ const HotspotDetailChart = ({
   color,
 }: Props) => {
   const { t } = useTranslation()
-  const { redMedium } = useColors()
+  const { redMedium, black } = useColors()
   const [focusedData, setFocusedData] = useState<ChartData | null>()
   const onFocus = (chartData: ChartData | null) => {
     setFocusedData(chartData)
@@ -55,18 +55,20 @@ const HotspotDetailChart = ({
             <Text variant="light" fontSize={32} color="black" marginBottom="s">
               {focusedData ? focusedData.up : number}
             </Text>
-            <Box
-              style={{
-                backgroundColor: change?.includes('-') ? redMedium : color,
-              }}
-              padding="xs"
-              borderRadius="s"
-              alignSelf="baseline"
-            >
-              <Text color="white" variant="body2Bold">
-                {change?.includes('-') ? change : `+${change}`}
-              </Text>
-            </Box>
+            {change && !focusedData && (
+              <Box
+                style={{
+                  backgroundColor: change < 0 ? redMedium : color,
+                }}
+                padding="xs"
+                borderRadius="s"
+                alignSelf="baseline"
+              >
+                <Text color="white" variant="body2Bold">
+                  {`${change < 0 ? '' : '+'}${change.toFixed(2).toString()}%`}
+                </Text>
+              </Box>
+            )}
           </Box>
         )}
         <Box paddingStart="l" width="65%">
@@ -76,7 +78,11 @@ const HotspotDetailChart = ({
             onFocus={onFocus}
             showXAxisLabel={false}
             upColor={color}
+            labelColor={black}
           />
+          <Text variant="body3" color="black">
+            {focusedData ? focusedData.day : ' '}
+          </Text>
         </Box>
       </Box>
     </Box>

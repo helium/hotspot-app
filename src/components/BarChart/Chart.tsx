@@ -21,6 +21,7 @@ type Props = {
   showXAxisLabel?: boolean
   upColor?: string
   downColor?: string
+  labelColor?: string
 }
 
 const BarChart = ({
@@ -29,6 +30,7 @@ const BarChart = ({
   data,
   onFocus,
   showXAxisLabel = true,
+  labelColor,
   upColor,
   downColor,
 }: Props) => {
@@ -121,7 +123,7 @@ const BarChart = ({
 
             {showXAxisLabel && (
               <Text
-                fill={white}
+                fill={labelColor || white}
                 stroke="none"
                 fontSize="12"
                 fontWeight={300}
