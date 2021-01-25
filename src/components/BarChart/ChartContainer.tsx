@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View } from 'react-native'
+import { ActivityIndicator, View } from 'react-native'
 import Chart from './Chart'
 import { ChartData } from './types'
 
@@ -12,6 +12,7 @@ type Props = {
   downColor?: string
   labelColor?: string
   paddingTop?: number
+  loading?: boolean
 }
 
 const ChartContainer = ({
@@ -23,6 +24,7 @@ const ChartContainer = ({
   downColor,
   labelColor,
   paddingTop,
+  loading,
 }: Props) => {
   const [width, setWidth] = useState(0)
 
@@ -30,6 +32,10 @@ const ChartContainer = ({
     nativeEvent: { layout: { width: number } }
   }) => {
     setWidth(event.nativeEvent.layout.width)
+  }
+
+  if (loading) {
+    return <ActivityIndicator style={{ height, paddingTop }} size="small" />
   }
 
   return (

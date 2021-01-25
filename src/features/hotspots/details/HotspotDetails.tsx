@@ -97,9 +97,11 @@ const HotspotDetails = () => {
   const [totalRewards, setTotalRewards] = useState<HotspotRewardSum>()
   const [rewardChange, setRewardChange] = useState<number>()
   const [rewardChatData, setRewardChatData] = useState<ChartData[]>([])
+  const [rewardsLoading, setRewardsLoading] = useState(true)
   const [chartPadding, setChartPadding] = useState(20)
   useEffect(() => {
     const fetchRewards = async () => {
+      setRewardsLoading(true)
       let numDays
       let padding
       switch (timelineIndex) {
@@ -139,6 +141,7 @@ const HotspotDetails = () => {
       const rewardChartData = await getRewardChartData(hotspot.address, numDays)
       setRewardChatData(rewardChartData)
       setChartPadding(padding)
+      setRewardsLoading(false)
     }
     fetchRewards()
   }, [hotspot.address, timelineIndex])
@@ -244,6 +247,7 @@ const HotspotDetails = () => {
               color={greenOnline}
               data={rewardChatData}
               paddingTop={chartPadding}
+              loading={rewardsLoading}
             />
             <HotspotDetailChart
               title={t('hotspot_details.witness_title')}
@@ -265,25 +269,17 @@ const HotspotDetails = () => {
   )
 }
 
-const weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
-
 const data: Record<string, ChartData[]> = {
-  0: times(14).map((v, i) => ({
-    up: random(0, 100),
-    down: 0,
-    day: weekdays[i % 7],
-    id: [0, i].join('-'),
-  })),
   1: times(30).map((v, i) => ({
     up: random(0, 100),
     down: 0,
-    day: weekdays[i % 7],
+    day: '',
     id: [1, i].join('-'),
   })),
   2: times(14).map((v, i) => ({
     up: random(0, 100),
     down: 0,
-    day: weekdays[i % 7],
+    day: '',
     id: [2, i].join('-'),
   })),
 }
