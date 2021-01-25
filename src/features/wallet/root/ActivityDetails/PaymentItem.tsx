@@ -8,6 +8,7 @@ import TheirAccount from '../../../../assets/images/theirAccount.svg'
 type Props = {
   text: string
   subText?: string | null
+  title?: string | null
   isFirst?: boolean
   isLast?: boolean
   mode: 'to' | 'from' | 'memo' | 'location' | 'seller' | 'owner' | 'buyer'
@@ -19,6 +20,7 @@ const PaymentItem = ({
   isFirst = true,
   isLast = false,
   mode,
+  title,
   isMyAccount,
 }: Props) => {
   const { t } = useTranslation()
@@ -47,7 +49,7 @@ const PaymentItem = ({
         flex={1}
         alignSelf="flex-start"
       >
-        {t(`activity_details.${mode}`)}
+        {title || t(`activity_details.${mode}`)}
       </Text>
       <Box
         alignItems="flex-end"

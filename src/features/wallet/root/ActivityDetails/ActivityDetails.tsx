@@ -25,6 +25,7 @@ import LinkImg from '../../../../assets/images/link.svg'
 import { useWalletContext } from './WalletProvider'
 import { getSecureItem } from '../../../../utils/secureAccount'
 import animateTransition from '../../../../utils/animateTransition'
+import UnknownTransaction from './UnknownTransaction'
 
 const DF = 'MM/dd/yyyy hh:mm a'
 const ActivityDetails = () => {
@@ -139,6 +140,7 @@ const ActivityDetails = () => {
           <Payment item={activityItem} address={address || ''} />
           <Burn item={activityItem} address={address || ''} />
           <HotspotTransaction item={activityItem} address={address || ''} />
+          <UnknownTransaction item={activityItem} />
           <TouchableOpacityBox
             backgroundColor={backgroundColorKey(activityItem)}
             height={63}

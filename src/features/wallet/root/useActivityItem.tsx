@@ -14,6 +14,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import animalHash from 'angry-purple-tiger'
 import Balance, { DataCredits, NetworkTokens } from '@helium/currency'
+import { startCase } from 'lodash'
 import { useColors } from '../../../theme/themeHooks'
 import { isPayer } from '../../../utils/transactions'
 import Rewards from '../../../assets/images/rewards.svg'
@@ -26,7 +27,7 @@ import Burn from '../../../assets/images/burn.svg'
 import shortLocale from '../../../utils/formatDistance'
 import { useFees } from '../../../utils/fees'
 
-const TxnTypeKeys = [
+export const TxnTypeKeys = [
   'rewards_v1',
   'payment_v1',
   'payment_v2',
@@ -58,7 +59,7 @@ const useActivityItem = (address: string) => {
   const backgroundColorKey = useCallback(
     (item: AnyTransaction | PendingTransaction) => {
       if (!TxnTypeKeys.find((k) => k === item.type)) {
-        return 'primaryBackground'
+        return 'redMain'
       }
 
       switch (item.type as TxnType) {
@@ -87,7 +88,7 @@ const useActivityItem = (address: string) => {
   const title = useCallback(
     (item: AnyTransaction | PendingTransaction) => {
       if (!TxnTypeKeys.find((k) => k === item.type)) {
-        return item.type
+        return startCase(item.type)
       }
 
       switch (item.type as TxnType) {
@@ -115,14 +116,9 @@ const useActivityItem = (address: string) => {
 
   const detailIcon = useCallback(
     (item: AnyTransaction | PendingTransaction) => {
-      if (!TxnTypeKeys.find((k) => k === item.type)) {
-        return null
-      }
       switch (item.type as TxnType) {
         case 'transfer_hotspot_v1':
           return <HotspotTransfer height={20} width={50} />
-        case 'add_gateway_v1':
-          return <HotspotAdded width={20} height={20} />
         case 'payment_v1':
         case 'payment_v2':
           return isSending(item) ? (
@@ -136,6 +132,9 @@ const useActivityItem = (address: string) => {
           return <Rewards width={26} height={26} />
         case 'token_burn_v1':
           return <Burn width={23} height={28} />
+        case 'add_gateway_v1':
+        default:
+          return <HotspotAdded width={20} height={20} />
       }
     },
     [isSending],
@@ -143,13 +142,7 @@ const useActivityItem = (address: string) => {
 
   const listIcon = useCallback(
     (item: AnyTransaction | PendingTransaction) => {
-      if (!TxnTypeKeys.find((k) => k === item.type)) {
-        return null
-      }
       switch (item.type as TxnType) {
-        case 'transfer_hotspot_v1':
-        case 'add_gateway_v1':
-          return <HotspotAdded width={20} height={20} />
         case 'payment_v1':
         case 'payment_v2':
           return isSending(item) ? (
@@ -163,6 +156,10 @@ const useActivityItem = (address: string) => {
           return <Rewards width={26} height={26} />
         case 'token_burn_v1':
           return <Burn width={23} height={28} />
+        case 'transfer_hotspot_v1':
+        case 'add_gateway_v1':
+        default:
+          return <HotspotAdded width={20} height={20} />
       }
     },
     [isSending],
@@ -242,8 +239,7 @@ const useActivityItem = (address: string) => {
         }
         return formatAmount(isFee(item), pendingTxn.txn.fee)
       }
-
-      return ''
+      return item.fee?.toString() || item.amount?.toString() || ''
     },
     [feeToHNT, isFee, isSelling],
   )
@@ -268,14 +264,7 @@ const useActivityItem = (address: string) => {
 
   const snapHeight = useCallback(
     (item: AnyTransaction | PendingTransaction) => {
-      if (!TxnTypeKeys.find((k) => k === item.type)) {
-        return 0
-      }
-
       switch (item.type as TxnType) {
-        case 'assert_location_v1':
-        case 'add_gateway_v1':
-          return 523
         case 'payment_v1':
         case 'payment_v2':
           return isSending(item) ? 509 : 480
@@ -285,6 +274,10 @@ const useActivityItem = (address: string) => {
           return 665
         case 'token_burn_v1':
           return 517
+        case 'assert_location_v1':
+        case 'add_gateway_v1':
+        default:
+          return 523
       }
     },
     [isSending],
