@@ -502,6 +502,8 @@ export default {
     added: 'Hotspot Added to Blockchain',
     location: 'Confirm Location',
     transfer: 'Hotspot Transfer',
+    transferSell: 'Transfer Hotspot (Sell)',
+    transferBuy: 'Transfer Hotspot (Buy)',
     view: 'View',
     filter: {
       all: 'All Activity',

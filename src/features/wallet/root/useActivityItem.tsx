@@ -19,6 +19,7 @@ import { isPayer } from '../../../utils/transactions'
 import Rewards from '../../../assets/images/rewards.svg'
 import SentHnt from '../../../assets/images/sentHNT.svg'
 import HotspotAdded from '../../../assets/images/hotspotAdded.svg'
+import HotspotTransfer from '../../../assets/images/hotspotTransfer.svg'
 import ReceivedHnt from '../../../assets/images/receivedHNT.svg'
 import Location from '../../../assets/images/location.svg'
 import Burn from '../../../assets/images/burn.svg'
@@ -45,6 +46,12 @@ const useActivityItem = (address: string) => {
     (item: AnyTransaction | PendingTransaction) => {
       return isPayer(address, item)
     },
+    [address],
+  )
+
+  const isSelling = useCallback(
+    (item: AnyTransaction | PendingTransaction) =>
+      (item as TransferHotspotV1).seller === address,
     [address],
   )
 
@@ -94,39 +101,68 @@ const useActivityItem = (address: string) => {
         case 'assert_location_v1':
           return t('transactions.location')
         case 'transfer_hotspot_v1':
-          return t('transactions.transfer')
+          return isSelling(item)
+            ? t('transactions.transferSell')
+            : t('transactions.transferBuy')
         case 'rewards_v1':
           return t('transactions.mining')
         case 'token_burn_v1':
           return t('transactions.burnHNT')
       }
     },
-    [isSending, t],
+    [isSending, isSelling, t],
   )
 
-  const icon = useCallback(
+  const detailIcon = useCallback(
     (item: AnyTransaction | PendingTransaction) => {
       if (!TxnTypeKeys.find((k) => k === item.type)) {
         return null
       }
-      const size = 24
       switch (item.type as TxnType) {
         case 'transfer_hotspot_v1':
+          return <HotspotTransfer height={20} width={50} />
         case 'add_gateway_v1':
-          return <HotspotAdded width={size} height={size} />
+          return <HotspotAdded width={20} height={20} />
         case 'payment_v1':
         case 'payment_v2':
           return isSending(item) ? (
-            <SentHnt width={size} height={size} />
+            <SentHnt width={35} height={24} />
           ) : (
-            <ReceivedHnt width={size} height={size} />
+            <ReceivedHnt width={35} height={24} />
           )
         case 'assert_location_v1':
-          return <Location width={size} height={size} />
+          return <Location width={20} height={23} />
         case 'rewards_v1':
-          return <Rewards width={size} height={size} />
+          return <Rewards width={26} height={26} />
         case 'token_burn_v1':
-          return <Burn width={size} height={size} />
+          return <Burn width={23} height={28} />
+      }
+    },
+    [isSending],
+  )
+
+  const listIcon = useCallback(
+    (item: AnyTransaction | PendingTransaction) => {
+      if (!TxnTypeKeys.find((k) => k === item.type)) {
+        return null
+      }
+      switch (item.type as TxnType) {
+        case 'transfer_hotspot_v1':
+        case 'add_gateway_v1':
+          return <HotspotAdded width={20} height={20} />
+        case 'payment_v1':
+        case 'payment_v2':
+          return isSending(item) ? (
+            <SentHnt width={32} height={18} />
+          ) : (
+            <ReceivedHnt width={32} height={18} />
+          )
+        case 'assert_location_v1':
+          return <Location width={20} height={23} />
+        case 'rewards_v1':
+          return <Rewards width={26} height={26} />
+        case 'token_burn_v1':
+          return <Burn width={23} height={28} />
       }
     },
     [isSending],
@@ -142,9 +178,13 @@ const useActivityItem = (address: string) => {
         return false
       }
 
+      if (item instanceof TransferHotspotV1) {
+        return (item as TransferHotspotV1).seller === address
+      }
+
       return true
     },
-    [isSending],
+    [isSending, address],
   )
 
   const formatAmount = (
@@ -170,11 +210,15 @@ const useActivityItem = (address: string) => {
 
         return formatAmount(true, feeToHNT(item.fee))
       }
-      if (
-        item instanceof AssertLocationV1 ||
-        item instanceof TransferHotspotV1 ||
-        item instanceof TokenBurnV1
-      ) {
+      if (item instanceof TransferHotspotV1) {
+        if (!item.fee) return ''
+
+        if (convertToHNT) {
+          return formatAmount(!isSelling(item), feeToHNT(item.fee))
+        }
+        return formatAmount(isFee(item), item.fee)
+      }
+      if (item instanceof AssertLocationV1 || item instanceof TokenBurnV1) {
         if (!item.fee) return ''
 
         if (convertToHNT) {
@@ -201,7 +245,7 @@ const useActivityItem = (address: string) => {
 
       return ''
     },
-    [feeToHNT, isFee],
+    [feeToHNT, isFee, isSelling],
   )
 
   const time = useCallback(
@@ -250,7 +294,8 @@ const useActivityItem = (address: string) => {
     backgroundColor,
     backgroundColorKey,
     title,
-    icon,
+    listIcon,
+    detailIcon,
     amount,
     time,
     snapHeight,

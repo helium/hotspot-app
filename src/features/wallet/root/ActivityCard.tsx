@@ -54,7 +54,7 @@ const ActivityCard = forwardRef(
     const [filter, setFilter] = useState<FilterType>('all')
     const prevFilter = usePrevious(filter)
     const { result: address } = useAsync(getSecureItem, ['address'])
-    const { backgroundColor, title, icon, amount, time } = useActivityItem(
+    const { backgroundColor, title, listIcon, amount, time } = useActivityItem(
       address || '',
     )
     const { m, n_m } = useSpacing()
@@ -119,7 +119,7 @@ const ActivityCard = forwardRef(
             isFirst={index === 0}
             isLast={!!transactionData && index === transactionData.length - 1}
             backgroundColor={backgroundColor(item)}
-            icon={icon(item)}
+            icon={listIcon(item)}
             title={title(item)}
             amount={amount(item)}
             time={time(item)}
@@ -130,7 +130,7 @@ const ActivityCard = forwardRef(
         amount,
         backgroundColor,
         handleActivityItemPressed,
-        icon,
+        listIcon,
         time,
         title,
         transactionData,

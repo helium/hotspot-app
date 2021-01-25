@@ -23,6 +23,9 @@ const PaymentItem = ({
 }: Props) => {
   const { t } = useTranslation()
 
+  const showIcon =
+    mode === 'to' || mode === 'from' || mode === 'seller' || mode === 'buyer'
+
   return (
     <Box
       height={63}
@@ -73,8 +76,8 @@ const PaymentItem = ({
           </Text>
         )}
       </Box>
-      {isMyAccount && (mode === 'to' || mode === 'from') && <MyAccount />}
-      {!isMyAccount && (mode === 'to' || mode === 'from') && <TheirAccount />}
+      {isMyAccount && showIcon && <MyAccount />}
+      {!isMyAccount && showIcon && <TheirAccount />}
     </Box>
   )
 }

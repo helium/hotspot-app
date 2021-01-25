@@ -37,7 +37,7 @@ const ActivityDetails = () => {
     backgroundColor,
     backgroundColorKey,
     title,
-    icon,
+    detailIcon,
     amount,
     time,
     snapHeight,
@@ -118,7 +118,7 @@ const ActivityDetails = () => {
         renderHeader={() => (
           <ActivityDetailsHeader
             backgroundColor={backgroundColor(activityItem)}
-            icon={icon(activityItem)}
+            icon={detailIcon(activityItem)}
             title={title(activityItem)}
             date={time(activityItem, DF)}
           />

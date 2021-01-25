@@ -4,13 +4,13 @@ import {
   PendingTransaction,
   AddGatewayV1,
   AssertLocationV1,
+  TransferHotspotV1,
 } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { LocationGeocodedAddress } from 'expo-location'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
 import PaymentItem from './PaymentItem'
-import { prettyPrint } from '../../../../utils/logger'
 import LittleHotspot from '../../../../assets/images/littleHotspot.svg'
 import { reverseGeocode } from '../../../../utils/location'
 
@@ -19,8 +19,12 @@ const HotspotTransaction = ({ item, address }: Props) => {
   const [geoInfo, setGeoInfo] = useState<LocationGeocodedAddress | undefined>()
   const addGateway = (item as unknown) as AddGatewayV1
   const assertLoc = (item as unknown) as AssertLocationV1
+  const transferHotspot = (item as unknown) as TransferHotspotV1
 
-  const type = item.type as 'assert_location_v1' | 'add_gateway_v1'
+  const type = item.type as
+    | 'assert_location_v1'
+    | 'add_gateway_v1'
+    | 'transfer_hotspot_v1'
 
   useEffect(() => {
     const geoCode = async () => {
@@ -33,22 +37,32 @@ const HotspotTransaction = ({ item, address }: Props) => {
       geoCode()
     }
   }, [assertLoc.lat, assertLoc.lng])
-  prettyPrint(item)
 
-  if (type !== 'add_gateway_v1' && type !== 'assert_location_v1') return null
+  if (
+    type !== 'add_gateway_v1' &&
+    type !== 'assert_location_v1' &&
+    type !== 'transfer_hotspot_v1'
+  )
+    return null
 
   return (
     <Box flex={1} marginTop="s" marginBottom="xxl">
-      <Text
-        variant="light"
-        fontSize={15}
-        color="blueBright"
-        alignSelf="flex-end"
+      {type !== 'transfer_hotspot_v1' && (
+        <Text
+          variant="light"
+          fontSize={15}
+          color="blueBright"
+          alignSelf="flex-end"
+        >
+          {addGateway.fee && `-${addGateway.fee.toString()}`}
+        </Text>
+      )}
+      <Box
+        flexDirection="row"
+        alignItems="center"
         marginBottom="m"
+        marginTop="m"
       >
-        {addGateway.fee && `-${addGateway.fee.toString()}`}
-      </Text>
-      <Box flexDirection="row" alignItems="center" marginBottom="m">
         <LittleHotspot />
         <Text variant="medium" fontSize={15} color="black" marginLeft="s">
           {animalName(addGateway.gateway)}
@@ -64,6 +78,7 @@ const HotspotTransaction = ({ item, address }: Props) => {
           mode="location"
         />
       )}
+
       {type === 'add_gateway_v1' && (
         <PaymentItem
           isFirst
@@ -72,6 +87,25 @@ const HotspotTransaction = ({ item, address }: Props) => {
           isMyAccount={addGateway.owner === address}
           mode="owner"
         />
+      )}
+
+      {type === 'transfer_hotspot_v1' && (
+        <>
+          <PaymentItem
+            isFirst
+            isLast
+            text={transferHotspot.seller}
+            isMyAccount={transferHotspot.seller === address}
+            mode="seller"
+          />
+          <PaymentItem
+            isFirst
+            isLast
+            text={transferHotspot.buyer}
+            isMyAccount={transferHotspot.buyer === address}
+            mode="buyer"
+          />
+        </>
       )}
     </Box>
   )
