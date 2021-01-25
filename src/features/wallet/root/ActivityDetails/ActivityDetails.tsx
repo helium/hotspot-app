@@ -81,9 +81,18 @@ const ActivityDetails = () => {
   }, [])
 
   if (!activityItem) return null
-
   return (
-    <Box flex={1}>
+    <Box
+      flex={1}
+      justifyContent="flex-end"
+      flexDirection="column"
+      position="absolute"
+      top={activityItem ? 0 : -1000}
+      left={0}
+      bottom={activityItem ? 0 : 1000}
+      right={0}
+      zIndex={1000}
+    >
       <ReAnimatedBlurBox
         style={animatedStyles}
         top={0}
