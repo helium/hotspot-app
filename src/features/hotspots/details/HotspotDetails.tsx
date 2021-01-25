@@ -11,7 +11,7 @@ import Animated, {
 import BottomSheet from 'react-native-holy-sheet/src/index'
 import { random, times } from 'lodash'
 import { useTranslation } from 'react-i18next'
-import { HotspotSumReward } from '@helium/http'
+import { HotspotRewardSum } from '@helium/http'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { HotspotStackParamList } from '../root/hotspotTypes'
@@ -93,26 +93,32 @@ const HotspotDetails = () => {
     }
   })
 
-  const [timelineIndex, setTimelineIndex] = useState(0)
-  const [totalRewards, setTotalRewards] = useState<HotspotSumReward>()
+  const [timelineIndex, setTimelineIndex] = useState(2)
+  const [totalRewards, setTotalRewards] = useState<HotspotRewardSum>()
   const [rewardChange, setRewardChange] = useState<number>()
   const [rewardChatData, setRewardChatData] = useState<ChartData[]>([])
+  const [chartPadding, setChartPadding] = useState(20)
   useEffect(() => {
     const fetchRewards = async () => {
       let numDays
+      let padding
       switch (timelineIndex) {
         default:
         case 0:
           numDays = 1
+          padding = 20
           break
         case 1:
           numDays = 7
+          padding = 10
           break
         case 2:
           numDays = 14
+          padding = 5
           break
         case 3:
           numDays = 30
+          padding = 0
           break
       }
       const rewardsSum = await getHotspotRewardsSum(hotspot.address, numDays)
@@ -132,6 +138,7 @@ const HotspotDetails = () => {
       )
       const rewardChartData = await getRewardChartData(hotspot.address, numDays)
       setRewardChatData(rewardChartData)
+      setChartPadding(padding)
     }
     fetchRewards()
   }, [hotspot.address, timelineIndex])
@@ -223,7 +230,10 @@ const HotspotDetails = () => {
                 })}
               </Text>
             </Box>
-            <TimelinePicker onTimelineChanged={onTimelineChanged} />
+            <TimelinePicker
+              index={timelineIndex}
+              onTimelineChanged={onTimelineChanged}
+            />
             <HotspotDetailChart
               title={t('hotspot_details.reward_title')}
               number={totalRewards?.total
@@ -233,6 +243,7 @@ const HotspotDetails = () => {
               change={rewardChange}
               color={greenOnline}
               data={rewardChatData}
+              paddingTop={chartPadding}
             />
             <HotspotDetailChart
               title={t('hotspot_details.witness_title')}

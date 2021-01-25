@@ -1,4 +1,4 @@
-import { Hotspot, HotspotSumReward } from '@helium/http'
+import { Hotspot, HotspotRewardSum } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import React from 'react'
 import Carousel from 'react-native-snap-carousel'
@@ -15,7 +15,7 @@ import TouchableOpacityBox from './TouchableOpacityBox'
 
 type HotspotsCarouselProps = {
   hotspots: Hotspot[]
-  rewards: Record<string, HotspotSumReward>
+  rewards: Record<string, HotspotRewardSum>
   onHotspotFocused: (hotspot: Hotspot) => void
 }
 

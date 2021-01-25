@@ -13,6 +13,7 @@ type Props = {
   percentage?: number
   data: ChartData[]
   color: string
+  paddingTop?: number
 }
 const HotspotDetailChart = ({
   title,
@@ -21,9 +22,10 @@ const HotspotDetailChart = ({
   percentage,
   data,
   color,
+  paddingTop,
 }: Props) => {
   const { t } = useTranslation()
-  const { redMedium, black } = useColors()
+  const { redMedium, black, grayLight } = useColors()
   const [focusedData, setFocusedData] = useState<ChartData | null>()
   const onFocus = (chartData: ChartData | null) => {
     setFocusedData(chartData)
@@ -74,10 +76,12 @@ const HotspotDetailChart = ({
         <Box paddingStart="l" width="65%">
           <ChartContainer
             height={75}
+            paddingTop={paddingTop}
             data={data}
             onFocus={onFocus}
             showXAxisLabel={false}
             upColor={color}
+            downColor={grayLight}
             labelColor={black}
           />
           <Text variant="body3" color="black">

@@ -39,7 +39,7 @@ export const getRewardChartData = async (address: string, numDays: number) => {
       }
       chartData.push({
         up: parseFloat(amount.toFixed(2)),
-        down: 0,
+        down: 0.01,
         day: date.toLocaleTimeString(),
         id: `reward-${numDays}-${date}`,
       })

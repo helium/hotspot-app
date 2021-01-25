@@ -11,6 +11,7 @@ type Props = {
   upColor?: string
   downColor?: string
   labelColor?: string
+  paddingTop?: number
 }
 
 const ChartContainer = ({
@@ -21,6 +22,7 @@ const ChartContainer = ({
   upColor,
   downColor,
   labelColor,
+  paddingTop,
 }: Props) => {
   const [width, setWidth] = useState(0)
 
@@ -31,7 +33,7 @@ const ChartContainer = ({
   }
 
   return (
-    <View onLayout={handleLayout} style={{ height }}>
+    <View onLayout={handleLayout} style={{ height, paddingTop }}>
       {width > 0 && (
         <Chart
           width={width}

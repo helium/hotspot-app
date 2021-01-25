@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Hotspot, HotspotSumReward } from '@helium/http'
+import { Hotspot, HotspotRewardSum } from '@helium/http'
 import BottomSheet from 'react-native-holy-sheet/src/index'
 import Animated, {
   Extrapolate,
@@ -63,7 +63,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
   useEffect(() => {
     const fetchRewards = async () => {
       let total = new Balance(0, CurrencyType.networkToken)
-      const rewards: Record<string, HotspotSumReward> = {}
+      const rewards: Record<string, HotspotRewardSum> = {}
       const results = await Promise.all(
         ownedHotspots.map((hotspot) =>
           getHotspotRewardsSum(hotspot.address, 1),
