@@ -31,8 +31,8 @@ export const getRewardChartData = async (address: string, numDays: number) => {
     )
     const start = new Date(now)
     start.setHours(now.getHours() - 24)
-    for (let i = start; i <= now; i.setHours(i.getHours() + 1)) {
-      const hourData = grouped[i.toString()]
+    for (let date = start; date <= now; date.setHours(date.getHours() + 1)) {
+      const hourData = grouped[date.toString()]
       let amount = 0
       if (hourData) {
         amount = sumBy(hourData, (o) => o.amount.floatBalance)
@@ -40,8 +40,8 @@ export const getRewardChartData = async (address: string, numDays: number) => {
       chartData.push({
         up: parseFloat(amount.toFixed(2)),
         down: 0,
-        day: i.toLocaleTimeString(),
-        id: `reward-${numDays}-${i}`,
+        day: date.toLocaleTimeString(),
+        id: `reward-${numDays}-${date}`,
       })
     }
     return chartData
@@ -60,9 +60,9 @@ export const getRewardChartData = async (address: string, numDays: number) => {
     new Date().getDate(),
   )
   const start = new Date(now)
-  start.setDate(now.getDate() - (numDays - 1))
-  for (let i = start; i <= now; i.setDate(i.getDate() + 1)) {
-    const dayData = grouped[i.toString()]
+  start.setDate(now.getDate() - numDays)
+  for (let date = start; date <= now; date.setDate(date.getDate() + 1)) {
+    const dayData = grouped[date.toString()]
     let amount = 0
     if (dayData) {
       amount = sumBy(dayData, (o) => o.amount.floatBalance)
@@ -70,8 +70,8 @@ export const getRewardChartData = async (address: string, numDays: number) => {
     chartData.push({
       up: parseFloat(amount.toFixed(2)),
       down: 0,
-      day: i.toDateString(),
-      id: `reward-${numDays}-${i}`,
+      day: date.toDateString(),
+      id: `reward-${numDays}-${date}`,
     })
   }
   return chartData
