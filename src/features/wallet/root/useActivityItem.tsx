@@ -233,7 +233,7 @@ const useActivityItem = (address: string) => {
         case 'rewards_v1':
           return 665
         case 'token_burn_v1':
-          return 300
+          return 517
       }
     },
     [isSending],

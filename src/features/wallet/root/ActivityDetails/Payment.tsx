@@ -44,7 +44,7 @@ const Payment = ({ item, address }: Props) => {
 
       <PaymentItem
         address={v1.payer}
-        isPayer
+        mode="payer"
         isMyAccount={v1.payer === address}
       />
       {payments.map((p, index) => (
@@ -53,7 +53,7 @@ const Payment = ({ item, address }: Props) => {
           key={index}
           address={p.payee}
           isMyAccount={p.payee === address}
-          isPayer={false}
+          mode="payee"
           isFirst={false}
           isLast={index === payments.length - 1}
         />

@@ -9,17 +9,28 @@ type Props = {
   address: string
   isFirst?: boolean
   isLast?: boolean
-  isPayer: boolean
+  mode: 'payer' | 'payee' | 'memo'
   isMyAccount: boolean
 }
 const PaymentItem = ({
   address,
   isFirst = true,
   isLast = false,
-  isPayer,
+  mode,
   isMyAccount,
 }: Props) => {
   const { t } = useTranslation()
+
+  const titleKey = (() => {
+    switch (mode) {
+      case 'memo':
+        return 'memo'
+      case 'payer':
+        return 'from'
+      case 'payee':
+        return 'to'
+    }
+  })()
 
   return (
     <Box
@@ -42,7 +53,7 @@ const PaymentItem = ({
         flex={1}
         alignSelf="flex-start"
       >
-        {t(`activity_details.${isPayer ? 'from' : 'to'}`)}
+        {t(`activity_details.${titleKey}`)}
       </Text>
       <Box
         alignItems="flex-end"
@@ -65,8 +76,8 @@ const PaymentItem = ({
           </Text>
         )}
       </Box>
-      {isMyAccount && <MyAccount />}
-      {!isMyAccount && <TheirAccount />}
+      {isMyAccount && mode !== 'memo' && <MyAccount />}
+      {!isMyAccount && mode !== 'memo' && <TheirAccount />}
     </Box>
   )
 }

@@ -599,6 +599,7 @@ export default {
     reward: 'Reward',
     from: 'From',
     to: 'To',
+    memo: 'Memo',
     my_account: 'My Account',
     view_block: 'View Block',
     rewardTypes: {

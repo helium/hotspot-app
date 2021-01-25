@@ -18,6 +18,7 @@ import ActivityDetailsHeader from './ActivityDetailsHeader'
 import useActivityItem from '../useActivityItem'
 import Rewards from './Rewards'
 import Payment from './Payment'
+import Burn from './Burn'
 import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
 import LinkImg from '../../../../assets/images/link.svg'
 import { useWalletContext } from './WalletProvider'
@@ -109,7 +110,7 @@ const ActivityDetails = () => {
         ref={sheet}
         snapPoints={snapPoints}
         initialSnapIndex={0}
-        onClose={() => {
+        onCloseStart={() => {
           animateTransition()
           onClose()
         }}
@@ -133,6 +134,7 @@ const ActivityDetails = () => {
           </Text>
           <Rewards item={activityItem} />
           <Payment item={activityItem} address={address || ''} />
+          <Burn item={activityItem} address={address || ''} />
           <TouchableOpacityBox
             backgroundColor={backgroundColorKey(activityItem)}
             height={63}
