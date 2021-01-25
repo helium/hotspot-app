@@ -24,11 +24,11 @@ const imagesByHotspotName: Record<string, any> = {
 const HotspotPairingList = ({
   hotspots,
   onPress,
-  disabled,
+  disabled = false,
 }: {
   hotspots: Device[]
   onPress: (hotspot: Device) => any
-  disabled: boolean
+  disabled?: boolean
 }) => {
   const spacing = useSpacing()
   return (

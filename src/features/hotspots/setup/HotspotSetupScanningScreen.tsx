@@ -1,6 +1,5 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Animated, Easing } from 'react-native'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
@@ -11,35 +10,22 @@ import {
   HotspotSetupStackParamList,
 } from './hotspotSetupTypes'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
+import RadarLoader from '../../../components/Loaders/RadarLoader'
 
-type Route = RouteProp<HotspotSetupStackParamList, 'HotspotScanningScreen'>
+type Route = RouteProp<HotspotSetupStackParamList, 'HotspotSetupScanningScreen'>
 
 const SCAN_DURATION = 4000
-const HotspotScanningScreen = () => {
-  const rotateAnim = useRef(new Animated.Value(0))
+const HotspotSetupScanningScreen = () => {
   const { t } = useTranslation()
   const { scanForHotspots } = useConnectedHotspotContext()
 
   const { params } = useRoute<Route>()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
 
-  const anim = () =>
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(rotateAnim.current, {
-          toValue: -2,
-          duration: SCAN_DURATION,
-          useNativeDriver: true,
-          easing: Easing.linear,
-        }),
-      ]),
-    ).start()
-
   useEffect(() => {
     const scan = async () => {
-      anim()
       await scanForHotspots(SCAN_DURATION)
-      navigation.replace('HotspotSetupBluetoothScreen', params)
+      navigation.replace('HotspotSetupPickHotspotScreen', params)
     }
     scan()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -53,19 +39,8 @@ const HotspotScanningScreen = () => {
     >
       <Box flex={1} />
 
-      <Animated.Image
-        source={require('../../../assets/images/loading.png')}
-        style={{
-          transform: [
-            {
-              rotate: rotateAnim.current.interpolate({
-                inputRange: [0, 1],
-                outputRange: ['0deg', '360deg'],
-              }),
-            },
-          ],
-        }}
-      />
+      <RadarLoader duration={2000} />
+
       <Text
         marginTop="xl"
         variant="body2Light"
@@ -88,4 +63,4 @@ const HotspotScanningScreen = () => {
   )
 }
 
-export default HotspotScanningScreen
+export default HotspotSetupScanningScreen

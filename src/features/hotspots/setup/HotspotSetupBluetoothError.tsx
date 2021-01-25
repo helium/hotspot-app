@@ -8,10 +8,11 @@ import {
   HotspotSetupNavigationProp,
   HotspotSetupStackParamList,
 } from './hotspotSetupTypes'
+import Bluetooth from '../../../assets/images/bluetooth.svg'
 
 type Route = RouteProp<
   HotspotSetupStackParamList,
-  'HotspotSetupBluetoothScreen'
+  'HotspotSetupPickHotspotScreen'
 >
 const HotspotSetupBluetoothError = () => {
   const { t } = useTranslation()
@@ -19,22 +20,59 @@ const HotspotSetupBluetoothError = () => {
   const navigation = useNavigation<HotspotSetupNavigationProp>()
   return (
     <Box flex={1}>
-      <Text
-        margin="m"
-        variant="h1"
-        textAlign="center"
-        numberOfLines={1}
-        adjustsFontSizeToFit
-      >
-        {t('hotspot_setup.ble_error.title')}
-      </Text>
-      <Text variant="body2Light" textAlign="center">
-        {t('hotspot_setup.ble_error.subtitle')}
-      </Text>
+      <Box flex={1}>
+        <Box marginBottom="l">
+          <Bluetooth />
+        </Box>
+        <Text
+          variant="h1"
+          numberOfLines={2}
+          adjustsFontSizeToFit
+          marginBottom="xxl"
+        >
+          {t('hotspot_setup.ble_error.title')} :(
+        </Text>
 
-      <Box flex={1} justifyContent="flex-end">
+        <Box flexDirection="row">
+          <Box
+            flex={3}
+            backgroundColor="purple200"
+            borderTopLeftRadius="m"
+            borderBottomLeftRadius="m"
+            padding="m"
+          >
+            <Text variant="body2Medium" marginBottom="xs">
+              {t('hotspot_setup.ble_error.enablePairing')}
+            </Text>
+            <Text variant="body2Light">
+              {t('hotspot_setup.ble_error.pairingInstructions')}
+            </Text>
+          </Box>
+          <Box
+            flex={1}
+            backgroundColor="purple300"
+            borderTopRightRadius="m"
+            borderBottomRightRadius="m"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Box
+              width={28}
+              height={28}
+              borderRadius="round"
+              backgroundColor="purpleMain"
+              shadowColor="purpleMain"
+              shadowOpacity={1}
+              shadowOffset={{ width: 0, height: 0 }}
+              shadowRadius={8}
+            />
+          </Box>
+        </Box>
+      </Box>
+
+      <Box justifyContent="flex-end">
         <Button
-          onPress={() => navigation.replace('HotspotScanningScreen', params)}
+          onPress={() => navigation.replace('HotspotSetupScanningScreen', params)}
           mode="contained"
           variant="primary"
           title={t('generic.scan_again')}

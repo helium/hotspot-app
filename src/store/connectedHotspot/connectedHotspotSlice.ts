@@ -18,7 +18,7 @@ export type HotspotDetails = {
   wifi?: string
   type?: HotspotType
   name?: HotspotName
-  freeAddHotspot?: boolean
+  validOnboarding?: boolean
   onboardingAddress?: string
   firmware?: {
     version: string

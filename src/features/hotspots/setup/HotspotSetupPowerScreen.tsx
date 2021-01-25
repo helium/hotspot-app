@@ -71,7 +71,7 @@ const HotspotSetupPowerScreen = () => {
         mode="contained"
         title={t('hotspot_setup.power.next')}
         onPress={() =>
-          navigation.push('HotspotSetupPairingScreen', { hotspotType })
+          navigation.push('HotspotSetupBluetoothInfoScreen', { hotspotType })
         }
       />
     </BackScreen>

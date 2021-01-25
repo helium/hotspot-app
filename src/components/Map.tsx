@@ -11,7 +11,7 @@ import { RootState } from '../store/rootReducer'
 import { useAppDispatch } from '../store/store'
 import { getLocation } from '../store/user/appSlice'
 
-const styleURL = 'mapbox://styles/petermain/cjsdsbmjb1h7c1grzv4clr7y7'
+const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
 
 type Props = {
   onMapMoved?: (coords?: Position) => void
@@ -26,6 +26,7 @@ type Props = {
   offsetMapCenter?: boolean
   maxZoomLevel?: number
   minZoomLevel?: number
+  interactive?: boolean
 }
 const Map = ({
   onMapMoved,
@@ -40,6 +41,7 @@ const Map = ({
   offsetMapCenter,
   maxZoomLevel = 16,
   minZoomLevel = 0,
+  interactive = true,
 }: Props) => {
   const map = useRef<MapboxGL.MapView>(null)
   const camera = useRef<MapboxGL.Camera>(null)
@@ -126,6 +128,8 @@ const Map = ({
         logoEnabled={false}
         rotateEnabled={false}
         pitchEnabled={false}
+        scrollEnabled={interactive}
+        zoomEnabled={interactive}
         compassEnabled={false}
       >
         <MapboxGL.Camera

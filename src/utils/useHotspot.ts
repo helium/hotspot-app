@@ -38,13 +38,13 @@ import * as Logger from './logger'
 
 type HotspotStaking = {
   batch: string
-  helium_serial: string
+  heliumSerial: string
   id: number
-  mac_eth0: string
-  mac_wlan0: string
-  onboarding_address: string
-  public_address: string
-  rpi_serial: string
+  macEth0: string
+  macWlan0: string
+  onboardingAddress: string
+  publicAddress: string
+  rpiSerial: string
 }
 
 const useHotspot = () => {
@@ -166,8 +166,9 @@ const useHotspot = () => {
       )
     }
 
-    const stakingAddress = `hotspots/${onboardingAddress}`
-    const feesStatus = (await getStaking(stakingAddress)) as HotspotStaking
+    const onboardingRecord = (await getStaking(
+      `hotspots/${onboardingAddress}`,
+    )) as HotspotStaking
 
     const details = {
       address,
@@ -176,7 +177,7 @@ const useHotspot = () => {
       name,
       wifi,
       ethernetOnline,
-      freeAddHotspot: !!feesStatus,
+      validOnboarding: !!onboardingRecord,
       onboardingAddress,
     }
     dispatch(connectedHotspotSlice.actions.initConnectedHotspot(details))
@@ -262,8 +263,8 @@ const useHotspot = () => {
     })
   }
 
-  const checkFirmwareCurrent = async () => {
-    if (!connectedHotspot.current) return
+  const checkFirmwareCurrent = async (): Promise<boolean> => {
+    if (!connectedHotspot.current) return false
 
     const characteristic = FirmwareCharacteristic.FIRMWAREVERSION_UUID
     const charVal = await findAndReadCharacteristic(
@@ -271,12 +272,14 @@ const useHotspot = () => {
       connectedHotspot.current,
       Service.FIRMWARESERVICE_UUID,
     )
-    if (!charVal) return
+    if (!charVal) return false
 
     const deviceFirmwareVersion = parseChar(charVal, characteristic)
 
     const firmware: { version: string } = await getStaking('firmware')
     const { version: minVersion } = firmware
+    console.log('version', deviceFirmwareVersion)
+    console.log('min version', minVersion)
 
     dispatch(
       connectedHotspotSlice.actions.setConnectedHotspotFirmware({

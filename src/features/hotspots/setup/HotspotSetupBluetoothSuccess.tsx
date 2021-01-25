@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native'
-import React, { useState } from 'react'
+import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Device } from 'react-native-ble-plx'
 import Box from '../../../components/Box'
@@ -11,12 +11,8 @@ import Bluetooth from '../../../assets/images/bluetooth.svg'
 
 const HotspotSetupBluetoothSuccess = () => {
   const { t } = useTranslation()
-  const [connecting, setConnecting] = useState(false)
   const navigation = useNavigation<HotspotSetupNavigationProp>()
-  const {
-    availableHotspots,
-    connectAndConfigHotspot,
-  } = useConnectedHotspotContext()
+  const { availableHotspots } = useConnectedHotspotContext()
 
   // console.log('availableHotspots', availableHotspots)
   // const availableHotspots = {
@@ -43,10 +39,7 @@ const HotspotSetupBluetoothSuccess = () => {
   // }
 
   const handleConnect = async (hotspot: Device) => {
-    setConnecting(true)
-    await connectAndConfigHotspot(hotspot)
-    setConnecting(false)
-    navigation.push('HotspotSetupScanWifiScreen')
+    navigation.push('HotspotSetupConnectingScreen', { hotspotId: hotspot.id })
   }
 
   return (
@@ -73,7 +66,6 @@ const HotspotSetupBluetoothSuccess = () => {
         <HotspotPairingList
           hotspots={Object.values(availableHotspots)}
           onPress={handleConnect}
-          disabled={connecting}
         />
       </Box>
     </Box>

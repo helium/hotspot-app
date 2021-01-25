@@ -1,12 +1,11 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
-import { Animated, Easing } from 'react-native'
 import SafeAreaBox from '../../../components/SafeAreaBox'
-import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import { OnboardingNavigationProp } from '../onboardingTypes'
 import { createKeypair } from '../../../utils/secureAccount'
+import RingLoader from '../../../components/Loaders/RingLoader'
 
 const DURATION = 4000
 const IMAGE_SIZE = 212
@@ -14,20 +13,6 @@ const IMAGE_SIZE = 212
 const AccountPassphraseGenerationScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<OnboardingNavigationProp>()
-
-  const rotateAnim = useRef(new Animated.Value(0))
-
-  const anim = () =>
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(rotateAnim.current, {
-          toValue: 2,
-          duration: DURATION,
-          useNativeDriver: true,
-          easing: Easing.linear,
-        }),
-      ]),
-    ).start()
 
   useEffect(() => {
     const genKeypair = async () => {
@@ -40,7 +25,6 @@ const AccountPassphraseGenerationScreen = () => {
     )
 
     genKeypair()
-    anim()
     return () => {
       clearTimeout(timer)
     }
@@ -55,39 +39,7 @@ const AccountPassphraseGenerationScreen = () => {
       alignItems="center"
       justifyContent="center"
     >
-      <Box>
-        <Animated.Image
-          source={require('../../../assets/images/generateLoader.png')}
-          style={{
-            position: 'absolute',
-            height: IMAGE_SIZE,
-            width: IMAGE_SIZE,
-            transform: [
-              {
-                rotate: rotateAnim.current.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: ['0deg', '-360deg'],
-                }),
-              },
-            ],
-          }}
-        />
-        <Animated.Image
-          source={require('../../../assets/images/generateLoaderInner.png')}
-          style={{
-            height: IMAGE_SIZE,
-            width: IMAGE_SIZE,
-            transform: [
-              {
-                rotate: rotateAnim.current.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: ['0deg', '360deg'],
-                }),
-              },
-            ],
-          }}
-        />
-      </Box>
+      <RingLoader color="purple" size={IMAGE_SIZE} />
       <Text textAlign="center" variant="body2Light" marginTop="xl">
         {t('account_setup.generating')}
       </Text>

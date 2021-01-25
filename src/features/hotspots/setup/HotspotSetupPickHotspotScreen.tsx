@@ -4,7 +4,7 @@ import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotP
 import HotspotSetupBluetoothError from './HotspotSetupBluetoothError'
 import HotspotSetupBluetoothSuccess from './HotspotSetupBluetoothSuccess'
 
-const HotspotSetupBluetoothScreen = () => {
+const HotspotSetupPickHotspotScreen = () => {
   const { availableHotspots } = useConnectedHotspotContext()
   // const availableHotspots = {
   //   '31D15CD5': {
@@ -31,4 +31,4 @@ const HotspotSetupBluetoothScreen = () => {
   )
 }
 
-export default HotspotSetupBluetoothScreen
+export default HotspotSetupPickHotspotScreen

@@ -1,8 +1,10 @@
-import Config from 'react-native-config'
+// import Config from 'react-native-config'
 
 const makeRequest = async (url: string, opts: RequestInit = {}) => {
   try {
-    const route = [Config.STAKING_API_BASE_URL, url].join('/')
+    // const route = [Config.STAKING_API_BASE_URL, url].join('/')
+    const route = ['https://onboarding.dewi.org/api/v2', url].join('/')
+    console.log('GET', route)
 
     const response = await fetch(route, {
       ...opts,
@@ -10,7 +12,6 @@ const makeRequest = async (url: string, opts: RequestInit = {}) => {
         ...opts.headers,
         'Cache-Control': 'no-cache',
         'Content-Type': 'application/json',
-        Authorization: `Basic ${Config.STAKING_TOKEN}`,
       },
     })
     const text = await response.text()

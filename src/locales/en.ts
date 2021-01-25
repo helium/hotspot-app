@@ -219,19 +219,15 @@ export default {
     },
     ble_error: {
       title: 'No Hotspots Found',
-      subtitle: "We're not having much luck finding any Hotspots nearby.",
-      tips: [
-        'Are you <green>within a few feet</green> of your Hotspot?',
-        "Is your phone's <blue>Bluetooth turned on</blue>?",
-        'Did you <purple>push the pairing button</purple>?',
-        'It can take <purple>up to a minute</purple> to find the RAK Hotspot Miner.',
-      ],
+      enablePairing: 'Enable Pairing Mode',
+      pairingInstructions:
+        'Refer to manufacturer instructions to enable Bluetooth',
     },
     wifi_scan: {
-      title: 'Set Up Wi-Fi',
+      title: 'Wi-Fi',
       settings_title: 'Wi-Fi Settings',
       subtitle:
-        'Your Hotspot has found Wi-Fi network nearby. Select yours so we can get the Hotspot online.',
+        'Select the Wi-Fi network you’d like your Hotspot to connect to.',
       ethernet: 'Use Ethernet Instead',
       connection_failed: 'Connection failed, please try again',
       disconnect_failed: 'Disconnect failed, please try again',
@@ -251,12 +247,13 @@ export default {
       body: 'The Hotspot will no longer automatically connect to {{wifiName}}.',
     },
     wifi_password: {
-      join_title: 'Join Wi-Fi',
+      join_title: 'Enter Password',
       update_title: 'Update Wi-Fi',
       message:
         'The Hotspot is currently connected to this network. Changing the password can cause the Hotspot to go offline.',
       error_title: 'Invalid Password',
-      subtitle: "What's your Wi-Fi password?",
+      subtitle:
+        'Enter your Wi-Fi’s credentials to connect your Hotspot to this Network.',
       placeholder: 'Password',
       show_password: 'Show Password',
       hide_password: 'Hide Password',
@@ -275,19 +272,13 @@ export default {
       next: 'My Hotspot is Connected',
     },
     firmware_update: {
-      title: 'Firmware Update Required',
-      subtitle: 'This Hotspot needs a firmware update before it can continue',
-      current_version: 'Current Version: {{version}}',
-      required_version: 'Required Version: {{minVersion}}',
+      title: 'Update Available',
+      subtitle: 'Your Hotspot needs a firmware update before you can continue.',
+      current_version: 'Current Version',
+      required_version: 'Required Version',
       explanation:
-        'This Hotspot will check for updates automatically. This can take about 10 minutes. Leave it plugged in and check back later.',
+        'Your Hotspot will check for updates automatically. This can take about 10 minutes. Leave it plugged in and check back later.',
       next: 'Got it',
-    },
-    genesis: {
-      title: 'Helium Hotspot',
-      subtitle: 'Zero On-Boarding Fees',
-      p:
-        'As a creator of the Helium Network, your first time adding the Hotspot and setting its location will have <b>zero fees</b>.',
     },
     add_hotspot: {
       title: 'Add Hotspot',
@@ -311,43 +302,38 @@ export default {
         'Hotspot miner is waiting to start. Please try again in a few minutes.',
     },
     enable_location: {
-      title: 'Confirm Location',
-      subtitle: 'Enable Location Services',
-      p_1:
-        "Your phone can be used to help find your Hotspot's location. An accurate location means more Proof-of-Coverage Challenges.",
-      p_2: 'Location Services Permissions can be updated in app settings.',
+      title: 'Set Hotspot\nLocation',
+      subtitle:
+        'We need to set a location for your Hotspot. We can use your phone to do this.',
+      p_1: 'First, we’ll ask for permission to access your phone’s location.',
       settings_p_1:
         "In order to update your Hotspot's location, we'll need additional location permissions.",
       settings_p_2:
         "Tap the button below to be taken to Settings. Under 'Location' tap 'While using the App'.",
-      next: 'Enable Location Services',
+      next: 'Ask for Permissions',
       cancel: "No thanks, I'll set it up later",
     },
     location_fee: {
-      title: 'Confirm Location',
-      subtitle: 'The fee to confirm your location is:',
+      title: 'Location Fee',
+      subtitle_free: 'Your Location Fee ($10) has been prepaid.',
+      subtitle_fee:
+        'You need to pay a $10 Location Fee (in DC) to confirm this location.',
+      confirm_location:
+        'Confirm the location selected is correct and register your Hotspot.',
       pending_p_1:
         'Your Hotspot has a Confirm Location transaction pending in the blockchain.',
       pending_p_2:
         "If you'd like to change the Hotspot's location, wait for the previous transaction to complete before updating its location.",
-      free_title: 'FREE',
-      free_text:
-        "The first time you confirm a Hotspot's location is free of any charges.",
-      free_subtext:
-        'However, changing the location of a Hotspot more than 300 meters will incur a small fee next time.',
       no_funds:
         'There is insufficient HNT in your account balance. Unable to confirm location.',
       calculating_text: 'Calculating HNT Amount',
       error_title: 'Error',
       error_body: 'There was an error loading fee data. Please try again.',
+      next: 'Register Hotspot',
     },
     location: {
-      title: 'Where are you?',
-      update_title: 'Update Location',
-      subtitle:
-        "Fine-tune your Hotspot's location by pinching and dragging the pin.",
-      finding: 'Please wait while we acquire GPS',
-      next: 'Confirm Hotspot Location',
+      title: 'Hotspot Location',
+      next: 'Set Location',
     },
     progress: {
       title: 'REGISTERING HOTSPOT',
