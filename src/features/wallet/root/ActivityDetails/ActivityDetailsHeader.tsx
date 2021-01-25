@@ -29,7 +29,12 @@ const ActivityDetailsHeader = ({
       </Box>
       <Box justifyContent="space-between" flex={1}>
         {icon}
-        <Text variant="medium" fontSize={28}>
+        <Text
+          variant="medium"
+          fontSize={28}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
           {title}
         </Text>
         <Text variant="light" fontSize={15} paddingBottom="ms">

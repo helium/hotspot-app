@@ -6,31 +6,22 @@ import MyAccount from '../../../../assets/images/myAccount.svg'
 import TheirAccount from '../../../../assets/images/theirAccount.svg'
 
 type Props = {
-  address: string
+  text: string
+  subText?: string | null
   isFirst?: boolean
   isLast?: boolean
-  mode: 'payer' | 'payee' | 'memo'
-  isMyAccount: boolean
+  mode: 'to' | 'from' | 'memo' | 'location' | 'seller' | 'owner' | 'buyer'
+  isMyAccount?: boolean
 }
 const PaymentItem = ({
-  address,
+  text,
+  subText,
   isFirst = true,
   isLast = false,
   mode,
   isMyAccount,
 }: Props) => {
   const { t } = useTranslation()
-
-  const titleKey = (() => {
-    switch (mode) {
-      case 'memo':
-        return 'memo'
-      case 'payer':
-        return 'from'
-      case 'payee':
-        return 'to'
-    }
-  })()
 
   return (
     <Box
@@ -53,7 +44,7 @@ const PaymentItem = ({
         flex={1}
         alignSelf="flex-start"
       >
-        {t(`activity_details.${titleKey}`)}
+        {t(`activity_details.${mode}`)}
       </Text>
       <Box
         alignItems="flex-end"
@@ -68,16 +59,22 @@ const PaymentItem = ({
           numberOfLines={1}
           ellipsizeMode="middle"
         >
-          {address}
+          {text}
         </Text>
-        {isMyAccount && (
-          <Text variant="light" fontSize={12} color="black" marginLeft="s">
-            {t('activity_details.my_account')}
+        {(isMyAccount || subText) && (
+          <Text
+            variant="light"
+            fontSize={12}
+            color="black"
+            marginLeft="s"
+            marginTop="xs"
+          >
+            {subText || t('activity_details.my_account')}
           </Text>
         )}
       </Box>
-      {isMyAccount && mode !== 'memo' && <MyAccount />}
-      {!isMyAccount && mode !== 'memo' && <TheirAccount />}
+      {isMyAccount && (mode === 'to' || mode === 'from') && <MyAccount />}
+      {!isMyAccount && (mode === 'to' || mode === 'from') && <TheirAccount />}
     </Box>
   )
 }

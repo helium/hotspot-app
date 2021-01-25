@@ -43,17 +43,17 @@ const Payment = ({ item, address }: Props) => {
       )}
 
       <PaymentItem
-        address={v1.payer}
-        mode="payer"
+        text={v1.payer}
+        mode="from"
         isMyAccount={v1.payer === address}
       />
       {payments.map((p, index) => (
         <PaymentItem
           // eslint-disable-next-line react/no-array-index-key
           key={index}
-          address={p.payee}
+          text={p.payee}
           isMyAccount={p.payee === address}
-          mode="payee"
+          mode="to"
           isFirst={false}
           isLast={index === payments.length - 1}
         />

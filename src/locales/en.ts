@@ -500,7 +500,7 @@ export default {
     burnHNT: 'Burn HNT',
     received: 'Received HNT',
     added: 'Hotspot Added to Blockchain',
-    location: 'Location Confirmed',
+    location: 'Confirm Location',
     transfer: 'Hotspot Transfer',
     view: 'View',
     filter: {
@@ -600,6 +600,10 @@ export default {
     from: 'From',
     to: 'To',
     memo: 'Memo',
+    location: 'Location',
+    seller: 'Seller',
+    buyer: 'Buyer',
+    owner: 'Owner',
     my_account: 'My Account',
     view_block: 'View Block',
     rewardTypes: {

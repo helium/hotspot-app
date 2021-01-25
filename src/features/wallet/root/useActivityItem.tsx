@@ -23,6 +23,7 @@ import ReceivedHnt from '../../../assets/images/receivedHNT.svg'
 import Location from '../../../assets/images/location.svg'
 import Burn from '../../../assets/images/burn.svg'
 import shortLocale from '../../../utils/formatDistance'
+import { useFees } from '../../../utils/fees'
 
 const TxnTypeKeys = [
   'rewards_v1',
@@ -38,6 +39,7 @@ type TxnType = typeof TxnTypeKeys[number]
 const useActivityItem = (address: string) => {
   const colors = useColors()
   const { t } = useTranslation()
+  const { feeToHNT } = useFees()
 
   const isSending = useCallback(
     (item: AnyTransaction | PendingTransaction) => {
@@ -162,9 +164,11 @@ const useActivityItem = (address: string) => {
   }
 
   const amount = useCallback(
-    (item: AnyTransaction | PendingTransaction) => {
+    (item: AnyTransaction | PendingTransaction, convertToHNT = false) => {
       if (item instanceof AddGatewayV1) {
-        return animalHash(item.gateway)
+        if (!convertToHNT) return animalHash(item.gateway)
+
+        return formatAmount(true, feeToHNT(item.fee))
       }
       if (
         item instanceof AssertLocationV1 ||
@@ -172,6 +176,10 @@ const useActivityItem = (address: string) => {
         item instanceof TokenBurnV1
       ) {
         if (!item.fee) return ''
+
+        if (convertToHNT) {
+          return formatAmount(true, feeToHNT(item.fee))
+        }
         return formatAmount(isFee(item), item.fee)
       }
       if (item instanceof RewardsV1) {
@@ -193,7 +201,7 @@ const useActivityItem = (address: string) => {
 
       return ''
     },
-    [isFee],
+    [feeToHNT, isFee],
   )
 
   const time = useCallback(
@@ -221,15 +229,14 @@ const useActivityItem = (address: string) => {
       }
 
       switch (item.type as TxnType) {
+        case 'assert_location_v1':
         case 'add_gateway_v1':
-          return 300
+          return 523
         case 'payment_v1':
         case 'payment_v2':
           return isSending(item) ? 509 : 480
-        case 'assert_location_v1':
-          return 300
         case 'transfer_hotspot_v1':
-          return 300
+          return 566
         case 'rewards_v1':
           return 665
         case 'token_burn_v1':

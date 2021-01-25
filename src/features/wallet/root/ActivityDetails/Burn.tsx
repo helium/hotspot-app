@@ -25,12 +25,12 @@ const Burn = ({ item, address }: Props) => {
       </Text>
 
       <PaymentItem
-        address={v1.payee}
-        mode="payee"
+        text={v1.payee}
+        mode="to"
         isMyAccount={v1.payee === address}
       />
       <PaymentItem
-        address={v1.memo}
+        text={v1.memo}
         isMyAccount={v1.payee === address}
         mode="memo"
         isFirst={false}

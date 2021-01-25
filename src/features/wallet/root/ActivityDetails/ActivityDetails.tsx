@@ -17,6 +17,7 @@ import Text from '../../../../components/Text'
 import ActivityDetailsHeader from './ActivityDetailsHeader'
 import useActivityItem from '../useActivityItem'
 import Rewards from './Rewards'
+import HotspotTransaction from './HotspotTransaction'
 import Payment from './Payment'
 import Burn from './Burn'
 import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
@@ -127,14 +128,17 @@ const ActivityDetails = () => {
           <Text
             variant="medium"
             fontSize={32}
+            numberOfLines={1}
+            adjustsFontSizeToFit
             color={isFee(activityItem) ? 'blueMain' : 'greenMain'}
             alignSelf="flex-end"
           >
-            {amount(activityItem)}
+            {amount(activityItem, true)}
           </Text>
           <Rewards item={activityItem} />
           <Payment item={activityItem} address={address || ''} />
           <Burn item={activityItem} address={address || ''} />
+          <HotspotTransaction item={activityItem} address={address || ''} />
           <TouchableOpacityBox
             backgroundColor={backgroundColorKey(activityItem)}
             height={63}

@@ -35,6 +35,22 @@ export const fetchPredictedOraclePrice = createAsyncThunk<OraclePrice[]>(
   async () => getPredictedOraclePrice(),
 )
 
+export const fetchInitialData = createAsyncThunk<HeliumDataState>(
+  'heliumData/fetchInitialData',
+  async () => {
+    const vals = await Promise.all([
+      getBlockHeight(),
+      getCurrentOraclePrice(),
+      getPredictedOraclePrice(),
+    ])
+    return {
+      blockHeight: vals[0],
+      currentOraclePrice: vals[1],
+      predictedOraclePrices: vals[2],
+    }
+  },
+)
+
 // This slice contains global helium data not specifically related to the current user
 const heliumDataSlice = createSlice({
   name: 'heliumData',
@@ -46,6 +62,11 @@ const heliumDataSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(fetchInitialData.fulfilled, (state, { payload }) => {
+      state.currentOraclePrice = payload.currentOraclePrice
+      state.predictedOraclePrices = payload.predictedOraclePrices
+      state.blockHeight = payload.blockHeight
+    })
     builder.addCase(fetchBlockHeight.fulfilled, (state, { payload }) => {
       state.blockHeight = payload
     })
