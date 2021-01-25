@@ -1,5 +1,5 @@
 import { PaymentV1 } from '@helium/http'
-import React, { ElementRef, useEffect, useRef, memo } from 'react'
+import React, { ElementRef, useEffect, useRef, memo, useCallback } from 'react'
 import { Linking } from 'react-native'
 import BottomSheet from 'react-native-holy-sheet'
 import { useTranslation } from 'react-i18next'
@@ -76,25 +76,14 @@ const ActivityDetails = () => {
     opacity: opacity.value,
   }))
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     sheet.current?.snapTo(0)
-    animateTransition()
-    setActivityItem(null)
-  }
+  }, [])
 
   if (!activityItem) return null
+
   return (
-    <Box
-      flex={1}
-      justifyContent="flex-end"
-      flexDirection="column"
-      position="absolute"
-      top={activityItem ? 0 : -1000}
-      left={0}
-      bottom={activityItem ? 0 : 1000}
-      right={0}
-      zIndex={1000}
-    >
+    <Box flex={1}>
       <ReAnimatedBlurBox
         style={animatedStyles}
         top={0}

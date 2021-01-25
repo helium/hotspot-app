@@ -1,17 +1,19 @@
 import React, { memo } from 'react'
+import Portal from '@burstware/react-native-portal'
 import WalletView from './WalletView'
 import Box from '../../../components/Box'
-import WalletProvider from './ActivityDetails/WalletProvider'
 import ActivityDetails from './ActivityDetails/ActivityDetails'
 
 const WalletScreen = () => {
   return (
-    <WalletProvider>
+    <>
       <Box flex={1} backgroundColor="primaryBackground">
         <WalletView />
       </Box>
-      <ActivityDetails />
-    </WalletProvider>
+      <Portal>
+        <ActivityDetails />
+      </Portal>
+    </>
   )
 }
 
