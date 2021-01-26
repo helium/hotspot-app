@@ -17,7 +17,7 @@ type Props = BoxProps<Theme> & {
   textStyle?: TextStyle
 }
 
-type ButtonVariant = 'primary' | 'secondary'
+type ButtonVariant = 'primary' | 'secondary' | 'destructive'
 
 const Button = ({
   onPress,
@@ -30,10 +30,14 @@ const Button = ({
 }: Props) => {
   const getBackground = (): Colors | undefined => {
     if (mode === 'contained') {
-      if (variant === 'secondary') {
-        return 'secondaryMain'
+      switch (variant) {
+        case 'primary':
+          return 'primaryMain'
+        case 'secondary':
+          return 'secondaryMain'
+        case 'destructive':
+          return 'purpleMuted'
       }
-      return 'primaryMain'
     }
 
     return undefined

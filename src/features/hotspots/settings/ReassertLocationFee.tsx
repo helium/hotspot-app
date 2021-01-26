@@ -11,8 +11,11 @@ import TextTransform from '../../../components/TextTransform'
 import Map from '../../../components/Map'
 import Button from '../../../components/Button'
 
-type Props = { locationAddress?: LocationGeocodedAddress }
-const ReassertLocationFee = ({ locationAddress }: Props) => {
+type Props = {
+  locationAddress?: LocationGeocodedAddress
+  onChangeLocation: () => void
+}
+const ReassertLocationFee = ({ locationAddress, onChangeLocation }: Props) => {
   const { t } = useTranslation()
   const { loadLocationFeeData } = useConnectedHotspotContext()
   const { result: feeData } = useAsync(loadLocationFeeData, [])
@@ -33,7 +36,12 @@ const ReassertLocationFee = ({ locationAddress }: Props) => {
         />
       )}
       <Box flex={1} marginTop="m" borderRadius="l" overflow="hidden">
-        <Map showUserLocation zoomLevel={13} />
+        <Map
+          showUserLocation
+          zoomLevel={13}
+          scrollEnabled={false}
+          zoomEnabled={false}
+        />
         {locationAddress && (
           <Box
             position="absolute"
@@ -52,6 +60,7 @@ const ReassertLocationFee = ({ locationAddress }: Props) => {
         )}
       </Box>
       <Button
+        onPress={onChangeLocation}
         marginTop="lx"
         marginBottom="s"
         variant="primary"

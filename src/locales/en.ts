@@ -593,6 +593,7 @@ export default {
       remaining_plural:
         'You have <b><purple>{{count}}</purple></b> free remaining Hotspot Location Assert Updates.',
       change_location: 'Change Location',
+      confirm: 'I Confirm',
     },
   },
   hotspot_details: {

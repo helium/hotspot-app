@@ -4,14 +4,21 @@ import { useSelector } from 'react-redux'
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
 import { getLocation } from '../../../store/user/appSlice'
+import animateTransition from '../../../utils/animateTransition'
 import { reverseGeocode } from '../../../utils/location'
 import ReassertLocationFee from './ReassertLocationFee'
+import ReassertLocationUpdate from './ReassertLocationUpdate'
 
+type Coords = { latitude: number; longitude: number }
 const ReassertLocation = () => {
-  const [state] = useState<'fee' | 'update' | 'pending'>('fee')
+  const [state, setState] = useState<'fee' | 'update' | 'confirm' | 'pending'>(
+    'fee',
+  )
   const [locationAddress, setLocationAddress] = useState<
     LocationGeocodedAddress | undefined
   >()
+  const [, setUpdatedLocation] = useState<Coords | undefined>()
+  const [, setUpdatedLocationConfirmation] = useState<Coords | undefined>()
   const dispatch = useAppDispatch()
   const {
     app: { currentLocation },
@@ -38,7 +45,36 @@ const ReassertLocation = () => {
 
   switch (state) {
     case 'fee':
-      return <ReassertLocationFee locationAddress={locationAddress} />
+      return (
+        <ReassertLocationFee
+          locationAddress={locationAddress}
+          onChangeLocation={() => {
+            animateTransition()
+            setState('update')
+          }}
+        />
+      )
+    case 'update':
+      return (
+        <ReassertLocationUpdate
+          locationSelected={(latitude, longitude) => {
+            setUpdatedLocation({ latitude, longitude })
+            animateTransition()
+            setState('confirm')
+          }}
+        />
+      )
+    case 'confirm':
+      return (
+        <ReassertLocationUpdate
+          confirming
+          locationSelected={(latitude, longitude) => {
+            setUpdatedLocationConfirmation({ latitude, longitude })
+            animateTransition()
+            setState('pending')
+          }}
+        />
+      )
   }
 
   return null
