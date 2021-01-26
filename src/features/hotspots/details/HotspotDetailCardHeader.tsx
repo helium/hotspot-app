@@ -14,16 +14,22 @@ const HotspotDetailCardHeader = ({
   onFollowSelected,
   onMoreSelected,
 }: Props) => (
-  <Box padding="m">
-    <Box flexDirection="row" justifyContent="space-between" padding="s">
-      <TouchableOpacityBox onPress={onFollowSelected}>
-        <Heart />
-      </TouchableOpacityBox>
-      <CardHandle />
-      <TouchableOpacityBox onPress={onMoreSelected}>
-        <MoreMenu />
-      </TouchableOpacityBox>
-    </Box>
+  <Box flexDirection="row" justifyContent="space-between" paddingTop="m">
+    <TouchableOpacityBox
+      onPress={onFollowSelected}
+      paddingVertical="s"
+      paddingHorizontal="l"
+    >
+      <Heart />
+    </TouchableOpacityBox>
+    <CardHandle />
+    <TouchableOpacityBox
+      onPress={onMoreSelected}
+      paddingVertical="s"
+      paddingHorizontal="l"
+    >
+      <MoreMenu />
+    </TouchableOpacityBox>
   </Box>
 )
 

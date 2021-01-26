@@ -281,9 +281,9 @@ PODS:
   - react-native-ble-plx (2.0.2):
     - MultiplatformBleAdapter (= 0.1.7)
     - React
-  - react-native-config (1.4.1):
-    - react-native-config/App (= 1.4.1)
-  - react-native-config/App (1.4.1):
+  - react-native-config (1.4.2):
+    - react-native-config/App (= 1.4.2)
+  - react-native-config/App (1.4.2):
     - React-Core
   - react-native-mapbox-gl (8.1.0):
     - "@react-native-mapbox-gl-mapbox-static (~> 5.9.0)"
@@ -414,7 +414,7 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (2.16.1):
+  - RNScreens (2.15.2):
     - React-Core
   - RNSentry (2.1.0):
     - React-Core
@@ -750,7 +750,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 93bd528844ad21dc07aab1c67cb10abae6df6949
   React-jsinspector: 58aef7155bc9a9683f5b60b35eccea8722a4f53a
   react-native-ble-plx: caac53ee98151ec81198239d591c203809a1ed6e
-  react-native-config: d8b45133fd13d4f23bd2064b72f6e2c08b2763ed
+  react-native-config: c98128a72bc2c3a1ca72caec0b021f0fa944aa29
   react-native-mapbox-gl: eec7e5be5b874cfceb79fcfe24d595411015153a
   react-native-onesignal: a69eeb12486e7739ed8f180e6ddd915be77721ba
   react-native-safe-area-context: b6e0e284002381d2ff29fa4fff42b4d8282e3c94
@@ -774,7 +774,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 9b7e605a741412e20e13c512738a31bd1611759b
   RNLocalize: 7c7aeda16c01db7a0918981c14875c0a53be9b79
   RNReanimated: b2d6785c8fc1f61e1c81179c64c9b6b1a00e6ab5
-  RNScreens: 45c457af3d2ee9e08fc01e70da87e653d46b1198
+  RNScreens: 3d682bcaba69a4f8e55543d90818704f34338db1
   RNSentry: 51972e3fe50e2fb38ae459af8c87d61f63f364db
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   Sentry: 388c9dc093b2fd3a264466a5c5b21e25959610a9
