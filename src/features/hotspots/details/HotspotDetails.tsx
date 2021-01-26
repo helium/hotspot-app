@@ -13,7 +13,7 @@ import { random, times } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { Linking, Share } from 'react-native'
-import { Hotspot, HotspotRewardSum } from '@helium/http'
+import { useSelector } from 'react-redux'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { HotspotStackParamList } from '../root/hotspotTypes'
@@ -32,12 +32,14 @@ import HotspotDetailChart from './HotspotDetailChart'
 import StatusBadge from './StatusBadge'
 import TimelinePicker from './TimelinePicker'
 import HotspotDetailCardHeader from './HotspotDetailCardHeader'
-import {
-  getHotspotRewardsSum,
-  getHotspotWitnesses,
-} from '../../../utils/appDataClient'
-import { calculatePercentChange, getRewardChartData } from './RewardsHelper'
+import { getRewardChartData } from './RewardsHelper'
 import HotspotSettings from '../settings/HotspotSettings'
+import { RootState } from '../../../store/rootReducer'
+import {
+  fetchHotspotRewards,
+  fetchHotspotWitnesses,
+} from '../../../store/hotspotDetails/hotspotDetailsSlice'
+import { useAppDispatch } from '../../../store/store'
 
 type HotspotDetailsRouteProp = RouteProp<
   HotspotStackParamList,
@@ -56,7 +58,18 @@ const onFollowHotspot = () => {
 
 const HotspotDetails = () => {
   const route = useRoute<HotspotDetailsRouteProp>()
+  const dispatch = useAppDispatch()
   const { hotspot } = route.params
+  const {
+    hotspotDetails: {
+      numDays,
+      rewards,
+      rewardSum,
+      percentChange,
+      loadingRewards,
+      witnesses,
+    },
+  } = useSelector((state: RootState) => state)
   const navigation = useNavigation()
   const { t } = useTranslation()
   const selectedHotspots = hotspotsToFeatures([hotspot])
@@ -96,7 +109,7 @@ const HotspotDetails = () => {
     )
   }
 
-  const dragMid = hp(25)
+  const dragMid = hp(20)
   const dragMax = hp(75)
   const dragMin = 50
   const snapProgress = useSharedValue(dragMid / dragMax)
@@ -131,64 +144,34 @@ const HotspotDetails = () => {
   })
 
   const [timelineIndex, setTimelineIndex] = useState(2)
-  const [totalRewards, setTotalRewards] = useState<HotspotRewardSum>()
-  const [rewardChange, setRewardChange] = useState<number>()
-  const [rewardChatData, setRewardChatData] = useState<ChartData[]>([])
-  const [rewardsLoading, setRewardsLoading] = useState(true)
   const [chartPadding, setChartPadding] = useState(20)
-  const [witnesses, setWitnesses] = useState<Hotspot[]>()
   const [showWitnesses, setShowWitnesses] = useState(false)
   useEffect(() => {
-    const fetchRewards = async () => {
-      setRewardsLoading(true)
-      let numDays
-      let padding
-      switch (timelineIndex) {
-        default:
-        case 0:
-          numDays = 1
-          padding = 15
-          break
-        case 1:
-          numDays = 7
-          padding = 10
-          break
-        case 2:
-          numDays = 14
-          padding = 5
-          break
-        case 3:
-          numDays = 30
-          padding = 0
-          break
-      }
-      const rewardsSum = await getHotspotRewardsSum(hotspot.address, numDays)
-      const previousStart = new Date()
-      previousStart.setDate(previousStart.getDate() - numDays)
-      const rewardsSumPastPeriod = await getHotspotRewardsSum(
-        hotspot.address,
-        numDays,
-        previousStart,
-      )
-      setTotalRewards(rewardsSum)
-      setRewardChange(
-        calculatePercentChange(
-          rewardsSum.total.floatBalance,
-          rewardsSumPastPeriod.total.floatBalance,
-        ),
-      )
-      const rewardChartData = await getRewardChartData(hotspot.address, numDays)
-      setRewardChatData(rewardChartData)
-      setChartPadding(padding)
-      setRewardsLoading(false)
+    let days
+    let padding
+    switch (timelineIndex) {
+      default:
+      case 0:
+        days = 1
+        padding = 15
+        break
+      case 1:
+        days = 7
+        padding = 10
+        break
+      case 2:
+        days = 14
+        padding = 5
+        break
+      case 3:
+        days = 30
+        padding = 0
+        break
     }
-    const fetchWitnesses = async () => {
-      const hotspotWitnesses = await getHotspotWitnesses(hotspot.address)
-      setWitnesses(hotspotWitnesses)
-    }
-    fetchRewards()
-    fetchWitnesses()
-  }, [hotspot.address, timelineIndex])
+    setChartPadding(padding)
+    dispatch(fetchHotspotRewards({ address: hotspot.address, numDays: days }))
+    dispatch(fetchHotspotWitnesses(hotspot.address))
+  }, [dispatch, hotspot.address, timelineIndex])
 
   const onTimelineChanged = (_value: string, index: number) => {
     setTimelineIndex(index)
@@ -290,15 +273,12 @@ const HotspotDetails = () => {
             />
             <HotspotDetailChart
               title={t('hotspot_details.reward_title')}
-              number={totalRewards?.total
-                ?.toString(0)
-                ?.replace('HNT', '')
-                ?.trim()}
-              change={rewardChange}
+              number={rewardSum?.total?.toString(0)?.replace('HNT', '')?.trim()}
+              change={percentChange}
               color={greenOnline}
-              data={rewardChatData}
+              data={getRewardChartData(rewards, numDays)}
               paddingTop={chartPadding}
-              loading={rewardsLoading}
+              loading={loadingRewards}
             />
             <HotspotDetailChart
               title={t('hotspot_details.witness_title')}

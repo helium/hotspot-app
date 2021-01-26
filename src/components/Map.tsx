@@ -171,7 +171,7 @@ const Map = ({
               id="markerWitness"
               style={{
                 iconImage: 'markerWitness',
-                iconAllowOverlap: false,
+                iconAllowOverlap: true,
                 iconSize: 1,
               }}
             />
