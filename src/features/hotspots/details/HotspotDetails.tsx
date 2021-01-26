@@ -147,7 +147,7 @@ const HotspotDetails = () => {
         default:
         case 0:
           numDays = 1
-          padding = 20
+          padding = 15
           break
         case 1:
           numDays = 7
