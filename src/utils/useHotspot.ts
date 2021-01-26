@@ -178,6 +178,7 @@ const useHotspot = () => {
       wifi,
       ethernetOnline,
       validOnboarding: !!onboardingRecord,
+      onboardingRecord,
       onboardingAddress,
     }
     dispatch(connectedHotspotSlice.actions.initConnectedHotspot(details))
@@ -390,9 +391,8 @@ const useHotspot = () => {
   }
 
   const loadLocationFeeData = async (): Promise<LocationFeeData> => {
-    const data = await getStaking('limits')
-    const locationNonceLimit = data.location_nonce
-    // staking fee from Transaction
+    const locationNonceLimit =
+      connectedHotspotDetails.onboardingRecord?.maker.locationNonceLimit || 0
     const locationStakingFee = Transaction.stakingFeeTxnAssertLocationV1
 
     const isFree =

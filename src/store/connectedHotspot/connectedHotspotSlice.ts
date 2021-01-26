@@ -19,6 +19,7 @@ export type HotspotDetails = {
   type?: HotspotType
   name?: HotspotName
   validOnboarding?: boolean
+  onboardingRecord?: OnboardingRecord
   onboardingAddress?: string
   firmware?: {
     version: string
@@ -27,6 +28,13 @@ export type HotspotDetails = {
   ethernetOnline?: boolean
   nonce?: number
   status?: HotspotStatus
+}
+
+export type OnboardingRecord = {
+  id: number
+  maker: {
+    locationNonceLimit: number
+  }
 }
 
 export type HotspotActivity = {
