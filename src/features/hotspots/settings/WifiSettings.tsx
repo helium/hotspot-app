@@ -19,7 +19,7 @@ import animateTransition from '../../../utils/animateTransition'
 type Props = { onNetworkSelected: (wifi: string) => void }
 const WifiSettings = ({ onNetworkSelected }: Props) => {
   const [networkStatus, setNetworkStatus] = useState<
-    'ethernet' | 'wifi' | 'notConnected'
+    'ethernet' | 'wifiConnected' | 'wifiConfigured' | 'notConnected'
   >('notConnected')
   const { greenBright } = useColors()
   const {
@@ -30,23 +30,27 @@ const WifiSettings = ({ onNetworkSelected }: Props) => {
     removeConfiguredWifi,
   } = useConnectedHotspotContext()
   const { showOKCancelAlert } = useAlert()
-  const [networks, setNetworks] = useState<null | undefined | string[]>(null)
+  const [networks, setNetworks] = useState<string[]>([])
+  const [configuredNetworks, setConfiguredNetworks] = useState<string[]>([])
 
   const scanWifi = async () => {
     const wifiNetworks = await scanForWifiNetworks()
+    const configured = await scanForWifiNetworks(true)
     animateTransition()
-    setNetworks(wifiNetworks)
+    setNetworks(wifiNetworks || [])
+    setConfiguredNetworks(configured || [])
   }
 
   const handleNetworkSelected = async (nextWifi: string) => {
-    if (wifi) {
+    if (wifi || configuredNetworks.length) {
+      const wifiName = wifi || configuredNetworks[0]
       const decision = await showOKCancelAlert({
         titleKey: 'hotspot_setup.disconnect_dialog.title',
         messageKey: 'hotspot_setup.disconnect_dialog.body',
-        messageOptions: { wifiName: wifi },
+        messageOptions: { wifiName },
         okKey: 'generic.forget',
       })
-      if (!decision) {
+      if (!decision || !wifi) {
         return
       }
       await removeConfiguredWifi(wifi)
@@ -66,12 +70,16 @@ const WifiSettings = ({ onNetworkSelected }: Props) => {
     }
 
     if (wifi) {
-      setNetworkStatus('wifi')
+      setNetworkStatus('wifiConnected')
+      return
+    }
+    if (configuredNetworks.length) {
+      setNetworkStatus('wifiConfigured')
       return
     }
 
     setNetworkStatus('notConnected')
-  }, [ethernetOnline, wifi])
+  }, [ethernetOnline, wifi, configuredNetworks])
 
   const { t } = useTranslation()
 
@@ -121,7 +129,8 @@ const WifiSettings = ({ onNetworkSelected }: Props) => {
           flex={1}
         >
           {networkStatus === 'ethernet' && t('hotspot_settings.wifi.ethernet')}
-          {networkStatus === 'wifi' && wifi}
+          {networkStatus === 'wifiConnected' && wifi}
+          {networkStatus === 'wifiConfigured' && configuredNetworks[0]}
           {networkStatus === 'notConnected' &&
             t('hotspot_settings.wifi.not_connected')}
         </Text>

@@ -11,6 +11,8 @@ import Animated, {
 import BottomSheet from 'react-native-holy-sheet/src/index'
 import { random, times } from 'lodash'
 import { useTranslation } from 'react-i18next'
+import { useActionSheet } from '@expo/react-native-action-sheet'
+import { Linking, Share } from 'react-native'
 import { Hotspot, HotspotRewardSum } from '@helium/http'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
@@ -35,6 +37,7 @@ import {
   getHotspotWitnesses,
 } from '../../../utils/appDataClient'
 import { calculatePercentChange, getRewardChartData } from './RewardsHelper'
+import HotspotSettings from '../settings/HotspotSettings'
 
 type HotspotDetailsRouteProp = RouteProp<
   HotspotStackParamList,
@@ -51,10 +54,6 @@ const onFollowHotspot = () => {
   // TODO: follow hotspot
 }
 
-const onMoreMenuSelected = () => {
-  // TODO: more menu
-}
-
 const HotspotDetails = () => {
   const route = useRoute<HotspotDetailsRouteProp>()
   const { hotspot } = route.params
@@ -62,6 +61,40 @@ const HotspotDetails = () => {
   const { t } = useTranslation()
   const selectedHotspots = hotspotsToFeatures([hotspot])
   const { purpleMain, greenOnline } = useColors()
+  const { showActionSheetWithOptions } = useActionSheet()
+  const [showSettings, setShowSettings] = useState(false)
+
+  type SettingsOption = { label: string; action?: () => void }
+  const onMoreMenuSelected = () => {
+    const explorerUrl = `https://explorer.helium.com/hotspots/${hotspot.address}`
+    const opts: SettingsOption[] = [
+      {
+        label: t('hotspot_details.options.settings'),
+        action: () => setShowSettings(true),
+      },
+      {
+        label: t('hotspot_details.options.viewExplorer'),
+        action: () => Linking.openURL(explorerUrl),
+      },
+      {
+        label: t('hotspot_details.options.share'),
+        action: () => Share.share({ message: explorerUrl }),
+      },
+      {
+        label: t('generic.cancel'),
+      },
+    ]
+
+    showActionSheetWithOptions(
+      {
+        options: opts.map(({ label }) => label),
+        destructiveButtonIndex: opts.length - 1,
+      },
+      (buttonIndex) => {
+        opts[buttonIndex].action?.()
+      },
+    )
+  }
 
   const dragMid = hp(25)
   const dragMax = hp(75)
@@ -283,6 +316,11 @@ const HotspotDetails = () => {
           </Box>
         </BottomSheet>
       </Box>
+
+      <HotspotSettings
+        visible={showSettings}
+        onClose={() => setShowSettings(false)}
+      />
     </SafeAreaBox>
   )
 }

@@ -16,6 +16,7 @@ import { useSelector } from 'react-redux'
 import MapboxGL from '@react-native-mapbox-gl/maps'
 import { useAsync } from 'react-async-hook'
 import Portal from '@burstware/react-native-portal'
+import { ActionSheetProvider } from '@expo/react-native-action-sheet'
 import { theme } from './theme/theme'
 import NavigationRoot from './navigation/NavigationRoot'
 import { useAppDispatch } from './store/store'
@@ -108,20 +109,22 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <BluetoothProvider>
-        <ConnectedHotspotProvider>
-          <SafeAreaProvider>
-            {/* TODO: Will need to adapt status bar for light/dark modes */}
-            {Platform.OS === 'ios' && <StatusBar barStyle="light-content" />}
-            {Platform.OS === 'android' && (
-              <StatusBar translucent backgroundColor="transparent" />
-            )}
-            <Portal.Host>
-              <NavigationRoot />
-            </Portal.Host>
-          </SafeAreaProvider>
-        </ConnectedHotspotProvider>
-      </BluetoothProvider>
+      <ActionSheetProvider>
+        <BluetoothProvider>
+          <ConnectedHotspotProvider>
+            <SafeAreaProvider>
+              {/* TODO: Will need to adapt status bar for light/dark modes */}
+              {Platform.OS === 'ios' && <StatusBar barStyle="light-content" />}
+              {Platform.OS === 'android' && (
+                <StatusBar translucent backgroundColor="transparent" />
+              )}
+              <Portal.Host>
+                <NavigationRoot />
+              </Portal.Host>
+            </SafeAreaProvider>
+          </ConnectedHotspotProvider>
+        </BluetoothProvider>
+      </ActionSheetProvider>
     </ThemeProvider>
   )
 }
