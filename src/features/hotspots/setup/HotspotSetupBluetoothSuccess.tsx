@@ -39,7 +39,9 @@ const HotspotSetupBluetoothSuccess = () => {
   // }
 
   const handleConnect = async (hotspot: Device) => {
-    navigation.push('HotspotSetupConnectingScreen', { hotspotId: hotspot.id })
+    navigation.replace('HotspotSetupConnectingScreen', {
+      hotspotId: hotspot.id,
+    })
   }
 
   return (

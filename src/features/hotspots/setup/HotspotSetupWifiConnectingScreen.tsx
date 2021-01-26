@@ -46,7 +46,7 @@ const HotspotSetupWifiConnectingScreen = () => {
         showOKAlert({ titleKey: 'Your password is invalid' })
         navigation.goBack()
       } else {
-        navigation.push('HotspotSetupLocationInfoScreen')
+        navigation.replace('HotspotSetupLocationInfoScreen')
       }
     })
   }

@@ -24,7 +24,7 @@ const HotspotSetupWifiScreen = () => {
   const [password, setPassword] = useState('')
 
   const navNext = async () => {
-    navigation.push('HotspotSetupWifiConnectingScreen', {
+    navigation.replace('HotspotSetupWifiConnectingScreen', {
       network,
       password,
     })

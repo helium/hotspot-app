@@ -3,9 +3,9 @@ import { uniq } from 'lodash'
 import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert } from 'react-native'
-import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
 import RadarLoader from '../../../components/Loaders/RadarLoader'
+import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import {
@@ -58,7 +58,7 @@ const HotspotSetupConnectingScreen = () => {
       const connectedNetworks = uniq((await scanForWifiNetworks(true)) || [])
 
       // navigate to next screen
-      navigation.navigate('HotspotSetupPickWifiScreen', {
+      navigation.replace('HotspotSetupPickWifiScreen', {
         networks,
         connectedNetworks,
       })
@@ -69,7 +69,7 @@ const HotspotSetupConnectingScreen = () => {
   }, [])
 
   return (
-    <BackScreen backgroundColor="primaryBackground">
+    <SafeAreaBox flex={1} backgroundColor="primaryBackground">
       <Box flex={0.8} justifyContent="center">
         <RadarLoader duration={2000} color="green" />
         <Text
@@ -84,7 +84,7 @@ const HotspotSetupConnectingScreen = () => {
           }).toUpperCase()}
         </Text>
       </Box>
-    </BackScreen>
+    </SafeAreaBox>
   )
 }
 

@@ -72,7 +72,9 @@ const HotspotSetupBluetoothError = () => {
 
       <Box justifyContent="flex-end">
         <Button
-          onPress={() => navigation.replace('HotspotSetupScanningScreen', params)}
+          onPress={() =>
+            navigation.replace('HotspotSetupScanningScreen', params)
+          }
           mode="contained"
           variant="primary"
           title={t('generic.scan_again')}

@@ -18,7 +18,7 @@ const HotspotSetupLocationInfoScreen = () => {
   const checkLocationPermissions = async () => {
     const enabled = await requestLocationPermission()
     if (enabled) {
-      navigation.push('HotspotSetupPickLocationScreen')
+      navigation.navigate('HotspotSetupPickLocationScreen')
     }
   }
 

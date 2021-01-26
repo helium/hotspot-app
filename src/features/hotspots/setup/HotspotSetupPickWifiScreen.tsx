@@ -95,6 +95,7 @@ const HotspotSetupPickWifiScreen = () => {
                   </Text>
                   {connectedNetworks.map((network, index) => (
                     <WifiItem
+                      key={network}
                       name={network}
                       isFirst={index === 0}
                       isLast={index === connectedNetworks.length - 1}

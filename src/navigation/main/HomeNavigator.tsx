@@ -38,7 +38,7 @@ const HomeStackScreen = () => {
       <HomeStack.Screen
         name="HotspotSetup"
         component={HotspotSetup}
-        options={{ headerShown: false }}
+        options={{ headerShown: false, gestureEnabled: false }}
       />
       <HomeStack.Screen
         name="Scan"
