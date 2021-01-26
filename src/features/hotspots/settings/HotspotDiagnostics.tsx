@@ -8,6 +8,7 @@ import HotspotDiagnosticReport from './HotspotDiagnosticReport'
 import HotspotDiagnosticsConnection from './HotspotDiagnosticsConnection'
 import HotspotDiagnosticOptions from './HotspotsDiagnosticOptions'
 import { HotspotOptions } from './HotspotSettingsTypes'
+import ReassertLocation from './ReassertLocation'
 import WifiSettingsContainer from './WifiSettingsContainer'
 
 type State = 'scan' | 'options' | HotspotOptions
@@ -32,6 +33,9 @@ const HotspotDiagnostics = ({ updateTitle }: Props) => {
         break
       case 'wifi':
         updateTitle(t('hotspot_settings.wifi.title'))
+        break
+      case 'reassert':
+        updateTitle(t('hotspot_settings.options.reassert'))
         break
       default:
         updateTitle(t('hotspot_settings.title'))
@@ -63,6 +67,8 @@ const HotspotDiagnostics = ({ updateTitle }: Props) => {
           onFinished={() => handleOptionSelected('options')}
         />
       )
+    case 'reassert':
+      return <ReassertLocation />
   }
 
   return (

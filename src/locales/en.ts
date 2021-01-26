@@ -584,8 +584,15 @@ export default {
       paired: 'Paired with Hotspot',
       diagnostic: 'Diagnostics',
       wifi: 'Wi-Fi Network',
-      reassert: 'Reassert Hotspot',
+      reassert: 'Update Location',
       firmware: 'Hotspot Firmware',
+    },
+    reassert: {
+      remaining:
+        'You have <b><purple>{{count}}</purple></b> free remaining Hotspot Location Assert Update.',
+      remaining_plural:
+        'You have <b><purple>{{count}}</purple></b> free remaining Hotspot Location Assert Updates.',
+      change_location: 'Change Location',
     },
   },
   hotspot_details: {
