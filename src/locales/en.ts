@@ -211,6 +211,7 @@ export default {
     ble_scan: {
       title: 'SCANNING FOR HOTSPOTS',
       cancel: 'Cancel Scan',
+      connecting: 'Connecting to {{hotspotName}}',
     },
     ble_select: {
       hotspots_found: '{{count}} Hotspot found.',
@@ -257,7 +258,7 @@ export default {
       placeholder: 'Password',
       show_password: 'Show Password',
       hide_password: 'Hide Password',
-      connecting: 'Connecting...',
+      connecting: 'Connecting to Network',
       forget: 'Forget',
       forget_network: 'Forget Network',
       forget_alert_title: 'Forget Network?',
@@ -324,12 +325,12 @@ export default {
         'Your Hotspot has a Confirm Location transaction pending in the blockchain.',
       pending_p_2:
         "If you'd like to change the Hotspot's location, wait for the previous transaction to complete before updating its location.",
-      no_funds:
-        'There is insufficient HNT in your account balance. Unable to confirm location.',
+      no_funds: 'There is insufficient HNT in your account balance',
       calculating_text: 'Calculating HNT Amount',
       error_title: 'Error',
       error_body: 'There was an error loading fee data. Please try again.',
       next: 'Register Hotspot',
+      fee_next: 'Pay Fee & Register Hotspot',
     },
     location: {
       title: 'Hotspot Location',
@@ -337,16 +338,9 @@ export default {
     },
     progress: {
       title: 'REGISTERING HOTSPOT',
-      p_1:
-        'Adding a Hotspot means submitting a transaction to the blockchain. This appears as a pending transaction like the one below.',
-      p_2:
-        "Pending transactions take time to clear so we'll let you know when it's done.",
-      p_3: 'Tap continue to explore the rest of the app.',
-      pending_txn: {
-        name: 'YOUR HOTSPOT NAME',
-      },
-      example: 'example transaction',
-      next: 'Continue to Accounts',
+      subtitle:
+        'This can take a few minutes so feel free to close this screen.',
+      next: 'Go to Wallet',
     },
     error: {
       alertTitle: 'Servers Unable to Respond',

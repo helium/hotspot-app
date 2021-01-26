@@ -89,6 +89,7 @@ const HotspotSetup = () => {
       <HotspotSetupStack.Screen
         name="HotspotTxnsProgressScreen"
         component={HotspotTxnsProgressScreen}
+        options={{ gestureEnabled: false }}
       />
     </HotspotSetupStack.Navigator>
   )

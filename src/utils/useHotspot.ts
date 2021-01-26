@@ -3,7 +3,7 @@ import { Device } from 'react-native-ble-plx'
 import validator from 'validator'
 import compareVersions from 'compare-versions'
 import { Transaction } from '@helium/transactions'
-import { Balance, CurrencyType } from '@helium/currency'
+import { Balance, CurrencyType, NetworkTokens } from '@helium/currency'
 import { useSelector } from 'react-redux'
 import { useBluetoothContext } from '../providers/BluetoothProvider'
 import {
@@ -181,6 +181,7 @@ const useHotspot = () => {
       onboardingAddress,
     }
     dispatch(connectedHotspotSlice.actions.initConnectedHotspot(details))
+    return details
   }
 
   const scanForWifiNetworks = async (configured = false) => {
@@ -382,15 +383,21 @@ const useHotspot = () => {
     }
   }
 
-  const loadLocationFeeData = async () => {
-    const data = await getStaking('/limits')
+  type LocationFeeData = {
+    isFree: boolean
+    hasSufficientBalance: boolean
+    totalStakingAmount: Balance<NetworkTokens>
+  }
+
+  const loadLocationFeeData = async (): Promise<LocationFeeData> => {
+    const data = await getStaking('limits')
     const locationNonceLimit = data.location_nonce
     // staking fee from Transaction
     const locationStakingFee = Transaction.stakingFeeTxnAssertLocationV1
 
     const isFree =
-      !!connectedHotspotDetails?.freeAddHotspot &&
-      (connectedHotspotDetails?.nonce || 0) + 1 < locationNonceLimit
+      !!connectedHotspotDetails?.validOnboarding &&
+      (connectedHotspotDetails?.nonce || 0) < locationNonceLimit
     const noPayerByteLength = 224
     const txnFee = Transaction.calculateFee(new Uint8Array(noPayerByteLength))
 
@@ -400,12 +407,15 @@ const useHotspot = () => {
     )
     const { price: oraclePrice } = await getCurrentOraclePrice()
     const totalStakingAmount = totalStakingAmountDC.toNetworkTokens(oraclePrice)
-      .integerBalance
 
     const balance = account?.balance?.integerBalance || 0
-    const hasSufficientBalance = balance >= totalStakingAmount
+    const hasSufficientBalance = balance >= totalStakingAmount.integerBalance
 
-    return { isFree, hasSufficientBalance, totalStakingAmount }
+    return {
+      isFree,
+      hasSufficientBalance,
+      totalStakingAmount,
+    }
   }
 
   const getDiagnosticInfo = async () => {

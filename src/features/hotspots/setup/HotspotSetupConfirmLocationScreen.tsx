@@ -1,17 +1,55 @@
 import React from 'react'
+import { ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
+import { useAsync } from 'react-async-hook'
+import { useSelector } from 'react-redux'
+import {
+  HotspotSetupNavigationProp,
+  HotspotSetupStackParamList,
+} from './hotspotSetupTypes'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
 import ImageBox from '../../../components/ImageBox'
 import Button from '../../../components/Button'
 import Map from '../../../components/Map'
 import Text from '../../../components/Text'
+import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
+import { RootState } from '../../../store/rootReducer'
+
+type Route = RouteProp<
+  HotspotSetupStackParamList,
+  'HotspotSetupConfirmLocationScreen'
+>
 
 const HotspotSetupConfirmLocationScreen = () => {
   const { t } = useTranslation()
+  const navigation = useNavigation<HotspotSetupNavigationProp>()
+  const { loadLocationFeeData } = useConnectedHotspotContext()
+  const {
+    account: { account },
+  } = useSelector((state: RootState) => state)
+  const { loading, result } = useAsync(loadLocationFeeData, [])
 
-  const hotspotCoords = [-122.43593, 37.76178]
-  const locationName = 'Collingwood St, San Francisco'
+  const {
+    params: { hotspotCoords, locationName },
+  } = useRoute<Route>()
+
+  const navNext = async () => {
+    navigation.push('HotspotTxnsProgressScreen')
+  }
+
+  if (loading || !result) {
+    return (
+      <BackScreen>
+        <Box flex={1} justifyContent="center" paddingBottom="xxl">
+          <ActivityIndicator />
+        </Box>
+      </BackScreen>
+    )
+  }
+
+  const { isFree, hasSufficientBalance, totalStakingAmount } = result
 
   return (
     <BackScreen>
@@ -19,13 +57,19 @@ const HotspotSetupConfirmLocationScreen = () => {
         <Text variant="h1" marginBottom="l">
           {t('hotspot_setup.location_fee.title')}
         </Text>
-        <Text variant="subtitleMedium" color="greenBright" marginBottom="l">
-          {t('hotspot_setup.location_fee.subtitle_free')}
-        </Text>
+        {isFree ? (
+          <Text variant="subtitleMedium" color="greenBright" marginBottom="l">
+            {t('hotspot_setup.location_fee.subtitle_free')}
+          </Text>
+        ) : (
+          <Text variant="subtitleMedium" marginBottom="l">
+            {t('hotspot_setup.location_fee.subtitle_fee')}
+          </Text>
+        )}
         <Text variant="subtitleLight" marginBottom="xl">
           {t('hotspot_setup.location_fee.confirm_location')}
         </Text>
-        <Box height={220} borderRadius="l" overflow="hidden">
+        <Box height={200} borderRadius="l" overflow="hidden" marginBottom="m">
           <Box flex={1}>
             <Map mapCenter={hotspotCoords} zoomLevel={16} interactive={false} />
             <Box
@@ -51,12 +95,47 @@ const HotspotSetupConfirmLocationScreen = () => {
             </Text>
           </Box>
         </Box>
+
+        <Box flexDirection="row" justifyContent="space-between" marginTop="m">
+          <Text variant="body1Light" color="secondaryText">
+            Balance:
+          </Text>
+          <Text
+            variant="body1Light"
+            color={hasSufficientBalance ? 'greenBright' : 'redMain'}
+          >
+            {account?.balance?.toString(2)}
+          </Text>
+        </Box>
+
+        <Box flexDirection="row" justifyContent="space-between" marginTop="m">
+          <Text variant="body1Light" color="secondaryText">
+            Fee:
+          </Text>
+          <Text variant="body1Light" color="white">
+            {totalStakingAmount.toString(2)}
+          </Text>
+        </Box>
+
+        {!hasSufficientBalance && (
+          <Box marginTop="l">
+            <Text variant="body2Medium" color="redMain" textAlign="center">
+              {t('hotspot_setup.location_fee.no_funds')}
+            </Text>
+          </Box>
+        )}
       </Box>
       <Box>
         <Button
-          title={t('hotspot_setup.location_fee.next')}
+          title={
+            isFree
+              ? t('hotspot_setup.location_fee.next')
+              : t('hotspot_setup.location_fee.fee_next')
+          }
           mode="contained"
           variant="secondary"
+          onPress={navNext}
+          disabled={!hasSufficientBalance}
         />
       </Box>
     </BackScreen>

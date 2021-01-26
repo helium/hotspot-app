@@ -17,7 +17,10 @@ export type HotspotSetupStackParamList = {
   HotspotSetupWifiScreen: { network: string }
   HotspotSetupWifiConnectingScreen: { network: string; password: string }
   HotspotSetupLocationInfoScreen: undefined
-  HotspotLocationFeeScreen: undefined
+  HotspotSetupConfirmLocationScreen: {
+    hotspotCoords: number[]
+    locationName: string
+  }
   FirmwareUpdateNeededScreen: undefined
   HotspotSetupPickLocationScreen: undefined
   HotspotTxnsProgressScreen: undefined

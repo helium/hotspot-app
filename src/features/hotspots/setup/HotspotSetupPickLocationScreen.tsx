@@ -44,11 +44,10 @@ const HotspotSetupPickLocationScreen = () => {
   }
 
   const navNext = () => {
-    console.log(`Pin location: ${markerCenter}`)
-
-    // TODO: Assert Location
-
-    navigation.push('HotspotTxnsProgressScreen')
+    navigation.navigate('HotspotSetupConfirmLocationScreen', {
+      hotspotCoords: markerCenter,
+      locationName,
+    })
   }
 
   const onDidFinishLoadingMap = (latitude: number, longitude: number) => {
