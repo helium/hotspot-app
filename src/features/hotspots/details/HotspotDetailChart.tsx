@@ -83,7 +83,7 @@ const HotspotDetailChart = ({
   loading,
 }: Props) => {
   const { t } = useTranslation()
-  const { redMedium, black, grayLight } = useColors()
+  const { redMedium, black, grayLight, grayMain } = useColors()
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
   const onFocus = (chartData: ChartData | null) => {
     setFocusedData(chartData)
@@ -103,7 +103,7 @@ const HotspotDetailChart = ({
         height={136}
       >
         {loading ? (
-          <ActivityIndicator size="small" />
+          <ActivityIndicator size="small" color={grayMain} />
         ) : (
           <>
             <Box width="35%">

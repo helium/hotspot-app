@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { ActivityIndicator, View } from 'react-native'
 import Chart from './Chart'
 import { ChartData } from './types'
+import { useColors } from '../../theme/themeHooks'
 
 type Props = {
   height: number
@@ -27,6 +28,7 @@ const ChartContainer = ({
   loading,
 }: Props) => {
   const [width, setWidth] = useState(0)
+  const colors = useColors()
 
   const handleLayout = (event: {
     nativeEvent: { layout: { width: number } }
@@ -35,7 +37,13 @@ const ChartContainer = ({
   }
 
   if (loading) {
-    return <ActivityIndicator style={{ height, paddingTop }} size="small" />
+    return (
+      <ActivityIndicator
+        style={{ height, paddingTop }}
+        size="small"
+        color={colors.grayMain}
+      />
+    )
   }
 
   return (
