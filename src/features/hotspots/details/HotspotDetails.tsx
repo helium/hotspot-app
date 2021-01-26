@@ -11,7 +11,7 @@ import Animated, {
 import BottomSheet from 'react-native-holy-sheet/src/index'
 import { random, times } from 'lodash'
 import { useTranslation } from 'react-i18next'
-import { HotspotRewardSum } from '@helium/http'
+import { Hotspot, HotspotRewardSum } from '@helium/http'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { HotspotStackParamList } from '../root/hotspotTypes'
@@ -21,6 +21,7 @@ import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import CarotLeft from '../../../assets/images/carot-left.svg'
 import HexCircleButton from '../../../assets/images/hex-circle-button.svg'
 import EyeCircleButton from '../../../assets/images/eye-circle-button.svg'
+import EyeCircleButtonYellow from '../../../assets/images/eye-circle-button-yellow.svg'
 import { hp } from '../../../utils/layout'
 import { hotspotsToFeatures } from '../../../utils/mapUtils'
 import { ChartData } from '../../../components/BarChart/types'
@@ -29,7 +30,10 @@ import HotspotDetailChart from './HotspotDetailChart'
 import StatusBadge from './StatusBadge'
 import TimelinePicker from './TimelinePicker'
 import HotspotDetailCardHeader from './HotspotDetailCardHeader'
-import { getHotspotRewardsSum } from '../../../utils/appDataClient'
+import {
+  getHotspotRewardsSum,
+  getHotspotWitnesses,
+} from '../../../utils/appDataClient'
 import { calculatePercentChange, getRewardChartData } from './RewardsHelper'
 
 type HotspotDetailsRouteProp = RouteProp<
@@ -99,6 +103,8 @@ const HotspotDetails = () => {
   const [rewardChatData, setRewardChatData] = useState<ChartData[]>([])
   const [rewardsLoading, setRewardsLoading] = useState(true)
   const [chartPadding, setChartPadding] = useState(20)
+  const [witnesses, setWitnesses] = useState<Hotspot[]>()
+  const [showWitnesses, setShowWitnesses] = useState(false)
   useEffect(() => {
     const fetchRewards = async () => {
       setRewardsLoading(true)
@@ -143,11 +149,20 @@ const HotspotDetails = () => {
       setChartPadding(padding)
       setRewardsLoading(false)
     }
+    const fetchWitnesses = async () => {
+      const hotspotWitnesses = await getHotspotWitnesses(hotspot.address)
+      setWitnesses(hotspotWitnesses)
+    }
     fetchRewards()
+    fetchWitnesses()
   }, [hotspot.address, timelineIndex])
 
   const onTimelineChanged = (_value: string, index: number) => {
     setTimelineIndex(index)
+  }
+
+  const toggleShowWitnesses = () => {
+    setShowWitnesses(!showWitnesses)
   }
 
   return (
@@ -167,6 +182,9 @@ const HotspotDetails = () => {
             mapCenter={[hotspot.lng || 0, hotspot.lat || 0]}
             animationDuration={0}
             selectedHotspots={selectedHotspots}
+            witnesses={
+              showWitnesses && witnesses ? hotspotsToFeatures(witnesses) : []
+            }
             offsetCenterRatio={2}
           />
         </Box>
@@ -195,8 +213,8 @@ const HotspotDetails = () => {
             flexDirection="row"
             style={{ marginBottom: dragMid }}
           >
-            <TouchableOpacityBox>
-              <EyeCircleButton />
+            <TouchableOpacityBox onPress={toggleShowWitnesses}>
+              {showWitnesses ? <EyeCircleButtonYellow /> : <EyeCircleButton />}
             </TouchableOpacityBox>
             <TouchableOpacityBox marginStart="s">
               <HexCircleButton />
@@ -251,8 +269,8 @@ const HotspotDetails = () => {
             />
             <HotspotDetailChart
               title={t('hotspot_details.witness_title')}
-              number="12"
-              change={-1.2}
+              number={witnesses?.length?.toString()}
+              change={1.2}
               color={purpleMain}
               data={data[1]}
             />
@@ -270,7 +288,7 @@ const HotspotDetails = () => {
 }
 
 const data: Record<string, ChartData[]> = {
-  1: times(30).map((v, i) => ({
+  1: times(14).map((v, i) => ({
     up: random(0, 100),
     down: 0,
     day: '',

@@ -15,6 +15,7 @@ import {
 } from '../features/wallet/root/walletTypes'
 import { getSecureItem } from './secureAccount'
 
+const MAX = 100000
 const client = new Client()
 
 export const configChainVars = async () => {
@@ -56,7 +57,12 @@ export const getHotspotRewards = async (
   const list = await client
     .hotspot(address)
     .rewards.list({ minTime: endDate, maxTime: date })
-  return list.take(100000)
+  return list.take(MAX)
+}
+
+export const getHotspotWitnesses = async (address: string) => {
+  const list = await client.hotspot(address).witnesses.list()
+  return list.take(MAX)
 }
 
 export const getAccount = async () => {
