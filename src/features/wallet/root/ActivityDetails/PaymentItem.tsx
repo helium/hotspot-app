@@ -58,6 +58,7 @@ const PaymentItem = ({
         marginHorizontal="ms"
       >
         <Text
+          selectable={false}
           variant="medium"
           fontSize={14}
           color="black"
