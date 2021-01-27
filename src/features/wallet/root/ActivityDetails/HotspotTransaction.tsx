@@ -46,7 +46,7 @@ const HotspotTransaction = ({ item, address }: Props) => {
     return null
 
   return (
-    <Box flex={1} marginTop="s" marginBottom="xxl">
+    <Box flex={1} marginTop="s" marginBottom="xl">
       {type !== 'transfer_hotspot_v1' && (
         <Text
           variant="light"

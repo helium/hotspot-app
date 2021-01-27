@@ -211,9 +211,9 @@ const useActivityItem = (address: string) => {
         if (!item.fee) return ''
 
         if (convertToHNT) {
-          return formatAmount(!isSelling(item), feeToHNT(item.fee))
+          return formatAmount(!isSelling(item), feeToHNT(item.amountToSeller))
         }
-        return formatAmount(isFee(item), item.fee)
+        return formatAmount(!isSelling(item), item.amountToSeller)
       }
       if (item instanceof AssertLocationV1 || item instanceof TokenBurnV1) {
         if (!item.fee) return ''
