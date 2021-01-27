@@ -123,7 +123,7 @@ const ActivityDetails = () => {
           />
         )}
       >
-        <Box padding="l" flex={1}>
+        <Box padding="l" flex={1} paddingBottom="xxxxl">
           <Text
             variant="medium"
             fontSize={32}
