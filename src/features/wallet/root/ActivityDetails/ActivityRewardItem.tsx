@@ -24,7 +24,7 @@ const ActivityRewardItem = ({ reward, isFirst, isLast }: Props) => {
     if (reward.type === 'securities') {
       return t('activity_details.security_tokens')
     }
-    return animalHash(reward.account)
+    return animalHash(reward.gateway)
   }
 
   const body = () => {
