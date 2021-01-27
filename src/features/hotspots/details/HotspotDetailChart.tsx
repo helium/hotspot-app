@@ -56,7 +56,7 @@ const NumberBox = ({
     <Text variant="light" fontSize={28} color="black" marginBottom="s">
       {focusedData ? focusedData.up : number}
     </Text>
-    {change && !focusedData && (
+    {change && !focusedData ? (
       <Box
         style={{
           backgroundColor: change < 0 ? negativeColor : positiveColor,
@@ -69,7 +69,7 @@ const NumberBox = ({
           {`${change < 0 ? '' : '+'}${change.toFixed(2).toString()}%`}
         </Text>
       </Box>
-    )}
+    ) : null}
   </>
 )
 

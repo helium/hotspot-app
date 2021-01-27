@@ -12,9 +12,9 @@ export const calculatePercentChange = (
 
 export const getRewardChartData = (
   rewardData: HotspotReward[] | undefined,
-  numDays: number,
+  numDays: number | undefined,
 ) => {
-  if (!rewardData) return []
+  if (!rewardData || !numDays) return []
   const chartData = []
   if (numDays === 1) {
     // chart hours
