@@ -20,9 +20,11 @@ export const useFees = () => {
     heliumData: { currentOraclePrice, predictedOraclePrices },
   } = useSelector((state: RootState) => state)
 
-  const feeToHNT = (balance: Balance<DataCredits>) => {
+  const feeToHNT = (balance?: Balance<DataCredits>) => {
+    if (!balance) return new Balance<DataCredits>(0, CurrencyType.dataCredit)
+
     const prices = [currentOraclePrice, ...predictedOraclePrices]
-    const oraclePrice = minBy(prices, (p) => p.price.integerBalance)
+    const oraclePrice = minBy(prices, (p) => p?.price.integerBalance || 0)
     return balance.toNetworkTokens(oraclePrice?.price)
   }
 
