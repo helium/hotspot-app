@@ -14,30 +14,6 @@ const HotspotSetupBluetoothSuccess = () => {
   const navigation = useNavigation<HotspotSetupNavigationProp>()
   const { availableHotspots } = useConnectedHotspotContext()
 
-  // console.log('availableHotspots', availableHotspots)
-  // const availableHotspots = {
-  //   '31D15CD5': {
-  //     id: '31D15CD5',
-  //     localName: 'Helium Hotspot A15B',
-  //     name: 'Helium Hotspot',
-  //   },
-  //   '61D15CD5': {
-  //     id: '61D15CD5',
-  //     localName: 'Rak Hotspot Miner F7B4',
-  //     name: 'Helium Hotspot',
-  //   },
-  //   '41D15CD5': {
-  //     id: '41D15CD5',
-  //     localName: 'Nebra Indoor Hotspot A15BFF',
-  //     name: 'Helium Hotspot',
-  //   },
-  //   '51D15CD5': {
-  //     id: '51D15CD5',
-  //     localName: 'Nebra Outdoor Hotspot A15BCC',
-  //     name: 'Helium Hotspot',
-  //   },
-  // }
-
   const handleConnect = async (hotspot: Device) => {
     navigation.replace('HotspotSetupConnectingScreen', {
       hotspotId: hotspot.id,
