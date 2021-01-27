@@ -195,9 +195,9 @@ const useActivityItem = (address: string) => {
       return `${fee ? '-' : '+'}${amount.toLocaleString()}`
     }
 
-    if (amount?.floatBalance === 0) return amount.toString()
+    if (amount?.floatBalance === 0) return amount.toString(8)
 
-    return `${fee ? '-' : '+'}${amount?.toString()}`
+    return `${fee ? '-' : '+'}${amount?.toString(8)}`
   }
 
   const amount = useCallback(
@@ -240,8 +240,8 @@ const useActivityItem = (address: string) => {
         return formatAmount(isFee(item), pendingTxn.txn.fee)
       }
       return (
-        (item as AddGatewayV1).fee?.toString() ||
-        (item as TokenBurnV1).amount?.toString() ||
+        (item as AddGatewayV1).fee?.toString(8) ||
+        (item as TokenBurnV1).amount?.toString(8) ||
         ''
       )
     },
