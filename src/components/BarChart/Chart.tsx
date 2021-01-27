@@ -25,9 +25,9 @@ type Props = {
 }
 
 const getMax = (data: ChartData[], iteratee: 'up' | 'down') => {
-  const maxUp = maxBy(data, iteratee)?.[iteratee]
-  if (maxUp && maxUp < 1) return 10
-  return maxUp || 0
+  const maxValue = maxBy(data, iteratee)?.[iteratee]
+  if (maxValue && maxValue < 1) return 10
+  return maxValue || 0
 }
 
 const BarChart = ({
