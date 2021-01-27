@@ -43,6 +43,15 @@ const HotspotTxnsProgressScreen = () => {
     )
   }
 
+  const hotspotOnChain = async (address: string): Promise<boolean> => {
+    try {
+      await getHotspotDetails(address)
+      return true
+    } catch (error) {
+      return false
+    }
+  }
+
   const submitOnboardingTxns = async () => {
     if (!connectedHotspot.address) {
       Alert.alert(
@@ -53,9 +62,8 @@ const HotspotTxnsProgressScreen = () => {
     }
 
     // check if add gateway needed
-    const existingHotspot = await getHotspotDetails(connectedHotspot.address)
-
-    if (existingHotspot) {
+    const isOnChain = await hotspotOnChain(connectedHotspot.address)
+    if (!isOnChain) {
       // if so, construct and publish add gateway
       try {
         const addGatewaySuccess = await addGatewayTxn()
