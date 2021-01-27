@@ -7,6 +7,7 @@ import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import ChartContainer from '../../../components/BarChart/ChartContainer'
 import { useColors } from '../../../theme/themeHooks'
+import animateTransition from '../../../utils/animateTransition'
 
 type Props = {
   title: string
@@ -52,7 +53,7 @@ const NumberBox = ({
   change?: number
 }) => (
   <>
-    <Text variant="light" fontSize={32} color="black" marginBottom="s">
+    <Text variant="light" fontSize={28} color="black" marginBottom="s">
       {focusedData ? focusedData.up : number}
     </Text>
     {change && !focusedData && (
@@ -86,6 +87,7 @@ const HotspotDetailChart = ({
   const { redMedium, black, grayLight, grayMain } = useColors()
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
   const onFocus = (chartData: ChartData | null) => {
+    animateTransition()
     setFocusedData(chartData)
   }
   return (

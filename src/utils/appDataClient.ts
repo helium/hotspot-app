@@ -23,8 +23,12 @@ export const configChainVars = async () => {
   Transaction.config(vars)
 }
 
+const getAddress = async () => {
+  return getSecureItem('address')
+}
+
 export const getHotspots = async () => {
-  const address = await getSecureItem('address')
+  const address = await getAddress()
   if (!address) return []
 
   const newHotspotList = await client.account(address).hotspots.list()
@@ -66,7 +70,7 @@ export const getHotspotWitnesses = async (address: string) => {
 }
 
 export const getAccount = async () => {
-  const address = await getSecureItem('address')
+  const address = await getAddress()
   if (!address) return
 
   const { data } = await client.accounts.get(address)
@@ -84,7 +88,7 @@ export const getPredictedOraclePrice = async () =>
   client.oracle.getPredictedPrice()
 
 export const getAccountTxnsList = async (filterType: FilterType) => {
-  const address = await getSecureItem('address')
+  const address = await getAddress()
   if (!address) return
 
   if (filterType === 'pending') {
@@ -99,7 +103,7 @@ export const getHotspotActivityList = async (
   gateway: string,
   filterType: HotspotActivityType,
 ) => {
-  const address = await getSecureItem('address')
+  const address = getAddress()
   if (!address) return
 
   const params = { filterTypes: HotspotActivityFilters[filterType] }

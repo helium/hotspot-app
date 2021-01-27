@@ -109,7 +109,7 @@ const HotspotDetails = () => {
     )
   }
 
-  const dragMid = hp(20)
+  const dragMid = 200
   const dragMax = hp(75)
   const dragMin = 50
   const snapProgress = useSharedValue(dragMid / dragMax)
@@ -273,7 +273,7 @@ const HotspotDetails = () => {
             />
             <HotspotDetailChart
               title={t('hotspot_details.reward_title')}
-              number={rewardSum?.total?.toString(0)?.replace('HNT', '')?.trim()}
+              number={rewardSum?.total?.toString(2)?.replace('HNT', '')?.trim()}
               change={percentChange}
               color={greenOnline}
               data={getRewardChartData(rewards, numDays)}

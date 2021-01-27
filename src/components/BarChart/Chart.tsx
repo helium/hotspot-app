@@ -24,6 +24,12 @@ type Props = {
   labelColor?: string
 }
 
+const getMax = (data: ChartData[], iteratee: 'up' | 'down') => {
+  const maxUp = maxBy(data, iteratee)?.[iteratee]
+  if (maxUp && maxUp < 1) return 10
+  return maxUp || 0
+}
+
 const BarChart = ({
   width,
   height,
@@ -48,8 +54,8 @@ const BarChart = ({
 
   // SVG maths
   const barWidth = width / (data.length + data.length - 1)
-  const maxUp = maxBy(data, 'up')?.up || 0
-  const maxDown = maxBy(data, 'down')?.down || 0
+  const maxUp = getMax(data, 'up')
+  const maxDown = getMax(data, 'down')
   const maxBarHeight = maxUp + barWidth / 1.5 + maxDown
   const vScale = (height - barOffset) / maxBarHeight
   const minBarHeight = barWidth
