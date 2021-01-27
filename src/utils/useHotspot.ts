@@ -17,6 +17,7 @@ import {
   encodeWifiConnect,
   encodeWifiRemove,
   encodeAddGateway,
+  encodeAssertLoc,
 } from './bluetooth/bluetoothDataParser'
 import {
   getCurrentOraclePrice,
@@ -24,8 +25,13 @@ import {
   submitTransaction,
 } from './appDataClient'
 import { getSecureItem } from './secureAccount'
-import { makeAddGatewayTxn } from './transactions'
-import { calculateAddGatewayFee, stakingFee } from './fees'
+import { makeAddGatewayTxn, makeAssertLocTxn } from './transactions'
+import {
+  calculateAddGatewayFee,
+  calculateAssertLocFee,
+  stakingFeeAddGateway,
+  stakingFeeAssertLoc,
+} from './fees'
 import accountSlice from '../store/account/accountSlice'
 import connectedHotspotSlice, {
   HotspotName,
@@ -280,8 +286,6 @@ const useHotspot = () => {
 
     const firmware: { version: string } = await getStaking('firmware')
     const { version: minVersion } = firmware
-    console.log('version', deviceFirmwareVersion)
-    console.log('min version', minVersion)
 
     dispatch(
       connectedHotspotSlice.actions.setConnectedHotspotFirmware({
@@ -338,12 +342,16 @@ const useHotspot = () => {
     if (!characteristic) return false
 
     const owner = await getSecureItem('address')
-    if (!owner) return false
-    const data = await getStaking('address')
-    const payer = data?.address || ''
+    const payer = connectedHotspotDetails.onboardingRecord?.maker.address
+    if (!payer || !owner) return false
     const fee = calculateAddGatewayFee(owner, payer) || 0
 
-    const encodedPayload = encodeAddGateway(owner, stakingFee, fee, payer)
+    const encodedPayload = encodeAddGateway(
+      owner,
+      stakingFeeAddGateway,
+      fee,
+      payer,
+    )
 
     await writeCharacteristic(characteristic, encodedPayload)
     const { value } = await readCharacteristic(characteristic)
@@ -384,6 +392,63 @@ const useHotspot = () => {
     }
   }
 
+  const assertLocationTxn = async (lat: number, lng: number) => {
+    if (!connectedHotspot.current || !connectedHotspotDetails.onboardingAddress)
+      return false
+
+    const isFree = hasFreeLocationAssert()
+
+    const uuid = HotspotCharacteristic.ASSERT_LOC_UUID
+    const characteristic = await findCharacteristic(
+      uuid,
+      connectedHotspot.current,
+    )
+    if (!characteristic) return false
+
+    const owner = await getSecureItem('address')
+    const payer = isFree
+      ? connectedHotspotDetails.onboardingRecord?.maker.address
+      : ''
+    if (!payer || !owner) return false
+
+    const fee = calculateAssertLocFee(owner, payer, 1) || 0
+    const nonce = connectedHotspotDetails?.nonce || 0
+    const amount = stakingFeeAssertLoc
+
+    const encodedPayload = encodeAssertLoc(
+      lat,
+      lng,
+      nonce,
+      owner,
+      amount,
+      fee,
+      payer,
+    )
+
+    await writeCharacteristic(characteristic, encodedPayload)
+    const { value } = await readCharacteristic(characteristic)
+    if (!value) return false
+
+    const txn = await makeAssertLocTxn(value)
+
+    const stakingServerSignedTxn = await getStakingSignedTransaction(
+      connectedHotspotDetails.onboardingAddress,
+      txn,
+    )
+
+    try {
+      const pendingTransaction = await submitTransaction(stakingServerSignedTxn)
+      pendingTransaction.txn = { fee }
+      pendingTransaction.status = 'pending'
+      pendingTransaction.type = 'assert_location_v1'
+      dispatch(accountSlice.actions.addPendingTransaction(pendingTransaction))
+      return !!pendingTransaction
+    } catch (error) {
+      Logger.error(error)
+      return false
+    }
+  }
+
   type LocationFeeData = {
     isFree: boolean
     hasSufficientBalance: boolean
@@ -391,15 +456,12 @@ const useHotspot = () => {
   }
 
   const loadLocationFeeData = async (): Promise<LocationFeeData> => {
-    const locationNonceLimit =
-      connectedHotspotDetails.onboardingRecord?.maker.locationNonceLimit || 0
-    const locationStakingFee = Transaction.stakingFeeTxnAssertLocationV1
+    const isFree = hasFreeLocationAssert()
 
-    const isFree =
-      !!connectedHotspotDetails?.validOnboarding &&
-      (connectedHotspotDetails?.nonce || 0) < locationNonceLimit
+    // TODO calculate fee using actual txn here
     const noPayerByteLength = 224
     const txnFee = Transaction.calculateFee(new Uint8Array(noPayerByteLength))
+    const locationStakingFee = Transaction.stakingFeeTxnAssertLocationV1
 
     const totalStakingAmountDC = new Balance(
       locationStakingFee + txnFee,
@@ -416,6 +478,17 @@ const useHotspot = () => {
       hasSufficientBalance,
       totalStakingAmount,
     }
+  }
+
+  const hasFreeLocationAssert = (): boolean => {
+    if (!connectedHotspotDetails.validOnboarding) {
+      return false
+    }
+
+    const locationNonceLimit =
+      connectedHotspotDetails.onboardingRecord?.maker.locationNonceLimit || 0
+
+    return (connectedHotspotDetails?.nonce || 0) < locationNonceLimit
   }
 
   const getDiagnosticInfo = async () => {
@@ -441,6 +514,7 @@ const useHotspot = () => {
     checkFirmwareCurrent,
     updateHotspotStatus,
     addGatewayTxn,
+    assertLocationTxn,
     loadLocationFeeData,
     getDiagnosticInfo,
   }

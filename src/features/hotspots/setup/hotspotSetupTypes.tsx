@@ -14,16 +14,18 @@ export type HotspotSetupStackParamList = {
     networks: string[]
     connectedNetworks: string[]
   }
+  FirmwareUpdateNeededScreen: undefined
   HotspotSetupWifiScreen: { network: string }
   HotspotSetupWifiConnectingScreen: { network: string; password: string }
   HotspotSetupLocationInfoScreen: undefined
+  HotspotSetupPickLocationScreen: undefined
   HotspotSetupConfirmLocationScreen: {
     hotspotCoords: number[]
     locationName: string
   }
-  FirmwareUpdateNeededScreen: undefined
-  HotspotSetupPickLocationScreen: undefined
-  HotspotTxnsProgressScreen: undefined
+  HotspotTxnsProgressScreen: {
+    hotspotCoords: number[]
+  }
 }
 
 export type HotspotSetupNavigationProp = StackNavigationProp<HotspotSetupStackParamList>

@@ -4,6 +4,7 @@ import {
   AddGatewayV1,
   Transaction,
   TokenBurnV1,
+  AssertLocationV1,
 } from '@helium/transactions'
 import Balance, {
   DataCredits,
@@ -14,7 +15,8 @@ import { minBy } from 'lodash'
 import { getKeypair } from './secureAccount'
 import { getCurrentOraclePrice, getPredictedOraclePrice } from './appDataClient'
 
-export const stakingFee = Transaction.stakingFeeTxnAddGatewayV1
+export const stakingFeeAddGateway = Transaction.stakingFeeTxnAddGatewayV1
+export const stakingFeeAssertLoc = Transaction.stakingFeeTxnAssertLocationV1
 
 export const convertFeeToNetworkTokens = async (
   balance: Balance<DataCredits>,
@@ -66,6 +68,25 @@ export const calculateAddGatewayFee = (ownerB58: string, payerB58: string) => {
     owner,
     gateway: emptyB58Address(),
     payer,
+  })
+
+  return txn.fee
+}
+
+export const calculateAssertLocFee = (
+  ownerB58: string,
+  payerB58: string,
+  nonce: number,
+) => {
+  const owner = Address.fromB58(ownerB58)
+  const payer = payerB58 !== '' ? Address.fromB58(payerB58) : undefined
+
+  const txn = new AssertLocationV1({
+    owner,
+    gateway: emptyB58Address(),
+    payer,
+    location: 'fffffffffffffff',
+    nonce,
   })
 
   return txn.fee

@@ -1,10 +1,9 @@
-// import Config from 'react-native-config'
+import Config from 'react-native-config'
+import * as Logger from './logger'
 
 const makeRequest = async (url: string, opts: RequestInit = {}) => {
   try {
-    // const route = [Config.STAKING_API_BASE_URL, url].join('/')
-    const route = ['https://onboarding.dewi.org/api/v2', url].join('/')
-    console.log('GET', route)
+    const route = [Config.STAKING_API_BASE_URL, url].join('/')
 
     const response = await fetch(route, {
       ...opts,
@@ -22,7 +21,7 @@ const makeRequest = async (url: string, opts: RequestInit = {}) => {
       return text
     }
   } catch (error) {
-    console.log(error)
+    Logger.error(error)
     throw error
   }
 }

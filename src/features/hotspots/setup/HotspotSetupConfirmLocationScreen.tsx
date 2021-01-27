@@ -36,7 +36,7 @@ const HotspotSetupConfirmLocationScreen = () => {
   } = useRoute<Route>()
 
   const navNext = async () => {
-    navigation.replace('HotspotTxnsProgressScreen')
+    navigation.replace('HotspotTxnsProgressScreen', { hotspotCoords })
   }
 
   if (loading || !result) {

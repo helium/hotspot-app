@@ -34,6 +34,7 @@ export type OnboardingRecord = {
   id: number
   maker: {
     locationNonceLimit: number
+    address: string
   }
 }
 
