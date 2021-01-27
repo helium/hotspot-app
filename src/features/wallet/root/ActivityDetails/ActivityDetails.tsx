@@ -48,7 +48,7 @@ const ActivityDetails = () => {
   let block = ''
   if (activityItem) {
     const asPayment = activityItem as PaymentV1
-    block = asPayment.height?.toString() || ''
+    block = asPayment.height?.toLocaleString() || ''
   }
 
   useEffect(() => {
