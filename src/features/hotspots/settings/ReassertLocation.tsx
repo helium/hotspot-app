@@ -57,6 +57,7 @@ const ReassertLocation = () => {
     case 'update':
       return (
         <ReassertLocationUpdate
+          key={state}
           locationSelected={(latitude, longitude) => {
             setUpdatedLocation({ latitude, longitude })
             animateTransition()
@@ -67,6 +68,7 @@ const ReassertLocation = () => {
     case 'confirm':
       return (
         <ReassertLocationUpdate
+          key={state}
           confirming
           locationSelected={(latitude, longitude) => {
             setUpdatedLocationConfirmation({ latitude, longitude })
