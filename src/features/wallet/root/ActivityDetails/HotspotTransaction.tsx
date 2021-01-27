@@ -47,14 +47,16 @@ const HotspotTransaction = ({ item, address }: Props) => {
 
   return (
     <Box flex={1} marginTop="s" marginBottom="xl">
-      {type !== 'transfer_hotspot_v1' && (
+      {type !== 'transfer_hotspot_v1' && !!addGateway.fee && (
         <Text
           variant="light"
           fontSize={15}
           color="blueBright"
           alignSelf="flex-end"
         >
-          {addGateway.fee && `-${addGateway.fee.toString()}`}
+          {addGateway.fee &&
+            addGateway.fee.integerBalance &&
+            `-${addGateway.fee.toString()}`}
         </Text>
       )}
       <Box
