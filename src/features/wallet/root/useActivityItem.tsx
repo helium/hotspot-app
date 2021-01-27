@@ -12,7 +12,6 @@ import {
   PendingTransaction,
 } from '@helium/http'
 import { useTranslation } from 'react-i18next'
-import animalHash from 'angry-purple-tiger'
 import Balance, { DataCredits, NetworkTokens } from '@helium/currency'
 import { startCase } from 'lodash'
 import { useColors } from '../../../theme/themeHooks'
@@ -196,57 +195,95 @@ const useActivityItem = (address: string) => {
       return `${fee ? '-' : '+'}${amount.toLocaleString()}`
     }
 
-    if (amount?.floatBalance === 0) return amount.toString(8)
+    if (amount?.floatBalance === 0) return amount.toString()
 
     return `${fee ? '-' : '+'}${amount?.toString(8)}`
   }
 
-  const amount = useCallback(
-    (item: AnyTransaction | PendingTransaction, convertToHNT = false) => {
-      if (item instanceof AddGatewayV1) {
-        if (!convertToHNT) return animalHash(item.gateway)
-
-        return formatAmount(true, feeToHNT(item.fee))
+  const fee = useCallback(
+    (item: AnyTransaction | PendingTransaction) => {
+      if (item instanceof RewardsV1) {
+        return ''
       }
+
       if (item instanceof TransferHotspotV1) {
-        if (!item.fee) return ''
-
-        if (convertToHNT) {
-          return formatAmount(!isSelling(item), feeToHNT(item.amountToSeller))
-        }
-        return formatAmount(!isSelling(item), item.amountToSeller)
+        if (!isSelling(item)) return ''
       }
-      if (item instanceof AssertLocationV1 || item instanceof TokenBurnV1) {
-        if (!item.fee) return ''
 
-        if (convertToHNT) {
-          return formatAmount(true, feeToHNT(item.fee))
-        }
-        return formatAmount(isFee(item), item.fee)
+      if (item instanceof AddGatewayV1) {
+        return formatAmount(true, item.fee)
+      }
+
+      if (item instanceof TransferHotspotV1) {
+        return formatAmount(true, item.fee)
+      }
+
+      if (item instanceof AssertLocationV1 || item instanceof TokenBurnV1) {
+        return formatAmount(true, item.fee)
+      }
+
+      if (item instanceof PaymentV1) {
+        if (address !== item.payer) return ''
+        return formatAmount(true, item.fee)
+      }
+
+      if (item instanceof PaymentV2) {
+        if (address !== item.payer) return ''
+        return formatAmount(true, item.fee)
+      }
+
+      const pendingTxn = item as PendingTransaction
+      if (pendingTxn.txn !== undefined) {
+        return formatAmount(true, pendingTxn.txn.fee)
+      }
+      return (item as AddGatewayV1).fee?.toString(8) || ''
+    },
+    [address, isSelling],
+  )
+
+  const amount = useCallback(
+    (item: AnyTransaction | PendingTransaction) => {
+      if (item instanceof TransferHotspotV1) {
+        return formatAmount(!isSelling(item), feeToHNT(item.amountToSeller))
+      }
+      if (item instanceof AssertLocationV1 || item instanceof AddGatewayV1) {
+        return formatAmount(true, item.stakingFee)
+      }
+      if (item instanceof TokenBurnV1) {
+        return formatAmount(true, item.amount)
       }
       if (item instanceof RewardsV1) {
-        return formatAmount(isFee(item), item.totalAmount)
+        return formatAmount(false, item.totalAmount)
       }
       if (item instanceof PaymentV1) {
-        return formatAmount(isFee(item), item.amount)
+        return formatAmount(item.payee === address, item.amount)
       }
       if (item instanceof PaymentV2) {
-        return formatAmount(isFee(item), item.totalAmount)
+        if (item.payer === address) {
+          return formatAmount(true, item.totalAmount)
+        }
+
+        const payment = item.payments.find((p) => p.payee === address)
+        return formatAmount(false, payment?.amount)
       }
+
       const pendingTxn = item as PendingTransaction
       if (pendingTxn.txn !== undefined) {
         if (pendingTxn.txn.type === 'add_gateway_v1') {
-          return animalHash((pendingTxn.txn as AddGatewayV1).gateway)
+          return formatAmount(true, (pendingTxn.txn as AddGatewayV1).stakingFee)
         }
+        if (pendingTxn.txn.type === 'assert_location_v1') {
+          return formatAmount(
+            true,
+            (pendingTxn.txn as AssertLocationV1).stakingFee,
+          )
+        }
+
         return formatAmount(isFee(item), pendingTxn.txn.fee)
       }
-      return (
-        (item as AddGatewayV1).fee?.toString(8) ||
-        (item as TokenBurnV1).amount?.toString(8) ||
-        ''
-      )
+      return ''
     },
-    [feeToHNT, isFee, isSelling],
+    [address, feeToHNT, isFee, isSelling],
   )
 
   const time = useCallback(
@@ -303,6 +340,7 @@ const useActivityItem = (address: string) => {
     time,
     snapHeight,
     isFee,
+    fee,
   }
 }
 
