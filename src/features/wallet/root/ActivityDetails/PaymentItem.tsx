@@ -2,8 +2,6 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
-import MyAccount from '../../../../assets/images/myAccount.svg'
-import TheirAccount from '../../../../assets/images/theirAccount.svg'
 
 type Props = {
   text: string
@@ -24,9 +22,6 @@ const PaymentItem = ({
   isMyAccount,
 }: Props) => {
   const { t } = useTranslation()
-
-  const showIcon =
-    mode === 'to' || mode === 'from' || mode === 'seller' || mode === 'buyer'
 
   return (
     <Box
@@ -79,8 +74,6 @@ const PaymentItem = ({
           </Text>
         )}
       </Box>
-      {isMyAccount && showIcon && <MyAccount />}
-      {!isMyAccount && showIcon && <TheirAccount />}
     </Box>
   )
 }
