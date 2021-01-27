@@ -1,9 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import {
-  HotspotRewardData,
-  HotspotRewardSumData,
-} from '@helium/http/build/models/HotspotReward'
-import { Hotspot } from '@helium/http'
+import { HotspotReward, HotspotRewardSum, Hotspot } from '@helium/http'
 import {
   getHotspotRewards,
   getHotspotRewardsSum,
@@ -48,9 +44,9 @@ export const fetchHotspotWitnesses = createAsyncThunk(
 )
 
 type HotspotDetailsState = {
-  numDays: number
-  rewardSum?: HotspotRewardSumData
-  rewards?: HotspotRewardData[]
+  numDays?: number
+  rewardSum?: HotspotRewardSum
+  rewards?: HotspotReward[]
   percentChange?: number
   loadingRewards: boolean
   witnesses?: Hotspot[]
@@ -80,6 +76,10 @@ const hotspotDetailsSlice = createSlice({
     })
     builder.addCase(fetchHotspotRewards.rejected, (state, _action) => {
       state.loadingRewards = false
+      state.numDays = undefined
+      state.rewardSum = undefined
+      state.rewards = undefined
+      state.percentChange = undefined
     })
     builder.addCase(fetchHotspotWitnesses.pending, (state, _action) => {
       state.loadingWitnesses = true
@@ -90,6 +90,10 @@ const hotspotDetailsSlice = createSlice({
     })
     builder.addCase(fetchHotspotWitnesses.rejected, (state, _action) => {
       state.loadingWitnesses = false
+      state.numDays = undefined
+      state.rewardSum = undefined
+      state.rewards = undefined
+      state.percentChange = undefined
     })
   },
 })
