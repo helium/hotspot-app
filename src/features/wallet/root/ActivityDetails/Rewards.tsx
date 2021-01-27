@@ -10,21 +10,34 @@ const Rewards = ({ item }: Props) => {
 
   const rewards = item as RewardsV1
 
-  const grouped = groupBy(rewards.rewards, (reward) => reward.type)
+  const grouped = groupBy(rewards.rewards, (reward) => {
+    if (reward.type === 'securities') return reward.type
+
+    return reward.gateway
+  })
+
+  const { securities, ...rewardsGroup } = grouped
 
   return (
     <Box marginTop="lx">
-      {Object.keys(grouped).map((k, idx) =>
-        grouped[k].map((r, index) => (
-          <ActivityRewardItem
-            reward={r}
-            // eslint-disable-next-line react/no-array-index-key
-            key={`${idx}.${index}`}
-            isFirst={index === 0}
-            isLast={index === grouped[k].length - 1}
-          />
-        )),
+      {securities && securities.length > 0 && (
+        <ActivityRewardItem
+          rewards={securities}
+          // eslint-disable-next-line react/no-array-index-key
+          isFirst
+          isSecurityToken
+          isLast
+        />
       )}
+      {Object.keys(rewardsGroup).map((k, idx) => (
+        <ActivityRewardItem
+          rewards={rewardsGroup[k]}
+          // eslint-disable-next-line react/no-array-index-key
+          key={`${idx}}`}
+          isFirst={idx === 0}
+          isLast={idx === Object.keys(rewardsGroup).length - 1}
+        />
+      ))}
     </Box>
   )
 }
