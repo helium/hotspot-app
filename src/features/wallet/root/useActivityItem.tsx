@@ -239,7 +239,11 @@ const useActivityItem = (address: string) => {
         }
         return formatAmount(isFee(item), pendingTxn.txn.fee)
       }
-      return item.fee?.toString() || item.amount?.toString() || ''
+      return (
+        (item as AddGatewayV1).fee?.toString() ||
+        (item as TokenBurnV1).amount?.toString() ||
+        ''
+      )
     },
     [feeToHNT, isFee, isSelling],
   )
