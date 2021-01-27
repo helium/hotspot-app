@@ -26,6 +26,7 @@ import Location from '../../../assets/images/location.svg'
 import Burn from '../../../assets/images/burn.svg'
 import shortLocale from '../../../utils/formatDistance'
 import { useFees } from '../../../utils/fees'
+import { hp } from '../../../utils/layout'
 
 export const TxnTypeKeys = [
   'rewards_v1',
@@ -268,21 +269,26 @@ const useActivityItem = (address: string) => {
 
   const snapHeight = useCallback(
     (item: AnyTransaction | PendingTransaction) => {
-      switch (item.type as TxnType) {
-        case 'payment_v1':
-        case 'payment_v2':
-          return isSending(item) ? 509 : 480
-        case 'transfer_hotspot_v1':
-          return 566
-        case 'rewards_v1':
-          return 665
-        case 'token_burn_v1':
-          return 517
-        case 'assert_location_v1':
-        case 'add_gateway_v1':
-        default:
-          return 523
-      }
+      const maxHeight = hp(75)
+      const desiredHeight = (() => {
+        switch (item.type as TxnType) {
+          case 'payment_v1':
+          case 'payment_v2':
+            return isSending(item) ? 509 : 480
+          case 'transfer_hotspot_v1':
+            return 566
+          case 'rewards_v1':
+            return 665
+          case 'token_burn_v1':
+            return 517
+          case 'assert_location_v1':
+          case 'add_gateway_v1':
+          default:
+            return 523
+        }
+      })()
+
+      return Math.min(maxHeight, desiredHeight)
     },
     [isSending],
   )
