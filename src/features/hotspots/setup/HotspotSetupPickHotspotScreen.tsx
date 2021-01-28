@@ -4,16 +4,23 @@ import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotP
 import HotspotSetupBluetoothError from './HotspotSetupBluetoothError'
 import HotspotSetupBluetoothSuccess from './HotspotSetupBluetoothSuccess'
 
-const HotspotSetupBluetoothScreen = () => {
+const HotspotSetupPickHotspotScreen = () => {
   const { availableHotspots } = useConnectedHotspotContext()
   const hotspotCount = Object.keys(availableHotspots).length
 
+  if (hotspotCount > 0) {
+    return (
+      <BackScreen backgroundColor="purple200" padding="none">
+        <HotspotSetupBluetoothSuccess />
+      </BackScreen>
+    )
+  }
+
   return (
     <BackScreen backgroundColor="primaryBackground">
-      {hotspotCount === 0 && <HotspotSetupBluetoothError />}
-      {hotspotCount > 0 && <HotspotSetupBluetoothSuccess />}
+      <HotspotSetupBluetoothError />
     </BackScreen>
   )
 }
 
-export default HotspotSetupBluetoothScreen
+export default HotspotSetupPickHotspotScreen

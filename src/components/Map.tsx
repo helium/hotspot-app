@@ -28,6 +28,7 @@ type Props = {
   offsetCenterRatio?: number
   maxZoomLevel?: number
   minZoomLevel?: number
+  interactive?: boolean
 }
 const Map = ({
   onMapMoved,
@@ -44,6 +45,7 @@ const Map = ({
   offsetCenterRatio,
   maxZoomLevel = 16,
   minZoomLevel = 0,
+  interactive = true,
 }: Props) => {
   const map = useRef<MapboxGL.MapView>(null)
   const camera = useRef<MapboxGL.Camera>(null)
@@ -133,6 +135,8 @@ const Map = ({
         logoEnabled={false}
         rotateEnabled={false}
         pitchEnabled={false}
+        scrollEnabled={interactive}
+        zoomEnabled={interactive}
         compassEnabled={false}
       >
         <MapboxGL.Camera

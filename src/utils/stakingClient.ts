@@ -1,4 +1,5 @@
 import Config from 'react-native-config'
+import * as Logger from './logger'
 
 const makeRequest = async (url: string, opts: RequestInit = {}) => {
   try {
@@ -10,7 +11,6 @@ const makeRequest = async (url: string, opts: RequestInit = {}) => {
         ...opts.headers,
         'Cache-Control': 'no-cache',
         'Content-Type': 'application/json',
-        Authorization: `Basic ${Config.STAKING_TOKEN}`,
       },
     })
     const text = await response.text()
@@ -21,7 +21,7 @@ const makeRequest = async (url: string, opts: RequestInit = {}) => {
       return text
     }
   } catch (error) {
-    console.log(error)
+    Logger.error(error)
     throw error
   }
 }

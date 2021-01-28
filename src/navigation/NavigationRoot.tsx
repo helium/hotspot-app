@@ -39,7 +39,13 @@ const NavigationRoot = () => {
       return <RootStack.Screen name="Splash" component={SplashScreen} />
 
     if (!isBackedUp)
-      return <RootStack.Screen name="Onboarding" component={Onboarding} />
+      return (
+        <RootStack.Screen
+          name="Onboarding"
+          component={Onboarding}
+          options={{ gestureEnabled: false }}
+        />
+      )
 
     if (!isEducated)
       return <RootStack.Screen name="Education" component={Education} />

@@ -1,10 +1,13 @@
-import { AnyTransaction, ResourceList } from '@helium/http'
+import { AnyTransaction, Hotspot, ResourceList } from '@helium/http'
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import {
   HotspotActivityKeys,
   HotspotActivityType,
 } from '../../features/hotspots/root/hotspotTypes'
-import { getHotspotActivityList } from '../../utils/appDataClient'
+import {
+  getHotspotActivityList,
+  getHotspotDetails,
+} from '../../utils/appDataClient'
 
 export type HotspotStatus = 'owned' | 'global' | 'new' | 'error' | 'initial'
 export type HotspotType = 'Helium' | 'RAK'
@@ -18,7 +21,8 @@ export type HotspotDetails = {
   wifi?: string
   type?: HotspotType
   name?: HotspotName
-  freeAddHotspot?: boolean
+  validOnboarding?: boolean
+  onboardingRecord?: OnboardingRecord
   onboardingAddress?: string
   firmware?: {
     version: string
@@ -27,6 +31,14 @@ export type HotspotDetails = {
   ethernetOnline?: boolean
   nonce?: number
   status?: HotspotStatus
+}
+
+export type OnboardingRecord = {
+  id: number
+  maker: {
+    locationNonceLimit: number
+    address: string
+  }
 }
 
 export type HotspotActivity = {
@@ -75,6 +87,16 @@ export const fetchHotspotActivity = createAsyncThunk<
   return list.takeJSON(opts.fetchCount || 10)
 })
 
+export const fetchHotspotDetails = createAsyncThunk<Hotspot, HotspotDetails>(
+  'account/fetchHotspotDetails',
+  async (details, thunkAPI) => {
+    thunkAPI.dispatch(
+      connectedHotspotSlice.actions.initConnectedHotspot(details),
+    )
+    return getHotspotDetails(details.address || '')
+  },
+)
+
 // This slice contains data related to a connected hotspot
 const connectedHotspotSlice = createSlice({
   name: 'connectedHotspot',
@@ -122,6 +144,12 @@ const connectedHotspotSlice = createSlice({
         ]
       },
     )
+    builder.addCase(fetchHotspotDetails.fulfilled, (state, { payload }) => {
+      state.nonce = payload.nonce
+    })
+    builder.addCase(fetchHotspotDetails.rejected, (state) => {
+      state.nonce = 0
+    })
   },
 })
 

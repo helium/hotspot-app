@@ -15,7 +15,7 @@ import { useBluetoothContext } from '../../../providers/BluetoothProvider'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotSetupPowerScreen'>
 
-const HotspotSetupPairingScreen = () => {
+const HotspotSetupBluetoothInfoScreen = () => {
   const { t } = useTranslation()
   const {
     params: { hotspotType },
@@ -36,7 +36,7 @@ const HotspotSetupPairingScreen = () => {
   }, [getState])
 
   const navNext = () =>
-    navigation.push('HotspotScanningScreen', { hotspotType })
+    navigation.push('HotspotSetupScanningScreen', { hotspotType })
 
   const checkBluetooth = async () => {
     const state = await getState()
@@ -110,4 +110,4 @@ const HotspotSetupPairingScreen = () => {
   )
 }
 
-export default HotspotSetupPairingScreen
+export default HotspotSetupBluetoothInfoScreen

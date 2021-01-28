@@ -1,6 +1,11 @@
 import { Address } from '@helium/crypto-react-native'
 import { PendingTransaction, AnyTransaction } from '@helium/http'
-import { PaymentV2, AddGatewayV1, TokenBurnV1 } from '@helium/transactions'
+import {
+  PaymentV2,
+  AddGatewayV1,
+  TokenBurnV1,
+  AssertLocationV1,
+} from '@helium/transactions'
 import { getKeypair } from './secureAccount'
 
 export const makePaymentTxn = async (
@@ -33,6 +38,18 @@ export const makeAddGatewayTxn = async (partialTxnBin: string) => {
   const keypair = await getKeypair()
 
   const signedTxn = await addGatewayTxn.sign({
+    owner: keypair,
+  })
+
+  const serialized = signedTxn.serialize()
+  return Buffer.from(serialized).toString('base64')
+}
+
+export const makeAssertLocTxn = async (partialTxnBin: string) => {
+  const assertLocTxn = AssertLocationV1.fromString(partialTxnBin)
+  const keypair = await getKeypair()
+
+  const signedTxn = await assertLocTxn.sign({
     owner: keypair,
   })
 

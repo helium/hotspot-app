@@ -42,7 +42,7 @@ const MainTabs = () => {
 
   return (
     <MainTab.Navigator
-      initialRouteName="Wallet"
+      initialRouteName="Hotspots"
       // lazy={false}
       tabBarOptions={{
         showLabel: false,

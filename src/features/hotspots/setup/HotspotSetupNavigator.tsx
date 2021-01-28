@@ -4,20 +4,19 @@ import HotspotSetupSelectionScreen from './HotspotSelectionScreen'
 import HotspotSetupEducationScreen from './HotspotSetupEducationScreen'
 import HotspotSetupDiagnosticsScreen from './HotspotSetupDiagnosticsScreen'
 import HotspotSetupPowerScreen from './HotspotSetupPowerScreen'
-import HotspotSetupPairingScreen from './HotspotSetupPairingScreen'
-import HotspotScanningScreen from './HotspotScanningScreen'
-import HotspotSetupBluetoothScreen from './HotspotSetupBluetoothScreen'
-import HotspotSetupScanWifiScreen from './HotspotSetupScanWifiScreen'
+import HotspotSetupBluetoothInfoScreen from './HotspotSetupBluetoothInfoScreen'
+import HotspotSetupScanningScreen from './HotspotSetupScanningScreen'
+import HotspotSetupPickHotspotScreen from './HotspotSetupPickHotspotScreen'
+import HotspotSetupConnectingScreen from './HotspotSetupConnectingScreen'
 import HotspotSetupWifiScreen from './HotspotSetupWifiScreen'
-import HotspotEthernetScreen from './HotspotEthernetScreen'
 import defaultScreenOptions from '../../../navigation/defaultScreenOptions'
-import HotspotGenesisScreen from './HotspotGenesisScreen'
-import HotspotSetupAddTxnScreen from './HotspotSetupAddTxnScreen'
-import EnableLocationScreen from './EnableLocationScreen'
-import HotspotLocationFeeScreen from './HotspotLocationFeeScreen'
+import HotspotSetupLocationInfoScreen from './HotspotSetupLocationInfoScreen'
 import FirmwareUpdateNeededScreen from './FirmwareUpdateNeededScreen'
-import ConfirmLocationScreen from './ConfirmLocationScreen'
+import HotspotSetupPickLocationScreen from './HotspotSetupPickLocationScreen'
 import HotspotTxnsProgressScreen from './HotspotTxnsProgressScreen'
+import HotspotSetupWifiConnectingScreen from './HotspotSetupWifiConnectingScreen'
+import HotspotSetupConfirmLocationScreen from './HotspotSetupConfirmLocationScreen'
+import HotspotSetupPickWifiScreen from './HotspotSetupPickWifiScreen'
 
 const HotspotSetupStack = createStackNavigator()
 
@@ -25,7 +24,7 @@ const HotspotSetup = () => {
   return (
     <HotspotSetupStack.Navigator
       headerMode="none"
-      screenOptions={defaultScreenOptions}
+      screenOptions={{ ...defaultScreenOptions, gestureEnabled: false }}
     >
       <HotspotSetupStack.Screen
         name="HotspotSetupSelectionScreen"
@@ -44,56 +43,53 @@ const HotspotSetup = () => {
         component={HotspotSetupPowerScreen}
       />
       <HotspotSetupStack.Screen
-        name="HotspotSetupPairingScreen"
-        component={HotspotSetupPairingScreen}
+        name="HotspotSetupBluetoothInfoScreen"
+        component={HotspotSetupBluetoothInfoScreen}
       />
       <HotspotSetupStack.Screen
-        name="HotspotScanningScreen"
-        component={HotspotScanningScreen}
+        name="HotspotSetupScanningScreen"
+        component={HotspotSetupScanningScreen}
       />
       <HotspotSetupStack.Screen
-        name="HotspotSetupBluetoothScreen"
-        component={HotspotSetupBluetoothScreen}
+        name="HotspotSetupPickHotspotScreen"
+        component={HotspotSetupPickHotspotScreen}
       />
       <HotspotSetupStack.Screen
-        name="HotspotSetupScanWifiScreen"
-        component={HotspotSetupScanWifiScreen}
+        name="HotspotSetupConnectingScreen"
+        component={HotspotSetupConnectingScreen}
+      />
+      <HotspotSetupStack.Screen
+        name="HotspotSetupPickWifiScreen"
+        component={HotspotSetupPickWifiScreen}
       />
       <HotspotSetupStack.Screen
         name="HotspotSetupWifiScreen"
         component={HotspotSetupWifiScreen}
       />
       <HotspotSetupStack.Screen
-        name="HotspotEthernetScreen"
-        component={HotspotEthernetScreen}
-      />
-      <HotspotSetupStack.Screen
-        name="HotspotGenesisScreen"
-        component={HotspotGenesisScreen}
-      />
-      <HotspotSetupStack.Screen
-        name="HotspotSetupAddTxnScreen"
-        component={HotspotSetupAddTxnScreen}
-      />
-      <HotspotSetupStack.Screen
-        name="EnableLocationScreen"
-        component={EnableLocationScreen}
-      />
-      <HotspotSetupStack.Screen
-        name="HotspotLocationFeeScreen"
-        component={HotspotLocationFeeScreen}
+        name="HotspotSetupWifiConnectingScreen"
+        component={HotspotSetupWifiConnectingScreen}
       />
       <HotspotSetupStack.Screen
         name="FirmwareUpdateNeededScreen"
         component={FirmwareUpdateNeededScreen}
       />
       <HotspotSetupStack.Screen
-        name="ConfirmLocationScreen"
-        component={ConfirmLocationScreen}
+        name="HotspotSetupLocationInfoScreen"
+        component={HotspotSetupLocationInfoScreen}
+      />
+      <HotspotSetupStack.Screen
+        name="HotspotSetupPickLocationScreen"
+        component={HotspotSetupPickLocationScreen}
+      />
+      <HotspotSetupStack.Screen
+        name="HotspotSetupConfirmLocationScreen"
+        component={HotspotSetupConfirmLocationScreen}
       />
       <HotspotSetupStack.Screen
         name="HotspotTxnsProgressScreen"
         component={HotspotTxnsProgressScreen}
+        options={{ gestureEnabled: false }}
       />
     </HotspotSetupStack.Navigator>
   )

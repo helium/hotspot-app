@@ -15,6 +15,7 @@ export enum HotspotCharacteristic {
   WIFI_REMOVE = '8cc6e0b3-98c5-40cc-b1d8-692940e6994b',
   WIFI_CONNECT_UUID = '398168aa-0111-4ec0-b1fa-171671270608',
   ADD_GATEWAY_UUID = 'df3b16ca-c985-4da2-a6d2-9b9b9abdb858',
+  ASSERT_LOC_UUID = 'd435f5de-01a4-4e7d-84ba-dfd347f60275',
   DIAGNOSTIC_UUID = 'b833d34f-d871-422c-bf9e-8e6ec117d57e',
   ETHERNET_ONLINE_UUID = 'e5866bd6-0288-4476-98ca-ef7da6b4d289',
 }

@@ -6,19 +6,26 @@ export type HotspotSetupStackParamList = {
   HotspotSetupEducationScreen: { hotspotType: HotspotType }
   HotspotSetupDiagnosticsScreen: { hotspotType: HotspotType }
   HotspotSetupPowerScreen: { hotspotType: HotspotType }
-  HotspotSetupPairingScreen: { hotspotType: HotspotType }
-  HotspotScanningScreen: { hotspotType: HotspotType }
-  HotspotSetupBluetoothScreen: { hotspotType: HotspotType }
-  HotspotSetupScanWifiScreen: undefined
-  HotspotSetupWifiScreen: { network: string }
-  HotspotEthernetScreen: undefined
-  HotspotGenesisScreen: undefined
-  HotspotSetupAddTxnScreen: undefined
-  EnableLocationScreen: undefined
-  HotspotLocationFeeScreen: undefined
+  HotspotSetupBluetoothInfoScreen: { hotspotType: HotspotType }
+  HotspotSetupScanningScreen: { hotspotType: HotspotType }
+  HotspotSetupPickHotspotScreen: { hotspotType: HotspotType }
+  HotspotSetupConnectingScreen: { hotspotId: string }
+  HotspotSetupPickWifiScreen: {
+    networks: string[]
+    connectedNetworks: string[]
+  }
   FirmwareUpdateNeededScreen: undefined
-  ConfirmLocationScreen: undefined
-  HotspotTxnsProgressScreen: undefined
+  HotspotSetupWifiScreen: { network: string }
+  HotspotSetupWifiConnectingScreen: { network: string; password: string }
+  HotspotSetupLocationInfoScreen: undefined
+  HotspotSetupPickLocationScreen: undefined
+  HotspotSetupConfirmLocationScreen: {
+    hotspotCoords: number[]
+    locationName: string
+  }
+  HotspotTxnsProgressScreen: {
+    hotspotCoords: number[]
+  }
 }
 
 export type HotspotSetupNavigationProp = StackNavigationProp<HotspotSetupStackParamList>

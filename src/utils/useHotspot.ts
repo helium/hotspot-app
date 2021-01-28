@@ -2,8 +2,7 @@ import { useState, useRef } from 'react'
 import { Device } from 'react-native-ble-plx'
 import validator from 'validator'
 import compareVersions from 'compare-versions'
-import { Transaction } from '@helium/transactions'
-import { Balance, CurrencyType } from '@helium/currency'
+import { Balance, CurrencyType, NetworkTokens } from '@helium/currency'
 import { useSelector } from 'react-redux'
 import { useBluetoothContext } from '../providers/BluetoothProvider'
 import {
@@ -17,6 +16,7 @@ import {
   encodeWifiConnect,
   encodeWifiRemove,
   encodeAddGateway,
+  encodeAssertLoc,
 } from './bluetooth/bluetoothDataParser'
 import {
   getCurrentOraclePrice,
@@ -24,10 +24,16 @@ import {
   submitTransaction,
 } from './appDataClient'
 import { getSecureItem } from './secureAccount'
-import { makeAddGatewayTxn } from './transactions'
-import { calculateAddGatewayFee, stakingFee } from './fees'
+import { makeAddGatewayTxn, makeAssertLocTxn } from './transactions'
+import {
+  calculateAddGatewayFee,
+  calculateAssertLocFee,
+  stakingFeeAddGateway,
+  stakingFeeAssertLoc,
+} from './fees'
 import accountSlice from '../store/account/accountSlice'
 import connectedHotspotSlice, {
+  fetchHotspotDetails,
   HotspotName,
   HotspotStatus,
   HotspotType,
@@ -38,13 +44,13 @@ import * as Logger from './logger'
 
 type HotspotStaking = {
   batch: string
-  helium_serial: string
+  heliumSerial: string
   id: number
-  mac_eth0: string
-  mac_wlan0: string
-  onboarding_address: string
-  public_address: string
-  rpi_serial: string
+  macEth0: string
+  macWlan0: string
+  onboardingAddress: string
+  publicAddress: string
+  rpiSerial: string
 }
 
 const useHotspot = () => {
@@ -166,8 +172,9 @@ const useHotspot = () => {
       )
     }
 
-    const stakingAddress = `hotspots/${onboardingAddress}`
-    const feesStatus = (await getStaking(stakingAddress)) as HotspotStaking
+    const onboardingRecord = (await getStaking(
+      `hotspots/${onboardingAddress}`,
+    )) as HotspotStaking
 
     const details = {
       address,
@@ -176,10 +183,12 @@ const useHotspot = () => {
       name,
       wifi,
       ethernetOnline,
-      freeAddHotspot: !!feesStatus,
+      validOnboarding: !!onboardingRecord,
+      onboardingRecord,
       onboardingAddress,
     }
-    dispatch(connectedHotspotSlice.actions.initConnectedHotspot(details))
+    dispatch(fetchHotspotDetails(details))
+    return details
   }
 
   const scanForWifiNetworks = async (configured = false) => {
@@ -262,8 +271,8 @@ const useHotspot = () => {
     })
   }
 
-  const checkFirmwareCurrent = async () => {
-    if (!connectedHotspot.current) return
+  const checkFirmwareCurrent = async (): Promise<boolean> => {
+    if (!connectedHotspot.current) return false
 
     const characteristic = FirmwareCharacteristic.FIRMWAREVERSION_UUID
     const charVal = await findAndReadCharacteristic(
@@ -271,7 +280,7 @@ const useHotspot = () => {
       connectedHotspot.current,
       Service.FIRMWARESERVICE_UUID,
     )
-    if (!charVal) return
+    if (!charVal) return false
 
     const deviceFirmwareVersion = parseChar(charVal, characteristic)
 
@@ -333,12 +342,16 @@ const useHotspot = () => {
     if (!characteristic) return false
 
     const owner = await getSecureItem('address')
-    if (!owner) return false
-    const data = await getStaking('address')
-    const payer = data?.address || ''
+    const payer = connectedHotspotDetails.onboardingRecord?.maker.address
+    if (!payer || !owner) return false
     const fee = calculateAddGatewayFee(owner, payer) || 0
 
-    const encodedPayload = encodeAddGateway(owner, stakingFee, fee, payer)
+    const encodedPayload = encodeAddGateway(
+      owner,
+      stakingFeeAddGateway,
+      fee,
+      payer,
+    )
 
     await writeCharacteristic(characteristic, encodedPayload)
     const { value } = await readCharacteristic(characteristic)
@@ -379,30 +392,110 @@ const useHotspot = () => {
     }
   }
 
-  const loadLocationFeeData = async () => {
-    const data = await getStaking('/limits')
-    const locationNonceLimit = data.location_nonce
-    // staking fee from Transaction
-    const locationStakingFee = Transaction.stakingFeeTxnAssertLocationV1
+  const assertLocationTxn = async (lat: number, lng: number) => {
+    if (!connectedHotspot.current || !connectedHotspotDetails.onboardingAddress)
+      return false
 
-    const isFree =
-      !!connectedHotspotDetails?.freeAddHotspot &&
-      (connectedHotspotDetails?.nonce || 0) + 1 < locationNonceLimit
-    const noPayerByteLength = 224
-    const txnFee = Transaction.calculateFee(new Uint8Array(noPayerByteLength))
+    const isFree = hasFreeLocationAssert()
+
+    const uuid = HotspotCharacteristic.ASSERT_LOC_UUID
+    const characteristic = await findCharacteristic(
+      uuid,
+      connectedHotspot.current,
+    )
+    if (!characteristic) return false
+
+    const owner = await getSecureItem('address')
+    const payer = isFree
+      ? connectedHotspotDetails.onboardingRecord?.maker.address
+      : ''
+    if (!payer || !owner) return false
+
+    const nonce = connectedHotspotDetails?.nonce || 0
+    const fee = calculateAssertLocFee(owner, payer, nonce) || 0
+    const amount = stakingFeeAssertLoc
+
+    const encodedPayload = encodeAssertLoc(
+      lat,
+      lng,
+      nonce,
+      owner,
+      amount,
+      fee,
+      payer,
+    )
+
+    await writeCharacteristic(characteristic, encodedPayload)
+    const { value } = await readCharacteristic(characteristic)
+    if (!value) return false
+
+    const txn = await makeAssertLocTxn(value)
+
+    const stakingServerSignedTxn = await getStakingSignedTransaction(
+      connectedHotspotDetails.onboardingAddress,
+      txn,
+    )
+
+    try {
+      const pendingTransaction = await submitTransaction(stakingServerSignedTxn)
+      pendingTransaction.txn = { fee }
+      pendingTransaction.status = 'pending'
+      pendingTransaction.type = 'assert_location_v1'
+      dispatch(accountSlice.actions.addPendingTransaction(pendingTransaction))
+      return !!pendingTransaction
+    } catch (error) {
+      Logger.error(error)
+      return false
+    }
+  }
+
+  type LocationFeeData = {
+    isFree: boolean
+    hasSufficientBalance: boolean
+    totalStakingAmount: Balance<NetworkTokens>
+  }
+
+  const loadLocationFeeData = async (): Promise<LocationFeeData> => {
+    const isFree = hasFreeLocationAssert()
+
+    const owner = await getSecureItem('address')
+    const payer = isFree
+      ? connectedHotspotDetails.onboardingRecord?.maker.address
+      : ''
+
+    if (!owner || payer === undefined) {
+      throw new Error('Missing payer or owner')
+    }
+
+    const nonce = connectedHotspotDetails?.nonce || 0
+    const fee = calculateAssertLocFee(owner, payer, nonce) || 0
 
     const totalStakingAmountDC = new Balance(
-      locationStakingFee + txnFee,
+      stakingFeeAssertLoc + fee,
       CurrencyType.dataCredit,
     )
     const { price: oraclePrice } = await getCurrentOraclePrice()
     const totalStakingAmount = totalStakingAmountDC.toNetworkTokens(oraclePrice)
-      .integerBalance
 
     const balance = account?.balance?.integerBalance || 0
-    const hasSufficientBalance = balance >= totalStakingAmount
+    const hasSufficientBalance = balance >= totalStakingAmount.integerBalance
 
-    return { isFree, hasSufficientBalance, totalStakingAmount }
+    return {
+      isFree,
+      hasSufficientBalance,
+      totalStakingAmount,
+    }
+  }
+
+  const hasFreeLocationAssert = (): boolean => {
+    if (!connectedHotspotDetails.validOnboarding) {
+      return false
+    }
+
+    const locationNonceLimit =
+      connectedHotspotDetails.onboardingRecord?.maker.locationNonceLimit || 0
+
+    return (connectedHotspotDetails?.nonce || 0) < locationNonceLimit
   }
 
   const getDiagnosticInfo = async () => {
@@ -428,6 +521,7 @@ const useHotspot = () => {
     checkFirmwareCurrent,
     updateHotspotStatus,
     addGatewayTxn,
+    assertLocationTxn,
     loadLocationFeeData,
     getDiagnosticInfo,
   }
