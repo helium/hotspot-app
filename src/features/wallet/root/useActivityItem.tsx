@@ -24,7 +24,6 @@ import ReceivedHnt from '../../../assets/images/receivedHNT.svg'
 import Location from '../../../assets/images/location.svg'
 import Burn from '../../../assets/images/burn.svg'
 import shortLocale from '../../../utils/formatDistance'
-import { useFees } from '../../../utils/fees'
 import { hp } from '../../../utils/layout'
 
 export const TxnTypeKeys = [
@@ -41,7 +40,6 @@ type TxnType = typeof TxnTypeKeys[number]
 const useActivityItem = (address: string) => {
   const colors = useColors()
   const { t } = useTranslation()
-  const { feeToHNT } = useFees()
 
   const isSending = useCallback(
     (item: AnyTransaction | PendingTransaction) => {
@@ -208,26 +206,19 @@ const useActivityItem = (address: string) => {
 
       if (item instanceof TransferHotspotV1) {
         if (!isSelling(item)) return ''
-      }
 
-      if (item instanceof AddGatewayV1) {
         return formatAmount(true, item.fee)
       }
 
-      if (item instanceof TransferHotspotV1) {
+      if (
+        item instanceof AddGatewayV1 ||
+        item instanceof AssertLocationV1 ||
+        item instanceof TokenBurnV1
+      ) {
         return formatAmount(true, item.fee)
       }
 
-      if (item instanceof AssertLocationV1 || item instanceof TokenBurnV1) {
-        return formatAmount(true, item.fee)
-      }
-
-      if (item instanceof PaymentV1) {
-        if (address !== item.payer) return ''
-        return formatAmount(true, item.fee)
-      }
-
-      if (item instanceof PaymentV2) {
+      if (item instanceof PaymentV1 || item instanceof PaymentV2) {
         if (address !== item.payer) return ''
         return formatAmount(true, item.fee)
       }
@@ -236,7 +227,8 @@ const useActivityItem = (address: string) => {
       if (pendingTxn.txn !== undefined) {
         return formatAmount(true, pendingTxn.txn.fee)
       }
-      return (item as AddGatewayV1).fee?.toString(8) || ''
+
+      return formatAmount(true, (item as AddGatewayV1).fee)
     },
     [address, isSelling],
   )
@@ -244,9 +236,10 @@ const useActivityItem = (address: string) => {
   const amount = useCallback(
     (item: AnyTransaction | PendingTransaction) => {
       if (item instanceof TransferHotspotV1) {
-        return formatAmount(!isSelling(item), feeToHNT(item.amountToSeller))
+        return formatAmount(!isSelling(item), item.amountToSeller)
       }
       if (item instanceof AssertLocationV1 || item instanceof AddGatewayV1) {
+        console.log(item)
         return formatAmount(true, item.stakingFee)
       }
       if (item instanceof TokenBurnV1) {
@@ -256,7 +249,7 @@ const useActivityItem = (address: string) => {
         return formatAmount(false, item.totalAmount)
       }
       if (item instanceof PaymentV1) {
-        return formatAmount(item.payee === address, item.amount)
+        return formatAmount(item.payer === address, item.amount)
       }
       if (item instanceof PaymentV2) {
         if (item.payer === address) {
@@ -283,7 +276,7 @@ const useActivityItem = (address: string) => {
       }
       return ''
     },
-    [address, feeToHNT, isFee, isSelling],
+    [address, isFee, isSelling],
   )
 
   const time = useCallback(

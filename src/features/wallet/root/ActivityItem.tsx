@@ -9,7 +9,7 @@ type Props = {
   backgroundColor: string
   icon: React.ReactNode
   title: string
-  amount: string
+  subtitle: string
   time?: string
   // eslint-disable-next-line react/no-unused-prop-types
   hash: string // used for memoization
@@ -21,7 +21,7 @@ const ActivityItem = ({
   isLast = false,
   backgroundColor,
   icon,
-  amount,
+  subtitle,
   time,
   title,
   handlePress,
@@ -66,7 +66,7 @@ const ActivityItem = ({
             numberOfLines={1}
             adjustsFontSizeToFit
           >
-            {amount}
+            {subtitle}
           </Text>
         </Box>
         <Box paddingHorizontal="m">

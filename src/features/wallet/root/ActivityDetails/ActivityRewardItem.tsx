@@ -62,10 +62,11 @@ const ActivityRewardItem = ({
       marginBottom={isLast ? 'l' : 'xxxs'}
     >
       {rewards.map((reward, idx) => (
-        <>
+        // eslint-disable-next-line react/no-array-index-key
+        <Box key={idx}>
           {idx === 0 && (
             <Box flexDirection="row" alignItems="center" marginBottom="s">
-              {icon(reward)}
+              {icon()}
               <Text variant="medium" fontSize={15} color="black" marginLeft="s">
                 {title(reward)}
               </Text>
@@ -89,7 +90,7 @@ const ActivityRewardItem = ({
               {`+${reward.amount.toString()}`}
             </Text>
           </Box>
-        </>
+        </Box>
       ))}
     </Box>
   )

@@ -16,7 +16,13 @@ import { useSelector } from 'react-redux'
 import { useAsync } from 'react-async-hook'
 import { LayoutAnimation, FlatList, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { AnyTransaction, AddGatewayV1, PendingTransaction } from '@helium/http'
+import {
+  AnyTransaction,
+  AddGatewayV1,
+  PendingTransaction,
+  AssertLocationV1,
+} from '@helium/http'
+import animalName from 'angry-purple-tiger'
 import ActivityItem from './ActivityItem'
 import { WalletAnimationPoints } from './walletLayout'
 import ActivityCardHeader from './ActivityCardHeader'
@@ -110,6 +116,16 @@ const ActivityCard = forwardRef(
       index: number
     }
 
+    const getSubtitle = useCallback(
+      (item: AnyTransaction | PendingTransaction) => {
+        if (item instanceof AssertLocationV1 || item instanceof AddGatewayV1) {
+          return animalName(item.gateway)
+        }
+        return amount(item)
+      },
+      [amount],
+    )
+
     const renderItem = useCallback(
       ({ item, index }: Item) => {
         return (
@@ -121,14 +137,14 @@ const ActivityCard = forwardRef(
             backgroundColor={backgroundColor(item)}
             icon={listIcon(item)}
             title={title(item)}
-            amount={amount(item)}
+            subtitle={getSubtitle(item)}
             time={time(item)}
           />
         )
       },
       [
-        amount,
         backgroundColor,
+        getSubtitle,
         handleActivityItemPressed,
         listIcon,
         time,

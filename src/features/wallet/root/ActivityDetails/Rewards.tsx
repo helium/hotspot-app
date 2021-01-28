@@ -19,7 +19,7 @@ const Rewards = ({ item }: Props) => {
   const { securities, ...rewardsGroup } = grouped
 
   return (
-    <Box marginTop="lx">
+    <Box>
       {securities && securities.length > 0 && (
         <ActivityRewardItem
           rewards={securities}
@@ -33,7 +33,7 @@ const Rewards = ({ item }: Props) => {
         <ActivityRewardItem
           rewards={rewardsGroup[k]}
           // eslint-disable-next-line react/no-array-index-key
-          key={`${idx}}`}
+          key={idx}
           isFirst={idx === 0}
           isLast={idx === Object.keys(rewardsGroup).length - 1}
         />

@@ -7,8 +7,6 @@ import {
 } from '@helium/http'
 import Balance, { NetworkTokens } from '@helium/currency'
 import Box from '../../../../components/Box'
-import Text from '../../../../components/Text'
-import { isPayer } from '../../../../utils/transactions'
 import PaymentItem from './PaymentItem'
 
 type Props = { item: AnyTransaction | PendingTransaction; address: string }
@@ -27,21 +25,8 @@ const Payment = ({ item, address }: Props) => {
     payments = [{ payee: v1.payee, amount: v1.amount || 0 }]
   }
 
-  const payer = isPayer(address, item)
   return (
-    <Box flex={1} marginTop={payer ? 'none' : 'm'}>
-      {payer && (
-        <Text
-          variant="light"
-          fontSize={15}
-          color="blueBright"
-          alignSelf="flex-end"
-          marginBottom="m"
-        >
-          {`-${v2.fee.toString()}`}
-        </Text>
-      )}
-
+    <Box flex={1}>
       <PaymentItem
         text={v1.payer}
         mode="from"

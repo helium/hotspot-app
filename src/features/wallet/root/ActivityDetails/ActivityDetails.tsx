@@ -43,6 +43,7 @@ const ActivityDetails = () => {
     time,
     snapHeight,
     isFee,
+    fee,
   } = useActivityItem(address || '')
 
   let block = ''
@@ -81,6 +82,9 @@ const ActivityDetails = () => {
   }, [])
 
   if (!activityItem) return null
+
+  const feeStr = fee(activityItem)
+
   return (
     <Box
       flex={1}
@@ -131,9 +135,22 @@ const ActivityDetails = () => {
             adjustsFontSizeToFit
             color={isFee(activityItem) ? 'blueMain' : 'greenMain'}
             alignSelf="flex-end"
+            marginBottom={!feeStr ? 'm' : 'none'}
           >
-            {amount(activityItem, true)}
+            {amount(activityItem)}
           </Text>
+
+          {!!feeStr && (
+            <Text
+              variant="light"
+              fontSize={15}
+              color="blueBright"
+              alignSelf="flex-end"
+              marginBottom="m"
+            >
+              {`${feeStr} ${t('generic.fee')}`}
+            </Text>
+          )}
           <Rewards item={activityItem} />
           <Payment item={activityItem} address={address || ''} />
           <Burn item={activityItem} address={address || ''} />
