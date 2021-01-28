@@ -90,8 +90,6 @@ export const fetchHotspotActivity = createAsyncThunk<
 export const fetchHotspotDetails = createAsyncThunk<Hotspot, HotspotDetails>(
   'account/fetchHotspotDetails',
   async (details, thunkAPI) => {
-    console.log('in fetchHotspotDetails')
-
     thunkAPI.dispatch(
       connectedHotspotSlice.actions.initConnectedHotspot(details),
     )
