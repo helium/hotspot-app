@@ -36,7 +36,6 @@ import {
 import {
   getAccount,
   getHotspotActivityList,
-  submitTransaction,
 } from '../../../utils/appDataClient'
 import * as Logger from '../../../utils/logger'
 import TransferBanner from '../../hotspots/transfers/TransferBanner'
@@ -49,6 +48,7 @@ import {
 import { getAddress } from '../../../utils/secureAccount'
 import Text from '../../../components/Text'
 import { fromNow } from '../../../utils/timeUtils'
+import useSubmitTxn from '../../../hooks/useSubmitTxn'
 
 type Props = {
   scanResult?: QrScanResult
@@ -60,6 +60,7 @@ type Props = {
 const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   const navigation = useNavigation()
   const { t } = useTranslation()
+  const submitTxn = useSubmitTxn()
 
   const [type, setType] = useState<SendType>(sendType || 'payment')
   const [address, setAddress] = useState<string>('')
@@ -344,9 +345,9 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   const handleSubmit = async () => {
     try {
       const txn = await constructTxn()
-      if (txn) {
-        await submitTransaction(txn)
-      }
+      if (!txn) return
+      // TODO change txn constructors to return the txn instead of string
+      submitTxn(txn)
       triggerNavHaptic()
       navigation.navigate('SendComplete')
     } catch (error) {
