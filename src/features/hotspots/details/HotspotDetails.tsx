@@ -25,6 +25,8 @@ import hotspotDetailsSlice, {
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import MoreMenu from '../../../assets/images/moreMenu.svg'
 import BackButton from '../../../components/BackButton'
+import HotspotSettingsProvider from '../settings/HotspotSettingsProvider'
+import HotspotSettings from '../settings/HotspotSettings'
 
 const shortAddress = (address?: string) =>
   `${address?.slice(0, 5)}...${address?.slice(
@@ -205,6 +207,9 @@ const HotspotDetails = () => {
           data={data[2]}
         />
       </Box>
+      <HotspotSettingsProvider>
+        <HotspotSettings />
+      </HotspotSettingsProvider>
     </BottomSheetScrollView>
   )
 }

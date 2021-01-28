@@ -30,6 +30,9 @@ import {
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
 import hotspotDetailsSlice from '../../../store/hotspotDetails/hotspotDetailsSlice'
+import { useHotspotSettingsContext } from './HotspotSettingsProvider'
+import Box from '../../../components/Box'
+import BackButton from '../../../components/BackButton'
 
 type State = 'init' | 'scan' | 'transfer'
 
@@ -41,6 +44,7 @@ const HotspotSettings = () => {
   const slideUpAnimRef = useRef(new Animated.Value(1000))
   const { getState } = useBluetoothContext()
   const dispatch = useAppDispatch()
+  const { showBack, goBack } = useHotspotSettingsContext()
 
   const {
     hotspotDetails: { hotspot, showSettings },
@@ -216,17 +220,24 @@ const HotspotSettings = () => {
         flexDirection="column"
         justifyContent="space-between"
       >
-        <TouchableOpacityBox
-          alignSelf="flex-end"
-          height={22}
-          flex={1}
-          padding="l"
-          width="100%"
-          alignItems="flex-end"
-          onPress={handleClose}
+        <Box
+          flexDirection="row-reverse"
+          justifyContent="space-between"
+          alignItems="center"
         >
-          <CloseModal color="white" />
-        </TouchableOpacityBox>
+          <TouchableOpacityBox
+            alignSelf="flex-end"
+            height={22}
+            flex={1}
+            padding="l"
+            width="100%"
+            alignItems="flex-end"
+            onPress={handleClose}
+          >
+            <CloseModal color="white" />
+          </TouchableOpacityBox>
+          {showBack && <BackButton alignSelf="center" onPress={goBack} />}
+        </Box>
         <AnimatedBox
           margin="ms"
           style={{ transform: [{ translateY: slideUpAnimRef.current }] }}

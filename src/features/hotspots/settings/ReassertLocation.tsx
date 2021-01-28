@@ -14,6 +14,7 @@ import useAlert from '../../../utils/useAlert'
 import ReassertLocationFee from './ReassertLocationFee'
 import ReassertLocationUpdate from './ReassertLocationUpdate'
 import * as Logger from '../../../utils/logger'
+import { useHotspotSettingsContext } from './HotspotSettingsProvider'
 
 type Coords = { latitude: number; longitude: number }
 const DEFAULT_FEE_DATA = {
@@ -44,12 +45,13 @@ const ReassertLocation = ({ onFinished }: Props) => {
     loadLocationFeeData,
     [],
   )
+  const { enableBack } = useHotspotSettingsContext()
 
   const { showOKAlert } = useAlert()
 
-  const amount = feeData.isFree
-    ? 'O DC'
-    : feeData.totalStakingAmountDC.toString()
+  useEffect(() => {
+    enableBack(() => onFinished())
+  }, [enableBack, onFinished])
 
   useEffect(() => {
     dispatch(getLocation())
@@ -93,6 +95,10 @@ const ReassertLocation = ({ onFinished }: Props) => {
     })
     onFinished()
   }
+
+  const amount = feeData.isFree
+    ? 'O DC'
+    : feeData.totalStakingAmountDC.toString()
 
   switch (state) {
     case 'fee':
@@ -140,8 +146,6 @@ const ReassertLocation = ({ onFinished }: Props) => {
         />
       )
   }
-
-  return null
 }
 
 export default memo(ReassertLocation)
