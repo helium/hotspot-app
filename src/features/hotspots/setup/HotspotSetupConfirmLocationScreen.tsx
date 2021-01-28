@@ -43,7 +43,7 @@ const HotspotSetupConfirmLocationScreen = () => {
     return (
       <BackScreen>
         <Box flex={1} justifyContent="center" paddingBottom="xxl">
-          <ActivityIndicator />
+          <ActivityIndicator color="gray" />
         </Box>
       </BackScreen>
     )

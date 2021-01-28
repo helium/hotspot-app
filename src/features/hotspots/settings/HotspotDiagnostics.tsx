@@ -68,7 +68,9 @@ const HotspotDiagnostics = ({ updateTitle }: Props) => {
         />
       )
     case 'reassert':
-      return <ReassertLocation />
+      return (
+        <ReassertLocation onFinished={() => handleOptionSelected('options')} />
+      )
   }
 
   return (

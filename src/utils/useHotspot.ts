@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { Device } from 'react-native-ble-plx'
 import validator from 'validator'
 import compareVersions from 'compare-versions'
-import { Balance, CurrencyType, NetworkTokens } from '@helium/currency'
+import { Balance, CurrencyType } from '@helium/currency'
 import { useSelector } from 'react-redux'
 import { useBluetoothContext } from '../providers/BluetoothProvider'
 import {
@@ -63,6 +63,8 @@ const useHotspot = () => {
     account: { account },
     connectedHotspot: connectedHotspotDetails,
   } = useSelector((state: RootState) => state)
+
+  // TODO: Move staking calls to redux
 
   // helium hotspot uses b58 onboarding address and RAK is uuid v4
   const getHotspotType = (onboardingAddress: string): HotspotType =>
@@ -395,7 +397,7 @@ const useHotspot = () => {
       : ''
     if (!payer || !owner) return false
 
-    const nonce = connectedHotspotDetails?.nonce || 0
+    const nonce = connectedHotspotDetails?.details?.nonce || 0
     const fee = calculateAssertLocFee(owner, payer, nonce) || 0
     const amount = stakingFeeAssertLoc
 
@@ -433,13 +435,7 @@ const useHotspot = () => {
     }
   }
 
-  type LocationFeeData = {
-    isFree: boolean
-    hasSufficientBalance: boolean
-    totalStakingAmount: Balance<NetworkTokens>
-  }
-
-  const loadLocationFeeData = async (): Promise<LocationFeeData> => {
+  const loadLocationFeeData = async () => {
     const isFree = hasFreeLocationAssert()
 
     const owner = await getSecureItem('address')
@@ -451,7 +447,7 @@ const useHotspot = () => {
       throw new Error('Missing payer or owner')
     }
 
-    const nonce = connectedHotspotDetails?.nonce || 0
+    const nonce = connectedHotspotDetails?.details?.nonce || 0
     const fee = calculateAssertLocFee(owner, payer, nonce) || 0
 
     const totalStakingAmountDC = new Balance(
@@ -460,6 +456,7 @@ const useHotspot = () => {
     )
     const { price: oraclePrice } = await getCurrentOraclePrice()
     const totalStakingAmount = totalStakingAmountDC.toNetworkTokens(oraclePrice)
+    const totalStakingAmountUsd = totalStakingAmountDC.toUsd(oraclePrice)
 
     const balance = account?.balance?.integerBalance || 0
     const hasSufficientBalance = balance >= totalStakingAmount.integerBalance
@@ -468,7 +465,21 @@ const useHotspot = () => {
       isFree,
       hasSufficientBalance,
       totalStakingAmount,
+      totalStakingAmountDC,
+      totalStakingAmountUsd,
+      remainingFreeAsserts: remainingFreeAsserts(),
     }
+  }
+
+  const remainingFreeAsserts = () => {
+    if (!connectedHotspotDetails.validOnboarding) {
+      return 0
+    }
+
+    const locationNonceLimit =
+      connectedHotspotDetails.onboardingRecord?.maker.locationNonceLimit || 0
+
+    return locationNonceLimit - (connectedHotspotDetails?.details?.nonce || 0)
   }
 
   const hasFreeLocationAssert = (): boolean => {
@@ -479,7 +490,7 @@ const useHotspot = () => {
     const locationNonceLimit =
       connectedHotspotDetails.onboardingRecord?.maker.locationNonceLimit || 0
 
-    return (connectedHotspotDetails?.nonce || 0) < locationNonceLimit
+    return (connectedHotspotDetails?.details?.nonce || 0) < locationNonceLimit
   }
 
   const getDiagnosticInfo = async () => {

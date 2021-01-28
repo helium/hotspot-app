@@ -31,8 +31,6 @@ type Props = BoxProps<Theme> & {
   interactive?: boolean
   onFeatureSelected?: (properties: GeoJsonProperties) => void
   showUserLocation?: boolean
-  scrollEnabled?: boolean
-  zoomEnabled?: boolean
 }
 const Map = ({
   onMapMoved,
@@ -160,7 +158,7 @@ const Map = ({
     markerOwned: require('../assets/images/owned-hotspot-marker.png'),
     markerSelected: require('../assets/images/selected-hotspot-marker.png'),
     markerWitness: require('../assets/images/witness-marker.png'),
-    markerLocation: require('../assets/images/location.png'),
+    markerLocation: require('../assets/images/locationPurple.png'),
   }
 
   return (
@@ -183,7 +181,12 @@ const Map = ({
         {(showUserLocation || currentLocationEnabled) && (
           <MapboxGL.UserLocation
             onUpdate={(loc) => {
-              if (userCoords.latitude && userCoords.longitude) return
+              if (
+                !loc?.coords ||
+                (userCoords.latitude && userCoords.longitude)
+              ) {
+                return
+              }
 
               setUserCoords(loc.coords)
             }}
@@ -192,7 +195,7 @@ const Map = ({
               id="markerLocation"
               style={{
                 iconImage: 'markerLocation',
-                iconPadding: 20,
+                iconOffset: [0, -25 / 2],
               }}
             />
           </MapboxGL.UserLocation>

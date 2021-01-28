@@ -15,6 +15,7 @@ type Props = BoxProps<Theme> & {
   disabled?: boolean
   title: string
   textStyle?: TextStyle
+  color?: Colors
 }
 
 type ButtonVariant = 'primary' | 'secondary' | 'destructive'
@@ -24,6 +25,7 @@ const Button = ({
   title,
   mode = 'text',
   variant = 'primary',
+  color,
   textStyle,
   disabled,
   ...rest
@@ -44,6 +46,8 @@ const Button = ({
   }
 
   const getTextColor = (): Colors => {
+    if (color) return color
+
     if (mode === 'contained') {
       return 'primaryButtonText'
     }
