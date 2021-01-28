@@ -592,4 +592,12 @@ export default {
       share: 'Share',
     },
   },
+  transfer: {
+    title: 'Transfer Hotspot',
+    heading: 'Securely change ownership for one of your Hotspots.',
+    body:
+      'Once the Hotspot is transferred, you will no longer see the Hotspot in the app and earn HNT from this Hotspot.\n\nTo proceed with the transfer, type the Hotspot name in the box below.',
+    button_title: 'Continue Transfer',
+    input_placeholder: 'Type Hotspot name here...',
+  },
 }

@@ -1,6 +1,13 @@
 import React, { useEffect, memo, useRef, useState } from 'react'
-import { Modal, Animated, Easing, LayoutAnimation } from 'react-native'
+import {
+  Modal,
+  Animated,
+  Easing,
+  LayoutAnimation,
+  KeyboardAvoidingView,
+} from 'react-native'
 import { useTranslation } from 'react-i18next'
+import { Hotspot } from '@helium/http'
 import BlurBox from '../../../components/BlurBox'
 import Card from '../../../components/Card'
 import Text from '../../../components/Text'
@@ -17,11 +24,12 @@ import { useBluetoothContext } from '../../../providers/BluetoothProvider'
 type Props = {
   visible: boolean
   onClose: () => void
+  hotspot: Hotspot
 }
 
 type State = 'init' | 'scan' | 'transfer'
 
-const HotspotSettings = ({ visible, onClose }: Props) => {
+const HotspotSettings = ({ visible, onClose, hotspot }: Props) => {
   const { t } = useTranslation()
   const [state, setState] = useState<State>('init')
   const [title, setTitle] = useState<string>(t('hotspot_settings.title'))
@@ -47,6 +55,10 @@ const HotspotSettings = ({ visible, onClose }: Props) => {
   const setNextState = (s: State) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
     setState(s)
+  }
+
+  const onCloseTransfer = () => {
+    setNextState('init')
   }
 
   useEffect(() => {
@@ -80,7 +92,13 @@ const HotspotSettings = ({ visible, onClose }: Props) => {
 
   const getSecondCard = () => {
     if (state === 'transfer') {
-      return <HotspotTransfer onClose={onClose} />
+      return (
+        <HotspotTransfer
+          hotspot={hotspot}
+          onCloseTransfer={onCloseTransfer}
+          onCloseSettings={onClose}
+        />
+      )
     }
 
     return (
@@ -132,21 +150,28 @@ const HotspotSettings = ({ visible, onClose }: Props) => {
           margin="ms"
           style={{ transform: [{ translateY: slideUpAnimRef.current }] }}
         >
-          <Text variant="h2" color="white" marginBottom="ms">
-            {title}
-          </Text>
+          <KeyboardAvoidingView
+            behavior="position"
+            keyboardVerticalOffset={260}
+          >
+            {state !== 'transfer' && (
+              <Text variant="h2" color="white" marginBottom="ms">
+                {title}
+              </Text>
+            )}
 
-          {state !== 'transfer' && (
-            <Card variant="modal" backgroundColor="white">
-              {getFirstCard()}
-            </Card>
-          )}
+            {state !== 'transfer' && (
+              <Card variant="modal" backgroundColor="white">
+                {getFirstCard()}
+              </Card>
+            )}
 
-          {state !== 'scan' && (
-            <Card variant="modal" backgroundColor="white" marginTop="l">
-              {getSecondCard()}
-            </Card>
-          )}
+            {state !== 'scan' && (
+              <Card variant="modal" backgroundColor="white" marginTop="l">
+                {getSecondCard()}
+              </Card>
+            )}
+          </KeyboardAvoidingView>
         </AnimatedBox>
       </SafeAreaBox>
     </Modal>
