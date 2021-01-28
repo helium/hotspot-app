@@ -98,7 +98,7 @@ const HotspotSetupConfirmLocationScreen = () => {
 
         <Box flexDirection="row" justifyContent="space-between" marginTop="m">
           <Text variant="body1Light" color="secondaryText">
-            Balance:
+            {t('hotspot_setup.location_fee.balance')}
           </Text>
           <Text
             variant="body1Light"
@@ -110,7 +110,7 @@ const HotspotSetupConfirmLocationScreen = () => {
 
         <Box flexDirection="row" justifyContent="space-between" marginTop="m">
           <Text variant="body1Light" color="secondaryText">
-            Fee:
+            {t('hotspot_setup.location_fee.fee')}
           </Text>
           <Text variant="body1Light" color="white">
             {totalStakingAmount.toString(2)}

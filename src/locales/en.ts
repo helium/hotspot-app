@@ -325,6 +325,8 @@ export default {
         'Your Hotspot has a Confirm Location transaction pending in the blockchain.',
       pending_p_2:
         "If you'd like to change the Hotspot's location, wait for the previous transaction to complete before updating its location.",
+      balance: 'Balance:',
+      fee: 'Fee:',
       no_funds: 'There is insufficient HNT in your account balance',
       calculating_text: 'Calculating HNT Amount',
       error_title: 'Error',

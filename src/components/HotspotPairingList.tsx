@@ -27,7 +27,7 @@ const HotspotPairingList = ({
   disabled = false,
 }: {
   hotspots: Device[]
-  onPress: (hotspot: Device) => any
+  onPress: (hotspot: Device) => void
   disabled?: boolean
 }) => {
   const spacing = useSpacing()

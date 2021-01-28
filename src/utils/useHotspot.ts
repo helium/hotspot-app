@@ -2,7 +2,6 @@ import { useState, useRef } from 'react'
 import { Device } from 'react-native-ble-plx'
 import validator from 'validator'
 import compareVersions from 'compare-versions'
-import { Transaction } from '@helium/transactions'
 import { Balance, CurrencyType, NetworkTokens } from '@helium/currency'
 import { useSelector } from 'react-redux'
 import { useBluetoothContext } from '../providers/BluetoothProvider'
@@ -34,6 +33,7 @@ import {
 } from './fees'
 import accountSlice from '../store/account/accountSlice'
 import connectedHotspotSlice, {
+  fetchHotspotDetails,
   HotspotName,
   HotspotStatus,
   HotspotType,
@@ -187,7 +187,7 @@ const useHotspot = () => {
       onboardingRecord,
       onboardingAddress,
     }
-    dispatch(connectedHotspotSlice.actions.initConnectedHotspot(details))
+    dispatch(fetchHotspotDetails(details))
     return details
   }
 
@@ -411,8 +411,8 @@ const useHotspot = () => {
       : ''
     if (!payer || !owner) return false
 
-    const fee = calculateAssertLocFee(owner, payer, 1) || 0
     const nonce = connectedHotspotDetails?.nonce || 0
+    const fee = calculateAssertLocFee(owner, payer, nonce) || 0
     const amount = stakingFeeAssertLoc
 
     const encodedPayload = encodeAssertLoc(
@@ -458,13 +458,20 @@ const useHotspot = () => {
   const loadLocationFeeData = async (): Promise<LocationFeeData> => {
     const isFree = hasFreeLocationAssert()
 
-    // TODO calculate fee using actual txn here
-    const noPayerByteLength = 224
-    const txnFee = Transaction.calculateFee(new Uint8Array(noPayerByteLength))
-    const locationStakingFee = Transaction.stakingFeeTxnAssertLocationV1
+    const owner = await getSecureItem('address')
+    const payer = isFree
+      ? connectedHotspotDetails.onboardingRecord?.maker.address
+      : ''
+
+    if (!owner || payer === undefined) {
+      throw new Error('Missing payer or owner')
+    }
+
+    const nonce = connectedHotspotDetails?.nonce || 0
+    const fee = calculateAssertLocFee(owner, payer, nonce) || 0
 
     const totalStakingAmountDC = new Balance(
-      locationStakingFee + txnFee,
+      stakingFeeAssertLoc + fee,
       CurrencyType.dataCredit,
     )
     const { price: oraclePrice } = await getCurrentOraclePrice()

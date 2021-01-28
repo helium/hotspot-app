@@ -91,7 +91,7 @@ const HotspotSetupPickWifiScreen = () => {
               {connectedNetworks.length > 0 && (
                 <Box marginBottom="m">
                   <Text variant="body1Bold" marginBottom="s">
-                    Connected to:
+                    {t('hotspot_setup.wifi_scan.saved_networks')}
                   </Text>
                   {connectedNetworks.map((network, index) => (
                     <WifiItem
@@ -106,7 +106,7 @@ const HotspotSetupPickWifiScreen = () => {
                 </Box>
               )}
               <Text variant="body1Bold" marginBottom="s">
-                Available Networks:
+                {t('hotspot_setup.wifi_scan.available_networks')}
               </Text>
             </Box>
           }
