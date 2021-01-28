@@ -8,16 +8,17 @@ import CarotDown from '../../../assets/images/carot-down.svg'
 import ModalPicker from '../../../components/ModalPicker'
 
 type Props = {
+  index: number
   onTimelineChanged: (value: string, index: number) => void
 }
 
-const TimelinePicker = ({ onTimelineChanged }: Props) => {
+const TimelinePicker = ({ index, onTimelineChanged }: Props) => {
   const { t } = useTranslation()
   const options: Array<string> = t('hotspot_details.picker_options', {
     returnObjects: true,
   })
   const [showPicker, setShowPicker] = useState(false)
-  const [selectedValue, setSelectedValue] = useState(options[0])
+  const [selectedValue, setSelectedValue] = useState(options[index])
   return (
     <Box flexDirection="row" alignItems="center" marginVertical="m">
       <Bars />
@@ -41,9 +42,9 @@ const TimelinePicker = ({ onTimelineChanged }: Props) => {
       <ModalPicker
         data={options.map((value) => ({ label: value, value }))}
         selectedValue={selectedValue}
-        onValueChanged={(_value, index) => {
-          setSelectedValue(options[index])
-          onTimelineChanged(options[index], index)
+        onValueChanged={(_value, i) => {
+          setSelectedValue(options[i])
+          onTimelineChanged(options[i], i)
         }}
         handleClose={() => setShowPicker(false)}
         visible={showPicker}

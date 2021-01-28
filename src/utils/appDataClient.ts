@@ -9,12 +9,13 @@ import {
   HotspotActivityType,
 } from '../features/hotspots/root/hotspotTypes'
 import {
-  FilterType,
-  Filters,
   FilterKeys,
+  Filters,
+  FilterType,
 } from '../features/wallet/root/walletTypes'
 import { getSecureItem } from './secureAccount'
 
+const MAX = 100000
 const client = new Client()
 
 export const configChainVars = async () => {
@@ -22,8 +23,12 @@ export const configChainVars = async () => {
   Transaction.config(vars)
 }
 
+const getAddress = async () => {
+  return getSecureItem('address')
+}
+
 export const getHotspots = async () => {
-  const address = await getSecureItem('address')
+  const address = await getAddress()
   if (!address) return []
 
   const newHotspotList = await client.account(address).hotspots.list()
@@ -35,19 +40,37 @@ export const getHotspotDetails = async (address: string) => {
   return data
 }
 
-export const getHotspotRewards = async (
+export const getHotspotRewardsSum = async (
   address: string,
-  minTime: Date,
-  maxTime: Date,
+  numDaysBack: number,
+  date: Date = new Date(),
 ) => {
-  const { data } = await client
-    .hotspot(address)
-    .rewards.getSum(minTime, maxTime)
+  const endDate = new Date(date)
+  endDate.setDate(date.getDate() - numDaysBack)
+  const { data } = await client.hotspot(address).rewards.getSum(endDate, date)
   return data
 }
 
+export const getHotspotRewards = async (
+  address: string,
+  numDaysBack: number,
+  date: Date = new Date(),
+) => {
+  const endDate = new Date(date)
+  endDate.setDate(date.getDate() - numDaysBack)
+  const list = await client
+    .hotspot(address)
+    .rewards.list({ minTime: endDate, maxTime: date })
+  return list.take(MAX)
+}
+
+export const getHotspotWitnesses = async (address: string) => {
+  const list = await client.hotspot(address).witnesses.list()
+  return list.take(MAX)
+}
+
 export const getAccount = async () => {
-  const address = await getSecureItem('address')
+  const address = await getAddress()
   if (!address) return
 
   const { data } = await client.accounts.get(address)
@@ -65,7 +88,7 @@ export const getPredictedOraclePrice = async () =>
   client.oracle.getPredictedPrice()
 
 export const getAccountTxnsList = async (filterType: FilterType) => {
-  const address = await getSecureItem('address')
+  const address = await getAddress()
   if (!address) return
 
   if (filterType === 'pending') {
@@ -80,7 +103,7 @@ export const getHotspotActivityList = async (
   gateway: string,
   filterType: HotspotActivityType,
 ) => {
-  const address = await getSecureItem('address')
+  const address = getAddress()
   if (!address) return
 
   const params = { filterTypes: HotspotActivityFilters[filterType] }

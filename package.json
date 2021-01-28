@@ -37,7 +37,7 @@
     "@expo/react-native-action-sheet": "^3.8.0",
     "@helium/crypto-react-native": "^3.9.0",
     "@helium/currency": "^3.16.0",
-    "@helium/http": "^3.16.0",
+    "@helium/http": "^3.18.0",
     "@helium/proto-ble": "3.10.0",
     "@helium/transactions": "^3.11.0",
     "@react-native-community/art": "^1.2.0",

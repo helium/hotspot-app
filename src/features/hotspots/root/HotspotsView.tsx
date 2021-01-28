@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Hotspot } from '@helium/http'
+import { Hotspot, HotspotRewardSum } from '@helium/http'
 import BottomSheet from 'react-native-holy-sheet/src/index'
 import Animated, {
   Extrapolate,
@@ -9,7 +9,6 @@ import Animated, {
   useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated'
-import { HotspotRewardsData } from '@helium/http/build/models/HotspotReward'
 import { useNavigation } from '@react-navigation/native'
 import Balance, { CurrencyType } from '@helium/currency'
 import Text from '../../../components/Text'
@@ -17,7 +16,7 @@ import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Add from '../../../assets/images/add.svg'
 import { hp } from '../../../utils/layout'
-import { getHotspotRewards } from '../../../utils/appDataClient'
+import { getHotspotRewardsSum } from '../../../utils/appDataClient'
 import HotspotsCarousel from '../../../components/HotspotsCarousel'
 import Map from '../../../components/Map'
 import { hotspotsToFeatures } from '../../../utils/mapUtils'
@@ -60,14 +59,11 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
   )
   useEffect(() => {
     const fetchRewards = async () => {
-      const today = date
-      const yesterday = new Date(today)
-      yesterday.setDate(yesterday.getDate() - 1)
       let total = new Balance(0, CurrencyType.networkToken)
-      const rewards: Record<string, HotspotRewardsData> = {}
+      const rewards: Record<string, HotspotRewardSum> = {}
       const results = await Promise.all(
         ownedHotspots.map((hotspot) =>
-          getHotspotRewards(hotspot.address, yesterday, today),
+          getHotspotRewardsSum(hotspot.address, 1),
         ),
       )
       results.forEach((reward, i) => {

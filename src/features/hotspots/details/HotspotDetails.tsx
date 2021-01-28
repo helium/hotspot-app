@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import animalName from 'angry-purple-tiger'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import Animated, {
@@ -13,6 +13,7 @@ import { random, times } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { Linking, Share } from 'react-native'
+import { useSelector } from 'react-redux'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { HotspotStackParamList } from '../root/hotspotTypes'
@@ -22,6 +23,7 @@ import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import CarotLeft from '../../../assets/images/carot-left.svg'
 import HexCircleButton from '../../../assets/images/hex-circle-button.svg'
 import EyeCircleButton from '../../../assets/images/eye-circle-button.svg'
+import EyeCircleButtonYellow from '../../../assets/images/eye-circle-button-yellow.svg'
 import { hp } from '../../../utils/layout'
 import { hotspotsToFeatures } from '../../../utils/mapUtils'
 import { ChartData } from '../../../components/BarChart/types'
@@ -30,7 +32,14 @@ import HotspotDetailChart from './HotspotDetailChart'
 import StatusBadge from './StatusBadge'
 import TimelinePicker from './TimelinePicker'
 import HotspotDetailCardHeader from './HotspotDetailCardHeader'
+import { getRewardChartData } from './RewardsHelper'
 import HotspotSettings from '../settings/HotspotSettings'
+import { RootState } from '../../../store/rootReducer'
+import {
+  fetchHotspotRewards,
+  fetchHotspotWitnesses,
+} from '../../../store/hotspotDetails/hotspotDetailsSlice'
+import { useAppDispatch } from '../../../store/store'
 
 type HotspotDetailsRouteProp = RouteProp<
   HotspotStackParamList,
@@ -47,13 +56,20 @@ const onFollowHotspot = () => {
   // TODO: follow hotspot
 }
 
-const onTimelineChanged = (_value: string, _index: number) => {
-  // TODO: load different timelines
-}
-
 const HotspotDetails = () => {
   const route = useRoute<HotspotDetailsRouteProp>()
+  const dispatch = useAppDispatch()
   const { hotspot } = route.params
+  const {
+    hotspotDetails: {
+      numDays,
+      rewards,
+      rewardSum,
+      percentChange,
+      loadingRewards,
+      witnesses,
+    },
+  } = useSelector((state: RootState) => state)
   const navigation = useNavigation()
   const { t } = useTranslation()
   const selectedHotspots = hotspotsToFeatures([hotspot])
@@ -93,7 +109,7 @@ const HotspotDetails = () => {
     )
   }
 
-  const dragMid = hp(25)
+  const dragMid = 200
   const dragMax = hp(75)
   const dragMin = 50
   const snapProgress = useSharedValue(dragMid / dragMax)
@@ -127,6 +143,37 @@ const HotspotDetails = () => {
     }
   })
 
+  const [timelineIndex, setTimelineIndex] = useState(2)
+  const [showWitnesses, setShowWitnesses] = useState(false)
+  useEffect(() => {
+    let days
+    switch (timelineIndex) {
+      default:
+      case 0:
+        days = 1
+        break
+      case 1:
+        days = 7
+        break
+      case 2:
+        days = 14
+        break
+      case 3:
+        days = 30
+        break
+    }
+    dispatch(fetchHotspotRewards({ address: hotspot.address, numDays: days }))
+    dispatch(fetchHotspotWitnesses(hotspot.address))
+  }, [dispatch, hotspot.address, timelineIndex])
+
+  const onTimelineChanged = (_value: string, index: number) => {
+    setTimelineIndex(index)
+  }
+
+  const toggleShowWitnesses = () => {
+    setShowWitnesses(!showWitnesses)
+  }
+
   return (
     <SafeAreaBox backgroundColor="primaryBackground" flex={1} edges={['top']}>
       <Box flex={1} flexDirection="column" justifyContent="space-between">
@@ -144,6 +191,9 @@ const HotspotDetails = () => {
             mapCenter={[hotspot.lng || 0, hotspot.lat || 0]}
             animationDuration={0}
             selectedHotspots={selectedHotspots}
+            witnesses={
+              showWitnesses && witnesses ? hotspotsToFeatures(witnesses) : []
+            }
             offsetCenterRatio={2}
           />
         </Box>
@@ -172,8 +222,8 @@ const HotspotDetails = () => {
             flexDirection="row"
             style={{ marginBottom: dragMid }}
           >
-            <TouchableOpacityBox>
-              <EyeCircleButton />
+            <TouchableOpacityBox onPress={toggleShowWitnesses}>
+              {showWitnesses ? <EyeCircleButtonYellow /> : <EyeCircleButton />}
             </TouchableOpacityBox>
             <TouchableOpacityBox marginStart="s">
               <HexCircleButton />
@@ -210,18 +260,22 @@ const HotspotDetails = () => {
                 })}
               </Text>
             </Box>
-            <TimelinePicker onTimelineChanged={onTimelineChanged} />
+            <TimelinePicker
+              index={timelineIndex}
+              onTimelineChanged={onTimelineChanged}
+            />
             <HotspotDetailChart
               title={t('hotspot_details.reward_title')}
-              number="12,345"
-              change="+3.4%"
+              number={rewardSum?.total?.toString(2)?.replace('HNT', '')?.trim()}
+              change={percentChange}
               color={greenOnline}
-              data={data[0]}
+              data={getRewardChartData(rewards, numDays)}
+              loading={loadingRewards}
             />
             <HotspotDetailChart
               title={t('hotspot_details.witness_title')}
-              number="12"
-              change="-1.2%"
+              number={witnesses?.length?.toString()}
+              change={1.2}
               color={purpleMain}
               data={data[1]}
             />
@@ -243,25 +297,17 @@ const HotspotDetails = () => {
   )
 }
 
-const weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
-
 const data: Record<string, ChartData[]> = {
-  0: times(14).map((v, i) => ({
-    up: random(0, 100),
-    down: 0,
-    day: weekdays[i % 7],
-    id: [0, i].join('-'),
-  })),
   1: times(14).map((v, i) => ({
     up: random(0, 100),
     down: 0,
-    day: weekdays[i % 7],
+    day: '',
     id: [1, i].join('-'),
   })),
   2: times(14).map((v, i) => ({
     up: random(0, 100),
     down: 0,
-    day: weekdays[i % 7],
+    day: '',
     id: [2, i].join('-'),
   })),
 }

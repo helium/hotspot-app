@@ -21,6 +21,8 @@ type Props = {
   showXAxisLabel?: boolean
   upColor?: string
   downColor?: string
+  labelColor?: string
+  hasDownBars?: boolean
 }
 
 const BarChart = ({
@@ -29,8 +31,10 @@ const BarChart = ({
   data,
   onFocus,
   showXAxisLabel = true,
+  labelColor,
   upColor,
   downColor,
+  hasDownBars = true,
 }: Props) => {
   const [focusedBar, setFocusedBar] = useState<ChartData | null>(null)
   const { greenBright, blueBright, white } = useColors()
@@ -46,11 +50,11 @@ const BarChart = ({
 
   // SVG maths
   const barWidth = width / (data.length + data.length - 1)
-  const maxUp = maxBy(data, 'up')?.up || 0
-  const maxDown = maxBy(data, 'down')?.down || 0
-  const maxBarHeight = maxUp + barWidth / 1.5 + maxDown
-  const vScale = (height - barOffset) / maxBarHeight
   const minBarHeight = barWidth
+  const maxUp = maxBy(data, 'up')?.up || minBarHeight
+  const maxDown = maxBy(data, 'down')?.down || minBarHeight
+  const maxBarHeight = hasDownBars ? maxUp + barWidth / 1.5 + maxDown : maxUp
+  const vScale = (height - barOffset) / maxBarHeight
 
   const barHeight = (value: number | undefined): number => {
     if (value === 0 || value === undefined) return 0
@@ -109,19 +113,21 @@ const BarChart = ({
               opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
             />
 
-            <Rect
-              x={barWidth * (2 * i)}
-              y={maxUp * vScale + barWidth / 1.5}
-              rx={barWidth / 2}
-              width={barWidth}
-              height={barHeight(v?.down)}
-              fill={downColor || blueBright}
-              opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
-            />
+            {hasDownBars && (
+              <Rect
+                x={barWidth * (2 * i)}
+                y={maxUp * vScale + barWidth / 1.5}
+                rx={barWidth / 2}
+                width={barWidth}
+                height={barHeight(v?.down)}
+                fill={downColor || blueBright}
+                opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
+              />
+            )}
 
             {showXAxisLabel && (
               <Text
-                fill={white}
+                fill={labelColor || white}
                 stroke="none"
                 fontSize="12"
                 fontWeight={300}

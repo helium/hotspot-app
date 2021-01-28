@@ -1,4 +1,4 @@
-import { Hotspot, HotspotReward } from '@helium/http'
+import { Hotspot, HotspotRewardSum } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import React from 'react'
 import Carousel from 'react-native-snap-carousel'
@@ -15,7 +15,7 @@ import TouchableOpacityBox from './TouchableOpacityBox'
 
 type HotspotsCarouselProps = {
   hotspots: Hotspot[]
-  rewards: Record<string, HotspotReward>
+  rewards: Record<string, HotspotRewardSum>
   onHotspotFocused: (hotspot: Hotspot) => void
 }
 
@@ -39,15 +39,22 @@ const HotspotItem = ({ hotspot, totalReward }: HotspotsItemProps) => {
       height={75}
       onPress={() => navigation.navigate('HotspotDetails', { hotspot })}
     >
-      <Box flexDirection="row">
+      <Box
+        flexDirection="row"
+        justifyContent="space-between"
+        alignItems="center"
+        flex={1}
+      >
         <Box flexDirection="column">
-          <Box flexDirection="row">
+          <Box flexDirection="row" alignItems="center">
             <CheckCircle width={17} height={17} />
             <Text
               variant="body2Medium"
               color="black"
               paddingStart="s"
-              width="80%"
+              ellipsizeMode="tail"
+              numberOfLines={2}
+              maxWidth={210}
             >
               {animalName(hotspot.address)}
             </Text>

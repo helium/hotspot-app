@@ -22,6 +22,7 @@ type Props = {
   mapCenter?: number[]
   ownedHotspots?: Feature[]
   selectedHotspots?: Feature[]
+  witnesses?: Feature[]
   animationMode?: 'flyTo' | 'easeTo' | 'moveTo'
   animationDuration?: number
   offsetCenterRatio?: number
@@ -39,6 +40,7 @@ const Map = ({
   animationDuration = 500,
   ownedHotspots,
   selectedHotspots,
+  witnesses,
   offsetCenterRatio,
   maxZoomLevel = 16,
   minZoomLevel = 0,
@@ -116,6 +118,7 @@ const Map = ({
   const mapImages = {
     markerOwned: require('../assets/images/owned-hotspot-marker.png'),
     markerSelected: require('../assets/images/selected-hotspot-marker.png'),
+    markerWitness: require('../assets/images/witness-marker.png'),
   }
 
   return (
@@ -152,6 +155,22 @@ const Map = ({
               id="markerOwned"
               style={{
                 iconImage: 'markerOwned',
+                iconAllowOverlap: true,
+                iconSize: 1,
+              }}
+            />
+          </MapboxGL.ShapeSource>
+        )}
+        {witnesses && (
+          <MapboxGL.ShapeSource
+            id="witnesses"
+            shape={{ type: 'FeatureCollection', features: witnesses }}
+            onPress={onShapeSourcePress}
+          >
+            <MapboxGL.SymbolLayer
+              id="markerWitness"
+              style={{
+                iconImage: 'markerWitness',
                 iconAllowOverlap: true,
                 iconSize: 1,
               }}

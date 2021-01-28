@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import { View } from 'react-native'
+import { ActivityIndicator, View } from 'react-native'
 import Chart from './Chart'
 import { ChartData } from './types'
+import { useColors } from '../../theme/themeHooks'
 
 type Props = {
   height: number
@@ -10,6 +11,10 @@ type Props = {
   showXAxisLabel?: boolean
   upColor?: string
   downColor?: string
+  labelColor?: string
+  paddingTop?: number
+  loading?: boolean
+  hasDownBars?: boolean
 }
 
 const ChartContainer = ({
@@ -19,8 +24,13 @@ const ChartContainer = ({
   showXAxisLabel,
   upColor,
   downColor,
+  labelColor,
+  paddingTop,
+  loading,
+  hasDownBars,
 }: Props) => {
   const [width, setWidth] = useState(0)
+  const colors = useColors()
 
   const handleLayout = (event: {
     nativeEvent: { layout: { width: number } }
@@ -28,8 +38,18 @@ const ChartContainer = ({
     setWidth(event.nativeEvent.layout.width)
   }
 
+  if (loading) {
+    return (
+      <ActivityIndicator
+        style={{ height, paddingTop }}
+        size="small"
+        color={colors.grayMain}
+      />
+    )
+  }
+
   return (
-    <View onLayout={handleLayout} style={{ height }}>
+    <View onLayout={handleLayout} style={{ height, paddingTop }}>
       {width > 0 && (
         <Chart
           width={width}
@@ -39,6 +59,8 @@ const ChartContainer = ({
           showXAxisLabel={showXAxisLabel}
           upColor={upColor}
           downColor={downColor}
+          labelColor={labelColor}
+          hasDownBars={hasDownBars}
         />
       )}
     </View>
