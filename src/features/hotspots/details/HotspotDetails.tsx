@@ -144,31 +144,24 @@ const HotspotDetails = () => {
   })
 
   const [timelineIndex, setTimelineIndex] = useState(2)
-  const [chartPadding, setChartPadding] = useState(20)
   const [showWitnesses, setShowWitnesses] = useState(false)
   useEffect(() => {
     let days
-    let padding
     switch (timelineIndex) {
       default:
       case 0:
         days = 1
-        padding = 15
         break
       case 1:
         days = 7
-        padding = 10
         break
       case 2:
         days = 14
-        padding = 5
         break
       case 3:
         days = 30
-        padding = 0
         break
     }
-    setChartPadding(padding)
     dispatch(fetchHotspotRewards({ address: hotspot.address, numDays: days }))
     dispatch(fetchHotspotWitnesses(hotspot.address))
   }, [dispatch, hotspot.address, timelineIndex])
@@ -277,7 +270,6 @@ const HotspotDetails = () => {
               change={percentChange}
               color={greenOnline}
               data={getRewardChartData(rewards, numDays)}
-              paddingTop={chartPadding}
               loading={loadingRewards}
             />
             <HotspotDetailChart

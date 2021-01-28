@@ -16,7 +16,6 @@ type Props = {
   percentage?: number
   data: ChartData[]
   color: string
-  paddingTop?: number
   loading?: boolean
 }
 
@@ -80,7 +79,6 @@ const HotspotDetailChart = ({
   percentage,
   data,
   color,
-  paddingTop,
   loading,
 }: Props) => {
   const { t } = useTranslation()
@@ -125,18 +123,18 @@ const HotspotDetailChart = ({
                 />
               )}
             </Box>
-            <Box paddingStart="l" width="65%">
+            <Box width="60%">
               <ChartContainer
                 height={75}
-                paddingTop={paddingTop}
                 data={data}
                 onFocus={onFocus}
                 showXAxisLabel={false}
                 upColor={color}
                 downColor={grayLight}
                 labelColor={black}
+                hasDownBars={false}
               />
-              <Text variant="body3" color="black">
+              <Text variant="body3" color="black" paddingTop="xs">
                 {focusedData ? focusedData.day : ' '}
               </Text>
             </Box>

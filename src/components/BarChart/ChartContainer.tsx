@@ -14,6 +14,7 @@ type Props = {
   labelColor?: string
   paddingTop?: number
   loading?: boolean
+  hasDownBars?: boolean
 }
 
 const ChartContainer = ({
@@ -26,6 +27,7 @@ const ChartContainer = ({
   labelColor,
   paddingTop,
   loading,
+  hasDownBars,
 }: Props) => {
   const [width, setWidth] = useState(0)
   const colors = useColors()
@@ -58,6 +60,7 @@ const ChartContainer = ({
           upColor={upColor}
           downColor={downColor}
           labelColor={labelColor}
+          hasDownBars={hasDownBars}
         />
       )}
     </View>

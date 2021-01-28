@@ -22,12 +22,7 @@ type Props = {
   upColor?: string
   downColor?: string
   labelColor?: string
-}
-
-const getMax = (data: ChartData[], iteratee: 'up' | 'down') => {
-  const maxValue = maxBy(data, iteratee)?.[iteratee]
-  if (maxValue && maxValue < 1) return 10
-  return maxValue || 0
+  hasDownBars?: boolean
 }
 
 const BarChart = ({
@@ -39,6 +34,7 @@ const BarChart = ({
   labelColor,
   upColor,
   downColor,
+  hasDownBars = true,
 }: Props) => {
   const [focusedBar, setFocusedBar] = useState<ChartData | null>(null)
   const { greenBright, blueBright, white } = useColors()
@@ -54,11 +50,11 @@ const BarChart = ({
 
   // SVG maths
   const barWidth = width / (data.length + data.length - 1)
-  const maxUp = getMax(data, 'up')
-  const maxDown = getMax(data, 'down')
-  const maxBarHeight = maxUp + barWidth / 1.5 + maxDown
-  const vScale = (height - barOffset) / maxBarHeight
   const minBarHeight = barWidth
+  const maxUp = maxBy(data, 'up')?.up || minBarHeight
+  const maxDown = maxBy(data, 'down')?.down || minBarHeight
+  const maxBarHeight = hasDownBars ? maxUp + barWidth / 1.5 + maxDown : maxUp
+  const vScale = (height - barOffset) / maxBarHeight
 
   const barHeight = (value: number | undefined): number => {
     if (value === 0 || value === undefined) return 0
@@ -117,15 +113,17 @@ const BarChart = ({
               opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
             />
 
-            <Rect
-              x={barWidth * (2 * i)}
-              y={maxUp * vScale + barWidth / 1.5}
-              rx={barWidth / 2}
-              width={barWidth}
-              height={barHeight(v?.down)}
-              fill={downColor || blueBright}
-              opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
-            />
+            {hasDownBars && (
+              <Rect
+                x={barWidth * (2 * i)}
+                y={maxUp * vScale + barWidth / 1.5}
+                rx={barWidth / 2}
+                width={barWidth}
+                height={barHeight(v?.down)}
+                fill={downColor || blueBright}
+                opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
+              />
+            )}
 
             {showXAxisLabel && (
               <Text
