@@ -7,7 +7,6 @@ import { Theme } from '../theme/theme'
 import { useColors } from '../theme/themeHooks'
 import BackButton from './BackButton'
 import Box from './Box'
-// import SafeAreaBox from './SafeAreaBox'
 
 type Props = BoxProps<Theme> & { children: React.ReactNode }
 
@@ -20,17 +19,6 @@ const BackScreen = ({
 }: Props) => {
   const navigation = useNavigation()
   const colors = useColors()
-  // return (
-  //   <SafeAreaBox
-  //     backgroundColor={backgroundColor || 'primaryBackground'}
-  //     flex={1}
-  //   >
-  //     <BackButton marginHorizontal="n_s" onPress={navigation.goBack} />
-  //     <Box padding={padding || 'lx'} flex={flex || 1} {...rest}>
-  //       {children}
-  //     </Box>
-  //   </SafeAreaBox>
-  // )
   return (
     <>
       <SafeAreaView
