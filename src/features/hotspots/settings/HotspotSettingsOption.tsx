@@ -9,6 +9,7 @@ type Props = {
   buttonLabel: string
   onPress: () => void
   variant: 'primary' | 'secondary'
+  buttonDisabled?: boolean
 }
 const HotspotSettingsOption = ({
   title,
@@ -16,6 +17,7 @@ const HotspotSettingsOption = ({
   buttonLabel,
   onPress,
   variant,
+  buttonDisabled = false,
 }: Props) => {
   return (
     <Box padding="l">
@@ -32,6 +34,7 @@ const HotspotSettingsOption = ({
         variant={variant}
         mode="contained"
         title={buttonLabel}
+        disabled={buttonDisabled}
       />
     </Box>
   )

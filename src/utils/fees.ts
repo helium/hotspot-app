@@ -5,6 +5,7 @@ import {
   Transaction,
   TokenBurnV1,
   AssertLocationV1,
+  TransferHotspotV1,
 } from '@helium/transactions'
 import Balance, {
   DataCredits,
@@ -115,4 +116,14 @@ export const calculateBurnTxnFee = async (
   })
 
   return new Balance(tokenBurnTxn.fee || 0, CurrencyType.dataCredit)
+}
+
+export const calculateTransferTxnFee = async (
+  partialTransaction: string | undefined,
+) => {
+  const transactionString = partialTransaction
+  const transferHotspotTxn = transactionString
+    ? TransferHotspotV1.fromString(transactionString)
+    : new TransferHotspotV1({})
+  return new Balance(transferHotspotTxn.fee || 0, CurrencyType.dataCredit)
 }

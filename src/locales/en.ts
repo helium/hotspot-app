@@ -612,7 +612,7 @@ export default {
     exists_alert_body: 'You have an active pending transfer for this Hotspot.',
     amount_changed_alert_title: 'Requested Amount Changed',
     amount_changed_alert_body:
-      'The amount requested by the seller has changed. The new amount requested is {{amount}}} HNT.',
+      'The amount requested by the seller has changed. The new amount requested is {{amount}} HNT.',
     nonce_alert_title: 'Unable to Complete Transfer',
     nonce_alert_body:
       'Looks like you sent or received HNT after the seller initiated the Transfer Hotspot transaction. Please contact the Hotspot seller to create a new Transfer Hotspot transaction and avoid unrelated payment transactions until Transfer Hotspot is complete.',
@@ -625,5 +625,16 @@ export default {
     fine_print:
       'Hotspot will transfer once the buyer accepts and completes the transaction.',
     notification_button: 'View Transaction',
+    cancel: {
+      button_title: 'Cancel Transfer',
+      failed_alert_title: 'Unable to Cancel Transfer',
+      failed_alert_body: 'No response from the API. Please try again.',
+      alert_title: 'Cancel Hotspot Transfer',
+      alert_body:
+        'There is a pending Hotspot Transfer to {{buyer}} for {{gateway}}.\n\nAre you sure you want to cancel?',
+      alert_back: 'Back',
+      alert_confirm: 'Cancel Transfer',
+    },
+    unknown: 'UNKNOWN',
   },
 }

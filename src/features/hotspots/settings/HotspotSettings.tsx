@@ -5,9 +5,11 @@ import {
   Easing,
   LayoutAnimation,
   KeyboardAvoidingView,
+  Alert,
 } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Hotspot } from '@helium/http'
+import animalName from 'angry-purple-tiger'
 import BlurBox from '../../../components/BlurBox'
 import Card from '../../../components/Card'
 import Text from '../../../components/Text'
@@ -20,6 +22,11 @@ import HotspotSettingsOption from './HotspotSettingsOption'
 import HotspotDiagnostics from './HotspotDiagnostics'
 import HotspotTransfer from '../transfers/HotspotTransfer'
 import { useBluetoothContext } from '../../../providers/BluetoothProvider'
+import {
+  deleteTransfer,
+  getTransfer,
+  Transfer,
+} from '../transfers/TransferRequests'
 
 type Props = {
   visible: boolean
@@ -55,6 +62,70 @@ const HotspotSettings = ({ visible, onClose, hotspot }: Props) => {
   const setNextState = (s: State) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
     setState(s)
+  }
+
+  const [hasActiveTransfer, setHasActiveTransfer] = useState<boolean>()
+  const [activeTransfer, setActiveTransfer] = useState<Transfer>()
+  useEffect(() => {
+    const fetchTransfer = async () => {
+      try {
+        const transfer = await getTransfer(hotspot.address)
+        setHasActiveTransfer(transfer !== undefined)
+        setActiveTransfer(transfer)
+      } catch (e) {
+        setHasActiveTransfer(false)
+      }
+    }
+    fetchTransfer()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const getTransferButtonTitle = () => {
+    if (hasActiveTransfer === undefined) {
+      return ''
+    }
+    if (hasActiveTransfer) {
+      return t('transfer.cancel.button_title')
+    }
+    return t('hotspot_settings.transfer.begin')
+  }
+
+  const cancelTransfer = async () => {
+    const deleteResponse = await deleteTransfer(hotspot.address, false)
+    if (deleteResponse) {
+      setHasActiveTransfer(false)
+      setActiveTransfer(undefined)
+    } else {
+      Alert.alert(
+        t('transfer.cancel.failed_alert_title'),
+        t('transfer.cancel.failed_alert_body'),
+      )
+    }
+  }
+
+  const onPressTransferSetting = () => {
+    if (hasActiveTransfer) {
+      Alert.alert(
+        t('transfer.cancel.alert_title'),
+        t('transfer.cancel.alert_body', {
+          buyer: activeTransfer?.buyer,
+          gateway: animalName(activeTransfer?.gateway || ''),
+        }),
+        [
+          {
+            text: t('transfer.cancel.alert_back'),
+            onPress: () => {},
+            style: 'cancel',
+          },
+          {
+            text: t('transfer.cancel.alert_confirm'),
+            onPress: cancelTransfer,
+          },
+        ],
+      )
+    } else {
+      setNextState('transfer')
+    }
   }
 
   const onCloseTransfer = () => {
@@ -105,9 +176,10 @@ const HotspotSettings = ({ visible, onClose, hotspot }: Props) => {
       <HotspotSettingsOption
         title={t('hotspot_settings.transfer.title')}
         subtitle={t('hotspot_settings.transfer.subtitle')}
-        buttonLabel={t('hotspot_settings.transfer.begin')}
+        buttonLabel={getTransferButtonTitle()}
+        buttonDisabled={hasActiveTransfer === undefined}
         variant="secondary"
-        onPress={() => setNextState('transfer')}
+        onPress={onPressTransferSetting}
       />
     )
   }
@@ -152,7 +224,7 @@ const HotspotSettings = ({ visible, onClose, hotspot }: Props) => {
         >
           <KeyboardAvoidingView
             behavior="position"
-            keyboardVerticalOffset={260}
+            keyboardVerticalOffset={220}
           >
             {state !== 'transfer' && (
               <Text variant="h2" color="white" marginBottom="ms">

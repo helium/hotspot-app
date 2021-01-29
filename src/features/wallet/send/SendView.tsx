@@ -23,6 +23,7 @@ import SendForm from './SendForm'
 import {
   calculateBurnTxnFee,
   calculatePaymentTxnFee,
+  calculateTransferTxnFee,
   convertFeeToNetworkTokens,
 } from '../../../utils/fees'
 import { networkTokensToDataCredits } from '../../../utils/currency'
@@ -80,6 +81,46 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     return new Balance(getIntegerAmount(), CurrencyType.networkToken)
   }
 
+  // load transfer data
+  const [transferData, setTransferData] = useState<Transfer>()
+  const [lastReportedActivity, setLastReportedActivity] = useState<string>()
+  useEffect(() => {
+    const fetchTransfer = async () => {
+      if (!hotspot) {
+        Alert.alert(
+          t('transfer.canceled_alert_title'),
+          t('transfer.canceled_alert_body'),
+        )
+        return
+      }
+      try {
+        const transfer = await getTransfer(hotspot.address)
+        setTransferData(transfer)
+        const hotspotActivityList = await getHotspotActivityList(
+          hotspot.address,
+          'all',
+        )
+        const [lastHotspotActivity] = hotspotActivityList
+          ? await hotspotActivityList?.take(1)
+          : []
+        const reportedActivity = lastHotspotActivity
+          ? fromNow(new Date(lastHotspotActivity.time * 1000))?.toUpperCase()
+          : t('transfer.unknown')
+        setLastReportedActivity(reportedActivity)
+      } catch (e) {
+        Alert.alert(
+          t('transfer.canceled_alert_title'),
+          t('transfer.canceled_alert_body'),
+        )
+        navigation.goBack()
+      }
+    }
+    if (!isSeller && type === 'transfer') {
+      fetchTransfer()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // process scan results
   useEffect(() => {
     if (scanResult) {
@@ -104,15 +145,29 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   // validate transaction
   useEffect(() => {
     const isValidAddress = Address.isValid(address)
-    const balanceAmount = getBalanceAmount()
-    const totalTxnAmount = balanceAmount.plus(fee)
-    // TODO balance compare/greater than/less than
-    const hasSufficientBalance =
-      totalTxnAmount.integerBalance <= (account?.balance?.integerBalance || 0)
 
     if (type === 'transfer') {
-      setIsValid(isValidAddress)
+      if (isSeller) {
+        setIsValid(isValidAddress)
+      } else {
+        const isValidSellerAddress = transferData
+          ? Address.isValid(transferData.seller)
+          : false
+        const balanceAmount = transferData?.amountToSeller
+        const totalTxnAmount = balanceAmount?.plus(fee)
+        // TODO balance compare/greater than/less than
+        const hasSufficientBalance =
+          totalTxnAmount &&
+          totalTxnAmount.integerBalance <=
+            (account?.balance?.integerBalance || 0)
+        setIsValid(isValidSellerAddress && (hasSufficientBalance || false))
+      }
     } else {
+      const balanceAmount = getBalanceAmount()
+      const totalTxnAmount = balanceAmount.plus(fee)
+      // TODO balance compare/greater than/less than
+      const hasSufficientBalance =
+        totalTxnAmount.integerBalance <= (account?.balance?.integerBalance || 0)
       setIsValid(
         isValidAddress &&
           hasSufficientBalance &&
@@ -121,44 +176,12 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, amount, fee, account])
+  }, [address, amount, fee, account, transferData?.seller])
 
   const getNonce = (): number => {
     if (!account?.speculativeNonce) return 1
     return account.speculativeNonce + 1
   }
-
-  // load transfer data
-  const [transferData, setTransferData] = useState<Transfer>()
-  const [lastReportedActivity, setLastReportedActivity] = useState<string>()
-  useEffect(() => {
-    const fetchTransfer = async () => {
-      if (!hotspot) {
-        Alert.alert(
-          t('transfer.canceled_alert_title'),
-          t('transfer.canceled_alert_body'),
-        )
-        return
-      }
-      const transfer = await getTransfer(hotspot.address)
-      setTransferData(transfer)
-      const hotspotActivityList = await getHotspotActivityList(
-        hotspot.address,
-        'all',
-      )
-      const [lastHotspotActivity] = hotspotActivityList
-        ? await hotspotActivityList?.take(1)
-        : []
-      const reportedActivity = lastHotspotActivity
-        ? fromNow(new Date(lastHotspotActivity.time * 1000))?.toUpperCase()
-        : 'UNKNOWN'
-      setLastReportedActivity(reportedActivity)
-    }
-    if (!isSeller && type === 'transfer') {
-      fetchTransfer()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   // compute fee
   useAsync(async () => {
@@ -177,11 +200,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     }
 
     if (type === 'transfer') {
-      const transactionString = transferData?.partialTransaction
-      const transferHotspotTxn = transactionString
-        ? TransferHotspotV1.fromString(transactionString)
-        : new TransferHotspotV1({})
-      return new Balance(transferHotspotTxn.fee || 0, CurrencyType.dataCredit)
+      return calculateTransferTxnFee(transferData?.partialTransaction)
     }
 
     throw new Error('Unsupported transaction type')
@@ -244,14 +263,14 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
 
   const checkTransferAmountChanged = (transfer: Transfer) => {
     if (
-      transfer.amountToSeller &&
-      transfer.amountToSeller.integerBalance !== getIntegerAmount()
+      transfer.amountToSeller?.integerBalance !==
+      transferData?.amountToSeller?.integerBalance
     ) {
-      setAmount(transfer.amountToSeller.floatBalance.toString())
+      setTransferData(transfer)
       Alert.alert(
         t('transfer.amount_changed_alert_title'),
         t('transfer.amount_changed_alert_body', {
-          amount: transfer.amountToSeller.floatBalance.toString(),
+          amount: transfer?.amountToSeller?.floatBalance.toString(),
         }),
       )
       throw new Error('transfer amount changed')
@@ -262,9 +281,13 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     if (!hotspot) {
       throw new Error('missing hotspot for buyer transfer')
     }
-    const transfer = await getTransfer(hotspot.address)
-    if (transfer) {
+    try {
+      const transfer = await getTransfer(hotspot.address)
+      if (!transfer) {
+        throw new Error('transfer no longer active')
+      }
       checkTransferAmountChanged(transfer)
+      setTransferData(transfer)
       const sellerSignedTxnBin = transfer.partialTransaction
       const transferHotspotTxn = TransferHotspotV1.fromString(
         sellerSignedTxnBin,
@@ -285,12 +308,19 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
         throw new Error('transfer delete invalid')
       }
       return txn
+    } catch (error) {
+      if (
+        error.message !== 'transfer amount changed' ||
+        error.message !== 'transfer nonce invalid' ||
+        error.message !== 'transfer delete invalid'
+      ) {
+        Alert.alert(
+          t('transfer.canceled_alert_title'),
+          t('transfer.canceled_alert_body'),
+        )
+      }
+      throw error
     }
-    Alert.alert(
-      t('transfer.canceled_alert_title'),
-      t('transfer.canceled_alert_body'),
-    )
-    throw new Error('transfer no longer active')
   }
 
   const constructTxn = async (): Promise<string | undefined> => {
