@@ -1,21 +1,20 @@
 import { RouteProp } from '@react-navigation/native'
 import React from 'react'
 import Box from '../../../components/Box'
-import { SendStackParamList, SendType } from './sendTypes'
+import { SendStackParamList } from './sendTypes'
 import SendView from './SendView'
 
 type Route = RouteProp<SendStackParamList, 'Send'>
 
 type Props = {
   route?: Route
-  sendType?: SendType
 }
 
-const SendScreen = ({ route, sendType }: Props) => {
+const SendScreen = ({ route }: Props) => {
   const scanResult = route?.params?.scanResult
-
-  console.log(sendType)
-
+  const type = route?.params?.type
+  const hotspot = route?.params?.hotspot
+  const isSeller = route?.params?.isSeller
   return (
     <>
       <Box
@@ -25,7 +24,12 @@ const SendScreen = ({ route, sendType }: Props) => {
         alignContent="center"
         flexDirection="column"
       >
-        <SendView scanResult={scanResult} />
+        <SendView
+          scanResult={scanResult}
+          sendType={type}
+          hotspot={hotspot}
+          isSeller={isSeller}
+        />
       </Box>
     </>
   )

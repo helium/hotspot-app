@@ -9,6 +9,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import Box from '../../../components/Box'
 import SendCircle from '../../../assets/images/send-circle.svg'
+import HotspotOutlineIcon from '../../../assets/images/hotspotOutlineIcon.svg'
 import Close from '../../../assets/images/close.svg'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Text from '../../../components/Text'
@@ -94,6 +95,7 @@ const SendHeader = ({ type, onClosePress }: Props) => {
           <Text variant="h1" marginLeft="s" fontSize={24}>
             {type === 'payment' && t('send.title.payment')}
             {type === 'dc_burn' && t('send.title.dcBurn')}
+            {type === 'transfer' && t('send.title.transfer')}
           </Text>
         </ReanimatedBox>
         <TouchableOpacityBox padding="m" onPress={onClosePress}>
@@ -106,11 +108,14 @@ const SendHeader = ({ type, onClosePress }: Props) => {
         alignItems="center"
       >
         <Box marginBottom="m">
-          <SendCircle />
+          {type === 'payment' && <SendCircle />}
+          {type === 'dc_burn' && <SendCircle />}
+          {type === 'transfer' && <HotspotOutlineIcon />}
         </Box>
         <Text variant="h1">
           {type === 'payment' && t('send.title.payment')}
           {type === 'dc_burn' && t('send.title.dcBurn')}
+          {type === 'transfer' && t('send.title.transfer')}
         </Text>
       </ReanimatedBox>
     </ReanimatedBox>

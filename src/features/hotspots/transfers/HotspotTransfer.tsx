@@ -37,7 +37,8 @@ const HotspotTransfer = ({
 
   const navigateToTransfer = () => {
     onCloseSettings()
-    navigation.navigate('Send')
+    navigation.goBack()
+    navigation.navigate('Transfer', { hotspot, isSeller: true })
   }
 
   return (

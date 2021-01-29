@@ -11,6 +11,7 @@ import HotspotSetup from '../../features/hotspots/setup/HotspotSetupNavigator'
 import MainTabs from './MainTabNavigator'
 import SendNavigator from '../../features/wallet/send/SendNavigator'
 import ScanNavigator from '../../features/wallet/scan/ScanNavigator'
+import TransferNavigator from '../../features/hotspots/transfers/TransferNavigator'
 
 const HomeStack = createStackNavigator()
 
@@ -52,6 +53,15 @@ const HomeStackScreen = () => {
       <HomeStack.Screen
         name="Send"
         component={SendNavigator}
+        options={{
+          headerShown: false,
+          cardOverlayEnabled: true,
+          ...TransitionPresets.ModalPresentationIOS,
+        }}
+      />
+      <HomeStack.Screen
+        name="Transfer"
+        component={TransferNavigator}
         options={{
           headerShown: false,
           cardOverlayEnabled: true,

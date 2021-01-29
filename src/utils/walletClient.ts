@@ -1,11 +1,12 @@
 import Config from 'react-native-config'
 import { getWalletApiToken } from './secureAccount'
+import * as Logger from './logger'
 
 const makeRequest = async (url: string, opts: RequestInit) => {
   try {
     const token = await getWalletApiToken()
     if (!token) {
-      console.log('no token')
+      Logger.breadcrumb('no token')
       throw new Error('no token')
     }
 
@@ -28,7 +29,8 @@ const makeRequest = async (url: string, opts: RequestInit) => {
       return text
     }
   } catch (error) {
-    console.log(error)
+    Logger.breadcrumb('fetch failed')
+    Logger.error(error)
     throw error
   }
 }
@@ -41,5 +43,11 @@ export const getWallet = async (url: string) =>
 export const postWallet = async (url: string, data?: unknown) =>
   makeRequest(url, {
     method: 'POST',
+    body: data ? JSON.stringify(data) : null,
+  })
+
+export const deleteWallet = async (url: string, data?: unknown) =>
+  makeRequest(url, {
+    method: 'DELETE',
     body: data ? JSON.stringify(data) : null,
   })

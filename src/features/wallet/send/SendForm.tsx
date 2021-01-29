@@ -32,11 +32,13 @@ type Props = {
   onSendMaxPress: () => void
   onSubmit: () => void
   onUnlock: () => void
+  isSeller?: boolean
 }
 
 const SendForm = ({
   isValid,
   isLocked,
+  isSeller,
   type,
   address,
   amount,
@@ -56,6 +58,17 @@ const SendForm = ({
   const { primaryMain } = useColors()
 
   const isValidAddress = Address.isValid(address)
+
+  const getButtonTitle = () => {
+    switch (type) {
+      case 'payment':
+        return t('send.button.payment')
+      case 'dc_burn':
+        return t('send.button.dcBurn')
+      case 'transfer':
+        return t('send.button.transfer')
+    }
+  }
 
   const renderLockedPaymentForm = () => (
     <Box>
@@ -174,6 +187,74 @@ const SendForm = ({
     </Box>
   )
 
+  const renderSellerTransferForm = () => (
+    <Box>
+      <InputField
+        defaultValue={address}
+        onChange={onAddressChange}
+        label={t('send.address.label_transfer')}
+        placeholder={t('send.address.placeholder')}
+        extra={
+          isValidAddress ? (
+            <Box padding="s" position="absolute" right={0}>
+              <Check />
+            </Box>
+          ) : (
+            <TouchableOpacityBox
+              onPress={onScanPress}
+              padding="s"
+              position="absolute"
+              right={0}
+            >
+              <QrCode width={16} color={primaryMain} />
+            </TouchableOpacityBox>
+          )
+        }
+      />
+      <InputField
+        type="numeric"
+        defaultValue={amount}
+        onChange={onAmountChange}
+        label={t('send.amount.label_transfer')}
+        placeholder={t('send.amount.placeholder_transfer')}
+      />
+    </Box>
+  )
+
+  const renderBuyerTransferForm = () => (
+    <Box>
+      <InputField
+        defaultValue={address}
+        onChange={onAddressChange}
+        label={t('send.address.label_transfer')}
+        placeholder={t('send.address.placeholder')}
+        extra={
+          isValidAddress ? (
+            <Box padding="s" position="absolute" right={0}>
+              <Check />
+            </Box>
+          ) : (
+            <TouchableOpacityBox
+              onPress={onScanPress}
+              padding="s"
+              position="absolute"
+              right={0}
+            >
+              <QrCode width={16} color={primaryMain} />
+            </TouchableOpacityBox>
+          )
+        }
+      />
+      <InputField
+        type="numeric"
+        defaultValue={amount}
+        onChange={onAmountChange}
+        label={t('send.amount.label_transfer')}
+        placeholder={t('send.amount.placeholder_transfer')}
+      />
+    </Box>
+  )
+
   return (
     <Box height="100%" justifyContent="space-between" paddingBottom="xl">
       <ScrollView contentContainerStyle={{ marginTop: 16 }}>
@@ -181,14 +262,12 @@ const SendForm = ({
         {isLocked && type === 'dc_burn' && renderLockedBurnForm()}
         {!isLocked && type === 'payment' && renderPaymentForm()}
         {!isLocked && type === 'dc_burn' && renderBurnForm()}
+        {isSeller && type === 'transfer' && renderSellerTransferForm()}
+        {!isSeller && type === 'transfer' && renderBuyerTransferForm()}
       </ScrollView>
       <Button
         onPress={onSubmit}
-        title={
-          type === 'payment'
-            ? t('send.button.payment')
-            : t('send.button.dcBurn')
-        }
+        title={getButtonTitle()}
         variant="primary"
         mode="contained"
         disabled={!isValid}

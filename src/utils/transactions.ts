@@ -5,8 +5,10 @@ import {
   AddGatewayV1,
   TokenBurnV1,
   AssertLocationV1,
+  TransferHotspotV1,
 } from '@helium/transactions'
 import { getKeypair } from './secureAccount'
+import { getAccount } from './appDataClient'
 
 export const makePaymentTxn = async (
   amount: number,
@@ -77,6 +79,42 @@ export const makeBurnTxn = async (
   })
 
   const signedTxn = await tokenBurnTxn.sign({ payer: keypair })
+  return signedTxn.toString()
+}
+
+export const makeSellerTransferHotspotTxn = async (
+  gatewayB58: string,
+  buyerB58: string,
+  seller: Address,
+  amountToSeller: number,
+) => {
+  const keypair = await getKeypair()
+
+  if (!keypair) throw new Error('missing keypair')
+
+  const gateway = Address.fromB58(gatewayB58)
+  const buyer = Address.fromB58(buyerB58)
+  const buyerAccount = await getAccount(buyerB58)
+
+  if (!buyerAccount || !buyerAccount.speculativeNonce)
+    throw new Error('missing buyer speculativeNonce')
+
+  const transferHotspotTxn = new TransferHotspotV1({
+    gateway,
+    seller,
+    buyer,
+    amountToSeller,
+    buyerNonce: buyerAccount.speculativeNonce + 1,
+  })
+  const signedTxn = await transferHotspotTxn.sign({ seller: keypair })
+  return signedTxn.toString()
+}
+
+export const makeBuyerTransferHotspotTxn = async (
+  transferHotspotTxn: TransferHotspotV1,
+) => {
+  const keypair = await getKeypair()
+  const signedTxn = await transferHotspotTxn.sign({ buyer: keypair })
   return signedTxn.toString()
 }
 

@@ -18,7 +18,7 @@ import { useSpacing } from '../../../theme/themeHooks'
 import AnimatedBox from '../../../components/AnimatedBox'
 import HotspotSettingsOption from './HotspotSettingsOption'
 import HotspotDiagnostics from './HotspotDiagnostics'
-import HotspotTransfer from './HotspotTransfer'
+import HotspotTransfer from '../transfers/HotspotTransfer'
 import { useBluetoothContext } from '../../../providers/BluetoothProvider'
 
 type Props = {

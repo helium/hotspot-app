@@ -381,15 +381,19 @@ export default {
     title: {
       payment: 'Send HNT',
       dcBurn: 'Burn HNT',
+      transfer: 'Transfer Hotspot',
     },
     available: '{{ amount }} Available',
     address: {
       label: 'Recipient Address',
+      label_transfer: 'Buyer Address',
       placeholder: 'Enter Address...',
     },
     amount: {
       label: 'Amount (HNT)',
+      label_transfer: 'Requested Amount (HNT)',
       placeholder: '0',
+      placeholder_transfer: '(Optional) Request Payment for Hotspot...',
     },
     dcAmount: {
       label: 'Equivalent To (DC)',
@@ -403,6 +407,7 @@ export default {
     button: {
       payment: 'Send HNT',
       dcBurn: 'Burn HNT',
+      transfer: 'Send Transfer Request',
     },
     qrInfo: 'QR INFO',
     error: 'There was an error submitting this transaction. Please try again.',
@@ -599,5 +604,21 @@ export default {
       'Once the Hotspot is transferred, you will no longer see the Hotspot in the app and earn HNT from this Hotspot.\n\nTo proceed with the transfer, type the Hotspot name in the box below.',
     button_title: 'Continue Transfer',
     input_placeholder: 'Type Hotspot name here...',
+    exists_alert_title: 'Transfer Already Exists',
+    exists_alert_body: 'You have an active pending transfer for this Hotspot.',
+    amount_changed_alert_title: 'Requested Amount Changed',
+    amount_changed_alert_body:
+      'The amount requested by the seller has changed. The new amount requested is {{amount}}} HNT.',
+    nonce_alert_title: 'Unable to Complete Transfer',
+    nonce_alert_body:
+      'Looks like you sent or received HNT after the seller initiated the Transfer Hotspot transaction. Please contact the Hotspot seller to create a new Transfer Hotspot transaction and avoid unrelated payment transactions until Transfer Hotspot is complete.',
+    incomplete_alert_title: 'Transfer Incomplete',
+    incomplete_alert_body:
+      'This transfer cannot be completed. Ensure you are the authorized buyer, or contact the seller for more information.',
+    canceled_alert_title: 'Transfer Canceled',
+    canceled_alert_body:
+      'This transfer is no longer active. Please contact the seller for more information.',
+    fine_print:
+      'Hotspot will transfer once the buyer accepts and completes the transaction.',
   },
 }
