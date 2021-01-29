@@ -112,7 +112,7 @@ const SendHeader = ({ type, onClosePress }: Props) => {
           {type === 'dc_burn' && <SendCircle />}
           {type === 'transfer' && <HotspotOutlineIcon />}
         </Box>
-        <Text variant="h1">
+        <Text variant="h2">
           {type === 'payment' && t('send.title.payment')}
           {type === 'dc_burn' && t('send.title.dcBurn')}
           {type === 'transfer' && t('send.title.transfer')}

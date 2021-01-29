@@ -3,6 +3,7 @@ import { ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Address } from '@helium/crypto-react-native'
 import Balance, { NetworkTokens } from '@helium/currency'
+import animalName from 'angry-purple-tiger'
 import InputField from '../../../components/InputField'
 import Button from '../../../components/Button'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
@@ -14,6 +15,7 @@ import { useColors } from '../../../theme/themeHooks'
 import LockedHeader from '../../../components/LockedHeader'
 import LockedField from '../../../components/LockedField'
 import { SendType } from './sendTypes'
+import { Transfer } from '../../hotspots/transfers/TransferRequests'
 
 type Props = {
   isValid: boolean
@@ -33,6 +35,8 @@ type Props = {
   onSubmit: () => void
   onUnlock: () => void
   isSeller?: boolean
+  transferData?: Transfer
+  lastReportedActivity?: string
 }
 
 const SendForm = ({
@@ -53,6 +57,8 @@ const SendForm = ({
   onSendMaxPress,
   onSubmit,
   onUnlock,
+  transferData,
+  lastReportedActivity,
 }: Props) => {
   const { t } = useTranslation()
   const { primaryMain } = useColors()
@@ -66,7 +72,9 @@ const SendForm = ({
       case 'dc_burn':
         return t('send.button.dcBurn')
       case 'transfer':
-        return t('send.button.transfer')
+        return isSeller
+          ? t('send.button.transfer_request')
+          : t('send.button.transfer_complete')
     }
   }
 
@@ -223,34 +231,23 @@ const SendForm = ({
 
   const renderBuyerTransferForm = () => (
     <Box>
-      <InputField
-        defaultValue={address}
-        onChange={onAddressChange}
-        label={t('send.address.label_transfer')}
-        placeholder={t('send.address.placeholder')}
-        extra={
-          isValidAddress ? (
-            <Box padding="s" position="absolute" right={0}>
-              <Check />
-            </Box>
-          ) : (
-            <TouchableOpacityBox
-              onPress={onScanPress}
-              padding="s"
-              position="absolute"
-              right={0}
-            >
-              <QrCode width={16} color={primaryMain} />
-            </TouchableOpacityBox>
-          )
-        }
+      <LockedField
+        label={t('send.address.seller')}
+        value={transferData?.seller || ''}
       />
-      <InputField
-        type="numeric"
-        defaultValue={amount}
-        onChange={onAmountChange}
+      <LockedField
         label={t('send.amount.label_transfer')}
-        placeholder={t('send.amount.placeholder_transfer')}
+        value={transferData?.amountToSeller?.floatBalance.toString() || ''}
+        footer={<FeeFooter fee={fee} />}
+      />
+      <LockedField
+        label={t('send.hotspot_label')}
+        value={transferData ? animalName(transferData.gateway) : ''}
+        footer={
+          <Text variant="mono" color="grayText" fontSize={11} paddingTop="xs">
+            {t('send.last_activity', { activity: lastReportedActivity })}
+          </Text>
+        }
       />
     </Box>
   )

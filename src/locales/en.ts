@@ -388,6 +388,7 @@ export default {
       label: 'Recipient Address',
       label_transfer: 'Buyer Address',
       placeholder: 'Enter Address...',
+      seller: 'Seller Address',
     },
     amount: {
       label: 'Amount (HNT)',
@@ -407,10 +408,13 @@ export default {
     button: {
       payment: 'Send HNT',
       dcBurn: 'Burn HNT',
-      transfer: 'Send Transfer Request',
+      transfer_request: 'Send Transfer Request',
+      transfer_complete: 'Complete Transfer',
     },
     qrInfo: 'QR INFO',
     error: 'There was an error submitting this transaction. Please try again.',
+    hotspot_label: 'Hotspot',
+    last_activity: 'LAST REPORTED ACTIVITY: {{activity}}',
   },
   more: {
     title: 'Settings',
@@ -620,5 +624,6 @@ export default {
       'This transfer is no longer active. Please contact the seller for more information.',
     fine_print:
       'Hotspot will transfer once the buyer accepts and completes the transaction.',
+    notification_button: 'View Transaction',
   },
 }

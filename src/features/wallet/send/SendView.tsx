@@ -32,7 +32,11 @@ import {
   makePaymentTxn,
   makeSellerTransferHotspotTxn,
 } from '../../../utils/transactions'
-import { getAccount, submitTransaction } from '../../../utils/appDataClient'
+import {
+  getAccount,
+  getHotspotActivityList,
+  submitTransaction,
+} from '../../../utils/appDataClient'
 import * as Logger from '../../../utils/logger'
 import TransferBanner from '../../hotspots/transfers/TransferBanner'
 import {
@@ -43,6 +47,7 @@ import {
 } from '../../hotspots/transfers/TransferRequests'
 import { getAddress } from '../../../utils/secureAccount'
 import Text from '../../../components/Text'
+import { fromNow } from '../../../utils/timeUtils'
 
 type Props = {
   scanResult?: QrScanResult
@@ -118,17 +123,49 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, amount, fee, account])
 
+  const getNonce = (): number => {
+    if (!account?.speculativeNonce) return 1
+    return account.speculativeNonce + 1
+  }
+
+  // load transfer data
+  const [transferData, setTransferData] = useState<Transfer>()
+  const [lastReportedActivity, setLastReportedActivity] = useState<string>()
+  useEffect(() => {
+    const fetchTransfer = async () => {
+      if (!hotspot) {
+        Alert.alert(
+          t('transfer.canceled_alert_title'),
+          t('transfer.canceled_alert_body'),
+        )
+        return
+      }
+      const transfer = await getTransfer(hotspot.address)
+      setTransferData(transfer)
+      const hotspotActivityList = await getHotspotActivityList(
+        hotspot.address,
+        'all',
+      )
+      const [lastHotspotActivity] = hotspotActivityList
+        ? await hotspotActivityList?.take(1)
+        : []
+      const reportedActivity = lastHotspotActivity
+        ? fromNow(new Date(lastHotspotActivity.time * 1000))?.toUpperCase()
+        : 'UNKNOWN'
+      setLastReportedActivity(reportedActivity)
+    }
+    if (!isSeller && type === 'transfer') {
+      fetchTransfer()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // compute fee
   useAsync(async () => {
     const dcFee = await calculateFee()
     const hntFee = await convertFeeToNetworkTokens(dcFee)
     setFee(hntFee)
-  }, [amount])
-
-  const getNonce = (): number => {
-    if (!account?.speculativeNonce) return 1
-    return account.speculativeNonce + 1
-  }
+  }, [amount, transferData?.amountToSeller])
 
   const calculateFee = async (): Promise<Balance<DataCredits>> => {
     if (type === 'payment') {
@@ -137,6 +174,14 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
 
     if (type === 'dc_burn') {
       return calculateBurnTxnFee(getIntegerAmount(), address, getNonce(), memo)
+    }
+
+    if (type === 'transfer') {
+      const transactionString = transferData?.partialTransaction
+      const transferHotspotTxn = transactionString
+        ? TransferHotspotV1.fromString(transactionString)
+        : new TransferHotspotV1({})
+      return new Balance(transferHotspotTxn.fee || 0, CurrencyType.dataCredit)
     }
 
     throw new Error('Unsupported transaction type')
@@ -301,6 +346,8 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
           dcAmount={dcAmount}
           memo={memo}
           fee={fee}
+          transferData={transferData}
+          lastReportedActivity={lastReportedActivity}
           onAddressChange={setAddress}
           onAmountChange={setAmount}
           onDcAmountChange={setDcAmount}
@@ -319,7 +366,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
           paddingHorizontal="l"
           textAlign="center"
         >
-          {t('transfer.fine_print')}{' '}
+          {t('transfer.fine_print')}
         </Text>
       )}
     </Box>
