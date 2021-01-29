@@ -28,6 +28,7 @@ import BluetoothProvider from './providers/BluetoothProvider'
 import ConnectedHotspotProvider from './providers/ConnectedHotspotProvider'
 import * as Logger from './utils/logger'
 import { configChainVars, initFetchers } from './utils/appDataClient'
+import { fetchBlockHeight } from './store/helium/heliumDataSlice'
 
 const App = () => {
   if (Platform.OS === 'android') {
@@ -50,6 +51,7 @@ const App = () => {
       isLocked,
       appStateStatus,
     },
+    heliumData: { blockHeight },
   } = useSelector((state: RootState) => state)
 
   useEffect(() => {
@@ -69,6 +71,10 @@ const App = () => {
 
     if (shouldLock) {
       dispatch(appSlice.actions.lock(true))
+    }
+
+    if (isActive) {
+      dispatch(fetchData())
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appStateStatus])
@@ -105,6 +111,17 @@ const App = () => {
       AppState.removeEventListener('change', handleChange)
     }
   }, [handleChange])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      dispatch(fetchBlockHeight())
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [dispatch])
+
+  useEffect(() => {
+    dispatch(fetchData())
+  }, [blockHeight, dispatch])
 
   useAsync(configChainVars, [])
 
