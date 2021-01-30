@@ -21,6 +21,7 @@ type Props = {
   amount: string
   coords?: { latitude: number; longitude: number }
   locationSelected?: (latitude: number, longitude: number) => void
+  onCancel: () => void
   onSuccess?: () => void
   onFailure?: (err: unknown) => void
 }
@@ -31,6 +32,7 @@ const ReassertLocationUpdate = ({
   locationSelected,
   onSuccess,
   onFailure,
+  onCancel,
 }: Props) => {
   const { t } = useTranslation()
   const [markerCenter, setMarkerCenter] = useState([0, 0])
@@ -98,13 +100,14 @@ const ReassertLocationUpdate = ({
   useEffect(() => {
     const sleepThenEnable = async () => {
       await sleep(3000)
+      animateTransition()
       setDisabled(false)
     }
     sleepThenEnable()
   }, [])
 
   return (
-    <Box height={hp(80)} borderRadius="l" overflow="hidden">
+    <Box height={hp(70)} borderRadius="l" overflow="hidden">
       {loading && (
         <Box
           position="absolute"
@@ -181,6 +184,7 @@ const ReassertLocationUpdate = ({
             mode="contained"
             title={t('generic.cancel')}
             marginRight="s"
+            onPress={onCancel}
           />
           <Button
             disabled={disabled}

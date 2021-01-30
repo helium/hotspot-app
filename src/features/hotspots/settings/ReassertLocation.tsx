@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import Balance, { CurrencyType } from '@helium/currency'
 import { LocationGeocodedAddress } from 'expo-location'
-import React, { useState, useEffect, memo } from 'react'
+import React, { useState, useEffect, memo, useCallback } from 'react'
 import { useAsync } from 'react-async-hook'
 import { useSelector } from 'react-redux'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
@@ -49,9 +49,25 @@ const ReassertLocation = ({ onFinished }: Props) => {
 
   const { showOKAlert } = useAlert()
 
+  const handleBack = useCallback(() => {
+    animateTransition()
+    switch (state) {
+      case 'fee':
+      case 'success':
+        onFinished()
+        break
+      case 'update':
+        setState('fee')
+        break
+      case 'confirm':
+        setState('update')
+        break
+    }
+  }, [onFinished, state])
+
   useEffect(() => {
-    enableBack(() => onFinished())
-  }, [enableBack, onFinished])
+    enableBack(handleBack)
+  }, [enableBack, handleBack, onFinished, state])
 
   useEffect(() => {
     dispatch(getLocation())
@@ -115,8 +131,9 @@ const ReassertLocation = ({ onFinished }: Props) => {
     case 'update':
       return (
         <ReassertLocationUpdate
-          key={state}
           amount={amount}
+          key={state}
+          onCancel={handleBack}
           locationSelected={(latitude, longitude) => {
             setUpdatedLocation({ latitude, longitude })
             animateTransition()
@@ -129,6 +146,7 @@ const ReassertLocation = ({ onFinished }: Props) => {
         <ReassertLocationUpdate
           amount={amount}
           key={state}
+          onCancel={handleBack}
           confirming
           coords={updatedLocation}
           onFailure={handleFailure}
