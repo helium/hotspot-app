@@ -4,7 +4,7 @@ import MapboxGL, {
   RegionPayload,
 } from '@react-native-mapbox-gl/maps'
 import { useSelector } from 'react-redux'
-import { Feature, Point, Position } from 'geojson'
+import { Feature, GeoJsonProperties, Point, Position } from 'geojson'
 import Box from './Box'
 import CurrentLocationButton from './CurrentLocationButton'
 import { RootState } from '../store/rootReducer'
@@ -29,6 +29,7 @@ type Props = {
   maxZoomLevel?: number
   minZoomLevel?: number
   interactive?: boolean
+  onFeatureSelected?: (properties: GeoJsonProperties) => void
 }
 const Map = ({
   onMapMoved,
@@ -46,6 +47,7 @@ const Map = ({
   maxZoomLevel = 16,
   minZoomLevel = 0,
   interactive = true,
+  onFeatureSelected = () => {},
 }: Props) => {
   const map = useRef<MapboxGL.MapView>(null)
   const camera = useRef<MapboxGL.Camera>(null)
@@ -83,14 +85,20 @@ const Map = ({
     setLoaded(true)
   }
 
-  const flyTo = (lat?: number, lng?: number) => {
+  const flyTo = (lat?: number, lng?: number, duration?: number) => {
     if (!lat || !lng) return
-    camera.current?.flyTo([lng, lat - centerOffset], animationDuration)
+    camera.current?.flyTo(
+      [lng, lat - centerOffset],
+      duration || animationDuration,
+    )
   }
 
   const onShapeSourcePress = (event: OnPressEvent) => {
     const { properties } = event.features[0]
-    flyTo(properties?.lat, properties?.lng)
+    if (properties) {
+      flyTo(properties.lat, properties.lng)
+      onFeatureSelected(properties)
+    }
   }
 
   const [centerOffset, setCenterOffset] = useState(0)
@@ -116,6 +124,22 @@ const Map = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentLocation, loaded, offsetCenterRatio])
+
+  useEffect(() => {
+    const hasWitnesses = witnesses ? witnesses.length > 0 : false
+    const selectedHotspot = selectedHotspots && selectedHotspots[0]
+    if (selectedHotspot) {
+      camera?.current?.setCamera({
+        centerCoordinate: [
+          selectedHotspot?.properties?.lng,
+          selectedHotspot?.properties?.lat - centerOffset,
+        ],
+        zoomLevel: hasWitnesses ? 11 : zoomLevel || 16,
+        animationDuration: 500,
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [witnesses])
 
   const mapImages = {
     markerOwned: require('../assets/images/owned-hotspot-marker.png'),

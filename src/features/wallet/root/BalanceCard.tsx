@@ -72,8 +72,14 @@ const BalanceCard = ({ onReceivePress, onSendPress }: Props) => {
         </AnimatedBox>
 
         <Box flexDirection="row" marginTop="m">
-          <CurrencyBadge variant="dc" amount={1032935734} />
-          <CurrencyBadge variant="hst" amount={20} />
+          <CurrencyBadge
+            variant="dc"
+            amount={account?.dcBalance?.integerBalance || 0}
+          />
+          <CurrencyBadge
+            variant="hst"
+            amount={account?.secBalance?.integerBalance || 0}
+          />
         </Box>
       </Box>
 

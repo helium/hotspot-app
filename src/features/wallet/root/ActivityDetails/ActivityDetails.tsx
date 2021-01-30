@@ -46,10 +46,10 @@ const ActivityDetails = () => {
     fee,
   } = useActivityItem(address || '')
 
-  let block = ''
+  let block: number | undefined
   if (activityItem) {
     const asPayment = activityItem as PaymentV1
-    block = asPayment.height?.toLocaleString() || ''
+    block = asPayment.height
   }
 
   useEffect(() => {
@@ -165,11 +165,13 @@ const ActivityDetails = () => {
             alignItems="center"
             justifyContent="center"
             onPress={() => {
-              Linking.openURL(`https://explorer.helium.com/blocks/${block}`)
+              Linking.openURL(
+                `https://explorer.helium.com/blocks/${block?.toString()}`,
+              )
             }}
           >
             <Text variant="medium" fontSize={16} color="white" marginRight="s">
-              {`${t('activity_details.view_block')} ${block}`}
+              {`${t('activity_details.view_block')} ${block?.toLocaleString()}`}
             </Text>
             <LinkImg />
           </TouchableOpacityBox>

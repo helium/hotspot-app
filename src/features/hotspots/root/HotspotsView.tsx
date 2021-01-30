@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Hotspot, HotspotRewardSum } from '@helium/http'
 import BottomSheet from 'react-native-holy-sheet/src/index'
@@ -11,16 +11,18 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useNavigation } from '@react-navigation/native'
 import Balance, { CurrencyType } from '@helium/currency'
+import { FlatList } from 'react-native'
+import { GeoJsonProperties } from 'geojson'
 import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Add from '../../../assets/images/add.svg'
 import { hp } from '../../../utils/layout'
 import { getHotspotRewardsSum } from '../../../utils/appDataClient'
-import HotspotsCarousel from '../../../components/HotspotsCarousel'
 import Map from '../../../components/Map'
 import { hotspotsToFeatures } from '../../../utils/mapUtils'
-import { RootNavigationProp } from '../../../navigation/main/tabTypes'
+import HotspotListItem from '../../../components/HotspotListItem'
+import Handle from '../../../assets/images/handle.svg'
 
 type Props = {
   ownedHotspots: Hotspot[]
@@ -40,12 +42,12 @@ const TimeOfDayHeader = ({ date }: { date: Date }) => {
 }
 
 const HotspotsView = ({ ownedHotspots }: Props) => {
-  const navigation = useNavigation<RootNavigationProp>()
+  const navigation = useNavigation()
   const dragMid = hp(40)
   const dragMax = hp(75)
   const dragMin = 40
   const { t } = useTranslation()
-  const [focusedHotspot, setFocusedHotspot] = useState(ownedHotspots[0])
+  const flatListRef = useRef<FlatList<Hotspot>>(null)
 
   const [date, setDate] = useState(new Date())
   useEffect(() => {
@@ -53,7 +55,9 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
     return () => clearInterval(dateTimer)
   })
 
-  const [hotspotRewards, setHotspotRewards] = useState({})
+  const [hotspotRewards, setHotspotRewards] = useState<
+    Record<string, HotspotRewardSum>
+  >({})
   const [totalRewards, setTotalRewards] = useState(
     new Balance(0, CurrencyType.networkToken),
   )
@@ -108,11 +112,30 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
     }
   })
 
-  const onHotspotFocused = (hotspot: Hotspot) => {
-    setFocusedHotspot(hotspot)
+  const onMapHotspotSelected = (properties: GeoJsonProperties) => {
+    const hotspot = {
+      ...properties,
+    } as Hotspot
+    navigation.navigate('HotspotDetails', { hotspot })
   }
 
   const ownedHotspotFeatures = hotspotsToFeatures(ownedHotspots)
+
+  const renderHeader = () => (
+    <Box paddingVertical="m" borderTopRightRadius="m" borderTopLeftRadius="m">
+      <Box alignItems="center">
+        <Handle />
+      </Box>
+      <Text
+        variant="subtitleBold"
+        color="black"
+        paddingVertical="m"
+        paddingStart="l"
+      >
+        {t('hotspots.owned.your_hotspots')}
+      </Text>
+    </Box>
+  )
 
   return (
     <Box flex={1} flexDirection="column" justifyContent="space-between">
@@ -128,9 +151,10 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         <Map
           ownedHotspots={ownedHotspotFeatures}
           zoomLevel={14}
-          mapCenter={[focusedHotspot.lng || 0, focusedHotspot.lat || 0]}
+          mapCenter={[ownedHotspots[0].lng || 0, ownedHotspots[0].lat || 0]}
           animationMode="flyTo"
           offsetCenterRatio={1.5}
+          onFeatureSelected={onMapHotspotSelected}
         />
       </Box>
       <Box
@@ -148,7 +172,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
           {/*  <Search width={22} height={22} /> */}
           {/* </TouchableOpacityBox> */}
           <TouchableOpacityBox
-            onPress={() => navigation.push('HotspotSetup')}
+            onPress={() => navigation.navigate('HotspotSetup')}
             padding="s"
           >
             <Add width={22} height={22} />
@@ -172,14 +196,23 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         containerStyle={{ paddingLeft: 0, paddingRight: 0 }}
         snapPoints={[dragMin, dragMid, dragMax]}
         initialSnapIndex={1}
+        renderHeader={renderHeader}
         snapProgress={snapProgress}
-      >
-        <HotspotsCarousel
-          hotspots={ownedHotspots}
-          rewards={hotspotRewards}
-          onHotspotFocused={onHotspotFocused}
-        />
-      </BottomSheet>
+        flatListProps={{
+          data: ownedHotspots,
+          ref: flatListRef,
+          keyExtractor: (item: Hotspot) => item.address,
+          renderItem: ({ item }: { item: Hotspot }) => (
+            <Box marginHorizontal="l" marginBottom="s">
+              <HotspotListItem
+                hotspot={item}
+                showCarot
+                totalReward={hotspotRewards[item.address]?.total || 0}
+              />
+            </Box>
+          ),
+        }}
+      />
     </Box>
   )
 }
