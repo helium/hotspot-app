@@ -25,7 +25,7 @@ const makeRequest = async (url: string, opts: RequestInit) => {
       const json = JSON.parse(text)
       return json.data || json
     } catch (err) {
-      return text
+      throw new Error(text)
     }
   } catch (error) {
     console.log(error)

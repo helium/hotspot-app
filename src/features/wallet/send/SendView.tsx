@@ -21,7 +21,7 @@ import SendForm from './SendForm'
 import {
   calculateBurnTxnFee,
   calculatePaymentTxnFee,
-  convertFeeToNetworkTokens,
+  useFees,
 } from '../../../utils/fees'
 import { networkTokensToDataCredits } from '../../../utils/currency'
 import { makeBurnTxn, makePaymentTxn } from '../../../utils/transactions'
@@ -45,6 +45,8 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
   const {
     account: { account },
   } = useSelector((state: RootState) => state)
+
+  const { feeToHNT } = useFees()
 
   // TODO Balance.fromString(amount: string, currencyType: CurrencyType)
   const getIntegerAmount = (): number => parseFloat(amount) * 100000000
@@ -94,7 +96,7 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
   // compute fee
   useAsync(async () => {
     const dcFee = await calculateFee()
-    const hntFee = await convertFeeToNetworkTokens(dcFee)
+    const hntFee = feeToHNT(dcFee)
     setFee(hntFee)
   }, [amount])
 

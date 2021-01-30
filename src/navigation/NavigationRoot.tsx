@@ -12,6 +12,7 @@ import { RootState } from '../store/rootReducer'
 import defaultScreenOptions from './defaultScreenOptions'
 import RootNav from './main/HomeNavigator'
 import { useColors } from '../theme/themeHooks'
+import { fetchInitialData } from '../store/helium/heliumDataSlice'
 
 const RootStack = createStackNavigator()
 
@@ -29,6 +30,8 @@ const NavigationRoot = () => {
 
   useEffect(() => {
     dispatch(restoreUser())
+    dispatch(fetchInitialData())
+
     setTimeout(() => {
       setShowSplash(false)
     }, 1250)
