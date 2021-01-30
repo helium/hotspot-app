@@ -83,9 +83,12 @@ const Map = ({
     setLoaded(true)
   }
 
-  const flyTo = (lat?: number, lng?: number) => {
+  const flyTo = (lat?: number, lng?: number, duration?: number) => {
     if (!lat || !lng) return
-    camera.current?.flyTo([lng, lat - centerOffset], animationDuration)
+    camera.current?.flyTo(
+      [lng, lat - centerOffset],
+      duration || animationDuration,
+    )
   }
 
   const onShapeSourcePress = (event: OnPressEvent) => {
@@ -116,6 +119,22 @@ const Map = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentLocation, loaded, offsetCenterRatio])
+
+  useEffect(() => {
+    const hasWitnesses = witnesses ? witnesses.length > 0 : false
+    const selectedHotspot = selectedHotspots && selectedHotspots[0]
+    if (selectedHotspot) {
+      camera?.current?.setCamera({
+        centerCoordinate: [
+          selectedHotspot?.properties?.lng,
+          selectedHotspot?.properties?.lat - centerOffset,
+        ],
+        zoomLevel: hasWitnesses ? 11 : zoomLevel || 16,
+        animationDuration: 500,
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [witnesses])
 
   const mapImages = {
     markerOwned: require('../assets/images/owned-hotspot-marker.png'),
