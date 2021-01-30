@@ -1,73 +1,16 @@
 import { Hotspot, HotspotRewardSum } from '@helium/http'
-import animalName from 'angry-purple-tiger'
 import React from 'react'
 import Carousel from 'react-native-snap-carousel'
 import { useTranslation } from 'react-i18next'
-import { useNavigation } from '@react-navigation/native'
-import Balance, { NetworkTokens } from '@helium/currency'
 import Box from './Box'
-import CheckCircle from '../assets/images/check-circle.svg'
 import Text from './Text'
-import CircleProgress from './CircleProgress'
 import { wp } from '../utils/layout'
-import { useColors } from '../theme/themeHooks'
-import TouchableOpacityBox from './TouchableOpacityBox'
+import HotspotListItem from './HotspotListItem'
 
 type HotspotsCarouselProps = {
   hotspots: Hotspot[]
   rewards: Record<string, HotspotRewardSum>
   onHotspotFocused: (hotspot: Hotspot) => void
-}
-
-type HotspotsItemProps = {
-  hotspot: Hotspot
-  totalReward: Balance<NetworkTokens>
-}
-
-const HotspotItem = ({ hotspot, totalReward }: HotspotsItemProps) => {
-  const { grayBox } = useColors()
-  const navigation = useNavigation()
-  return (
-    <TouchableOpacityBox
-      backgroundColor="grayBox"
-      flexDirection="row"
-      justifyContent="space-between"
-      alignItems="center"
-      padding="m"
-      borderRadius="m"
-      marginStart="l"
-      height={75}
-      onPress={() => navigation.navigate('HotspotDetails', { hotspot })}
-    >
-      <Box
-        flexDirection="row"
-        justifyContent="space-between"
-        alignItems="center"
-        flex={1}
-      >
-        <Box flexDirection="column">
-          <Box flexDirection="row" alignItems="center">
-            <CheckCircle width={17} height={17} />
-            <Text
-              variant="body2Medium"
-              color="black"
-              paddingStart="s"
-              ellipsizeMode="tail"
-              numberOfLines={2}
-              maxWidth={210}
-            >
-              {animalName(hotspot.address)}
-            </Text>
-          </Box>
-          <Text variant="body2" color="purpleMain" paddingTop="s">
-            {`+${totalReward.toString(2)}`}
-          </Text>
-        </Box>
-        {/* TODO: Update percentage to use hotspot on-boarding progress */}
-        <CircleProgress percentage={50} centerColor={grayBox} />
-      </Box>
-    </TouchableOpacityBox>
-  )
 }
 
 const HotspotsCarousel = ({
@@ -78,7 +21,7 @@ const HotspotsCarousel = ({
   const { t } = useTranslation()
 
   const renderItem = ({ item }: { item: Hotspot }) => (
-    <HotspotItem
+    <HotspotListItem
       hotspot={item}
       totalReward={rewards[item.address]?.total || 0}
     />

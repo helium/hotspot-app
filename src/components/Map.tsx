@@ -4,7 +4,7 @@ import MapboxGL, {
   RegionPayload,
 } from '@react-native-mapbox-gl/maps'
 import { useSelector } from 'react-redux'
-import { Feature, Point, Position } from 'geojson'
+import { Feature, GeoJsonProperties, Point, Position } from 'geojson'
 import Box from './Box'
 import CurrentLocationButton from './CurrentLocationButton'
 import { RootState } from '../store/rootReducer'
@@ -29,6 +29,7 @@ type Props = {
   maxZoomLevel?: number
   minZoomLevel?: number
   interactive?: boolean
+  onFeatureSelected?: (properties: GeoJsonProperties) => void
 }
 const Map = ({
   onMapMoved,
@@ -46,6 +47,7 @@ const Map = ({
   maxZoomLevel = 16,
   minZoomLevel = 0,
   interactive = true,
+  onFeatureSelected = () => {},
 }: Props) => {
   const map = useRef<MapboxGL.MapView>(null)
   const camera = useRef<MapboxGL.Camera>(null)
@@ -93,7 +95,10 @@ const Map = ({
 
   const onShapeSourcePress = (event: OnPressEvent) => {
     const { properties } = event.features[0]
-    flyTo(properties?.lat, properties?.lng)
+    if (properties) {
+      flyTo(properties.lat, properties.lng)
+      onFeatureSelected(properties)
+    }
   }
 
   const [centerOffset, setCenterOffset] = useState(0)
