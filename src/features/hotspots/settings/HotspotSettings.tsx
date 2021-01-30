@@ -238,7 +238,9 @@ const HotspotSettings = () => {
           </TouchableOpacityBox>
           {showBack && <BackButton alignSelf="center" onPress={goBack} />}
         </Box>
+        <Box flex={1} onTouchStart={handleClose} />
         <AnimatedBox
+          marginTop="none"
           margin="ms"
           style={{ transform: [{ translateY: slideUpAnimRef.current }] }}
         >
@@ -247,7 +249,12 @@ const HotspotSettings = () => {
             keyboardVerticalOffset={220}
           >
             {settingsState !== 'transfer' && (
-              <Text variant="h2" color="white" marginBottom="ms">
+              <Text
+                variant="h2"
+                lineHeight={27}
+                color="white"
+                marginBottom="ms"
+              >
                 {title}
               </Text>
             )}
