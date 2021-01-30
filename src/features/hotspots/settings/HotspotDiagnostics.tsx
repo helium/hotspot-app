@@ -65,7 +65,11 @@ const HotspotDiagnostics = ({ updateTitle }: Props) => {
         />
       )
     case 'diagnostic':
-      return <HotspotDiagnosticReport />
+      return (
+        <HotspotDiagnosticReport
+          onFinished={() => handleOptionSelected('options')}
+        />
+      )
     case 'wifi':
       return (
         <WifiSettingsContainer
