@@ -21,7 +21,6 @@ import Box from '../../../components/Box'
 import Map from '../../../components/Map'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import CarotLeft from '../../../assets/images/carot-left.svg'
-import HexCircleButton from '../../../assets/images/hex-circle-button.svg'
 import EyeCircleButton from '../../../assets/images/eye-circle-button.svg'
 import EyeCircleButtonYellow from '../../../assets/images/eye-circle-button-yellow.svg'
 import { hp } from '../../../utils/layout'
@@ -225,9 +224,10 @@ const HotspotDetails = () => {
             <TouchableOpacityBox onPress={toggleShowWitnesses}>
               {showWitnesses ? <EyeCircleButtonYellow /> : <EyeCircleButton />}
             </TouchableOpacityBox>
-            <TouchableOpacityBox marginStart="s">
-              <HexCircleButton />
-            </TouchableOpacityBox>
+            {/* TODO: hex grid button */}
+            {/* <TouchableOpacityBox marginStart="s"> */}
+            {/*  <HexCircleButton /> */}
+            {/* </TouchableOpacityBox> */}
           </Box>
         </Animated.View>
 
