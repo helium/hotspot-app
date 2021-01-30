@@ -7,26 +7,29 @@ import {
   AssertLocationV1,
   TransferHotspotV1,
 } from '@helium/transactions'
-import Balance, {
-  DataCredits,
-  CurrencyType,
-  NetworkTokens,
-} from '@helium/currency'
+import Balance, { DataCredits, CurrencyType } from '@helium/currency'
 import { minBy } from 'lodash'
+import { useSelector } from 'react-redux'
 import { getKeypair } from './secureAccount'
-import { getCurrentOraclePrice, getPredictedOraclePrice } from './appDataClient'
+import { RootState } from '../store/rootReducer'
 
 export const stakingFeeAddGateway = Transaction.stakingFeeTxnAddGatewayV1
 export const stakingFeeAssertLoc = Transaction.stakingFeeTxnAssertLocationV1
 
-export const convertFeeToNetworkTokens = async (
-  balance: Balance<DataCredits>,
-): Promise<Balance<NetworkTokens>> => {
-  const currentPrice = await getCurrentOraclePrice()
-  const predictedPrices = await getPredictedOraclePrice()
-  const prices = [currentPrice, ...predictedPrices]
-  const oraclePrice = minBy(prices, (p) => p.price.integerBalance)
-  return balance.toNetworkTokens(oraclePrice?.price)
+export const useFees = () => {
+  const {
+    heliumData: { currentOraclePrice, predictedOraclePrices },
+  } = useSelector((state: RootState) => state)
+
+  const feeToHNT = (balance?: Balance<DataCredits>) => {
+    if (!balance) return new Balance<DataCredits>(0, CurrencyType.dataCredit)
+
+    const prices = [currentOraclePrice, ...predictedOraclePrices]
+    const oraclePrice = minBy(prices, (p) => p?.price.integerBalance || 0)
+    return balance.toNetworkTokens(oraclePrice?.price)
+  }
+
+  return { feeToHNT }
 }
 
 const emptyB58Address = () =>
@@ -36,7 +39,7 @@ export const calculatePaymentTxnFee = async (
   amount: number,
   nonce: number,
   payeeB58?: string,
-): Promise<Balance<DataCredits>> => {
+) => {
   const keypair = await getKeypair()
   if (!keypair) throw new Error('missing keypair')
 
@@ -98,7 +101,7 @@ export const calculateBurnTxnFee = async (
   payeeB58: string,
   nonce: number,
   memo: string,
-): Promise<Balance<DataCredits>> => {
+) => {
   const keypair = await getKeypair()
   if (!keypair) throw new Error('missing keypair')
 

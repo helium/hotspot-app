@@ -148,10 +148,10 @@ const accountSlice = createSlice({
           const joined = unionBy(filtered, state.txns.pending.data, 'hash')
           state.txns.pending.data = joined
         } else {
-          state.txns[arg].data = [
-            ...state.txns[arg].data,
-            ...(payload as AnyTransaction[]),
-          ]
+          const newTxns = payload as AnyTransaction[]
+          // TODO: this should be unnecessary, but RN's "fast refresh" is causing duplicated items to get in
+          const joined = unionBy(state.txns[arg].data, newTxns, 'hash')
+          state.txns[arg].data = joined
         }
       },
     )

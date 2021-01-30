@@ -24,7 +24,7 @@ import {
   calculateBurnTxnFee,
   calculatePaymentTxnFee,
   calculateTransferTxnFee,
-  convertFeeToNetworkTokens,
+  useFees,
 } from '../../../utils/fees'
 import { networkTokensToDataCredits } from '../../../utils/currency'
 import {
@@ -74,6 +74,8 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   const {
     account: { account },
   } = useSelector((state: RootState) => state)
+
+  const { feeToHNT } = useFees()
 
   // TODO Balance.fromString(amount: string, currencyType: CurrencyType)
   const getIntegerAmount = (): number => parseFloat(amount) * 100000000
@@ -186,7 +188,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   // compute fee
   useAsync(async () => {
     const dcFee = await calculateFee()
-    const hntFee = await convertFeeToNetworkTokens(dcFee)
+    const hntFee = feeToHNT(dcFee)
     setFee(hntFee)
   }, [amount, transferData?.amountToSeller])
 

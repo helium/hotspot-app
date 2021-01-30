@@ -1,8 +1,7 @@
 import React, { memo } from 'react'
-import { TouchableWithoutFeedback } from 'react-native'
+import { TouchableOpacity } from 'react-native'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
-import { triggerNotification } from '../../../utils/haptic'
 
 type Props = {
   isFirst: boolean
@@ -10,8 +9,11 @@ type Props = {
   backgroundColor: string
   icon: React.ReactNode
   title: string
-  amount: string
+  subtitle: string
   time?: string
+  // eslint-disable-next-line react/no-unused-prop-types
+  hash: string // used for memoization
+  handlePress: () => void
 }
 
 const ActivityItem = ({
@@ -19,16 +21,13 @@ const ActivityItem = ({
   isLast = false,
   backgroundColor,
   icon,
-  amount,
+  subtitle,
   time,
   title,
+  handlePress,
 }: Props) => {
-  const handlePress = () => {
-    triggerNotification()
-  }
-
   return (
-    <TouchableWithoutFeedback onPress={handlePress}>
+    <TouchableOpacity onPress={handlePress}>
       <Box
         flexDirection="row"
         justifyContent="space-between"
@@ -67,15 +66,15 @@ const ActivityItem = ({
             numberOfLines={1}
             adjustsFontSizeToFit
           >
-            {amount}
+            {subtitle}
           </Text>
         </Box>
         <Box paddingHorizontal="m">
           {time && <Text color="graySteel">{time}</Text>}
         </Box>
       </Box>
-    </TouchableWithoutFeedback>
+    </TouchableOpacity>
   )
 }
 
-export default memo(ActivityItem)
+export default memo(ActivityItem, (prev, next) => prev.hash === next.hash)
