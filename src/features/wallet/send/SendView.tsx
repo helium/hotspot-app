@@ -235,7 +235,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     triggerNavHaptic()
   }
 
-  const handleSellerTransfer = async (): Promise<undefined> => {
+  const handleSellerTransfer = async () => {
     const seller = await getAddress()
     if (!hotspot || !seller) {
       throw new Error('missing hotspot or seller for transfer')
