@@ -290,6 +290,7 @@ const HotspotDetails = () => {
       </Box>
 
       <HotspotSettings
+        hotspot={hotspot}
         visible={showSettings}
         onClose={() => setShowSettings(false)}
       />

@@ -14,12 +14,10 @@ export const setUser = (userAddress: string) => {
 }
 
 export const error = (e: unknown) => {
-  console.warn(e)
   Sentry.captureException(e)
 }
 
 export const breadcrumb = (message: string) => {
-  console.log(message)
   Sentry.addBreadcrumb({
     message,
   })

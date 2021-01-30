@@ -4,15 +4,15 @@ import SendScreen from './SendScreen'
 import ScanScreen from '../scan/ScanScreen'
 import SendCompleteScreen from './SendCompleteScreen'
 
-const WalletStack = createStackNavigator()
+const SendStack = createStackNavigator()
 
 const SendNavigator = () => {
   return (
-    <WalletStack.Navigator headerMode="none">
-      <WalletStack.Screen name="Send" component={SendScreen} />
-      <WalletStack.Screen name="SendScan" component={ScanScreen} />
-      <WalletStack.Screen name="SendComplete" component={SendCompleteScreen} />
-    </WalletStack.Navigator>
+    <SendStack.Navigator headerMode="none">
+      <SendStack.Screen name="Send" component={SendScreen} />
+      <SendStack.Screen name="SendScan" component={ScanScreen} />
+      <SendStack.Screen name="SendComplete" component={SendCompleteScreen} />
+    </SendStack.Navigator>
   )
 }
 

@@ -23,7 +23,7 @@ export const configChainVars = async () => {
   Transaction.config(vars)
 }
 
-const getAddress = async () => {
+export const getAddress = async () => {
   return getSecureItem('address')
 }
 
@@ -69,11 +69,11 @@ export const getHotspotWitnesses = async (address: string) => {
   return list.take(MAX)
 }
 
-export const getAccount = async () => {
-  const address = await getAddress()
-  if (!address) return
+export const getAccount = async (address?: string) => {
+  const accountAddress = address || (await getAddress())
+  if (!accountAddress) return
 
-  const { data } = await client.accounts.get(address)
+  const { data } = await client.accounts.get(accountAddress)
   return data
 }
 

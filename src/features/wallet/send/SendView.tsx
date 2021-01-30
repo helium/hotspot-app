@@ -10,6 +10,8 @@ import Balance, {
 import { Address } from '@helium/crypto-react-native'
 import { useAsync } from 'react-async-hook'
 import { useSelector } from 'react-redux'
+import { Hotspot } from '@helium/http'
+import { TransferHotspotV1 } from '@helium/transactions'
 import { RootState } from '../../../store/rootReducer'
 import Box from '../../../components/Box'
 import { triggerNavHaptic } from '../../../utils/haptic'
@@ -21,18 +23,45 @@ import SendForm from './SendForm'
 import {
   calculateBurnTxnFee,
   calculatePaymentTxnFee,
+  calculateTransferTxnFee,
   useFees,
 } from '../../../utils/fees'
 import { networkTokensToDataCredits } from '../../../utils/currency'
-import { makeBurnTxn, makePaymentTxn } from '../../../utils/transactions'
-import { submitTransaction } from '../../../utils/appDataClient'
+import {
+  makeBurnTxn,
+  makeBuyerTransferHotspotTxn,
+  makePaymentTxn,
+  makeSellerTransferHotspotTxn,
+} from '../../../utils/transactions'
+import {
+  getAccount,
+  getHotspotActivityList,
+  submitTransaction,
+} from '../../../utils/appDataClient'
 import * as Logger from '../../../utils/logger'
+import TransferBanner from '../../hotspots/transfers/TransferBanner'
+import {
+  createTransfer,
+  deleteTransfer,
+  getTransfer,
+  Transfer,
+} from '../../hotspots/transfers/TransferRequests'
+import { getAddress } from '../../../utils/secureAccount'
+import Text from '../../../components/Text'
+import { fromNow } from '../../../utils/timeUtils'
 
-const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
+type Props = {
+  scanResult?: QrScanResult
+  sendType?: SendType
+  hotspot?: Hotspot
+  isSeller?: boolean
+}
+
+const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   const navigation = useNavigation()
   const { t } = useTranslation()
 
-  const [type, setType] = useState<SendType>('payment')
+  const [type, setType] = useState<SendType>(sendType || 'payment')
   const [address, setAddress] = useState<string>('')
   const [amount, setAmount] = useState<string>('')
   const [dcAmount, setDcAmount] = useState<string>('')
@@ -53,6 +82,46 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
   const getBalanceAmount = (): Balance<NetworkTokens> => {
     return new Balance(getIntegerAmount(), CurrencyType.networkToken)
   }
+
+  // load transfer data
+  const [transferData, setTransferData] = useState<Transfer>()
+  const [lastReportedActivity, setLastReportedActivity] = useState<string>()
+  useEffect(() => {
+    const fetchTransfer = async () => {
+      if (!hotspot) {
+        Alert.alert(
+          t('transfer.canceled_alert_title'),
+          t('transfer.canceled_alert_body'),
+        )
+        return
+      }
+      try {
+        const transfer = await getTransfer(hotspot.address)
+        setTransferData(transfer)
+        const hotspotActivityList = await getHotspotActivityList(
+          hotspot.address,
+          'all',
+        )
+        const [lastHotspotActivity] = hotspotActivityList
+          ? await hotspotActivityList?.take(1)
+          : []
+        const reportedActivity = lastHotspotActivity
+          ? fromNow(new Date(lastHotspotActivity.time * 1000))?.toUpperCase()
+          : t('transfer.unknown')
+        setLastReportedActivity(reportedActivity)
+      } catch (e) {
+        Alert.alert(
+          t('transfer.canceled_alert_title'),
+          t('transfer.canceled_alert_body'),
+        )
+        navigation.goBack()
+      }
+    }
+    if (!isSeller && type === 'transfer') {
+      fetchTransfer()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // process scan results
   useEffect(() => {
@@ -78,32 +147,50 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
   // validate transaction
   useEffect(() => {
     const isValidAddress = Address.isValid(address)
-    const balanceAmount = getBalanceAmount()
-    const totalTxnAmount = balanceAmount.plus(fee)
-    // TODO balance compare/greater than/less than
-    const hasSufficientBalance =
-      totalTxnAmount.integerBalance <= (account?.balance?.integerBalance || 0)
 
-    setIsValid(
-      isValidAddress &&
-        hasSufficientBalance &&
-        address !== account?.address &&
-        balanceAmount.integerBalance > 0,
-    )
+    if (type === 'transfer') {
+      if (isSeller) {
+        setIsValid(isValidAddress)
+      } else {
+        const isValidSellerAddress = transferData
+          ? Address.isValid(transferData.seller)
+          : false
+        const balanceAmount = transferData?.amountToSeller
+        const totalTxnAmount = balanceAmount?.plus(fee)
+        // TODO balance compare/greater than/less than
+        const hasSufficientBalance =
+          totalTxnAmount &&
+          totalTxnAmount.integerBalance <=
+            (account?.balance?.integerBalance || 0)
+        setIsValid(isValidSellerAddress && (hasSufficientBalance || false))
+      }
+    } else {
+      const balanceAmount = getBalanceAmount()
+      const totalTxnAmount = balanceAmount.plus(fee)
+      // TODO balance compare/greater than/less than
+      const hasSufficientBalance =
+        totalTxnAmount.integerBalance <= (account?.balance?.integerBalance || 0)
+      setIsValid(
+        isValidAddress &&
+          hasSufficientBalance &&
+          address !== account?.address &&
+          balanceAmount.integerBalance > 0,
+      )
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, amount, fee, account])
+  }, [address, amount, fee, account, transferData?.seller])
+
+  const getNonce = (): number => {
+    if (!account?.speculativeNonce) return 1
+    return account.speculativeNonce + 1
+  }
 
   // compute fee
   useAsync(async () => {
     const dcFee = await calculateFee()
     const hntFee = feeToHNT(dcFee)
     setFee(hntFee)
-  }, [amount])
-
-  const getNonce = (): number => {
-    if (!account?.speculativeNonce) return 1
-    return account.speculativeNonce + 1
-  }
+  }, [amount, transferData?.amountToSeller])
 
   const calculateFee = async (): Promise<Balance<DataCredits>> => {
     if (type === 'payment') {
@@ -112,6 +199,10 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
 
     if (type === 'dc_burn') {
       return calculateBurnTxnFee(getIntegerAmount(), address, getNonce(), memo)
+    }
+
+    if (type === 'transfer') {
+      return calculateTransferTxnFee(transferData?.partialTransaction)
     }
 
     throw new Error('Unsupported transaction type')
@@ -144,7 +235,97 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
     triggerNavHaptic()
   }
 
-  const constructTxn = async (): Promise<string> => {
+  const handleSellerTransfer = async () => {
+    const seller = await getAddress()
+    if (!hotspot || !seller) {
+      throw new Error('missing hotspot or seller for transfer')
+    }
+    const partialTxn = await makeSellerTransferHotspotTxn(
+      hotspot.address,
+      address,
+      seller,
+      getIntegerAmount(),
+    )
+    const transfer = createTransfer(
+      hotspot.address,
+      seller?.b58,
+      address,
+      partialTxn,
+      getIntegerAmount(),
+    )
+    if (!transfer) {
+      Alert.alert(
+        t('transfer.exists_alert_title'),
+        t('transfer.exists_alert_body'),
+      )
+      throw new Error('transfer already exists')
+    }
+    return undefined
+  }
+
+  const checkTransferAmountChanged = (transfer: Transfer) => {
+    if (
+      transfer.amountToSeller?.integerBalance !==
+      transferData?.amountToSeller?.integerBalance
+    ) {
+      setTransferData(transfer)
+      Alert.alert(
+        t('transfer.amount_changed_alert_title'),
+        t('transfer.amount_changed_alert_body', {
+          amount: transfer?.amountToSeller?.floatBalance.toString(),
+        }),
+      )
+      throw new Error('transfer amount changed')
+    }
+  }
+
+  const handleBuyerTransfer = async (): Promise<string | undefined> => {
+    if (!hotspot) {
+      throw new Error('missing hotspot for buyer transfer')
+    }
+    try {
+      const transfer = await getTransfer(hotspot.address)
+      if (!transfer) {
+        throw new Error('transfer no longer active')
+      }
+      checkTransferAmountChanged(transfer)
+      setTransferData(transfer)
+      const sellerSignedTxnBin = transfer.partialTransaction
+      const transferHotspotTxn = TransferHotspotV1.fromString(
+        sellerSignedTxnBin,
+      )
+      const buyerAccount = await getAccount()
+      const nonce = buyerAccount?.speculativeNonce || 0
+      if (transferHotspotTxn.buyerNonce !== nonce + 1) {
+        Alert.alert(t('nonce_alert_title'), t('nonce_alert_body'))
+        throw new Error('transfer nonce invalid')
+      }
+      const txn = await makeBuyerTransferHotspotTxn(transferHotspotTxn)
+      const deleteResponse = await deleteTransfer(hotspot.address, true)
+      if (!deleteResponse) {
+        Alert.alert(
+          t('transfer.incomplete_alert_title'),
+          t('transfer.incomplete_alert_body'),
+        )
+        throw new Error('transfer delete invalid')
+      }
+      return txn
+    } catch (error) {
+      if (
+        error.message !== 'transfer amount changed' ||
+        error.message !== 'transfer nonce invalid' ||
+        error.message !== 'transfer delete invalid'
+      ) {
+        Alert.alert(
+          t('transfer.canceled_alert_title'),
+          t('transfer.canceled_alert_body'),
+        )
+      }
+      throw error
+    }
+  }
+
+  const constructTxn = async (): Promise<string | undefined> => {
     if (type === 'payment') {
       return makePaymentTxn(getIntegerAmount(), address, getNonce())
     }
@@ -153,27 +334,42 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
       return makeBurnTxn(getIntegerAmount(), address, getNonce(), memo)
     }
 
+    if (type === 'transfer') {
+      return isSeller ? handleSellerTransfer() : handleBuyerTransfer()
+    }
+
     throw new Error('Unsupported transaction type')
   }
 
   const handleSubmit = async () => {
     try {
       const txn = await constructTxn()
-      await submitTransaction(txn)
+      if (txn) {
+        await submitTransaction(txn)
+      }
       triggerNavHaptic()
       navigation.navigate('SendComplete')
     } catch (error) {
       Logger.error(error)
-      Alert.alert(t('generic.error'), t('send.error'))
+      if (type !== 'transfer') {
+        Alert.alert(t('generic.error'), t('send.error'))
+      }
     }
   }
 
   return (
     <Box flex={1}>
       <SendHeader type={type} onClosePress={navBack} />
-      <SendAmountAvailableBanner amount={account?.balance} />
+      {type === 'payment' && (
+        <SendAmountAvailableBanner amount={account?.balance} />
+      )}
+      {type === 'dc_burn' && (
+        <SendAmountAvailableBanner amount={account?.balance} />
+      )}
+      {type === 'transfer' && <TransferBanner hotspot={hotspot} />}
       <Box flex={3} backgroundColor="white" paddingHorizontal="l">
         <SendForm
+          isSeller={isSeller}
           type={type}
           isValid={isValid}
           isLocked={isLocked}
@@ -182,6 +378,8 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
           dcAmount={dcAmount}
           memo={memo}
           fee={fee}
+          transferData={transferData}
+          lastReportedActivity={lastReportedActivity}
           onAddressChange={setAddress}
           onAmountChange={setAmount}
           onDcAmountChange={setDcAmount}
@@ -192,6 +390,17 @@ const SendView = ({ scanResult }: { scanResult?: QrScanResult }) => {
           onUnlock={unlockForm}
         />
       </Box>
+      {isSeller && (
+        <Text
+          variant="body3"
+          color="gray"
+          paddingBottom="xl"
+          paddingHorizontal="l"
+          textAlign="center"
+        >
+          {t('transfer.fine_print')}
+        </Text>
+      )}
     </Box>
   )
 }

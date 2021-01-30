@@ -12,7 +12,9 @@ type Props = {
 
 const SendScreen = ({ route }: Props) => {
   const scanResult = route?.params?.scanResult
-
+  const type = route?.params?.type
+  const hotspot = route?.params?.hotspot
+  const isSeller = route?.params?.isSeller
   return (
     <>
       <Box
@@ -22,7 +24,12 @@ const SendScreen = ({ route }: Props) => {
         alignContent="center"
         flexDirection="column"
       >
-        <SendView scanResult={scanResult} />
+        <SendView
+          scanResult={scanResult}
+          sendType={type}
+          hotspot={hotspot}
+          isSeller={isSeller}
+        />
       </Box>
     </>
   )

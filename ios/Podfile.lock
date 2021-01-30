@@ -414,9 +414,9 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (2.15.2):
+  - RNScreens (2.17.1):
     - React-Core
-  - RNSentry (2.1.0):
+  - RNSentry (2.1.1):
     - React-Core
     - Sentry (= 6.0.9)
   - RNSVG (12.1.0):
@@ -774,8 +774,8 @@ SPEC CHECKSUMS:
   RNGestureHandler: 9b7e605a741412e20e13c512738a31bd1611759b
   RNLocalize: 7c7aeda16c01db7a0918981c14875c0a53be9b79
   RNReanimated: b2d6785c8fc1f61e1c81179c64c9b6b1a00e6ab5
-  RNScreens: 3d682bcaba69a4f8e55543d90818704f34338db1
-  RNSentry: 51972e3fe50e2fb38ae459af8c87d61f63f364db
+  RNScreens: b6c9607e6fe47c1b6e2f1910d2acd46dd7ecea3a
+  RNSentry: 6b46b6fc1d715a378fbaa5d7d43bc9ce99b500e5
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   Sentry: 388c9dc093b2fd3a264466a5c5b21e25959610a9
   UMAppLoader: 5db5dc03176c6238da9c8b3657a370137882a4ad

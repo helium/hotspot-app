@@ -3,6 +3,7 @@ import { ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Address } from '@helium/crypto-react-native'
 import Balance, { NetworkTokens } from '@helium/currency'
+import animalName from 'angry-purple-tiger'
 import InputField from '../../../components/InputField'
 import Button from '../../../components/Button'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
@@ -14,6 +15,7 @@ import { useColors } from '../../../theme/themeHooks'
 import LockedHeader from '../../../components/LockedHeader'
 import LockedField from '../../../components/LockedField'
 import { SendType } from './sendTypes'
+import { Transfer } from '../../hotspots/transfers/TransferRequests'
 
 type Props = {
   isValid: boolean
@@ -32,11 +34,15 @@ type Props = {
   onSendMaxPress: () => void
   onSubmit: () => void
   onUnlock: () => void
+  isSeller?: boolean
+  transferData?: Transfer
+  lastReportedActivity?: string
 }
 
 const SendForm = ({
   isValid,
   isLocked,
+  isSeller,
   type,
   address,
   amount,
@@ -51,11 +57,26 @@ const SendForm = ({
   onSendMaxPress,
   onSubmit,
   onUnlock,
+  transferData,
+  lastReportedActivity,
 }: Props) => {
   const { t } = useTranslation()
   const { primaryMain } = useColors()
 
   const isValidAddress = Address.isValid(address)
+
+  const getButtonTitle = () => {
+    switch (type) {
+      case 'payment':
+        return t('send.button.payment')
+      case 'dc_burn':
+        return t('send.button.dcBurn')
+      case 'transfer':
+        return isSeller
+          ? t('send.button.transfer_request')
+          : t('send.button.transfer_complete')
+    }
+  }
 
   const renderLockedPaymentForm = () => (
     <Box>
@@ -174,6 +195,63 @@ const SendForm = ({
     </Box>
   )
 
+  const renderSellerTransferForm = () => (
+    <Box>
+      <InputField
+        defaultValue={address}
+        onChange={onAddressChange}
+        label={t('send.address.label_transfer')}
+        placeholder={t('send.address.placeholder')}
+        extra={
+          isValidAddress ? (
+            <Box padding="s" position="absolute" right={0}>
+              <Check />
+            </Box>
+          ) : (
+            <TouchableOpacityBox
+              onPress={onScanPress}
+              padding="s"
+              position="absolute"
+              right={0}
+            >
+              <QrCode width={16} color={primaryMain} />
+            </TouchableOpacityBox>
+          )
+        }
+      />
+      <InputField
+        type="numeric"
+        defaultValue={amount}
+        onChange={onAmountChange}
+        label={t('send.amount.label_transfer')}
+        placeholder={t('send.amount.placeholder_transfer')}
+      />
+    </Box>
+  )
+
+  const renderBuyerTransferForm = () => (
+    <Box>
+      <LockedField
+        label={t('send.address.seller')}
+        value={transferData?.seller || ''}
+      />
+      <LockedField
+        label={t('send.amount.label_transfer')}
+        value={transferData?.amountToSeller?.floatBalance.toString() || ''}
+        footer={<FeeFooter fee={fee} />}
+      />
+      <LockedField
+        label={t('send.hotspot_label')}
+        value={transferData ? animalName(transferData.gateway) : ''}
+        footer={
+          <Text variant="mono" color="grayText" fontSize={11} paddingTop="xs">
+            {t('send.last_activity', { activity: lastReportedActivity })}
+          </Text>
+        }
+      />
+    </Box>
+  )
+
   return (
     <Box height="100%" justifyContent="space-between" paddingBottom="xl">
       <ScrollView contentContainerStyle={{ marginTop: 16 }}>
@@ -181,14 +259,12 @@ const SendForm = ({
         {isLocked && type === 'dc_burn' && renderLockedBurnForm()}
         {!isLocked && type === 'payment' && renderPaymentForm()}
         {!isLocked && type === 'dc_burn' && renderBurnForm()}
+        {isSeller && type === 'transfer' && renderSellerTransferForm()}
+        {!isSeller && type === 'transfer' && renderBuyerTransferForm()}
       </ScrollView>
       <Button
         onPress={onSubmit}
-        title={
-          type === 'payment'
-            ? t('send.button.payment')
-            : t('send.button.dcBurn')
-        }
+        title={getButtonTitle()}
         variant="primary"
         mode="contained"
         disabled={!isValid}
