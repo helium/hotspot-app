@@ -12,6 +12,7 @@ import Button from '../../../components/Button'
 import Check from '../../../assets/images/check.svg'
 import PartialSuccess from '../../../assets/images/partialSuccess.svg'
 import { RootState } from '../../../store/rootReducer'
+import { hp } from '../../../utils/layout'
 
 type Props = {
   locationAddress?: LocationGeocodedAddress
@@ -41,8 +42,15 @@ const ReassertLocationFee = ({
   } = useSelector((state: RootState) => state)
 
   return (
-    <Box height={569} padding="l" paddingTop="lx">
-      <Text variant="medium" fontSize={21} color="black" marginBottom="l">
+    <Box height={Math.min(569, hp(75))} padding="l" paddingTop="lx">
+      <Text
+        variant="medium"
+        fontSize={21}
+        color="black"
+        marginBottom="l"
+        numberOfLines={1}
+        adjustsFontSizeToFit
+      >
         {hotspotAddress ? animalName(hotspotAddress) : ''}
       </Text>
       {isPending && (

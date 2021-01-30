@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Device } from 'react-native-ble-plx'
-import Box from '../../../components/Box'
-import Text from '../../../components/Text'
 import animateTransition from '../../../utils/animateTransition'
 import HotspotDiagnosticReport from './HotspotDiagnosticReport'
 import HotspotDiagnosticsConnection from './HotspotDiagnosticsConnection'
@@ -82,13 +80,7 @@ const HotspotDiagnostics = ({ updateTitle }: Props) => {
       )
   }
 
-  return (
-    <Box height={412} padding="l">
-      <Text variant="subtitle" color="black">
-        {state}
-      </Text>
-    </Box>
-  )
+  return null
 }
 
 export default HotspotDiagnostics

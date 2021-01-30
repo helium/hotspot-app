@@ -49,7 +49,9 @@ const ReassertLocationUpdate = ({
       setMarkerCenter(newCoords)
 
       const [longitude, latitude] = newCoords
-      const [{ street, city }] = await reverseGeocode(latitude, longitude)
+      const results = await reverseGeocode(latitude, longitude)
+      if (!results.length) return
+      const [{ street, city }] = results
       const name = street && city ? [street, city].join(', ') : 'Loading...'
       setLocationName(name)
     }
@@ -107,7 +109,7 @@ const ReassertLocationUpdate = ({
   }, [])
 
   return (
-    <Box height={hp(70)} borderRadius="l" overflow="hidden">
+    <Box height={hp(75)} borderRadius="l" overflow="hidden">
       {loading && (
         <Box
           position="absolute"
@@ -180,6 +182,7 @@ const ReassertLocationUpdate = ({
         <Box flexDirection="row">
           <Button
             flex={132}
+            height={56}
             variant="destructive"
             mode="contained"
             title={t('generic.cancel')}
@@ -189,6 +192,7 @@ const ReassertLocationUpdate = ({
           <Button
             disabled={disabled}
             color={confirming ? 'black' : undefined}
+            height={56}
             flex={198}
             variant={confirming ? 'secondary' : 'primary'}
             mode="contained"

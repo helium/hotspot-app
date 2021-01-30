@@ -202,7 +202,14 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
   return (
     <ScrollView style={{ height: hp(80) }}>
       <Box padding="l" minHeight={413}>
-        <Text variant="medium" fontSize={21} color="black" marginBottom="lx">
+        <Text
+          variant="medium"
+          fontSize={21}
+          color="black"
+          marginBottom="lx"
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
           {animalHash(address || '')}
         </Text>
 

@@ -28,6 +28,7 @@ const Button = ({
   color,
   textStyle,
   disabled,
+  height,
   ...rest
 }: Props) => {
   const getBackground = (): Colors | undefined => {
@@ -64,15 +65,18 @@ const Button = ({
   }
 
   return (
-    <Box style={{ opacity: disabled ? 0.2 : 1 }} {...rest}>
+    <Box style={{ opacity: disabled ? 0.2 : 1 }} {...rest} height={height}>
       <TouchableOpacityBox
+        height={height}
         backgroundColor={getBackground()}
         borderRadius="m"
         onPress={onPress}
         disabled={disabled}
+        justifyContent="center"
       >
         <Text
-          paddingVertical="lm"
+          alignSelf="center"
+          paddingVertical={height ? undefined : 'lm'}
           variant={getTextVariant()}
           color={getTextColor()}
           style={textStyle}

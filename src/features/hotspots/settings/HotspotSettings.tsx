@@ -219,6 +219,7 @@ const HotspotSettings = () => {
         flex={1}
         flexDirection="column"
         justifyContent="space-between"
+        marginBottom="m"
       >
         <Box
           flexDirection="row-reverse"

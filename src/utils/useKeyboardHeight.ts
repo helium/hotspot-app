@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Keyboard, KeyboardEvent } from 'react-native'
+import animateTransition from './animateTransition'
 
 const useKeyboard = () => {
   const [keyboardHeight, setKeyboardHeight] = useState(0)
 
   function onKeyboardDidShow(e: KeyboardEvent): void {
+    animateTransition()
     setKeyboardHeight(e.endCoordinates.height)
   }
 
