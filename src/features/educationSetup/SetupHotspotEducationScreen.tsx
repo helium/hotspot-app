@@ -23,7 +23,9 @@ const SetupHotspotEducationScreen = () => {
       paddingHorizontal="lx"
     >
       <Box flex={1} />
-      <Miner />
+      <Box maxHeight={{ smallPhone: 200, phone: 300 }}>
+        <Miner height="100%" />
+      </Box>
       <Text variant="h1" marginTop="xl">
         {t('hotspot_setup.start.title')}
       </Text>

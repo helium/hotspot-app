@@ -247,7 +247,7 @@ const useHotspot = () => {
 
     const subscription = characteristic?.monitor((error, c) => {
       if (error) {
-        console.log(error)
+        Logger.error(error)
         subscription?.remove()
         callback?.('error')
       }

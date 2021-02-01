@@ -10,7 +10,7 @@ const HotspotSetupPickHotspotScreen = () => {
 
   if (hotspotCount > 0) {
     return (
-      <BackScreen backgroundColor="purple200" padding="none">
+      <BackScreen backgroundColor="primaryBackground" padding="none">
         <HotspotSetupBluetoothSuccess />
       </BackScreen>
     )

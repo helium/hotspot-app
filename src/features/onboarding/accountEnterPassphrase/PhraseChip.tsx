@@ -48,7 +48,8 @@ const PhraseChip = ({
       backgroundColor={getBackgroundColor()}
       onPress={() => {}}
       borderRadius="l"
-      padding="m"
+      paddingVertical="m"
+      maxWidth="30%"
       underlayColor={purpleMain}
       disabled={selected || disabled}
       onHideUnderlay={() => setUnderlayShowing(false)}
@@ -68,6 +69,7 @@ const PhraseChip = ({
           {getIcon()}
         </Box>
         <Text
+          paddingHorizontal="m"
           numberOfLines={1}
           adjustsFontSizeToFit
           opacity={fail || success ? 0 : 1}
