@@ -8,6 +8,7 @@ import {
   getHotspotActivityList,
   getHotspotDetails,
 } from '../../utils/appDataClient'
+import { getStaking } from '../../utils/stakingClient'
 
 export type HotspotStatus = 'owned' | 'global' | 'new' | 'error' | 'initial'
 export type HotspotType = 'Helium' | 'RAK'
@@ -21,7 +22,6 @@ export type HotspotDetails = {
   wifi?: string
   type?: HotspotType
   name?: HotspotName
-  validOnboarding?: boolean
   onboardingRecord?: OnboardingRecord
   onboardingAddress?: string
   firmware?: {
@@ -33,11 +33,25 @@ export type HotspotDetails = {
   status?: HotspotStatus
 }
 
-export type OnboardingRecord = {
+type OnboardingRecord = {
   id: number
+  onboardingKey: string
+  macWlan0: string
+  rpiSerial: string
+  batch: string
+  publicAddress: string
+  heliumSerial: string
+  macEth0: string
+  createdAt: string
+  updatedAt: string
+  makerId: number
   maker: {
-    locationNonceLimit: number
+    id: number
+    name: string
     address: string
+    locationNonceLimit: number
+    createdAt: string
+    updatedAt: string
   }
 }
 
@@ -87,15 +101,33 @@ export const fetchHotspotActivity = createAsyncThunk<
   return list.takeJSON(opts.fetchCount || 10)
 })
 
-export const fetchHotspotDetails = createAsyncThunk<Hotspot, HotspotDetails>(
-  'account/fetchHotspotDetails',
-  async (details, thunkAPI) => {
-    thunkAPI.dispatch(
-      connectedHotspotSlice.actions.initConnectedHotspot(details),
-    )
-    return getHotspotDetails(details.address || '')
-  },
-)
+export type AllHotspotDetails = {
+  hotspot: Hotspot
+  onboardingRecord: OnboardingRecord
+}
+export const fetchHotspotDetails = createAsyncThunk<
+  AllHotspotDetails,
+  HotspotDetails
+>('account/fetchHotspotDetails', async (details, thunkAPI) => {
+  thunkAPI.dispatch(connectedHotspotSlice.actions.initConnectedHotspot(details))
+
+  if (!details.address) {
+    throw new Error('fetchHotspotDetails address is missing')
+  }
+  if (!details.onboardingAddress) {
+    throw new Error('fetchHotspotDetails onboardingAddress is missing')
+  }
+
+  const [hotspot, onboardingRecord] = await Promise.all([
+    getHotspotDetails(details.address),
+    getStaking(`hotspots/${details.onboardingAddress}`),
+  ])
+
+  return {
+    hotspot,
+    onboardingRecord,
+  } as AllHotspotDetails
+})
 
 // This slice contains data related to a connected hotspot
 const connectedHotspotSlice = createSlice({
@@ -145,7 +177,8 @@ const connectedHotspotSlice = createSlice({
       },
     )
     builder.addCase(fetchHotspotDetails.fulfilled, (state, { payload }) => {
-      state.nonce = payload.nonce
+      state.onboardingRecord = payload.onboardingRecord
+      Object.assign(state, payload.hotspot)
     })
     builder.addCase(fetchHotspotDetails.rejected, (state) => {
       state.nonce = 0

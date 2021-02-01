@@ -21,6 +21,7 @@ import Button from '../../../components/Button'
 import sendReport from './sendReport'
 import Card from '../../../components/Card'
 import CircleLoader from '../../../components/CircleLoader'
+import { hp } from '../../../utils/layout'
 
 type Info = {
   percentSynced: number
@@ -192,7 +193,7 @@ const HotspotDiagnosticReport = () => {
   }
 
   return (
-    <ScrollView>
+    <ScrollView style={{ height: hp(80) }}>
       <Box padding="l" minHeight={413}>
         <Text variant="medium" fontSize={21} color="black" marginBottom="lx">
           {animalHash(address || '')}

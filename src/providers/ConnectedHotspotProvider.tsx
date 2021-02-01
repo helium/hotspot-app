@@ -1,3 +1,4 @@
+import Balance, { CurrencyType } from '@helium/currency'
 import React, { createContext, ReactNode, useContext } from 'react'
 import { State } from 'react-native-ble-plx'
 import useHotspot from '../utils/useHotspot'
@@ -7,19 +8,20 @@ const initialState = {
   enable: async () => {},
   scanForHotspots: async () => {},
   getDiagnosticInfo: async () => undefined,
-  connectAndConfigHotspot: async () => {},
+  connectAndConfigHotspot: async () => false,
   availableHotspots: {},
   scanForWifiNetworks: async () => undefined,
   removeConfiguredWifi: async () => undefined,
   setWifiCredentials: async () => undefined,
-  checkFirmwareCurrent: async () => undefined,
+  checkFirmwareCurrent: async () => false,
   updateHotspotStatus: async () => undefined,
   addGatewayTxn: async () => false,
   loadLocationFeeData: async () => ({
     isFree: false,
     hasSufficientBalance: false,
-    totalStakingAmount: 0,
+    totalStakingAmount: new Balance(0, CurrencyType.default),
   }),
+  assertLocationTxn: async () => false,
 }
 
 const ConnectedHotspotContext = createContext<ReturnType<typeof useHotspot>>(

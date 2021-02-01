@@ -42,17 +42,6 @@ import { useAppDispatch } from '../store/store'
 import { RootState } from '../store/rootReducer'
 import * as Logger from './logger'
 
-type HotspotStaking = {
-  batch: string
-  heliumSerial: string
-  id: number
-  macEth0: string
-  macWlan0: string
-  onboardingAddress: string
-  publicAddress: string
-  rpiSerial: string
-}
-
 const useHotspot = () => {
   const connectedHotspot = useRef<Device | null>(null)
   const [availableHotspots, setAvailableHotspots] = useState<
@@ -172,10 +161,6 @@ const useHotspot = () => {
       )
     }
 
-    const onboardingRecord = (await getStaking(
-      `hotspots/${onboardingAddress}`,
-    )) as HotspotStaking
-
     const details = {
       address,
       mac,
@@ -183,12 +168,11 @@ const useHotspot = () => {
       name,
       wifi,
       ethernetOnline,
-      validOnboarding: !!onboardingRecord,
-      onboardingRecord,
       onboardingAddress,
     }
-    dispatch(fetchHotspotDetails(details))
-    return details
+
+    const retVal = await dispatch(fetchHotspotDetails(details))
+    return !!retVal.payload
   }
 
   const scanForWifiNetworks = async (configured = false) => {
@@ -488,7 +472,7 @@ const useHotspot = () => {
   }
 
   const hasFreeLocationAssert = (): boolean => {
-    if (!connectedHotspotDetails.validOnboarding) {
+    if (!connectedHotspotDetails.onboardingRecord) {
       return false
     }
 

@@ -36,10 +36,10 @@ const HotspotSetupConnectingScreen = () => {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
       // connect to hotspot
-      const connectedHotspot = await connectAndConfigHotspot(hotspot)
+      const success = await connectAndConfigHotspot(hotspot)
 
       // check for valid onboarding record
-      if (!connectedHotspot?.validOnboarding) {
+      if (!success) {
         // TODO actual screen for this
         Alert.alert('Error', 'Invalid onboarding record')
         navigation.goBack()
