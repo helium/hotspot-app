@@ -472,7 +472,7 @@ const useHotspot = () => {
   }
 
   const remainingFreeAsserts = () => {
-    if (!connectedHotspotDetails.validOnboarding) {
+    if (!connectedHotspotDetails.onboardingRecord) {
       return 0
     }
 

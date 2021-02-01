@@ -108,7 +108,7 @@ export type AllHotspotDetails = {
 export const fetchHotspotDetails = createAsyncThunk<
   AllHotspotDetails,
   HotspotDetails
->('account/fetchHotspotDetails', async (details, thunkAPI) => {
+>('connectedHotspot/fetchHotspotDetails', async (details, thunkAPI) => {
   thunkAPI.dispatch(connectedHotspotSlice.actions.initConnectedHotspot(details))
 
   if (!details.address) {
