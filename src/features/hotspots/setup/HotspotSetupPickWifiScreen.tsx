@@ -69,7 +69,7 @@ const HotspotSetupPickWifiScreen = () => {
   }
 
   return (
-    <BackScreen padding="none" backgroundColor="purple200">
+    <BackScreen padding="none" backgroundColor="primaryBackground">
       <Box backgroundColor="primaryBackground" padding="m">
         <Box flexDirection="row" justifyContent="center" marginBottom="lm">
           <Wifi />
@@ -81,7 +81,7 @@ const HotspotSetupPickWifiScreen = () => {
           {t('hotspot_setup.wifi_scan.subtitle')}
         </Text>
       </Box>
-      <Box paddingHorizontal="lx" flex={1}>
+      <Box paddingHorizontal="lx" flex={1} backgroundColor="purple200">
         <FlatList
           data={networks}
           keyExtractor={(item) => item}

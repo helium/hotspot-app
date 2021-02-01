@@ -60,7 +60,7 @@ const AccountCreatePassphraseScreen = () => {
   )
 
   return (
-    <BackScreen flex={1} backgroundColor="primaryBackground">
+    <BackScreen flex={1} backgroundColor="primaryBackground" paddingTop="none">
       <Box flex={1} />
       <Text variant="h1">{t('account_setup.passphrase.title')}</Text>
       <TextTransform
@@ -68,7 +68,11 @@ const AccountCreatePassphraseScreen = () => {
         variant="subtitle"
         i18nKey="account_setup.passphrase.subtitle"
       />
-      <Box marginHorizontal="n_lx" height={114} marginVertical="l">
+      <Box
+        marginHorizontal="n_lx"
+        height={{ smallPhone: 80, phone: 114 }}
+        marginVertical="l"
+      >
         <Carousel
           layout="default"
           vertical={false}
@@ -94,6 +98,7 @@ const AccountCreatePassphraseScreen = () => {
       />
       <Box flex={1} />
       <Button
+        marginBottom="m"
         mode="contained"
         disabled={disabled}
         variant="primary"

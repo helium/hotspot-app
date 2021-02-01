@@ -12,6 +12,7 @@ import {
 import Bluetooth from '../../../assets/images/bluetooth.svg'
 import useAlert from '../../../utils/useAlert'
 import { useBluetoothContext } from '../../../providers/BluetoothProvider'
+import Box from '../../../components/Box'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotSetupPowerScreen'>
 
@@ -78,7 +79,7 @@ const HotspotSetupBluetoothInfoScreen = () => {
     >
       <Bluetooth />
       <Text
-        marginTop="xl"
+        marginTop={{ phone: 'xl', smallPhone: 'm' }}
         variant="h1"
         numberOfLines={2}
         adjustsFontSizeToFit
@@ -88,24 +89,31 @@ const HotspotSetupBluetoothInfoScreen = () => {
         {t('hotspot_setup.pair.title')}
       </Text>
       <Text
-        marginBottom="lx"
+        marginBottom={{ phone: 'lx', smallPhone: 'm' }}
         variant="subtitleBold"
         textAlign="center"
         color="white"
       >
         {subtitle1}
       </Text>
-      <Text marginBottom="xl" variant="subtitle" textAlign="center">
+      <Text
+        marginBottom="xl"
+        variant="subtitle"
+        textAlign="center"
+        numberOfLines={8}
+        adjustsFontSizeToFit
+      >
         {subtitle2}
       </Text>
-      <Button
-        marginTop="xxl"
-        width="100%"
-        variant="primary"
-        mode="contained"
-        title={t('hotspot_setup.pair.scan')}
-        onPress={checkBluetooth}
-      />
+      <Box flex={1} width="100%" justifyContent="flex-end">
+        <Button
+          width="100%"
+          variant="primary"
+          mode="contained"
+          title={t('hotspot_setup.pair.scan')}
+          onPress={checkBluetooth}
+        />
+      </Box>
     </BackScreen>
   )
 }

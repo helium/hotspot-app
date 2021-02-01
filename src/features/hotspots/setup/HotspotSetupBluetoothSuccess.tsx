@@ -40,7 +40,7 @@ const HotspotSetupBluetoothSuccess = () => {
           {t('hotspot_setup.ble_select.subtitle')}
         </Text>
       </Box>
-      <Box flex={1} paddingHorizontal="lx">
+      <Box flex={1} paddingHorizontal="lx" backgroundColor="purple200">
         <HotspotPairingList
           hotspots={Object.values(availableHotspots)}
           onPress={handleConnect}
