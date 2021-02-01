@@ -15,6 +15,7 @@ export type ActivityState = {
     pending: { data: PendingTransaction[]; status: Loading }
   }
   filter: FilterType
+  detailTxn?: AnyTransaction | PendingTransaction
 }
 
 const initialState: ActivityState = {
@@ -60,6 +61,15 @@ const activitySlice = createSlice({
       action: PayloadAction<PendingTransaction>,
     ) => {
       state.txns.pending.data.push(action.payload)
+    },
+    setDetailTxn: (
+      state,
+      action: PayloadAction<AnyTransaction | PendingTransaction>,
+    ) => {
+      state.detailTxn = action.payload
+    },
+    clearDetailTxn: (state) => {
+      return { ...state, detailTxn: undefined }
     },
     signOut: () => {
       return { ...initialState }

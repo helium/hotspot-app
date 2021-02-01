@@ -27,14 +27,13 @@ import ActivityCardHeader from './ActivityCardHeader'
 import { RootState } from '../../../../store/rootReducer'
 import { getSecureItem } from '../../../../utils/secureAccount'
 import { isPendingTransaction } from '../../../../utils/transactions'
-import {
+import activitySlice, {
   fetchPendingTxns,
   fetchTxns,
 } from '../../../../store/activity/activitySlice'
 import { useAppDispatch } from '../../../../store/store'
 import { useSpacing } from '../../../../theme/themeHooks'
 import useActivityItem from '../useActivityItem'
-import { useWalletContext } from '../ActivityDetails/WalletProvider'
 import ActivityCardLoading from './ActivityCardLoading'
 
 type Props = {
@@ -49,7 +48,6 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
   const [transactionData, setTransactionData] = useState<
     (AnyTransaction | PendingTransaction)[]
   >([])
-  const { setActivityItem } = useWalletContext()
   const { result: address } = useAsync(getSecureItem, ['address'])
   const { backgroundColor, title, listIcon, amount, time } = useActivityItem(
     address || '',
@@ -96,9 +94,9 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
 
   const handleActivityItemPressed = useCallback(
     (item: AnyTransaction | PendingTransaction) => () => {
-      setActivityItem(item)
+      dispatch(activitySlice.actions.setDetailTxn(item))
     },
-    [setActivityItem],
+    [dispatch],
   )
 
   const getSubtitle = useCallback(
