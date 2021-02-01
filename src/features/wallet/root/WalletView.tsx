@@ -1,13 +1,8 @@
-import React, { useRef, ElementRef, memo, useCallback } from 'react'
+import React, { useRef, memo, useCallback, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import Animated, {
-  useSharedValue,
-  useDerivedValue,
-  interpolate,
-  Extrapolate,
-  useAnimatedStyle,
-} from 'react-native-reanimated'
+import Animated, { Extrapolate, useValue } from 'react-native-reanimated'
 import { useNavigation } from '@react-navigation/native'
+import BottomSheet from '@gorhom/bottom-sheet'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import BarChart from '../../../components/BarChart'
@@ -29,11 +24,12 @@ type Props = {
 }
 
 const WalletView = ({ layout, animationPoints }: Props) => {
-  const { dragMax, dragMid } = animationPoints
-
   const { t } = useTranslation()
-
   const navigation = useNavigation()
+
+  const card = useRef<BottomSheet>(null)
+  const [cardIndex, setCardIndex] = useState(1)
+  const animatedCardIndex = useValue(1)
 
   const handlePress = useCallback(() => {
     triggerNavHaptic()
@@ -44,39 +40,36 @@ const WalletView = ({ layout, animationPoints }: Props) => {
     navigation.navigate('Scan')
   }, [navigation])
 
-  type ActivityCardHandle = ElementRef<typeof ActivityCard>
-  const card = useRef<ActivityCardHandle>(null)
-
   const handleSendPress = useCallback(() => {
     triggerNavHaptic()
     navigation.navigate('Send')
   }, [navigation])
 
-  const snapProgress = useSharedValue(dragMid / dragMax)
-
-  const balanceTranslateY = useDerivedValue(() => {
-    return interpolate(
-      snapProgress.value,
-      [dragMid / dragMax, 1],
-      [0, -layout.chartHeight],
-      Extrapolate.CLAMP,
-    )
-  })
-
-  const animatedStyles = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateY: balanceTranslateY.value,
-        },
-      ],
-    }
-  })
-
   const animateActivityToBottom = useCallback(() => {
-    card.current?.snapTo(0)
+    const snapToIndex = cardIndex === 1 ? 0 : 1
+    card.current?.snapTo(snapToIndex)
     triggerNavHaptic()
-  }, [])
+  }, [cardIndex])
+
+  const balanceCardStyles = useMemo(
+    () => [
+      {
+        flex: 1,
+      },
+      {
+        transform: [
+          {
+            translateY: animatedCardIndex.interpolate({
+              inputRange: [1, 2],
+              outputRange: [0, -layout.chartHeight],
+              extrapolate: Extrapolate.CLAMP,
+            }),
+          },
+        ],
+      },
+    ],
+    [animatedCardIndex, layout.chartHeight],
+  )
 
   return (
     <Box flex={1} style={{ paddingTop: layout.notchHeight }}>
@@ -107,7 +100,7 @@ const WalletView = ({ layout, animationPoints }: Props) => {
         <BarChart height={layout.chartHeight} />
       </Box>
 
-      <Animated.View style={[{ flex: 1 }, animatedStyles]}>
+      <Animated.View style={balanceCardStyles}>
         <BalanceCard
           onReceivePress={animateActivityToBottom}
           onSendPress={handleSendPress}
@@ -117,7 +110,8 @@ const WalletView = ({ layout, animationPoints }: Props) => {
       <ActivityCard
         ref={card}
         animationPoints={animationPoints}
-        snapProgress={snapProgress}
+        animatedIndex={animatedCardIndex}
+        onChange={setCardIndex}
       />
     </Box>
   )
