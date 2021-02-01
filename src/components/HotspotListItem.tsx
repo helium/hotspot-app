@@ -1,10 +1,11 @@
 import { Hotspot } from '@helium/http'
 import Balance, { NetworkTokens } from '@helium/currency'
-import { useNavigation } from '@react-navigation/native'
 import animalName from 'angry-purple-tiger'
 import React from 'react'
 import { useColors } from '../theme/themeHooks'
-import TouchableOpacityBox from './TouchableOpacityBox'
+// import TouchableOpacityBox from './TouchableOpacityBox'
+import TouchableOpacityBox from './BSTouchableOpacityBox'
+// import { TouchableOpacity } from '@gorhom/bottom-sheet'
 import Box from './Box'
 import CheckCircle from '../assets/images/check-circle.svg'
 import CarotRight from '../assets/images/carot-right.svg'
@@ -12,18 +13,19 @@ import Text from './Text'
 import CircleProgress from './CircleProgress'
 
 type HotspotListItemProps = {
+  onPress: (hotspot: Hotspot) => void
   hotspot: Hotspot
   totalReward: Balance<NetworkTokens>
   showCarot?: boolean
 }
 
 const HotspotListItem = ({
+  onPress,
   hotspot,
   totalReward,
   showCarot = false,
 }: HotspotListItemProps) => {
   const { grayBox } = useColors()
-  const navigation = useNavigation()
   return (
     <TouchableOpacityBox
       backgroundColor="grayBox"
@@ -33,7 +35,7 @@ const HotspotListItem = ({
       padding="m"
       borderRadius="m"
       height={75}
-      onPress={() => navigation.navigate('HotspotDetails', { hotspot })}
+      onPress={() => onPress(hotspot)}
     >
       <Box
         flexDirection="row"

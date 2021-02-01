@@ -10,7 +10,8 @@ import React, {
   useCallback,
   memo,
 } from 'react'
-import BottomSheet from 'react-native-holy-sheet'
+// import BottomSheet from 'react-native-holy-sheet'
+import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet'
 import Animated from 'react-native-reanimated'
 import { useSelector } from 'react-redux'
 import { useAsync } from 'react-async-hook'
@@ -216,6 +217,27 @@ const ActivityCard = forwardRef(
       transactionData,
       txns,
     ])
+
+    return (
+      <BottomSheet
+        handleComponent={ActivityCardHeader}
+        snapPoints={[dragMin, dragMid, dragMax]}
+        index={1}
+      >
+        <BottomSheetFlatList
+          data={transactionData}
+          renderItem={renderItem}
+          keyExtractor={(item: AnyTransaction | PendingTransaction) => {
+            if (isPendingTransaction(item)) {
+              return `${filter}.${(item as PendingTransaction).hash}`
+            }
+
+            return `${filter}.${(item as AddGatewayV1).hash}`
+          }}
+          contentContainerStyle={{ paddingHorizontal: m }}
+        />
+      </BottomSheet>
+    )
 
     return (
       <BottomSheet

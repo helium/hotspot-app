@@ -1,15 +1,17 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, useMemo } from 'react'
 import MapboxGL, {
   OnPressEvent,
   RegionPayload,
 } from '@react-native-mapbox-gl/maps'
 import { useSelector } from 'react-redux'
 import { Feature, GeoJsonProperties, Point, Position } from 'geojson'
+import { Hotspot } from '@helium/http'
 import Box from './Box'
 import CurrentLocationButton from './CurrentLocationButton'
 import { RootState } from '../store/rootReducer'
 import { useAppDispatch } from '../store/store'
 import { getLocation } from '../store/user/appSlice'
+import { hotspotsToFeatures } from '../utils/mapUtils'
 
 const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
 
@@ -20,8 +22,8 @@ type Props = {
   currentLocationEnabled?: boolean
   zoomLevel?: number
   mapCenter?: number[]
-  ownedHotspots?: Feature[]
-  selectedHotspots?: Feature[]
+  ownedHotspots?: Hotspot[]
+  selectedHotspots?: Hotspot[]
   witnesses?: Feature[]
   animationMode?: 'flyTo' | 'easeTo' | 'moveTo'
   animationDuration?: number
@@ -141,6 +143,16 @@ const Map = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [witnesses])
 
+  const ownedHotspotFeatures = useMemo(
+    () => (ownedHotspots ? hotspotsToFeatures(ownedHotspots) : []),
+    [ownedHotspots],
+  )
+
+  const selectedHotspotFeatures = useMemo(
+    () => (selectedHotspots ? hotspotsToFeatures(selectedHotspots) : []),
+    [selectedHotspots],
+  )
+
   const mapImages = {
     markerOwned: require('../assets/images/owned-hotspot-marker.png'),
     markerSelected: require('../assets/images/selected-hotspot-marker.png'),
@@ -173,22 +185,20 @@ const Map = ({
           centerCoordinate={[mapCenter[0], mapCenter[1] - centerOffset]}
         />
         <MapboxGL.Images images={mapImages} />
-        {ownedHotspots && (
-          <MapboxGL.ShapeSource
-            id="ownedHotspots"
-            shape={{ type: 'FeatureCollection', features: ownedHotspots }}
-            onPress={onShapeSourcePress}
-          >
-            <MapboxGL.SymbolLayer
-              id="markerOwned"
-              style={{
-                iconImage: 'markerOwned',
-                iconAllowOverlap: true,
-                iconSize: 1,
-              }}
-            />
-          </MapboxGL.ShapeSource>
-        )}
+        <MapboxGL.ShapeSource
+          id="ownedHotspots"
+          shape={{ type: 'FeatureCollection', features: ownedHotspotFeatures }}
+          onPress={onShapeSourcePress}
+        >
+          <MapboxGL.SymbolLayer
+            id="markerOwned"
+            style={{
+              iconImage: 'markerOwned',
+              iconAllowOverlap: true,
+              iconSize: 1,
+            }}
+          />
+        </MapboxGL.ShapeSource>
         {witnesses && (
           <MapboxGL.ShapeSource
             id="witnesses"
@@ -205,22 +215,23 @@ const Map = ({
             />
           </MapboxGL.ShapeSource>
         )}
-        {selectedHotspots && (
-          <MapboxGL.ShapeSource
-            id="selectedHotspots"
-            shape={{ type: 'FeatureCollection', features: selectedHotspots }}
-            onPress={onShapeSourcePress}
-          >
-            <MapboxGL.SymbolLayer
-              id="markerSelected"
-              style={{
-                iconImage: 'markerSelected',
-                iconAllowOverlap: true,
-                iconSize: 1,
-              }}
-            />
-          </MapboxGL.ShapeSource>
-        )}
+        <MapboxGL.ShapeSource
+          id="selectedHotspots"
+          shape={{
+            type: 'FeatureCollection',
+            features: selectedHotspotFeatures,
+          }}
+          onPress={onShapeSourcePress}
+        >
+          <MapboxGL.SymbolLayer
+            id="markerSelected"
+            style={{
+              iconImage: 'markerSelected',
+              iconAllowOverlap: true,
+              iconSize: 1,
+            }}
+          />
+        </MapboxGL.ShapeSource>
       </MapboxGL.MapView>
       {currentLocationEnabled && (
         <CurrentLocationButton onPress={centerUserLocation} />

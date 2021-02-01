@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import CardHandle from './CardHandle'
 import Box from '../../../components/Box'
@@ -60,4 +60,4 @@ const ActivityCardHeader = ({ filter, onFilterChanged }: Props) => {
   )
 }
 
-export default memo(ActivityCardHeader)
+export default ActivityCardHeader
