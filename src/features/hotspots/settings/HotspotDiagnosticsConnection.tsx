@@ -101,8 +101,8 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
 
   const handleConnect = (hotspot: Device) => async () => {
     setSelectedHotspot(hotspot)
-    const retVal = await connectAndConfigHotspot(hotspot)
-    if (retVal) {
+    const connectHotspotSuccess = await connectAndConfigHotspot(hotspot)
+    if (connectHotspotSuccess) {
       onConnected(hotspot)
     } else {
       showOKAlert({ titleKey: 'something went wrong' })

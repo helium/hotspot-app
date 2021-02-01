@@ -118,14 +118,14 @@ export const fetchHotspotDetails = createAsyncThunk<
     throw new Error('fetchHotspotDetails onboardingAddress is missing')
   }
 
-  const vals = await Promise.all([
+  const [hotspot, onboardingRecord] = await Promise.all([
     getHotspotDetails(details.address),
     getStaking(`hotspots/${details.onboardingAddress}`),
   ])
 
   return {
-    hotspot: vals[0],
-    onboardingRecord: vals[1] as OnboardingRecord,
+    hotspot,
+    onboardingRecord,
   } as AllHotspotDetails
 })
 
