@@ -11,7 +11,6 @@ import HotspotItem from './HotspotItem'
 import { RootState } from '../../../store/rootReducer'
 import { useBluetoothContext } from '../../../providers/BluetoothProvider'
 import useAlert from '../../../utils/useAlert'
-import sleep from '../../../utils/sleep'
 import CircleLoader from '../../../components/CircleLoader'
 import usePermissionManager from '../../../utils/usePermissionManager'
 import animateTransition from '../../../utils/animateTransition'
@@ -21,14 +20,14 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
   const [scanComplete, setScanComplete] = useState(false)
   const [bleEnabled, setBleEnabled] = useState(false)
   const [locationEnabled, setLocationEnabled] = useState(false)
-  const [selectedHotspot, setSelectedHotspot] = useState<Device | undefined>()
+  const [selectedHotspot, setSelectedHotspot] = useState<Device | null>(null)
   const {
     scanForHotspots,
     availableHotspots,
     connectAndConfigHotspot,
   } = useConnectedHotspotContext()
   const { enable, getState } = useBluetoothContext()
-  const { showOKCancelAlert } = useAlert()
+  const { showOKCancelAlert, showOKAlert } = useAlert()
   const { requestLocationPermission } = usePermissionManager()
   const hotspotCount = Object.keys(availableHotspots).length
   const keys = Object.keys(availableHotspots)
@@ -51,17 +50,6 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locationEnabled])
-
-  useEffect(() => {
-    const handleConnect = async () => {
-      if (selectedHotspot && !!connectedHotspot.address) {
-        await sleep(500)
-        onConnected(selectedHotspot)
-      }
-    }
-    handleConnect()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connectedHotspot.address, selectedHotspot])
 
   const checkBluetooth = async () => {
     const state = await getState()
@@ -111,9 +99,15 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scanComplete, bleEnabled, locationEnabled])
 
-  const handleConnect = (hotspot: Device) => () => {
+  const handleConnect = (hotspot: Device) => async () => {
     setSelectedHotspot(hotspot)
-    connectAndConfigHotspot(hotspot)
+    const retVal = await connectAndConfigHotspot(hotspot)
+    if (retVal) {
+      onConnected(hotspot)
+    } else {
+      showOKAlert({ titleKey: 'something went wrong' })
+      setSelectedHotspot(null)
+    }
   }
 
   return (
