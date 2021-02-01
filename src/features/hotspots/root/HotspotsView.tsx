@@ -17,15 +17,7 @@ import { RootState } from '../../../store/rootReducer'
 import { fetchHotspotDetails } from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import { fetchHotspotsData } from '../../../store/hotspots/hotspotsSlice'
 import HotspotsHeader from './HotspotsHeader'
-import CardHandle from '../../../components/CardHandle'
-
-const SheetHandle = () => {
-  return (
-    <Box padding="lm" alignItems="center">
-      <CardHandle />
-    </Box>
-  )
-}
+import BSHandle from '../../../components/BSHandle'
 
 type Props = {
   ownedHotspots: Hotspot[]
@@ -153,7 +145,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         snapPoints={[dragMin, dragMid, dragMax]}
         index={1}
         animatedIndex={animatedIndex}
-        handleComponent={SheetHandle}
+        handleComponent={BSHandle}
       >
         <SheetNavigator />
       </BottomSheet>
