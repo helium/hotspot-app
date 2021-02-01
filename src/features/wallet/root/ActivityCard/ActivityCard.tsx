@@ -27,11 +27,12 @@ import ActivityCardHeader from './ActivityCardHeader'
 import { RootState } from '../../../../store/rootReducer'
 import { getSecureItem } from '../../../../utils/secureAccount'
 import { isPendingTransaction } from '../../../../utils/transactions'
-import { FilterType } from '../walletTypes'
-import { fetchTxns } from '../../../../store/account/accountSlice'
+import {
+  fetchPendingTxns,
+  fetchTxns,
+} from '../../../../store/activity/activitySlice'
 import { useAppDispatch } from '../../../../store/store'
 import { useSpacing } from '../../../../theme/themeHooks'
-import usePrevious from '../../../../utils/usePrevious'
 import useActivityItem from '../useActivityItem'
 import { useWalletContext } from '../ActivityDetails/WalletProvider'
 import ActivityCardLoading from './ActivityCardLoading'
@@ -44,12 +45,11 @@ type Props = {
 
 const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
   const { animationPoints, animatedIndex, onChange } = props
+  const { dragMax, dragMid, dragMin } = animationPoints
   const [transactionData, setTransactionData] = useState<
     (AnyTransaction | PendingTransaction)[]
   >([])
   const { setActivityItem } = useWalletContext()
-  const [filter, setFilter] = useState<FilterType>('all')
-  const prevFilter = usePrevious(filter)
   const { result: address } = useAsync(getSecureItem, ['address'])
   const { backgroundColor, title, listIcon, amount, time } = useActivityItem(
     address || '',
@@ -57,22 +57,15 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
   const { m } = useSpacing()
   const dispatch = useAppDispatch()
   const {
-    account: { txns },
+    activity: { txns, filter },
   } = useSelector((state: RootState) => state)
-  const prevStatus = usePrevious(txns[filter].status)
+  const sheet = useRef<BottomSheet>(null)
 
   useEffect(() => {
-    dispatch(fetchTxns(filter))
-    dispatch(fetchTxns('pending'))
+    dispatch(fetchTxns('all'))
+    dispatch(fetchPendingTxns())
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  useEffect(() => {
-    if (prevFilter !== filter) {
-      dispatch(fetchTxns(filter))
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [prevFilter, filter])
 
   useEffect(() => {
     let data: (PendingTransaction | AnyTransaction)[]
@@ -84,9 +77,6 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
     setTransactionData(data)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txns[filter]])
-
-  // type BottomSheetHandle = ElementRef<typeof BottomSheet>
-  const sheet = useRef<BottomSheet>(null)
 
   // TODO is there an easier way to copy/forward these methods?
   useImperativeHandle(ref, () => ({
@@ -111,11 +101,6 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
     [setActivityItem],
   )
 
-  type Item = {
-    item: AnyTransaction | PendingTransaction
-    index: number
-  }
-
   const getSubtitle = useCallback(
     (item: AnyTransaction | PendingTransaction) => {
       if (item instanceof AssertLocationV1 || item instanceof AddGatewayV1) {
@@ -125,6 +110,11 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
     },
     [amount],
   )
+
+  type Item = {
+    item: AnyTransaction | PendingTransaction
+    index: number
+  }
 
   const renderItem = useCallback(
     ({ item, index }: Item) => {
@@ -152,15 +142,6 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
       transactionData,
     ],
   )
-
-  const { dragMax, dragMid, dragMin } = animationPoints
-
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const onFilterChanged = useCallback((f: FilterType) => {
-    setTransactionData([])
-    setFilter(f)
-  }, [])
 
   return (
     <BottomSheet
@@ -193,9 +174,7 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
             hasNoResults={
               txns[filter].status === 'fulfilled' &&
               transactionData &&
-              transactionData.length === 0 &&
-              prevStatus === 'fulfilled' &&
-              prevFilter === filter
+              transactionData.length === 0
             }
           />
         }

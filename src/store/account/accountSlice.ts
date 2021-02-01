@@ -1,14 +1,7 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import {
-  Account,
-  Hotspot,
-  PendingTransaction,
-  AnyTransaction,
-} from '@helium/http'
-import { unionBy } from 'lodash'
-import { getHotspots, getAccount, txnFetchers } from '../../utils/appDataClient'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { Account, Hotspot } from '@helium/http'
+import { getHotspots, getAccount } from '../../utils/appDataClient'
 import { getWallet, postWallet } from '../../utils/walletClient'
-import { FilterType } from '../../features/wallet/root/walletTypes'
 
 export type Notification = {
   account_address: string
@@ -34,13 +27,6 @@ export type AccountState = {
   account?: Account
   mainDataStatus: Loading
   markNotificationStatus: Loading
-  txns: {
-    all: { data: AnyTransaction[]; status: Loading }
-    hotspot: { data: AnyTransaction[]; status: Loading }
-    mining: { data: AnyTransaction[]; status: Loading }
-    payment: { data: AnyTransaction[]; status: Loading }
-    pending: { data: PendingTransaction[]; status: Loading }
-  }
 }
 
 const initialState: AccountState = {
@@ -48,13 +34,6 @@ const initialState: AccountState = {
   notifications: [],
   mainDataStatus: 'idle',
   markNotificationStatus: 'idle',
-  txns: {
-    all: { data: [], status: 'idle' },
-    hotspot: { data: [], status: 'idle' },
-    mining: { data: [], status: 'idle' },
-    payment: { data: [], status: 'idle' },
-    pending: { data: [], status: 'idle' },
-  },
 }
 
 type AccountData = {
@@ -93,25 +72,11 @@ export const markNotificationsViewed = createAsyncThunk<Notification[]>(
   },
 )
 
-export const fetchTxns = createAsyncThunk<
-  AnyTransaction[] | PendingTransaction[],
-  FilterType
->('account/fetchAccountActivity', async (filterType) => {
-  const list = txnFetchers[filterType]
-  return list.takeJSON(filterType === 'pending' ? 1000 : 30)
-})
-
 // This slice contains data related to the user account
 const accountSlice = createSlice({
   name: 'account',
   initialState,
   reducers: {
-    addPendingTransaction: (
-      state,
-      action: PayloadAction<PendingTransaction>,
-    ) => {
-      state.txns.pending.data.push(action.payload)
-    },
     signOut: () => {
       return { ...initialState }
     },
@@ -132,29 +97,6 @@ const accountSlice = createSlice({
       state.mainDataStatus = 'rejected'
       state.markNotificationStatus = 'rejected'
     })
-    builder.addCase(fetchTxns.pending, (state, { meta: { arg } }) => {
-      state.txns[arg].status = 'pending'
-    })
-    builder.addCase(fetchTxns.rejected, (state, { meta: { arg } }) => {
-      state.txns[arg].status = 'rejected'
-    })
-    builder.addCase(
-      fetchTxns.fulfilled,
-      (state, { payload, meta: { arg } }) => {
-        state.txns[arg].status = 'fulfilled'
-        if (arg === 'pending') {
-          const pending = payload as PendingTransaction[]
-          const filtered = pending.filter((txn) => txn.status === 'pending')
-          const joined = unionBy(filtered, state.txns.pending.data, 'hash')
-          state.txns.pending.data = joined
-        } else {
-          const newTxns = payload as AnyTransaction[]
-          // TODO: this should be unnecessary, but RN's "fast refresh" is causing duplicated items to get in
-          const joined = unionBy(state.txns[arg].data, newTxns, 'hash')
-          state.txns[arg].data = joined
-        }
-      },
-    )
     builder.addCase(markNotificationsViewed.pending, (state, _action) => {
       state.markNotificationStatus = 'pending'
     })
