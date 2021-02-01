@@ -109,11 +109,11 @@ const useHotspot = () => {
       connectedHotspot.current,
     )
 
-    let retVal = ''
+    let parsedStr = ''
     if (charVal) {
-      retVal = parseChar(charVal, characteristic)
+      parsedStr = parseChar(charVal, characteristic)
     }
-    return retVal
+    return parsedStr
   }
 
   const getDecodedBoolVal = async (
@@ -126,11 +126,11 @@ const useHotspot = () => {
       connectedHotspot.current,
     )
 
-    let retVal = false
+    let parsedStr = false
     if (charVal) {
-      retVal = parseChar(charVal, characteristic)
+      parsedStr = parseChar(charVal, characteristic)
     }
-    return retVal
+    return parsedStr
   }
 
   const connectAndConfigHotspot = async (hotspotDevice: Device) => {
@@ -173,8 +173,8 @@ const useHotspot = () => {
       onboardingAddress,
     }
 
-    const retVal = await dispatch(fetchHotspotDetails(details))
-    return !!retVal.payload
+    const response = await dispatch(fetchHotspotDetails(details))
+    return !!response.payload
   }
 
   const scanForWifiNetworks = async (configured = false) => {
