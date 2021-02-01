@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import CardHandle from './CardHandle'
-import Box from '../../../components/Box'
-import Text from '../../../components/Text'
-import CarotDown from '../../../assets/images/carot-down.svg'
-import { FilterKeys, FilterType } from './walletTypes'
-import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import { Font } from '../../../theme/theme'
-import ModalPicker from '../../../components/ModalPicker'
+import CarotDown from '@assets/images/carot-down.svg'
+import CardHandle from '../../../../components/CardHandle'
+import Box from '../../../../components/Box'
+import Text from '../../../../components/Text'
+import { FilterKeys, FilterType } from '../walletTypes'
+import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
+import { Font } from '../../../../theme/theme'
+import ModalPicker from '../../../../components/ModalPicker'
 
 type Props = {
   filter: FilterType

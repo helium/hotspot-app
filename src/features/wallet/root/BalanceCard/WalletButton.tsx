@@ -1,9 +1,9 @@
 import React from 'react'
-import Send from '../../../assets/images/send.svg'
-import Receive from '../../../assets/images/receive.svg'
-import { wp } from '../../../utils/layout'
-import TouchableHighlightBox from '../../../components/TouchableHighlightBox'
-import Box from '../../../components/Box'
+import Receive from '@assets/images/receive.svg'
+import Send from '@assets/images/send.svg'
+import { wp } from '../../../../utils/layout'
+import TouchableHighlightBox from '../../../../components/TouchableHighlightBox'
+import Box from '../../../../components/Box'
 
 type Props = {
   variant: 'send' | 'receive'

@@ -1,6 +1,6 @@
 import React from 'react'
+import Handle from '@assets/images/handle.svg'
 import Box from '../../../../components/Box'
-import Handle from '../../../../assets/images/handle.svg'
 import Text from '../../../../components/Text'
 
 type Props = {

@@ -8,10 +8,10 @@ import {
 } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { LocationGeocodedAddress } from 'expo-location'
+import LittleHotspot from '@assets/images/littleHotspot.svg'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
 import PaymentItem from './PaymentItem'
-import LittleHotspot from '../../../../assets/images/littleHotspot.svg'
 import { reverseGeocode } from '../../../../utils/location'
 
 type Props = { item: AnyTransaction | PendingTransaction; address: string }

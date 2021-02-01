@@ -1,8 +1,8 @@
 import React from 'react'
-import Box from '../../../components/Box'
-import DC from '../../../assets/images/dc.svg'
-import HST from '../../../assets/images/hst.svg'
-import Text from '../../../components/Text'
+import DC from '@assets/images/dc.svg'
+import HST from '@assets/images/hst.svg'
+import Box from '../../../../components/Box'
+import Text from '../../../../components/Text'
 
 type Props = {
   variant: 'dc' | 'hst'

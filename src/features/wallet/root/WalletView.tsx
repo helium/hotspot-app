@@ -3,13 +3,13 @@ import { useTranslation } from 'react-i18next'
 import Animated, { Extrapolate, useValue } from 'react-native-reanimated'
 import { useNavigation } from '@react-navigation/native'
 import BottomSheet from '@gorhom/bottom-sheet'
+import Search from '@assets/images/search.svg'
+import Qr from '@assets/images/qr.svg'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import BarChart from '../../../components/BarChart'
-import Search from '../../../assets/images/search.svg'
-import Qr from '../../../assets/images/qr.svg'
-import BalanceCard from './BalanceCard'
-import ActivityCard from './ActivityCard'
+import BalanceCard from './BalanceCard/BalanceCard'
+import ActivityCard from './ActivityCard/ActivityCard'
 import {
   withWalletLayout,
   WalletAnimationPoints,

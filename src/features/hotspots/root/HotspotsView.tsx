@@ -17,7 +17,7 @@ import { RootState } from '../../../store/rootReducer'
 import { fetchHotspotDetails } from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import { fetchHotspotsData } from '../../../store/hotspots/hotspotsSlice'
 import HotspotsHeader from './HotspotsHeader'
-import CardHandle from '../../wallet/root/CardHandle'
+import CardHandle from '../../../components/CardHandle'
 
 const SheetHandle = () => {
   return (

@@ -2,10 +2,10 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import Balance, { NetworkTokens } from '@helium/currency'
 import animalHash from 'angry-purple-tiger'
+import HeliumReward from '@assets/images/heliumReward.svg'
+import LittleHotspot from '@assets/images/littleHotspot.svg'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
-import HeliumReward from '../../../../assets/images/heliumReward.svg'
-import LittleHotspot from '../../../../assets/images/littleHotspot.svg'
 
 type Reward = {
   type: string
