@@ -4,6 +4,7 @@ import validator from 'validator'
 import compareVersions from 'compare-versions'
 import { Balance, CurrencyType } from '@helium/currency'
 import { useSelector } from 'react-redux'
+import { Transaction } from '@helium/transactions'
 import { useBluetoothContext } from '../providers/BluetoothProvider'
 import {
   FirmwareCharacteristic,
@@ -25,12 +26,7 @@ import {
 } from './appDataClient'
 import { getSecureItem } from './secureAccount'
 import { makeAddGatewayTxn, makeAssertLocTxn } from './transactions'
-import {
-  calculateAddGatewayFee,
-  calculateAssertLocFee,
-  stakingFeeAddGateway,
-  stakingFeeAssertLoc,
-} from './fees'
+import { calculateAddGatewayFee, calculateAssertLocFee } from './fees'
 import accountSlice from '../store/account/accountSlice'
 import connectedHotspotSlice, {
   fetchHotspotDetails,
@@ -335,14 +331,9 @@ const useHotspot = () => {
     const owner = await getSecureItem('address')
     const payer = connectedHotspotDetails.onboardingRecord?.maker.address
     if (!payer || !owner) return false
-    const fee = calculateAddGatewayFee(owner, payer) || 0
+    const { fee, stakingFee } = calculateAddGatewayFee(owner, payer) || 0
 
-    const encodedPayload = encodeAddGateway(
-      owner,
-      stakingFeeAddGateway,
-      fee,
-      payer,
-    )
+    const encodedPayload = encodeAddGateway(owner, stakingFee, fee, payer)
 
     await writeCharacteristic(characteristic, encodedPayload)
     const { value } = await readCharacteristic(characteristic)
@@ -403,8 +394,8 @@ const useHotspot = () => {
     if (!payer || !owner) return false
 
     const nonce = connectedHotspotDetails?.details?.nonce || 0
-    const fee = calculateAssertLocFee(owner, payer, nonce) || 0
-    const amount = stakingFeeAssertLoc
+    const { fee } = calculateAssertLocFee(owner, payer, nonce)
+    const amount = Transaction.stakingFeeTxnAssertLocationV1
 
     const encodedPayload = encodeAssertLoc(
       lat,
@@ -453,10 +444,10 @@ const useHotspot = () => {
     }
 
     const nonce = connectedHotspotDetails?.details?.nonce || 0
-    const fee = calculateAssertLocFee(owner, payer, nonce) || 0
+    const { stakingFee, fee } = calculateAssertLocFee(owner, payer, nonce)
 
     const totalStakingAmountDC = new Balance(
-      stakingFeeAssertLoc + fee,
+      stakingFee + fee,
       CurrencyType.dataCredit,
     )
     const { price: oraclePrice } = await getCurrentOraclePrice()
