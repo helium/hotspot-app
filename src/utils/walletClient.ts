@@ -36,7 +36,7 @@ const makeRequest = async (url: string, opts: RequestInit) => {
       const json = JSON.parse(text)
       return json.data || json
     } catch (err) {
-      throw new Error(text)
+      return text
     }
   } catch (error) {
     Logger.breadcrumb('fetch failed')

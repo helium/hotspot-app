@@ -297,7 +297,10 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       const buyerAccount = await getAccount()
       const nonce = buyerAccount?.speculativeNonce || 0
       if (transferHotspotTxn.buyerNonce !== nonce + 1) {
-        Alert.alert(t('nonce_alert_title'), t('nonce_alert_body'))
+        Alert.alert(
+          t('transfer.nonce_alert_title'),
+          t('transfer.nonce_alert_body'),
+        )
         throw new Error('transfer nonce invalid')
       }
       const txn = await makeBuyerTransferHotspotTxn(transferHotspotTxn)
@@ -312,8 +315,8 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       return txn
     } catch (error) {
       if (
-        error.message !== 'transfer amount changed' ||
-        error.message !== 'transfer nonce invalid' ||
+        error.message !== 'transfer amount changed' &&
+        error.message !== 'transfer nonce invalid' &&
         error.message !== 'transfer delete invalid'
       ) {
         Alert.alert(
