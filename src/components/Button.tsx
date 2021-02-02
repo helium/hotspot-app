@@ -20,6 +20,12 @@ type Props = BoxProps<Theme> & {
 
 type ButtonVariant = 'primary' | 'secondary' | 'destructive'
 
+const containedBackground = {
+  primary: 'primaryMain',
+  secondary: 'secondaryMain',
+  destructive: 'purpleMuted',
+} as Record<string, Colors>
+
 const Button = ({
   onPress,
   title,
@@ -32,18 +38,8 @@ const Button = ({
   ...rest
 }: Props) => {
   const getBackground = (): Colors | undefined => {
-    if (mode === 'contained') {
-      switch (variant) {
-        case 'primary':
-          return 'primaryMain'
-        case 'secondary':
-          return 'secondaryMain'
-        case 'destructive':
-          return 'purpleMuted'
-      }
-    }
-
-    return undefined
+    if (mode !== 'contained') return undefined
+    return containedBackground[variant]
   }
 
   const getTextColor = (): Colors => {
@@ -56,6 +52,7 @@ const Button = ({
     if (variant === 'secondary') {
       return 'secondaryText'
     }
+
     return 'purpleLight'
   }
 
