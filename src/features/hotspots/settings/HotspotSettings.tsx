@@ -30,6 +30,9 @@ import {
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
 import hotspotDetailsSlice from '../../../store/hotspotDetails/hotspotDetailsSlice'
+import { useHotspotSettingsContext } from './HotspotSettingsProvider'
+import Box from '../../../components/Box'
+import BackButton from '../../../components/BackButton'
 
 type State = 'init' | 'scan' | 'transfer'
 
@@ -41,6 +44,7 @@ const HotspotSettings = () => {
   const slideUpAnimRef = useRef(new Animated.Value(1000))
   const { getState } = useBluetoothContext()
   const dispatch = useAppDispatch()
+  const { showBack, goBack, disableBack } = useHotspotSettingsContext()
 
   const {
     hotspotDetails: { hotspot, showSettings },
@@ -67,6 +71,7 @@ const HotspotSettings = () => {
   }
 
   const handleClose = () => {
+    disableBack()
     dispatch(hotspotDetailsSlice.actions.toggleShowSettings())
   }
 
@@ -215,19 +220,27 @@ const HotspotSettings = () => {
         flex={1}
         flexDirection="column"
         justifyContent="space-between"
+        marginBottom="m"
       >
-        <TouchableOpacityBox
-          alignSelf="flex-end"
-          height={22}
-          flex={1}
-          padding="l"
-          width="100%"
-          alignItems="flex-end"
-          onPress={handleClose}
+        <Box
+          flexDirection="row-reverse"
+          justifyContent="space-between"
+          alignItems="center"
         >
-          <CloseModal color="white" />
-        </TouchableOpacityBox>
+          <TouchableOpacityBox
+            height={22}
+            padding="l"
+            alignItems="flex-end"
+            justifyContent="center"
+            onPress={handleClose}
+          >
+            <CloseModal color="white" />
+          </TouchableOpacityBox>
+          {showBack && <BackButton alignSelf="center" onPress={goBack} />}
+        </Box>
+        <Box flex={1} onTouchStart={handleClose} />
         <AnimatedBox
+          marginTop="none"
           margin="ms"
           style={{ transform: [{ translateY: slideUpAnimRef.current }] }}
         >
@@ -236,7 +249,12 @@ const HotspotSettings = () => {
             keyboardVerticalOffset={220}
           >
             {settingsState !== 'transfer' && (
-              <Text variant="h2" color="white" marginBottom="ms">
+              <Text
+                variant="h2"
+                lineHeight={27}
+                color="white"
+                marginBottom="ms"
+              >
                 {title}
               </Text>
             )}

@@ -2,7 +2,6 @@ import { Address } from '@helium/crypto-react-native'
 import {
   PaymentV2,
   AddGatewayV1,
-  Transaction,
   TokenBurnV1,
   AssertLocationV1,
   TransferHotspotV1,
@@ -12,9 +11,6 @@ import { minBy } from 'lodash'
 import { useSelector } from 'react-redux'
 import { getKeypair } from './secureAccount'
 import { RootState } from '../store/rootReducer'
-
-export const stakingFeeAddGateway = Transaction.stakingFeeTxnAddGatewayV1
-export const stakingFeeAssertLoc = Transaction.stakingFeeTxnAssertLocationV1
 
 export const useFees = () => {
   const {
@@ -74,7 +70,7 @@ export const calculateAddGatewayFee = (ownerB58: string, payerB58: string) => {
     payer,
   })
 
-  return txn.fee
+  return { fee: txn.fee || 0, stakingFee: txn.stakingFee || 0 }
 }
 
 export const calculateAssertLocFee = (
@@ -93,7 +89,7 @@ export const calculateAssertLocFee = (
     nonce,
   })
 
-  return txn.fee
+  return { fee: txn.fee || 0, stakingFee: txn.stakingFee || 0 }
 }
 
 export const calculateBurnTxnFee = async (

@@ -239,7 +239,6 @@ const useActivityItem = (address: string) => {
         return formatAmount(!isSelling(item), item.amountToSeller)
       }
       if (item instanceof AssertLocationV1 || item instanceof AddGatewayV1) {
-        console.log(item)
         return formatAmount(true, item.stakingFee)
       }
       if (item instanceof TokenBurnV1) {

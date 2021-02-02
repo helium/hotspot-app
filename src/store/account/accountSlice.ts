@@ -64,6 +64,7 @@ export const fetchNotifications = createAsyncThunk<Notification[]>(
   'account/fetchNotifications',
   async () => getWallet('notifications'),
 )
+
 export const markNotificationsViewed = createAsyncThunk<Notification[]>(
   'account/markNotificationsViewed',
   async () => {

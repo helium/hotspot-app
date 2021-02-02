@@ -2,8 +2,9 @@ import { useState, useRef } from 'react'
 import { Device } from 'react-native-ble-plx'
 import validator from 'validator'
 import compareVersions from 'compare-versions'
-import { Balance, CurrencyType, NetworkTokens } from '@helium/currency'
+import { Balance, CurrencyType } from '@helium/currency'
 import { useSelector } from 'react-redux'
+import { Transaction } from '@helium/transactions'
 import { useBluetoothContext } from '../providers/BluetoothProvider'
 import {
   FirmwareCharacteristic,
@@ -25,12 +26,7 @@ import {
 } from './appDataClient'
 import { getSecureItem } from './secureAccount'
 import { makeAddGatewayTxn, makeAssertLocTxn } from './transactions'
-import {
-  calculateAddGatewayFee,
-  calculateAssertLocFee,
-  stakingFeeAddGateway,
-  stakingFeeAssertLoc,
-} from './fees'
+import { calculateAddGatewayFee, calculateAssertLocFee } from './fees'
 import accountSlice from '../store/account/accountSlice'
 import connectedHotspotSlice, {
   fetchHotspotDetails,
@@ -63,6 +59,8 @@ const useHotspot = () => {
     account: { account },
     connectedHotspot: connectedHotspotDetails,
   } = useSelector((state: RootState) => state)
+
+  // TODO: Move staking calls to redux
 
   // helium hotspot uses b58 onboarding address and RAK is uuid v4
   const getHotspotType = (onboardingAddress: string): HotspotType =>
@@ -107,11 +105,11 @@ const useHotspot = () => {
       connectedHotspot.current,
     )
 
-    let retVal = ''
+    let parsedStr = ''
     if (charVal) {
-      retVal = parseChar(charVal, characteristic)
+      parsedStr = parseChar(charVal, characteristic)
     }
-    return retVal
+    return parsedStr
   }
 
   const getDecodedBoolVal = async (
@@ -124,16 +122,21 @@ const useHotspot = () => {
       connectedHotspot.current,
     )
 
-    let retVal = false
+    let parsedStr = false
     if (charVal) {
-      retVal = parseChar(charVal, characteristic)
+      parsedStr = parseChar(charVal, characteristic)
     }
-    return retVal
+    return parsedStr
   }
 
   const connectAndConfigHotspot = async (hotspotDevice: Device) => {
-    const connectedDevice = await connect(hotspotDevice)
-    if (!connectedDevice) return
+    let connectedDevice = hotspotDevice
+    const connected = await hotspotDevice.isConnected()
+    if (!connected) {
+      const device = await connect(hotspotDevice)
+      if (!device) return
+      connectedDevice = device
+    }
 
     const deviceWithServices = await discoverAllServicesAndCharacteristics(
       connectedDevice,
@@ -171,8 +174,8 @@ const useHotspot = () => {
       onboardingAddress,
     }
 
-    const retVal = await dispatch(fetchHotspotDetails(details))
-    return !!retVal.payload
+    const response = await dispatch(fetchHotspotDetails(details))
+    return !!response.payload
   }
 
   const scanForWifiNetworks = async (configured = false) => {
@@ -328,14 +331,9 @@ const useHotspot = () => {
     const owner = await getSecureItem('address')
     const payer = connectedHotspotDetails.onboardingRecord?.maker.address
     if (!payer || !owner) return false
-    const fee = calculateAddGatewayFee(owner, payer) || 0
+    const { fee, stakingFee } = calculateAddGatewayFee(owner, payer) || 0
 
-    const encodedPayload = encodeAddGateway(
-      owner,
-      stakingFeeAddGateway,
-      fee,
-      payer,
-    )
+    const encodedPayload = encodeAddGateway(owner, stakingFee, fee, payer)
 
     await writeCharacteristic(characteristic, encodedPayload)
     const { value } = await readCharacteristic(characteristic)
@@ -395,9 +393,9 @@ const useHotspot = () => {
       : ''
     if (!payer || !owner) return false
 
-    const nonce = connectedHotspotDetails?.nonce || 0
-    const fee = calculateAssertLocFee(owner, payer, nonce) || 0
-    const amount = stakingFeeAssertLoc
+    const nonce = connectedHotspotDetails?.details?.nonce || 0
+    const { fee } = calculateAssertLocFee(owner, payer, nonce)
+    const amount = Transaction.stakingFeeTxnAssertLocationV1
 
     const encodedPayload = encodeAssertLoc(
       lat,
@@ -433,13 +431,7 @@ const useHotspot = () => {
     }
   }
 
-  type LocationFeeData = {
-    isFree: boolean
-    hasSufficientBalance: boolean
-    totalStakingAmount: Balance<NetworkTokens>
-  }
-
-  const loadLocationFeeData = async (): Promise<LocationFeeData> => {
+  const loadLocationFeeData = async () => {
     const isFree = hasFreeLocationAssert()
 
     const owner = await getSecureItem('address')
@@ -451,15 +443,16 @@ const useHotspot = () => {
       throw new Error('Missing payer or owner')
     }
 
-    const nonce = connectedHotspotDetails?.nonce || 0
-    const fee = calculateAssertLocFee(owner, payer, nonce) || 0
+    const nonce = connectedHotspotDetails?.details?.nonce || 0
+    const { stakingFee, fee } = calculateAssertLocFee(owner, payer, nonce)
 
     const totalStakingAmountDC = new Balance(
-      stakingFeeAssertLoc + fee,
+      stakingFee + fee,
       CurrencyType.dataCredit,
     )
     const { price: oraclePrice } = await getCurrentOraclePrice()
     const totalStakingAmount = totalStakingAmountDC.toNetworkTokens(oraclePrice)
+    const totalStakingAmountUsd = totalStakingAmountDC.toUsd(oraclePrice)
 
     const balance = account?.balance?.integerBalance || 0
     const hasSufficientBalance = balance >= totalStakingAmount.integerBalance
@@ -468,7 +461,21 @@ const useHotspot = () => {
       isFree,
       hasSufficientBalance,
       totalStakingAmount,
+      totalStakingAmountDC,
+      totalStakingAmountUsd,
+      remainingFreeAsserts: remainingFreeAsserts(),
     }
+  }
+
+  const remainingFreeAsserts = () => {
+    if (!connectedHotspotDetails.onboardingRecord) {
+      return 0
+    }
+
+    const locationNonceLimit =
+      connectedHotspotDetails.onboardingRecord?.maker.locationNonceLimit || 0
+
+    return locationNonceLimit - (connectedHotspotDetails?.details?.nonce || 0)
   }
 
   const hasFreeLocationAssert = (): boolean => {
@@ -479,7 +486,7 @@ const useHotspot = () => {
     const locationNonceLimit =
       connectedHotspotDetails.onboardingRecord?.maker.locationNonceLimit || 0
 
-    return (connectedHotspotDetails?.nonce || 0) < locationNonceLimit
+    return (connectedHotspotDetails?.details?.nonce || 0) < locationNonceLimit
   }
 
   const getDiagnosticInfo = async () => {

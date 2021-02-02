@@ -22,6 +22,7 @@ import sendReport from './sendReport'
 import Card from '../../../components/Card'
 import CircleLoader from '../../../components/CircleLoader'
 import { hp } from '../../../utils/layout'
+import { useHotspotSettingsContext } from './HotspotSettingsProvider'
 
 type Info = {
   percentSynced: number
@@ -52,7 +53,8 @@ const formatMac = (mac: string) =>
 
 const DF = 'yyyy-MM-dd hh:mm a'
 
-const HotspotDiagnosticReport = () => {
+type Props = { onFinished: () => void }
+const HotspotDiagnosticReport = ({ onFinished }: Props) => {
   const {
     getDiagnosticInfo,
     checkFirmwareCurrent,
@@ -77,6 +79,11 @@ const HotspotDiagnosticReport = () => {
     heliumData: { blockHeight },
   } = useSelector((state: RootState) => state)
   const dispatch = useAppDispatch()
+  const { enableBack } = useHotspotSettingsContext()
+
+  useEffect(() => {
+    enableBack(() => onFinished())
+  }, [enableBack, onFinished])
 
   useEffect(() => {
     setLineItems([
@@ -193,9 +200,16 @@ const HotspotDiagnosticReport = () => {
   }
 
   return (
-    <ScrollView style={{ height: hp(80) }}>
+    <ScrollView style={{ height: hp(75) }}>
       <Box padding="l" minHeight={413}>
-        <Text variant="medium" fontSize={21} color="black" marginBottom="lx">
+        <Text
+          variant="medium"
+          fontSize={21}
+          color="black"
+          marginBottom="lx"
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
           {animalHash(address || '')}
         </Text>
 

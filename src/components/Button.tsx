@@ -15,31 +15,36 @@ type Props = BoxProps<Theme> & {
   disabled?: boolean
   title: string
   textStyle?: TextStyle
+  color?: Colors
 }
 
-type ButtonVariant = 'primary' | 'secondary'
+type ButtonVariant = 'primary' | 'secondary' | 'destructive'
+
+const containedBackground = {
+  primary: 'primaryMain',
+  secondary: 'secondaryMain',
+  destructive: 'purpleMuted',
+} as Record<string, Colors>
 
 const Button = ({
   onPress,
   title,
   mode = 'text',
   variant = 'primary',
+  color,
   textStyle,
   disabled,
+  height,
   ...rest
 }: Props) => {
   const getBackground = (): Colors | undefined => {
-    if (mode === 'contained') {
-      if (variant === 'secondary') {
-        return 'secondaryMain'
-      }
-      return 'primaryMain'
-    }
-
-    return undefined
+    if (mode !== 'contained') return undefined
+    return containedBackground[variant]
   }
 
   const getTextColor = (): Colors => {
+    if (color) return color
+
     if (mode === 'contained') {
       return 'primaryButtonText'
     }
@@ -47,6 +52,7 @@ const Button = ({
     if (variant === 'secondary') {
       return 'secondaryText'
     }
+
     return 'purpleLight'
   }
 
@@ -56,15 +62,18 @@ const Button = ({
   }
 
   return (
-    <Box style={{ opacity: disabled ? 0.2 : 1 }} {...rest}>
+    <Box style={{ opacity: disabled ? 0.2 : 1 }} {...rest} height={height}>
       <TouchableOpacityBox
+        height={height}
         backgroundColor={getBackground()}
         borderRadius="m"
         onPress={onPress}
         disabled={disabled}
+        justifyContent="center"
       >
         <Text
-          paddingVertical="lm"
+          alignSelf="center"
+          paddingVertical={height ? undefined : 'lm'}
           variant={getTextVariant()}
           color={getTextColor()}
           style={textStyle}

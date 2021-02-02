@@ -584,8 +584,25 @@ export default {
       paired: 'Paired with Hotspot',
       diagnostic: 'Diagnostics',
       wifi: 'Wi-Fi Network',
-      reassert: 'Reassert Hotspot',
+      reassert: 'Update Location',
       firmware: 'Hotspot Firmware',
+    },
+    reassert: {
+      remaining:
+        'You have <b><purple>{{count}} free remaining</purple></b> Hotspot Location Assert Update.',
+      remaining_plural:
+        'You have <b><purple>{{count}} free remaining</purple></b> Hotspot Location Assert Updates.',
+      change_location: 'Change Location',
+      confirm: 'I Confirm',
+      cost: 'The cost to reasserting location is:',
+      insufficient_funds:
+        'You do not have the funds available to make\nthis assert. Acquire HNT.',
+      confirm_location: "Please confirm your Hotspot's change in location",
+      charge: 'You will be charged {{amount}}.',
+      pending_message: 'Location update pending.',
+      assert_pending: 'Assert Pending...',
+      failTitle: 'Failed to reassert hotspot',
+      failSubtitle: 'Please try again later',
     },
   },
   hotspot_details: {

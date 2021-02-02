@@ -61,9 +61,8 @@ const HotspotDiagnosticOptions = ({ hotspot, optionSelected }: Props) => {
             backgroundColor="whitePurple"
             marginBottom="xxxs"
             height={48}
-            onPress={() => {
-              selectOption(k)
-            }}
+            disabled={k === 'firmware'}
+            onPress={() => selectOption(k)}
             paddingHorizontal="m"
             borderBottomLeftRadius={
               index === HotspotOptionsKeys.length - 1 ? 'l' : undefined

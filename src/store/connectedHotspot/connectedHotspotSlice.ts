@@ -29,8 +29,8 @@ export type HotspotDetails = {
     minVersion: string
   }
   ethernetOnline?: boolean
-  nonce?: number
   status?: HotspotStatus
+  details?: Hotspot
 }
 
 type OnboardingRecord = {
@@ -108,7 +108,7 @@ export type AllHotspotDetails = {
 export const fetchHotspotDetails = createAsyncThunk<
   AllHotspotDetails,
   HotspotDetails
->('account/fetchHotspotDetails', async (details, thunkAPI) => {
+>('connectedHotspot/fetchHotspotDetails', async (details, thunkAPI) => {
   thunkAPI.dispatch(connectedHotspotSlice.actions.initConnectedHotspot(details))
 
   if (!details.address) {
@@ -178,10 +178,10 @@ const connectedHotspotSlice = createSlice({
     )
     builder.addCase(fetchHotspotDetails.fulfilled, (state, { payload }) => {
       state.onboardingRecord = payload.onboardingRecord
-      Object.assign(state, payload.hotspot)
+      state.details = payload.hotspot
     })
     builder.addCase(fetchHotspotDetails.rejected, (state) => {
-      state.nonce = 0
+      state.details = undefined
     })
   },
 })

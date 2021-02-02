@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Platform } from 'react-native'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
 import CircleLoader from '../../../components/CircleLoader'
 import Text from '../../../components/Text'
 import TextInput from '../../../components/TextInput'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
-import animateTransition from '../../../utils/animateTransition'
-import { hp } from '../../../utils/layout'
 import useAlert from '../../../utils/useAlert'
 import useKeyboardHeight from '../../../utils/useKeyboardHeight'
 
@@ -15,7 +14,6 @@ type Props = { network: string; onFinished: () => void }
 const WifiSetup = ({ network, onFinished }: Props) => {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [height, setHeight] = useState(hp(66))
   const [secureTextEntry, setSecureTextEntry] = useState(true)
   const { t } = useTranslation()
   const keyboardHeight = useKeyboardHeight()
@@ -40,14 +38,8 @@ const WifiSetup = ({ network, onFinished }: Props) => {
     })
   }
 
-  useEffect(() => {
-    if (keyboardHeight === 0) return
-    animateTransition()
-    setHeight(keyboardHeight + 260)
-  }, [keyboardHeight])
-
   return (
-    <Box padding="l" minHeight={height}>
+    <Box padding="l">
       <Text variant="h4" color="black">
         {network}
       </Text>
@@ -85,6 +77,7 @@ const WifiSetup = ({ network, onFinished }: Props) => {
             : t('hotspot_settings.wifi.hide_password')
         }
       />
+      {Platform.OS === 'ios' && <Box height={keyboardHeight} />}
       {loading && <CircleLoader marginTop="l" />}
     </Box>
   )
