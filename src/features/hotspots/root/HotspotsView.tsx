@@ -20,7 +20,6 @@ import HotspotsHeader from './HotspotsHeader'
 import BSHandle from '../../../components/BSHandle'
 import HotspotMapButtons from './HotspotMapButtons'
 import useToggle from '../../../utils/useToggle'
-import HotspotSettings from '../settings/HotspotSettings'
 
 type Props = {
   ownedHotspots: Hotspot[]
@@ -179,7 +178,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         toggleShowWitnesses={toggleShowWitnesses}
       />
 
-      <HotspotSettings />
+      {/* <HotspotSettings /> */}
 
       <BottomSheet
         snapPoints={snapPoints}

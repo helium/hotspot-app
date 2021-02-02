@@ -67,7 +67,8 @@ const ReassertLocation = ({ onFinished }: Props) => {
 
   useEffect(() => {
     enableBack(handleBack)
-  }, [enableBack, handleBack, onFinished, state])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     dispatch(getLocation())

@@ -44,7 +44,7 @@ const HotspotSettings = () => {
   const slideUpAnimRef = useRef(new Animated.Value(1000))
   const { getState } = useBluetoothContext()
   const dispatch = useAppDispatch()
-  const { showBack, goBack } = useHotspotSettingsContext()
+  const { showBack, goBack, disableBack } = useHotspotSettingsContext()
 
   const {
     hotspotDetails: { hotspot, showSettings },
@@ -71,6 +71,7 @@ const HotspotSettings = () => {
   }
 
   const handleClose = () => {
+    disableBack()
     dispatch(hotspotDetailsSlice.actions.toggleShowSettings())
   }
 
@@ -227,12 +228,10 @@ const HotspotSettings = () => {
           alignItems="center"
         >
           <TouchableOpacityBox
-            alignSelf="flex-end"
             height={22}
-            flex={1}
             padding="l"
-            width="100%"
             alignItems="flex-end"
+            justifyContent="center"
             onPress={handleClose}
           >
             <CloseModal color="white" />
