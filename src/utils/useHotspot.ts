@@ -134,8 +134,13 @@ const useHotspot = () => {
   }
 
   const connectAndConfigHotspot = async (hotspotDevice: Device) => {
-    const connectedDevice = await connect(hotspotDevice)
-    if (!connectedDevice) return
+    let connectedDevice = hotspotDevice
+    const connected = await hotspotDevice.isConnected()
+    if (!connected) {
+      const device = await connect(hotspotDevice)
+      if (!device) return
+      connectedDevice = device
+    }
 
     const deviceWithServices = await discoverAllServicesAndCharacteristics(
       connectedDevice,

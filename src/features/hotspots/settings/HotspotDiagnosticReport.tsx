@@ -200,7 +200,7 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
   }
 
   return (
-    <ScrollView style={{ height: hp(80) }}>
+    <ScrollView style={{ height: hp(75) }}>
       <Box padding="l" minHeight={413}>
         <Text
           variant="medium"
