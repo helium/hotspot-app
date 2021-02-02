@@ -175,7 +175,6 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
 
       <HotspotMapButtons
         style={mapButtonStyles}
-        // marginBottom={300}
         showWitnesses={showWitnesses}
         toggleShowWitnesses={toggleShowWitnesses}
       />

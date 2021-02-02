@@ -42,8 +42,8 @@ const Map = ({
   mapCenter = [0, 0],
   animationMode = 'moveTo',
   animationDuration = 500,
-  ownedHotspots,
-  selectedHotspots,
+  ownedHotspots = [],
+  selectedHotspots = [],
   witnesses = [],
   offsetCenterRatio,
   maxZoomLevel = 16,
@@ -143,20 +143,18 @@ const Map = ({
   }, [witnesses, centerOffset, selectedHotspots, zoomLevel])
 
   const ownedHotspotFeatures = useMemo(
-    () => (ownedHotspots ? hotspotsToFeatures(ownedHotspots) : []),
+    () => hotspotsToFeatures(ownedHotspots),
     [ownedHotspots],
   )
 
   const selectedHotspotFeatures = useMemo(
-    () => (selectedHotspots ? hotspotsToFeatures(selectedHotspots) : []),
+    () => hotspotsToFeatures(selectedHotspots),
     [selectedHotspots],
   )
 
   const witnessFeatures = useMemo(() => hotspotsToFeatures(witnesses), [
     witnesses,
   ])
-
-  // console.log('witnessFeatures', witnessFeatures)
 
   const mapImages = {
     markerOwned: require('../assets/images/owned-hotspot-marker.png'),

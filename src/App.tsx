@@ -28,7 +28,6 @@ import BluetoothProvider from './providers/BluetoothProvider'
 import ConnectedHotspotProvider from './providers/ConnectedHotspotProvider'
 import * as Logger from './utils/logger'
 import { configChainVars, initFetchers } from './utils/appDataClient'
-import WalletProvider from './features/wallet/root/ActivityDetails/WalletProvider'
 
 const App = () => {
   if (Platform.OS === 'android') {
@@ -115,20 +114,18 @@ const App = () => {
         <ActionSheetProvider>
           <BluetoothProvider>
             <ConnectedHotspotProvider>
-              <WalletProvider>
-                <SafeAreaProvider>
-                  {/* TODO: Will need to adapt status bar for light/dark modes */}
-                  {Platform.OS === 'ios' && (
-                    <StatusBar barStyle="light-content" />
-                  )}
-                  {Platform.OS === 'android' && (
-                    <StatusBar translucent backgroundColor="transparent" />
-                  )}
-                  <Portal.Host>
-                    <NavigationRoot />
-                  </Portal.Host>
-                </SafeAreaProvider>
-              </WalletProvider>
+              <SafeAreaProvider>
+                {/* TODO: Will need to adapt status bar for light/dark modes */}
+                {Platform.OS === 'ios' && (
+                  <StatusBar barStyle="light-content" />
+                )}
+                {Platform.OS === 'android' && (
+                  <StatusBar translucent backgroundColor="transparent" />
+                )}
+                <Portal.Host>
+                  <NavigationRoot />
+                </Portal.Host>
+              </SafeAreaProvider>
             </ConnectedHotspotProvider>
           </BluetoothProvider>
         </ActionSheetProvider>

@@ -41,7 +41,11 @@ const initialState: HotspotsSliceState = {
 const hotspotsSlice = createSlice({
   name: 'hotspotDetails',
   initialState,
-  reducers: {},
+  reducers: {
+    signOut: () => {
+      return { ...initialState }
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(fetchHotspotsData.fulfilled, (state, action) => {
       state.hotspots = action.payload.hotspots
