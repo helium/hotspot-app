@@ -2,18 +2,17 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Linking, Platform } from 'react-native'
 import { Device } from 'react-native-ble-plx'
-import { useSelector } from 'react-redux'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Box from '../../../components/Box'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import HotspotItem from './HotspotItem'
-import { RootState } from '../../../store/rootReducer'
 import { useBluetoothContext } from '../../../providers/BluetoothProvider'
 import useAlert from '../../../utils/useAlert'
 import CircleLoader from '../../../components/CircleLoader'
 import usePermissionManager from '../../../utils/usePermissionManager'
 import animateTransition from '../../../utils/animateTransition'
+import sleep from '../../../utils/sleep'
 
 type Props = { onConnected: (hotspot: Device) => void }
 const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
@@ -21,6 +20,7 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
   const [bleEnabled, setBleEnabled] = useState(false)
   const [locationEnabled, setLocationEnabled] = useState(false)
   const [selectedHotspot, setSelectedHotspot] = useState<Device | null>(null)
+  const [connected, setConnected] = useState(false)
   const {
     scanForHotspots,
     availableHotspots,
@@ -33,7 +33,7 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
   const keys = Object.keys(availableHotspots)
   const { t } = useTranslation()
 
-  const { connectedHotspot } = useSelector((state: RootState) => state)
+  // const { connectedHotspot } = useSelector((state: RootState) => state)
 
   const checkLocation = async () => {
     if (Platform.OS === 'android') {
@@ -102,7 +102,9 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
   const handleConnect = (hotspot: Device) => async () => {
     setSelectedHotspot(hotspot)
     const connectHotspotSuccess = await connectAndConfigHotspot(hotspot)
+    setConnected(!!connectHotspotSuccess)
     if (connectHotspotSuccess) {
+      await sleep(500)
       onConnected(hotspot)
     } else {
       showOKAlert({ titleKey: 'something went wrong' })
@@ -130,9 +132,7 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
               onPress={handleConnect(hotspot)}
               connecting={hotspot === selectedHotspot}
               selected={hotspot === selectedHotspot}
-              connected={
-                hotspot === selectedHotspot && !!connectedHotspot.address
-              }
+              connected={hotspot === selectedHotspot && connected}
             />
           )
         })}
