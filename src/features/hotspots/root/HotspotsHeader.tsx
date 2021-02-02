@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ViewStyle } from 'react-native'
 import Animated from 'react-native-reanimated'
 import { useSelector } from 'react-redux'
 import Box from '../../../components/Box'
@@ -23,7 +24,7 @@ const HotspotsHeader = ({
   style,
   marginBottom,
 }: {
-  style: any
+  style: Animated.AnimatedStyleProp<ViewStyle>[]
   marginBottom: number
 }) => {
   const { t } = useTranslation()

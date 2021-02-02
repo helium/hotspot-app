@@ -23,8 +23,8 @@ import hotspotDetailsSlice, {
   fetchHotspotWitnesses,
 } from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import CarotLeft from '../../../assets/images/carot-left.svg'
 import MoreMenu from '../../../assets/images/moreMenu.svg'
+import BackButton from '../../../components/BackButton'
 
 const shortAddress = (address?: string) =>
   `${address?.slice(0, 5)}...${address?.slice(
@@ -144,22 +144,12 @@ const HotspotDetails = () => {
         alignItems="flex-end"
         justifyContent="space-between"
       >
-        <TouchableOpacityBox
+        <BackButton
           onPress={navBack}
-          flexDirection="row"
-          alignItems="center"
-          marginBottom="s"
-        >
-          <CarotLeft
-            height={10}
-            width={10}
-            stroke={colors.grayLightText}
-            strokeWidth={2}
-          />
-          <Text variant="h6" color="grayLightText" marginLeft="xxs">
-            Back
-          </Text>
-        </TouchableOpacityBox>
+          color="grayLightText"
+          fontSize={12}
+          paddingHorizontal="none"
+        />
 
         <TouchableOpacityBox
           onPress={onMoreMenuSelected}

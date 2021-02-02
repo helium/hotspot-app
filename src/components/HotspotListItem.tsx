@@ -11,7 +11,7 @@ import Text from './Text'
 import CircleProgress from './CircleProgress'
 
 type HotspotListItemProps = {
-  onPress: (hotspot: Hotspot) => void
+  onPress?: (hotspot: Hotspot) => void
   hotspot: Hotspot
   totalReward: Balance<NetworkTokens>
   showCarot?: boolean
@@ -33,7 +33,7 @@ const HotspotListItem = ({
       padding="m"
       borderRadius="m"
       height={75}
-      onPress={() => onPress(hotspot)}
+      onPress={() => onPress?.(hotspot)}
     >
       <Box
         flexDirection="row"

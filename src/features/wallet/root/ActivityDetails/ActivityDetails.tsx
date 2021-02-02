@@ -1,5 +1,5 @@
 import { PaymentV1 } from '@helium/http'
-import React, { useEffect, useRef, useCallback } from 'react'
+import React, { useEffect, useRef, useCallback, memo } from 'react'
 import { Linking } from 'react-native'
 import {
   BottomSheetBackdrop,
@@ -140,4 +140,4 @@ const ActivityDetails = () => {
   )
 }
 
-export default ActivityDetails
+export default memo(ActivityDetails)

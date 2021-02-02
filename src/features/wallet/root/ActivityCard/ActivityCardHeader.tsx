@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { memo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import CarotDown from '@assets/images/carot-down.svg'
@@ -68,4 +68,4 @@ const ActivityCardHeader = () => {
   )
 }
 
-export default ActivityCardHeader
+export default memo(ActivityCardHeader)
