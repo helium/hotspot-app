@@ -26,13 +26,20 @@ const Word = ({
       <TouchableOpacityBox
         flexDirection="row"
         disabled={!onPress}
+        alignItems="center"
         onPress={onPress}
       >
         <Text variant="body1Mono" color="grayMain">
           {position}
         </Text>
 
-        <Text variant="body1Mono" color="grayLight" marginLeft="s">
+        <Text
+          variant="body1Mono"
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          color="grayLight"
+          marginLeft="s"
+        >
           {upperFirst(word)}
         </Text>
       </TouchableOpacityBox>
