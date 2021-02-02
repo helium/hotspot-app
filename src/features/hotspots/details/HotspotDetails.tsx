@@ -57,7 +57,7 @@ const HotspotDetails = () => {
   const navigation = useNavigation()
   const { hotspot } = route.params
   const { t } = useTranslation()
-  const { purpleMain, greenOnline, secondaryText } = useColors()
+  const colors = useColors()
   const dispatch = useAppDispatch()
 
   const navBack = () => {
@@ -152,10 +152,10 @@ const HotspotDetails = () => {
           <CarotLeft
             height={10}
             width={10}
-            stroke={secondaryText}
+            stroke={colors.grayLightText}
             strokeWidth={2}
           />
-          <Text variant="h6" color="secondaryText" marginLeft="xxs">
+          <Text variant="h6" color="grayLightText" marginLeft="xxs">
             Back
           </Text>
         </TouchableOpacityBox>
@@ -163,7 +163,7 @@ const HotspotDetails = () => {
         <TouchableOpacityBox
           onPress={onMoreMenuSelected}
           paddingVertical="s"
-          paddingHorizontal="l"
+          paddingLeft="l"
         >
           <MoreMenu />
         </TouchableOpacityBox>
@@ -196,7 +196,7 @@ const HotspotDetails = () => {
           title={t('hotspot_details.reward_title')}
           number={rewardSum?.total?.toString(2)?.replace('HNT', '')?.trim()}
           change={percentChange}
-          color={greenOnline}
+          color={colors.greenOnline}
           data={getRewardChartData(rewards, numDays)}
           loading={loadingRewards}
         />
@@ -204,13 +204,13 @@ const HotspotDetails = () => {
           title={t('hotspot_details.witness_title')}
           number={witnesses?.length?.toString()}
           change={1.2}
-          color={purpleMain}
+          color={colors.purpleMain}
           data={data[1]}
         />
         <HotspotDetailChart
           title={t('hotspot_details.challenge_title')}
           percentage={78}
-          color={purpleMain}
+          color={colors.purpleMain}
           data={data[2]}
         />
       </Box>

@@ -18,6 +18,8 @@ import { fetchHotspotDetails } from '../../../store/hotspotDetails/hotspotDetail
 import { fetchHotspotsData } from '../../../store/hotspots/hotspotsSlice'
 import HotspotsHeader from './HotspotsHeader'
 import BSHandle from '../../../components/BSHandle'
+import HotspotMapButtons from './HotspotMapButtons'
+import useToggle from '../../../utils/useToggle'
 
 type Props = {
   ownedHotspots: Hotspot[]
@@ -25,14 +27,13 @@ type Props = {
 
 const HotspotsView = ({ ownedHotspots }: Props) => {
   const navigation = useNavigation()
-  const dragMid = hp(38)
-  const dragMax = hp(70)
-  const dragMin = 40
   const { t } = useTranslation()
   const dispatch = useDispatch()
 
+  const [showWitnesses, toggleShowWitnesses] = useToggle(false)
+
   const {
-    hotspotDetails: { hotspot: selectedHotspot },
+    hotspotDetails: { hotspot: selectedHotspot, witnesses },
   } = useSelector((state: RootState) => state)
 
   useEffect(() => {
@@ -80,6 +81,31 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
     ]
   }, [animatedIndex, animatedValue, selectedHotspot])
 
+  const mapButtonStyles = useMemo(() => {
+    return [
+      {
+        position: 'absolute',
+        bottom: 200,
+      },
+      {
+        opacity: animatedValue.interpolate({
+          inputRange: [0, 1],
+          outputRange: [1, 0],
+          extrapolate: Extrapolate.CLAMP,
+        }),
+        transform: [
+          {
+            translateY: animatedIndex.interpolate({
+              inputRange: [0, 1],
+              outputRange: [140, 0],
+              extrapolate: Extrapolate.CLAMP,
+            }),
+          },
+        ],
+      },
+    ]
+  }, [animatedIndex, animatedValue])
+
   const onMapHotspotSelected = (properties: GeoJsonProperties) => {
     const hotspot = {
       ...properties,
@@ -87,6 +113,10 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
     dispatch(fetchHotspotDetails(hotspot.address))
     navigation.navigate('HotspotDetails', { hotspot })
   }
+
+  const snapPoints = useMemo(() => {
+    return selectedHotspot ? [0.1, 140, '80%'] : [0.1, '38%', '80%']
+  }, [selectedHotspot])
 
   return (
     <Box flex={1} flexDirection="column" justifyContent="space-between">
@@ -111,8 +141,9 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
               ? [selectedHotspot.lng || 0, selectedHotspot.lat || 0]
               : [ownedHotspots[0].lng || 0, ownedHotspots[0].lat || 0]
           }
+          witnesses={showWitnesses ? witnesses : []}
           animationMode="flyTo"
-          offsetCenterRatio={1.5}
+          offsetCenterRatio={2.2}
           onFeatureSelected={onMapHotspotSelected}
         />
       </Box>
@@ -139,10 +170,16 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         </Box>
       </Box>
 
-      <HotspotsHeader style={headerStyles} marginBottom={dragMid + 40} />
+      <HotspotsHeader style={headerStyles} marginBottom={hp(38)} />
+      <HotspotMapButtons
+        style={mapButtonStyles}
+        // marginBottom={300}
+        showWitnesses={showWitnesses}
+        toggleShowWitnesses={toggleShowWitnesses}
+      />
 
       <BottomSheet
-        snapPoints={[dragMin, dragMid, dragMax]}
+        snapPoints={snapPoints}
         index={1}
         animatedIndex={animatedIndex}
         handleComponent={BSHandle}

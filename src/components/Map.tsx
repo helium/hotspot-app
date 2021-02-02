@@ -24,7 +24,7 @@ type Props = {
   mapCenter?: number[]
   ownedHotspots?: Hotspot[]
   selectedHotspots?: Hotspot[]
-  witnesses?: Feature[]
+  witnesses?: Hotspot[]
   animationMode?: 'flyTo' | 'easeTo' | 'moveTo'
   animationDuration?: number
   offsetCenterRatio?: number
@@ -44,7 +44,7 @@ const Map = ({
   animationDuration = 500,
   ownedHotspots,
   selectedHotspots,
-  witnesses,
+  witnesses = [],
   offsetCenterRatio,
   maxZoomLevel = 16,
   minZoomLevel = 0,
@@ -133,15 +133,14 @@ const Map = ({
     if (selectedHotspot) {
       camera?.current?.setCamera({
         centerCoordinate: [
-          selectedHotspot?.properties?.lng,
-          selectedHotspot?.properties?.lat - centerOffset,
+          selectedHotspot?.lng || 0,
+          (selectedHotspot?.lat || 0) - centerOffset,
         ],
         zoomLevel: hasWitnesses ? 11 : zoomLevel || 16,
         animationDuration: 500,
       })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [witnesses])
+  }, [witnesses, centerOffset, selectedHotspots, zoomLevel])
 
   const ownedHotspotFeatures = useMemo(
     () => (ownedHotspots ? hotspotsToFeatures(ownedHotspots) : []),
@@ -152,6 +151,12 @@ const Map = ({
     () => (selectedHotspots ? hotspotsToFeatures(selectedHotspots) : []),
     [selectedHotspots],
   )
+
+  const witnessFeatures = useMemo(() => hotspotsToFeatures(witnesses), [
+    witnesses,
+  ])
+
+  // console.log('witnessFeatures', witnessFeatures)
 
   const mapImages = {
     markerOwned: require('../assets/images/owned-hotspot-marker.png'),
@@ -199,22 +204,20 @@ const Map = ({
             }}
           />
         </MapboxGL.ShapeSource>
-        {witnesses && (
-          <MapboxGL.ShapeSource
-            id="witnesses"
-            shape={{ type: 'FeatureCollection', features: witnesses }}
-            onPress={onShapeSourcePress}
-          >
-            <MapboxGL.SymbolLayer
-              id="markerWitness"
-              style={{
-                iconImage: 'markerWitness',
-                iconAllowOverlap: true,
-                iconSize: 1,
-              }}
-            />
-          </MapboxGL.ShapeSource>
-        )}
+        <MapboxGL.ShapeSource
+          id="witnesses"
+          shape={{ type: 'FeatureCollection', features: witnessFeatures }}
+          onPress={onShapeSourcePress}
+        >
+          <MapboxGL.SymbolLayer
+            id="markerWitness"
+            style={{
+              iconImage: 'markerWitness',
+              iconAllowOverlap: true,
+              iconSize: 1,
+            }}
+          />
+        </MapboxGL.ShapeSource>
         <MapboxGL.ShapeSource
           id="selectedHotspots"
           shape={{
