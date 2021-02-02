@@ -1,5 +1,6 @@
 import Client, {
   AnyTransaction,
+  Hotspot,
   PendingTransaction,
   ResourceList,
 } from '@helium/http'
@@ -35,7 +36,7 @@ export const getHotspots = async () => {
   return newHotspotList.takeJSON(1000)
 }
 
-export const getHotspotDetails = async (address: string) => {
+export const getHotspotDetails = async (address: string): Promise<Hotspot> => {
   const { data } = await client.hotspots.get(address)
   return data
 }

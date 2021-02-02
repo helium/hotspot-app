@@ -7,10 +7,10 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated'
 import { useTranslation } from 'react-i18next'
-import Text from '../../../components/Text'
-import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import { triggerNavHaptic } from '../../../utils/haptic'
-import Box from '../../../components/Box'
+import Text from '../../../../components/Text'
+import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
+import { triggerNavHaptic } from '../../../../utils/haptic'
+import Box from '../../../../components/Box'
 
 const SLICE_SIZE = 8
 

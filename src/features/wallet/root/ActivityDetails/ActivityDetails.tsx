@@ -1,17 +1,15 @@
 import { PaymentV1 } from '@helium/http'
-import React, { ElementRef, useEffect, useRef, memo, useCallback } from 'react'
+import React, { useEffect, useRef, useCallback, memo } from 'react'
 import { Linking } from 'react-native'
-import BottomSheet from 'react-native-holy-sheet'
-import { useTranslation } from 'react-i18next'
 import {
-  useDerivedValue,
-  useSharedValue,
-  interpolate,
-  Extrapolate,
-  useAnimatedStyle,
-} from 'react-native-reanimated'
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetScrollView,
+} from '@gorhom/bottom-sheet'
+import { useTranslation } from 'react-i18next'
 import { useAsync } from 'react-async-hook'
-import { ReAnimatedBlurBox } from '../../../../components/BlurBox'
+import LinkImg from '@assets/images/link.svg'
+import { useSelector } from 'react-redux'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
 import ActivityDetailsHeader from './ActivityDetailsHeader'
@@ -21,19 +19,21 @@ import HotspotTransaction from './HotspotTransaction'
 import Payment from './Payment'
 import Burn from './Burn'
 import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
-import LinkImg from '../../../../assets/images/link.svg'
-import { useWalletContext } from './WalletProvider'
 import { getSecureItem } from '../../../../utils/secureAccount'
-import animateTransition from '../../../../utils/animateTransition'
 import UnknownTransaction from './UnknownTransaction'
+import { RootState } from '../../../../store/rootReducer'
+import { useAppDispatch } from '../../../../store/store'
+import activitySlice from '../../../../store/activity/activitySlice'
 
 const DF = 'MM/dd/yyyy hh:mm a'
 const ActivityDetails = () => {
-  type BottomSheetHandle = ElementRef<typeof BottomSheet>
-  const sheet = useRef<BottomSheetHandle>(null)
+  const sheet = useRef<BottomSheetModal>(null)
   const { result: address } = useAsync(getSecureItem, ['address'])
   const { t } = useTranslation()
-  const { activityItem, setActivityItem } = useWalletContext()
+  const dispatch = useAppDispatch()
+  const {
+    activity: { detailTxn },
+  } = useSelector((state: RootState) => state)
   const {
     backgroundColor,
     backgroundColorKey,
@@ -41,103 +41,62 @@ const ActivityDetails = () => {
     detailIcon,
     amount,
     time,
-    snapHeight,
     isFee,
     fee,
   } = useActivityItem(address || '')
 
   let block: number | undefined
-  if (activityItem) {
-    const asPayment = activityItem as PaymentV1
+  if (detailTxn) {
+    const asPayment = detailTxn as PaymentV1
     block = asPayment.height
   }
 
   useEffect(() => {
-    if (activityItem) {
-      const snap = async () => {
-        sheet.current?.snapTo(2)
-      }
-      snap()
+    if (detailTxn) {
+      sheet.current?.present()
     }
-  }, [activityItem])
+  }, [detailTxn])
 
   const onClose = () => {
-    setActivityItem(null)
+    dispatch(activitySlice.actions.clearDetailTxn())
   }
 
-  const dragMax = activityItem ? snapHeight(activityItem) : 100
-  const dragMin = 0
-  const snapPoints = [dragMin, dragMax]
-  const snapProgress = useSharedValue(0)
+  const renderHandle = useCallback(() => {
+    if (!detailTxn) return null
+    return (
+      <ActivityDetailsHeader
+        backgroundColor={backgroundColor(detailTxn)}
+        icon={detailIcon(detailTxn)}
+        title={title(detailTxn)}
+        date={time(detailTxn, DF)}
+      />
+    )
+  }, [detailTxn, detailIcon, title, time, backgroundColor])
 
-  const opacity = useDerivedValue(() => {
-    return interpolate(snapProgress.value, [1, 0], [1, 0.5], Extrapolate.CLAMP)
-  })
-  const animatedStyles = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-  }))
+  if (!detailTxn) return null
 
-  const handleClose = useCallback(() => {
-    sheet.current?.snapTo(0)
-  }, [])
-
-  if (!activityItem) return null
-
-  const feeStr = fee(activityItem)
+  const feeStr = fee(detailTxn)
 
   return (
-    <Box
-      flex={1}
-      justifyContent="flex-end"
-      flexDirection="column"
-      position="absolute"
-      top={activityItem ? 0 : -1000}
-      left={0}
-      bottom={activityItem ? 0 : 1000}
-      right={0}
-      zIndex={1000}
+    <BottomSheetModal
+      ref={sheet}
+      snapPoints={['50%', '75%']}
+      handleComponent={renderHandle}
+      backdropComponent={BottomSheetBackdrop}
+      onDismiss={onClose}
     >
-      <ReAnimatedBlurBox
-        style={animatedStyles}
-        top={0}
-        bottom={0}
-        right={0}
-        left={0}
-        tint="dark"
-        position="absolute"
-        intensity={90}
-        onTouchStart={handleClose}
-      />
-      <BottomSheet
-        snapProgress={snapProgress}
-        containerStyle={{ paddingHorizontal: 0 }}
-        ref={sheet}
-        snapPoints={snapPoints}
-        initialSnapIndex={0}
-        onCloseStart={() => {
-          animateTransition()
-          onClose()
-        }}
-        renderHeader={() => (
-          <ActivityDetailsHeader
-            backgroundColor={backgroundColor(activityItem)}
-            icon={detailIcon(activityItem)}
-            title={title(activityItem)}
-            date={time(activityItem, DF)}
-          />
-        )}
-      >
-        <Box padding="l" flex={1} style={{ paddingBottom: 500 }}>
+      <BottomSheetScrollView>
+        <Box padding="l" flex={1}>
           <Text
             variant="medium"
             fontSize={32}
             numberOfLines={1}
             adjustsFontSizeToFit
-            color={isFee(activityItem) ? 'blueMain' : 'greenMain'}
+            color={isFee(detailTxn) ? 'blueMain' : 'greenMain'}
             alignSelf="flex-end"
             marginBottom={!feeStr ? 'm' : 'none'}
           >
-            {amount(activityItem)}
+            {amount(detailTxn)}
           </Text>
 
           {!!feeStr && (
@@ -151,13 +110,13 @@ const ActivityDetails = () => {
               {`${feeStr} ${t('generic.fee')}`}
             </Text>
           )}
-          <Rewards item={activityItem} />
-          <Payment item={activityItem} address={address || ''} />
-          <Burn item={activityItem} address={address || ''} />
-          <HotspotTransaction item={activityItem} address={address || ''} />
-          <UnknownTransaction item={activityItem} />
+          <Rewards item={detailTxn} />
+          <Payment item={detailTxn} address={address || ''} />
+          <Burn item={detailTxn} address={address || ''} />
+          <HotspotTransaction item={detailTxn} address={address || ''} />
+          <UnknownTransaction item={detailTxn} />
           <TouchableOpacityBox
-            backgroundColor={backgroundColorKey(activityItem)}
+            backgroundColor={backgroundColorKey(detailTxn)}
             height={63}
             width="100%"
             borderRadius="ms"
@@ -176,8 +135,8 @@ const ActivityDetails = () => {
             <LinkImg />
           </TouchableOpacityBox>
         </Box>
-      </BottomSheet>
-    </Box>
+      </BottomSheetScrollView>
+    </BottomSheetModal>
   )
 }
 

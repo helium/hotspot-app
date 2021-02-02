@@ -17,6 +17,7 @@ import MapboxGL from '@react-native-mapbox-gl/maps'
 import { useAsync } from 'react-async-hook'
 import Portal from '@burstware/react-native-portal'
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { theme } from './theme/theme'
 import NavigationRoot from './navigation/NavigationRoot'
 import { useAppDispatch } from './store/store'
@@ -27,7 +28,6 @@ import BluetoothProvider from './providers/BluetoothProvider'
 import ConnectedHotspotProvider from './providers/ConnectedHotspotProvider'
 import * as Logger from './utils/logger'
 import { configChainVars, initFetchers } from './utils/appDataClient'
-import WalletProvider from './features/wallet/root/ActivityDetails/WalletProvider'
 
 const App = () => {
   if (Platform.OS === 'android') {
@@ -110,10 +110,10 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <ActionSheetProvider>
-        <BluetoothProvider>
-          <ConnectedHotspotProvider>
-            <WalletProvider>
+      <BottomSheetModalProvider>
+        <ActionSheetProvider>
+          <BluetoothProvider>
+            <ConnectedHotspotProvider>
               <SafeAreaProvider>
                 {/* TODO: Will need to adapt status bar for light/dark modes */}
                 {Platform.OS === 'ios' && (
@@ -126,10 +126,10 @@ const App = () => {
                   <NavigationRoot />
                 </Portal.Host>
               </SafeAreaProvider>
-            </WalletProvider>
-          </ConnectedHotspotProvider>
-        </BluetoothProvider>
-      </ActionSheetProvider>
+            </ConnectedHotspotProvider>
+          </BluetoothProvider>
+        </ActionSheetProvider>
+      </BottomSheetModalProvider>
     </ThemeProvider>
   )
 }

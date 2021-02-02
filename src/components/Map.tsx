@@ -1,15 +1,17 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, useMemo } from 'react'
 import MapboxGL, {
   OnPressEvent,
   RegionPayload,
 } from '@react-native-mapbox-gl/maps'
 import { useSelector } from 'react-redux'
 import { Feature, GeoJsonProperties, Point, Position } from 'geojson'
+import { Hotspot } from '@helium/http'
 import Box from './Box'
 import CurrentLocationButton from './CurrentLocationButton'
 import { RootState } from '../store/rootReducer'
 import { useAppDispatch } from '../store/store'
 import { getLocation } from '../store/user/appSlice'
+import { hotspotsToFeatures } from '../utils/mapUtils'
 
 const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
 
@@ -20,9 +22,9 @@ type Props = {
   currentLocationEnabled?: boolean
   zoomLevel?: number
   mapCenter?: number[]
-  ownedHotspots?: Feature[]
-  selectedHotspots?: Feature[]
-  witnesses?: Feature[]
+  ownedHotspots?: Hotspot[]
+  selectedHotspots?: Hotspot[]
+  witnesses?: Hotspot[]
   animationMode?: 'flyTo' | 'easeTo' | 'moveTo'
   animationDuration?: number
   offsetCenterRatio?: number
@@ -40,9 +42,9 @@ const Map = ({
   mapCenter = [0, 0],
   animationMode = 'moveTo',
   animationDuration = 500,
-  ownedHotspots,
-  selectedHotspots,
-  witnesses,
+  ownedHotspots = [],
+  selectedHotspots = [],
+  witnesses = [],
   offsetCenterRatio,
   maxZoomLevel = 16,
   minZoomLevel = 0,
@@ -131,15 +133,28 @@ const Map = ({
     if (selectedHotspot) {
       camera?.current?.setCamera({
         centerCoordinate: [
-          selectedHotspot?.properties?.lng,
-          selectedHotspot?.properties?.lat - centerOffset,
+          selectedHotspot?.lng || 0,
+          (selectedHotspot?.lat || 0) - centerOffset,
         ],
         zoomLevel: hasWitnesses ? 11 : zoomLevel || 16,
         animationDuration: 500,
       })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [witnesses])
+  }, [witnesses, centerOffset, selectedHotspots, zoomLevel])
+
+  const ownedHotspotFeatures = useMemo(
+    () => hotspotsToFeatures(ownedHotspots),
+    [ownedHotspots],
+  )
+
+  const selectedHotspotFeatures = useMemo(
+    () => hotspotsToFeatures(selectedHotspots),
+    [selectedHotspots],
+  )
+
+  const witnessFeatures = useMemo(() => hotspotsToFeatures(witnesses), [
+    witnesses,
+  ])
 
   const mapImages = {
     markerOwned: require('../assets/images/owned-hotspot-marker.png'),
@@ -173,54 +188,51 @@ const Map = ({
           centerCoordinate={[mapCenter[0], mapCenter[1] - centerOffset]}
         />
         <MapboxGL.Images images={mapImages} />
-        {ownedHotspots && (
-          <MapboxGL.ShapeSource
-            id="ownedHotspots"
-            shape={{ type: 'FeatureCollection', features: ownedHotspots }}
-            onPress={onShapeSourcePress}
-          >
-            <MapboxGL.SymbolLayer
-              id="markerOwned"
-              style={{
-                iconImage: 'markerOwned',
-                iconAllowOverlap: true,
-                iconSize: 1,
-              }}
-            />
-          </MapboxGL.ShapeSource>
-        )}
-        {witnesses && (
-          <MapboxGL.ShapeSource
-            id="witnesses"
-            shape={{ type: 'FeatureCollection', features: witnesses }}
-            onPress={onShapeSourcePress}
-          >
-            <MapboxGL.SymbolLayer
-              id="markerWitness"
-              style={{
-                iconImage: 'markerWitness',
-                iconAllowOverlap: true,
-                iconSize: 1,
-              }}
-            />
-          </MapboxGL.ShapeSource>
-        )}
-        {selectedHotspots && (
-          <MapboxGL.ShapeSource
-            id="selectedHotspots"
-            shape={{ type: 'FeatureCollection', features: selectedHotspots }}
-            onPress={onShapeSourcePress}
-          >
-            <MapboxGL.SymbolLayer
-              id="markerSelected"
-              style={{
-                iconImage: 'markerSelected',
-                iconAllowOverlap: true,
-                iconSize: 1,
-              }}
-            />
-          </MapboxGL.ShapeSource>
-        )}
+        <MapboxGL.ShapeSource
+          id="ownedHotspots"
+          shape={{ type: 'FeatureCollection', features: ownedHotspotFeatures }}
+          onPress={onShapeSourcePress}
+        >
+          <MapboxGL.SymbolLayer
+            id="markerOwned"
+            style={{
+              iconImage: 'markerOwned',
+              iconAllowOverlap: true,
+              iconSize: 1,
+            }}
+          />
+        </MapboxGL.ShapeSource>
+        <MapboxGL.ShapeSource
+          id="witnesses"
+          shape={{ type: 'FeatureCollection', features: witnessFeatures }}
+          onPress={onShapeSourcePress}
+        >
+          <MapboxGL.SymbolLayer
+            id="markerWitness"
+            style={{
+              iconImage: 'markerWitness',
+              iconAllowOverlap: true,
+              iconSize: 1,
+            }}
+          />
+        </MapboxGL.ShapeSource>
+        <MapboxGL.ShapeSource
+          id="selectedHotspots"
+          shape={{
+            type: 'FeatureCollection',
+            features: selectedHotspotFeatures,
+          }}
+          onPress={onShapeSourcePress}
+        >
+          <MapboxGL.SymbolLayer
+            id="markerSelected"
+            style={{
+              iconImage: 'markerSelected',
+              iconAllowOverlap: true,
+              iconSize: 1,
+            }}
+          />
+        </MapboxGL.ShapeSource>
       </MapboxGL.MapView>
       {currentLocationEnabled && (
         <CurrentLocationButton onPress={centerUserLocation} />

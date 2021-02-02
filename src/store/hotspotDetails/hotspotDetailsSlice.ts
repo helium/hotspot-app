@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { HotspotReward, HotspotRewardSum, Hotspot } from '@helium/http'
 import {
+  getHotspotDetails,
   getHotspotRewards,
   getHotspotRewardsSum,
   getHotspotWitnesses,
@@ -11,6 +12,13 @@ type FetchRewardsParams = {
   address: string
   numDays: number
 }
+
+export const fetchHotspotDetails = createAsyncThunk<Hotspot, string>(
+  'hotspotDetails/fetchHotspotDetails',
+  async (address: string) => {
+    return getHotspotDetails(address)
+  },
+)
 
 export const fetchHotspotRewards = createAsyncThunk(
   'hotspotDetails/fetchRewards',
@@ -44,6 +52,7 @@ export const fetchHotspotWitnesses = createAsyncThunk(
 )
 
 type HotspotDetailsState = {
+  hotspot?: Hotspot
   numDays?: number
   rewardSum?: HotspotRewardSum
   rewards?: HotspotReward[]
@@ -51,19 +60,32 @@ type HotspotDetailsState = {
   loadingRewards: boolean
   witnesses?: Hotspot[]
   loadingWitnesses: boolean
+  showSettings: boolean
 }
 const initialState: HotspotDetailsState = {
   numDays: 14,
   loadingRewards: false,
   loadingWitnesses: false,
+  showSettings: false,
 }
 
 // This slice contains data related to hotspot details
 const hotspotDetailsSlice = createSlice({
   name: 'hotspotDetails',
   initialState,
-  reducers: {},
+  reducers: {
+    toggleShowSettings: (state) => ({
+      ...state,
+      showSettings: !state.showSettings,
+    }),
+    clearHotspotDetails: () => {
+      return { ...initialState }
+    },
+  },
   extraReducers: (builder) => {
+    builder.addCase(fetchHotspotDetails.fulfilled, (state, action) => {
+      state.hotspot = action.payload
+    })
     builder.addCase(fetchHotspotRewards.pending, (state, _action) => {
       state.loadingRewards = true
     })

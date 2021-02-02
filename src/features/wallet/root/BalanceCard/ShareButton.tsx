@@ -1,11 +1,11 @@
 import React from 'react'
 import { Share, View } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import Box from '../../../components/Box'
-import Text from '../../../components/Text'
-import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import ShareImg from '../../../assets/images/share.svg'
-import { triggerNavHaptic } from '../../../utils/haptic'
+import ShareImg from '@assets/images/share.svg'
+import Box from '../../../../components/Box'
+import Text from '../../../../components/Text'
+import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
+import { triggerNavHaptic } from '../../../../utils/haptic'
 
 const ShareButton = ({ address }: { address: string }) => {
   const { t } = useTranslation()

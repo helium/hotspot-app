@@ -1,6 +1,6 @@
 import React from 'react'
 import Box from '../../../components/Box'
-import CardHandle from '../../wallet/root/CardHandle'
+import CardHandle from '../../../components/CardHandle'
 import Heart from '../../../assets/images/heart.svg'
 import MoreMenu from '../../../assets/images/moreMenu.svg'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'

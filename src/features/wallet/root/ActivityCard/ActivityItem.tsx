@@ -1,7 +1,7 @@
 import React, { memo } from 'react'
 import { TouchableOpacity } from 'react-native'
-import Box from '../../../components/Box'
-import Text from '../../../components/Text'
+import Box from '../../../../components/Box'
+import Text from '../../../../components/Text'
 
 type Props = {
   isFirst: boolean

@@ -1,26 +1,34 @@
 import React, { memo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import CardHandle from './CardHandle'
-import Box from '../../../components/Box'
-import Text from '../../../components/Text'
-import CarotDown from '../../../assets/images/carot-down.svg'
-import { FilterKeys, FilterType } from './walletTypes'
-import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import { Font } from '../../../theme/theme'
-import ModalPicker from '../../../components/ModalPicker'
+import { useSelector } from 'react-redux'
+import CarotDown from '@assets/images/carot-down.svg'
+import CardHandle from '../../../../components/CardHandle'
+import Box from '../../../../components/Box'
+import Text from '../../../../components/Text'
+import { FilterKeys, FilterType } from '../walletTypes'
+import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
+import { Font } from '../../../../theme/theme'
+import ModalPicker from '../../../../components/ModalPicker'
+import { RootState } from '../../../../store/rootReducer'
+import { useAppDispatch } from '../../../../store/store'
+import { changeFilter } from '../../../../store/activity/activitySlice'
 
-type Props = {
-  filter: FilterType
-  onFilterChanged: (filter: FilterType) => void
-}
-
-const ActivityCardHeader = ({ filter, onFilterChanged }: Props) => {
+const ActivityCardHeader = () => {
   const [showPicker, setShowPicker] = useState(false)
   const { t } = useTranslation()
+  const dispatch = useAppDispatch()
+  const {
+    activity: { filter },
+  } = useSelector((state: RootState) => state)
+
   const filters = t('transactions.filter', { returnObjects: true }) as Record<
     string,
     string
   >
+
+  const onFilterChanged = (nextFilter: FilterType) => {
+    dispatch(changeFilter(nextFilter))
+  }
 
   return (
     <Box padding="m">

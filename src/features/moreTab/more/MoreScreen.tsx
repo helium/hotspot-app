@@ -26,6 +26,8 @@ import Account from '../../../assets/images/account.svg'
 import Box from '../../../components/Box'
 import DiscordItem from './DiscordItem'
 import AppInfoItem from './AppInfoItem'
+import activitySlice from '../../../store/activity/activitySlice'
+import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
 
 type Route = RouteProp<RootStackParamList & MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
@@ -116,6 +118,8 @@ const MoreScreen = () => {
           onPress: () => {
             dispatch(appSlice.actions.signOut())
             dispatch(accountSlice.actions.signOut())
+            dispatch(activitySlice.actions.signOut())
+            dispatch(hotspotsSlice.actions.signOut())
             dispatch(connectedHotspotSlice.actions.signOut())
             dispatch(heliumDataSlice.actions.signOut())
           },

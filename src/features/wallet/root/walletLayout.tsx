@@ -16,6 +16,7 @@ export const withWalletLayout = (WrappedComponent: any) => (props: any) => {
           altCurrencyHeight: 60,
           navbarHeight: 49,
           bottomHeight: insets?.bottom || 0,
+          cardHandleHeight: 82,
         }
 
         const walletAnimationPoints = {
@@ -26,7 +27,8 @@ export const withWalletLayout = (WrappedComponent: any) => (props: any) => {
             walletLayout.navbarHeight -
             walletLayout.headerHeight -
             walletLayout.balanceHeight +
-            walletLayout.altCurrencyHeight,
+            walletLayout.altCurrencyHeight -
+            walletLayout.cardHandleHeight,
           dragMid:
             wh -
             walletLayout.notchHeight -
@@ -34,8 +36,9 @@ export const withWalletLayout = (WrappedComponent: any) => (props: any) => {
             walletLayout.navbarHeight -
             walletLayout.headerHeight -
             walletLayout.chartHeight -
-            walletLayout.balanceHeight,
-          dragMin: 40,
+            walletLayout.balanceHeight -
+            walletLayout.cardHandleHeight,
+          dragMin: 0.1,
         }
         return (
           <WrappedComponent

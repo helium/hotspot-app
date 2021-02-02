@@ -43,7 +43,7 @@ const MainTabs = () => {
   return (
     <MainTab.Navigator
       initialRouteName="Hotspots"
-      // lazy={false}
+      lazy={false}
       tabBarOptions={{
         showLabel: false,
         style: {
