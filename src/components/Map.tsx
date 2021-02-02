@@ -87,6 +87,17 @@ const Map = ({
     [animationDuration, centerOffset],
   )
 
+  const handleUserLocationUpdate = useCallback(
+    (loc) => {
+      if (!loc?.coords || (userCoords.latitude && userCoords.longitude)) {
+        return
+      }
+
+      setUserCoords(loc.coords)
+    },
+    [userCoords],
+  )
+
   useEffect(() => {
     if (!showUserLocation || !userCoords.latitude || !userCoords.longitude)
       return
@@ -183,18 +194,7 @@ const Map = ({
         compassEnabled={false}
       >
         {(showUserLocation || currentLocationEnabled) && (
-          <MapboxGL.UserLocation
-            onUpdate={(loc) => {
-              if (
-                !loc?.coords ||
-                (userCoords.latitude && userCoords.longitude)
-              ) {
-                return
-              }
-
-              setUserCoords(loc.coords)
-            }}
-          >
+          <MapboxGL.UserLocation onUpdate={handleUserLocationUpdate}>
             <MapboxGL.SymbolLayer
               id="markerLocation"
               style={{
