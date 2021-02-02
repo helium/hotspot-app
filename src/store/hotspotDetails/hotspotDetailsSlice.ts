@@ -60,11 +60,13 @@ type HotspotDetailsState = {
   loadingRewards: boolean
   witnesses?: Hotspot[]
   loadingWitnesses: boolean
+  showSettings: boolean
 }
 const initialState: HotspotDetailsState = {
   numDays: 14,
   loadingRewards: false,
   loadingWitnesses: false,
+  showSettings: false,
 }
 
 // This slice contains data related to hotspot details
@@ -72,6 +74,10 @@ const hotspotDetailsSlice = createSlice({
   name: 'hotspotDetails',
   initialState,
   reducers: {
+    toggleShowSettings: (state) => ({
+      ...state,
+      showSettings: !state.showSettings,
+    }),
     clearHotspotDetails: () => {
       return { ...initialState }
     },

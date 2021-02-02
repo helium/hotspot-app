@@ -18,7 +18,7 @@ import { useColors } from '../../../theme/themeHooks'
 import { getRewardChartData } from './RewardsHelper'
 import { ChartData } from '../../../components/BarChart/types'
 import { useAppDispatch } from '../../../store/store'
-import {
+import hotspotDetailsSlice, {
   fetchHotspotRewards,
   fetchHotspotWitnesses,
 } from '../../../store/hotspotDetails/hotspotDetailsSlice'
@@ -107,10 +107,11 @@ const HotspotDetails = () => {
   const onMoreMenuSelected = () => {
     const explorerUrl = `https://explorer.helium.com/hotspots/${hotspot.address}`
     const opts: SettingsOption[] = [
-      // {
-      //   label: t('hotspot_details.options.settings'),
-      //   action: () => setShowSettings(true),
-      // },
+      {
+        label: t('hotspot_details.options.settings'),
+        action: () =>
+          dispatch(hotspotDetailsSlice.actions.toggleShowSettings()),
+      },
       {
         label: t('hotspot_details.options.viewExplorer'),
         action: () => Linking.openURL(explorerUrl),
