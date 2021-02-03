@@ -1,7 +1,4 @@
 {
   "name": "Helium",
-  "displayName": "Helium",
-  "ios": {
-    "image": "./src/assets/images/splash.png"
-  }
+  "displayName": "Helium"
 }
