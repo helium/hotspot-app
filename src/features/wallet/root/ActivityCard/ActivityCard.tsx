@@ -56,7 +56,6 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
   const {
     activity: { txns, filter },
   } = useSelector((state: RootState) => state)
-  const hasActivity = txns.all.data.length !== 0
   const sheet = useRef<BottomSheet>(null)
 
   useEffect(() => {
@@ -134,10 +133,6 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
       transactionData,
     ],
   )
-
-  if (!hasActivity) {
-    return null
-  }
 
   return (
     <BottomSheet
