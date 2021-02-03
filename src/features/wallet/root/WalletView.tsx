@@ -75,7 +75,7 @@ const WalletView = ({ layout, animationPoints }: Props) => {
     navigation.navigate('Send')
   }, [navigation])
 
-  const animateActivityToBottom = useCallback(() => {
+  const toggleShowReceive = useCallback(() => {
     if (hasActivity) {
       const snapToIndex = activityCardIndex === 1 ? 0 : 1
       activityCard.current?.snapTo(snapToIndex)
@@ -138,7 +138,7 @@ const WalletView = ({ layout, animationPoints }: Props) => {
           </Box>
           <Animated.View style={balanceCardStyles}>
             <BalanceCard
-              onReceivePress={animateActivityToBottom}
+              onReceivePress={toggleShowReceive}
               onSendPress={handleSendPress}
             />
           </Animated.View>
@@ -163,7 +163,7 @@ const WalletView = ({ layout, animationPoints }: Props) => {
             ref={balanceSheet}
           >
             <BalanceCard
-              onReceivePress={animateActivityToBottom}
+              onReceivePress={toggleShowReceive}
               onSendPress={handleSendPress}
             />
           </BottomSheet>
