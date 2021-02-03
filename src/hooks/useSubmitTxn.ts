@@ -25,15 +25,15 @@ const useSubmitTxn = (): Submitter => {
   const submitter: Submitter = async (txn) => {
     // serialize the txn
     const serializedTxn = txn.toString()
+
     // submit to blockchain
     const pendingTxn = await submitTransaction(serializedTxn)
+
     // construct mock pending txn
     pendingTxn.type = txn.type
     pendingTxn.status = 'pending'
     pendingTxn.txn = populatePendingTxn(txn)
-    console.log('txn', txn)
-    console.log('pending txn', pendingTxn)
-    console.log('pending txn txn', pendingTxn.txn.payments)
+
     // dispatch pending txn to activity slice
     dispatch(activitySlice.actions.addPendingTransaction(pendingTxn))
     return pendingTxn

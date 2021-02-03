@@ -42,14 +42,6 @@ export const fetchTxns = createAsyncThunk<
   return list.takeJSON(30)
 })
 
-// export const fetchMoreTxns = createAsyncThunk<
-//   AnyTransaction[] | PendingTransaction[],
-//   FilterType
-// >('activity/fetchAccountActivity', async (filterType) => {
-//   const list = txnFetchers[filterType]
-//   return list.takeJSON(30)
-// })
-
 export const fetchPendingTxns = createAsyncThunk(
   'activity/fetchPendingTxns',
   async () => {

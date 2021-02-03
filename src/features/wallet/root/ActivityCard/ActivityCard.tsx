@@ -86,13 +86,10 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
   useEffect(() => {
     let data: (PendingTransaction | AnyTransaction)[]
     data = txns[filter].data
-    console.log('data', data[0])
     if (filter === 'all') {
       data = [...txns.pending.data, ...data]
     }
-    console.log('pending', txns.pending.data)
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
-    console.log('setTransactionData')
     setTransactionData(data)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txns[filter]])
