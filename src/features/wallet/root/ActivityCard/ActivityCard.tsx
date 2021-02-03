@@ -28,7 +28,6 @@ import { RootState } from '../../../../store/rootReducer'
 import { getSecureItem } from '../../../../utils/secureAccount'
 import { isPendingTransaction } from '../../../../utils/transactions'
 import activitySlice, {
-  fetchPendingTxns,
   fetchTxns,
 } from '../../../../store/activity/activitySlice'
 import { useAppDispatch } from '../../../../store/store'
@@ -57,13 +56,8 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
   const {
     activity: { txns, filter },
   } = useSelector((state: RootState) => state)
+  const hasActivity = txns.all.data.length !== 0
   const sheet = useRef<BottomSheet>(null)
-
-  useEffect(() => {
-    dispatch(fetchTxns('all'))
-    dispatch(fetchPendingTxns())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   useEffect(() => {
     let data: (PendingTransaction | AnyTransaction)[]
@@ -140,6 +134,10 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
       transactionData,
     ],
   )
+
+  if (!hasActivity) {
+    return null
+  }
 
   return (
     <BottomSheet
