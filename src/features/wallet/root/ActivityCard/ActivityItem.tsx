@@ -77,4 +77,13 @@ const ActivityItem = ({
   )
 }
 
-export default memo(ActivityItem, (prev, next) => prev.hash === next.hash)
+export default memo(ActivityItem, (prev, next) => {
+  const areEqual =
+    prev.hash === next.hash &&
+    prev.title === next.title &&
+    prev.subtitle === next.subtitle &&
+    prev.isFirst === next.isFirst &&
+    prev.isLast === next.isLast &&
+    prev.time === next.time
+  return areEqual
+})

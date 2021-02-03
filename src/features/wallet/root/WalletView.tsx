@@ -1,11 +1,4 @@
-import React, {
-  useRef,
-  memo,
-  useCallback,
-  useState,
-  useMemo,
-  useEffect,
-} from 'react'
+import React, { useRef, memo, useCallback, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import Animated, { Extrapolate, useValue } from 'react-native-reanimated'
 import { useNavigation } from '@react-navigation/native'
@@ -28,11 +21,6 @@ import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { RootState } from '../../../store/rootReducer'
 import { hp } from '../../../utils/layout'
 import WalletIntroCarousel from './WalletIntroCarousel'
-import {
-  fetchPendingTxns,
-  fetchTxns,
-} from '../../../store/activity/activitySlice'
-import { useAppDispatch } from '../../../store/store'
 
 type Props = {
   layout: WalletLayout
@@ -45,7 +33,6 @@ const WalletView = ({ layout, animationPoints }: Props) => {
   const {
     activity: { txns },
   } = useSelector((state: RootState) => state)
-  const dispatch = useAppDispatch()
   const hasActivity = txns.all.data.length !== 0
 
   const activityCard = useRef<BottomSheet>(null)
@@ -54,12 +41,6 @@ const WalletView = ({ layout, animationPoints }: Props) => {
   const [activityCardIndex, setActivityCardIndex] = useState(1)
   const [balanceSheetIndex, setBalanceSheetIndex] = useState(0)
   const animatedCardIndex = useValue(1)
-
-  useEffect(() => {
-    dispatch(fetchTxns('all'))
-    dispatch(fetchPendingTxns())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   const handlePress = useCallback(() => {
     triggerNavHaptic()

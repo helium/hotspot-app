@@ -24,7 +24,6 @@ import ReceivedHnt from '../../../assets/images/receivedHNT.svg'
 import Location from '../../../assets/images/location.svg'
 import Burn from '../../../assets/images/burn.svg'
 import shortLocale from '../../../utils/formatDistance'
-import { hp } from '../../../utils/layout'
 
 export const TxnTypeKeys = [
   'rewards_v1',
@@ -183,19 +182,22 @@ const useActivityItem = (address: string) => {
   )
 
   const formatAmount = (
-    fee: boolean,
+    prefix: '-' | '+',
     amount?: Balance<DataCredits | NetworkTokens> | number,
+    postFix = '',
   ) => {
     if (!amount) return ''
 
     if (typeof amount === 'number') {
       if (amount === 0) return '0'
-      return `${fee ? '-' : '+'}${amount.toLocaleString()}`
+      return `${prefix}${amount.toLocaleString('en-US', {
+        maximumFractionDigits: 8,
+      })}${postFix ? ' ' : ''}${postFix}`
     }
 
     if (amount?.floatBalance === 0) return amount.toString()
 
-    return `${fee ? '-' : '+'}${amount?.toString(8)}`
+    return `${prefix}${amount?.toString(8)}`
   }
 
   const fee = useCallback(
@@ -207,7 +209,7 @@ const useActivityItem = (address: string) => {
       if (item instanceof TransferHotspotV1) {
         if (!isSelling(item)) return ''
 
-        return formatAmount(true, item.fee)
+        return formatAmount('-', item.fee)
       }
 
       if (
@@ -215,20 +217,20 @@ const useActivityItem = (address: string) => {
         item instanceof AssertLocationV1 ||
         item instanceof TokenBurnV1
       ) {
-        return formatAmount(true, item.fee)
+        return formatAmount('-', item.fee)
       }
 
       if (item instanceof PaymentV1 || item instanceof PaymentV2) {
         if (address !== item.payer) return ''
-        return formatAmount(true, item.fee)
+        return formatAmount('-', item.fee)
       }
 
       const pendingTxn = item as PendingTransaction
       if (pendingTxn.txn !== undefined) {
-        return formatAmount(true, pendingTxn.txn.fee)
+        return formatAmount('-', pendingTxn.txn.fee)
       }
 
-      return formatAmount(true, (item as AddGatewayV1).fee)
+      return formatAmount('-', (item as AddGatewayV1).fee)
     },
     [address, isSelling],
   )
@@ -236,42 +238,56 @@ const useActivityItem = (address: string) => {
   const amount = useCallback(
     (item: AnyTransaction | PendingTransaction) => {
       if (item instanceof TransferHotspotV1) {
-        return formatAmount(!isSelling(item), item.amountToSeller)
+        return formatAmount(isSelling(item) ? '+' : '-', item.amountToSeller)
       }
       if (item instanceof AssertLocationV1 || item instanceof AddGatewayV1) {
-        return formatAmount(true, item.stakingFee)
+        return formatAmount('-', item.stakingFee)
       }
       if (item instanceof TokenBurnV1) {
-        return formatAmount(true, item.amount)
+        return formatAmount('-', item.amount)
       }
       if (item instanceof RewardsV1) {
-        return formatAmount(false, item.totalAmount)
+        return formatAmount('+', item.totalAmount)
       }
       if (item instanceof PaymentV1) {
-        return formatAmount(item.payer === address, item.amount)
+        return formatAmount(item.payer === address ? '-' : '+', item.amount)
       }
       if (item instanceof PaymentV2) {
         if (item.payer === address) {
-          return formatAmount(true, item.totalAmount)
+          return formatAmount('-', item.totalAmount)
         }
 
         const payment = item.payments.find((p) => p.payee === address)
-        return formatAmount(false, payment?.amount)
+        return formatAmount('+', payment?.amount)
       }
 
       const pendingTxn = item as PendingTransaction
       if (pendingTxn.txn !== undefined) {
-        if (pendingTxn.txn.type === 'add_gateway_v1') {
-          return formatAmount(true, (pendingTxn.txn as AddGatewayV1).stakingFee)
+        if (pendingTxn.type === 'add_gateway_v1') {
+          return formatAmount('-', (pendingTxn.txn as AddGatewayV1).stakingFee)
         }
-        if (pendingTxn.txn.type === 'assert_location_v1') {
+        if (pendingTxn.type === 'assert_location_v1') {
           return formatAmount(
-            true,
+            '-',
             (pendingTxn.txn as AssertLocationV1).stakingFee,
           )
         }
+        if (pendingTxn.type === 'payment_v2') {
+          const paymentV2 = pendingTxn.txn as PaymentV2
+          if (paymentV2.payer === address) {
+            const sum = paymentV2.payments.reduce(
+              (a, b) => a + b.amount.floatBalance,
+              0,
+            )
 
-        return formatAmount(isFee(item), pendingTxn.txn.fee)
+            return formatAmount('-', sum, 'HNT')
+          }
+
+          const payment = paymentV2.payments.find((p) => p.payee === address)
+          return formatAmount('+', payment?.amount)
+        }
+
+        return formatAmount(isFee(item) ? '-' : '+', pendingTxn.txn.fee)
       }
       return ''
     },
@@ -282,7 +298,7 @@ const useActivityItem = (address: string) => {
     (item: AnyTransaction | PendingTransaction, dateFormat?: string) => {
       const pending = item as PendingTransaction
       if (pending.status === 'pending') {
-        return t('transations.pending')
+        return t('transactions.pending')
       }
       const val = fromUnixTime((item as AddGatewayV1).time)
 
@@ -296,32 +312,6 @@ const useActivityItem = (address: string) => {
     [t],
   )
 
-  const snapHeight = useCallback(
-    (item: AnyTransaction | PendingTransaction) => {
-      const maxHeight = hp(75)
-      const desiredHeight = (() => {
-        switch (item.type as TxnType) {
-          case 'payment_v1':
-          case 'payment_v2':
-            return isSending(item) ? 509 : 480
-          case 'transfer_hotspot_v1':
-            return 566
-          case 'rewards_v1':
-            return 665
-          case 'token_burn_v1':
-            return 517
-          case 'assert_location_v1':
-          case 'add_gateway_v1':
-          default:
-            return 523
-        }
-      })()
-
-      return Math.min(maxHeight, desiredHeight)
-    },
-    [isSending],
-  )
-
   return {
     backgroundColor,
     backgroundColorKey,
@@ -330,7 +320,6 @@ const useActivityItem = (address: string) => {
     detailIcon,
     amount,
     time,
-    snapHeight,
     isFee,
     fee,
   }

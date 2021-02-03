@@ -29,11 +29,14 @@ import { getSecureItem } from '../../../../utils/secureAccount'
 import { isPendingTransaction } from '../../../../utils/transactions'
 import activitySlice, {
   fetchTxns,
+  resetTxns,
 } from '../../../../store/activity/activitySlice'
 import { useAppDispatch } from '../../../../store/store'
 import { useSpacing } from '../../../../theme/themeHooks'
 import useActivityItem from '../useActivityItem'
 import ActivityCardLoading from './ActivityCardLoading'
+import useVisible from '../../../../utils/useVisible'
+import usePrevious from '../../../../utils/usePrevious'
 
 type Props = {
   animationPoints: WalletAnimationPoints
@@ -44,19 +47,62 @@ type Props = {
 const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
   const { animationPoints, animatedIndex, onChange } = props
   const { dragMax, dragMid, dragMin } = animationPoints
+  const { m } = useSpacing()
+  const dispatch = useAppDispatch()
+
   const [transactionData, setTransactionData] = useState<
     (AnyTransaction | PendingTransaction)[]
   >([])
+
   const { result: address } = useAsync(getSecureItem, ['address'])
   const { backgroundColor, title, listIcon, amount, time } = useActivityItem(
     address || '',
   )
-  const { m } = useSpacing()
-  const dispatch = useAppDispatch()
+
   const {
-    activity: { txns, filter },
+    activity: { txns, filter, isResetting },
+    heliumData: { blockHeight },
   } = useSelector((state: RootState) => state)
+
   const sheet = useRef<BottomSheet>(null)
+  const interval = useRef<NodeJS.Timeout>()
+  const visible = useVisible()
+  const prevVisible = usePrevious(visible)
+  const prevBlockHeight = usePrevious(blockHeight)
+
+  const schedulePendingFetch = useCallback(() => {
+    if (!visible && interval.current) {
+      clearInterval(interval.current)
+      interval.current = undefined
+    } else if (visible && !interval.current) {
+      interval.current = setInterval(() => {
+        dispatch(fetchTxns('pending'))
+      }, 5000)
+    }
+  }, [dispatch, visible])
+
+  const filterFetch = useCallback(() => {
+    if (!visible || isResetting) return
+
+    if (!prevVisible || blockHeight !== prevBlockHeight) {
+      dispatch(resetTxns())
+    } else {
+      dispatch(fetchTxns(filter))
+    }
+  }, [
+    blockHeight,
+    dispatch,
+    filter,
+    prevBlockHeight,
+    prevVisible,
+    visible,
+    isResetting,
+  ])
+
+  useEffect(() => {
+    filterFetch()
+    schedulePendingFetch()
+  }, [filterFetch, schedulePendingFetch])
 
   useEffect(() => {
     let data: (PendingTransaction | AnyTransaction)[]
@@ -111,7 +157,7 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
     ({ item, index }: Item) => {
       return (
         <ActivityItem
-          hash={item.hash}
+          hash={(item as AddGatewayV1).hash}
           handlePress={handleActivityItemPressed(item)}
           isFirst={index === 0}
           isLast={!!transactionData && index === transactionData.length - 1}
@@ -145,7 +191,8 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
       animatedIndex={animatedIndex}
     >
       <BottomSheetFlatList
-        data={transactionData}
+        onEndReachedThreshold={0.9}
+        data={isResetting ? [] : transactionData}
         renderItem={renderItem}
         keyExtractor={(item: AnyTransaction | PendingTransaction) => {
           if (isPendingTransaction(item)) {
@@ -160,7 +207,8 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
         ListFooterComponent={
           <ActivityCardLoading
             isLoading={
-              txns[filter].status === 'pending' && !transactionData?.length
+              isResetting ||
+              (txns[filter].status === 'pending' && !transactionData?.length)
             }
             hasNoResults={
               txns[filter].status === 'fulfilled' &&
@@ -169,7 +217,7 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
             }
           />
         }
-        onEndReached={() => dispatch(fetchTxns(filter))}
+        onEndReached={filterFetch}
       />
     </BottomSheet>
   )
