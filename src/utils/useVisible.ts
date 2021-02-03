@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from '../store/rootReducer'
 import usePrevious from './usePrevious'
 
-type Props = { onAppear?: () => void; onDisappear: () => void }
+type Props = { onAppear?: () => void; onDisappear?: () => void }
 const useVisible = ({ onAppear, onDisappear }: Props) => {
   const {
     app: { appStateStatus },

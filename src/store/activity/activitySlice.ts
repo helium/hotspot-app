@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { PendingTransaction, AnyTransaction } from '@helium/http'
-import { unionBy } from 'lodash'
-import { txnFetchers } from '../../utils/appDataClient'
+import { differenceBy, unionBy } from 'lodash'
+import { initFetchers, txnFetchers } from '../../utils/appDataClient'
 import { FilterType } from '../../features/wallet/root/walletTypes'
 
 type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
@@ -29,13 +29,26 @@ const initialState: ActivityState = {
   filter: 'all',
 }
 
+type FetchArgs = {
+  filter: FilterType
+  resetLists?: boolean
+}
 export const fetchTxns = createAsyncThunk<
   AnyTransaction[] | PendingTransaction[],
-  FilterType
->('activity/fetchAccountActivity', async (filterType) => {
-  const list = txnFetchers[filterType]
+  FetchArgs
+>('activity/fetchAccountActivity', async ({ filter, resetLists = false }) => {
+  if (resetLists) await initFetchers()
+  const list = txnFetchers[filter]
   return list.takeJSON(30)
 })
+
+// export const fetchMoreTxns = createAsyncThunk<
+//   AnyTransaction[] | PendingTransaction[],
+//   FilterType
+// >('activity/fetchAccountActivity', async (filterType) => {
+//   const list = txnFetchers[filterType]
+//   return list.takeJSON(30)
+// })
 
 export const fetchPendingTxns = createAsyncThunk(
   'activity/fetchPendingTxns',
@@ -46,9 +59,9 @@ export const fetchPendingTxns = createAsyncThunk(
 
 export const changeFilter = createAsyncThunk<FilterType, FilterType>(
   'activity/changeFilter',
-  async (filterType, thunkAPI) => {
-    thunkAPI.dispatch(fetchTxns(filterType))
-    return filterType
+  async (filter, thunkAPI) => {
+    thunkAPI.dispatch(fetchTxns({ filter }))
+    return filter
   },
 )
 
@@ -77,19 +90,26 @@ const activitySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchTxns.pending, (state, { meta: { arg } }) => {
-      state.txns[arg].status = 'pending'
+      state.txns[arg.filter].status = 'pending'
     })
     builder.addCase(fetchTxns.rejected, (state, { meta: { arg } }) => {
-      state.txns[arg].status = 'rejected'
+      state.txns[arg.filter].status = 'rejected'
     })
     builder.addCase(
       fetchTxns.fulfilled,
       (state, { payload, meta: { arg } }) => {
-        state.txns[arg].status = 'fulfilled'
+        state.txns[arg.filter].status = 'fulfilled'
         const newTxns = payload as AnyTransaction[]
         // TODO: this should be unnecessary, but RN's "fast refresh" is causing duplicated items to get in
-        const joined = unionBy(state.txns[arg].data, newTxns, 'hash')
-        state.txns[arg].data = joined
+        const joined = unionBy(state.txns[arg.filter].data, newTxns, 'hash')
+        state.txns[arg.filter].data = joined
+
+        // remove any pending txns with the same hash
+        state.txns.pending.data = differenceBy(
+          state.txns.pending.data,
+          newTxns,
+          'hash',
+        )
       },
     )
     builder.addCase(fetchPendingTxns.pending, (state) => {

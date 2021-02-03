@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import React from 'react'
 import { TouchableOpacity } from 'react-native'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
@@ -77,4 +77,5 @@ const ActivityItem = ({
   )
 }
 
-export default memo(ActivityItem, (prev, next) => prev.hash === next.hash)
+// export default memo(ActivityItem, (prev, next) => prev.hash === next.hash)
+export default ActivityItem

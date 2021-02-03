@@ -115,25 +115,34 @@ const ActivityDetails = () => {
           <Burn item={detailTxn} address={address || ''} />
           <HotspotTransaction item={detailTxn} address={address || ''} />
           <UnknownTransaction item={detailTxn} />
-          <TouchableOpacityBox
-            backgroundColor={backgroundColorKey(detailTxn)}
-            height={63}
-            width="100%"
-            borderRadius="ms"
-            flexDirection="row"
-            alignItems="center"
-            justifyContent="center"
-            onPress={() => {
-              Linking.openURL(
-                `https://explorer.helium.com/blocks/${block?.toString()}`,
-              )
-            }}
-          >
-            <Text variant="medium" fontSize={16} color="white" marginRight="s">
-              {`${t('activity_details.view_block')} ${block?.toLocaleString()}`}
-            </Text>
-            <LinkImg />
-          </TouchableOpacityBox>
+          {block && (
+            <TouchableOpacityBox
+              backgroundColor={backgroundColorKey(detailTxn)}
+              height={63}
+              width="100%"
+              borderRadius="ms"
+              flexDirection="row"
+              alignItems="center"
+              justifyContent="center"
+              onPress={() => {
+                Linking.openURL(
+                  `https://explorer.helium.com/blocks/${block?.toString()}`,
+                )
+              }}
+            >
+              <Text
+                variant="medium"
+                fontSize={16}
+                color="white"
+                marginRight="s"
+              >
+                {`${t(
+                  'activity_details.view_block',
+                )} ${block?.toLocaleString()}`}
+              </Text>
+              <LinkImg />
+            </TouchableOpacityBox>
+          )}
         </Box>
       </BottomSheetScrollView>
     </BottomSheetModal>

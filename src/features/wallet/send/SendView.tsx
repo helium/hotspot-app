@@ -10,7 +10,7 @@ import Balance, {
 import { Address } from '@helium/crypto-react-native'
 import { useAsync } from 'react-async-hook'
 import { useSelector } from 'react-redux'
-import { Hotspot } from '@helium/http'
+import { AnyTransaction, Hotspot } from '@helium/http'
 import { TransferHotspotV1 } from '@helium/transactions'
 import { RootState } from '../../../store/rootReducer'
 import Box from '../../../components/Box'
@@ -36,7 +36,6 @@ import {
 import {
   getAccount,
   getHotspotActivityList,
-  submitTransaction,
 } from '../../../utils/appDataClient'
 import * as Logger from '../../../utils/logger'
 import TransferBanner from '../../hotspots/transfers/TransferBanner'
@@ -49,6 +48,7 @@ import {
 import { getAddress } from '../../../utils/secureAccount'
 import Text from '../../../components/Text'
 import { fromNow } from '../../../utils/timeUtils'
+import useSubmitTxn from '../../../hooks/useSubmitTxn'
 
 type Props = {
   scanResult?: QrScanResult
@@ -60,6 +60,7 @@ type Props = {
 const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   const navigation = useNavigation()
   const { t } = useTranslation()
+  const submitTxn = useSubmitTxn()
 
   const [type, setType] = useState<SendType>(sendType || 'payment')
   const [address, setAddress] = useState<string>('')
@@ -250,7 +251,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       hotspot.address,
       seller?.b58,
       address,
-      partialTxn,
+      partialTxn.toString(),
       getIntegerAmount(),
     )
     if (!transfer) {
@@ -279,7 +280,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     }
   }
 
-  const handleBuyerTransfer = async (): Promise<string | undefined> => {
+  const handleBuyerTransfer = async (): Promise<TransferHotspotV1> => {
     if (!hotspot) {
       throw new Error('missing hotspot for buyer transfer')
     }
@@ -328,7 +329,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     }
   }
 
-  const constructTxn = async (): Promise<string | undefined> => {
+  const constructTxn = async (): Promise<AnyTransaction> => {
     if (type === 'payment') {
       return makePaymentTxn(getIntegerAmount(), address, getNonce())
     }
@@ -348,7 +349,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     try {
       const txn = await constructTxn()
       if (txn) {
-        await submitTransaction(txn)
+        await submitTxn(txn)
       }
       triggerNavHaptic()
       navigation.navigate('SendComplete')

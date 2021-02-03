@@ -28,8 +28,11 @@ import { fetchData } from './store/account/accountSlice'
 import BluetoothProvider from './providers/BluetoothProvider'
 import ConnectedHotspotProvider from './providers/ConnectedHotspotProvider'
 import * as Logger from './utils/logger'
-import { configChainVars, initFetchers } from './utils/appDataClient'
-import { fetchInitialData } from './store/helium/heliumDataSlice'
+import { initFetchers, configChainVars } from './utils/appDataClient'
+import {
+  fetchInitialData,
+  fetchBlockHeight,
+} from './store/helium/heliumDataSlice'
 import sleep from './utils/sleep'
 
 SplashScreen.preventAutoHideAsync()
@@ -40,6 +43,7 @@ const App = () => {
       UIManager.setLayoutAnimationEnabledExperimental(true)
     }
   }
+  LogBox.ignoreLogs(['Calling getNode'])
 
   LogBox.ignoreLogs([
     'Setting a timer',
@@ -63,6 +67,7 @@ const App = () => {
       appStateStatus,
     },
     account: { fetchDataStatus },
+    heliumData: { blockHeight },
   } = useSelector((state: RootState) => state)
 
   useEffect(() => {
@@ -146,6 +151,17 @@ const App = () => {
   }, [handleChange])
 
   useAsync(configChainVars, [])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      dispatch(fetchBlockHeight())
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [dispatch])
+
+  useEffect(() => {
+    dispatch(fetchData())
+  }, [blockHeight, dispatch])
 
   return (
     <ThemeProvider theme={theme}>

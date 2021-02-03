@@ -7,7 +7,7 @@ import React, {
   useEffect,
   useState,
   useCallback,
-  memo,
+  // memo,
 } from 'react'
 import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet'
 import Animated from 'react-native-reanimated'
@@ -35,6 +35,7 @@ import { useAppDispatch } from '../../../../store/store'
 import { useSpacing } from '../../../../theme/themeHooks'
 import useActivityItem from '../useActivityItem'
 import ActivityCardLoading from './ActivityCardLoading'
+import useVisible from '../../../../utils/useVisible'
 
 type Props = {
   animationPoints: WalletAnimationPoints
@@ -45,33 +46,53 @@ type Props = {
 const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
   const { animationPoints, animatedIndex, onChange } = props
   const { dragMax, dragMid, dragMin } = animationPoints
+  const { m } = useSpacing()
+  const dispatch = useAppDispatch()
+
   const [transactionData, setTransactionData] = useState<
     (AnyTransaction | PendingTransaction)[]
   >([])
+
   const { result: address } = useAsync(getSecureItem, ['address'])
   const { backgroundColor, title, listIcon, amount, time } = useActivityItem(
     address || '',
   )
-  const { m } = useSpacing()
-  const dispatch = useAppDispatch()
+
   const {
     activity: { txns, filter },
+    heliumData: { blockHeight },
   } = useSelector((state: RootState) => state)
-  const sheet = useRef<BottomSheet>(null)
 
-  useEffect(() => {
-    dispatch(fetchTxns('all'))
-    dispatch(fetchPendingTxns())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  const sheet = useRef<BottomSheet>(null)
+  const interval = useRef<any>(null)
+
+  useVisible({
+    onAppear: () => {
+      dispatch(fetchTxns({ filter, resetLists: true }))
+      dispatch(fetchPendingTxns())
+      interval.current = setInterval(() => {
+        dispatch(fetchPendingTxns())
+      }, 5000)
+    },
+    onDisappear: () => {
+      clearInterval(interval.current)
+    },
+  })
+
+  useAsync(async () => {
+    dispatch(fetchTxns({ filter, resetLists: true }))
+  }, [blockHeight, dispatch, filter])
 
   useEffect(() => {
     let data: (PendingTransaction | AnyTransaction)[]
     data = txns[filter].data
+    console.log('data', data[0])
     if (filter === 'all') {
       data = [...txns.pending.data, ...data]
     }
+    console.log('pending', txns.pending.data)
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+    console.log('setTransactionData')
     setTransactionData(data)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txns[filter]])
@@ -176,10 +197,11 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
             }
           />
         }
-        onEndReached={() => dispatch(fetchTxns(filter))}
+        onEndReached={() => dispatch(fetchTxns({ filter }))}
       />
     </BottomSheet>
   )
 })
 
-export default memo(ActivityCard)
+// export default memo(ActivityCard)
+export default ActivityCard
