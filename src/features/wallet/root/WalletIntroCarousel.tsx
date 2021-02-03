@@ -31,9 +31,9 @@ const WalletIntroCarousel = () => {
   const getIcon = (index: number) => {
     switch (index) {
       case 0:
-        return <Receive width={44} height={44} color={colors.greenBright} />
+        return <Receive width={40} height={40} color={colors.greenBright} />
       case 1:
-        return <Send width={44} height={44} color={colors.blueBright} />
+        return <Send width={40} height={40} color={colors.blueBright} />
       case 2:
       case 3:
         return <ChartIcon />
