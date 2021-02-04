@@ -1,83 +1,77 @@
-import React, { memo, ReactText, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Picker } from '@react-native-picker/picker'
-import { Modal } from 'react-native'
+import React, { memo, ReactText, useRef } from 'react'
+import RNPickerSelect from 'react-native-picker-select'
+import CarotDown from '@assets/images/carot-down.svg'
+import { BoxProps } from '@shopify/restyle'
+import { Platform } from 'react-native'
 import Box from './Box'
-import TouchableOpacityBox from './TouchableOpacityBox'
 import Text from './Text'
-import { useColors } from '../theme/themeHooks'
+import { useColors, useTextVariants } from '../theme/themeHooks'
+import { Theme } from '../theme/theme'
 
-type Props = {
+type Props = BoxProps<Theme> & {
   data: Array<{ label: string; value: string }>
   selectedValue: string
   onValueChanged: (itemValue: ReactText, itemIndex: number) => void
-  visible: boolean
-  handleClose: () => void
+  prefix?: string
 }
 
 const ModalPicker = ({
   data,
   selectedValue,
   onValueChanged,
-  visible,
-  handleClose,
+  prefix,
+  ...boxProps
 }: Props) => {
-  const { grayLight } = useColors()
-  const { t } = useTranslation()
-  const [selection, setSelection] = useState<{
-    itemIndex: number | undefined
-    itemValue: ReactText
-  }>({ itemValue: selectedValue, itemIndex: undefined })
+  const textVariants = useTextVariants()
+  const { purpleMain } = useColors()
+  const pickerRef = useRef<RNPickerSelect>(null)
+
   return (
-    <Modal
-      visible={visible}
-      onRequestClose={handleClose}
-      animationType="slide"
-      transparent
-    >
-      <Box flex={1} justifyContent="flex-end">
-        <Box
-          top={0}
-          left={0}
-          bottom={0}
-          right={0}
-          position="absolute"
-          onTouchStart={handleClose}
-        />
-        <Box backgroundColor="grayBox">
-          <TouchableOpacityBox alignSelf="flex-end">
-            <Text
-              color="purpleMain"
-              variant="body1Medium"
-              paddingVertical="ms"
-              paddingHorizontal="m"
-              onPress={() => {
-                if (selection.itemIndex !== undefined) {
-                  onValueChanged(selection.itemValue, selection.itemIndex)
-                }
-                handleClose()
-              }}
-            >
-              {t('generic.done')}
-            </Text>
-          </TouchableOpacityBox>
-          <Picker
-            selectedValue={selection.itemValue}
-            style={{
-              width: '100%',
-              backgroundColor: grayLight,
-            }}
-            onValueChange={(itemValue, itemIndex) =>
-              setSelection({ itemValue, itemIndex })
-            }
-          >
-            {data.map(({ label, value }) => (
-              <Picker.Item key={value} label={label} value={value} />
-            ))}
-          </Picker>
-        </Box>
-      </Box>
-    </Modal>
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    <Box flexDirection="row" alignItems="center" {...boxProps}>
+      {prefix && (
+        <Text
+          color="grayDark"
+          variant="h4"
+          paddingRight={Platform.OS === 'android' ? 'none' : 'xs'}
+        >
+          {prefix}
+        </Text>
+      )}
+      <RNPickerSelect
+        ref={pickerRef}
+        placeholder={{}}
+        touchableWrapperProps={{ activeOpacity: 0.35 }}
+        Icon={CarotDown}
+        style={{
+          iconContainer: {
+            padding: 10,
+            top: Platform.OS === 'android' ? 12 : 8,
+          },
+          inputIOSContainer: {
+            paddingRight: 24,
+          },
+          inputAndroidContainer: {
+            paddingRight: 16,
+          },
+          inputIOS: {
+            ...textVariants.h4,
+            color: purpleMain,
+            paddingVertical: 8,
+          },
+          inputAndroid: {
+            ...textVariants.h4,
+            color: purpleMain,
+            paddingVertical: 8,
+          },
+        }}
+        items={data}
+        value={selectedValue}
+        onValueChange={onValueChanged}
+        useNativeAndroidPickerStyle={false}
+        fixAndroidTouchableBug
+      />
+    </Box>
   )
 }
 

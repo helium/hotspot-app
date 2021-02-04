@@ -2088,7 +2088,7 @@
     "@types/geojson" "^7946.0.7"
     debounce "^1.2.0"
 
-"@react-native-picker/picker@^1.8.3", "@react-native-picker/picker@^1.9.4":
+"@react-native-picker/picker@^1.8.3", "@react-native-picker/picker@^1.9.10":
   version "1.9.10"
   resolved "https://registry.yarnpkg.com/@react-native-picker/picker/-/picker-1.9.10.tgz#c0d445453e91077cc85a3f0a6d0074d44d21e438"
   integrity sha512-g0C0RLjXXGE4UfmGxNtAOY3LE5Epz8+ck/rB1oErJowskIIG83U6LVqH9oFrx1Hq1k/lbVQGgabURlE0QQ1MHA==
@@ -9869,7 +9869,7 @@ react-native-onesignal@^4.0.0-beta.4:
   dependencies:
     invariant "^2.2.2"
 
-react-native-picker-select@^8.0.3:
+react-native-picker-select@^8.0.4:
   version "8.0.4"
   resolved "https://registry.yarnpkg.com/react-native-picker-select/-/react-native-picker-select-8.0.4.tgz#3f7f1f42df69b06e7d2c10338288332a6c40fd10"
   integrity sha512-orBjPIwBkV5oipyVw263YNMI56f6Kj3p/ejabZoCYYNSG3AiLVVhC2RqsxMgDA7IayyURAW+AlV+mDJyVqLBkg==
