@@ -1,11 +1,13 @@
-import React, { memo, ReactText } from 'react'
+import React, { memo, ReactText, useRef } from 'react'
 import RNPickerSelect from 'react-native-picker-select'
 import CarotDown from '@assets/images/carot-down.svg'
+import { BoxProps } from '@shopify/restyle'
 import Box from './Box'
 import Text from './Text'
 import { useColors, useTextVariants } from '../theme/themeHooks'
+import { Theme } from '../theme/theme'
 
-type Props = {
+type Props = BoxProps<Theme> & {
   data: Array<{ label: string; value: string }>
   selectedValue: string
   onValueChanged: (itemValue: ReactText, itemIndex: number) => void
@@ -17,20 +19,24 @@ const ModalPicker = ({
   selectedValue,
   onValueChanged,
   prefix,
+  ...boxProps
 }: Props) => {
   const textVariants = useTextVariants()
   const { purpleMain } = useColors()
+  const pickerRef = useRef<RNPickerSelect>(null)
 
   return (
-    <Box flexDirection="row" alignItems="center">
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    <Box flexDirection="row" alignItems="center" {...boxProps}>
       {prefix && (
         <Text color="grayDark" variant="h4" paddingRight="xs">
           {prefix}
         </Text>
       )}
       <RNPickerSelect
+        ref={pickerRef}
         placeholder={{}}
-        touchableWrapperProps={{}}
+        touchableWrapperProps={{ activeOpacity: 0.35 }}
         Icon={CarotDown}
         style={{
           iconContainer: { padding: 10 },
