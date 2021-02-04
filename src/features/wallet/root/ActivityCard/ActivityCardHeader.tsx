@@ -31,6 +31,7 @@ const ActivityCardHeader = () => {
         <CardHandle />
       </Box>
       <ModalPicker
+        marginLeft="ms"
         prefix={t('transactions.view')}
         data={FilterKeys.map((value) => ({ label: filters[value], value }))}
         selectedValue={filter}

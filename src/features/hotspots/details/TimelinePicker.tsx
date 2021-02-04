@@ -16,7 +16,12 @@ const TimelinePicker = ({ index, onTimelineChanged }: Props) => {
   })
   const [selectedValue, setSelectedValue] = useState(options[index])
   return (
-    <Box flexDirection="row" alignItems="center" marginVertical="m">
+    <Box
+      flexDirection="row"
+      alignItems="center"
+      marginVertical="m"
+      width="100%"
+    >
       <Bars />
       <ModalPicker
         marginHorizontal="xs"
