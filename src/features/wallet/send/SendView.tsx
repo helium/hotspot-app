@@ -10,7 +10,7 @@ import Balance, {
 import { Address } from '@helium/crypto-react-native'
 import { useAsync } from 'react-async-hook'
 import { useSelector } from 'react-redux'
-import { AnyTransaction, Hotspot } from '@helium/http'
+import { Hotspot } from '@helium/http'
 import { TransferHotspotV1 } from '@helium/transactions'
 import { RootState } from '../../../store/rootReducer'
 import Box from '../../../components/Box'
@@ -329,7 +329,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     }
   }
 
-  const constructTxn = async (): Promise<AnyTransaction> => {
+  const constructTxn = async () => {
     if (type === 'payment') {
       return makePaymentTxn(getIntegerAmount(), address, getNonce())
     }

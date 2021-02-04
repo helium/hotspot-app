@@ -63,7 +63,7 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
   } = useSelector((state: RootState) => state)
 
   const sheet = useRef<BottomSheet>(null)
-  const interval = useRef<any>(null)
+  const interval = useRef<NodeJS.Timeout>()
 
   useVisible({
     onAppear: () => {
@@ -74,6 +74,7 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
       }, 5000)
     },
     onDisappear: () => {
+      if (!interval.current) return
       clearInterval(interval.current)
     },
   })
@@ -135,7 +136,7 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
     ({ item, index }: Item) => {
       return (
         <ActivityItem
-          hash={item.hash}
+          hash={(item as AddGatewayV1).hash}
           handlePress={handleActivityItemPressed(item)}
           isFirst={index === 0}
           isLast={!!transactionData && index === transactionData.length - 1}
