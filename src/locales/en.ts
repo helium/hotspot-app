@@ -133,6 +133,8 @@ export default {
       subtitle: 'What kind of Hotspot do you\nwish to add?',
       option_one: 'Helium\nHotspot',
       option_two: 'RAK\nHotspot Miner',
+      option_three: 'Nebra\nIndoor Hotspot',
+      option_four: 'Nebra\nOutdoor Hotspot',
       third_party_header: 'Other Hotspots',
       helium_edition: 'For the Helium Network',
       fine_print:

@@ -11,8 +11,12 @@ import {
 import { getStaking } from '../../utils/stakingClient'
 
 export type HotspotStatus = 'owned' | 'global' | 'new' | 'error' | 'initial'
-export type HotspotType = 'Helium' | 'RAK'
-export type HotspotName = 'RAK Hotspot Miner' | 'Helium Hotspot'
+export type HotspotType = 'Helium' | 'RAK' | 'NEBRAIN' | 'NEBRAOUT'
+export type HotspotName =
+  | 'RAK Hotspot Miner'
+  | 'Helium Hotspot'
+  | 'Nebra Indoor Hotspot'
+  | 'Nebra Outdoor Hotspot'
 
 type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
 

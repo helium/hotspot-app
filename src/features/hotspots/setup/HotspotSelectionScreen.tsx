@@ -9,6 +9,8 @@ import TouchableHighlightBox from '../../../components/TouchableHighlightBox'
 import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
 import Hotspot from '../../../assets/images/hotspot.svg'
 import RAK from '../../../assets/images/rak.svg'
+import NEBRAIN from '../../../assets/images/nebra-in.svg'
+import NEBRAOUT from '../../../assets/images/nebra-out.svg'
 import { useColors } from '../../../theme/themeHooks'
 import { HotspotType } from '../../../store/connectedHotspot/connectedHotspotSlice'
 
@@ -109,6 +111,89 @@ const HotspotSetupSelectionScreen = () => {
           </TouchableHighlightBox>
         </Card>
       </Box>
+
+      <Box flexDirection="row" height={191} marginTop="s">
+        <Card flex={1} variant="elevated" backgroundColor="white">
+          <TouchableHighlightBox
+            height="100%"
+            width="100%"
+            borderRadius="m"
+            underlayColor={purpleMain}
+            onPressIn={() => setPressing('NEBRAIN')}
+            onPressOut={() => setPressing(undefined)}
+            onPress={() =>
+              navigation.push('HotspotSetupEducationScreen', {
+                hotspotType: 'NEBRAIN',
+              })
+            }
+            alignItems="center"
+            justifyContent="center"
+          >
+            <>
+              <Box height={77}>
+                <NEBRAIN
+                  color={
+                    pressing === 'NEBRAIN' ? colors.white : colors.blueGray
+                  }
+                />
+              </Box>
+              <Text
+                variant="body1Medium"
+                color={pressing === 'NEBRAIN' ? 'white' : 'blueGray'}
+                marginTop="l"
+                textAlign="center"
+                numberOfLines={2}
+                adjustsFontSizeToFit
+                lineHeight={19}
+              >
+                {t('hotspot_setup.selection.option_three')}
+              </Text>
+            </>
+          </TouchableHighlightBox>
+        </Card>
+
+        <Box marginRight="ms" />
+
+        <Card flex={1} variant="elevated" backgroundColor="white">
+          <TouchableHighlightBox
+            height="100%"
+            width="100%"
+            borderRadius="m"
+            underlayColor={purpleMain}
+            onPressIn={() => setPressing('NEBRAOUT')}
+            onPressOut={() => setPressing(undefined)}
+            onPress={() =>
+              navigation.push('HotspotSetupEducationScreen', {
+                hotspotType: 'NEBRAOUT',
+              })
+            }
+            alignItems="center"
+            justifyContent="center"
+          >
+            <>
+              <Box height={77}>
+                <NEBRAOUT
+                  color={
+                    pressing === 'NEBRAOUT' ? colors.white : colors.blueGray
+                  }
+                />
+              </Box>
+              <Text
+                variant="body1Medium"
+                color={pressing === 'NEBRAOUT' ? 'white' : 'blueGray'}
+                marginTop="l"
+                textAlign="center"
+                numberOfLines={2}
+                adjustsFontSizeToFit
+                lineHeight={19}
+              >
+                {t('hotspot_setup.selection.option_four')}
+              </Text>
+            </>
+          </TouchableHighlightBox>
+        </Card>
+      </Box>
+
       <Box flex={1.5} />
     </BackScreen>
   )
