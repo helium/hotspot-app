@@ -42,7 +42,7 @@ export const getRewardChartData = (
       }
       chartData.push({
         up: parseFloat(amount.toFixed(2)),
-        down: 0.01,
+        down: 0,
         day: date.toLocaleDateString(undefined, {
           day: 'numeric',
           month: 'short',

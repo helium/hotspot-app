@@ -21,6 +21,7 @@ import { useAppDispatch } from '../../../store/store'
 import hotspotDetailsSlice, {
   fetchHotspotRewards,
   fetchHotspotWitnesses,
+  fetchHotspotWitnessSums,
 } from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import MoreMenu from '../../../assets/images/moreMenu.svg'
@@ -71,9 +72,12 @@ const HotspotDetails = () => {
       numDays,
       rewards,
       rewardSum,
-      percentChange,
+      rewardsChange,
       loadingRewards,
-      witnesses,
+      loadingWitnessSums,
+      witnessSums,
+      witnessAverage,
+      witnessChange,
     },
   } = useSelector((state: RootState) => state)
 
@@ -101,6 +105,12 @@ const HotspotDetails = () => {
     }
     dispatch(fetchHotspotRewards({ address: hotspot.address, numDays: days }))
     dispatch(fetchHotspotWitnesses(hotspot.address))
+    dispatch(
+      fetchHotspotWitnessSums({
+        address: hotspot.address,
+        numDays: days,
+      }),
+    )
   }, [dispatch, hotspot.address, timelineIndex])
 
   const { showActionSheetWithOptions } = useActionSheet()
@@ -188,17 +198,29 @@ const HotspotDetails = () => {
         <HotspotDetailChart
           title={t('hotspot_details.reward_title')}
           number={rewardSum?.total?.toString(2)?.replace('HNT', '')?.trim()}
-          change={percentChange}
+          change={rewardsChange}
           color={colors.greenOnline}
           data={getRewardChartData(rewards, numDays)}
           loading={loadingRewards}
         />
         <HotspotDetailChart
           title={t('hotspot_details.witness_title')}
-          number={witnesses?.length?.toString()}
-          change={1.2}
+          number={witnessAverage?.toFixed(0)}
+          change={witnessChange}
           color={colors.purpleMain}
-          data={data[1]}
+          data={
+            witnessSums?.map((w) => ({
+              up: Math.round(w.avg),
+              down: 0,
+              day: new Date(w.timestamp).toLocaleDateString(undefined, {
+                day: 'numeric',
+                month: 'short',
+                hour: 'numeric',
+              }),
+              id: `witness-${numDays}-${w.timestamp}`,
+            })) || []
+          }
+          loading={loadingWitnessSums}
         />
         <HotspotDetailChart
           title={t('hotspot_details.challenge_title')}

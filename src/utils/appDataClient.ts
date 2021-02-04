@@ -3,6 +3,8 @@ import Client, {
   Hotspot,
   PendingTransaction,
   ResourceList,
+  Bucket,
+  NaturalDate,
 } from '@helium/http'
 import { Transaction } from '@helium/transactions'
 import {
@@ -67,6 +69,20 @@ export const getHotspotRewards = async (
 
 export const getHotspotWitnesses = async (address: string) => {
   const list = await client.hotspot(address).witnesses.list()
+  return list.take(MAX)
+}
+
+export const getHotspotWitnessSums = async (params: {
+  address: string
+  bucket: Bucket
+  minTime: Date | NaturalDate
+  maxTime?: Date | NaturalDate
+}) => {
+  const list = await client.hotspot(params.address).witnesses.listSums({
+    minTime: params.minTime,
+    maxTime: params.maxTime,
+    bucket: params.bucket,
+  })
   return list.take(MAX)
 }
 

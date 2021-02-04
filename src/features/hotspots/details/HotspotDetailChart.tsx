@@ -55,7 +55,7 @@ const NumberBox = ({
     <Text variant="light" fontSize={28} color="black" marginBottom="s">
       {focusedData ? focusedData.up : number}
     </Text>
-    {change && !focusedData ? (
+    {change !== undefined && !focusedData ? (
       <Box
         style={{
           backgroundColor: change < 0 ? negativeColor : positiveColor,
