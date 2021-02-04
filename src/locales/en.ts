@@ -207,14 +207,14 @@ export default {
       rak_subtitle_1: 'There is no pairing button on the RAK Hotspot Miner.',
       nebrain_subtitle_1:
         'There is no pairing button on the Nebra Indoor Hotspot.',
-      nebrain_subtitle_1:
+      nebraout_subtitle_1:
         'There is no pairing button on the Nebra Outdoor Hotspot.',
       subtitle_2: "Ensure your phone's bluetooth is on before proceeding",
       rak_subtitle_2:
         'Bluetooth is automatically enabled for 5 minutes after the RAK Hotspot Miner is powered on.\n\nHotspot can take up to 1 minute to fully boot up.\n\nPress Next to scan.',
       nebrain_subtitle_2:
         'Bluetooth is automatically enabled for 5 minutes after the Nebra Indoor Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.\n\nPress Next to scan.',
-      nebrain_subtitle_2:
+      nebraout_subtitle_2:
         'Bluetooth is automatically enabled for 5 minutes after the Nebra Outdoor Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.\n\nPress Next to scan.',
       alert_no_permissions: {
         title: 'Authorize Bluetooth',
