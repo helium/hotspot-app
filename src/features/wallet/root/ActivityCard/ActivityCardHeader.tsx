@@ -7,7 +7,7 @@ import { FilterKeys, FilterType } from '../walletTypes'
 import ModalPicker from '../../../../components/ModalPicker'
 import { RootState } from '../../../../store/rootReducer'
 import { useAppDispatch } from '../../../../store/store'
-import { changeFilter } from '../../../../store/activity/activitySlice'
+import activitySlice from '../../../../store/activity/activitySlice'
 
 const ActivityCardHeader = () => {
   const { t } = useTranslation()
@@ -22,7 +22,7 @@ const ActivityCardHeader = () => {
   >
 
   const onFilterChanged = (nextFilter: FilterType) => {
-    dispatch(changeFilter(nextFilter))
+    dispatch(activitySlice.actions.setFilter(nextFilter))
   }
 
   return (

@@ -28,7 +28,7 @@ import { fetchData } from './store/account/accountSlice'
 import BluetoothProvider from './providers/BluetoothProvider'
 import ConnectedHotspotProvider from './providers/ConnectedHotspotProvider'
 import * as Logger from './utils/logger'
-import { initFetchers, configChainVars } from './utils/appDataClient'
+import { configChainVars } from './utils/appDataClient'
 import {
   fetchInitialData,
   fetchBlockHeight,
@@ -69,6 +69,8 @@ const App = () => {
     account: { fetchDataStatus },
     heliumData: { blockHeight },
   } = useSelector((state: RootState) => state)
+
+  useAsync(configChainVars, [])
 
   useEffect(() => {
     if (appStateStatus === 'background' && !isLocked) {
@@ -130,9 +132,6 @@ const App = () => {
   }, [fetchDataStatus, isBackedUp, isRestored])
 
   useEffect(() => {
-    if (isBackedUp) {
-      initFetchers()
-    }
     hideSplash()
   }, [hideSplash, isBackedUp])
 
@@ -149,8 +148,6 @@ const App = () => {
       AppState.removeEventListener('change', handleChange)
     }
   }, [handleChange])
-
-  useAsync(configChainVars, [])
 
   useEffect(() => {
     const interval = setInterval(() => {

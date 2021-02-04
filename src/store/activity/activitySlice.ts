@@ -16,6 +16,7 @@ export type ActivityState = {
   }
   filter: FilterType
   detailTxn?: AnyTransaction | PendingTransaction
+  isResetting: boolean
 }
 
 const initialState: ActivityState = {
@@ -27,27 +28,23 @@ const initialState: ActivityState = {
     pending: { data: [], status: 'idle' },
   },
   filter: 'all',
+  isResetting: false,
 }
 
-type FetchArgs = {
-  filter: FilterType
-  resetLists?: boolean
-}
 export const fetchTxns = createAsyncThunk<
   AnyTransaction[] | PendingTransaction[],
-  FetchArgs
->('activity/fetchAccountActivity', async ({ filter, resetLists = false }) => {
-  if (resetLists) await initFetchers()
-
+  FilterType
+>('activity/fetchAccountActivity', async (filter) => {
   const list = txnFetchers[filter]
   return list.takeJSON(filter === 'pending' ? 1000 : 30)
 })
 
-export const changeFilter = createAsyncThunk<FilterType, FilterType>(
-  'activity/changeFilter',
-  async (filter, thunkAPI) => {
-    thunkAPI.dispatch(fetchTxns({ filter }))
-    return filter
+export const resetTxns = createAsyncThunk(
+  'activity/resetTxns',
+  async (_, { dispatch }) => {
+    dispatch(activitySlice.actions.resetTxns())
+    await initFetchers()
+    dispatch(activitySlice.actions.finishReset())
   },
 )
 
@@ -55,6 +52,9 @@ const activitySlice = createSlice({
   name: 'activity',
   initialState,
   reducers: {
+    setFilter: (state, action: PayloadAction<FilterType>) => {
+      state.filter = action.payload
+    },
     addPendingTransaction: (
       state,
       action: PayloadAction<PendingTransaction>,
@@ -70,38 +70,34 @@ const activitySlice = createSlice({
     clearDetailTxn: (state) => {
       return { ...state, detailTxn: undefined }
     },
+    resetTxns: (state) => {
+      state.isResetting = true
+      Object.keys(state.txns).forEach((key) => {
+        const filterType = key as FilterType
+        if (filterType !== 'pending') {
+          // Don't reset pending, we will clear it manually
+          state.txns[filterType].data = []
+        }
+      })
+    },
+    finishReset: (state) => {
+      state.isResetting = false
+    },
     signOut: () => {
       return { ...initialState }
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchTxns.pending, (state, { meta: { arg } }) => {
-      state.txns[arg.filter].status = 'pending'
+    builder.addCase(fetchTxns.pending, (state, { meta: { arg: filter } }) => {
+      state.txns[filter].status = 'pending'
     })
-    builder.addCase(fetchTxns.rejected, (state, { meta: { arg } }) => {
-      state.txns[arg.filter].status = 'rejected'
+    builder.addCase(fetchTxns.rejected, (state, { meta: { arg: filter } }) => {
+      state.txns[filter].status = 'rejected'
     })
     builder.addCase(
       fetchTxns.fulfilled,
-      (
-        state,
-        {
-          payload,
-          meta: {
-            arg: { filter, resetLists },
-          },
-        },
-      ) => {
+      (state, { payload, meta: { arg: filter } }) => {
         state.txns[filter].status = 'fulfilled'
-        if (resetLists) {
-          Object.keys(state.txns).forEach((key) => {
-            const filterType = key as FilterType
-            if (filterType !== 'pending') {
-              // Don't reset pending, we will clear it manually
-              state.txns[filterType] = { data: [], status: 'idle' }
-            }
-          })
-        }
 
         if (filter === 'pending') {
           state.txns.pending.status = 'fulfilled'
@@ -122,9 +118,9 @@ const activitySlice = createSlice({
         }
       },
     )
-    builder.addCase(changeFilter.fulfilled, (state, { payload }) => {
-      state.filter = payload
-    })
+    // builder.addCase(changeFilter.fulfilled, (state, { payload }) => {
+    //   state.filter = payload
+    // })
   },
 })
 
