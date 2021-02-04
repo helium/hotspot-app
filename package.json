@@ -70,6 +70,7 @@
     "expo-location": "^9.0.1",
     "expo-permissions": "^9.3.0",
     "expo-secure-store": "^9.2.0",
+    "expo-splash-screen": "^0.9.0",
     "i18next": "^19.8.3",
     "is-uuid": "^1.0.2",
     "lodash": "^4.17.20",
