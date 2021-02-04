@@ -32,6 +32,7 @@ export async function getSecureItem(key: BooleanKey): Promise<boolean>
 export async function getSecureItem(key: StringKey): Promise<string | null>
 export async function getSecureItem(key: AccountStoreKey) {
   const item = await SecureStore.getItemAsync(key)
+  if (key === 'address') console.log({ [key]: item })
   if (boolKeys.find((bk) => key === bk)) {
     return item === 'true'
   }

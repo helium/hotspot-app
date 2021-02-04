@@ -34,8 +34,15 @@ const App = () => {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
       UIManager.setLayoutAnimationEnabledExperimental(true)
     }
-    LogBox.ignoreLogs(['Setting a timer'])
   }
+
+  LogBox.ignoreLogs([
+    'Setting a timer',
+    'Calling getNode() on the ref of an Animated component',
+    'Native splash screen is already hidden',
+    'No Native splash screen',
+    'RCTBridge required dispatch_sync to load',
+  ])
 
   const dispatch = useAppDispatch()
 
