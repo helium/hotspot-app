@@ -26,14 +26,18 @@ const HotspotSetupBluetoothInfoScreen = () => {
   const { showOKCancelAlert } = useAlert()
 
   const subtitle1 = t(
-    `hotspot_setup.pair.${hotspotType === 'RAK' ? 'rak_' : ''}${
-      hotspotType === 'NEBRAIN' ? 'nebrain_' : ''
-    }subtitle_1`,
+    `hotspot_setup.pair.
+      ${hotspotType === 'RAK' ? 'rak_' : ''}
+      ${hotspotType === 'NEBRAIN' ? 'nebrain_' : ''}
+      ${hotspotType === 'NEBRAOUT' ? 'nebraout_' : ''}
+      subtitle_1`,
   )
   const subtitle2 = t(
-    `hotspot_setup.pair.${hotspotType === 'RAK' ? 'rak_' : ''}${
-      hotspotType === 'NEBRAIN' ? 'nebrain_' : ''
-    }subtitle_2`,
+    `hotspot_setup.pair.
+      ${hotspotType === 'RAK' ? 'rak_' : ''}
+      ${hotspotType === 'NEBRAIN' ? 'nebrain_' : ''}
+      ${hotspotType === 'NEBRAOUT' ? 'nebraout_' : ''}
+      subtitle_2`,
   )
 
   useEffect(() => {
