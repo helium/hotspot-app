@@ -13,14 +13,6 @@ if (__DEV__) {
   import('./ReactotronConfig')
 }
 
-// import { LogBox } from 'react-native'
-// LogBox.ignoreLogs([
-//   'SectionList',
-//   'FlatList',
-//   'ReactNativeFiberHostComponent',
-//   'Sending `onAnimatedValueUpdate` with no listeners registered',
-// ])
-
 const render = () => {
   return (
     <Provider store={store}>
