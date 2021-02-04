@@ -1,3 +1,4 @@
+import Balance, { CurrencyType } from '@helium/currency'
 import { PendingTransaction } from '@helium/http'
 import {
   AddGatewayV1,
@@ -49,7 +50,7 @@ const populatePendingTxn = (txn: SignableTransaction) => {
     pendingTxn.payer = txn?.payer?.b58
     pendingTxn.payments = txn.payments.map((p) => ({
       payee: p.payee.b58,
-      amount: p.amount,
+      amount: new Balance(p.amount, CurrencyType.networkToken),
     }))
     pendingTxn.nonce = txn.nonce
   }

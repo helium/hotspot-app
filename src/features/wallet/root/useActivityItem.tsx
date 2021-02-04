@@ -12,12 +12,8 @@ import {
   PendingTransaction,
 } from '@helium/http'
 import { useTranslation } from 'react-i18next'
-import Balance, {
-  CurrencyType,
-  DataCredits,
-  NetworkTokens,
-} from '@helium/currency'
-import { startCase, sumBy } from 'lodash'
+import Balance, { DataCredits, NetworkTokens } from '@helium/currency'
+import { startCase } from 'lodash'
 import { useColors } from '../../../theme/themeHooks'
 import { isPayer } from '../../../utils/transactions'
 import Rewards from '../../../assets/images/rewards.svg'
@@ -188,12 +184,15 @@ const useActivityItem = (address: string) => {
   const formatAmount = (
     prefix: '-' | '+',
     amount?: Balance<DataCredits | NetworkTokens> | number,
+    postFix = '',
   ) => {
     if (!amount) return ''
 
     if (typeof amount === 'number') {
       if (amount === 0) return '0'
-      return `${prefix}${amount.toLocaleString()}`
+      return `${prefix}${amount.toLocaleString('en-US', {
+        maximumFractionDigits: 8,
+      })}${postFix ? ' ' : ''}${postFix}`
     }
 
     if (amount?.floatBalance === 0) return amount.toString()
@@ -274,23 +273,18 @@ const useActivityItem = (address: string) => {
           )
         }
         if (pendingTxn.type === 'payment_v2') {
-          if (pendingTxn.txn.payer === address) {
-            return formatAmount(
-              '-',
-              new Balance(
-                sumBy(pendingTxn.txn.payments, 'amount'),
-                CurrencyType.networkToken,
-              ),
+          const paymentV2 = pendingTxn.txn as PaymentV2
+          if (paymentV2.payer === address) {
+            const sum = paymentV2.payments.reduce(
+              (a, b) => a + b.amount.floatBalance,
+              0,
             )
+
+            return formatAmount('-', sum, 'HNT')
           }
 
-          const payment = pendingTxn.txn.payments.find(
-            (p) => p.payee === address,
-          )
-          return formatAmount(
-            '+',
-            new Balance(payment?.amount, CurrencyType.networkToken),
-          )
+          const payment = paymentV2.payments.find((p) => p.payee === address)
+          return formatAmount('+', payment?.amount)
         }
 
         return formatAmount(isFee(item) ? '-' : '+', pendingTxn.txn.fee)

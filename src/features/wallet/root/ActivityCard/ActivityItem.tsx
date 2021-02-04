@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { TouchableOpacity } from 'react-native'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
@@ -77,5 +77,13 @@ const ActivityItem = ({
   )
 }
 
-// export default memo(ActivityItem, (prev, next) => prev.hash === next.hash)
-export default ActivityItem
+export default memo(ActivityItem, (prev, next) => {
+  const areEqual =
+    prev.hash === next.hash &&
+    prev.title === next.title &&
+    prev.subtitle === next.subtitle &&
+    prev.isFirst === next.isFirst &&
+    prev.isLast === next.isLast &&
+    prev.time === next.time
+  return areEqual
+})

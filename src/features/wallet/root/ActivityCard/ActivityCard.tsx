@@ -7,7 +7,7 @@ import React, {
   useEffect,
   useState,
   useCallback,
-  // memo,
+  memo,
 } from 'react'
 import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet'
 import Animated from 'react-native-reanimated'
@@ -28,7 +28,6 @@ import { RootState } from '../../../../store/rootReducer'
 import { getSecureItem } from '../../../../utils/secureAccount'
 import { isPendingTransaction } from '../../../../utils/transactions'
 import activitySlice, {
-  fetchPendingTxns,
   fetchTxns,
 } from '../../../../store/activity/activitySlice'
 import { useAppDispatch } from '../../../../store/store'
@@ -69,9 +68,9 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
   useVisible({
     onAppear: () => {
       dispatch(fetchTxns({ filter, resetLists: true }))
-      dispatch(fetchPendingTxns())
+      dispatch(fetchTxns({ filter: 'pending' }))
       interval.current = setInterval(() => {
-        dispatch(fetchPendingTxns())
+        dispatch(fetchTxns({ filter: 'pending' }))
       }, 5000)
     },
     onDisappear: () => {
@@ -200,5 +199,4 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
   )
 })
 
-// export default memo(ActivityCard)
-export default ActivityCard
+export default memo(ActivityCard)

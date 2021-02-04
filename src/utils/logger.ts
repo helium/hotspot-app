@@ -23,6 +23,6 @@ export const breadcrumb = (message: string) => {
   })
 }
 
-export const prettyPrint = (whatever: any, prefix = '') => {
+export const prettyPrintToConsole = (whatever: any, prefix = '') => {
   console.log(`${prefix}\n${JSON.stringify(whatever, null, 2)}`)
 }
