@@ -76,6 +76,10 @@ const useHotspot = () => {
     switch (type) {
       case 'RAK':
         return 'RAK Hotspot Miner'
+      case 'NEBRAIN':
+        return 'Nebra Indoor Hotspot'
+      case 'NEBRAOUT':
+        return 'Nebra Indoor Hotspot'
       default:
       case 'Helium':
         return 'Helium Hotspot'

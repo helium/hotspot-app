@@ -185,19 +185,27 @@ export default {
       subtitle_1: 'Attach the antenna and plug in the provided power adapter.',
       rak_subtitle_1:
         'Plug in the provided power adapter into an outlet near a window.',
+      nebrain_subtitle_1:
+        'Attach the antenna and plug in the provided power adapter near a window.',
       subtitle_2:
         'Your Hotspot will boot up, and its light will become Green when ready.',
       rak_subtitle_2:
         'The RAK Hotspot Miner will show a red LED light once it’s powered on.',
+      nebrain_subtitle_2:
+        'The Nebra Indoor Hotspot will show a Green LED once it’s powered on.',
     },
     pair: {
       title: 'Bluetooth',
       subtitle_1:
         'Press the black button on your Hotspot. Its light should turn blue.',
       rak_subtitle_1: 'There is no pairing button on the RAK Hotspot Miner.',
+      nebrain_subtitle_1:
+        'There is no pairing button on the Nebra Indoor Hotspot.',
       subtitle_2: "Ensure your phone's bluetooth is on before proceeding",
       rak_subtitle_2:
         'Bluetooth is automatically enabled for 5 minutes after the RAK Hotspot Miner is powered on.\n\nHotspot can take up to 1 minute to fully boot up.\n\nPress Next to scan.',
+      nebrain_subtitle_2:
+        'Bluetooth is automatically enabled for 5 minutes after the Nebra Indoor Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.\n\nPress Next to scan.',
       alert_no_permissions: {
         title: 'Authorize Bluetooth',
         body:
