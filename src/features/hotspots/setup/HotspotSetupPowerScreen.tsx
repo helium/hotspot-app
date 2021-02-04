@@ -27,11 +27,9 @@ const HotspotSetupPowerScreen = () => {
     }${hotspotType === 'NEBRAOUT' ? 'nebraout_' : ''}subtitle_1`,
   )
   const subtitle2 = t(
-    `hotspot_setup.power.
-      ${hotspotType === 'RAK' ? 'rak_' : ''}
-      ${hotspotType === 'NEBRAIN' ? 'nebrain_' : ''}
-      ${hotspotType === 'NEBRAOUT' ? 'nebraout_' : ''}
-      subtitle_2`,
+    `hotspot_setup.power.${hotspotType === 'RAK' ? 'rak_' : ''}${
+      hotspotType === 'NEBRAIN' ? 'nebrain_' : ''
+    }${hotspotType === 'NEBRAOUT' ? 'nebraout_' : ''}subtitle_2`,
   )
 
   useEffect(() => {
