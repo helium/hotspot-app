@@ -148,6 +148,24 @@ const HotspotDetails = () => {
     )
   }
 
+  const formatDate = (timestamp: string) => {
+    let options
+    if (numDays === 1) {
+      options = {
+        day: 'numeric',
+        month: 'short',
+        hour: 'numeric',
+      }
+    } else {
+      options = {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+      }
+    }
+    return new Date(timestamp).toLocaleDateString(undefined, options)
+  }
+
   return (
     <BottomSheetScrollView>
       <Box
@@ -212,11 +230,7 @@ const HotspotDetails = () => {
             witnessSums?.map((w) => ({
               up: Math.round(w.avg),
               down: 0,
-              day: new Date(w.timestamp).toLocaleDateString(undefined, {
-                day: 'numeric',
-                month: 'short',
-                hour: 'numeric',
-              }),
+              day: formatDate(w.timestamp),
               id: `witness-${numDays}-${w.timestamp}`,
             })) || []
           }
