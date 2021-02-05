@@ -1,14 +1,20 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { HotspotReward, HotspotRewardSum, Hotspot } from '@helium/http'
+import { Hotspot, Reward, Sum } from '@helium/http'
 import {
   getHotspotDetails,
   getHotspotRewards,
   getHotspotRewardsSum,
   getHotspotWitnesses,
+  getHotspotWitnessSums,
 } from '../../utils/appDataClient'
 import { calculatePercentChange } from '../../features/hotspots/details/RewardsHelper'
 
 type FetchRewardsParams = {
+  address: string
+  numDays: number
+}
+
+type FetchWitnessSumsParams = {
   address: string
   numDays: number
 }
@@ -34,10 +40,7 @@ export const fetchHotspotRewards = createAsyncThunk(
       address: params.address,
       numDays: params.numDays,
       rewardSum: data[0],
-      percentChange: calculatePercentChange(
-        data[0].total.floatBalance,
-        data[1].total.floatBalance,
-      ),
+      percentChange: calculatePercentChange(data[0].total, data[1].total),
       rewards: data[2],
     }
   },
@@ -51,14 +54,77 @@ export const fetchHotspotWitnesses = createAsyncThunk(
   },
 )
 
+const getMissingHourlyValue = (i: number, arr: Sum[]) => {
+  const averages = arr.map((w) => w.avg)
+  const lastNonZero = averages
+    .slice(0, i)
+    .filter((a) => a > 0)
+    .pop()
+  const nextNonZero = averages.slice(i).filter((a) => a > 0)[0]
+  return lastNonZero || nextNonZero || 0
+}
+
+const fillMissingHourlyValues = (array: Sum[]) => {
+  array.forEach((sum, i) => {
+    if (sum.avg === 0) {
+      sum.avg = getMissingHourlyValue(i, array)
+    }
+  })
+}
+
+export const fetchHotspotWitnessSums = createAsyncThunk(
+  'hotspotDetails/fetchWitnessSums',
+  async (params: FetchWitnessSumsParams) => {
+    const bucket = params.numDays === 1 ? 'hour' : 'day'
+    const today = new Date()
+    const previousMaxDate = new Date(today)
+    previousMaxDate.setDate(previousMaxDate.getDate() - params.numDays)
+    const witnessSums = await getHotspotWitnessSums({
+      address: params.address,
+      minTime: `-${params.numDays} day`,
+      maxTime: today,
+      bucket,
+    })
+    const witnessSumsPrevious = await getHotspotWitnessSums({
+      address: params.address,
+      minTime: `-${params.numDays} day`,
+      maxTime: previousMaxDate,
+      bucket,
+    })
+    if (bucket === 'hour') {
+      fillMissingHourlyValues(witnessSums)
+      fillMissingHourlyValues(witnessSumsPrevious)
+    }
+    witnessSums.reverse()
+    const totalAvg = witnessSums.reduce(
+      (a, b) => ({ avg: a.avg + b.avg } as any),
+    )
+    const prevAvg = witnessSumsPrevious.reduce(
+      (a, b) => ({ avg: a.avg + b.avg } as any),
+    )
+    const witnessAverage = totalAvg.avg / witnessSums.length
+    const witnessAveragePrev = prevAvg.avg / witnessSumsPrevious.length
+    return {
+      address: params.address,
+      witnessSums,
+      witnessAverage,
+      witnessChange: calculatePercentChange(witnessAverage, witnessAveragePrev),
+    }
+  },
+)
+
 type HotspotDetailsState = {
   hotspot?: Hotspot
   numDays?: number
-  rewardSum?: HotspotRewardSum
-  rewards?: HotspotReward[]
-  percentChange?: number
+  rewardSum?: Sum
+  rewards?: Reward[]
+  rewardsChange?: number
   loadingRewards: boolean
   witnesses?: Hotspot[]
+  witnessSums?: Sum[]
+  witnessAverage?: number
+  witnessChange?: number
+  loadingWitnessSums?: boolean
   loadingWitnesses: boolean
   showSettings: boolean
 }
@@ -94,14 +160,14 @@ const hotspotDetailsSlice = createSlice({
       state.numDays = action.payload.numDays
       state.rewardSum = action.payload.rewardSum
       state.rewards = action.payload.rewards
-      state.percentChange = action.payload.percentChange
+      state.rewardsChange = action.payload.percentChange
     })
     builder.addCase(fetchHotspotRewards.rejected, (state, _action) => {
       state.loadingRewards = false
       state.numDays = undefined
       state.rewardSum = undefined
       state.rewards = undefined
-      state.percentChange = undefined
+      state.rewardsChange = undefined
     })
     builder.addCase(fetchHotspotWitnesses.pending, (state, _action) => {
       state.loadingWitnesses = true
@@ -115,7 +181,22 @@ const hotspotDetailsSlice = createSlice({
       state.numDays = undefined
       state.rewardSum = undefined
       state.rewards = undefined
-      state.percentChange = undefined
+      state.rewardsChange = undefined
+    })
+    builder.addCase(fetchHotspotWitnessSums.pending, (state, _action) => {
+      state.loadingWitnessSums = true
+    })
+    builder.addCase(fetchHotspotWitnessSums.fulfilled, (state, action) => {
+      state.loadingWitnessSums = false
+      state.witnessSums = action.payload.witnessSums
+      state.witnessAverage = action.payload.witnessAverage
+      state.witnessChange = action.payload.witnessChange
+    })
+    builder.addCase(fetchHotspotWitnessSums.rejected, (state, _action) => {
+      state.loadingWitnessSums = false
+      state.witnessSums = undefined
+      state.witnessAverage = undefined
+      state.witnessChange = undefined
     })
   },
 })

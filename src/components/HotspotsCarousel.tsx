@@ -1,7 +1,8 @@
-import { Hotspot, HotspotRewardSum } from '@helium/http'
+import { Hotspot, Sum } from '@helium/http'
 import React from 'react'
 import Carousel from 'react-native-snap-carousel'
 import { useTranslation } from 'react-i18next'
+import Balance, { CurrencyType } from '@helium/currency'
 import Box from './Box'
 import Text from './Text'
 import { wp } from '../utils/layout'
@@ -9,7 +10,7 @@ import HotspotListItem from './HotspotListItem'
 
 type HotspotsCarouselProps = {
   hotspots: Hotspot[]
-  rewards: Record<string, HotspotRewardSum>
+  rewards: Record<string, Sum>
   onHotspotFocused: (hotspot: Hotspot) => void
 }
 
@@ -23,7 +24,10 @@ const HotspotsCarousel = ({
   const renderItem = ({ item }: { item: Hotspot }) => (
     <HotspotListItem
       hotspot={item}
-      totalReward={rewards[item.address]?.total || 0}
+      totalReward={
+        rewards[item.address]?.balanceTotal ||
+        new Balance(0, CurrencyType.networkToken)
+      }
     />
   )
 
