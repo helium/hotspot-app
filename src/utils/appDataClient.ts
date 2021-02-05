@@ -5,6 +5,7 @@ import Client, {
   ResourceList,
 } from '@helium/http'
 import { Transaction } from '@helium/transactions'
+import { ChartRange } from '../components/BarChart/types'
 import {
   HotspotActivityFilters,
   HotspotActivityType,
@@ -104,9 +105,6 @@ export const getHotspotActivityList = async (
   gateway: string,
   filterType: HotspotActivityType,
 ) => {
-  const address = getAddress()
-  if (!address) return
-
   const params = { filterTypes: HotspotActivityFilters[filterType] }
   return client.hotspot(gateway).activity.list(params)
 }
@@ -125,6 +123,37 @@ export const initFetchers = async () => {
     if (!fetcher) return
     txnFetchers[key] = fetcher
   })
+}
+
+export const getRewardsChart = async (range: ChartRange) => {
+  const address = await getAddress()
+  if (!address) return
+
+  const txns = await getAccountTxnsUntil('payment')
+  console.log('txns', txns)
+}
+
+export const getAccountTxnsUntil = async (
+  filterType: FilterType,
+  time?: Date,
+) => {
+  const address = await getAddress()
+  if (!address) return
+
+  const params = { filterTypes: Filters[filterType] }
+  const list = await client.account(address).activity.list(params)
+  const txns = []
+
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const txn of list) {
+    if (txns.length > 10) {
+      break
+    }
+
+    txns.push(txn)
+  }
+
+  return txns
 }
 
 export default client

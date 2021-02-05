@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { Account, Hotspot } from '@helium/http'
-import { getHotspots, getAccount } from '../../utils/appDataClient'
+import { getHotspots, getAccount, getRewardsChart } from '../../utils/appDataClient'
 import { getWallet, postWallet } from '../../utils/walletClient'
+import { ChartData, ChartRange } from '../../components/BarChart/types'
 
 export type Notification = {
   account_address: string
@@ -21,12 +22,20 @@ export type Notification = {
 
 type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
 
+type ChartRangeData = { data: ChartData[]; loading: Loading }
+type RewardsChart = {
+  daily: ChartRangeData
+  weekly: ChartRangeData
+  monthly: ChartRangeData
+}
+
 export type AccountState = {
   hotspots: Hotspot[]
   notifications: Notification[]
   account?: Account
   mainDataStatus: Loading
   markNotificationStatus: Loading
+  rewardsChart: RewardsChart
 }
 
 const initialState: AccountState = {
@@ -34,6 +43,11 @@ const initialState: AccountState = {
   notifications: [],
   mainDataStatus: 'idle',
   markNotificationStatus: 'idle',
+  rewardsChart: {
+    daily: { data: [], loading: 'idle' },
+    weekly: { data: [], loading: 'idle' },
+    monthly: { data: [], loading: 'idle' },
+  },
 }
 
 type AccountData = {
@@ -70,6 +84,13 @@ export const markNotificationsViewed = createAsyncThunk<Notification[]>(
   async () => {
     await postWallet('notifications/view')
     return getWallet('notifications')
+  },
+)
+
+export const fetchRewardsChart = createAsyncThunk<ChartData[], ChartRange>(
+  'account/fetchRewardsChart',
+  async (range) => {
+    await getRewardsChart()
   },
 )
 

@@ -35,6 +35,7 @@ import { useAppDispatch } from '../../../../store/store'
 import { useSpacing } from '../../../../theme/themeHooks'
 import useActivityItem from '../useActivityItem'
 import ActivityCardLoading from './ActivityCardLoading'
+import { fetchRewardsChart } from '../../../../store/account/accountSlice'
 
 type Props = {
   animationPoints: WalletAnimationPoints
@@ -62,6 +63,7 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
   useEffect(() => {
     dispatch(fetchTxns('all'))
     dispatch(fetchPendingTxns())
+    dispatch(fetchRewardsChart())
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
