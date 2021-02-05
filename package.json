@@ -38,7 +38,7 @@
     "@gorhom/bottom-sheet": "2.0.7",
     "@helium/crypto-react-native": "^3.9.0",
     "@helium/currency": "^3.16.0",
-    "@helium/http": "^3.21.0",
+    "@helium/http": "/Users/tylerwhitman/Documents/repos/helium-js/packages/http/helium-http-v3.21.0-test.6.tgz",
     "@helium/proto-ble": "3.10.0",
     "@helium/transactions": "^3.11.0",
     "@react-native-community/art": "^1.2.0",

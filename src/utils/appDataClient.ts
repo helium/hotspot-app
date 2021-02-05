@@ -50,7 +50,7 @@ export const getHotspotRewardsSum = async (
 ) => {
   const endDate = new Date(date)
   endDate.setDate(date.getDate() - numDaysBack)
-  const { data } = await client.hotspot(address).rewards.getSum(endDate, date)
+  const { data } = await client.hotspot(address).rewards.sum.get(endDate, date)
   return data
 }
 
@@ -78,7 +78,7 @@ export const getHotspotWitnessSums = async (params: {
   minTime: Date | NaturalDate
   maxTime?: Date | NaturalDate
 }) => {
-  const list = await client.hotspot(params.address).witnesses.listSums({
+  const list = await client.hotspot(params.address).witnesses.sum.list({
     minTime: params.minTime,
     maxTime: params.maxTime,
     bucket: params.bucket,

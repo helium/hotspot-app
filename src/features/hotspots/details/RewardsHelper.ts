@@ -1,5 +1,5 @@
 import { groupBy, sumBy } from 'lodash'
-import { HotspotReward } from '@helium/http'
+import { Reward } from '@helium/http'
 
 export const calculatePercentChange = (
   value: number,
@@ -11,7 +11,7 @@ export const calculatePercentChange = (
 }
 
 export const getRewardChartData = (
-  rewardData: HotspotReward[] | undefined,
+  rewardData: Reward[] | undefined,
   numDays: number | undefined,
 ) => {
   if (!rewardData || !numDays) return []

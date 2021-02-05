@@ -197,7 +197,7 @@ const HotspotDetails = () => {
         />
         <HotspotDetailChart
           title={t('hotspot_details.reward_title')}
-          number={rewardSum?.total?.toString(2)?.replace('HNT', '')?.trim()}
+          number={rewardSum?.total.toFixed(2)}
           change={rewardsChange}
           color={colors.greenOnline}
           data={getRewardChartData(rewards, numDays)}

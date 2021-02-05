@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { HotspotReward, HotspotRewardSum, Hotspot } from '@helium/http'
-import { WitnessSum } from '@helium/http/build/models/WitnessSum'
+import { Hotspot, Reward, Sum } from '@helium/http'
 import {
   getHotspotDetails,
   getHotspotRewards,
@@ -41,10 +40,7 @@ export const fetchHotspotRewards = createAsyncThunk(
       address: params.address,
       numDays: params.numDays,
       rewardSum: data[0],
-      percentChange: calculatePercentChange(
-        data[0].total.floatBalance,
-        data[1].total.floatBalance,
-      ),
+      percentChange: calculatePercentChange(data[0].total, data[1].total),
       rewards: data[2],
     }
   },
@@ -58,7 +54,7 @@ export const fetchHotspotWitnesses = createAsyncThunk(
   },
 )
 
-const getMissingHourlyValue = (i: number, arr: WitnessSum[]) => {
+const getMissingHourlyValue = (i: number, arr: Sum[]) => {
   const averages = arr.map((w) => w.avg)
   const lastNonZero = averages
     .slice(0, i)
@@ -68,14 +64,12 @@ const getMissingHourlyValue = (i: number, arr: WitnessSum[]) => {
   return lastNonZero || nextNonZero || 0
 }
 
-const fillMissingHourlyValues = (array: WitnessSum[]) => {
-  return array.map(
-    (w, i, arr) =>
-      ({
-        ...w,
-        avg: w.avg || getMissingHourlyValue(i, arr),
-      } as WitnessSum),
-  )
+const fillMissingHourlyValues = (array: Sum[]) => {
+  array.forEach((sum, i) => {
+    if (sum.avg === 0) {
+      sum.avg = getMissingHourlyValue(i, array)
+    }
+  })
 }
 
 export const fetchHotspotWitnessSums = createAsyncThunk(
@@ -85,28 +79,28 @@ export const fetchHotspotWitnessSums = createAsyncThunk(
     const today = new Date()
     const previousMaxDate = new Date(today)
     previousMaxDate.setDate(previousMaxDate.getDate() - params.numDays)
-    let witnessSums = await getHotspotWitnessSums({
+    const witnessSums = await getHotspotWitnessSums({
       address: params.address,
       minTime: `-${params.numDays} day`,
       maxTime: today,
       bucket,
     })
-    let witnessSumsPrevious = await getHotspotWitnessSums({
+    const witnessSumsPrevious = await getHotspotWitnessSums({
       address: params.address,
       minTime: `-${params.numDays} day`,
       maxTime: previousMaxDate,
       bucket,
     })
     if (bucket === 'hour') {
-      witnessSums = fillMissingHourlyValues(witnessSums)
-      witnessSumsPrevious = fillMissingHourlyValues(witnessSumsPrevious)
+      fillMissingHourlyValues(witnessSums)
+      fillMissingHourlyValues(witnessSumsPrevious)
     }
     witnessSums.reverse()
     const totalAvg = witnessSums.reduce(
-      (a, b) => ({ avg: a.avg + b.avg } as WitnessSum),
+      (a, b) => ({ avg: a.avg + b.avg } as any),
     )
     const prevAvg = witnessSumsPrevious.reduce(
-      (a, b) => ({ avg: a.avg + b.avg } as WitnessSum),
+      (a, b) => ({ avg: a.avg + b.avg } as any),
     )
     const witnessAverage = totalAvg.avg / witnessSums.length
     const witnessAveragePrev = prevAvg.avg / witnessSumsPrevious.length
@@ -122,12 +116,12 @@ export const fetchHotspotWitnessSums = createAsyncThunk(
 type HotspotDetailsState = {
   hotspot?: Hotspot
   numDays?: number
-  rewardSum?: HotspotRewardSum
-  rewards?: HotspotReward[]
+  rewardSum?: Sum
+  rewards?: Reward[]
   rewardsChange?: number
   loadingRewards: boolean
   witnesses?: Hotspot[]
-  witnessSums?: WitnessSum[]
+  witnessSums?: Sum[]
   witnessAverage?: number
   witnessChange?: number
   loadingWitnessSums?: boolean
