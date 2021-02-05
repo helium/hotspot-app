@@ -33,7 +33,7 @@ export type AccountState = {
   hotspots: Hotspot[]
   notifications: Notification[]
   account?: Account
-  mainDataStatus: Loading
+  fetchDataStatus: Loading
   markNotificationStatus: Loading
   rewardsChart: RewardsChart
 }
@@ -41,7 +41,7 @@ export type AccountState = {
 const initialState: AccountState = {
   hotspots: [],
   notifications: [],
-  mainDataStatus: 'idle',
+  fetchDataStatus: 'idle',
   markNotificationStatus: 'idle',
   rewardsChart: {
     daily: { data: [], loading: 'idle' },
@@ -105,18 +105,18 @@ const accountSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchData.pending, (state, _action) => {
-      state.mainDataStatus = 'pending'
+      state.fetchDataStatus = 'pending'
       state.markNotificationStatus = 'pending'
     })
     builder.addCase(fetchData.fulfilled, (state, { payload }) => {
-      state.mainDataStatus = 'fulfilled'
+      state.fetchDataStatus = 'fulfilled'
       state.markNotificationStatus = 'fulfilled'
       state.hotspots = payload.hotspots
       state.account = payload.account
       state.notifications = payload.notifications
     })
     builder.addCase(fetchData.rejected, (state, _action) => {
-      state.mainDataStatus = 'rejected'
+      state.fetchDataStatus = 'rejected'
       state.markNotificationStatus = 'rejected'
     })
     builder.addCase(markNotificationsViewed.pending, (state, _action) => {

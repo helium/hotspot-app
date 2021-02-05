@@ -28,14 +28,12 @@ import { RootState } from '../../../../store/rootReducer'
 import { getSecureItem } from '../../../../utils/secureAccount'
 import { isPendingTransaction } from '../../../../utils/transactions'
 import activitySlice, {
-  fetchPendingTxns,
   fetchTxns,
 } from '../../../../store/activity/activitySlice'
 import { useAppDispatch } from '../../../../store/store'
 import { useSpacing } from '../../../../theme/themeHooks'
 import useActivityItem from '../useActivityItem'
 import ActivityCardLoading from './ActivityCardLoading'
-import { fetchRewardsChart } from '../../../../store/account/accountSlice'
 
 type Props = {
   animationPoints: WalletAnimationPoints
@@ -59,13 +57,6 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
     activity: { txns, filter },
   } = useSelector((state: RootState) => state)
   const sheet = useRef<BottomSheet>(null)
-
-  useEffect(() => {
-    dispatch(fetchTxns('all'))
-    dispatch(fetchPendingTxns())
-    dispatch(fetchRewardsChart())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   useEffect(() => {
     let data: (PendingTransaction | AnyTransaction)[]
