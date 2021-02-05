@@ -1253,10 +1253,10 @@
   dependencies:
     bignumber.js "^9.0.0"
 
-"@helium/http@^3.21.0":
-  version "3.21.0"
-  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.21.0.tgz#dfb1c83ea02123934631734e392fd1d46a47df7c"
-  integrity sha512-qygSNXa5/N30kw80iSFeUBldrqmjY4ta6iVQ4dbUzlmQ0hPP01g18cpYZIFyihScfZzVsbFbwUSP6uCmoccAcA==
+"@helium/http@^3.22.0":
+  version "3.22.0"
+  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.22.0.tgz#6874103dc64ca1755ccc83444d6159ea346804c8"
+  integrity sha512-6InMHGqvhP4gaahgryG8PSUjN3CQ+w2BIHiS/jqkRePx5uqRFeXg85NkzW7yi3GBjvo9M9FWSTgfYHh6X92ckQ==
   dependencies:
     "@helium/currency" "^3.16.0"
     axios "^0.21.1"
@@ -1278,10 +1278,10 @@
   dependencies:
     protobufjs "^6.8.9"
 
-"@helium/transactions@^3.11.0":
-  version "3.15.0"
-  resolved "https://registry.yarnpkg.com/@helium/transactions/-/transactions-3.15.0.tgz#d7fb95e623b2962d60f2c4692f74e17fd8d0b502"
-  integrity sha512-vvTOfiVsITbx8MLAQoKoOjwua99uHoZTkq1ru/q2oXap6Qkr2bYurk7J7GirQHROhr14ZcxFzAGSR1vM0a/ydA==
+"@helium/transactions@^3.20.0":
+  version "3.20.0"
+  resolved "https://registry.yarnpkg.com/@helium/transactions/-/transactions-3.20.0.tgz#17cd4843dbd53773dff6f305ba2f649417f397eb"
+  integrity sha512-msiZCSgVLD6q7wU/7kD0g0YPmoojiT/vLVN95Gi3t4XU2jIVxYiyRjTlY4TE26JRzBG3bnqshfUgPsE4OYfxlw==
   dependencies:
     "@helium/crypto" "^3.7.0"
     "@helium/proto" "^1.2.0"

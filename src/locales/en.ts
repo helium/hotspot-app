@@ -624,7 +624,7 @@ export default {
     owner: 'Owned by {{address}}',
     pass_rate: 'PASS RATE',
     reward_title: 'HNT Rewards',
-    witness_title: 'Witnesses',
+    witness_title: 'Average Witnesses',
     challenge_title: 'Challenges',
     picker_title: 'Past',
     picker_options: ['24 Hours', '7 Days', '14 Days', '30 Days'],

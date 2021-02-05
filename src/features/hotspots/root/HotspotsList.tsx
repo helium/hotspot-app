@@ -70,7 +70,7 @@ const HotspotsList = () => {
             showCarot
             totalReward={
               rewards
-                ? rewards[item.address].total
+                ? rewards[item.address].balanceTotal
                 : new Balance(0, CurrencyType.networkToken)
             }
           />
