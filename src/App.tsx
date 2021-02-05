@@ -18,24 +18,36 @@ import { useAsync } from 'react-async-hook'
 import Portal from '@burstware/react-native-portal'
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
+import * as SplashScreen from 'expo-splash-screen'
 import { theme } from './theme/theme'
 import NavigationRoot from './navigation/NavigationRoot'
 import { useAppDispatch } from './store/store'
-import appSlice from './store/user/appSlice'
+import appSlice, { restoreUser } from './store/user/appSlice'
 import { RootState } from './store/rootReducer'
 import { fetchData } from './store/account/accountSlice'
 import BluetoothProvider from './providers/BluetoothProvider'
 import ConnectedHotspotProvider from './providers/ConnectedHotspotProvider'
 import * as Logger from './utils/logger'
 import { configChainVars, initFetchers } from './utils/appDataClient'
+import { fetchInitialData } from './store/helium/heliumDataSlice'
+import sleep from './utils/sleep'
+
+SplashScreen.preventAutoHideAsync()
 
 const App = () => {
   if (Platform.OS === 'android') {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
       UIManager.setLayoutAnimationEnabledExperimental(true)
     }
-    LogBox.ignoreLogs(['Setting a timer'])
   }
+
+  LogBox.ignoreLogs([
+    'Setting a timer',
+    'Calling getNode() on the ref of an Animated component',
+    'Native splash screen is already hidden',
+    'No Native splash screen',
+    'RCTBridge required dispatch_sync to load',
+  ])
 
   const dispatch = useAppDispatch()
 
@@ -50,6 +62,7 @@ const App = () => {
       isLocked,
       appStateStatus,
     },
+    account: { fetchDataStatus },
   } = useSelector((state: RootState) => state)
 
   useEffect(() => {
@@ -80,17 +93,43 @@ const App = () => {
     [dispatch],
   )
 
-  useEffect(() => {
-    if (!isRestored && !isBackedUp) return
+  const loadInitialData = useCallback(async () => {
+    dispatch(restoreUser())
+    dispatch(fetchInitialData())
+
+    if (!isRestored && !isBackedUp) {
+      return
+    }
 
     dispatch(fetchData())
-  }, [isRestored, isBackedUp, dispatch])
+  }, [dispatch, isBackedUp, isRestored])
+
+  useEffect(() => {
+    loadInitialData()
+  }, [loadInitialData])
+
+  const hideSplash = useCallback(async () => {
+    if (isRestored && !isBackedUp) {
+      // user isn't logged in
+      SplashScreen.hideAsync()
+    }
+    if (
+      isRestored &&
+      isBackedUp &&
+      fetchDataStatus !== 'pending' &&
+      fetchDataStatus !== 'idle'
+    ) {
+      await sleep(300) // add a little delay for views to setup
+      SplashScreen.hideAsync()
+    }
+  }, [fetchDataStatus, isBackedUp, isRestored])
 
   useEffect(() => {
     if (isBackedUp) {
       initFetchers()
     }
-  }, [isBackedUp])
+    hideSplash()
+  }, [hideSplash, isBackedUp])
 
   useEffect(() => {
     OneSignal.setAppId(Config.ONE_SIGNAL_APP_ID)

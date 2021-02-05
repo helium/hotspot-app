@@ -36,6 +36,9 @@ PODS:
     - UMPermissionsInterface
   - EXSecureStore (9.3.0):
     - UMCore
+  - EXSplashScreen (0.9.0):
+    - React-Core
+    - UMCore
   - FBLazyVector (0.63.4)
   - FBReactNativeSpec (0.63.4):
     - Folly (= 2020.01.13.00)
@@ -462,6 +465,7 @@ DEPENDENCIES:
   - EXLocation (from `../node_modules/expo-location/ios`)
   - EXPermissions (from `../node_modules/expo-permissions/ios`)
   - EXSecureStore (from `../node_modules/expo-secure-store/ios`)
+  - EXSplashScreen (from `../node_modules/expo-splash-screen/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/Libraries/FBReactNativeSpec`)
   - Flipper (~> 0.54.0)
@@ -588,6 +592,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-permissions/ios"
   EXSecureStore:
     :path: "../node_modules/expo-secure-store/ios"
+  EXSplashScreen:
+    :path: "../node_modules/expo-splash-screen/ios"
   FBLazyVector:
     :path: "../node_modules/react-native/Libraries/FBLazyVector"
   FBReactNativeSpec:
@@ -721,6 +727,7 @@ SPEC CHECKSUMS:
   EXLocation: 90232c6f2773b04a3c146bfda9f181035722c10a
   EXPermissions: 30cbe5b72bd209b65c00884180ad058a60bb413d
   EXSecureStore: 1b571851e6068b30b8ec097be848a04603c03bae
+  EXSplashScreen: 29c266c9f15e70805a540894f74bd9fa9cd48358
   FBLazyVector: 3bb422f41b18121b71783a905c10e58606f7dc3e
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
   Flipper: be611d4b742d8c87fbae2ca5f44603a02539e365
@@ -730,8 +737,8 @@ SPEC CHECKSUMS:
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: 64e7431a55835eb953b0bf984ef3b90ae9fdddd7
   FlipperKit: ab353d41aea8aae2ea6daaf813e67496642f3d7d
-  Folly: b73c3869541e86821df3c387eb0af5f65addfab4
-  glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
+  Folly: aeb27d02cdff07ca01f8a8a5a6dd5bcaf6be6f70
+  glog: 2ad46e202fbaa5641fceb4b2af37dcd88fd8762d
   lottie-ios: 48fac6be217c76937e36e340e2d09cf7b10b7f5f
   lottie-react-native: 1fb4ce21d6ad37dab8343eaff8719df76035bd93
   Mapbox-iOS-SDK: a5915700ec84bc1a7f8b3e746d474789e35b7956
@@ -795,6 +802,6 @@ SPEC CHECKSUMS:
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: cb0b1503fafdfd47c00196486ddb9af228e8c1da
+PODFILE CHECKSUM: 67821afdd1454b493d392312187f191c5b601b2d
 
 COCOAPODS: 1.9.3

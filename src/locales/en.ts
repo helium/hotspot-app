@@ -376,6 +376,20 @@ export default {
     title: 'My Wallet',
     copiedToClipboard: 'Copied {{address}} to clipboard',
     share: 'Share',
+    intro_body:
+      'This Account tab acts as a virtual wallet for any HNT or Data Credits you hold.',
+    intro_slides: [
+      { title: 'Receive HNT', body: 'Access your address or QR code.' },
+      { title: 'Send HNT', body: 'Scan a QR code or enter details manually.' },
+      {
+        title: 'Chart your account',
+        body: 'Green signifies HNT being <green>added</green> to your account.',
+      },
+      {
+        title: 'Chart your account',
+        body: 'Blue signifies HNT <blue>leaving</blue> your account.',
+      },
+    ],
   },
   send: {
     title: {
