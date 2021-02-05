@@ -17,6 +17,7 @@ export type ActivityState = {
   filter: FilterType
   detailTxn?: AnyTransaction | PendingTransaction
   isResetting: boolean
+  requestMore: boolean
 }
 
 const initialState: ActivityState = {
@@ -29,6 +30,7 @@ const initialState: ActivityState = {
   },
   filter: 'all',
   isResetting: false,
+  requestMore: false,
 }
 
 export const fetchTxns = createAsyncThunk<
@@ -54,6 +56,9 @@ const activitySlice = createSlice({
   reducers: {
     setFilter: (state, action: PayloadAction<FilterType>) => {
       state.filter = action.payload
+    },
+    requestMoreActivity: (state) => {
+      state.requestMore = true
     },
     addPendingTransaction: (
       state,
@@ -92,11 +97,13 @@ const activitySlice = createSlice({
       state.txns[filter].status = 'pending'
     })
     builder.addCase(fetchTxns.rejected, (state, { meta: { arg: filter } }) => {
+      state.requestMore = false
       state.txns[filter].status = 'rejected'
     })
     builder.addCase(
       fetchTxns.fulfilled,
       (state, { payload, meta: { arg: filter } }) => {
+        state.requestMore = false
         state.txns[filter].status = 'fulfilled'
 
         if (filter === 'pending') {
@@ -108,7 +115,6 @@ const activitySlice = createSlice({
         } else {
           const newTxns = payload as AnyTransaction[]
           state.txns[filter].data = [...state.txns[filter].data, ...newTxns]
-
           // remove any pending txns with the same hash
           state.txns.pending.data = differenceBy(
             state.txns.pending.data,
@@ -118,9 +124,6 @@ const activitySlice = createSlice({
         }
       },
     )
-    // builder.addCase(changeFilter.fulfilled, (state, { payload }) => {
-    //   state.filter = payload
-    // })
   },
 })
 

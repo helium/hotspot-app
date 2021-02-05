@@ -27,16 +27,11 @@ import ActivityCardHeader from './ActivityCardHeader'
 import { RootState } from '../../../../store/rootReducer'
 import { getSecureItem } from '../../../../utils/secureAccount'
 import { isPendingTransaction } from '../../../../utils/transactions'
-import activitySlice, {
-  fetchTxns,
-  resetTxns,
-} from '../../../../store/activity/activitySlice'
+import activitySlice from '../../../../store/activity/activitySlice'
 import { useAppDispatch } from '../../../../store/store'
 import { useSpacing } from '../../../../theme/themeHooks'
 import useActivityItem from '../useActivityItem'
 import ActivityCardLoading from './ActivityCardLoading'
-import useVisible from '../../../../utils/useVisible'
-import usePrevious from '../../../../utils/usePrevious'
 
 type Props = {
   animationPoints: WalletAnimationPoints
@@ -61,48 +56,9 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
 
   const {
     activity: { txns, filter, isResetting },
-    heliumData: { blockHeight },
   } = useSelector((state: RootState) => state)
 
   const sheet = useRef<BottomSheet>(null)
-  const interval = useRef<NodeJS.Timeout>()
-  const visible = useVisible()
-  const prevVisible = usePrevious(visible)
-  const prevBlockHeight = usePrevious(blockHeight)
-
-  const schedulePendingFetch = useCallback(() => {
-    if (!visible && interval.current) {
-      clearInterval(interval.current)
-      interval.current = undefined
-    } else if (visible && !interval.current) {
-      interval.current = setInterval(() => {
-        dispatch(fetchTxns('pending'))
-      }, 5000)
-    }
-  }, [dispatch, visible])
-
-  const filterFetch = useCallback(() => {
-    if (!visible || isResetting) return
-
-    if (!prevVisible || blockHeight !== prevBlockHeight) {
-      dispatch(resetTxns())
-    } else {
-      dispatch(fetchTxns(filter))
-    }
-  }, [
-    blockHeight,
-    dispatch,
-    filter,
-    prevBlockHeight,
-    prevVisible,
-    visible,
-    isResetting,
-  ])
-
-  useEffect(() => {
-    filterFetch()
-    schedulePendingFetch()
-  }, [filterFetch, schedulePendingFetch])
 
   useEffect(() => {
     let data: (PendingTransaction | AnyTransaction)[]
@@ -146,6 +102,11 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
       return amount(item)
     },
     [amount],
+  )
+
+  const requestMore = useCallback(
+    () => dispatch(activitySlice.actions.requestMoreActivity()),
+    [dispatch],
   )
 
   type Item = {
@@ -217,7 +178,7 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
             }
           />
         }
-        onEndReached={filterFetch}
+        onEndReached={requestMore}
       />
     </BottomSheet>
   )

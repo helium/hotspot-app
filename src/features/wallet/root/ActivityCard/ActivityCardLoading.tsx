@@ -13,7 +13,7 @@ const ActivityCardLoading = ({
   const { t } = useTranslation()
 
   if (isLoading) {
-    return <ActivityIndicator />
+    return <ActivityIndicator color="gray" />
   }
 
   if (hasNoResults) {

@@ -1,4 +1,11 @@
-import React, { useRef, memo, useCallback, useState, useMemo } from 'react'
+import React, {
+  useRef,
+  memo,
+  useCallback,
+  useState,
+  useMemo,
+  useEffect,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 import Animated, { Extrapolate, useValue } from 'react-native-reanimated'
 import { useNavigation } from '@react-navigation/native'
@@ -6,6 +13,7 @@ import BottomSheet from '@gorhom/bottom-sheet'
 import Search from '@assets/images/search.svg'
 import Qr from '@assets/images/qr.svg'
 import { useSelector } from 'react-redux'
+import { ActivityIndicator } from 'react-native'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import BarChart from '../../../components/BarChart'
@@ -21,6 +29,8 @@ import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { RootState } from '../../../store/rootReducer'
 import { hp } from '../../../utils/layout'
 import WalletIntroCarousel from './WalletIntroCarousel'
+import animateTransition from '../../../utils/animateTransition'
+import usePrevious from '../../../utils/usePrevious'
 
 type Props = {
   layout: WalletLayout
@@ -33,7 +43,8 @@ const WalletView = ({ layout, animationPoints }: Props) => {
   const {
     activity: { txns },
   } = useSelector((state: RootState) => state)
-  const hasActivity = txns.all.data.length !== 0
+  const [hasActivity, setHasActivity] = useState<boolean | undefined>()
+  const prevAllTxnsStatus = usePrevious(txns.all.status)
 
   const activityCard = useRef<BottomSheet>(null)
   const balanceSheet = useRef<BottomSheet>(null)
@@ -66,6 +77,27 @@ const WalletView = ({ layout, animationPoints }: Props) => {
     }
     triggerNavHaptic()
   }, [activityCardIndex, balanceSheetIndex, hasActivity])
+
+  const determineHasActivity = useCallback(() => {
+    if (hasActivity) {
+      return
+    }
+
+    if (
+      prevAllTxnsStatus === 'pending' &&
+      (txns.all.status === 'fulfilled' || txns.all.status === 'rejected')
+    ) {
+      const nextHasActivity = txns.all.data.length > 0
+      if (nextHasActivity !== hasActivity) {
+        animateTransition()
+        setHasActivity(nextHasActivity)
+      }
+    }
+  }, [hasActivity, prevAllTxnsStatus, txns.all.data.length, txns.all.status])
+
+  useEffect(() => {
+    determineHasActivity()
+  }, [determineHasActivity])
 
   const balanceCardStyles = useMemo(
     () => [
@@ -112,7 +144,13 @@ const WalletView = ({ layout, animationPoints }: Props) => {
         </Box>
       </Box>
 
-      {hasActivity ? (
+      {hasActivity === undefined && (
+        <Box flex={1} justifyContent="center">
+          <ActivityIndicator color="white" />
+        </Box>
+      )}
+
+      {hasActivity && (
         <>
           <Box paddingHorizontal="l">
             <BarChart height={layout.chartHeight} />
@@ -131,7 +169,8 @@ const WalletView = ({ layout, animationPoints }: Props) => {
             onChange={setActivityCardIndex}
           />
         </>
-      ) : (
+      )}
+      {hasActivity === false && (
         <>
           <WalletIntroCarousel />
           <BottomSheet
