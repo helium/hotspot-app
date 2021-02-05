@@ -50,8 +50,7 @@ export const getHotspotRewardsSum = async (
 ) => {
   const endDate = new Date(date)
   endDate.setDate(date.getDate() - numDaysBack)
-  const { data } = await client.hotspot(address).rewards.sum.get(endDate, date)
-  return data
+  return client.hotspot(address).rewards.sum.get(endDate, date)
 }
 
 export const getHotspotRewards = async (
