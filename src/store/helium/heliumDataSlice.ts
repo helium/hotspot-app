@@ -68,7 +68,10 @@ const heliumDataSlice = createSlice({
       state.blockHeight = payload.blockHeight
     })
     builder.addCase(fetchBlockHeight.fulfilled, (state, { payload }) => {
-      state.blockHeight = payload
+      // this is happening on an interval, only update if there's a change
+      if (state.blockHeight !== payload) {
+        state.blockHeight = payload
+      }
     })
     builder.addCase(fetchCurrentOraclePrice.fulfilled, (state, { payload }) => {
       state.currentOraclePrice = payload

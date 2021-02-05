@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useAsync } from 'react-async-hook'
 import { useTranslation } from 'react-i18next'
-import { LayoutAnimation } from 'react-native'
 import { capitalize, round, times } from 'lodash'
 import { useSelector } from 'react-redux'
 import { formatDistance, fromUnixTime, getUnixTime, format } from 'date-fns'
@@ -23,6 +22,7 @@ import Card from '../../../components/Card'
 import CircleLoader from '../../../components/CircleLoader'
 import { hp } from '../../../utils/layout'
 import { useHotspotSettingsContext } from './HotspotSettingsProvider'
+import animateTransition from '../../../utils/animateTransition'
 
 type Info = {
   percentSynced: number
@@ -165,7 +165,7 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
 
   useEffect(() => {
     if (diagnostics) {
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+      animateTransition()
       setLoading(false)
     }
   }, [diagnostics])

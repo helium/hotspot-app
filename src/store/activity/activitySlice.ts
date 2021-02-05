@@ -4,7 +4,7 @@ import { differenceBy, unionBy } from 'lodash'
 import { initFetchers, txnFetchers } from '../../utils/appDataClient'
 import { FilterType } from '../../features/wallet/root/walletTypes'
 
-type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
+export type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
 
 export type ActivityState = {
   txns: {
@@ -38,7 +38,7 @@ export const fetchTxns = createAsyncThunk<
   FilterType
 >('activity/fetchAccountActivity', async (filter) => {
   const list = txnFetchers[filter]
-  return list.takeJSON(filter === 'pending' ? 1000 : 30)
+  return list.takeJSON(filter === 'pending' ? 1000 : 50)
 })
 
 export const resetTxns = createAsyncThunk(
@@ -106,8 +106,9 @@ const activitySlice = createSlice({
         state.requestMore = false
         state.txns[filter].status = 'fulfilled'
 
+        if (payload.length === 0) return
+
         if (filter === 'pending') {
-          state.txns.pending.status = 'fulfilled'
           const pending = payload as PendingTransaction[]
           const filtered = pending.filter((txn) => txn.status === 'pending')
           const joined = unionBy(filtered, state.txns.pending.data, 'hash')

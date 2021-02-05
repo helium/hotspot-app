@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { useSelector } from 'react-redux'
 import Box from '../../components/Box'
 import HotspotsSvg from './icons/HotspotsSvg'
@@ -60,4 +60,4 @@ const TabBarIcon = ({ name, focused, size }: Props) => {
   )
 }
 
-export default TabBarIcon
+export default memo(TabBarIcon)

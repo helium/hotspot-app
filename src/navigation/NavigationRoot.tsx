@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react'
+import React, { useEffect, useCallback, memo } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import { useSelector } from 'react-redux'
@@ -50,4 +50,4 @@ const NavigationRoot = () => {
   )
 }
 
-export default NavigationRoot
+export default memo(NavigationRoot)

@@ -1,3 +1,6 @@
+// import './src/whyDidYouRender'
+// ^^ uncomment this line if you want to see verbose log output regarding render optimization
+
 import React from 'react'
 
 import { AppRegistry, Platform } from 'react-native'

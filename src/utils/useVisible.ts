@@ -42,7 +42,8 @@ const useVisible = (props?: Props) => {
     })
 
     return unsubscribe
-  }, [handleVisibility, navigation])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handleVisibility])
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -50,7 +51,8 @@ const useVisible = (props?: Props) => {
     })
 
     return unsubscribe
-  }, [handleVisibility, navigation])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handleVisibility])
 
   return visible
 }

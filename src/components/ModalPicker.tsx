@@ -1,4 +1,11 @@
-import React, { memo, ReactText, useRef } from 'react'
+import React, {
+  memo,
+  ReactText,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import RNPickerSelect from 'react-native-picker-select'
 import CarotDown from '@assets/images/carot-down.svg'
 import { BoxProps } from '@shopify/restyle'
@@ -25,6 +32,27 @@ const ModalPicker = ({
   const textVariants = useTextVariants()
   const { purpleMain } = useColors()
   const pickerRef = useRef<RNPickerSelect>(null)
+  const [valueIndex, setValueIndex] = useState<{
+    value: string
+    index: number
+  }>({
+    value: selectedValue,
+    index: data.findIndex(({ value }) => value === selectedValue),
+  })
+
+  const changeValue = useCallback(async () => {
+    onValueChanged(valueIndex.value, valueIndex.index)
+  }, [onValueChanged, valueIndex.index, valueIndex.value])
+
+  const handleChange = useCallback((value, index) => {
+    setValueIndex({ value, index })
+  }, [])
+
+  useEffect(() => {
+    if (valueIndex.value === selectedValue) return
+
+    changeValue()
+  }, [changeValue, selectedValue, valueIndex.value])
 
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
@@ -66,8 +94,8 @@ const ModalPicker = ({
           },
         }}
         items={data}
-        value={selectedValue}
-        onValueChange={onValueChanged}
+        value={valueIndex.value}
+        onValueChange={handleChange}
         useNativeAndroidPickerStyle={false}
         fixAndroidTouchableBug
       />

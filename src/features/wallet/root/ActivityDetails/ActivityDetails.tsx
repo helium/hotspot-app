@@ -1,4 +1,4 @@
-import { PaymentV1 } from '@helium/http'
+import { PaymentV1, AnyTransaction, PendingTransaction } from '@helium/http'
 import React, { useEffect, useRef, useCallback, memo } from 'react'
 import { Linking } from 'react-native'
 import {
@@ -9,7 +9,6 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useAsync } from 'react-async-hook'
 import LinkImg from '@assets/images/link.svg'
-import { useSelector } from 'react-redux'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
 import ActivityDetailsHeader from './ActivityDetailsHeader'
@@ -21,19 +20,16 @@ import Burn from './Burn'
 import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
 import { getSecureItem } from '../../../../utils/secureAccount'
 import UnknownTransaction from './UnknownTransaction'
-import { RootState } from '../../../../store/rootReducer'
 import { useAppDispatch } from '../../../../store/store'
 import activitySlice from '../../../../store/activity/activitySlice'
 
 const DF = 'MM/dd/yyyy hh:mm a'
-const ActivityDetails = () => {
+type Props = { detailTxn?: AnyTransaction | PendingTransaction }
+const ActivityDetails = ({ detailTxn }: Props) => {
   const sheet = useRef<BottomSheetModal>(null)
   const { result: address } = useAsync(getSecureItem, ['address'])
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const {
-    activity: { detailTxn },
-  } = useSelector((state: RootState) => state)
   const {
     backgroundColor,
     backgroundColorKey,
