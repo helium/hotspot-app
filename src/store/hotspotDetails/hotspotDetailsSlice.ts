@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { Hotspot, Reward, Sum } from '@helium/http'
+import { Bucket, Hotspot, Reward, Sum } from '@helium/http'
 import {
+  getHotspotChallengeSums,
   getHotspotDetails,
   getHotspotRewards,
   getHotspotRewardsSum,
@@ -9,50 +10,10 @@ import {
 } from '../../utils/appDataClient'
 import { calculatePercentChange } from '../../features/hotspots/details/RewardsHelper'
 
-type FetchRewardsParams = {
+type FetchDetailsParams = {
   address: string
   numDays: number
 }
-
-type FetchWitnessSumsParams = {
-  address: string
-  numDays: number
-}
-
-export const fetchHotspotDetails = createAsyncThunk<Hotspot, string>(
-  'hotspotDetails/fetchHotspotDetails',
-  async (address: string) => {
-    return getHotspotDetails(address)
-  },
-)
-
-export const fetchHotspotRewards = createAsyncThunk(
-  'hotspotDetails/fetchRewards',
-  async (params: FetchRewardsParams) => {
-    const previousStart = new Date()
-    previousStart.setDate(previousStart.getDate() - params.numDays)
-    const data = await Promise.all([
-      getHotspotRewardsSum(params.address, params.numDays),
-      getHotspotRewardsSum(params.address, params.numDays, previousStart),
-      getHotspotRewards(params.address, params.numDays),
-    ])
-    return {
-      address: params.address,
-      numDays: params.numDays,
-      rewardSum: data[0],
-      percentChange: calculatePercentChange(data[0].total, data[1].total),
-      rewards: data[2],
-    }
-  },
-)
-
-export const fetchHotspotWitnesses = createAsyncThunk(
-  'hotspotDetails/fetchWitnesses',
-  async (address: string) => {
-    const witnesses = await getHotspotWitnesses(address)
-    return { address, witnesses }
-  },
-)
 
 const getMissingHourlyValue = (i: number, arr: Sum[]) => {
   const averages = arr.map((w) => w.avg)
@@ -72,43 +33,112 @@ const fillMissingHourlyValues = (array: Sum[]) => {
   })
 }
 
-export const fetchHotspotWitnessSums = createAsyncThunk(
-  'hotspotDetails/fetchWitnessSums',
-  async (params: FetchWitnessSumsParams) => {
+const fetchHotspotWitnessSums = async (
+  params: FetchDetailsParams,
+  today: Date,
+  previousMaxDate: Date,
+  bucket: Bucket,
+) => {
+  previousMaxDate.setDate(previousMaxDate.getDate() - params.numDays)
+  const witnessSums = await getHotspotWitnessSums({
+    address: params.address,
+    minTime: `-${params.numDays} day`,
+    maxTime: today,
+    bucket,
+  })
+  const witnessSumsPrevious = await getHotspotWitnessSums({
+    address: params.address,
+    minTime: `-${params.numDays} day`,
+    maxTime: previousMaxDate,
+    bucket,
+  })
+  if (bucket === 'hour') {
+    fillMissingHourlyValues(witnessSums)
+    fillMissingHourlyValues(witnessSumsPrevious)
+  }
+  witnessSums.reverse()
+  const totalAvg = witnessSums.reduce((a, b) => ({ avg: a.avg + b.avg } as any))
+  const prevAvg = witnessSumsPrevious.reduce(
+    (a, b) => ({ avg: a.avg + b.avg } as any),
+  )
+  const witnessAverage = totalAvg.avg / witnessSums.length
+  const witnessAveragePrev = prevAvg.avg / witnessSumsPrevious.length
+  return {
+    witnessSums,
+    witnessAverage,
+    witnessChange: calculatePercentChange(witnessAverage, witnessAveragePrev),
+  }
+}
+
+export const fetchHotspotChallengeSums = async (
+  params: FetchDetailsParams,
+  today: Date,
+  previousMaxDate: Date,
+  bucket: Bucket,
+) => {
+  const challengeSums = await getHotspotChallengeSums({
+    address: params.address,
+    minTime: `-${params.numDays} day`,
+    maxTime: today,
+    bucket,
+  })
+  const challengeSumsPrevious = await getHotspotChallengeSums({
+    address: params.address,
+    minTime: `-${params.numDays} day`,
+    maxTime: previousMaxDate,
+    bucket,
+  })
+  challengeSums.reverse()
+  const totalSum = challengeSums.reduce(
+    (a, b) => ({ sum: a.sum + b.sum } as any),
+  )
+  const prevSum = challengeSumsPrevious.reduce(
+    (a, b) => ({ sum: a.sum + b.sum } as any),
+  )
+  return {
+    challengeSums,
+    challengeSum: totalSum.sum,
+    challengeChange: calculatePercentChange(totalSum.sum, prevSum.sum),
+  }
+}
+
+export const fetchHotspotDetails = createAsyncThunk(
+  'hotspotDetails/fetchHotspotDetails',
+  async (params: FetchDetailsParams) => {
     const bucket = params.numDays === 1 ? 'hour' : 'day'
-    const today = new Date()
-    const previousMaxDate = new Date(today)
-    previousMaxDate.setDate(previousMaxDate.getDate() - params.numDays)
-    const witnessSums = await getHotspotWitnessSums({
-      address: params.address,
-      minTime: `-${params.numDays} day`,
-      maxTime: today,
-      bucket,
-    })
-    const witnessSumsPrevious = await getHotspotWitnessSums({
-      address: params.address,
-      minTime: `-${params.numDays} day`,
-      maxTime: previousMaxDate,
-      bucket,
-    })
-    if (bucket === 'hour') {
-      fillMissingHourlyValues(witnessSums)
-      fillMissingHourlyValues(witnessSumsPrevious)
-    }
-    witnessSums.reverse()
-    const totalAvg = witnessSums.reduce(
-      (a, b) => ({ avg: a.avg + b.avg } as any),
-    )
-    const prevAvg = witnessSumsPrevious.reduce(
-      (a, b) => ({ avg: a.avg + b.avg } as any),
-    )
-    const witnessAverage = totalAvg.avg / witnessSums.length
-    const witnessAveragePrev = prevAvg.avg / witnessSumsPrevious.length
+    const startDate = new Date()
+    const endDate = new Date(startDate)
+    endDate.setDate(endDate.getDate() - params.numDays)
+    const data = await Promise.all([
+      getHotspotDetails(params.address),
+      getHotspotRewardsSum(params.address, params.numDays),
+      getHotspotRewardsSum(params.address, params.numDays, endDate),
+      getHotspotRewards(params.address, params.numDays),
+      getHotspotWitnesses(params.address),
+      fetchHotspotWitnessSums(params, startDate, endDate, bucket),
+      fetchHotspotChallengeSums(params, startDate, endDate, bucket),
+    ])
+    // TODO: handle failures
+    const hotspot = data[0]
+    const rewardSum = data[1]
+    const pastRewardSum = data[2]
+    const rewards = data[3]
+    const witnesses = data[4]
+    const witnessSumData = data[5]
+    const challengeSumData = data[6]
     return {
+      hotspot,
       address: params.address,
-      witnessSums,
-      witnessAverage,
-      witnessChange: calculatePercentChange(witnessAverage, witnessAveragePrev),
+      numDays: params.numDays,
+      rewardSum,
+      rewardsChange: calculatePercentChange(
+        rewardSum.total,
+        pastRewardSum.total,
+      ),
+      rewards,
+      witnesses,
+      ...witnessSumData,
+      ...challengeSumData,
     }
   },
 )
@@ -116,22 +146,22 @@ export const fetchHotspotWitnessSums = createAsyncThunk(
 type HotspotDetailsState = {
   hotspot?: Hotspot
   numDays?: number
+  loading: boolean
   rewardSum?: Sum
   rewards?: Reward[]
   rewardsChange?: number
-  loadingRewards: boolean
   witnesses?: Hotspot[]
   witnessSums?: Sum[]
   witnessAverage?: number
   witnessChange?: number
-  loadingWitnessSums?: boolean
-  loadingWitnesses: boolean
+  challengeSums?: Sum[]
+  challengeSum?: number
+  challengeChange?: number
   showSettings: boolean
 }
 const initialState: HotspotDetailsState = {
   numDays: 14,
-  loadingRewards: false,
-  loadingWitnesses: false,
+  loading: true,
   showSettings: false,
 }
 
@@ -149,54 +179,37 @@ const hotspotDetailsSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(fetchHotspotDetails.pending, (state, _action) => {
+      state.loading = true
+    })
     builder.addCase(fetchHotspotDetails.fulfilled, (state, action) => {
-      state.hotspot = action.payload
-    })
-    builder.addCase(fetchHotspotRewards.pending, (state, _action) => {
-      state.loadingRewards = true
-    })
-    builder.addCase(fetchHotspotRewards.fulfilled, (state, action) => {
-      state.loadingRewards = false
+      state.hotspot = action.payload.hotspot
+      state.loading = false
       state.numDays = action.payload.numDays
       state.rewardSum = action.payload.rewardSum
       state.rewards = action.payload.rewards
-      state.rewardsChange = action.payload.percentChange
-    })
-    builder.addCase(fetchHotspotRewards.rejected, (state, _action) => {
-      state.loadingRewards = false
-      state.numDays = undefined
-      state.rewardSum = undefined
-      state.rewards = undefined
-      state.rewardsChange = undefined
-    })
-    builder.addCase(fetchHotspotWitnesses.pending, (state, _action) => {
-      state.loadingWitnesses = true
-    })
-    builder.addCase(fetchHotspotWitnesses.fulfilled, (state, action) => {
-      state.loadingWitnesses = false
+      state.rewardsChange = action.payload.rewardsChange
       state.witnesses = action.payload.witnesses
-    })
-    builder.addCase(fetchHotspotWitnesses.rejected, (state, _action) => {
-      state.loadingWitnesses = false
-      state.numDays = undefined
-      state.rewardSum = undefined
-      state.rewards = undefined
-      state.rewardsChange = undefined
-    })
-    builder.addCase(fetchHotspotWitnessSums.pending, (state, _action) => {
-      state.loadingWitnessSums = true
-    })
-    builder.addCase(fetchHotspotWitnessSums.fulfilled, (state, action) => {
-      state.loadingWitnessSums = false
       state.witnessSums = action.payload.witnessSums
       state.witnessAverage = action.payload.witnessAverage
       state.witnessChange = action.payload.witnessChange
+      state.challengeSums = action.payload.challengeSums
+      state.challengeSum = action.payload.challengeSum
+      state.challengeChange = action.payload.challengeChange
     })
-    builder.addCase(fetchHotspotWitnessSums.rejected, (state, _action) => {
-      state.loadingWitnessSums = false
+    builder.addCase(fetchHotspotDetails.rejected, (state, _action) => {
+      state.loading = false
+      state.numDays = undefined
+      state.rewardSum = undefined
+      state.rewards = undefined
+      state.rewardsChange = undefined
+      state.witnesses = undefined
       state.witnessSums = undefined
       state.witnessAverage = undefined
       state.witnessChange = undefined
+      state.challengeSums = undefined
+      state.challengeSum = undefined
+      state.challengeChange = undefined
     })
   },
 })
