@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import animalName from 'angry-purple-tiger'
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { random, times } from 'lodash'
-import { Linking, Share } from 'react-native'
-import { useActionSheet } from '@expo/react-native-action-sheet'
+import { Hotspot } from '@helium/http'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
-import { HotspotStackParamList } from '../root/hotspotTypes'
 import StatusBadge from './StatusBadge'
 import TimelinePicker from './TimelinePicker'
 import HotspotDetailChart from './HotspotDetailChart'
@@ -18,14 +15,11 @@ import { useColors } from '../../../theme/themeHooks'
 import { getRewardChartData } from './RewardsHelper'
 import { ChartData } from '../../../components/BarChart/types'
 import { useAppDispatch } from '../../../store/store'
-import hotspotDetailsSlice, {
+import {
   fetchHotspotRewards,
   fetchHotspotWitnesses,
   fetchHotspotWitnessSums,
 } from '../../../store/hotspotDetails/hotspotDetailsSlice'
-import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import MoreMenu from '../../../assets/images/moreMenu.svg'
-import BackButton from '../../../components/BackButton'
 import HotspotSettingsProvider from '../settings/HotspotSettingsProvider'
 import HotspotSettings from '../settings/HotspotSettings'
 
@@ -50,22 +44,10 @@ const data: Record<string, ChartData[]> = {
   })),
 }
 
-type HotspotDetailsRouteProp = RouteProp<
-  HotspotStackParamList,
-  'HotspotDetails'
->
-
-const HotspotDetails = () => {
-  const route = useRoute<HotspotDetailsRouteProp>()
-  const navigation = useNavigation()
-  const { hotspot } = route.params
+const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
   const { t } = useTranslation()
   const colors = useColors()
   const dispatch = useAppDispatch()
-
-  const navBack = () => {
-    navigation.goBack()
-  }
 
   const {
     hotspotDetails: {
@@ -87,6 +69,8 @@ const HotspotDetails = () => {
   }
 
   useEffect(() => {
+    if (!hotspot) return
+
     let days
     switch (timelineIndex) {
       default:
@@ -111,42 +95,7 @@ const HotspotDetails = () => {
         numDays: days,
       }),
     )
-  }, [dispatch, hotspot.address, timelineIndex])
-
-  const { showActionSheetWithOptions } = useActionSheet()
-
-  type SettingsOption = { label: string; action?: () => void }
-  const onMoreMenuSelected = () => {
-    const explorerUrl = `https://explorer.helium.com/hotspots/${hotspot.address}`
-    const opts: SettingsOption[] = [
-      {
-        label: t('hotspot_details.options.settings'),
-        action: () =>
-          dispatch(hotspotDetailsSlice.actions.toggleShowSettings()),
-      },
-      {
-        label: t('hotspot_details.options.viewExplorer'),
-        action: () => Linking.openURL(explorerUrl),
-      },
-      {
-        label: t('hotspot_details.options.share'),
-        action: () => Share.share({ message: explorerUrl }),
-      },
-      {
-        label: t('generic.cancel'),
-      },
-    ]
-
-    showActionSheetWithOptions(
-      {
-        options: opts.map(({ label }) => label),
-        destructiveButtonIndex: opts.length - 1,
-      },
-      (buttonIndex) => {
-        opts[buttonIndex].action?.()
-      },
-    )
-  }
+  }, [dispatch, hotspot, timelineIndex])
 
   const formatDate = (timestamp: string) => {
     let options
@@ -166,30 +115,12 @@ const HotspotDetails = () => {
     return new Date(timestamp).toLocaleDateString(undefined, options)
   }
 
+  if (!hotspot) {
+    return null
+  }
+
   return (
     <BottomSheetScrollView>
-      <Box
-        paddingHorizontal="l"
-        flexDirection="row"
-        alignItems="flex-end"
-        justifyContent="space-between"
-      >
-        <BackButton
-          onPress={navBack}
-          color="grayLightText"
-          fontSize={12}
-          paddingHorizontal="none"
-        />
-
-        <TouchableOpacityBox
-          onPress={onMoreMenuSelected}
-          paddingVertical="s"
-          paddingLeft="l"
-        >
-          <MoreMenu />
-        </TouchableOpacityBox>
-      </Box>
-
       <Box paddingHorizontal="l" paddingBottom="l">
         <Box marginBottom="m">
           <Text variant="h2" color="black">

@@ -1,39 +1,29 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { BottomSheetSectionList } from '@gorhom/bottom-sheet'
 import { Hotspot } from '@helium/http'
 import Balance, { CurrencyType } from '@helium/currency'
 import { useSelector } from 'react-redux'
-import { useNavigation } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import Box from '../../../components/Box'
 import HotspotListItem from '../../../components/HotspotListItem'
 import { RootState } from '../../../store/rootReducer'
 import Text from '../../../components/Text'
-import { useAppDispatch } from '../../../store/store'
-import hotspotDetailsSlice, {
-  fetchHotspotDetails,
-} from '../../../store/hotspotDetails/hotspotDetailsSlice'
+import WelcomeOverview from './WelcomeOverview'
 
-const HotspotsList = () => {
+const HotspotsList = ({
+  hotspots,
+  onSelectHotspot,
+}: {
+  hotspots: Hotspot[]
+  onSelectHotspot: (hotspot: Hotspot) => void
+}) => {
   const {
-    account: { hotspots },
     hotspots: { rewards },
   } = useSelector((state: RootState) => state)
-  const navigation = useNavigation()
   const { t } = useTranslation()
-  const dispatch = useAppDispatch()
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      dispatch(hotspotDetailsSlice.actions.clearHotspotDetails())
-    })
-
-    return unsubscribe
-  }, [navigation, dispatch])
 
   const handlePress = (hotspot: Hotspot) => {
-    dispatch(fetchHotspotDetails(hotspot.address))
-    navigation.navigate('HotspotDetails', { hotspot })
+    onSelectHotspot(hotspot)
   }
 
   const sections = [
@@ -61,6 +51,7 @@ const HotspotsList = () => {
     <BottomSheetSectionList
       sections={sections}
       keyExtractor={(item: Hotspot) => item.address}
+      ListHeaderComponent={<WelcomeOverview />}
       renderSectionHeader={renderHeader}
       renderItem={({ item }) => (
         <Box marginHorizontal="l" marginBottom="s">

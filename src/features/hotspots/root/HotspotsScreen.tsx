@@ -1,3 +1,4 @@
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import React from 'react'
 import { useSelector } from 'react-redux'
 import SafeAreaBox from '../../../components/SafeAreaBox'
@@ -11,8 +12,10 @@ const HotspotsScreen = () => {
   } = useSelector((state: RootState) => state)
   return (
     <SafeAreaBox backgroundColor="primaryBackground" flex={1} edges={['top']}>
-      {hotspots.length > 0 && <HotspotsView ownedHotspots={hotspots} />}
-      {hotspots.length === 0 && <HotspotsEmpty />}
+      <BottomSheetModalProvider>
+        {hotspots.length > 0 && <HotspotsView ownedHotspots={hotspots} />}
+        {hotspots.length === 0 && <HotspotsEmpty />}
+      </BottomSheetModalProvider>
     </SafeAreaBox>
   )
 }
