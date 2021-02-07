@@ -43,10 +43,12 @@ const WalletView = ({ layout, animationPoints }: Props) => {
   const { t } = useTranslation()
   const navigation = useNavigation()
   const {
+    account: { account },
     activity: { txns },
   } = useSelector((state: RootState) => state)
   const dispatch = useAppDispatch()
-  const hasActivity = txns.all.data.length !== 0
+  const hasActivity =
+    txns.all.data.length !== 0 || account?.balance?.integerBalance > 0
 
   const activityCard = useRef<BottomSheet>(null)
   const balanceSheet = useRef<BottomSheet>(null)

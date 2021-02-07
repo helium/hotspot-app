@@ -1,6 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { Account, Hotspot } from '@helium/http'
-import { getHotspots, getAccount, getRewardsChart } from '../../utils/appDataClient'
+import {
+  getHotspots,
+  getAccount,
+  getRewardsChart,
+} from '../../utils/appDataClient'
 import { getWallet, postWallet } from '../../utils/walletClient'
 import { ChartData, ChartRange } from '../../components/BarChart/types'
 
@@ -90,7 +94,7 @@ export const markNotificationsViewed = createAsyncThunk<Notification[]>(
 export const fetchRewardsChart = createAsyncThunk<ChartData[], ChartRange>(
   'account/fetchRewardsChart',
   async (range) => {
-    await getRewardsChart()
+    return getRewardsChart(range)
   },
 )
 
@@ -131,6 +135,16 @@ const accountSlice = createSlice({
     })
     builder.addCase(fetchNotifications.fulfilled, (state, { payload }) => {
       state.notifications = payload
+    })
+    builder.addCase(fetchRewardsChart.pending, (state, { meta }) => {
+      state.rewardsChart[meta.arg].loading = 'pending'
+    })
+    builder.addCase(fetchRewardsChart.fulfilled, (state, { meta, payload }) => {
+      state.rewardsChart[meta.arg].loading = 'fulfilled'
+      state.rewardsChart[meta.arg].data = payload
+    })
+    builder.addCase(fetchRewardsChart.rejected, (state, { meta }) => {
+      state.rewardsChart[meta.arg].loading = 'rejected'
     })
   },
 })
