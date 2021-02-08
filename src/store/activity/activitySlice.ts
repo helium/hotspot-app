@@ -114,14 +114,19 @@ const activitySlice = createSlice({
           const joined = unionBy(filtered, state.txns.pending.data, 'hash')
           state.txns.pending.data = joined
         } else {
-          const newTxns = payload as AnyTransaction[]
-          state.txns[filter].data = [...state.txns[filter].data, ...newTxns]
+          const nextTxns = [
+            ...state.txns[filter].data,
+            ...(payload as AnyTransaction[]),
+          ]
+          state.txns[filter].data = nextTxns
+
           // remove any pending txns with the same hash
-          state.txns.pending.data = differenceBy(
+          const nextPending = differenceBy(
             state.txns.pending.data,
-            newTxns,
+            nextTxns,
             'hash',
           )
+          state.txns.pending.data = nextPending
         }
       },
     )

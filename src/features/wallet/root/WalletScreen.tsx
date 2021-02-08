@@ -60,7 +60,7 @@ const WalletScreen = () => {
   }, [txns[filter]])
 
   useEffect(() => {
-    if (!txns.pending.data.length && !!pendingTxns.length) return
+    if (!txns.pending.data.length && !pendingTxns.length) return
 
     setPendingTxns(txns.pending.data)
   }, [pendingTxns, txns.pending.data])
