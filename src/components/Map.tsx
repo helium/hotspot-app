@@ -309,6 +309,8 @@ const styles = {
 }
 
 const hotspotsEqual = (prev: Hotspot[], next: Hotspot[]) => {
+  if (prev.length !== next.length) return false
+
   const ownedHotspotsEqual = next === prev
   if (!ownedHotspotsEqual) {
     next.forEach((hotspot, index) => {
