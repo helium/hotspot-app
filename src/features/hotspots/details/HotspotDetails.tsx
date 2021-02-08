@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
@@ -42,6 +42,24 @@ const data: Record<string, ChartData[]> = {
     day: '',
     id: [2, i].join('-'),
   })),
+}
+
+const formatDate = (timestamp: string, numDays?: number) => {
+  let options
+  if (numDays === 1) {
+    options = {
+      day: 'numeric',
+      month: 'short',
+      hour: 'numeric',
+    }
+  } else {
+    options = {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+    }
+  }
+  return new Date(timestamp).toLocaleDateString(undefined, options)
 }
 
 const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
@@ -97,23 +115,16 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
     )
   }, [dispatch, hotspot, timelineIndex])
 
-  const formatDate = (timestamp: string) => {
-    let options
-    if (numDays === 1) {
-      options = {
-        day: 'numeric',
-        month: 'short',
-        hour: 'numeric',
-      }
-    } else {
-      options = {
-        weekday: 'short',
-        day: 'numeric',
-        month: 'short',
-      }
-    }
-    return new Date(timestamp).toLocaleDateString(undefined, options)
-  }
+  const chartData = useMemo(() => {
+    return (
+      witnessSums?.map((w) => ({
+        up: Math.round(w.avg),
+        down: 0,
+        day: formatDate(w.timestamp, numDays),
+        id: `witness-${numDays}-${w.timestamp}`,
+      })) || []
+    )
+  }, [witnessSums, numDays])
 
   if (!hotspot) {
     return null
@@ -157,14 +168,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
           number={witnessAverage?.toFixed(0)}
           change={witnessChange}
           color={colors.purpleMain}
-          data={
-            witnessSums?.map((w) => ({
-              up: Math.round(w.avg),
-              down: 0,
-              day: formatDate(w.timestamp),
-              id: `witness-${numDays}-${w.timestamp}`,
-            })) || []
-          }
+          data={chartData}
           loading={loadingWitnessSums}
         />
         <HotspotDetailChart

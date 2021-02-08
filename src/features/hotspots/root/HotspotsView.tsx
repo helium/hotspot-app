@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { Hotspot } from '@helium/http'
@@ -13,9 +13,7 @@ import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Add from '../../../assets/images/add.svg'
 import Map from '../../../components/Map'
 import { RootState } from '../../../store/rootReducer'
-import hotspotDetailsSlice, {
-  fetchHotspotDetails,
-} from '../../../store/hotspotDetails/hotspotDetailsSlice'
+import hotspotDetailsSlice from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import { fetchHotspotsData } from '../../../store/hotspots/hotspotsSlice'
 import BSHandle from '../../../components/BSHandle'
 import HotspotMapButtons from './HotspotMapButtons'
@@ -61,33 +59,41 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
     return unsubscribe
   }, [navigation, dispatch])
 
-  const animatedIndex = useValue(1)
-  const animatedValue = useValue(1)
+  // const animatedIndex = useValue(1)
+  // const animatedValue = useValue(1)
   const animatedPosition = useValue(0)
 
   // TODO when we upgrade to bottom-sheet v3
   // we can use reanimated v2 to animate this value
-  useEffect(() => {
-    if (selectedHotspot) {
-      animatedValue.setValue(0)
-    }
-  }, [selectedHotspot, animatedValue])
+  // useEffect(() => {
+  //   if (selectedHotspot) {
+  //     animatedValue.setValue(0)
+  //   }
+  // }, [selectedHotspot, animatedValue])
 
-  const handlePresentDetails = (hotspot: Hotspot) => {
+  const handlePresentDetails = useCallback((hotspot: Hotspot) => {
     setSelectedHotspot(hotspot)
     detailsRef.current?.present()
-  }
+  }, [])
 
-  const handleDismissList = () => {
+  const handleDismissList = useCallback(() => {
     setSelectedHotspot(ownedHotspots[0])
     detailsRef.current?.present()
-  }
+  }, [ownedHotspots])
 
-  const handleDismissDetails = () => {
+  const handleDismissDetails = useCallback(() => {
     setSelectedHotspot(undefined)
     dispatch(hotspotDetailsSlice.actions.clearHotspotDetails())
     listRef.current?.present()
-  }
+  }, [dispatch])
+
+  const onMapHotspotSelected = useCallback((properties: GeoJsonProperties) => {
+    const hotspot = {
+      ...properties,
+    } as Hotspot
+    setSelectedHotspot(hotspot)
+    detailsRef.current?.present()
+  }, [])
 
   const backdropStyles = useMemo(() => {
     return {
@@ -120,38 +126,37 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
     }
   }, [animatedPosition, listSnapPoints])
 
-  const mapButtonStyles = useMemo(() => {
-    return [
-      {
-        position: 'absolute',
-        bottom: 200,
-      },
-      {
-        opacity: animatedValue.interpolate({
-          inputRange: [0, 1],
-          outputRange: [1, 0],
-          extrapolate: Extrapolate.CLAMP,
-        }),
-        transform: [
-          {
-            translateY: animatedIndex.interpolate({
-              inputRange: [0, 1],
-              outputRange: [140, 0],
-              extrapolate: Extrapolate.CLAMP,
-            }),
-          },
-        ],
-      },
-    ]
-  }, [animatedIndex, animatedValue])
+  // const mapButtonStyles = useMemo(() => {
+  //   return [
+  //     {
+  //       position: 'absolute',
+  //       bottom: 200,
+  //     },
+  //     {
+  //       opacity: animatedValue.interpolate({
+  //         inputRange: [0, 1],
+  //         outputRange: [1, 0],
+  //         extrapolate: Extrapolate.CLAMP,
+  //       }),
+  //       transform: [
+  //         {
+  //           translateY: animatedIndex.interpolate({
+  //             inputRange: [0, 1],
+  //             outputRange: [140, 0],
+  //             extrapolate: Extrapolate.CLAMP,
+  //           }),
+  //         },
+  //       ],
+  //     },
+  //   ]
+  // }, [animatedIndex, animatedValue])
 
-  const onMapHotspotSelected = (properties: GeoJsonProperties) => {
-    const hotspot = {
-      ...properties,
-    } as Hotspot
-    dispatch(fetchHotspotDetails(hotspot.address))
-    navigation.navigate('HotspotDetails', { hotspot })
-  }
+  const containerStyles = useMemo(
+    () => ({
+      marginTop: 70,
+    }),
+    [],
+  )
 
   return (
     <Box flex={1} flexDirection="column" justifyContent="space-between">
@@ -161,7 +166,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         width="100%"
         borderTopLeftRadius="xl"
         borderTopRightRadius="xl"
-        style={{ marginTop: 70 }}
+        style={containerStyles}
         overflow="hidden"
       >
         <Map
@@ -174,7 +179,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
               : [ownedHotspots[0].lng || 0, ownedHotspots[0].lat || 0]
           }
           witnesses={showWitnesses ? witnesses : []}
-          animationMode="flyTo"
+          animationMode="moveTo"
           offsetCenterRatio={2.2}
           onFeatureSelected={onMapHotspotSelected}
         />
@@ -204,11 +209,14 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         flexDirection="row"
         justifyContent="space-between"
         alignItems="center"
-        backgroundColor="primaryBackground"
         padding="m"
       >
         {selectedHotspot ? (
-          <BackButton paddingHorizontal="none" onPress={handleDismissDetails} />
+          <BackButton
+            paddingHorizontal="none"
+            paddingVertical="s"
+            onPress={handleDismissDetails}
+          />
         ) : (
           <Text variant="h3">{t('hotspots.owned.title')}</Text>
         )}
@@ -228,7 +236,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
       </Box>
 
       <HotspotMapButtons
-        style={mapButtonStyles}
+        // style={mapButtonStyles}
         showWitnesses={showWitnesses}
         toggleShowWitnesses={toggleShowWitnesses}
       />
@@ -237,7 +245,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         ref={listRef}
         snapPoints={listSnapPoints}
         index={0}
-        animatedIndex={animatedIndex}
+        // animatedIndex={animatedIndex}
         handleComponent={BSHandle}
         onDismiss={handleDismissList}
         animatedPosition={animatedPosition}

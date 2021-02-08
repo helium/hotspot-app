@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import Blip from '@assets/images/blip.svg'
@@ -37,6 +37,13 @@ const WelcomeOverview = () => {
     return () => clearInterval(dateTimer)
   })
 
+  const emojiStyle = useMemo(
+    () => ({
+      fontSize: 28,
+    }),
+    [],
+  )
+
   return (
     <Box padding="l" paddingTop="m">
       <Box width={70} marginBottom="m">
@@ -48,7 +55,7 @@ const WelcomeOverview = () => {
           justifyContent="center"
           alignItems="center"
         >
-          <Emoji name="stuck_out_tongue_winking_eye" style={{ fontSize: 28 }} />
+          <Emoji name="stuck_out_tongue_winking_eye" style={emojiStyle} />
         </Box>
       </Box>
       <TimeOfDayTitle date={date} />
