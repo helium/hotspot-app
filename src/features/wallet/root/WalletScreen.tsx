@@ -62,8 +62,8 @@ const WalletScreen = () => {
   useEffect(() => {
     if (!txns.pending.data.length && !!pendingTxns.length) return
 
-    setPendingTxns(pendingTxns)
-  }, [pendingTxns, txns.pending.data.length])
+    setPendingTxns(txns.pending.data)
+  }, [pendingTxns, txns.pending.data])
 
   useEffect(() => {
     if (!visible && interval.current) {
@@ -74,7 +74,7 @@ const WalletScreen = () => {
         if (txns.pending.status === 'pending') return
 
         dispatch(fetchTxns('pending'))
-      }, 30000)
+      }, 5000)
     }
   }, [dispatch, txns.pending.status, visible])
 
