@@ -1,11 +1,20 @@
-import React, { useRef, useState, useEffect, useMemo, useCallback } from 'react'
+import React, {
+  memo,
+  useRef,
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+} from 'react'
 import MapboxGL, {
   OnPressEvent,
   RegionPayload,
+  SymbolLayerStyle,
 } from '@react-native-mapbox-gl/maps'
 import { Feature, GeoJsonProperties, Point, Position } from 'geojson'
 import { Hotspot } from '@helium/http'
 import { BoxProps } from '@shopify/restyle'
+import { StyleProp, ViewStyle } from 'react-native'
 import Box from './Box'
 import { hotspotsToFeatures } from '../utils/mapUtils'
 import CurrentLocationButton from './CurrentLocationButton'
@@ -17,6 +26,8 @@ type Props = BoxProps<Theme> & {
   onMapMoved?: (coords?: Position) => void
   onDidFinishLoadingMap?: (latitude: number, longitude: number) => void
   onMapMoving?: (feature: Feature<Point, RegionPayload>) => void
+  onFeatureSelected?: (properties: GeoJsonProperties) => void
+
   currentLocationEnabled?: boolean
   zoomLevel?: number
   mapCenter?: number[]
@@ -29,7 +40,6 @@ type Props = BoxProps<Theme> & {
   maxZoomLevel?: number
   minZoomLevel?: number
   interactive?: boolean
-  onFeatureSelected?: (properties: GeoJsonProperties) => void
   showUserLocation?: boolean
 }
 const Map = ({
@@ -58,14 +68,14 @@ const Map = ({
   const [userCoords, setUserCoords] = useState({ latitude: 0, longitude: 0 })
   const [centerOffset, setCenterOffset] = useState(0)
 
-  const onRegionDidChange = async () => {
+  const onRegionDidChange = useCallback(async () => {
     if (onMapMoved) {
       const center = await map.current?.getCenter()
       onMapMoved(center)
     }
-  }
+  }, [onMapMoved])
 
-  const centerUserLocation = () => {
+  const centerUserLocation = useCallback(() => {
     camera.current?.setCamera({
       centerCoordinate: userCoords
         ? [userCoords.longitude, userCoords.latitude]
@@ -74,7 +84,8 @@ const Map = ({
       animationDuration: 500,
       heading: 0,
     })
-  }
+  }, [userCoords])
+
   const flyTo = useCallback(
     async (lat?: number, lng?: number, duration?: number) => {
       if (!lat || !lng) return
@@ -108,17 +119,20 @@ const Map = ({
     })
   }, [showUserLocation, userCoords, zoomLevel])
 
-  const onDidFinishLoad = () => {
+  const onDidFinishLoad = useCallback(() => {
     setLoaded(true)
-  }
+  }, [])
 
-  const onShapeSourcePress = (event: OnPressEvent) => {
-    const { properties } = event.features[0]
-    if (properties) {
-      flyTo(properties.lat, properties.lng)
-      onFeatureSelected(properties)
-    }
-  }
+  const onShapeSourcePress = useCallback(
+    (event: OnPressEvent) => {
+      const { properties } = event.features[0]
+      if (properties) {
+        flyTo(properties.lat, properties.lng)
+        onFeatureSelected(properties)
+      }
+    },
+    [flyTo, onFeatureSelected],
+  )
 
   useEffect(() => {
     if (loaded && userCoords) {
@@ -169,12 +183,33 @@ const Map = ({
     witnesses,
   ])
 
-  const mapImages = {
-    markerOwned: require('../assets/images/owned-hotspot-marker.png'),
-    markerSelected: require('../assets/images/selected-hotspot-marker.png'),
-    markerWitness: require('../assets/images/witness-marker.png'),
-    markerLocation: require('../assets/images/locationPurple.png'),
-  }
+  const mapImages = useMemo(
+    () => ({
+      markerOwned: require('../assets/images/owned-hotspot-marker.png'),
+      markerSelected: require('../assets/images/selected-hotspot-marker.png'),
+      markerWitness: require('../assets/images/witness-marker.png'),
+      markerLocation: require('../assets/images/locationPurple.png'),
+    }),
+    [],
+  )
+
+  const shapeSources = useMemo(
+    () => ({
+      ownedHotspotFeatures: {
+        type: 'FeatureCollection',
+        features: ownedHotspotFeatures,
+      } as GeoJSON.FeatureCollection,
+      witnessFeatures: {
+        type: 'FeatureCollection',
+        features: witnessFeatures,
+      } as GeoJSON.FeatureCollection,
+      selectedHotspotFeatures: {
+        type: 'FeatureCollection',
+        features: selectedHotspotFeatures,
+      } as GeoJSON.FeatureCollection,
+    }),
+    [ownedHotspotFeatures, witnessFeatures, selectedHotspotFeatures],
+  )
 
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
@@ -185,7 +220,7 @@ const Map = ({
         onRegionWillChange={onMapMoving}
         onDidFinishLoadingMap={onDidFinishLoad}
         styleURL={styleURL}
-        style={{ width: '100%', height: '100%', borderRadius: 40 }}
+        style={styles.map}
         logoEnabled={false}
         rotateEnabled={false}
         pitchEnabled={false}
@@ -197,10 +232,7 @@ const Map = ({
           <MapboxGL.UserLocation onUpdate={handleUserLocationUpdate}>
             <MapboxGL.SymbolLayer
               id="markerLocation"
-              style={{
-                iconImage: 'markerLocation',
-                iconOffset: [0, -25 / 2],
-              }}
+              style={styles.markerLocation}
             />
           </MapboxGL.UserLocation>
         )}
@@ -216,47 +248,29 @@ const Map = ({
         <MapboxGL.Images images={mapImages} />
         <MapboxGL.ShapeSource
           id="ownedHotspots"
-          shape={{ type: 'FeatureCollection', features: ownedHotspotFeatures }}
+          shape={shapeSources.ownedHotspotFeatures}
           onPress={onShapeSourcePress}
         >
-          <MapboxGL.SymbolLayer
-            id="markerOwned"
-            style={{
-              iconImage: 'markerOwned',
-              iconAllowOverlap: true,
-              iconSize: 1,
-            }}
-          />
+          <MapboxGL.SymbolLayer id="markerOwned" style={styles.markerOwned} />
         </MapboxGL.ShapeSource>
         <MapboxGL.ShapeSource
           id="witnesses"
-          shape={{ type: 'FeatureCollection', features: witnessFeatures }}
+          shape={shapeSources.witnessFeatures}
           onPress={onShapeSourcePress}
         >
           <MapboxGL.SymbolLayer
             id="markerWitness"
-            style={{
-              iconImage: 'markerWitness',
-              iconAllowOverlap: true,
-              iconSize: 1,
-            }}
+            style={styles.markerWitness}
           />
         </MapboxGL.ShapeSource>
         <MapboxGL.ShapeSource
           id="selectedHotspots"
-          shape={{
-            type: 'FeatureCollection',
-            features: selectedHotspotFeatures,
-          }}
+          shape={shapeSources.selectedHotspotFeatures}
           onPress={onShapeSourcePress}
         >
           <MapboxGL.SymbolLayer
             id="markerSelected"
-            style={{
-              iconImage: 'markerSelected',
-              iconAllowOverlap: true,
-              iconSize: 1,
-            }}
+            style={styles.markerSelected}
           />
         </MapboxGL.ShapeSource>
       </MapboxGL.MapView>
@@ -267,4 +281,86 @@ const Map = ({
   )
 }
 
-export default Map
+const styles = {
+  map: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 40,
+  } as StyleProp<ViewStyle>,
+  markerLocation: {
+    iconImage: 'markerLocation',
+    iconOffset: [0, -25 / 2],
+  } as StyleProp<SymbolLayerStyle>,
+  markerWitness: {
+    iconImage: 'markerWitness',
+    iconAllowOverlap: true,
+    iconSize: 1,
+  } as StyleProp<SymbolLayerStyle>,
+  markerOwned: {
+    iconImage: 'markerOwned',
+    iconAllowOverlap: true,
+    iconSize: 1,
+  } as StyleProp<SymbolLayerStyle>,
+  markerSelected: {
+    iconImage: 'markerSelected',
+    iconAllowOverlap: true,
+    iconSize: 1,
+  } as StyleProp<SymbolLayerStyle>,
+}
+
+const hotspotsEqual = (prev: Hotspot[], next: Hotspot[]) => {
+  const ownedHotspotsEqual = next === prev
+  if (!ownedHotspotsEqual) {
+    next.forEach((hotspot, index) => {
+      const addressesEqual = hotspot.address === prev[index].address
+      if (!addressesEqual) return false
+    })
+  }
+  return true
+}
+
+export default memo(Map, (prevProps, nextProps) => {
+  const {
+    mapCenter: prevMapCenter,
+    ownedHotspots: prevOwnedHotspots,
+    selectedHotspots: prevSelectedHotspots,
+    witnesses: prevWitnesses,
+    ...prevRest
+  } = prevProps
+  const {
+    mapCenter,
+    ownedHotspots,
+    selectedHotspots,
+    witnesses,
+    ...nextRest
+  } = nextProps
+
+  const primitivesEqual = Object.keys(prevRest).every(
+    (key) => nextRest.hasOwnProperty(key) && nextRest[key] === prevRest[key],
+  )
+  let mapCenterEqual = mapCenter === prevMapCenter
+  if (!mapCenterEqual && mapCenter && prevMapCenter) {
+    mapCenterEqual =
+      mapCenter[0] === prevMapCenter[0] && mapCenter[1] === prevMapCenter[1]
+  }
+
+  const ownedHotspotsEqual = hotspotsEqual(
+    prevOwnedHotspots || [],
+    ownedHotspots || [],
+  )
+  const selectedHotspotsEqual = hotspotsEqual(
+    prevSelectedHotspots || [],
+    selectedHotspots || [],
+  )
+  const witnessHotspotsEqual = hotspotsEqual(
+    prevWitnesses || [],
+    witnesses || [],
+  )
+  return (
+    primitivesEqual &&
+    mapCenterEqual &&
+    ownedHotspotsEqual &&
+    selectedHotspotsEqual &&
+    witnessHotspotsEqual
+  )
+})
