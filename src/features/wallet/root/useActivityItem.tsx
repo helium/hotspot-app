@@ -184,7 +184,6 @@ const useActivityItem = (address: string) => {
   const formatAmount = (
     prefix: '-' | '+',
     amount?: Balance<DataCredits | NetworkTokens> | number,
-    postFix = '',
   ) => {
     if (!amount) return ''
 
@@ -192,7 +191,7 @@ const useActivityItem = (address: string) => {
       if (amount === 0) return '0'
       return `${prefix}${amount.toLocaleString('en-US', {
         maximumFractionDigits: 8,
-      })}${postFix ? ' ' : ''}${postFix}`
+      })}`
     }
 
     if (amount?.floatBalance === 0) return amount.toString()
@@ -275,12 +274,7 @@ const useActivityItem = (address: string) => {
         if (pendingTxn.type === 'payment_v2') {
           const paymentV2 = pendingTxn.txn as PaymentV2
           if (paymentV2.payer === address) {
-            const sum = paymentV2.payments.reduce(
-              (a, b) => a + b.amount.floatBalance,
-              0,
-            )
-
-            return formatAmount('-', sum, 'HNT')
+            return formatAmount('-', paymentV2.totalAmount)
           }
 
           const payment = paymentV2.payments.find((p) => p.payee === address)

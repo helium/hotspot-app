@@ -55,6 +55,7 @@ const ModalPicker = ({
     }),
     [purpleMain, textVariants.h4],
   )
+  const placeholder = {}
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
     <Box flexDirection="row" alignItems="center" {...boxProps}>
@@ -69,6 +70,7 @@ const ModalPicker = ({
       )}
       <RNPickerSelect
         ref={pickerRef}
+        placeholder={placeholder}
         touchableWrapperProps={touchableProps}
         Icon={CarotDown}
         style={pickerStyle}

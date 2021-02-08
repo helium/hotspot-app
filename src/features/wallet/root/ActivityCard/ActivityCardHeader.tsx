@@ -22,7 +22,7 @@ const ActivityCardHeader = ({ filter }: Props) => {
 
   const onFilterChanged = useCallback(
     (_itemValue, itemIndex) => {
-      const nextFilter = FilterKeys[itemIndex - 1]
+      const nextFilter = FilterKeys[itemIndex]
       animateTransition()
       dispatch(activitySlice.actions.setFilter(nextFilter))
     },
