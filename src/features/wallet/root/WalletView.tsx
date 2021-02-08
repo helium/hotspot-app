@@ -101,8 +101,12 @@ const WalletView = ({
     [animatedCardIndex, layout.chartHeight],
   )
 
+  const containerStyle = useMemo(() => ({ paddingTop: layout.notchHeight }), [
+    layout.notchHeight,
+  ])
+
   return (
-    <Box flex={1} style={{ paddingTop: layout.notchHeight }}>
+    <Box flex={1} style={containerStyle}>
       <Box
         flexDirection="row"
         justifyContent="space-between"

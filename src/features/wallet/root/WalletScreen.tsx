@@ -53,9 +53,9 @@ const WalletScreen = () => {
     }
     const { data } = txns[filter]
     if (data.length !== transactionData.length) {
+      animateTransition()
       setTransactionData(data)
     }
-    animateTransition()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txns[filter]])
 

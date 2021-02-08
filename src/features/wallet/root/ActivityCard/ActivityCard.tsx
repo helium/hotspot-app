@@ -94,7 +94,6 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
       <ActivityCardListView
         data={getData}
         isResetting={isResetting}
-        filter={filter}
         status={status}
       />
     </BottomSheet>

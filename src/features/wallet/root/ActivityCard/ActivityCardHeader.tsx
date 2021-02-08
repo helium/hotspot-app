@@ -6,6 +6,7 @@ import { FilterKeys, FilterType } from '../walletTypes'
 import ModalPicker from '../../../../components/ModalPicker'
 import { useAppDispatch } from '../../../../store/store'
 import activitySlice from '../../../../store/activity/activitySlice'
+import animateTransition from '../../../../utils/animateTransition'
 
 type Props = { filter: FilterType }
 const ActivityCardHeader = ({ filter }: Props) => {
@@ -21,7 +22,9 @@ const ActivityCardHeader = ({ filter }: Props) => {
 
   const onFilterChanged = useCallback(
     (_itemValue, itemIndex) => {
-      dispatch(activitySlice.actions.setFilter(FilterKeys[itemIndex]))
+      const nextFilter = FilterKeys[itemIndex - 1]
+      animateTransition()
+      dispatch(activitySlice.actions.setFilter(nextFilter))
     },
     [dispatch],
   )

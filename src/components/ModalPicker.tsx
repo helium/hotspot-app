@@ -1,11 +1,4 @@
-import React, {
-  memo,
-  ReactText,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import React, { memo, ReactText, useRef, useMemo } from 'react'
 import RNPickerSelect from 'react-native-picker-select'
 import CarotDown from '@assets/images/carot-down.svg'
 import { BoxProps } from '@shopify/restyle'
@@ -32,28 +25,36 @@ const ModalPicker = ({
   const textVariants = useTextVariants()
   const { purpleMain } = useColors()
   const pickerRef = useRef<RNPickerSelect>(null)
-  const [valueIndex, setValueIndex] = useState<{
-    value: string
-    index: number
-  }>({
-    value: selectedValue,
-    index: data.findIndex(({ value }) => value === selectedValue),
-  })
 
-  const changeValue = useCallback(async () => {
-    onValueChanged(valueIndex.value, valueIndex.index)
-  }, [onValueChanged, valueIndex.index, valueIndex.value])
-
-  const handleChange = useCallback((value, index) => {
-    setValueIndex({ value, index })
-  }, [])
-
-  useEffect(() => {
-    if (valueIndex.value === selectedValue) return
-
-    changeValue()
-  }, [changeValue, selectedValue, valueIndex.value])
-
+  const touchableProps = useMemo(
+    () => ({ activeOpacity: 0.35, width: 250 }),
+    [],
+  )
+  const pickerStyle = useMemo(
+    () => ({
+      iconContainer: {
+        padding: 10,
+        top: Platform.OS === 'android' ? 12 : 8,
+      },
+      inputIOSContainer: {
+        paddingRight: 24,
+      },
+      inputAndroidContainer: {
+        paddingRight: 16,
+      },
+      inputIOS: {
+        ...textVariants.h4,
+        color: purpleMain,
+        paddingVertical: 8,
+      },
+      inputAndroid: {
+        ...textVariants.h4,
+        color: purpleMain,
+        paddingVertical: 8,
+      },
+    }),
+    [purpleMain, textVariants.h4],
+  )
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
     <Box flexDirection="row" alignItems="center" {...boxProps}>
@@ -68,34 +69,12 @@ const ModalPicker = ({
       )}
       <RNPickerSelect
         ref={pickerRef}
-        placeholder={{}}
-        touchableWrapperProps={{ activeOpacity: 0.35 }}
+        touchableWrapperProps={touchableProps}
         Icon={CarotDown}
-        style={{
-          iconContainer: {
-            padding: 10,
-            top: Platform.OS === 'android' ? 12 : 8,
-          },
-          inputIOSContainer: {
-            paddingRight: 24,
-          },
-          inputAndroidContainer: {
-            paddingRight: 16,
-          },
-          inputIOS: {
-            ...textVariants.h4,
-            color: purpleMain,
-            paddingVertical: 8,
-          },
-          inputAndroid: {
-            ...textVariants.h4,
-            color: purpleMain,
-            paddingVertical: 8,
-          },
-        }}
+        style={pickerStyle}
         items={data}
-        value={valueIndex.value}
-        onValueChange={handleChange}
+        value={selectedValue}
+        onValueChange={onValueChanged}
         useNativeAndroidPickerStyle={false}
         fixAndroidTouchableBug
       />

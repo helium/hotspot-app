@@ -18,17 +18,15 @@ import { useAppDispatch } from '../../../../store/store'
 import { useSpacing } from '../../../../theme/themeHooks'
 import useActivityItem from '../useActivityItem'
 import ActivityCardLoading from './ActivityCardLoading'
-import { FilterType } from '../walletTypes'
 
 type AllTxns = (AnyTransaction | PendingTransaction)[]
 type Props = {
   isResetting: boolean
-  filter: FilterType
   status: Loading
   data: AllTxns
 }
 
-const ActivityCardListView = ({ isResetting, filter, status, data }: Props) => {
+const ActivityCardListView = ({ isResetting, data, status }: Props) => {
   const { m } = useSpacing()
   const dispatch = useAppDispatch()
   const { result: address } = useAsync(getSecureItem, ['address'])
@@ -84,20 +82,20 @@ const ActivityCardListView = ({ isResetting, filter, status, data }: Props) => {
     },
     [
       backgroundColor,
+      data,
       getSubtitle,
       handleActivityItemPressed,
       listIcon,
       time,
       title,
-      data,
     ],
   )
 
   const keyExtractor = useCallback(
     (item: AnyTransaction | PendingTransaction) => {
-      return `${filter}.${(item as AddGatewayV1).hash}`
+      return (item as AddGatewayV1).hash
     },
-    [filter],
+    [],
   )
 
   const getItemLayout = useCallback(
@@ -113,18 +111,23 @@ const ActivityCardListView = ({ isResetting, filter, status, data }: Props) => {
     return { paddingHorizontal: m }
   }, [m])
 
+  const footer = useMemo(
+    () => (
+      <ActivityCardLoading
+        isLoading={isResetting || (status === 'pending' && !data?.length)}
+        hasNoResults={status === 'fulfilled' && data && data.length === 0}
+      />
+    ),
+    [data, isResetting, status],
+  )
+
   return (
     <BottomSheetFlatList
       data={data}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       contentContainerStyle={contentContainerStyle}
-      ListFooterComponent={
-        <ActivityCardLoading
-          isLoading={isResetting || (status === 'pending' && !data?.length)}
-          hasNoResults={status === 'fulfilled' && data && data.length === 0}
-        />
-      }
+      ListFooterComponent={footer}
       getItemLayout={getItemLayout}
       onEndReached={requestMore}
     />
@@ -133,17 +136,21 @@ const ActivityCardListView = ({ isResetting, filter, status, data }: Props) => {
 
 export default memo(ActivityCardListView, (prevProps, nextProps) => {
   const lengthEqual = prevProps.data.length === nextProps.data.length
-  const filterEqual = prevProps.filter === nextProps.filter
-  if (!lengthEqual || !filterEqual) return false
+
+  if (!lengthEqual) {
+    return false
+  }
 
   prevProps.data.forEach((txn, index) => {
     const prevTxn = txn as PendingTransaction
     const nextTxn = nextProps.data[index] as PendingTransaction
 
-    const hashEqual = nextTxn.hash !== prevTxn.hash
-    const statusEqual = nextTxn.status !== prevTxn.status
+    const hashEqual = nextTxn.hash === prevTxn.hash
+    const statusEqual = nextTxn.status === prevTxn.status
 
-    if (!hashEqual || !statusEqual) return false
+    if (!hashEqual || !statusEqual) {
+      return false
+    }
   })
 
   return true

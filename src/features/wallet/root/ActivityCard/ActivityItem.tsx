@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import React, { memo, useMemo } from 'react'
 import { createText } from '@shopify/restyle'
 import Box from '../../../../components/Box'
 import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
@@ -31,6 +31,13 @@ const ActivityItem = ({
   title,
   handlePress,
 }: Props) => {
+  const iconStyle = useMemo(
+    () => ({
+      backgroundColor,
+    }),
+    [backgroundColor],
+  )
+
   return (
     <TouchableOpacityBox
       onPress={handlePress}
@@ -48,7 +55,7 @@ const ActivityItem = ({
       <Box
         width={50}
         height={50}
-        style={{ backgroundColor }}
+        style={iconStyle}
         justifyContent="center"
         alignItems="center"
         borderTopLeftRadius={isFirst ? 'm' : undefined}
