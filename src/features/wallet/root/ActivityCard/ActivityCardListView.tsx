@@ -29,7 +29,7 @@ type Props = {
 const ActivityCardListView = ({ isResetting, data, status }: Props) => {
   const { m } = useSpacing()
   const dispatch = useAppDispatch()
-  const { result: address } = useAsync(getSecureItem, ['address'])
+  const { result: address, loading } = useAsync(getSecureItem, ['address'])
   const { backgroundColor, title, listIcon, amount, time } = useActivityItem(
     address || '',
   )
@@ -120,6 +120,8 @@ const ActivityCardListView = ({ isResetting, data, status }: Props) => {
     ),
     [data, isResetting, status],
   )
+
+  if (loading) return null
 
   return (
     <BottomSheetFlatList
