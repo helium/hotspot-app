@@ -223,13 +223,6 @@ const MoreScreen = () => {
             },
           },
           {
-            title: t('more.sections.account.units'),
-            select: {
-              items: [{ label: 'Metric', value: 'Metric' }],
-              onValueSelect: () => {},
-            },
-          },
-          {
             title: t('more.sections.account.signOut'),
             onPress: handleSignOut,
             destructive: true,

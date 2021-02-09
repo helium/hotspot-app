@@ -460,7 +460,6 @@ export default {
       account: {
         title: 'Account',
         language: 'Language',
-        units: 'Units',
         signOut: 'Sign Out',
         signOutAlert: {
           title: 'Warning!',
