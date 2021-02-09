@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import animalName from 'angry-purple-tiger'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
@@ -124,8 +124,8 @@ const HotspotDetails = () => {
     )
   }
 
-  const formatDate = (timestamp: string) => {
-    let options
+  const witnessChartData = useMemo(() => {
+    let options: Intl.DateTimeFormatOptions
     if (numDays === 1) {
       options = {
         day: 'numeric',
@@ -139,8 +139,40 @@ const HotspotDetails = () => {
         month: 'short',
       }
     }
-    return new Date(timestamp).toLocaleDateString(undefined, options)
-  }
+    return (
+      witnessSums?.map((w) => ({
+        up: Math.round(w.avg),
+        down: 0,
+        day: new Date(w.timestamp).toLocaleDateString(undefined, options),
+        id: `witness-${numDays}-${w.timestamp}`,
+      })) || []
+    )
+  }, [numDays, witnessSums])
+
+  const challengeChartData = useMemo(() => {
+    let options: Intl.DateTimeFormatOptions
+    if (numDays === 1) {
+      options = {
+        day: 'numeric',
+        month: 'short',
+        hour: 'numeric',
+      }
+    } else {
+      options = {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+      }
+    }
+    return (
+      challengeSums?.map((w) => ({
+        up: Math.round(w.sum),
+        down: 0,
+        day: new Date(w.timestamp).toLocaleDateString(undefined, options),
+        id: `challenge-${numDays}-${w.timestamp}`,
+      })) || []
+    )
+  }, [numDays, challengeSums])
 
   return (
     <BottomSheetScrollView>
@@ -202,14 +234,7 @@ const HotspotDetails = () => {
           number={witnessAverage?.toFixed(0)}
           change={witnessChange}
           color={colors.purpleMain}
-          data={
-            witnessSums?.map((w) => ({
-              up: Math.round(w.avg),
-              down: 0,
-              day: formatDate(w.timestamp),
-              id: `witness-${numDays}-${w.timestamp}`,
-            })) || []
-          }
+          data={witnessChartData}
           loading={loading}
         />
         <HotspotDetailChart
@@ -218,14 +243,7 @@ const HotspotDetails = () => {
           number={challengeSum?.toFixed(0)}
           change={challengeChange}
           color={colors.purpleMain}
-          data={
-            challengeSums?.map((w) => ({
-              up: Math.round(w.sum),
-              down: 0,
-              day: formatDate(w.timestamp),
-              id: `challenge-${numDays}-${w.timestamp}`,
-            })) || []
-          }
+          data={challengeChartData}
           loading={loading}
         />
       </Box>
