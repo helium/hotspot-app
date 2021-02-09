@@ -81,39 +81,22 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
     },
   } = useSelector((state: RootState) => state)
 
-  const [timelineIndex, setTimelineIndex] = useState(2)
-  const onTimelineChanged = (_value: string, index: number) => {
-    setTimelineIndex(index)
-  }
+  const [timelineValue, setTimelineValue] = useState(14)
 
   useEffect(() => {
     if (!hotspot) return
 
-    let days
-    switch (timelineIndex) {
-      default:
-      case 0:
-        days = 1
-        break
-      case 1:
-        days = 7
-        break
-      case 2:
-        days = 14
-        break
-      case 3:
-        days = 30
-        break
-    }
-    dispatch(fetchHotspotRewards({ address: hotspot.address, numDays: days }))
+    dispatch(
+      fetchHotspotRewards({ address: hotspot.address, numDays: timelineValue }),
+    )
     dispatch(fetchHotspotWitnesses(hotspot.address))
     dispatch(
       fetchHotspotWitnessSums({
         address: hotspot.address,
-        numDays: days,
+        numDays: timelineValue,
       }),
     )
-  }, [dispatch, hotspot, timelineIndex])
+  }, [dispatch, hotspot, timelineValue])
 
   const chartData = useMemo(() => {
     return (
@@ -151,10 +134,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
             })}
           </Text>
         </Box>
-        <TimelinePicker
-          index={timelineIndex}
-          onTimelineChanged={onTimelineChanged}
-        />
+        <TimelinePicker index={2} onTimelineChanged={setTimelineValue} />
         <HotspotDetailChart
           title={t('hotspot_details.reward_title')}
           number={rewardSum?.total.toFixed(2)}
@@ -184,5 +164,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
     </BottomSheetScrollView>
   )
 }
+
+// HotspotDetails.whyDidYouRender = true
 
 export default HotspotDetails

@@ -30,6 +30,8 @@ type Props = {
   ownedHotspots: Hotspot[]
 }
 
+const DETAIL_COLLAPSED_CARD_HEIGHT = 120
+
 const HotspotsView = ({ ownedHotspots }: Props) => {
   const navigation = useNavigation()
   const { t } = useTranslation()
@@ -38,10 +40,15 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
   const detailsRef = useRef<BottomSheetModal>(null)
   const colors = useColors()
   const listSnapPoints = useMemo(() => [hp(68)], [])
+  const detailSnapPoints = useMemo(
+    () => [DETAIL_COLLAPSED_CARD_HEIGHT, '75%'],
+    [],
+  )
 
   useEffect(() => {
+    dispatch(fetchHotspotsData())
     listRef.current?.present()
-  }, [])
+  }, [dispatch])
 
   const [showWitnesses, toggleShowWitnesses] = useToggle(false)
 
@@ -59,17 +66,8 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
     return unsubscribe
   }, [navigation, dispatch])
 
-  // const animatedIndex = useValue(1)
-  // const animatedValue = useValue(1)
-  const animatedPosition = useValue(0)
-
-  // TODO when we upgrade to bottom-sheet v3
-  // we can use reanimated v2 to animate this value
-  // useEffect(() => {
-  //   if (selectedHotspot) {
-  //     animatedValue.setValue(0)
-  //   }
-  // }, [selectedHotspot, animatedValue])
+  const animatedListPosition = useValue(0)
+  const animatedDetailsPosition = useValue(0)
 
   const handlePresentDetails = useCallback((hotspot: Hotspot) => {
     setSelectedHotspot(hotspot)
@@ -84,8 +82,13 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
   const handleDismissDetails = useCallback(() => {
     setSelectedHotspot(undefined)
     dispatch(hotspotDetailsSlice.actions.clearHotspotDetails())
-    listRef.current?.present()
+    detailsRef.current?.dismiss()
+    // listRef.current?.present()
   }, [dispatch])
+
+  const handleReset = useCallback(() => {
+    listRef.current?.present()
+  }, [])
 
   const onMapHotspotSelected = useCallback((properties: GeoJsonProperties) => {
     const hotspot = {
@@ -103,20 +106,19 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
       top: 0,
       bottom: 0,
       backgroundColor: colors.purpleMain,
-      // opacity: 0,
-      opacity: animatedPosition.interpolate({
+      opacity: animatedListPosition.interpolate({
         inputRange: [0, listSnapPoints[0]],
         outputRange: [0, 1],
         extrapolate: Extrapolate.CLAMP,
       }),
     }
-  }, [animatedPosition, colors, listSnapPoints])
+  }, [animatedListPosition, colors, listSnapPoints])
 
   const backdropTitleStyles = useMemo(() => {
     return {
       transform: [
         {
-          translateY: animatedPosition.interpolate({
+          translateY: animatedListPosition.interpolate({
             inputRange: [0, listSnapPoints[0]],
             outputRange: [-100, 0],
             extrapolate: Extrapolate.CLAMP,
@@ -124,32 +126,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         },
       ],
     }
-  }, [animatedPosition, listSnapPoints])
-
-  // const mapButtonStyles = useMemo(() => {
-  //   return [
-  //     {
-  //       position: 'absolute',
-  //       bottom: 200,
-  //     },
-  //     {
-  //       opacity: animatedValue.interpolate({
-  //         inputRange: [0, 1],
-  //         outputRange: [1, 0],
-  //         extrapolate: Extrapolate.CLAMP,
-  //       }),
-  //       transform: [
-  //         {
-  //           translateY: animatedIndex.interpolate({
-  //             inputRange: [0, 1],
-  //             outputRange: [140, 0],
-  //             extrapolate: Extrapolate.CLAMP,
-  //           }),
-  //         },
-  //       ],
-  //     },
-  //   ]
-  // }, [animatedIndex, animatedValue])
+  }, [animatedListPosition, listSnapPoints])
 
   const containerStyles = useMemo(
     () => ({
@@ -182,6 +159,11 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
           animationMode="moveTo"
           offsetCenterRatio={2.2}
           onFeatureSelected={onMapHotspotSelected}
+        />
+        <HotspotMapButtons
+          animatedPosition={animatedDetailsPosition}
+          showWitnesses={showWitnesses}
+          toggleShowWitnesses={toggleShowWitnesses}
         />
         <ReAnimatedBox pointerEvents="none" style={backdropStyles} />
         <ReAnimatedBox
@@ -218,7 +200,9 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
             onPress={handleDismissDetails}
           />
         ) : (
-          <Text variant="h3">{t('hotspots.owned.title')}</Text>
+          <TouchableOpacityBox onPress={handleReset}>
+            <Text variant="h3">{t('hotspots.owned.title')}</Text>
+          </TouchableOpacityBox>
         )}
 
         <Box flexDirection="row" justifyContent="space-between">
@@ -235,20 +219,14 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         </Box>
       </Box>
 
-      <HotspotMapButtons
-        // style={mapButtonStyles}
-        showWitnesses={showWitnesses}
-        toggleShowWitnesses={toggleShowWitnesses}
-      />
-
       <BottomSheetModal
         ref={listRef}
         snapPoints={listSnapPoints}
         index={0}
-        // animatedIndex={animatedIndex}
         handleComponent={BSHandle}
         onDismiss={handleDismissList}
-        animatedPosition={animatedPosition}
+        // dismissOnPanDown={false}
+        animatedPosition={animatedListPosition}
       >
         <HotspotsList
           hotspots={ownedHotspots}
@@ -258,11 +236,12 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
 
       <BottomSheetModal
         ref={detailsRef}
-        snapPoints={[180, '75%']}
+        snapPoints={detailSnapPoints}
         index={0}
         handleComponent={HotspotDetailCardHeader}
-        onDismiss={handleDismissDetails}
+        // onDismiss={handleDismissDetails}
         // dismissOnPanDown={false}
+        animatedPosition={animatedDetailsPosition}
       >
         <HotspotDetails hotspot={selectedHotspot} />
       </BottomSheetModal>

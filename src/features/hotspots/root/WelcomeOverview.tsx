@@ -1,9 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import Blip from '@assets/images/blip.svg'
-import Emoji from 'react-native-emoji'
 import Box from '../../../components/Box'
+import EmojiBlip from '../../../components/EmojiBlip'
 import Text from '../../../components/Text'
 import { RootState } from '../../../store/rootReducer'
 
@@ -37,27 +36,9 @@ const WelcomeOverview = () => {
     return () => clearInterval(dateTimer)
   })
 
-  const emojiStyle = useMemo(
-    () => ({
-      fontSize: 28,
-    }),
-    [],
-  )
-
   return (
     <Box padding="l" paddingTop="m">
-      <Box width={70} marginBottom="m">
-        <Blip width={70} />
-        <Box
-          position="absolute"
-          width="100%"
-          height="100%"
-          justifyContent="center"
-          alignItems="center"
-        >
-          <Emoji name="stuck_out_tongue_winking_eye" style={emojiStyle} />
-        </Box>
-      </Box>
+      <EmojiBlip date={date} />
       <TimeOfDayTitle date={date} />
       <Text variant="body1Light" paddingTop="m" paddingRight="xl" color="black">
         {t('hotspots.owned.reward_summary', {

@@ -58,6 +58,7 @@
     "@types/lodash": "^4.14.165",
     "@types/parse5": "^5.0.3",
     "@types/validator": "^13.1.1",
+    "@welldone-software/why-did-you-render": "^6.0.5",
     "angry-purple-tiger": "^1.0.5",
     "babel-plugin-module-resolver": "^3.2.0",
     "base-64": "^1.0.0",
