@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TFunction } from 'i18next'
-import { ActivityIndicator } from 'react-native'
+import { ActivityIndicator, Platform } from 'react-native'
 import { ChartData } from '../../../components/BarChart/types'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -17,6 +17,7 @@ type Props = {
   data: ChartData[]
   color: string
   loading?: boolean
+  subTitle?: string
 }
 
 const PercentageBox = ({
@@ -55,7 +56,7 @@ const NumberBox = ({
     <Text variant="light" fontSize={28} color="black" marginBottom="s">
       {focusedData ? focusedData.up : number}
     </Text>
-    {change && !focusedData ? (
+    {change !== undefined && !focusedData ? (
       <Box
         style={{
           backgroundColor: change < 0 ? negativeColor : positiveColor,
@@ -80,19 +81,36 @@ const HotspotDetailChart = ({
   data,
   color,
   loading,
+  subTitle,
 }: Props) => {
   const { t } = useTranslation()
   const { redMedium, black, grayLight, grayMain } = useColors()
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
   const onFocus = (chartData: ChartData | null) => {
-    animateTransition()
+    if (Platform.OS === 'ios') {
+      // this animation causes layout issues on Android
+      animateTransition()
+    }
     setFocusedData(chartData)
   }
   return (
     <Box marginBottom="m">
-      <Text variant="body1" color="black" marginVertical="s">
-        {title}
-      </Text>
+      <Box
+        flexDirection="row"
+        alignItems="center"
+        marginVertical="s"
+        width="100%"
+        marginEnd="s"
+      >
+        <Text variant="body1" color="black">
+          {title}
+        </Text>
+        {subTitle && (
+          <Text variant="body3" color="grayText" paddingLeft="xs">
+            {subTitle}
+          </Text>
+        )}
+      </Box>
       <Box
         backgroundColor="grayBox"
         padding="l"

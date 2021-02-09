@@ -3,6 +3,8 @@ import Client, {
   Hotspot,
   PendingTransaction,
   ResourceList,
+  Bucket,
+  NaturalDate,
 } from '@helium/http'
 import { Transaction } from '@helium/transactions'
 import {
@@ -37,8 +39,7 @@ export const getHotspots = async () => {
 }
 
 export const getHotspotDetails = async (address: string): Promise<Hotspot> => {
-  const { data } = await client.hotspots.get(address)
-  return data
+  return client.hotspots.get(address)
 }
 
 export const getHotspotRewardsSum = async (
@@ -48,8 +49,7 @@ export const getHotspotRewardsSum = async (
 ) => {
   const endDate = new Date(date)
   endDate.setDate(date.getDate() - numDaysBack)
-  const { data } = await client.hotspot(address).rewards.getSum(endDate, date)
-  return data
+  return client.hotspot(address).rewards.sum.get(endDate, date)
 }
 
 export const getHotspotRewards = async (
@@ -67,6 +67,34 @@ export const getHotspotRewards = async (
 
 export const getHotspotWitnesses = async (address: string) => {
   const list = await client.hotspot(address).witnesses.list()
+  return list.take(MAX)
+}
+
+export const getHotspotWitnessSums = async (params: {
+  address: string
+  bucket: Bucket
+  minTime: Date | NaturalDate
+  maxTime?: Date | NaturalDate
+}) => {
+  const list = await client.hotspot(params.address).witnesses.sum.list({
+    minTime: params.minTime,
+    maxTime: params.maxTime,
+    bucket: params.bucket,
+  })
+  return list.take(MAX)
+}
+
+export const getHotspotChallengeSums = async (params: {
+  address: string
+  bucket: Bucket
+  minTime: Date | NaturalDate
+  maxTime?: Date | NaturalDate
+}) => {
+  const list = await client.hotspot(params.address).challenges.sum.list({
+    minTime: params.minTime,
+    maxTime: params.maxTime,
+    bucket: params.bucket,
+  })
   return list.take(MAX)
 }
 

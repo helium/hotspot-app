@@ -396,6 +396,20 @@ export default {
     title: 'My Wallet',
     copiedToClipboard: 'Copied {{address}} to clipboard',
     share: 'Share',
+    intro_body:
+      'This Account tab acts as a virtual wallet for any HNT or Data Credits you hold.',
+    intro_slides: [
+      { title: 'Receive HNT', body: 'Access your address or QR code.' },
+      { title: 'Send HNT', body: 'Scan a QR code or enter details manually.' },
+      {
+        title: 'Chart your account',
+        body: 'Green signifies HNT being <green>added</green> to your account.',
+      },
+      {
+        title: 'Chart your account',
+        body: 'Blue signifies HNT <blue>leaving</blue> your account.',
+      },
+    ],
   },
   send: {
     title: {
@@ -630,8 +644,9 @@ export default {
     owner: 'Owned by {{address}}',
     pass_rate: 'PASS RATE',
     reward_title: 'HNT Rewards',
-    witness_title: 'Witnesses',
+    witness_title: 'Average Witnesses',
     challenge_title: 'Challenges',
+    challenge_sub_title: '(witness, challenger, or challengee)',
     picker_title: 'Past',
     picker_options: ['24 Hours', '7 Days', '14 Days', '30 Days'],
     status_online: 'Online',

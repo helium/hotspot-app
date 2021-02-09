@@ -98,6 +98,7 @@ const MoreListItem = ({
           onValueChange={select.onValueSelect}
           onDonePress={select.onDonePress}
           useNativeAndroidPickerStyle={false}
+          fixAndroidTouchableBug
         />
       )}
     </TouchableOpacityBox>

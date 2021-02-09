@@ -24,6 +24,7 @@ const BalanceCard = ({ onReceivePress, onSendPress }: Props) => {
     account: { account },
   } = useSelector((state: RootState) => state)
 
+  const hasBalance = account?.balance?.integerBalance !== 0
   const [integerPart, decimalPart] =
     account?.balance?.toString().split('.') || []
 
@@ -48,7 +49,7 @@ const BalanceCard = ({ onReceivePress, onSendPress }: Props) => {
               fontSize={hp(4.5)}
               fontWeight="300"
             >
-              {integerPart}
+              {hasBalance ? integerPart : '0'}
             </Text>
             <Text
               color="white"
@@ -57,7 +58,7 @@ const BalanceCard = ({ onReceivePress, onSendPress }: Props) => {
               opacity={0.4}
               lineHeight={25}
             >
-              .{decimalPart}
+              .{hasBalance ? decimalPart : '00000000 HNT'}
             </Text>
           </Box>
 
@@ -67,7 +68,11 @@ const BalanceCard = ({ onReceivePress, onSendPress }: Props) => {
             width={wp(30)}
           >
             <WalletButton variant="receive" onPress={onReceivePress} />
-            <WalletButton variant="send" onPress={onSendPress} />
+            <WalletButton
+              variant="send"
+              onPress={onSendPress}
+              disabled={!hasBalance}
+            />
           </Box>
         </AnimatedBox>
 

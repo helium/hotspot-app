@@ -1,10 +1,18 @@
-import React, { useRef, memo, useCallback, useState, useMemo } from 'react'
+import React, {
+  useRef,
+  memo,
+  useCallback,
+  useState,
+  useMemo,
+  useEffect,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 import Animated, { Extrapolate, useValue } from 'react-native-reanimated'
 import { useNavigation } from '@react-navigation/native'
 import BottomSheet from '@gorhom/bottom-sheet'
 import Search from '@assets/images/search.svg'
 import Qr from '@assets/images/qr.svg'
+import { useSelector } from 'react-redux'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import BarChart from '../../../components/BarChart'
@@ -17,6 +25,14 @@ import {
 } from './walletLayout'
 import { triggerNavHaptic } from '../../../utils/haptic'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import { RootState } from '../../../store/rootReducer'
+import { hp } from '../../../utils/layout'
+import WalletIntroCarousel from './WalletIntroCarousel'
+import {
+  fetchPendingTxns,
+  fetchTxns,
+} from '../../../store/activity/activitySlice'
+import { useAppDispatch } from '../../../store/store'
 
 type Props = {
   layout: WalletLayout
@@ -26,10 +42,24 @@ type Props = {
 const WalletView = ({ layout, animationPoints }: Props) => {
   const { t } = useTranslation()
   const navigation = useNavigation()
+  const {
+    activity: { txns },
+  } = useSelector((state: RootState) => state)
+  const dispatch = useAppDispatch()
+  const hasActivity = txns.all.data.length !== 0
 
-  const card = useRef<BottomSheet>(null)
-  const [cardIndex, setCardIndex] = useState(1)
+  const activityCard = useRef<BottomSheet>(null)
+  const balanceSheet = useRef<BottomSheet>(null)
+
+  const [activityCardIndex, setActivityCardIndex] = useState(1)
+  const [balanceSheetIndex, setBalanceSheetIndex] = useState(0)
   const animatedCardIndex = useValue(1)
+
+  useEffect(() => {
+    dispatch(fetchTxns('all'))
+    dispatch(fetchPendingTxns())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handlePress = useCallback(() => {
     triggerNavHaptic()
@@ -45,11 +75,16 @@ const WalletView = ({ layout, animationPoints }: Props) => {
     navigation.navigate('Send')
   }, [navigation])
 
-  const animateActivityToBottom = useCallback(() => {
-    const snapToIndex = cardIndex === 1 ? 0 : 1
-    card.current?.snapTo(snapToIndex)
+  const toggleShowReceive = useCallback(() => {
+    if (hasActivity) {
+      const snapToIndex = activityCardIndex === 1 ? 0 : 1
+      activityCard.current?.snapTo(snapToIndex)
+    } else {
+      const snapToIndex = balanceSheetIndex === 1 ? 0 : 1
+      balanceSheet.current?.snapTo(snapToIndex)
+    }
     triggerNavHaptic()
-  }, [cardIndex])
+  }, [activityCardIndex, balanceSheetIndex, hasActivity])
 
   const balanceCardStyles = useMemo(
     () => [
@@ -83,7 +118,7 @@ const WalletView = ({ layout, animationPoints }: Props) => {
         height={layout.headerHeight}
       >
         <Text variant="h1" fontSize={22}>
-          {t('wallet.title')}
+          {hasActivity ? t('wallet.title') : ' '}
         </Text>
 
         <Box flexDirection="row" justifyContent="space-between" width={85}>
@@ -96,23 +131,44 @@ const WalletView = ({ layout, animationPoints }: Props) => {
         </Box>
       </Box>
 
-      <Box paddingHorizontal="l">
-        <BarChart height={layout.chartHeight} />
-      </Box>
+      {hasActivity ? (
+        <>
+          <Box paddingHorizontal="l">
+            <BarChart height={layout.chartHeight} />
+          </Box>
+          <Animated.View style={balanceCardStyles}>
+            <BalanceCard
+              onReceivePress={toggleShowReceive}
+              onSendPress={handleSendPress}
+            />
+          </Animated.View>
 
-      <Animated.View style={balanceCardStyles}>
-        <BalanceCard
-          onReceivePress={animateActivityToBottom}
-          onSendPress={handleSendPress}
-        />
-      </Animated.View>
-
-      <ActivityCard
-        ref={card}
-        animationPoints={animationPoints}
-        animatedIndex={animatedCardIndex}
-        onChange={setCardIndex}
-      />
+          <ActivityCard
+            ref={activityCard}
+            animationPoints={animationPoints}
+            animatedIndex={animatedCardIndex}
+            onChange={setActivityCardIndex}
+          />
+        </>
+      ) : (
+        <>
+          <WalletIntroCarousel />
+          <BottomSheet
+            index={balanceSheetIndex}
+            onChange={setBalanceSheetIndex}
+            handleComponent={null}
+            backgroundComponent={null}
+            snapPoints={[hp(20), hp(55)]}
+            animateOnMount={false}
+            ref={balanceSheet}
+          >
+            <BalanceCard
+              onReceivePress={toggleShowReceive}
+              onSendPress={handleSendPress}
+            />
+          </BottomSheet>
+        </>
+      )}
     </Box>
   )
 }

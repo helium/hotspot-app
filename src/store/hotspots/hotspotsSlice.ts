@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { HotspotRewardSum, Hotspot } from '@helium/http'
+import { Hotspot, Sum } from '@helium/http'
 import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
 import { getHotspotRewardsSum, getHotspots } from '../../utils/appDataClient'
 
@@ -9,14 +9,14 @@ export const fetchHotspotsData = createAsyncThunk(
     const hotspots = await getHotspots()
 
     let total = new Balance(0, CurrencyType.networkToken)
-    const rewards: Record<string, HotspotRewardSum> = {}
+    const rewards: Record<string, Sum> = {}
     const results = await Promise.all(
       hotspots.map((hotspot) => getHotspotRewardsSum(hotspot.address, 1)),
     )
     results.forEach((reward, i) => {
       const { address } = hotspots[i]
       rewards[address] = reward
-      total = total.plus(reward.total)
+      total = total.plus(reward.balanceTotal)
     })
 
     return {
@@ -29,7 +29,7 @@ export const fetchHotspotsData = createAsyncThunk(
 
 type HotspotsSliceState = {
   hotspots?: Hotspot[]
-  rewards?: Record<string, HotspotRewardSum>
+  rewards?: Record<string, Sum>
   totalRewards: Balance<NetworkTokens>
   loadingRewards: boolean
 }
