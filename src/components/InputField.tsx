@@ -16,6 +16,7 @@ type Props = {
   onChange: (text: string) => void
   locked?: boolean
   defaultValue?: string
+  value?: string
 }
 
 const InputField = ({
@@ -27,6 +28,7 @@ const InputField = ({
   onChange,
   locked = false,
   defaultValue,
+  value,
 }: Props) => {
   const inputRef = useRef<TextInput | null>(null)
 
@@ -69,6 +71,7 @@ const InputField = ({
             dataDetectorTypes="none"
             keyboardAppearance="dark"
             keyboardType={type}
+            value={value}
             style={{
               fontFamily: 'InputMono-Regular',
               fontSize: 15,

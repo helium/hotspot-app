@@ -8913,6 +8913,11 @@ number-is-nan@^1.0.0:
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
   integrity sha1-CXtgK1NCKlIsGvuHkDGDNpQaAR0=
 
+number-to-locale-string-polyfill@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/number-to-locale-string-polyfill/-/number-to-locale-string-polyfill-1.0.9.tgz#4fa9a293216d99349230f6eedca4cd8c9570bea0"
+  integrity sha512-2ACyxP9+fbAo/PDd8Q5VzBw1MZag3m5JREh1mskkENf67XJj0h+pBwH4Z3uKmQobb+aTy+nqJlvoDwD5/e3uHQ==
+
 nwsapi@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/nwsapi/-/nwsapi-2.2.0.tgz#204879a9e3d068ff2a55139c2c772780681a38b7"
