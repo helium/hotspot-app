@@ -131,10 +131,10 @@ export default {
     selection: {
       title: 'Choose\nyour Hotspot.',
       subtitle: 'What kind of Hotspot do you\nwish to add?',
-      option_one: 'Helium\nHotspot',
-      option_two: 'RAK\nHotspot Miner',
-      option_three: 'Nebra\nIndoor Hotspot',
-      option_four: 'Nebra\nOutdoor Hotspot',
+      helium: 'Helium\nHotspot',
+      rak: 'RAK\nHotspot Miner',
+      nebrain: 'Nebra\nIndoor Hotspot',
+      nebraout: 'Nebra\nOutdoor Hotspot',
       third_party_header: 'Other Hotspots',
       helium_edition: 'For the Helium Network',
       fine_print:
@@ -184,14 +184,15 @@ export default {
     power: {
       title: 'Power Up',
       next: "I'm powered up",
-      subtitle_1: 'Attach the antenna and plug in the provided power adapter.',
+      helium_subtitle_1:
+        'Attach the antenna and plug in the provided power adapter.',
       rak_subtitle_1:
         'Plug in the provided power adapter into an outlet near a window.',
       nebrain_subtitle_1:
         'Attach the antenna and plug in the provided power adapter near a window.',
       nebraout_subtitle_1:
         'Attach the antenna and connect to an appropriate power source.',
-      subtitle_2:
+      helium_subtitle_2:
         'Your Hotspot will boot up, and its light will become Green when ready.',
       rak_subtitle_2:
         'The RAK Hotspot Miner will show a red LED light once it’s powered on.',
@@ -202,14 +203,15 @@ export default {
     },
     pair: {
       title: 'Bluetooth',
-      subtitle_1:
+      helium_subtitle_1:
         'Press the black button on your Hotspot. Its light should turn blue.',
       rak_subtitle_1: 'There is no pairing button on the RAK Hotspot Miner.',
       nebrain_subtitle_1:
         'Hold down the button on the back of the Nebra Indoor Hotspot until it starts flashing.',
       nebraout_subtitle_1:
         'There is no pairing button on the Nebra Outdoor Hotspot.',
-      subtitle_2: "Ensure your phone's bluetooth is on before proceeding",
+      helium_subtitle_2:
+        "Ensure your phone's bluetooth is on before proceeding",
       rak_subtitle_2:
         'Bluetooth is automatically enabled for 5 minutes after the RAK Hotspot Miner is powered on.\n\nHotspot can take up to 1 minute to fully boot up.\n\nPress Next to scan.',
       nebrain_subtitle_2:

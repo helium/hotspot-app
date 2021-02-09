@@ -21,16 +21,6 @@ const HotspotSetupPowerScreen = () => {
     params: { hotspotType },
   } = useRoute<Route>()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
-  const subtitle1 = t(
-    `hotspot_setup.power.${hotspotType === 'RAK' ? 'rak_' : ''}${
-      hotspotType === 'NEBRAIN' ? 'nebrain_' : ''
-    }${hotspotType === 'NEBRAOUT' ? 'nebraout_' : ''}subtitle_1`,
-  )
-  const subtitle2 = t(
-    `hotspot_setup.power.${hotspotType === 'RAK' ? 'rak_' : ''}${
-      hotspotType === 'NEBRAIN' ? 'nebrain_' : ''
-    }${hotspotType === 'NEBRAOUT' ? 'nebraout_' : ''}subtitle_2`,
-  )
 
   useEffect(() => {
     if (Platform.OS === 'android') {
@@ -63,10 +53,10 @@ const HotspotSetupPowerScreen = () => {
         textAlign="center"
         color="white"
       >
-        {subtitle1}
+        {t(`hotspot_setup.power.${hotspotType.toLowerCase()}_subtitle_1`)}
       </Text>
       <Text marginBottom="xl" variant="subtitle" textAlign="center">
-        {subtitle2}
+        {t(`hotspot_setup.power.${hotspotType.toLowerCase()}_subtitle_2`)}
       </Text>
       <Button
         marginTop="xxl"

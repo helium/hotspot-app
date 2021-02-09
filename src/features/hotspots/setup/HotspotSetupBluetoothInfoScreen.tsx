@@ -25,17 +25,6 @@ const HotspotSetupBluetoothInfoScreen = () => {
   const { enable, getState } = useBluetoothContext()
   const { showOKCancelAlert } = useAlert()
 
-  const subtitle1 = t(
-    `hotspot_setup.pair.${hotspotType === 'RAK' ? 'rak_' : ''}${
-      hotspotType === 'NEBRAIN' ? 'nebrain_' : ''
-    }${hotspotType === 'NEBRAOUT' ? 'nebraout_' : ''}subtitle_1`,
-  )
-  const subtitle2 = t(
-    `hotspot_setup.pair.${hotspotType === 'RAK' ? 'rak_' : ''}${
-      hotspotType === 'NEBRAIN' ? 'nebrain_' : ''
-    }${hotspotType === 'NEBRAOUT' ? 'nebraout_' : ''}subtitle_2`,
-  )
-
   useEffect(() => {
     getState()
   }, [getState])
@@ -98,7 +87,7 @@ const HotspotSetupBluetoothInfoScreen = () => {
         textAlign="center"
         color="white"
       >
-        {subtitle1}
+        {t(`hotspot_setup.pair.${hotspotType.toLowerCase()}_subtitle_1`)}
       </Text>
       <Text
         marginBottom="xl"
@@ -107,7 +96,7 @@ const HotspotSetupBluetoothInfoScreen = () => {
         numberOfLines={8}
         adjustsFontSizeToFit
       >
-        {subtitle2}
+        {t(`hotspot_setup.pair.${hotspotType.toLowerCase()}_subtitle_2`)}
       </Text>
       <Box flex={1} width="100%" justifyContent="flex-end">
         <Button
