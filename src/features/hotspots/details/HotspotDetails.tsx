@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import animalName from 'angry-purple-tiger'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import { random, times } from 'lodash'
 import { Linking, Share } from 'react-native'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import Box from '../../../components/Box'
@@ -16,12 +15,9 @@ import HotspotDetailChart from './HotspotDetailChart'
 import { RootState } from '../../../store/rootReducer'
 import { useColors } from '../../../theme/themeHooks'
 import { getRewardChartData } from './RewardsHelper'
-import { ChartData } from '../../../components/BarChart/types'
 import { useAppDispatch } from '../../../store/store'
 import hotspotDetailsSlice, {
-  fetchHotspotRewards,
-  fetchHotspotWitnesses,
-  fetchHotspotWitnessSums,
+  fetchHotspotDetails,
 } from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import MoreMenu from '../../../assets/images/moreMenu.svg'
@@ -34,21 +30,6 @@ const shortAddress = (address?: string) =>
     address?.length - 5,
     address?.length,
   )}`
-
-const data: Record<string, ChartData[]> = {
-  1: times(14).map((v, i) => ({
-    up: random(0, 100),
-    down: 0,
-    day: '',
-    id: [1, i].join('-'),
-  })),
-  2: times(14).map((v, i) => ({
-    up: random(0, 100),
-    down: 0,
-    day: '',
-    id: [2, i].join('-'),
-  })),
-}
 
 type HotspotDetailsRouteProp = RouteProp<
   HotspotStackParamList,
@@ -73,11 +54,13 @@ const HotspotDetails = () => {
       rewards,
       rewardSum,
       rewardsChange,
-      loadingRewards,
-      loadingWitnessSums,
+      loading,
       witnessSums,
       witnessAverage,
       witnessChange,
+      challengeSums,
+      challengeSum,
+      challengeChange,
     },
   } = useSelector((state: RootState) => state)
 
@@ -103,14 +86,7 @@ const HotspotDetails = () => {
         days = 30
         break
     }
-    dispatch(fetchHotspotRewards({ address: hotspot.address, numDays: days }))
-    dispatch(fetchHotspotWitnesses(hotspot.address))
-    dispatch(
-      fetchHotspotWitnessSums({
-        address: hotspot.address,
-        numDays: days,
-      }),
-    )
+    dispatch(fetchHotspotDetails({ address: hotspot.address, numDays: days }))
   }, [dispatch, hotspot.address, timelineIndex])
 
   const { showActionSheetWithOptions } = useActionSheet()
@@ -148,8 +124,8 @@ const HotspotDetails = () => {
     )
   }
 
-  const formatDate = (timestamp: string) => {
-    let options
+  const witnessChartData = useMemo(() => {
+    let options: Intl.DateTimeFormatOptions
     if (numDays === 1) {
       options = {
         day: 'numeric',
@@ -163,8 +139,40 @@ const HotspotDetails = () => {
         month: 'short',
       }
     }
-    return new Date(timestamp).toLocaleDateString(undefined, options)
-  }
+    return (
+      witnessSums?.map((w) => ({
+        up: Math.round(w.avg),
+        down: 0,
+        day: new Date(w.timestamp).toLocaleDateString(undefined, options),
+        id: `witness-${numDays}-${w.timestamp}`,
+      })) || []
+    )
+  }, [numDays, witnessSums])
+
+  const challengeChartData = useMemo(() => {
+    let options: Intl.DateTimeFormatOptions
+    if (numDays === 1) {
+      options = {
+        day: 'numeric',
+        month: 'short',
+        hour: 'numeric',
+      }
+    } else {
+      options = {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+      }
+    }
+    return (
+      challengeSums?.map((w) => ({
+        up: Math.round(w.sum),
+        down: 0,
+        day: new Date(w.timestamp).toLocaleDateString(undefined, options),
+        id: `challenge-${numDays}-${w.timestamp}`,
+      })) || []
+    )
+  }, [numDays, challengeSums])
 
   return (
     <BottomSheetScrollView>
@@ -219,28 +227,24 @@ const HotspotDetails = () => {
           change={rewardsChange}
           color={colors.greenOnline}
           data={getRewardChartData(rewards, numDays)}
-          loading={loadingRewards}
+          loading={loading}
         />
         <HotspotDetailChart
           title={t('hotspot_details.witness_title')}
           number={witnessAverage?.toFixed(0)}
           change={witnessChange}
           color={colors.purpleMain}
-          data={
-            witnessSums?.map((w) => ({
-              up: Math.round(w.avg),
-              down: 0,
-              day: formatDate(w.timestamp),
-              id: `witness-${numDays}-${w.timestamp}`,
-            })) || []
-          }
-          loading={loadingWitnessSums}
+          data={witnessChartData}
+          loading={loading}
         />
         <HotspotDetailChart
           title={t('hotspot_details.challenge_title')}
-          percentage={78}
+          subTitle={t('hotspot_details.challenge_sub_title')}
+          number={challengeSum?.toFixed(0)}
+          change={challengeChange}
           color={colors.purpleMain}
-          data={data[2]}
+          data={challengeChartData}
+          loading={loading}
         />
       </Box>
       <HotspotSettingsProvider>
