@@ -1,5 +1,5 @@
 import React, { useEffect, memo, useRef, useMemo, useState } from 'react'
-import { Animated, ImageStyle, Image } from 'react-native'
+import { Animated, ImageStyle, Image, Platform } from 'react-native'
 
 const AnimatedImage = Animated.createAnimatedComponent(Image)
 
@@ -53,7 +53,14 @@ const SecurityScreen = ({ visible }: Props) => {
     [],
   )
 
-  if (!mounted) return null
+  if (Platform.OS === 'android' || !mounted) {
+    // android ui doesn't update after "background" is detected in RN.
+    // We're using WindowManager.LayoutParams.FLAG_SECURE in
+    // MainActivity.java to hide the view.
+
+    return null
+  }
+
   return (
     <AnimatedImage
       style={style}
