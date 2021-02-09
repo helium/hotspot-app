@@ -53,9 +53,9 @@ const ActivityDetails = ({ detailTxn }: Props) => {
     }
   }, [detailTxn])
 
-  const onClose = () => {
+  const onClose = useCallback(() => {
     dispatch(activitySlice.actions.clearDetailTxn())
-  }
+  }, [dispatch])
 
   const renderHandle = useCallback(() => {
     if (!detailTxn) return null
@@ -68,6 +68,14 @@ const ActivityDetails = ({ detailTxn }: Props) => {
       />
     )
   }, [detailTxn, detailIcon, title, time, backgroundColor])
+
+  const openExplorer = useCallback(
+    () =>
+      Linking.openURL(
+        `https://explorer.helium.com/blocks/${block?.toString()}`,
+      ),
+    [block],
+  )
 
   if (!detailTxn) return null
 
@@ -120,11 +128,7 @@ const ActivityDetails = ({ detailTxn }: Props) => {
               flexDirection="row"
               alignItems="center"
               justifyContent="center"
-              onPress={() => {
-                Linking.openURL(
-                  `https://explorer.helium.com/blocks/${block?.toString()}`,
-                )
-              }}
+              onPress={openExplorer}
             >
               <Text
                 variant="medium"

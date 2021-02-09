@@ -1,14 +1,19 @@
 import React from 'react'
-import { PendingTransaction, PaymentV1, PaymentV2 } from '@helium/http'
+import {
+  PendingTransaction,
+  PaymentV1,
+  PaymentV2,
+  AnyTransaction,
+} from '@helium/http'
 import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
 import Box from '../../../../components/Box'
 import PaymentItem from './PaymentItem'
 
-type AnyPaymentTransaction = PaymentV1 | PaymentV2 | PendingTransaction
 type Payments = { payee: string; amount: Balance<NetworkTokens> }[]
-
-type Props = { item: AnyPaymentTransaction; address: string }
+type Props = { item: AnyTransaction | PendingTransaction; address: string }
 const Payment = ({ item, address }: Props) => {
+  if (item.type !== 'payment_v1' && item.type !== 'payment_v2') return null
+
   const payer = getPayer(item)
   const payments = getPayments(item)
 
@@ -29,15 +34,15 @@ const Payment = ({ item, address }: Props) => {
   )
 }
 
-const getPayer = (item: AnyPaymentTransaction): string => {
+const getPayer = (item: AnyTransaction | PendingTransaction): string => {
   if (item instanceof PaymentV2 || item instanceof PaymentV1) {
     return item.payer
   }
 
-  return item?.txn?.payer
+  return (item as PendingTransaction).txn?.payer
 }
 
-const getPayments = (item: AnyPaymentTransaction): Payments => {
+const getPayments = (item: AnyTransaction | PendingTransaction): Payments => {
   if (item instanceof PaymentV2) {
     return item.payments
   }
@@ -46,7 +51,7 @@ const getPayments = (item: AnyPaymentTransaction): Payments => {
     return [{ payee: item.payee, amount: item.amount }]
   }
 
-  return (item?.txn?.payments || []).map(
+  return ((item as PendingTransaction).txn?.payments || []).map(
     (p: { payee: string; amount: number }) => ({
       ...p,
       amount: new Balance(p.amount, CurrencyType.networkToken),
