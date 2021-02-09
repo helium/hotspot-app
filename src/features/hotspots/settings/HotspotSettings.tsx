@@ -211,9 +211,9 @@ const HotspotSettings = () => {
         left={0}
         bottom={0}
         right={0}
-        tint="dark"
+        blurAmount={70}
+        blurType="dark"
         position="absolute"
-        intensity={97}
       />
 
       <SafeAreaBox

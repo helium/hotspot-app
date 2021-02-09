@@ -140,6 +140,11 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    dexOptions {
+        incremental true
+        javaMaxHeapSize "4g"
+    }
+
     defaultConfig {
         applicationId "com.helium.wallet.v3"
         minSdkVersion rootProject.ext.minSdkVersion
