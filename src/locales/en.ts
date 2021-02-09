@@ -213,7 +213,7 @@ export default {
       rak_subtitle_2:
         'Bluetooth is automatically enabled for 5 minutes after the RAK Hotspot Miner is powered on.\n\nHotspot can take up to 1 minute to fully boot up.\n\nPress Next to scan.',
       nebrain_subtitle_2:
-        'Once the LED is slowly blinking and is ready to pair.\n\n.\n\nPress Next to scan.',
+        'Once the LED is slowly blinking and is ready to pair.\n\nPress Next to scan.',
       nebraout_subtitle_2:
         'Bluetooth is automatically enabled for 10 minutes after the Nebra Outdoor Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.\n\nPress Next to scan.',
       alert_no_permissions: {
