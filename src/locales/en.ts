@@ -138,14 +138,6 @@ export default {
       fine_print:
         'RAK Hotspot Miners have special firmware preloaded by RAK. Double check your hardware is a RAK Hotspot Miner before proceeding.',
     },
-    start: {
-      title: 'Set up Hotspot',
-      subtitle:
-        'Hotspots allow you to earn HNT by building out The People’s Network.',
-      info: 'How does this work? ⓘ',
-      next: "Let's get started",
-      not_now: 'Not right now',
-    },
     education: {
       title: 'Placing\nyour Hotspot.',
       cards: [
