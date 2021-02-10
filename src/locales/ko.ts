@@ -1,0 +1,676 @@
+export default {
+  back: '돌아가기',
+  ordinals: [
+    '첫 번째',
+    '두 번째',
+    '세 번째',
+    '네 번째',
+    '다섯 번째',
+    '여섯 번째',
+    '일곱 번째',
+    '여덟 번째',
+    '아홉 번째',
+    '열 번째',
+    '열한 번째',
+    '열두 번째',
+  ],
+  account_setup: {
+    welcome: {
+      title: 'Helium에 오신 것을\n환영합니다',
+      subtitle:
+        'The People’s Network 구축을 위해 Hotspot을 호스팅하고\n새로운 암호화폐인\n<b><purple>$HNT</purple></b>을 획득하세요.',
+      create_account: '계정 생성',
+      import_account: '기존 계정 가져오기',
+    },
+    warning: {
+      title: '보안 계정\n생성.',
+      subtitle:
+        'Helium 계정은\n<b><purple>12개의 고유한 단어</purple></b>로 보호되며, 이는 계정에\n로그인하거나\n계정을 복구하기 위해 사용하는 암호 역할을 합니다.',
+      generate: '12개의 단어 생성',
+    },
+    generating: '12개의 단어 생성 중...',
+    passphrase: {
+      title: '귀하의 12개의 단어\n암호',
+      subtitle:
+        '12개의 단어를 순서대로 <b>모두 적어둬야\n합니다</b>.\n\n<red>Helium은 이러한 단어를 복구할 수 없습니다.</red>',
+      warning: 'Helium은 이러한 단어를 복구할 수 없습니다',
+      next: '단어를 모두 적었습니다',
+    },
+    confirm: {
+      title: '단어\n확인',
+      subtitle:
+        '다음 중 귀하의 <b><purple>{{ordinal}} 단어는 무엇인가요?</purple></b>',
+      forgot: '단어를 잊어버림',
+      failed: {
+        title: '죄송합니다.',
+        subtitle_1: '시드 문구를 잘못 입력했습니다.',
+        subtitle_2: '다시 시도해 주세요.',
+        try_again: '다시 시도하세요',
+      },
+    },
+    create_pin: {
+      title: 'PIN 코드 설정',
+      subtitle: '마지막 보안 단계로 PIN 코드를 사용하여 계정을 보호해 주세요.',
+    },
+    confirm_pin: {
+      title: 'PIN 반복',
+      subtitle: 'PIN을 다시 입력하세요',
+    },
+    enable_notifications: {
+      title: '알림 활성화',
+      subtitle:
+        '계정 또는 Hotspot에 중요한 업데이트가 발생하면 알림을 받습니다.',
+      mining: 'Hotspot은 채굴입니다',
+      later: '아니요, 나중에 설정하겠습니다',
+    },
+  },
+  learn: {
+    title: 'HNT를 획득하려면\n어떻게 해야 하나요?',
+    slides: [
+      {
+        topTitle: 'Beacon 수신',
+        topBody: 'Hotspot은 근처 Hotspot의 Beacon을 수신합니다',
+        bottomTitle: 'Beacon은 어떻게 작동하나요?',
+        bottomBody:
+          'Beacon은 Hotspot이 전송하는 특수 패킷으로 다른 인접 Hotspot에서 수신할 수 있습니다.\n\n이러한 신호를 통해 네트워크는 서로 수신 범위 내에 있는 Hotspot을 확인할 수 있습니다. 이러한 인접한 Hotspot을 ’감시’라고 하며 귀하의 Beacon을 수신하는 Hotspot이 감시 목록에 추가됩니다.',
+      },
+      {
+        topTitle: 'Beacon 수신',
+        topBody: 'Hotspot은 근처 Hotspot의 Beacon을 수신합니다',
+        bottomTitle: 'Beacon은 어떻게 작동하나요?',
+        bottomBody:
+          'Beacon은 Hotspot이 전송하는 특수 패킷으로 다른 인접 Hotspot에서 수신할 수 있습니다.\n\n이러한 신호를 통해 네트워크는 서로 수신 범위 내에 있는 Hotspot을 확인할 수 있습니다. 이러한 인접한 Hotspot을 ’감시’라고 하며 귀하의 Beacon을 수신하는 Hotspot이 감시 목록에 추가됩니다.',
+      },
+      {
+        topTitle: 'Beacon 수신',
+        topBody: 'Hotspot은 근처 Hotspot의 Beacon을 수신합니다',
+        bottomTitle: 'Beacon은 어떻게 작동하나요?',
+        bottomBody:
+          'Beacon은 Hotspot이 전송하는 특수 패킷으로 다른 인접 Hotspot에서 수신할 수 있습니다.\n\n이러한 신호를 통해 네트워크는 서로 수신 범위 내에 있는 Hotspot을 확인할 수 있습니다. 이러한 인접한 Hotspot을 ’감시’라고 하며 귀하의 Beacon을 수신하는 Hotspot이 감시 목록에 추가됩니다.',
+      },
+    ],
+    next: '가이드를 읽었음',
+  },
+  generic: {
+    done: '완료',
+    understand: '내용을 이해함',
+    blocks: '블록',
+    active: '활성화',
+    skip: '건너뛰기',
+    next: '다음',
+    need_help: '지원 요청',
+    scan_again: '다시 스캔',
+    submit: '제출',
+    balance: '잔액',
+    continue: '계속',
+    skip_for_now: '지금은 건너뛰기',
+    go_to_account: '내 계정으로 이동',
+    go_to_settings: '설정으로 이동',
+    hotspot: 'Hotspot',
+    location: '위치',
+    challenger: 'Challenger',
+    learn_more: '자세히 알아보기',
+    cancel: '취소',
+    ok: '확인',
+    unknown: '알 수 없음',
+    online: '온라인',
+    offline: '오프라인',
+    fee: '수수료',
+    to: '수신처',
+    from: '발신처',
+    new: '새로 생성',
+    save: '저장',
+    connect: '연결',
+    go_back: '돌아가기',
+    forget: '잊어버림',
+    error: '오류 발생',
+    loading: '로드 중...',
+  },
+  hotspot_setup: {
+    selection: {
+      title: 'Hotspot\n선택',
+      subtitle: '어떤 종류의 Hotspot을\n추가하시겠어요?',
+      option_one: 'Helium\nHotspot',
+      option_two: 'RAK\nHotspot Miner',
+      third_party_header: '기타 Hotspot',
+      helium_edition: 'Helium Network의 경우',
+      fine_print:
+        'RAK Hotspot Miner에는 RAK가 사전 로드한 특수 펌웨어가 설치되어 있습니다. 계속하기 전에 하드웨어가 RAK Hotspot Miner인지 다시 확인하세요.',
+    },
+    start: {
+      title: 'Hotspot 설정',
+      subtitle:
+        'The People’s Network를 구축하여 Hotspot을 사용하면 HNT를 획득할 수 있습니다.',
+      info: '어떻게 작동하나요? ⓘ',
+      next: '시작합니다',
+      not_now: '나중에',
+    },
+    education: {
+      title: 'Hotspot\n배치',
+      cards: [
+        {
+          title: '좋은 장소에 배치하세요',
+          subtitle:
+            'Hotspot은 하늘이 보이고 다른 Hotspot에서 최소한 300m 이상 떨어진 장소를 좋아합니다. ',
+        },
+        {
+          title: '숨기지 마세요',
+          subtitle:
+            'Hotspot을 침실용 탁자나 책장에 숨겨서는 안 됩니다. 그 대신 창가에 두세요.',
+        },
+        {
+          title: '건물이 신호를 차단할 수 있습니다',
+          subtitle:
+            '주변 건물로 인해 주변 기기에 대한 Hotspot의 커버리지가 감소될 수 있습니다.',
+        },
+        {
+          title: '마지막으로 오류가 발생하지 않도록 주의하세요.',
+          subtitle:
+            'Hotspot을 금속망에서 멀리 떨어진 곳에 두세요. 금속망은 무선 신호를 상당 부분 차단할 수 있습니다.',
+        },
+      ],
+      next: '가이드를 읽었음',
+    },
+    diagnostics: {
+      title: '진단 도구',
+      p_1:
+        '<b><white>Helium은 진단 지원을 통해 안전한 방법으로 Hotspot에서 발생하는 문제를 식별할 수 있습니다.</white></b>\n\nHelium은 개인 키에 대한 액세스 권한이 없으며 네트워크 내의 다른 장치를 제외하고 Hotspot에만 액세스할 수 있습니다.\n\n진단 지원을 선택 취소하려면 Hotspot을 구매할 때 사용한 이메일을 통해 <purple><b>support@helium.com</b></purple>으로 이메일을 보내주시기 바랍니다.',
+    },
+    power: {
+      title: '전원 켜기',
+      next: '전원을 켰습니다',
+      subtitle_1: '안테나를 부착하고 제공된 전원 어댑터를 끼웁니다.',
+      rak_subtitle_1: '제공된 전원 어댑터를 창가 부근의 콘센트에 끼웁니다.',
+      subtitle_2: 'Hotspot이 부팅되고 준비되면 표시등이 녹색으로 바뀝니다.',
+      rak_subtitle_2:
+        '전원이 켜지면 RAK Hotspot Miner에 빨간색 LED 표시등이 표시됩니다.',
+    },
+    pair: {
+      title: 'Bluetooth',
+      subtitle_1:
+        'Hotspot에서 검은색 버튼을 누르세요. 표시등이 파란색으로 바뀝니다.',
+      rak_subtitle_1: 'RAK Hotspot Miner에는 페어링 버튼이 없습니다.',
+      subtitle_2: '계속하기 전에 휴대전화의 Bluetooth가 켜져 있는지 확인하세요',
+      rak_subtitle_2:
+        'RAK Hotspot Miner의 전원이 켜진 후 5분 동안 Bluetooth가 자동으로 활성화됩니다.\n\nHotspot이 완전히 부팅되는 데 최대 1분이 소요될 수 있습니다.\n\n다음을 눌러 스캔합니다.',
+      alert_no_permissions: {
+        title: 'Bluetooth 승인',
+        body:
+          'Helium이 Bluetooth를 사용하려면 권한이 필요합니다. 설정에서 Bluetooth 권한을 활성화할 수 있습니다.',
+      },
+      alert_ble_off: {
+        title: 'Bluetooth 활성화',
+        body:
+          '페어링을 시작하려면 Bluetooth를 켜세요. 등록이 완료될 때까지 Bluetooth를 켜두세요.',
+      },
+      scan: '내 Hotspot 스캔',
+    },
+    ble_scan: {
+      title: 'Hotspot 스캔',
+      cancel: '스캔 취소',
+      connecting: '{{hotspotName}}에 연결',
+    },
+    ble_select: {
+      hotspots_found: 'Hotspot이 {{count}}개 발견되었습니다.',
+      hotspots_found_plural: 'Hotspot {{count}}개 발견',
+      subtitle: 'Hotspot을 선택하여 계속하세요.',
+    },
+    ble_error: {
+      title: 'Hotspot을 찾을 수 없음',
+      enablePairing: '페어링 모드 활성화',
+      pairingInstructions:
+        'Bluetooth를 활성화하려면 제조업체 지침을 참조하세요',
+    },
+    wifi_scan: {
+      title: 'Wi-Fi',
+      settings_title: 'Wi-Fi 설정',
+      subtitle: 'Hotspot을 연결하려는 Wi-Fi 네트워크를 선택합니다.',
+      ethernet: '그 대신에 이더넷을 사용합니다',
+      connection_failed: '연결에 실패했습니다. 다시 시도해 주세요',
+      disconnect_failed: '분리에 실패했습니다. 다시 시도해 주세요',
+      connected:
+        '귀하의 Hotspot은 <green>온라인</green> 상태이며 %{network}에 연결되었습니다.',
+      scan_fail_subtitle:
+        'Hotspot 근처에 Wi-Fi 네트워크가 없습니다. 라우터가 온라인 상태이고 근처에 있는지 확인하세요.',
+      tip: '<blue>Wi-Fi가 숨김으로 설정되었는지</blue> 확인하셨나요?',
+      saved_networks: '구성된 네트워크',
+      available_networks: '사용 가능한 네트워크',
+      disconnect_help:
+        '암호를 업데이트하거나 새 네트워크에 연결하려면 먼저 이전 네트워크를 삭제하세요.',
+      disconnect: '네트워크 삭제',
+    },
+    disconnect_dialog: {
+      title: '네트워크를 삭제하시겠어요?',
+      body: '이 Hotspot은 더 이상 {{wifiName}}에 자동으로 연결되지 않습니다.',
+    },
+    wifi_password: {
+      join_title: '암호 입력',
+      update_title: 'Wi-Fi 업데이트',
+      message:
+        '현재 이 네트워크에 Hotspot이 연결되어 있습니다. 암호를 변경하면 Hotspot이 오프라인 상태가 될 수 있습니다.',
+      error_title: '유효하지 않은 암호',
+      subtitle:
+        '이 네트워크에 Hotspot을 연결하려면 Wi-Fi의 자격 증명을 입력하세요.',
+      placeholder: '암호',
+      show_password: '암호 표시',
+      hide_password: '암호 숨기기',
+      connecting: '네트워크에 연결',
+      forget: '잊어버림',
+      forget_network: '네트워크 삭제',
+      forget_alert_title: '네트워크를 삭제하시겠어요?',
+      forget_alert_message: '이 Hotspot은 더 이상 자동으로 연결되지 않습니다 ',
+    },
+    ethernet: {
+      title: '이더넷을 사용하세요',
+      subtitle: 'Hotspot을 인터넷 라우터의 사용 가능한 활성 포트에 연결합니다.',
+      secure: '이더넷 케이블을 단단히 연결하세요',
+      next: 'Hotspot이 연결되었습니다',
+    },
+    firmware_update: {
+      title: '업데이트 사용 가능',
+      subtitle: '계속하려면 Hotspot의 펌웨어를 업데이트해야 합니다.',
+      current_version: '현재 버전',
+      required_version: '필수 버전',
+      explanation:
+        'Hotspot은 자동으로 업데이트를 확인합니다. 이 작업은 약 10분 정도 걸릴 수 있습니다. 연결한 상태로 두고 나중에 다시 확인하세요.',
+      next: '확인',
+    },
+    add_hotspot: {
+      title: 'Hotspot 추가',
+      subtitle:
+        'Hotspot을 추가하려면 진위 여부를 확인하기 위해 약간의 수수료(Data Credit 비용)가 필요합니다.',
+      checking_status: 'Hotspot 상태 확인 중...',
+      already_added:
+        '이미 이 Hotspot을 지갑에 추가했습니다. 다음 화면으로 이동하여 위치를 확인합니다.',
+      not_owned:
+        '귀하는 이 Hotspot을 소유하고 있지 않으며 지갑에 추가할 수 없습니다.',
+      label: '현재 Hotspot 추가 수수료(Data Credit 비용)',
+      help_link: 'Data Credit이란 무엇인가요?',
+      support_title: 'Data Credit이란 무엇인가요?',
+      support_answer:
+        'Helium Network를 통해 데이터를 전송하려면 Data Credit이 필요합니다.',
+      error:
+        'Hotspot 추가를 진행할 수 없습니다. Helium에서 Hotspot을 구매한 경우, support@helium.com에 문의하고 mac 주소({{mac}})를 포함해 주시기 바랍니다.',
+      back: 'Hotspot 페어링으로 돌아가기',
+      wait_error_title: '다시 시도해 주세요',
+      wait_error_body:
+        'Hotspot Miner가 시작을 기다리고 있습니다. 몇 분 후에 다시 시도해 주세요.',
+    },
+    enable_location: {
+      title: 'Hotspot\n위치 설정',
+      subtitle:
+        'Hotspot의 위치를 설정해야 합니다. 휴대전화를 사용하여 이 작업을 수행할 수 있습니다.',
+      p_1: '먼저 휴대전화의 위치에 액세스할 수 있는 권한을 요청받게 됩니다.',
+      settings_p_1:
+        'Hotspot 위치를 업데이트하려면 추가 위치 권한이 필요합니다.',
+      settings_p_2:
+        "아래 버튼을 탭하면 설정으로 이동합니다. 'Location(위치)'에서 'While using the App(앱을 사용하는 동안)'을 탭합니다.",
+      next: '권한 요청',
+      cancel: '아니요, 나중에 설정하겠습니다',
+    },
+    location_fee: {
+      title: '위치 수수료',
+      subtitle_free: '위치 수수료($10)가 선불 결제되었습니다.',
+      subtitle_fee:
+        '이 위치를 확인하려면 $10의 위치 수수료(DC)를 지불해야 합니다.',
+      confirm_location: '선택한 위치가 올바른지 확인하고 Hotspot을 등록하세요.',
+      pending_p_1:
+        '이 Hotspot에는 블록체인에서 보류 중인 위치 확인 트랜잭션이 있습니다.',
+      pending_p_2:
+        'Hotspot의 위치를 변경하려면 이전 트랜잭션이 완료될 때까지 기다린 후 위치를 업데이트하세요.',
+      balance: '잔액:',
+      fee: '수수료:',
+      no_funds: '계정 잔액에 HNT가 부족합니다',
+      calculating_text: 'HNT 금액 계산',
+      error_title: '오류 발생',
+      error_body:
+        '수수료 데이터를 로드하는 중에 오류가 발생했습니다. 다시 시도해 주세요.',
+      next: 'Hotspot 등록',
+      fee_next: '수수료 지불 및 Hotspot 등록',
+    },
+    location: {
+      title: 'Hotspot 위치',
+      next: '위치 설정',
+    },
+    progress: {
+      title: 'Hotspot 등록',
+      subtitle: '몇 분 정도 걸릴 수 있으므로 이 화면을 닫아도 됩니다.',
+      next: '지갑으로 이동',
+    },
+    error: {
+      alertTitle: '서버가 응답할 수 없음',
+      alertMessage:
+        '서버 요청 시간이 초과되어 현재 Hotspot을 추가할 수 없습니다.\n\nsupport@helium.com에 문의하고 MAC 주소( %{mac})를 적어주시기 바랍니다.',
+    },
+  },
+  account_import: {
+    word_entry: {
+      title: '복구 시드\n문구 입력',
+      directions: '<b>{{ordinal}}</b> 단어 입력',
+      placeholder: '{{ordinal}} 단어',
+      subtitle: '복구 시드 문구는 대소문자를 구분하지 않음',
+    },
+    confirm: {
+      title: '시드 문구 확인',
+      subtitle:
+        '입력하신 12개의 단어는 다음과 같습니다. 필요한 경우 단어를 탭하여 업데이트할 수 있습니다.',
+      next: '시드 문구 제출',
+    },
+    complete: {
+      title: '계정 복구 중...',
+      subtitle: '잠시만 기다려 주세요.',
+    },
+    alert: {
+      title: '오류 발생',
+      body: '이 시드 문구는 Helium 계정과 일치하지 않습니다',
+    },
+  },
+  wallet: {
+    title: '내 지갑',
+    copiedToClipboard: '{{address}}이(가) 클립 보드에 복사됨',
+    share: '공유',
+  },
+  send: {
+    title: {
+      payment: 'HNT 전송',
+      dcBurn: 'HNT 버닝',
+      transfer: 'Hotspot 전송',
+    },
+    available: '{{ amount }} 사용 가능',
+    address: {
+      label: '받는 사람 주소',
+      label_transfer: '구매자 주소',
+      placeholder: '주소 입력',
+      seller: '판매자 주소',
+    },
+    amount: {
+      label: '금액(HNT)',
+      label_transfer: '요청 금액(HNT)',
+      placeholder: '0',
+      placeholder_transfer: '(옵션) Hotspot에 대한 결제 요청',
+    },
+    dcAmount: {
+      label: '(DC)와 동일한 금액',
+      placeholder: '0',
+    },
+    memo: {
+      label: '메모',
+      placeholder: '메모 입력... (옵션)',
+    },
+    sendMax: '최대 전송',
+    button: {
+      payment: 'HNT 전송',
+      dcBurn: 'HNT 버닝',
+      transfer_request: '이체 요청 전송',
+      transfer_complete: '이체 완료',
+    },
+    qrInfo: 'QR 정보',
+    error:
+      '이 트랜잭션을 제출하는 중에 오류가 발생했습니다. 다시 시도해 주세요.',
+    hotspot_label: 'Hotspot',
+    last_activity: '마지막으로 보고된 활동: {{activity}}',
+  },
+  more: {
+    title: '설정',
+    sections: {
+      security: {
+        title: '보안',
+        enablePin: 'PIN 활성화',
+        requirePin: 'PIN 요청',
+        resetPin: 'PIN 초기화',
+        requirePinForPayments: '결제 시 PIN 필요',
+        authIntervals: {
+          immediately: '즉시',
+          after_1_min: '1분 후',
+          after_5_min: '5분 후',
+          after_15_min: '15분 후',
+          after_1_hr: '1시간 후',
+          after_4_hr: '4시간 후',
+        },
+        revealWords: '단어 공개',
+      },
+      learn: {
+        title: '알아보기',
+        tokenEarnings: '토큰 획득',
+        hotspotPlacement: 'Hotspot 배치',
+        support: '지원',
+        troubleshooting: '문제 해결',
+        joinDiscord: 'Helium Discord 참여',
+      },
+      account: {
+        title: '계정',
+        language: '언어',
+        units: '단위',
+        signOut: '로그아웃',
+        signOutAlert: {
+          title: '경고!',
+          body:
+            '이 기기에서 모든 계정 정보가 제거됩니다. 계정 및 Hotspot에 대한 액세스를 복원하는 유일한 방법은 12개의 단어 복구 시드 문구를 사용하는 것입니다.',
+        },
+      },
+    },
+  },
+  auth: {
+    title: 'PIN 입력',
+    error: '잘못된 PIN',
+    enter_current: '계속하려면 현재 PIN을 입력하세요',
+  },
+  hotspots: {
+    new: {
+      title: '새 Hotspot 추가',
+      subtitle:
+        'Hotspot을 방금 추가했다면 잠시 기다려 주세요. 네트워크가 Hotspot을 전파하는 데 몇 분 정도 걸립니다.',
+      setup: 'Hotspot 설정',
+      explorer: '글로벌 Hotspot 탐색기',
+    },
+    owned: {
+      title: '내 Hotspot',
+      reward_summary:
+        '지난 24시간 동안 귀하의 Hotspot이 {{hntAmount}}을(를) 채굴했습니다.',
+      reward_summary_plural:
+        '지난 24시간 동안 Hotspot {{count}}개가 {{hntAmount}}을(를) 채굴했습니다.',
+      your_hotspots: '귀하의 Hotspot',
+    },
+    empty: {
+      body: '아직 Hotspot을 추가하거나 팔로우하지 않았습니다.',
+    },
+  },
+  permissions: {
+    location: {
+      title: '위치 권한',
+      message:
+        'Helium 지갑은 Bluetooth LE 검색을 위해 사용자의 위치에 액세스해야 합니다.',
+    },
+  },
+  time: {
+    morning: '아침',
+    evening: '저녁',
+    afternoon: '오후',
+    day_header: '안녕하세요, 현재\n{{timeOfDay}}입니다.',
+  },
+  notifications: {
+    share: '공유',
+    list: { title: 'Notifications' },
+    none: {
+      title: '알림이\n없습니다',
+      subtitle:
+        '여기에서 Hotspot 및 The People’s Network에 대한 뉴스, 업데이트 및 알림을 받을 수 있습니다.',
+    },
+  },
+  transactions: {
+    pending: '보류 중',
+    mining: '채굴 보상',
+    sent: 'HNT 전송',
+    burnHNT: 'HNT 버닝',
+    received: 'HNT 수신',
+    added: '블록체인에 Hotspot 추가',
+    location: '위치 확인',
+    transfer: 'Hotspot 전송',
+    transferSell: 'Hotspot 전송(판매)',
+    transferBuy: 'Hotspot 전송(구매)',
+    view: '보기',
+    filter: {
+      all: '모든 활동',
+      mining: '채굴 보상',
+      payment: '결제 트랜잭션',
+      hotspot: 'Hotspot 트랜잭션',
+      pending: '트랜잭션 보류 중',
+    },
+    no_results: '결과 없음',
+  },
+  hotspot_settings: {
+    title: 'Hotspot 설정',
+    pairing: {
+      title: 'Hotspot 페어링 필요',
+      subtitle:
+        'Helium Hotspot의 버튼을 누르거나 RAK Hotspot Miner의 전원을 껐다 켜세요.',
+      scan: '내 Hotspot 스캔',
+    },
+    transfer: {
+      title: 'Hotspot 전송',
+      subtitle: 'Hotspot을 다른 Helium 지갑 계정에 전송합니다.',
+      begin: 'Hotspot 전송 시작',
+    },
+    diagnostics: {
+      title: '진단 보고서',
+      no_hotspots: 'Hotspot을 찾을 수 없음',
+      scan_again: '다시 스캔',
+      generating_report: '보고서 생성',
+      p2p: 'Peer-to-Peer 연결',
+      no_connection: '연결되지 않음',
+      outbound: '아웃바운드',
+      outbound_help:
+        'Hotspot을 블록체인의 피어에 연결할 수 없습니다. 이는 라우터 문제, 인터넷 연결 없음 또는 수신되는 연결을 차단하는 방화벽 때문일 수 있습니다.',
+      inbound: '인바운드',
+      inbound_help:
+        '블록체인 피어를 Hotspot에 연결할 수 없습니다. 이는 라우터 문제, 인터넷 연결 없음 또는 수신되는 연결을 차단하는 방화벽 때문일 수 있습니다.',
+      activity: '활동',
+      blockchain_sync: '블록체인 동기화',
+      synced: '{{percent}} 동기화됨',
+      blockchain_height_help:
+        '채굴을 시작하기 전에 Hotspot을 100% 동기화해야 합니다. 인터넷 속도에 따라 몇 시간 이상 걸릴 수 있습니다. Hotspot의 전원을 켜고 인터넷에 연결된 상태를 유지하세요.',
+      last_challenged: '마지막 Challenge 처리',
+      last_challenged_help:
+        '인접 Hotspot이 귀하의 Hotspot 위치를 확인할 수 없습니다. 대부분의 경우, 이는 무선 신호가 도달할 수 없는 영역에 안테나가 있기 때문입니다(건물로 차단됨, 안테나가 아래로 향함, 안테나가 실내에 위치함).',
+      firmware: 'Hotspot 펌웨어',
+      hotspot_type: 'Hotspot 유형',
+      app_version: '앱 버전',
+      wifi_mac: 'Wi-Fi MAC',
+      eth_mac: '이더넷 MAC',
+      nat_type: 'NAT 유형',
+      ip: 'IP 주소',
+      report_generated: '보고서 생성',
+      send_to_support: '지원팀에 보고서 보내기',
+      help_link: '가능한 솔루션에 대해 자세히 알아보기',
+      email_client_missing:
+        '설치된 호환 가능한 이메일 클라이언트를 찾을 수 없습니다',
+      other_info: '추가 정보',
+    },
+    wifi: {
+      title: 'Wi-Fi 네트워크',
+      connected_via: '다음을 통해 연결',
+      not_connected: '연결되지 않음',
+      available_wifi: '사용 가능한 Wi-Fi 네트워크',
+      show_password: '암호 표시',
+      hide_password: '암호 숨기기',
+      ethernet: '이더넷',
+    },
+    options: {
+      paired: 'Hotspot과 페어링',
+      diagnostic: '진단 도구',
+      wifi: 'Wi-Fi 네트워크',
+      reassert: '위치 업데이트',
+      firmware: 'Hotspot 펌웨어',
+    },
+    reassert: {
+      remaining:
+        '무료</purple></b> Hotspot 위치 확인 업데이트가 <b><purple>{{count}}개 남아 있습니다.',
+      remaining_plural:
+        '무료</purple></b> Hotspot 위치 확인 업데이트가 <b><purple>{{count}}개 남아 있습니다.',
+      change_location: '위치 변경',
+      confirm: '확인함',
+      cost: '위치를 재확인하는 데 드는 비용:',
+      insufficient_funds:
+        '이 확인을 위해 사용할 수 있는\n자금이 없습니다. HNT를 획득하세요.',
+      confirm_location: 'Hotspot 위치 변경을 확인하세요',
+      charge: '{{amount}}의 금액이 청구됩니다.',
+      pending_message: '위치 업데이트가 보류 중입니다.',
+      assert_pending: '확인 보류 중...',
+      failTitle: 'Hotspot 재확인에 실패했습니다',
+      failSubtitle: '나중에 다시 시도해 주세요',
+    },
+  },
+  hotspot_details: {
+    title: 'Hotspot 세부 정보',
+    owner: '소유자: {{address}}',
+    pass_rate: '통과 비율',
+    reward_title: 'HNT 보상',
+    witness_title: '감시',
+    challenge_title: 'Challenge',
+    picker_title: '이전',
+    picker_options: ['24시간', '7일', '14일', '30일'],
+    status_online: '온라인',
+    status_offline: '주의 필요',
+    options: {
+      settings: '설정',
+      viewExplorer: '탐색기에서 보기',
+      share: '공유',
+    },
+  },
+  transfer: {
+    title: 'Hotspot 전송',
+    heading: 'Hotspot 중 하나의 소유권을 안전하게 변경하세요.',
+    body:
+      'Hotspot이 전송되면 더 이상 앱에서 이 Hotspot을 볼 수 없으며 이 Hotspot에서 HNT를 획득할 수 없습니다.\n\n전송을 계속하려면 아래 상자에 Hotspot 이름을 입력하세요.',
+    button_title: '전송 계속',
+    input_placeholder: '여기에 Hotspot 이름 입력',
+    exists_alert_title: '전송이 이미 존재함',
+    exists_alert_body: '이 Hotspot에 대해 보류 중인 활성 전송이 있습니다.',
+    amount_changed_alert_title: '요청 금액 변경',
+    amount_changed_alert_body:
+      '판매자가 요청한 금액이 변경되었습니다. 요청된 새로운 금액은 {{amount}} HNT입니다.',
+    nonce_alert_title: '전송을 완료할 수 없음',
+    nonce_alert_body:
+      '판매자가 Hotspot 전송 트랜잭션을 시작한 후 HNT를 보내거나 받은 것 같습니다. Hotspot 판매자에게 연락하여 새로운 Hotspot 전송 트랜잭션을 생성하고 Hotspot 전송이 완료될 때까지 무관한 결재 트랜잭션을 피하세요.',
+    incomplete_alert_title: '전송이 완료되지 않음',
+    incomplete_alert_body:
+      '이 전송을 완료할 수 없습니다. 귀하가 승인된 구매자인지 확인하거나 판매자에게 자세한 내용을 문의하세요.',
+    canceled_alert_title: '전송이 취소됨',
+    canceled_alert_body:
+      '이 전송은 더 이상 활성화되지 않습니다. 판매자에게 자세한 내용을 문의하세요.',
+    fine_print: '구매자가 트랜잭션을 수락하고 완료하면 Hotspot이 전송됩니다.',
+    notification_button: '트랜잭션 보기',
+    cancel: {
+      button_title: '전송 취소',
+      failed_alert_title: '전송을 취소할 수 없음',
+      failed_alert_body: 'API에서 응답이 없습니다. 다시 시도해 주세요.',
+      alert_title: 'Hotspot 전송 취소',
+      alert_body:
+        '{{gateway}}에 대해 {{buyer}}에게 보낼 보류 중인 Hotspot 전송이 있습니다.\n\n그래도 취소하시겠어요?',
+      alert_back: '돌아가기',
+      alert_confirm: '전송 취소',
+    },
+    unknown: '알 수 없음',
+  },
+  activity_details: {
+    security_tokens: 'Security Token',
+    reward: '보상',
+    from: '발신처',
+    to: '수신처',
+    memo: '메모',
+    location: '위치',
+    seller: '판매자',
+    buyer: '구매자',
+    owner: '소유자',
+    my_account: '내 계정',
+    view_block: '블록 보기',
+    rewardTypes: {
+      poc_challengees: 'PoC',
+      poc_challengers: 'Challenger',
+      poc_witnesses: '감시',
+      consensus: 'Consensus',
+      data_credits: '패킷 전송',
+      securities: 'Security Token',
+    },
+  },
+}
