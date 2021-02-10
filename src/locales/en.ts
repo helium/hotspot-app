@@ -429,6 +429,7 @@ export default {
     error: 'There was an error submitting this transaction. Please try again.',
     hotspot_label: 'Hotspot',
     last_activity: 'LAST REPORTED ACTIVITY: {{activity}}',
+    label_error: 'You do not have enough HNT in your account.',
   },
   more: {
     title: 'Settings',
