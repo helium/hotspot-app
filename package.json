@@ -86,7 +86,7 @@
     "react-native-ble-plx": "^2.0.2",
     "react-native-config": "^1.4.1",
     "react-native-device-info": "^7.1.0",
-    "react-native-gesture-handler": "^1.9.0",
+    "react-native-gesture-handler": "1.9.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.3",
     "react-native-localize": "^1.4.3",
     "react-native-navigation-bar-color": "^2.0.1",
