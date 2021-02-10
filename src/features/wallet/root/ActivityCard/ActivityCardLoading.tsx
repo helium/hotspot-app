@@ -1,6 +1,7 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { ActivityIndicator } from 'react-native'
+import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
 
 const ActivityCardLoading = ({
@@ -13,7 +14,11 @@ const ActivityCardLoading = ({
   const { t } = useTranslation()
 
   if (isLoading) {
-    return <ActivityIndicator color="gray" />
+    return (
+      <Box paddingBottom="l">
+        <ActivityIndicator color="gray" />
+      </Box>
+    )
   }
 
   if (hasNoResults) {

@@ -24,7 +24,6 @@ type Props = {
   onChange?: (index: number) => void
   txns: AnyTransaction[]
   pendingTxns: PendingTransaction[]
-  isResetting: boolean
   filter: FilterType
   status: Loading
 }
@@ -36,7 +35,6 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
     onChange,
     txns,
     pendingTxns,
-    isResetting,
     filter,
     status,
   } = props
@@ -60,8 +58,6 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
   }))
 
   const getData = useMemo((): AllTxns => {
-    if (isResetting) return []
-
     if (filter === 'pending') {
       return pendingTxns
     }
@@ -69,11 +65,17 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
       return [...pendingTxns, ...txns]
     }
     return txns
-  }, [filter, isResetting, pendingTxns, txns])
+  }, [filter, pendingTxns, txns])
 
-  const header = useCallback(() => <ActivityCardHeader filter={filter} />, [
-    filter,
-  ])
+  const header = useCallback(
+    () => (
+      <ActivityCardHeader
+        filter={filter}
+        loading={status !== 'fulfilled' && status !== 'rejected'}
+      />
+    ),
+    [filter, status],
+  )
 
   const getSnapPoints = useMemo(() => [dragMin, dragMid, dragMax], [
     dragMax,
@@ -91,11 +93,7 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
       onChange={onChange}
       animatedIndex={animatedIndex}
     >
-      <ActivityCardListView
-        data={getData}
-        isResetting={isResetting}
-        status={status}
-      />
+      <ActivityCardListView data={getData} status={status} />
     </BottomSheet>
   )
 })

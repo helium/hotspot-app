@@ -21,12 +21,11 @@ import ActivityCardLoading from './ActivityCardLoading'
 
 type AllTxns = (AnyTransaction | PendingTransaction)[]
 type Props = {
-  isResetting: boolean
   status: Loading
   data: AllTxns
 }
 
-const ActivityCardListView = ({ isResetting, data, status }: Props) => {
+const ActivityCardListView = ({ data, status }: Props) => {
   const { m } = useSpacing()
   const dispatch = useAppDispatch()
   const { result: address, loading } = useAsync(getSecureItem, ['address'])
@@ -114,11 +113,12 @@ const ActivityCardListView = ({ isResetting, data, status }: Props) => {
   const footer = useMemo(
     () => (
       <ActivityCardLoading
-        isLoading={isResetting || (status === 'pending' && !data?.length)}
+        // isLoading={status === 'idle' || status === 'pending'}
+        isLoading
         hasNoResults={status === 'fulfilled' && data && data.length === 0}
       />
     ),
-    [data, isResetting, status],
+    [data, status],
   )
 
   if (loading) return null
@@ -130,30 +130,11 @@ const ActivityCardListView = ({ isResetting, data, status }: Props) => {
       keyExtractor={keyExtractor}
       contentContainerStyle={contentContainerStyle}
       ListFooterComponent={footer}
+      ListHeaderComponent={footer}
       getItemLayout={getItemLayout}
       onEndReached={requestMore}
     />
   )
 }
 
-export default memo(ActivityCardListView, (prevProps, nextProps) => {
-  const lengthEqual = prevProps.data.length === nextProps.data.length
-
-  if (!lengthEqual) {
-    return false
-  }
-
-  prevProps.data.forEach((txn, index) => {
-    const prevTxn = txn as PendingTransaction
-    const nextTxn = nextProps.data[index] as PendingTransaction
-
-    const hashEqual = nextTxn.hash === prevTxn.hash
-    const statusEqual = nextTxn.status === prevTxn.status
-
-    if (!hashEqual || !statusEqual) {
-      return false
-    }
-  })
-
-  return true
-})
+export default memo(ActivityCardListView)

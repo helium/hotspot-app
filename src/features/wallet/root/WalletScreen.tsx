@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useRef, useState, useCallback } from 'react'
 import { useSelector } from 'react-redux'
-import { AnyTransaction, PendingTransaction } from '@helium/http'
+import { AnyTransaction, PendingTransaction, PaymentV1 } from '@helium/http'
 import WalletView from './WalletView'
 import Box from '../../../components/Box'
 import ActivityDetails from './ActivityDetails/ActivityDetails'
@@ -8,7 +8,7 @@ import useVisible from '../../../utils/useVisible'
 import usePrevious from '../../../utils/usePrevious'
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
-import { fetchTxns, resetTxns } from '../../../store/activity/activitySlice'
+import { fetchTxns } from '../../../store/activity/activitySlice'
 import animateTransition from '../../../utils/animateTransition'
 
 const WalletScreen = () => {
@@ -17,7 +17,7 @@ const WalletScreen = () => {
   const [pendingTxns, setPendingTxns] = useState<PendingTransaction[]>([])
   const [hasActivity, setHasActivity] = useState<boolean | undefined>()
   const {
-    activity: { txns, requestMore, filter, isResetting, detailTxn },
+    activity: { txns, filter, detailTxn, requestMore },
     heliumData: { blockHeight },
   } = useSelector((state: RootState) => state)
   const interval = useRef<NodeJS.Timeout>()
@@ -27,6 +27,8 @@ const WalletScreen = () => {
   const prevAllTxnsStatus = usePrevious(txns.all.status)
 
   const determineHasActivity = useCallback(() => {
+    // TODO: Have this check all filters. Data may update when they're on a filter other than ALL
+
     if (hasActivity) {
       return
     }
@@ -47,14 +49,34 @@ const WalletScreen = () => {
     determineHasActivity()
   }, [determineHasActivity])
 
+  const updateTxnData = (data: AnyTransaction[]) => {
+    animateTransition()
+    setTransactionData(data)
+  }
+
   useEffect(() => {
-    if (filter === 'pending') {
+    if (
+      filter === 'pending' ||
+      txns[filter].status === 'pending' ||
+      txns[filter].status === 'idle'
+    ) {
       return
     }
     const { data } = txns[filter]
     if (data.length !== transactionData.length) {
-      animateTransition()
-      setTransactionData(data)
+      updateTxnData(data)
+    } else if (data.length) {
+      data.every((txn, index) => {
+        const prevTxn = txn as PaymentV1
+        const nextTxn = transactionData[index] as PaymentV1
+
+        const hashEqual = nextTxn.hash === prevTxn.hash
+        if (!hashEqual) {
+          // data has changed update
+          updateTxnData(data)
+        }
+        return hashEqual
+      })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txns[filter]])
@@ -66,47 +88,53 @@ const WalletScreen = () => {
   }, [pendingTxns, txns.pending.data])
 
   useEffect(() => {
+    // Fetch pending txns on an interval of 5s
     if (!visible && interval.current) {
       clearInterval(interval.current)
       interval.current = undefined
     } else if (visible && !interval.current) {
+      dispatch(fetchTxns({ filter: 'pending' }))
+
       interval.current = setInterval(() => {
         if (txns.pending.status === 'pending') return
 
-        dispatch(fetchTxns('pending'))
+        dispatch(fetchTxns({ filter: 'pending' }))
       }, 5000)
     }
   }, [dispatch, txns.pending.status, visible])
 
   useEffect(() => {
-    if (!visible || isResetting) return
-    if (requestMore && txns[filter].status !== 'pending') {
-      dispatch(fetchTxns(filter))
-    }
-  }, [dispatch, filter, isResetting, requestMore, txns, visible])
+    // if we're resetting wait for it to finish
+    // if the filter is set to pending, do nothing. It refreshes on an interval.
+    if (!visible || filter === 'pending') return
 
-  useEffect(() => {
-    if (!visible || isResetting) return
-
+    // Block height is being request every 30s in App.tsx
+    // Reset data if block changes or view becomes visible
     if (!prevVisible || blockHeight !== prevBlockHeight) {
-      dispatch(resetTxns())
-    } else if (
-      filter !== 'pending' &&
-      txns[filter].data.length === 0 &&
-      txns[filter].status !== 'pending'
-    ) {
-      dispatch(fetchTxns(filter))
+      dispatch(fetchTxns({ filter, reset: true }))
+      return
+    }
+
+    // if filter changes & there's no txn data for that filter, request
+    if (txns[filter].data.length === 0 && txns[filter].status === 'idle') {
+      dispatch(fetchTxns({ filter }))
     }
   }, [
-    blockHeight,
-    dispatch,
-    filter,
-    isResetting,
-    prevBlockHeight,
-    prevVisible,
-    txns,
     visible,
+    prevVisible,
+    blockHeight,
+    prevBlockHeight,
+    filter,
+    txns,
+    dispatch,
   ])
+
+  useEffect(() => {
+    if (!visible) return
+    if (requestMore && txns[filter].status !== 'pending') {
+      dispatch(fetchTxns({ filter }))
+    }
+  }, [dispatch, filter, requestMore, txns, visible])
 
   return (
     <>
@@ -116,7 +144,6 @@ const WalletScreen = () => {
           hasActivity={hasActivity}
           txns={transactionData}
           pendingTxns={pendingTxns}
-          isResetting={isResetting}
           filter={filter}
         />
       </Box>

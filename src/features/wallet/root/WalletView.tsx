@@ -36,7 +36,6 @@ type Props = {
   hasActivity: boolean
   txns: AnyTransaction[]
   pendingTxns: PendingTransaction[]
-  isResetting: boolean
   filter: FilterType
   status: Loading
 }
@@ -47,7 +46,6 @@ const WalletView = ({
   hasActivity,
   txns,
   pendingTxns,
-  isResetting,
   filter,
   status,
 }: Props) => {
@@ -151,7 +149,6 @@ const WalletView = ({
           </Animated.View>
 
           <ActivityCard
-            isResetting={isResetting}
             filter={filter}
             txns={txns}
             pendingTxns={pendingTxns}
