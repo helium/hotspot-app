@@ -19,7 +19,7 @@ const HexBadge = ({ rewardScale }: Props) => {
   return (
     <TouchableOpacityBox
       onPress={handlePress}
-      backgroundColor="blueBright"
+      backgroundColor="purpleMain"
       padding="s"
       borderRadius="s"
       flexDirection="row"
