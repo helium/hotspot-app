@@ -177,6 +177,4 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
   )
 }
 
-// HotspotDetails.whyDidYouRender = true
-
 export default HotspotDetails
