@@ -1,19 +1,41 @@
 import React from 'react'
-import Animated from 'react-native-reanimated'
+import Animated, {
+  Extrapolate,
+  interpolate,
+  useAnimatedStyle,
+} from 'react-native-reanimated'
 import EyeCircleButton from '@assets/images/eye-circle-button.svg'
 import EyeCircleButtonYellow from '@assets/images/eye-circle-button-yellow.svg'
 import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 
 const HotspotMapButtons = ({
-  style,
+  animatedPosition,
   showWitnesses,
   toggleShowWitnesses,
 }: {
-  style: any
+  animatedPosition: Animated.SharedValue<number>
   showWitnesses: boolean
   toggleShowWitnesses: () => void
 }) => {
+  const style = useAnimatedStyle(
+    () => ({
+      position: 'absolute',
+      bottom: -100,
+      transform: [
+        {
+          translateY: interpolate(
+            animatedPosition.value,
+            [0, 1],
+            [0, -520],
+            Extrapolate.CLAMP,
+          ),
+        },
+      ],
+    }),
+    [animatedPosition],
+  )
+
   return (
     <Animated.View style={style}>
       <Box padding="m" flexDirection="row">

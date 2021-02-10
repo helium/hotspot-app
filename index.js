@@ -1,3 +1,4 @@
+// import './src/whyDidYouRender'
 import React from 'react'
 
 import { AppRegistry, Platform } from 'react-native'

@@ -1,28 +1,21 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { Linking, Share } from 'react-native'
-import { useSelector } from 'react-redux'
+import { Hotspot } from '@helium/http'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { useTranslation } from 'react-i18next'
-import Box from '../../../components/Box'
-import CardHandle from '../../../components/CardHandle'
-// import Heart from '../../../assets/images/heart.svg'
-import MoreMenu from '../../../assets/images/moreMenu.svg'
+import MoreMenu from '@assets/images/moreMenu.svg'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { useAppDispatch } from '../../../store/store'
 import hotspotDetailsSlice from '../../../store/hotspotDetails/hotspotDetailsSlice'
-import { RootState } from '../../../store/rootReducer'
 
-const HotspotDetailCardHeader = () => {
+const HotspotMoreMenuButton = ({ hotspot }: { hotspot: Hotspot }) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const { showActionSheetWithOptions } = useActionSheet()
 
-  const {
-    hotspotDetails: { hotspot },
-  } = useSelector((state: RootState) => state)
-
   type SettingsOption = { label: string; action?: () => void }
-  const onMoreSelected = () => {
+
+  const onMoreSelected = useCallback(() => {
     if (!hotspot) return
 
     const explorerUrl = `https://explorer.helium.com/hotspots/${hotspot.address}`
@@ -54,24 +47,18 @@ const HotspotDetailCardHeader = () => {
         opts[buttonIndex].action?.()
       },
     )
-  }
+  }, [dispatch, hotspot, showActionSheetWithOptions, t])
 
   return (
-    <Box flexDirection="row" justifyContent="space-between" paddingTop="m">
-      {/* <TouchableOpacityBox paddingVertical="s" paddingHorizontal="l">
-        <Heart />
-      </TouchableOpacityBox> */}
-      <Box width={66} />
-      <CardHandle />
-      <TouchableOpacityBox
-        onPress={onMoreSelected}
-        paddingVertical="s"
-        paddingHorizontal="l"
-      >
-        <MoreMenu />
-      </TouchableOpacityBox>
-    </Box>
+    <TouchableOpacityBox
+      onPress={onMoreSelected}
+      paddingVertical="s"
+      marginTop="xxs"
+      paddingLeft="l"
+    >
+      <MoreMenu />
+    </TouchableOpacityBox>
   )
 }
 
-export default HotspotDetailCardHeader
+export default HotspotMoreMenuButton

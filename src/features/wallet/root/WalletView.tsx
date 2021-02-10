@@ -1,6 +1,11 @@
 import React, { useRef, memo, useCallback, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import Animated, { Extrapolate, useValue } from 'react-native-reanimated'
+import Animated, {
+  Extrapolate,
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated'
 import { useNavigation } from '@react-navigation/native'
 import BottomSheet from '@gorhom/bottom-sheet'
 import Search from '@assets/images/search.svg'
@@ -54,7 +59,7 @@ const WalletView = ({
 
   const [activityCardIndex, setActivityCardIndex] = useState(1)
   const [balanceSheetIndex, setBalanceSheetIndex] = useState(0)
-  const animatedCardIndex = useValue(1)
+  const animatedCardIndex = useSharedValue<number>(1)
 
   const handlePress = useCallback(() => {
     triggerNavHaptic()
@@ -81,23 +86,20 @@ const WalletView = ({
     triggerNavHaptic()
   }, [activityCardIndex, balanceSheetIndex, hasActivity])
 
-  const balanceCardStyles = useMemo(
-    () => [
-      {
-        flex: 1,
-      },
-      {
-        transform: [
-          {
-            translateY: animatedCardIndex.interpolate({
-              inputRange: [1, 2],
-              outputRange: [0, -layout.chartHeight],
-              extrapolate: Extrapolate.CLAMP,
-            }),
-          },
-        ],
-      },
-    ],
+  const balanceCardStyles = useAnimatedStyle(
+    () => ({
+      flex: 1,
+      transform: [
+        {
+          translateY: interpolate(
+            animatedCardIndex.value,
+            [1, 2],
+            [0, -layout.chartHeight],
+            Extrapolate.CLAMP,
+          ),
+        },
+      ],
+    }),
     [animatedCardIndex, layout.chartHeight],
   )
 

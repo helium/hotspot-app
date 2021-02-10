@@ -9,6 +9,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import animalName from 'angry-purple-tiger'
+import { Hotspot } from '@helium/http'
 import BlurBox from '../../../components/BlurBox'
 import Card from '../../../components/Card'
 import Text from '../../../components/Text'
@@ -36,7 +37,7 @@ import animateTransition from '../../../utils/animateTransition'
 
 type State = 'init' | 'scan' | 'transfer'
 
-const HotspotSettings = () => {
+const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
   const { t } = useTranslation()
   const [settingsState, setSettingsState] = useState<State>('init')
   const [title, setTitle] = useState<string>(t('hotspot_settings.title'))
@@ -47,7 +48,7 @@ const HotspotSettings = () => {
   const { showBack, goBack, disableBack } = useHotspotSettingsContext()
 
   const {
-    hotspotDetails: { hotspot, showSettings },
+    hotspotDetails: { showSettings },
   } = useSelector((state: RootState) => state)
 
   useEffect(() => {

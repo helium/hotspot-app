@@ -622,6 +622,7 @@ export default {
   hotspot_details: {
     title: 'Hotspot Details',
     owner: 'Owned by {{address}}',
+    owner_you: 'Owned by you',
     pass_rate: 'PASS RATE',
     reward_title: 'HNT Rewards',
     witness_title: 'Average Witnesses',

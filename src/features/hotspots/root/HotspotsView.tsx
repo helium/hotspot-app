@@ -1,40 +1,61 @@
-import React, { useCallback, useEffect, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { Hotspot } from '@helium/http'
-import BottomSheet from '@gorhom/bottom-sheet'
-import { Extrapolate, useValue } from 'react-native-reanimated'
+import { BottomSheetModal } from '@gorhom/bottom-sheet'
+import {
+  Extrapolate,
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated'
 import { useNavigation } from '@react-navigation/native'
 import { GeoJsonProperties } from 'geojson'
+import HotspotIcon from '@assets/images/hotspot-icon-white.svg'
 import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Add from '../../../assets/images/add.svg'
-import { hp } from '../../../utils/layout'
 import Map from '../../../components/Map'
-import SheetNavigator from './SheetNavigator'
 import { RootState } from '../../../store/rootReducer'
-import { fetchHotspotDetails } from '../../../store/hotspotDetails/hotspotDetailsSlice'
+import hotspotDetailsSlice from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import { fetchHotspotsData } from '../../../store/hotspots/hotspotsSlice'
-import HotspotsHeader from './HotspotsHeader'
 import BSHandle from '../../../components/BSHandle'
 import HotspotMapButtons from './HotspotMapButtons'
 import useToggle from '../../../utils/useToggle'
+import HotspotsList from './HotspotsList'
+import HotspotDetails from '../details/HotspotDetails'
+import { ReAnimatedBox } from '../../../components/AnimatedBox'
+import { useColors } from '../../../theme/themeHooks'
+import BackButton from '../../../components/BackButton'
 
 type Props = {
   ownedHotspots: Hotspot[]
 }
 
 const HotspotsView = ({ ownedHotspots }: Props) => {
+  const [listIsDismissed, setListIsDismissed] = useState(false)
   const navigation = useNavigation()
   const { t } = useTranslation()
   const dispatch = useDispatch()
+  const listRef = useRef<BottomSheetModal>(null)
+  const detailsRef = useRef<BottomSheetModal>(null)
+  const colors = useColors()
+  const listSnapPoints = useMemo(() => ['74%'], [])
+  const detailSnapPoints = useMemo(() => [300, '75%'], [])
+
+  useEffect(() => {
+    dispatch(fetchHotspotsData())
+    listRef.current?.present()
+  }, [dispatch])
 
   const [showWitnesses, toggleShowWitnesses] = useToggle(false)
 
   const {
-    hotspotDetails: { hotspot: selectedHotspot, witnesses },
+    hotspotDetails: { witnesses },
   } = useSelector((state: RootState) => state)
+
+  const [selectedHotspot, setSelectedHotspot] = useState<Hotspot>()
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -44,82 +65,88 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
     return unsubscribe
   }, [navigation, dispatch])
 
-  const animatedIndex = useValue(1)
-  const animatedValue = useValue(1)
+  const animatedListPosition = useSharedValue<number>(0)
+  const animatedDetailsPosition = useSharedValue<number>(0)
 
-  // TODO when we upgrade to bottom-sheet v3
-  // we can use reanimated v2 to animate this value
-  useEffect(() => {
-    if (selectedHotspot) {
-      animatedValue.setValue(0)
+  const handlePresentDetails = useCallback((hotspot: Hotspot) => {
+    setSelectedHotspot(hotspot)
+    detailsRef.current?.present()
+  }, [])
+
+  const handleDismissList = useCallback(() => {
+    setSelectedHotspot(ownedHotspots[0])
+    detailsRef.current?.present()
+    setListIsDismissed(true)
+  }, [ownedHotspots])
+
+  const handlePressMyHotspots = useCallback(() => {
+    setSelectedHotspot(ownedHotspots[0])
+    detailsRef.current?.present()
+  }, [ownedHotspots])
+
+  const handleDismissDetails = useCallback(() => {
+    setSelectedHotspot(undefined)
+    dispatch(hotspotDetailsSlice.actions.clearHotspotDetails())
+    if (listIsDismissed) {
+      listRef.current?.present()
+      setListIsDismissed(false)
     }
-  }, [selectedHotspot, animatedValue])
+  }, [dispatch, listIsDismissed])
 
-  const headerStyles = useMemo(() => {
-    let animatedNode = animatedIndex
-    if (selectedHotspot) {
-      animatedNode = animatedValue
-    }
+  const handleBack = useCallback(() => {
+    detailsRef.current?.dismiss()
+    setSelectedHotspot(undefined)
+    dispatch(hotspotDetailsSlice.actions.clearHotspotDetails())
+  }, [dispatch])
 
-    return [
-      {
-        opacity: animatedNode.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, 1],
-          extrapolate: Extrapolate.CLAMP,
-        }),
-        transform: [
-          {
-            translateY: animatedNode.interpolate({
-              inputRange: [0, 1],
-              outputRange: [480, 0],
-              extrapolate: Extrapolate.CLAMP,
-            }),
-          },
-        ],
-      },
-    ]
-  }, [animatedIndex, animatedValue, selectedHotspot])
+  const onMapHotspotSelected = useCallback((properties: GeoJsonProperties) => {
+    const hotspot = {
+      ...properties,
+    } as Hotspot
+    setSelectedHotspot(hotspot)
+    detailsRef.current?.present()
+  }, [])
 
-  const mapButtonStyles = useMemo(() => {
-    return [
-      {
-        position: 'absolute',
-        bottom: 200,
-      },
-      {
-        opacity: animatedValue.interpolate({
-          inputRange: [0, 1],
-          outputRange: [1, 0],
-          extrapolate: Extrapolate.CLAMP,
-        }),
-        transform: [
-          {
-            translateY: animatedIndex.interpolate({
-              inputRange: [0, 1],
-              outputRange: [140, 0],
-              extrapolate: Extrapolate.CLAMP,
-            }),
-          },
-        ],
-      },
-    ]
-  }, [animatedIndex, animatedValue])
-
-  const onMapHotspotSelected = useCallback(
-    (properties: GeoJsonProperties) => {
-      const hotspot = {
-        ...properties,
-      } as Hotspot
-      dispatch(fetchHotspotDetails(hotspot.address))
-      navigation.navigate('HotspotDetails', { hotspot })
-    },
-    [dispatch, navigation],
+  const backdropStyles = useAnimatedStyle(
+    () => ({
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0,
+      backgroundColor: colors.purpleMain,
+      opacity: interpolate(
+        animatedListPosition.value,
+        [0, 1],
+        [0, 1],
+        Extrapolate.CLAMP,
+      ),
+    }),
+    [animatedListPosition, colors, listSnapPoints],
   )
 
-  const snapPoints = useMemo(() => {
-    return selectedHotspot ? [0.1, 140, '80%'] : [0.1, '38%', '80%']
-  }, [selectedHotspot])
+  const backdropTitleStyles = useAnimatedStyle(
+    () => ({
+      transform: [
+        {
+          translateY: interpolate(
+            animatedListPosition.value,
+            [0, 1],
+            [-100, 0],
+            Extrapolate.CLAMP,
+          ),
+        },
+      ],
+    }),
+    [animatedListPosition, listSnapPoints],
+  )
+
+  const containerStyles = useMemo(
+    () => ({
+      marginTop: 70,
+    }),
+    [],
+  )
 
   return (
     <Box flex={1} flexDirection="column" justifyContent="space-between">
@@ -129,41 +156,74 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         width="100%"
         borderTopLeftRadius="xl"
         borderTopRightRadius="xl"
-        style={{ marginTop: 70 }}
+        style={containerStyles}
         overflow="hidden"
       >
         <Map
           ownedHotspots={ownedHotspots}
           selectedHotspots={selectedHotspot ? [selectedHotspot] : undefined}
           zoomLevel={14}
-          // TODO could we bring this intelligence into the Map?
-          // if no hotspots are selected and has location permissions
-          // use user's position etc
           mapCenter={
             selectedHotspot
               ? [selectedHotspot.lng || 0, selectedHotspot.lat || 0]
               : [ownedHotspots[0].lng || 0, ownedHotspots[0].lat || 0]
           }
           witnesses={showWitnesses ? witnesses : []}
-          animationMode="flyTo"
-          offsetCenterRatio={2.2}
+          animationMode="moveTo"
+          offsetCenterRatio={2.0}
           onFeatureSelected={onMapHotspotSelected}
         />
+        <HotspotMapButtons
+          animatedPosition={animatedDetailsPosition}
+          showWitnesses={showWitnesses}
+          toggleShowWitnesses={toggleShowWitnesses}
+        />
+        <ReAnimatedBox pointerEvents="none" style={backdropStyles} />
+        <ReAnimatedBox
+          position="absolute"
+          top={0}
+          width="100%"
+          padding="m"
+          style={backdropTitleStyles}
+        >
+          <TouchableOpacityBox
+            flexDirection="row"
+            justifyContent="center"
+            onPress={handlePressMyHotspots}
+          >
+            <Box marginRight="s">
+              <HotspotIcon />
+            </Box>
+            <Text variant="body1Bold" color="white">
+              {t('hotspots.owned.title')}
+            </Text>
+          </TouchableOpacityBox>
+        </ReAnimatedBox>
       </Box>
       <Box
         flexDirection="row"
         justifyContent="space-between"
         alignItems="center"
-        backgroundColor="primaryBackground"
         padding="m"
       >
-        <Text variant="h3">{t('hotspots.owned.title')}</Text>
+        {selectedHotspot ? (
+          <BackButton
+            paddingHorizontal="none"
+            paddingVertical="s"
+            onPress={handleBack}
+          />
+        ) : (
+          <Text variant="h3">{t('hotspots.owned.title')}</Text>
+        )}
 
         <Box flexDirection="row" justifyContent="space-between">
-          {/* TODO: Hotspot Search */}
-          {/* <TouchableOpacityBox padding="s"> */}
-          {/*  <Search width={22} height={22} /> */}
-          {/* </TouchableOpacityBox> */}
+          {/* <TouchableOpacityBox
+            onPress={handleToggleSettings}
+            padding="s"
+            marginRight="s"
+          >
+            <Settings width={22} height={22} color="white" />
+          </TouchableOpacityBox> */}
           <TouchableOpacityBox
             onPress={() => navigation.navigate('HotspotSetup')}
             padding="s"
@@ -173,24 +233,30 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         </Box>
       </Box>
 
-      <HotspotsHeader style={headerStyles} marginBottom={hp(38)} />
-
-      <HotspotMapButtons
-        style={mapButtonStyles}
-        showWitnesses={showWitnesses}
-        toggleShowWitnesses={toggleShowWitnesses}
-      />
-
-      {/* <HotspotSettings /> */}
-
-      <BottomSheet
-        snapPoints={snapPoints}
-        index={1}
-        animatedIndex={animatedIndex}
+      <BottomSheetModal
+        ref={listRef}
+        snapPoints={listSnapPoints}
+        index={0}
         handleComponent={BSHandle}
+        onDismiss={handleDismissList}
+        animatedIndex={animatedListPosition}
       >
-        <SheetNavigator />
-      </BottomSheet>
+        <HotspotsList
+          hotspots={ownedHotspots}
+          onSelectHotspot={handlePresentDetails}
+        />
+      </BottomSheetModal>
+
+      <BottomSheetModal
+        ref={detailsRef}
+        snapPoints={detailSnapPoints}
+        index={0}
+        handleComponent={BSHandle}
+        onDismiss={handleDismissDetails}
+        animatedIndex={animatedDetailsPosition}
+      >
+        <HotspotDetails hotspot={selectedHotspot} />
+      </BottomSheetModal>
     </Box>
   )
 }

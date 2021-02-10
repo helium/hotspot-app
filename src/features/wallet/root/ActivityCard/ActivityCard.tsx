@@ -20,7 +20,7 @@ type AllTxns = (AnyTransaction | PendingTransaction)[]
 
 type Props = {
   animationPoints: WalletAnimationPoints
-  animatedIndex?: Animated.Value<number>
+  animatedIndex?: Animated.SharedValue<number>
   onChange?: (index: number) => void
   txns: AnyTransaction[]
   pendingTxns: PendingTransaction[]
@@ -45,8 +45,8 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
 
   // TODO is there an easier way to copy/forward these methods?
   useImperativeHandle(ref, () => ({
-    snapTo(index: number, force?: boolean): void {
-      sheet.current?.snapTo(index, force)
+    snapTo(index: number): void {
+      sheet.current?.snapTo(index)
     },
     expand() {
       sheet.current?.expand()
