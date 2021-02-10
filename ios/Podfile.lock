@@ -10,8 +10,6 @@ PODS:
     - UMPermissionsInterface
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
-  - EXBlur (8.2.2):
-    - UMCore
   - EXConstants (9.2.0):
     - UMConstantsInterface
     - UMCore
@@ -284,6 +282,8 @@ PODS:
   - react-native-ble-plx (2.0.2):
     - MultiplatformBleAdapter (= 0.1.7)
     - React
+  - react-native-blur (0.8.0):
+    - React
   - react-native-config (1.4.2):
     - react-native-config/App (= 1.4.2)
   - react-native-config/App (1.4.2):
@@ -456,7 +456,6 @@ PODS:
 DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXBarCodeScanner (from `../node_modules/expo-barcode-scanner/ios`)
-  - EXBlur (from `../node_modules/expo-blur/ios`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
   - EXFileSystem (from `../node_modules/expo-file-system/ios`)
   - EXHaptics (from `../node_modules/expo-haptics/ios`)
@@ -505,6 +504,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - react-native-ble-plx (from `../node_modules/react-native-ble-plx`)
+  - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - react-native-config (from `../node_modules/react-native-config`)
   - "react-native-mapbox-gl (from `../node_modules/@react-native-mapbox-gl/maps`)"
   - react-native-onesignal (from `../node_modules/react-native-onesignal`)
@@ -574,8 +574,6 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXBarCodeScanner:
     :path: "../node_modules/expo-barcode-scanner/ios"
-  EXBlur:
-    :path: "../node_modules/expo-blur/ios"
   EXConstants:
     :path: "../node_modules/expo-constants/ios"
   EXFileSystem:
@@ -628,6 +626,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   react-native-ble-plx:
     :path: "../node_modules/react-native-ble-plx"
+  react-native-blur:
+    :path: "../node_modules/@react-native-community/blur"
   react-native-config:
     :path: "../node_modules/react-native-config"
   react-native-mapbox-gl:
@@ -718,7 +718,6 @@ SPEC CHECKSUMS:
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXBarCodeScanner: aa1eda7595b8258471ff733acdb18f62cfd85813
-  EXBlur: 569d38c2b0b7b000866d928bc36acadfdc02ea8e
   EXConstants: f486f6b4a36b86e47ab258d4d2b7b2699786fdce
   EXFileSystem: afe9b1fd937d30270bf5108ba44e2f4a1d1ad694
   EXHaptics: 6d2e09387f0eb4d3c8dc97ae905cbea8afe33651
@@ -757,6 +756,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 93bd528844ad21dc07aab1c67cb10abae6df6949
   React-jsinspector: 58aef7155bc9a9683f5b60b35eccea8722a4f53a
   react-native-ble-plx: caac53ee98151ec81198239d591c203809a1ed6e
+  react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-config: c98128a72bc2c3a1ca72caec0b021f0fa944aa29
   react-native-mapbox-gl: eec7e5be5b874cfceb79fcfe24d595411015153a
   react-native-onesignal: a69eeb12486e7739ed8f180e6ddd915be77721ba
