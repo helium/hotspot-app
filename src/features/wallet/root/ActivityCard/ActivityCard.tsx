@@ -67,15 +67,9 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
     return txns
   }, [filter, pendingTxns, txns])
 
-  const header = useCallback(
-    () => (
-      <ActivityCardHeader
-        filter={filter}
-        loading={status !== 'fulfilled' && status !== 'rejected'}
-      />
-    ),
-    [filter, status],
-  )
+  const header = useCallback(() => <ActivityCardHeader filter={filter} />, [
+    filter,
+  ])
 
   const getSnapPoints = useMemo(() => [dragMin, dragMid, dragMax], [
     dragMax,

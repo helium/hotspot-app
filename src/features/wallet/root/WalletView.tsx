@@ -135,7 +135,11 @@ const WalletView = ({
           <ActivityIndicator color="white" />
         </Box>
       )}
-
+      {/* TODO: Get rid of this ActivityIndicator
+          Turn the below view into one that
+          takes a loading flag and show a
+          skeleton while  hasActivity === undefined
+      */}
       {hasActivity && (
         <>
           <Box paddingHorizontal="l">

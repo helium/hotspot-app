@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import React, { useCallback, memo, useMemo } from 'react'
+import React, { useCallback, memo, useMemo, useState, useEffect } from 'react'
 import { useAsync } from 'react-async-hook'
 import {
   AnyTransaction,
@@ -32,6 +32,11 @@ const ActivityCardListView = ({ data, status }: Props) => {
   const { backgroundColor, title, listIcon, amount, time } = useActivityItem(
     address || '',
   )
+  const [hasNoResults, setHasNoResults] = useState(false)
+
+  useEffect(() => {
+    setHasNoResults(status === 'fulfilled' && data && data.length === 0)
+  }, [data, status])
 
   const handleActivityItemPressed = useCallback(
     (item: AnyTransaction | PendingTransaction) => () => {
@@ -111,14 +116,8 @@ const ActivityCardListView = ({ data, status }: Props) => {
   }, [m])
 
   const footer = useMemo(
-    () => (
-      <ActivityCardLoading
-        // isLoading={status === 'idle' || status === 'pending'}
-        isLoading
-        hasNoResults={status === 'fulfilled' && data && data.length === 0}
-      />
-    ),
-    [data, status],
+    () => <ActivityCardLoading hasNoResults={hasNoResults} />,
+    [hasNoResults],
   )
 
   if (loading) return null
@@ -130,7 +129,6 @@ const ActivityCardListView = ({ data, status }: Props) => {
       keyExtractor={keyExtractor}
       contentContainerStyle={contentContainerStyle}
       ListFooterComponent={footer}
-      ListHeaderComponent={footer}
       getItemLayout={getItemLayout}
       onEndReached={requestMore}
     />
