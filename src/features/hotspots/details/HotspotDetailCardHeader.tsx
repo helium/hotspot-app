@@ -5,7 +5,7 @@ import { useActionSheet } from '@expo/react-native-action-sheet'
 import { useTranslation } from 'react-i18next'
 import Box from '../../../components/Box'
 import CardHandle from '../../../components/CardHandle'
-import Heart from '../../../assets/images/heart.svg'
+// import Heart from '../../../assets/images/heart.svg'
 import MoreMenu from '../../../assets/images/moreMenu.svg'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { useAppDispatch } from '../../../store/store'
@@ -58,9 +58,10 @@ const HotspotDetailCardHeader = () => {
 
   return (
     <Box flexDirection="row" justifyContent="space-between" paddingTop="m">
-      <TouchableOpacityBox paddingVertical="s" paddingHorizontal="l">
+      {/* <TouchableOpacityBox paddingVertical="s" paddingHorizontal="l">
         <Heart />
-      </TouchableOpacityBox>
+      </TouchableOpacityBox> */}
+      <Box width={66} />
       <CardHandle />
       <TouchableOpacityBox
         onPress={onMoreSelected}

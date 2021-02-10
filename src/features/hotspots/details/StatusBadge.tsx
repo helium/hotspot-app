@@ -15,7 +15,7 @@ const StatusBadge = ({ online = 'offline' }: Props) => {
       borderRadius="s"
       alignSelf="baseline"
     >
-      <Text color="white">
+      <Text color="white" variant="body2Medium">
         {t(
           online === 'online'
             ? 'hotspot_details.status_online'

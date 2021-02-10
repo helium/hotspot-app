@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { random, times } from 'lodash'
 import { Hotspot } from '@helium/http'
+import { Linking } from 'react-native'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import StatusBadge from './StatusBadge'
@@ -22,12 +23,10 @@ import {
 } from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import HotspotSettingsProvider from '../settings/HotspotSettingsProvider'
 import HotspotSettings from '../settings/HotspotSettings'
+import TouchableOpacityBox from '../../../components/BSTouchableOpacityBox'
+import HexBadge from './HexBadge'
 
-const shortAddress = (address?: string) =>
-  `${address?.slice(0, 5)}...${address?.slice(
-    address?.length - 5,
-    address?.length,
-  )}`
+const shortAddress = (address?: string) => `${address?.slice(0, 5)}...`
 
 const data: Record<string, ChartData[]> = {
   1: times(14).map((v, i) => ({
@@ -68,6 +67,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
   const dispatch = useAppDispatch()
 
   const {
+    account: { account },
     hotspotDetails: {
       numDays,
       rewards,
@@ -109,6 +109,11 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
     )
   }, [witnessSums, numDays])
 
+  const openExplorerOwner = useCallback(() => {
+    if (!hotspot) return
+    Linking.openURL(`https://explorer.helium.com/accounts/${hotspot.owner}`)
+  }, [hotspot])
+
   if (!hotspot) {
     return null
   }
@@ -127,12 +132,19 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
           alignItems="center"
           marginBottom="xl"
         >
-          <StatusBadge online={hotspot.status?.online} />
-          <Text color="grayLightText">
-            {t('hotspot_details.owner', {
-              address: shortAddress(hotspot.owner),
-            })}
-          </Text>
+          <Box flexDirection="row">
+            <StatusBadge online={hotspot.status?.online} />
+            <HexBadge rewardScale={hotspot.rewardScale} />
+          </Box>
+          <TouchableOpacityBox onPress={openExplorerOwner}>
+            <Text color="grayLightText">
+              {hotspot.owner === account?.address
+                ? t('hotspot_details.owner_you')
+                : t('hotspot_details.owner', {
+                    address: shortAddress(hotspot.owner),
+                  })}
+            </Text>
+          </TouchableOpacityBox>
         </Box>
         <TimelinePicker index={2} onTimelineChanged={setTimelineValue} />
         <HotspotDetailChart

@@ -43,7 +43,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
   const detailsRef = useRef<BottomSheetModal>(null)
   const colors = useColors()
   const listSnapPoints = useMemo(() => ['74%'], [])
-  const detailSnapPoints = useMemo(() => [120, '75%'], [])
+  const detailSnapPoints = useMemo(() => ['40%', '75%'], [])
 
   useEffect(() => {
     dispatch(fetchHotspotsData())
@@ -96,8 +96,9 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
 
   const handleBack = useCallback(() => {
     detailsRef.current?.dismiss()
-    handleDismissDetails()
-  }, [handleDismissDetails])
+    setSelectedHotspot(undefined)
+    dispatch(hotspotDetailsSlice.actions.clearHotspotDetails())
+  }, [dispatch])
 
   const onMapHotspotSelected = useCallback((properties: GeoJsonProperties) => {
     const hotspot = {
