@@ -3,6 +3,7 @@ package com.helium.wallet.v3;
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactRootView;
+import android.view.WindowManager;
 import expo.modules.splashscreen.singletons.SplashScreen;
 import expo.modules.splashscreen.SplashScreenImageResizeMode;
 
@@ -10,6 +11,8 @@ public class MainActivity extends ReactActivity {
     @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
     SplashScreen.show(this, SplashScreenImageResizeMode.COVER, ReactRootView.class, true);
   }

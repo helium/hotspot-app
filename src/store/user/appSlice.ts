@@ -128,6 +128,8 @@ const appSlice = createSlice({
       }
     },
     updateAppStateStatus: (state, action: PayloadAction<AppStateStatus>) => {
+      if (action.payload === state.appStateStatus) return
+
       state.appStateStatus = action.payload
     },
     requestingPermission: (state, action: PayloadAction<boolean>) => {
