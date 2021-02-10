@@ -17,7 +17,8 @@
     "ios-clean": "rm -rf ios/Pods && rm -rf ios/build",
     "pod-install": "cd ios && pod _1.9.3_ install && cd ..",
     "clean-install": "watchman watch-del-all && rm -rf $TMPDIR/react-native-packager-cache-* && rm -rf $TMPDIR/metro-bundler-cache-* && rm -rf node_modules/ && yarn cache clean && yarn install && yarn android-clean && yarn ios-clean && yarn pod-install",
-    "clean-start": "yarn start -- --reset-cache"
+    "clean-start": "yarn start -- --reset-cache",
+    "patch-install": "yarn install && npx patch-package"
   },
   "husky": {
     "hooks": {
@@ -35,7 +36,7 @@
   "dependencies": {
     "@burstware/react-native-portal": "^1.0.2",
     "@expo/react-native-action-sheet": "^3.8.0",
-    "@gorhom/bottom-sheet": "2.0.7",
+    "@gorhom/bottom-sheet": "^3.3.0",
     "@helium/crypto-react-native": "^3.9.0",
     "@helium/currency": "^3.16.0",
     "@helium/http": "^3.22.0",
@@ -94,7 +95,7 @@
     "react-native-navigation-bar-color": "^2.0.1",
     "react-native-onesignal": "^4.0.0-beta.4",
     "react-native-picker-select": "^8.0.4",
-    "react-native-reanimated": "2.0.0-rc.2",
+    "react-native-reanimated": "2.0.0-rc.3",
     "react-native-safe-area-context": "^3.1.8",
     "react-native-screens": "^2.12.0",
     "react-native-snap-carousel": "^4.0.0-beta.6",
