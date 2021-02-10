@@ -13,7 +13,6 @@ const StatusBadge = ({ online = 'offline' }: Props) => {
       backgroundColor={online === 'online' ? 'greenOnline' : 'yellow'}
       padding="s"
       borderRadius="s"
-      alignSelf="baseline"
     >
       <Text color="white" variant="body2Medium">
         {t(

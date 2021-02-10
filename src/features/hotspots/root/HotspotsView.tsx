@@ -27,7 +27,6 @@ import HotspotsList from './HotspotsList'
 import HotspotDetails from '../details/HotspotDetails'
 import { ReAnimatedBox } from '../../../components/AnimatedBox'
 import { useColors } from '../../../theme/themeHooks'
-import HotspotDetailCardHeader from '../details/HotspotDetailCardHeader'
 import BackButton from '../../../components/BackButton'
 
 type Props = {
@@ -43,7 +42,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
   const detailsRef = useRef<BottomSheetModal>(null)
   const colors = useColors()
   const listSnapPoints = useMemo(() => ['74%'], [])
-  const detailSnapPoints = useMemo(() => ['40%', '75%'], [])
+  const detailSnapPoints = useMemo(() => [300, '75%'], [])
 
   useEffect(() => {
     dispatch(fetchHotspotsData())
@@ -171,7 +170,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
           }
           witnesses={showWitnesses ? witnesses : []}
           animationMode="moveTo"
-          offsetCenterRatio={2.2}
+          offsetCenterRatio={2.0}
           onFeatureSelected={onMapHotspotSelected}
         />
         <HotspotMapButtons
@@ -218,10 +217,13 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         )}
 
         <Box flexDirection="row" justifyContent="space-between">
-          {/* TODO: Hotspot Search */}
-          {/* <TouchableOpacityBox padding="s"> */}
-          {/*  <Search width={22} height={22} /> */}
-          {/* </TouchableOpacityBox> */}
+          {/* <TouchableOpacityBox
+            onPress={handleToggleSettings}
+            padding="s"
+            marginRight="s"
+          >
+            <Settings width={22} height={22} color="white" />
+          </TouchableOpacityBox> */}
           <TouchableOpacityBox
             onPress={() => navigation.navigate('HotspotSetup')}
             padding="s"
@@ -249,7 +251,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         ref={detailsRef}
         snapPoints={detailSnapPoints}
         index={0}
-        handleComponent={HotspotDetailCardHeader}
+        handleComponent={BSHandle}
         onDismiss={handleDismissDetails}
         animatedIndex={animatedDetailsPosition}
       >

@@ -27,7 +27,7 @@ const HotspotMapButtons = ({
           translateY: interpolate(
             animatedPosition.value,
             [0, 1],
-            [0, -340],
+            [0, -520],
             Extrapolate.CLAMP,
           ),
         },

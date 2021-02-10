@@ -16,7 +16,7 @@ import { useColors } from '../../../theme/themeHooks'
 import { getRewardChartData } from './RewardsHelper'
 import { ChartData } from '../../../components/BarChart/types'
 import { useAppDispatch } from '../../../store/store'
-import {
+import hotspotDetailsSlice, {
   fetchHotspotRewards,
   fetchHotspotWitnesses,
   fetchHotspotWitnessSums,
@@ -25,6 +25,8 @@ import HotspotSettingsProvider from '../settings/HotspotSettingsProvider'
 import HotspotSettings from '../settings/HotspotSettings'
 import TouchableOpacityBox from '../../../components/BSTouchableOpacityBox'
 import HexBadge from './HexBadge'
+import HotspotMoreMenuButton from './HotspotMoreMenuButton'
+import Button from '../../../components/Button'
 
 const shortAddress = (address?: string) => `${address?.slice(0, 5)}...`
 
@@ -114,6 +116,10 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
     Linking.openURL(`https://explorer.helium.com/accounts/${hotspot.owner}`)
   }, [hotspot])
 
+  const handleToggleSettings = useCallback(() => {
+    dispatch(hotspotDetailsSlice.actions.toggleShowSettings())
+  }, [dispatch])
+
   if (!hotspot) {
     return null
   }
@@ -121,10 +127,16 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
   return (
     <BottomSheetScrollView>
       <Box paddingHorizontal="l" paddingBottom="l">
-        <Box marginBottom="m">
+        <Box
+          marginBottom="m"
+          flexDirection="row"
+          justifyContent="space-between"
+        >
           <Text variant="h2" color="black">
             {animalName(hotspot.address)}
           </Text>
+
+          <HotspotMoreMenuButton hotspot={hotspot} />
         </Box>
         <Box
           flexDirection="row"
@@ -169,9 +181,18 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
           color={colors.purpleMain}
           data={data[2]}
         />
+
+        <Box marginTop="m">
+          <Button
+            mode="contained"
+            variant="primary"
+            title="Settings"
+            onPress={handleToggleSettings}
+          />
+        </Box>
       </Box>
       <HotspotSettingsProvider>
-        <HotspotSettings />
+        <HotspotSettings hotspot={hotspot} />
       </HotspotSettingsProvider>
     </BottomSheetScrollView>
   )
