@@ -3,7 +3,6 @@ import {
   Modal,
   Animated,
   Easing,
-  LayoutAnimation,
   KeyboardAvoidingView,
   Alert,
 } from 'react-native'
@@ -33,6 +32,7 @@ import hotspotDetailsSlice from '../../../store/hotspotDetails/hotspotDetailsSli
 import { useHotspotSettingsContext } from './HotspotSettingsProvider'
 import Box from '../../../components/Box'
 import BackButton from '../../../components/BackButton'
+import animateTransition from '../../../utils/animateTransition'
 
 type State = 'init' | 'scan' | 'transfer'
 
@@ -66,7 +66,7 @@ const HotspotSettings = () => {
   }, [showSettings])
 
   const setNextState = (s: State) => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+    animateTransition()
     setSettingsState(s)
   }
 

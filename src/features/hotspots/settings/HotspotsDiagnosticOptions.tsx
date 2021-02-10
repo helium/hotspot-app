@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Device } from 'react-native-ble-plx'
-import { LayoutAnimation } from 'react-native'
 import { useSelector } from 'react-redux'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -16,6 +15,7 @@ import Chevron from '../../../assets/images/chevron-right.svg'
 import { useColors } from '../../../theme/themeHooks'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import { RootState } from '../../../store/rootReducer'
+import animateTransition from '../../../utils/animateTransition'
 
 type Opts = 'scan' | HotspotOptions
 type Props = { hotspot?: Device; optionSelected: (option: Opts) => void }
@@ -35,7 +35,7 @@ const HotspotDiagnosticOptions = ({ hotspot, optionSelected }: Props) => {
   }, [firmware, checkFirmwareCurrent])
 
   const selectOption = (opt: Opts) => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+    animateTransition()
     optionSelected(opt)
   }
 

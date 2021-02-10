@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, memo } from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { useNavigation } from '@react-navigation/native'
 import { useSelector } from 'react-redux'
@@ -74,4 +74,4 @@ const MainTabs = () => {
   )
 }
 
-export default MainTabs
+export default memo(MainTabs)

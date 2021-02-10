@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { Device } from 'react-native-ble-plx'
-import { ActivityIndicator, LayoutAnimation } from 'react-native'
+import { ActivityIndicator } from 'react-native'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import HotspotIco from '../../../assets/images/hotspotIco.svg'
 import HotspotNotSelected from '../../../assets/images/hotspotNotSelected.svg'
 import HotspotConnected from '../../../assets/images/hotspotConnected.svg'
 import { useColors } from '../../../theme/themeHooks'
+import animateTransition from '../../../utils/animateTransition'
 
 type Props = {
   hotspot: Device
@@ -38,7 +39,7 @@ const HotspotItem = ({
     else if (connecting) nextState = 'connecting'
 
     if (nextState !== state) {
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+      animateTransition()
       setState(nextState)
     }
   }, [connected, connecting, selected, state])

@@ -1,7 +1,10 @@
-import React, { memo } from 'react'
-import { TouchableOpacity } from 'react-native'
+import React, { memo, useMemo } from 'react'
+import { createText } from '@shopify/restyle'
 import Box from '../../../../components/Box'
-import Text from '../../../../components/Text'
+import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
+import { Theme } from '../../../../theme/theme'
+
+export const ACTIVITY_ITEM_ROW_HEIGHT = 58
 
 type Props = {
   isFirst: boolean
@@ -16,6 +19,8 @@ type Props = {
   handlePress: () => void
 }
 
+const Text = createText<Theme>()
+
 const ActivityItem = ({
   isFirst = false,
   isLast = false,
@@ -26,55 +31,68 @@ const ActivityItem = ({
   title,
   handlePress,
 }: Props) => {
+  const iconStyle = useMemo(
+    () => ({
+      backgroundColor,
+    }),
+    [backgroundColor],
+  )
+
   return (
-    <TouchableOpacity onPress={handlePress}>
+    <TouchableOpacityBox
+      onPress={handlePress}
+      flexDirection="row"
+      justifyContent="space-between"
+      alignItems="center"
+      borderColor="grayLight"
+      borderWidth={1}
+      borderBottomWidth={isLast ? 1 : 0}
+      borderTopLeftRadius={isFirst ? 'm' : undefined}
+      borderTopRightRadius={isFirst ? 'm' : undefined}
+      borderBottomLeftRadius={isLast ? 'm' : undefined}
+      borderBottomRightRadius={isLast ? 'm' : undefined}
+    >
       <Box
-        flexDirection="row"
-        justifyContent="space-between"
+        width={50}
+        height={50}
+        style={iconStyle}
+        justifyContent="center"
         alignItems="center"
-        borderColor="grayLight"
-        borderWidth={1}
-        borderBottomWidth={isLast ? 1 : 0}
         borderTopLeftRadius={isFirst ? 'm' : undefined}
-        borderTopRightRadius={isFirst ? 'm' : undefined}
         borderBottomLeftRadius={isLast ? 'm' : undefined}
-        borderBottomRightRadius={isLast ? 'm' : undefined}
       >
-        <Box
-          width={50}
-          height={50}
-          style={{ backgroundColor }}
-          justifyContent="center"
-          alignItems="center"
-          borderTopLeftRadius={isFirst ? 'm' : undefined}
-          borderBottomLeftRadius={isLast ? 'm' : undefined}
-        >
-          {icon}
-        </Box>
-        <Box flex={1} paddingHorizontal="m">
-          <Text
-            variant="body2Medium"
-            color="black"
-            numberOfLines={1}
-            adjustsFontSizeToFit
-          >
-            {title}
-          </Text>
-          <Text
-            color="grayExtraLight"
-            variant="body2"
-            numberOfLines={1}
-            adjustsFontSizeToFit
-          >
-            {subtitle}
-          </Text>
-        </Box>
-        <Box paddingHorizontal="m">
-          {time && <Text color="graySteel">{time}</Text>}
-        </Box>
+        {icon}
       </Box>
-    </TouchableOpacity>
+      <Box flex={1} paddingHorizontal="m">
+        <Text
+          variant="body2Medium"
+          color="black"
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
+          {title}
+        </Text>
+        <Text
+          color="grayExtraLight"
+          variant="body2"
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
+          {subtitle}
+        </Text>
+      </Box>
+      <Box paddingHorizontal="m">
+        {time && <Text color="graySteel">{time}</Text>}
+      </Box>
+    </TouchableOpacityBox>
   )
 }
 
-export default memo(ActivityItem, (prev, next) => prev.hash === next.hash)
+export default memo(ActivityItem, (prev, next) => {
+  const areEqual =
+    prev.hash === next.hash &&
+    prev.isFirst === next.isFirst &&
+    prev.isLast === next.isLast &&
+    prev.time === next.time
+  return areEqual
+})

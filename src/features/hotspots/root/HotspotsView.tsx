@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { Hotspot } from '@helium/http'
@@ -106,13 +106,16 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
     ]
   }, [animatedIndex, animatedValue])
 
-  const onMapHotspotSelected = (properties: GeoJsonProperties) => {
-    const hotspot = {
-      ...properties,
-    } as Hotspot
-    dispatch(fetchHotspotDetails(hotspot.address))
-    navigation.navigate('HotspotDetails', { hotspot })
-  }
+  const onMapHotspotSelected = useCallback(
+    (properties: GeoJsonProperties) => {
+      const hotspot = {
+        ...properties,
+      } as Hotspot
+      dispatch(fetchHotspotDetails(hotspot.address))
+      navigation.navigate('HotspotDetails', { hotspot })
+    },
+    [dispatch, navigation],
+  )
 
   const snapPoints = useMemo(() => {
     return selectedHotspot ? [0.1, 140, '80%'] : [0.1, '38%', '80%']
