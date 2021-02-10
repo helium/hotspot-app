@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useEffect, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Position } from 'geojson'
 import { useSelector } from 'react-redux'
@@ -44,7 +44,7 @@ const ReassertLocationUpdate = ({
     connectedHotspot: { address: hotspotAddress, details },
   } = useSelector((s: RootState) => s)
   const { assertLocationTxn } = useConnectedHotspotContext()
-  const onMapMoved = async (newCoords?: Position) => {
+  const onMapMoved = useCallback(async (newCoords?: Position) => {
     if (newCoords) {
       setMarkerCenter(newCoords)
 
@@ -55,7 +55,7 @@ const ReassertLocationUpdate = ({
       const name = street && city ? [street, city].join(', ') : 'Loading...'
       setLocationName(name)
     }
-  }
+  }, [])
 
   const finish = (success: boolean, message?: unknown) => {
     setLoading(false)

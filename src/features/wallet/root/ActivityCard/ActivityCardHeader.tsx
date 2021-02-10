@@ -1,29 +1,33 @@
-import React, { memo } from 'react'
+import React, { memo, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useSelector } from 'react-redux'
 import CardHandle from '../../../../components/CardHandle'
 import Box from '../../../../components/Box'
 import { FilterKeys, FilterType } from '../walletTypes'
 import ModalPicker from '../../../../components/ModalPicker'
-import { RootState } from '../../../../store/rootReducer'
 import { useAppDispatch } from '../../../../store/store'
-import { changeFilter } from '../../../../store/activity/activitySlice'
+import activitySlice from '../../../../store/activity/activitySlice'
+import animateTransition from '../../../../utils/animateTransition'
 
-const ActivityCardHeader = () => {
+type Props = { filter: FilterType }
+const ActivityCardHeader = ({ filter }: Props) => {
   const { t } = useTranslation()
-  const dispatch = useAppDispatch()
-  const {
-    activity: { filter },
-  } = useSelector((state: RootState) => state)
-
   const filters = t('transactions.filter', { returnObjects: true }) as Record<
     string,
     string
   >
+  const dispatch = useAppDispatch()
+  const [data] = useState(
+    FilterKeys.map((value) => ({ label: filters[value], value })),
+  )
 
-  const onFilterChanged = (nextFilter: FilterType) => {
-    dispatch(changeFilter(nextFilter))
-  }
+  const onFilterChanged = useCallback(
+    (_itemValue, itemIndex) => {
+      const nextFilter = FilterKeys[itemIndex]
+      animateTransition()
+      dispatch(activitySlice.actions.setFilter(nextFilter))
+    },
+    [dispatch],
+  )
 
   return (
     <Box padding="m">
@@ -33,11 +37,9 @@ const ActivityCardHeader = () => {
       <ModalPicker
         marginLeft="ms"
         prefix={t('transactions.view')}
-        data={FilterKeys.map((value) => ({ label: filters[value], value }))}
+        data={data}
         selectedValue={filter}
-        onValueChanged={(_itemValue, itemIndex) =>
-          onFilterChanged(FilterKeys[itemIndex])
-        }
+        onValueChanged={onFilterChanged}
       />
     </Box>
   )

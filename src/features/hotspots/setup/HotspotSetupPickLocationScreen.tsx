@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Position } from 'geojson'
 import Box from '../../../components/Box'
@@ -32,7 +32,7 @@ const HotspotSetupPickLocationScreen = () => {
     sleepThenEnable()
   }, [])
 
-  const onMapMoved = async (newCoords?: Position) => {
+  const onMapMoved = useCallback(async (newCoords?: Position) => {
     if (newCoords) {
       setMarkerCenter(newCoords)
 
@@ -41,7 +41,7 @@ const HotspotSetupPickLocationScreen = () => {
       const name = street && city ? [street, city].join(', ') : 'Loading...'
       setLocationName(name)
     }
-  }
+  }, [])
 
   const navNext = () => {
     navigation.navigate('HotspotSetupConfirmLocationScreen', {

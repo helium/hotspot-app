@@ -6,7 +6,11 @@ import {
   AssertLocationV1,
   TransferHotspotV1,
 } from '@helium/transactions'
-import Balance, { DataCredits, CurrencyType } from '@helium/currency'
+import Balance, {
+  DataCredits,
+  CurrencyType,
+  NetworkTokens,
+} from '@helium/currency'
 import { minBy } from 'lodash'
 import { useSelector } from 'react-redux'
 import { getKeypair } from './secureAccount'
@@ -22,7 +26,11 @@ export const useFees = () => {
 
     const prices = [currentOraclePrice, ...predictedOraclePrices]
     const oraclePrice = minBy(prices, (p) => p?.price.integerBalance || 0)
-    return balance.toNetworkTokens(oraclePrice?.price)
+    // ensure precision is only 8 decimals
+    const feeHNTInteger = Math.trunc(
+      balance.toNetworkTokens(oraclePrice?.price).integerBalance,
+    )
+    return new Balance<NetworkTokens>(feeHNTInteger, CurrencyType.networkToken)
   }
 
   return { feeToHNT }

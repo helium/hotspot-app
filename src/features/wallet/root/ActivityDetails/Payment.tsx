@@ -1,41 +1,28 @@
 import React from 'react'
 import {
-  AnyTransaction,
   PendingTransaction,
   PaymentV1,
   PaymentV2,
+  AnyTransaction,
 } from '@helium/http'
-import Balance, { NetworkTokens } from '@helium/currency'
+import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
 import Box from '../../../../components/Box'
 import PaymentItem from './PaymentItem'
 
+type Payments = { payee: string; amount: Balance<NetworkTokens> }[]
 type Props = { item: AnyTransaction | PendingTransaction; address: string }
 const Payment = ({ item, address }: Props) => {
   if (item.type !== 'payment_v1' && item.type !== 'payment_v2') return null
 
-  const v1 = (item as unknown) as PaymentV1
-  const v2 = (item as unknown) as PaymentV2
-  let payments: { payee: string; amount: Balance<NetworkTokens> }[] = []
-  if (v2.payments !== undefined) {
-    payments = v2.payments.map((p) => ({
-      payee: p.payee,
-      amount: p.amount,
-    }))
-  } else if (v1.payee !== undefined) {
-    payments = [{ payee: v1.payee, amount: v1.amount || 0 }]
-  }
+  const payer = getPayer(item)
+  const payments = getPayments(item)
 
   return (
     <Box flex={1}>
-      <PaymentItem
-        text={v1.payer}
-        mode="from"
-        isMyAccount={v1.payer === address}
-      />
+      <PaymentItem text={payer} mode="from" isMyAccount={payer === address} />
       {payments.map((p, index) => (
         <PaymentItem
-          // eslint-disable-next-line react/no-array-index-key
-          key={index}
+          key={p.payee}
           text={p.payee}
           isMyAccount={p.payee === address}
           mode="to"
@@ -44,6 +31,31 @@ const Payment = ({ item, address }: Props) => {
         />
       ))}
     </Box>
+  )
+}
+
+const getPayer = (item: AnyTransaction | PendingTransaction): string => {
+  if (item instanceof PaymentV2 || item instanceof PaymentV1) {
+    return item.payer
+  }
+
+  return (item as PendingTransaction).txn?.payer
+}
+
+const getPayments = (item: AnyTransaction | PendingTransaction): Payments => {
+  if (item instanceof PaymentV2) {
+    return item.payments
+  }
+
+  if (item instanceof PaymentV1) {
+    return [{ payee: item.payee, amount: item.amount }]
+  }
+
+  return ((item as PendingTransaction).txn?.payments || []).map(
+    (p: { payee: string; amount: number }) => ({
+      ...p,
+      amount: new Balance(p.amount, CurrencyType.networkToken),
+    }),
   )
 }
 

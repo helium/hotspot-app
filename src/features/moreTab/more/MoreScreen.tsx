@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useEffect } from 'react'
+import React, { useCallback, useMemo, useEffect, memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, SectionList } from 'react-native'
 import { useSelector } from 'react-redux'
@@ -223,13 +223,6 @@ const MoreScreen = () => {
             },
           },
           {
-            title: t('more.sections.account.units'),
-            select: {
-              items: [{ label: 'Metric', value: 'Metric' }],
-              onValueSelect: () => {},
-            },
-          },
-          {
             title: t('more.sections.account.signOut'),
             onPress: handleSignOut,
             destructive: true,
@@ -291,4 +284,4 @@ const MoreScreen = () => {
   )
 }
 
-export default MoreScreen
+export default memo(MoreScreen)

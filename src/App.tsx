@@ -1,7 +1,6 @@
 import 'react-native-gesture-handler'
 import React, { useEffect, useCallback } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
-import { ThemeProvider } from '@shopify/restyle'
 import {
   Platform,
   StatusBar,
@@ -10,6 +9,8 @@ import {
   UIManager,
   LogBox,
 } from 'react-native'
+import { ThemeProvider } from '@shopify/restyle'
+
 import OneSignal from 'react-native-onesignal'
 import Config from 'react-native-config'
 import { useSelector } from 'react-redux'
@@ -28,9 +29,13 @@ import { fetchData } from './store/account/accountSlice'
 import BluetoothProvider from './providers/BluetoothProvider'
 import ConnectedHotspotProvider from './providers/ConnectedHotspotProvider'
 import * as Logger from './utils/logger'
-import { configChainVars, initFetchers } from './utils/appDataClient'
-import { fetchInitialData } from './store/helium/heliumDataSlice'
+import { configChainVars } from './utils/appDataClient'
+import {
+  fetchInitialData,
+  fetchBlockHeight,
+} from './store/helium/heliumDataSlice'
 import sleep from './utils/sleep'
+import SecurityScreen from './features/security/SecurityScreen'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -63,7 +68,10 @@ const App = () => {
       appStateStatus,
     },
     account: { fetchDataStatus },
+    heliumData: { blockHeight },
   } = useSelector((state: RootState) => state)
+
+  useAsync(configChainVars, [])
 
   useEffect(() => {
     if (appStateStatus === 'background' && !isLocked) {
@@ -125,9 +133,6 @@ const App = () => {
   }, [fetchDataStatus, isBackedUp, isRestored])
 
   useEffect(() => {
-    if (isBackedUp) {
-      initFetchers()
-    }
     hideSplash()
   }, [hideSplash, isBackedUp])
 
@@ -145,7 +150,16 @@ const App = () => {
     }
   }, [handleChange])
 
-  useAsync(configChainVars, [])
+  useEffect(() => {
+    const interval = setInterval(() => {
+      dispatch(fetchBlockHeight())
+    }, 30000)
+    return () => clearInterval(interval)
+  }, [dispatch])
+
+  useEffect(() => {
+    dispatch(fetchData())
+  }, [blockHeight, dispatch])
 
   return (
     <ThemeProvider theme={theme}>
@@ -165,6 +179,11 @@ const App = () => {
                   <NavigationRoot />
                 </Portal.Host>
               </SafeAreaProvider>
+              <SecurityScreen
+                visible={
+                  appStateStatus !== 'active' && appStateStatus !== 'unknown'
+                }
+              />
             </ConnectedHotspotProvider>
           </BluetoothProvider>
         </ActionSheetProvider>

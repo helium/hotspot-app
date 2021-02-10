@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { PendingTransaction, AnyTransaction } from '@helium/http'
-import { unionBy } from 'lodash'
-import { txnFetchers } from '../../utils/appDataClient'
+import { differenceBy, unionBy } from 'lodash'
+import { initFetchers, txnFetchers } from '../../utils/appDataClient'
 import { FilterType } from '../../features/wallet/root/walletTypes'
 
-type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
+export type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
 
 export type ActivityState = {
   txns: {
@@ -16,6 +16,8 @@ export type ActivityState = {
   }
   filter: FilterType
   detailTxn?: AnyTransaction | PendingTransaction
+  isResetting: boolean
+  requestMore: boolean
 }
 
 const initialState: ActivityState = {
@@ -27,28 +29,24 @@ const initialState: ActivityState = {
     pending: { data: [], status: 'idle' },
   },
   filter: 'all',
+  isResetting: false,
+  requestMore: false,
 }
 
 export const fetchTxns = createAsyncThunk<
   AnyTransaction[] | PendingTransaction[],
   FilterType
->('activity/fetchAccountActivity', async (filterType) => {
-  const list = txnFetchers[filterType]
-  return list.takeJSON(30)
+>('activity/fetchAccountActivity', async (filter) => {
+  const list = txnFetchers[filter]
+  return list.takeJSON(filter === 'pending' ? 1000 : 50)
 })
 
-export const fetchPendingTxns = createAsyncThunk(
-  'activity/fetchPendingTxns',
-  async () => {
-    return txnFetchers.pending.takeJSON(1000)
-  },
-)
-
-export const changeFilter = createAsyncThunk<FilterType, FilterType>(
-  'activity/changeFilter',
-  async (filterType, thunkAPI) => {
-    thunkAPI.dispatch(fetchTxns(filterType))
-    return filterType
+export const resetTxns = createAsyncThunk(
+  'activity/resetTxns',
+  async (_, { dispatch }) => {
+    dispatch(activitySlice.actions.resetTxns())
+    await initFetchers()
+    dispatch(activitySlice.actions.finishReset())
   },
 )
 
@@ -56,6 +54,12 @@ const activitySlice = createSlice({
   name: 'activity',
   initialState,
   reducers: {
+    setFilter: (state, action: PayloadAction<FilterType>) => {
+      state.filter = action.payload
+    },
+    requestMoreActivity: (state) => {
+      state.requestMore = true
+    },
     addPendingTransaction: (
       state,
       action: PayloadAction<PendingTransaction>,
@@ -71,43 +75,61 @@ const activitySlice = createSlice({
     clearDetailTxn: (state) => {
       return { ...state, detailTxn: undefined }
     },
+    resetTxns: (state) => {
+      state.isResetting = true
+      Object.keys(state.txns).forEach((key) => {
+        const filterType = key as FilterType
+        if (filterType !== 'pending') {
+          // Don't reset pending, we will clear it manually
+          state.txns[filterType].data = []
+        }
+      })
+    },
+    finishReset: (state) => {
+      state.isResetting = false
+    },
     signOut: () => {
       return { ...initialState }
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchTxns.pending, (state, { meta: { arg } }) => {
-      state.txns[arg].status = 'pending'
+    builder.addCase(fetchTxns.pending, (state, { meta: { arg: filter } }) => {
+      state.txns[filter].status = 'pending'
     })
-    builder.addCase(fetchTxns.rejected, (state, { meta: { arg } }) => {
-      state.txns[arg].status = 'rejected'
+    builder.addCase(fetchTxns.rejected, (state, { meta: { arg: filter } }) => {
+      state.requestMore = false
+      state.txns[filter].status = 'rejected'
     })
     builder.addCase(
       fetchTxns.fulfilled,
-      (state, { payload, meta: { arg } }) => {
-        state.txns[arg].status = 'fulfilled'
-        const newTxns = payload as AnyTransaction[]
-        // TODO: this should be unnecessary, but RN's "fast refresh" is causing duplicated items to get in
-        const joined = unionBy(state.txns[arg].data, newTxns, 'hash')
-        state.txns[arg].data = joined
+      (state, { payload, meta: { arg: filter } }) => {
+        state.requestMore = false
+        state.txns[filter].status = 'fulfilled'
+
+        if (payload.length === 0) return
+
+        if (filter === 'pending') {
+          const pending = payload as PendingTransaction[]
+          const filtered = pending.filter((txn) => txn.status === 'pending')
+          const joined = unionBy(filtered, state.txns.pending.data, 'hash')
+          state.txns.pending.data = joined
+        } else {
+          const nextTxns = [
+            ...state.txns[filter].data,
+            ...(payload as AnyTransaction[]),
+          ]
+          state.txns[filter].data = nextTxns
+
+          // remove any pending txns with the same hash
+          const nextPending = differenceBy(
+            state.txns.pending.data,
+            nextTxns,
+            'hash',
+          )
+          state.txns.pending.data = nextPending
+        }
       },
     )
-    builder.addCase(fetchPendingTxns.pending, (state) => {
-      state.txns.pending.status = 'pending'
-    })
-    builder.addCase(fetchPendingTxns.rejected, (state) => {
-      state.txns.pending.status = 'rejected'
-    })
-    builder.addCase(fetchPendingTxns.fulfilled, (state, { payload }) => {
-      state.txns.pending.status = 'fulfilled'
-      const pending = payload as PendingTransaction[]
-      const filtered = pending.filter((txn) => txn.status === 'pending')
-      const joined = unionBy(filtered, state.txns.pending.data, 'hash')
-      state.txns.pending.data = joined
-    })
-    builder.addCase(changeFilter.fulfilled, (state, { payload }) => {
-      state.filter = payload
-    })
   },
 })
 

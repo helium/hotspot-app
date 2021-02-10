@@ -429,6 +429,7 @@ export default {
     error: 'There was an error submitting this transaction. Please try again.',
     hotspot_label: 'Hotspot',
     last_activity: 'LAST REPORTED ACTIVITY: {{activity}}',
+    label_error: 'You do not have enough HNT in your account.',
   },
   more: {
     title: 'Settings',
@@ -460,7 +461,6 @@ export default {
       account: {
         title: 'Account',
         language: 'Language',
-        units: 'Units',
         signOut: 'Sign Out',
         signOutAlert: {
           title: 'Warning!',
@@ -627,6 +627,7 @@ export default {
     reward_title: 'HNT Rewards',
     witness_title: 'Average Witnesses',
     challenge_title: 'Challenges',
+    challenge_sub_title: '(witness, challenger, or challengee)',
     picker_title: 'Past',
     picker_options: ['24 Hours', '7 Days', '14 Days', '30 Days'],
     status_online: 'Online',

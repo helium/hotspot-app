@@ -3,7 +3,6 @@ import {
   Modal,
   Animated,
   Easing,
-  LayoutAnimation,
   KeyboardAvoidingView,
   Alert,
 } from 'react-native'
@@ -34,6 +33,7 @@ import hotspotDetailsSlice from '../../../store/hotspotDetails/hotspotDetailsSli
 import { useHotspotSettingsContext } from './HotspotSettingsProvider'
 import Box from '../../../components/Box'
 import BackButton from '../../../components/BackButton'
+import animateTransition from '../../../utils/animateTransition'
 
 type State = 'init' | 'scan' | 'transfer'
 
@@ -67,7 +67,7 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
   }, [showSettings])
 
   const setNextState = (s: State) => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+    animateTransition()
     setSettingsState(s)
   }
 
@@ -212,9 +212,9 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
         left={0}
         bottom={0}
         right={0}
-        tint="dark"
+        blurAmount={70}
+        blurType="dark"
         position="absolute"
-        intensity={97}
       />
 
       <SafeAreaBox
