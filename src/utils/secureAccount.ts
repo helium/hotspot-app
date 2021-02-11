@@ -16,7 +16,6 @@ type StringKey = typeof stringKeys[number]
 
 const boolKeys = [
   'accountBackedUp',
-  'isEducated',
   'isSettingUpHotspot',
   'requirePin',
   'requirePinForPayment',

@@ -12,7 +12,6 @@ type Location = { latitude: number; longitude: number }
 
 export type AppState = {
   isBackedUp: boolean
-  isEducated: boolean
   isSettingUpHotspot: boolean
   isRestored: boolean
   isPinRequired: boolean
@@ -27,7 +26,6 @@ export type AppState = {
 }
 const initialState: AppState = {
   isBackedUp: false,
-  isEducated: false,
   isSettingUpHotspot: false,
   isRestored: false,
   isPinRequired: false,
@@ -42,7 +40,6 @@ const initialState: AppState = {
 
 type Restore = {
   isBackedUp: boolean
-  isEducated: boolean
   isPinRequired: boolean
   isPinRequiredForPayment: boolean
   authInterval: number
@@ -54,18 +51,16 @@ export const restoreUser = createAsyncThunk<Restore>(
   async () => {
     const vals = await Promise.all([
       getSecureItem('accountBackedUp'),
-      getSecureItem('isEducated'),
       getSecureItem('requirePin'),
       getSecureItem('requirePinForPayment'),
       getSecureItem('authInterval'),
     ])
     return {
       isBackedUp: vals[0],
-      isEducated: vals[1],
-      isPinRequired: vals[2],
-      isPinRequiredForPayment: vals[3],
-      authInterval: vals[4] ? parseInt(vals[4], 10) : 0,
-      isLocked: vals[2],
+      isPinRequired: vals[1],
+      isPinRequiredForPayment: vals[2],
+      authInterval: vals[3] ? parseInt(vals[3], 10) : 0,
+      isLocked: vals[1],
     }
   },
 )
@@ -86,15 +81,6 @@ const appSlice = createSlice({
       setSecureItem('userPin', action.payload)
       state.isBackedUp = true
       state.isPinRequired = true
-    },
-    finishEducation: (state) => {
-      setSecureItem('isEducated', true)
-      state.isEducated = true
-    },
-    setupHotspot: (state) => {
-      setSecureItem('isEducated', true)
-      state.isEducated = true
-      state.isSettingUpHotspot = true
     },
     startHotspotSetup: (state) => {
       state.isSettingUpHotspot = false
