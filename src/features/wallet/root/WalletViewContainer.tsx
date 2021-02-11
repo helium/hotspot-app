@@ -17,16 +17,17 @@ import { triggerNavHaptic } from '../../../utils/haptic'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { hp } from '../../../utils/layout'
 import WalletIntroCarousel from './WalletIntroCarousel'
-import { Loading } from '../../../store/activity/activitySlice'
+import {
+  ActivityViewState,
+  Loading,
+} from '../../../store/activity/activitySlice'
 import { FilterType } from './walletTypes'
 import WalletView from './WalletView'
-
-export type WalletViewState = 'loading' | 'no_activity' | 'has_activity'
 
 type Props = {
   layout: WalletLayout
   animationPoints: WalletAnimationPoints
-  walletViewState: WalletViewState
+  activityViewState: ActivityViewState
   txns: AnyTransaction[]
   pendingTxns: PendingTransaction[]
   filter: FilterType
@@ -36,7 +37,7 @@ type Props = {
 const WalletViewContainer = ({
   layout,
   animationPoints,
-  walletViewState,
+  activityViewState,
   txns,
   pendingTxns,
   filter,
@@ -66,7 +67,7 @@ const WalletViewContainer = ({
   }, [navigation])
 
   const toggleShowReceive = useCallback(() => {
-    if (walletViewState) {
+    if (activityViewState) {
       const snapToIndex = activityCardIndex === 1 ? 0 : 1
       activityCard.current?.snapTo(snapToIndex)
     } else {
@@ -74,7 +75,7 @@ const WalletViewContainer = ({
       balanceSheet.current?.snapTo(snapToIndex)
     }
     triggerNavHaptic()
-  }, [activityCardIndex, balanceSheetIndex, walletViewState])
+  }, [activityCardIndex, activityViewState, balanceSheetIndex])
 
   const containerStyle = useMemo(() => ({ paddingTop: layout.notchHeight }), [
     layout.notchHeight,
@@ -92,7 +93,7 @@ const WalletViewContainer = ({
         height={layout.headerHeight}
       >
         <Text variant="h1" fontSize={22}>
-          {walletViewState ? t('wallet.title') : ' '}
+          {t('wallet.title')}
         </Text>
 
         <Box flexDirection="row" justifyContent="space-between" width={85}>
@@ -107,7 +108,7 @@ const WalletViewContainer = ({
       <WalletView
         layout={layout}
         animationPoints={animationPoints}
-        walletViewState={walletViewState}
+        activityViewState={activityViewState}
         txns={txns}
         pendingTxns={pendingTxns}
         filter={filter}
@@ -116,7 +117,7 @@ const WalletViewContainer = ({
         activityCardIndex={activityCardIndex}
         setActivityCardIndex={setActivityCardIndex}
       />
-      {walletViewState === 'no_activity' && (
+      {activityViewState === 'no_activity' && (
         <>
           <WalletIntroCarousel />
           <BottomSheet

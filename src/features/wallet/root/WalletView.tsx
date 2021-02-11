@@ -9,7 +9,6 @@ import Animated, {
 import { useNavigation } from '@react-navigation/native'
 import BottomSheet from '@gorhom/bottom-sheet'
 import { AnyTransaction, PendingTransaction } from '@helium/http'
-import { ActivityIndicator } from 'react-native'
 import Box from '../../../components/Box'
 import BarChart from '../../../components/BarChart'
 import BalanceCard from './BalanceCard/BalanceCard'
@@ -21,15 +20,16 @@ import {
   WalletLayout,
 } from './walletLayout'
 import { triggerNavHaptic } from '../../../utils/haptic'
-import { Loading } from '../../../store/activity/activitySlice'
+import {
+  ActivityViewState,
+  Loading,
+} from '../../../store/activity/activitySlice'
 import { FilterType } from './walletTypes'
-
-export type WalletViewState = 'loading' | 'no_activity' | 'has_activity'
 
 type Props = {
   layout: WalletLayout
   animationPoints: WalletAnimationPoints
-  walletViewState: WalletViewState
+  activityViewState: ActivityViewState
   txns: AnyTransaction[]
   pendingTxns: PendingTransaction[]
   filter: FilterType
@@ -42,7 +42,7 @@ type Props = {
 const WalletView = ({
   layout,
   animationPoints,
-  walletViewState,
+  activityViewState,
   txns,
   pendingTxns,
   filter,
@@ -54,13 +54,12 @@ const WalletView = ({
   const navigation = useNavigation()
   const activityCard = useRef<BottomSheet>(null)
   const balanceSheet = useRef<BottomSheet>(null)
-
   const animatedCardIndex = useSharedValue<number>(1)
   const [showSkeleton, setShowSkeleton] = useState(true)
 
   useEffect(() => {
-    setShowSkeleton(walletViewState !== 'has_activity')
-  }, [walletViewState])
+    setShowSkeleton(activityViewState !== 'has_activity')
+  }, [activityViewState])
 
   const handleSendPress = useCallback(() => {
     triggerNavHaptic()
@@ -68,7 +67,7 @@ const WalletView = ({
   }, [navigation])
 
   const toggleShowReceive = useCallback(() => {
-    if (walletViewState === 'has_activity') {
+    if (activityViewState === 'has_activity') {
       const snapToIndex = activityCardIndex === 1 ? 0 : 1
       activityCard.current?.snapTo(snapToIndex)
     } else {
@@ -76,7 +75,7 @@ const WalletView = ({
       balanceSheet.current?.snapTo(snapToIndex)
     }
     triggerNavHaptic()
-  }, [activityCardIndex, balanceSheetIndex, walletViewState])
+  }, [activityCardIndex, activityViewState, balanceSheetIndex])
 
   const balanceCardStyles = useAnimatedStyle(
     () => ({
@@ -95,9 +94,7 @@ const WalletView = ({
     [animatedCardIndex, layout.chartHeight],
   )
 
-  if (walletViewState === 'no_activity') return null
-
-  if (showSkeleton) return <ActivityIndicator color="white" />
+  if (activityViewState === 'no_activity') return null
 
   return (
     <>
@@ -112,6 +109,7 @@ const WalletView = ({
       </Animated.View>
 
       <ActivityCard
+        showSkeleton={showSkeleton}
         filter={filter}
         txns={txns}
         pendingTxns={pendingTxns}

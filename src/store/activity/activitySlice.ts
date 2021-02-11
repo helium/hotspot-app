@@ -5,6 +5,7 @@ import { initFetchers, txnFetchers } from '../../utils/appDataClient'
 import { FilterType } from '../../features/wallet/root/walletTypes'
 
 export type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
+export type ActivityViewState = 'loading' | 'no_activity' | 'has_activity'
 
 export type ActivityState = {
   txns: {
@@ -17,6 +18,7 @@ export type ActivityState = {
   filter: FilterType
   detailTxn?: AnyTransaction | PendingTransaction
   requestMore: boolean
+  activityViewState: ActivityViewState
 }
 
 const initialState: ActivityState = {
@@ -29,6 +31,7 @@ const initialState: ActivityState = {
   },
   filter: 'all',
   requestMore: false,
+  activityViewState: 'loading',
 }
 
 type FetchTxns = { filter: FilterType; reset?: boolean }
@@ -56,6 +59,7 @@ const activitySlice = createSlice({
       state.requestMore = true
     },
     resetTxnStatuses: (state, action: PayloadAction<FilterType>) => {
+      state.activityViewState = 'loading'
       Object.keys(state.txns).forEach((key) => {
         const filterType = key as FilterType
         if (filterType !== 'pending' && filterType !== action.payload) {
@@ -157,6 +161,18 @@ const activitySlice = createSlice({
             'hash',
           )
           state.txns.pending.data = nextPending
+
+          // Determine if the user has any activity data
+          let hasData = false
+          Object.keys(state.txns).every((key) => {
+            const filterType = key as FilterType
+            const { data } = state.txns[filterType]
+            if (data.length > 0) {
+              hasData = true
+            }
+            return !hasData
+          })
+          state.activityViewState = hasData ? 'has_activity' : 'no_activity'
         }
       },
     )

@@ -15,8 +15,7 @@ import ActivityCardHeader from './ActivityCardHeader'
 import { Loading } from '../../../../store/activity/activitySlice'
 import { FilterType } from '../walletTypes'
 import ActivityCardListView from './ActivityCardListView'
-
-type AllTxns = (AnyTransaction | PendingTransaction)[]
+import { skeletonData } from './SkeletonData'
 
 type Props = {
   animationPoints: WalletAnimationPoints
@@ -26,6 +25,7 @@ type Props = {
   pendingTxns: PendingTransaction[]
   filter: FilterType
   status: Loading
+  showSkeleton: boolean
 }
 
 const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
@@ -37,6 +37,7 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
     pendingTxns,
     filter,
     status,
+    showSkeleton,
   } = props
   const { dragMax, dragMid, dragMin } = animationPoints
   const sheet = useRef<BottomSheet>(null)
@@ -57,15 +58,20 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
     },
   }))
 
-  const getData = useMemo((): AllTxns => {
+  const getData = useMemo(() => {
+    if (showSkeleton) {
+      return skeletonData
+    }
+
     if (filter === 'pending') {
       return pendingTxns
     }
+
     if (filter === 'all') {
       return [...pendingTxns, ...txns]
     }
     return txns
-  }, [filter, pendingTxns, txns])
+  }, [filter, pendingTxns, txns, showSkeleton])
 
   const header = useCallback(() => <ActivityCardHeader filter={filter} />, [
     filter,

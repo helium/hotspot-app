@@ -18,11 +18,21 @@ import { useAppDispatch } from '../../../../store/store'
 import { useSpacing } from '../../../../theme/themeHooks'
 import useActivityItem from '../useActivityItem'
 import ActivityCardLoading from './ActivityCardLoading'
+import { SkeletonTxn } from './SkeletonData'
+import Box from '../../../../components/Box'
 
-type AllTxns = (AnyTransaction | PendingTransaction)[]
 type Props = {
   status: Loading
-  data: AllTxns
+  data: (AnyTransaction | PendingTransaction | SkeletonTxn)[]
+}
+
+function isSkeleton(
+  txn: AnyTransaction | PendingTransaction | SkeletonTxn,
+): txn is SkeletonTxn {
+  if ((txn as SkeletonTxn).type === 'skeleton') {
+    return true
+  }
+  return false
 }
 
 const ActivityCardListView = ({ data, status }: Props) => {
@@ -39,7 +49,9 @@ const ActivityCardListView = ({ data, status }: Props) => {
   }, [data, status])
 
   const handleActivityItemPressed = useCallback(
-    (item: AnyTransaction | PendingTransaction) => () => {
+    (item: AnyTransaction | PendingTransaction | SkeletonTxn) => () => {
+      if (isSkeleton(item)) return
+
       dispatch(activitySlice.actions.setDetailTxn(item))
     },
     [dispatch],
@@ -61,7 +73,7 @@ const ActivityCardListView = ({ data, status }: Props) => {
   )
 
   type Item = {
-    item: AnyTransaction | PendingTransaction
+    item: AnyTransaction | PendingTransaction | SkeletonTxn
     index: number
   }
 
@@ -70,6 +82,13 @@ const ActivityCardListView = ({ data, status }: Props) => {
       const isLast = () => {
         return !!data && index === data?.length - 1
       }
+
+      if (isSkeleton(item)) {
+        return (
+          <Box height={ACTIVITY_ITEM_ROW_HEIGHT} backgroundColor="purple100" />
+        )
+      }
+
       return (
         <ActivityItem
           hash={(item as AddGatewayV1).hash}
@@ -96,8 +115,9 @@ const ActivityCardListView = ({ data, status }: Props) => {
   )
 
   const keyExtractor = useCallback(
-    (item: AnyTransaction | PendingTransaction) => {
-      return (item as AddGatewayV1).hash
+    (item: AnyTransaction | PendingTransaction | SkeletonTxn) => {
+      const txn = item as PendingTransaction
+      return `${txn.hash}${txn.status}`
     },
     [],
   )
