@@ -67,6 +67,10 @@ const hotspotChecklistSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchChecklistActivity.pending, (state, _action) => {
       state.loadingActivity = true
+      state.challengerTxn = undefined
+      state.challengeeTxn = undefined
+      state.witnessTxn = undefined
+      state.dataTransferTxn = undefined
     })
     builder.addCase(fetchChecklistActivity.fulfilled, (state, action) => {
       state.loadingActivity = false

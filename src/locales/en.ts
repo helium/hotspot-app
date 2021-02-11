@@ -697,41 +697,58 @@ export default {
   },
   checklist: {
     blocks: {
-      not: 'Hotspot is not yet synced.',
+      not:
+        'Hotspots must be fully synced before they can mine. New Hotspots can take up to 48 hours to sync.',
       full: 'Hotspot is fully synced.',
       partial:
         'Hotspot is {(count}} block behind the Helium blockchain and is roughly {{percent}}% synced.',
       partial_plural:
         'Hotspot is {(count}} blocks behind the Helium blockchain and is roughly {{percent}}% synced.',
+      title: 'Sync to Blockchain',
     },
     status: {
-      online: 'Hotspot is online.',
-      offline: 'Hotspot is offline.',
+      online: 'Hotspot is connect to the internet.',
+      offline:
+        'Hotspot is not online. Hotspots must be online to sync and mine.',
+      title: 'Hotspot Status',
     },
     challenger: {
       success: 'Hotspot issued a challenge {{count}} block ago.',
       success_plural: 'Hotspot issued a challenge {{count}} blocks ago.',
       fail:
         "Hotspot hasn't issued a challenge yet. Hotspots create challenges automatically.",
+      title: 'Create a Challenge',
     },
     challenge_witness: {
       success: 'Hotspot has witnessed a challenge recently.',
-      fail: "Hotspot hasn't witnessed a challenge recently.",
+      fail: 'Your Hotspot will listen for challenges from nearby Hotspots.',
+      title: 'Witness a Challenge',
     },
     witness: {
       success: 'Hotspot has been witnessed by {{count}} Hotspot.',
       success_plural: 'Hotspot has been witnessed by {{count}} Hotspots.',
-      fail: 'Hotspot has no witnesses.',
+      fail:
+        "No Witness List yet. Hotspot may have recently refreshed its list or hasn't witnessed enough challenges.",
+      title: 'Witness List',
     },
     challengee: {
       success: 'Hotspot last participated in a challenge {{count}} block ago.',
       success_plural:
         'Hotspot last participated in a challenge {{count}} blocks ago.',
-      fail: "Hotspot hasn't participated in a challenge yet.",
+      fail:
+        'It can take a few hours to pass a challenge once a witness list is created.',
+      title: 'Pass a Challenge',
     },
     data_transfer: {
       success: 'Hotspot has transferred data packets recently.',
-      fail: "Hotspot hasn't transferred data packets recently.",
+      fail:
+        "Hotspots automatically transfer device data and earn HNT. This Hotspot hasn't transferred data yet.",
+      title: 'Transfer Data',
     },
+    auto: 'AUTO',
+    auto_days: 'EVERY ~14 DAYS',
+    auto_hours: 'EVERY FEW HOURS',
+    complete: 'COMPLETE',
+    online: 'ONLINE',
   },
 }

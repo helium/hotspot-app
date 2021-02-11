@@ -3,10 +3,10 @@ import { Hotspot } from '@helium/http'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import Box from '../../../components/Box'
-import Text from '../../../components/Text'
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
 import { fetchChecklistActivity } from '../../../store/hotspotDetails/hotspotChecklistSlice'
+import HotspotChecklistItem from './HotspotChecklistItem'
 
 type Props = {
   hotspot: Hotspot
@@ -85,13 +85,55 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
 
   return (
     <Box>
-      <Text>{syncStatus()}</Text>
-      <Text>{hotspotStatus()}</Text>
-      <Text>{challengerStatus()}</Text>
-      <Text>{challengeWitnessStatus()}</Text>
-      <Text>{witnessStatus()}</Text>
-      <Text>{challengeeStatus()}</Text>
-      <Text>{dataTransferStatus()}</Text>
+      <HotspotChecklistItem
+        title={t('checklist.blocks.title')}
+        description={syncStatus()}
+        complete={
+          (blockHeight &&
+            hotspot?.status?.height &&
+            blockHeight - hotspot.status.height < 500) ||
+          false
+        }
+        showAuto
+      />
+      <HotspotChecklistItem
+        title={t('checklist.status.title')}
+        description={hotspotStatus()}
+        complete={hotspot?.status?.online === 'online'}
+        completeText={t('checklist.online')}
+      />
+      <HotspotChecklistItem
+        title={t('checklist.challenger.title')}
+        description={challengerStatus()}
+        complete={challengerTxn !== undefined}
+        showAuto
+      />
+      <HotspotChecklistItem
+        title={t('checklist.challenge_witness.title')}
+        description={challengeWitnessStatus()}
+        complete={witnessTxn !== undefined}
+        showAuto
+      />
+      <HotspotChecklistItem
+        title={t('checklist.witness.title')}
+        description={witnessStatus()}
+        complete={witnesses && witnesses.length > 0}
+        showAuto
+        autoText={t('checklist.auto_days')}
+      />
+      <HotspotChecklistItem
+        title={t('checklist.challengee.title')}
+        description={challengeeStatus()}
+        complete={challengeeTxn !== undefined}
+        showAuto
+        autoText={t('checklist.auto_hours')}
+      />
+      <HotspotChecklistItem
+        title={t('checklist.data_transfer.title')}
+        description={dataTransferStatus()}
+        complete={dataTransferTxn !== undefined}
+        showAuto
+      />
     </Box>
   )
 }
