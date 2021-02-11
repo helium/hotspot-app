@@ -18,7 +18,7 @@ const WalletScreen = () => {
   const dispatch = useAppDispatch()
   const [transactionData, setTransactionData] = useState<AnyTransaction[]>([])
   const [pendingTxns, setPendingTxns] = useState<PendingTransaction[]>([])
-  const [viewState, setViewState] = useState<ActivityViewState>('loading')
+  const [viewState, setViewState] = useState<ActivityViewState>('init')
   const {
     activity: { txns, filter, detailTxn, requestMore, activityViewState },
     heliumData: { blockHeight },
@@ -125,7 +125,7 @@ const WalletScreen = () => {
     <>
       <Box flex={1} backgroundColor="primaryBackground">
         <WalletViewContainer
-          status={txns[filter].status}
+          txnTypeStatus={txns[filter].status}
           activityViewState={viewState}
           txns={transactionData}
           pendingTxns={pendingTxns}

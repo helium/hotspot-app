@@ -31,7 +31,7 @@ type Props = {
   txns: AnyTransaction[]
   pendingTxns: PendingTransaction[]
   filter: FilterType
-  status: Loading
+  txnTypeStatus: Loading
 }
 
 const WalletViewContainer = ({
@@ -41,7 +41,7 @@ const WalletViewContainer = ({
   txns,
   pendingTxns,
   filter,
-  status,
+  txnTypeStatus,
 }: Props) => {
   const { t } = useTranslation()
   const navigation = useNavigation()
@@ -112,7 +112,7 @@ const WalletViewContainer = ({
         txns={txns}
         pendingTxns={pendingTxns}
         filter={filter}
-        status={status}
+        txnTypeStatus={txnTypeStatus}
         balanceSheetIndex={balanceSheetIndex}
         activityCardIndex={activityCardIndex}
         setActivityCardIndex={setActivityCardIndex}

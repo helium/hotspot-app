@@ -25,6 +25,7 @@ import {
   Loading,
 } from '../../../store/activity/activitySlice'
 import { FilterType } from './walletTypes'
+import animateTransition from '../../../utils/animateTransition'
 
 type Props = {
   layout: WalletLayout
@@ -33,7 +34,7 @@ type Props = {
   txns: AnyTransaction[]
   pendingTxns: PendingTransaction[]
   filter: FilterType
-  status: Loading
+  txnTypeStatus: Loading
   balanceSheetIndex: number
   activityCardIndex: number
   setActivityCardIndex: (index: number) => void
@@ -46,7 +47,7 @@ const WalletView = ({
   txns,
   pendingTxns,
   filter,
-  status,
+  txnTypeStatus,
   balanceSheetIndex,
   activityCardIndex,
   setActivityCardIndex,
@@ -58,14 +59,16 @@ const WalletView = ({
   const [showSkeleton, setShowSkeleton] = useState(true)
 
   useEffect(() => {
-    if (activityViewState === 'loading' || status === 'idle') {
+    if (activityViewState === 'init' || txnTypeStatus === 'idle') {
+      animateTransition()
       setShowSkeleton(true)
       return
     }
-    if (status === 'fulfilled' || status === 'rejected') {
+    if (txnTypeStatus === 'fulfilled' || txnTypeStatus === 'rejected') {
+      animateTransition()
       setShowSkeleton(false)
     }
-  }, [activityViewState, status])
+  }, [activityViewState, txnTypeStatus])
 
   const handleSendPress = useCallback(() => {
     triggerNavHaptic()
@@ -119,7 +122,7 @@ const WalletView = ({
         filter={filter}
         txns={txns}
         pendingTxns={pendingTxns}
-        status={status}
+        status={txnTypeStatus}
         ref={activityCard}
         animationPoints={animationPoints}
         animatedIndex={animatedCardIndex}

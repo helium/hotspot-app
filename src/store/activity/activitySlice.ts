@@ -5,7 +5,11 @@ import { initFetchers, txnFetchers } from '../../utils/appDataClient'
 import { FilterType } from '../../features/wallet/root/walletTypes'
 
 export type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
-export type ActivityViewState = 'loading' | 'no_activity' | 'has_activity'
+export type ActivityViewState =
+  | 'init'
+  | 'reset'
+  | 'no_activity'
+  | 'has_activity'
 
 export type ActivityState = {
   txns: {
@@ -31,7 +35,7 @@ const initialState: ActivityState = {
   },
   filter: 'all',
   requestMore: false,
-  activityViewState: 'loading',
+  activityViewState: 'init',
 }
 
 export const ACTIVITY_FETCH_SIZE = 50
@@ -61,7 +65,9 @@ const activitySlice = createSlice({
       state.requestMore = true
     },
     resetTxnStatuses: (state, action: PayloadAction<FilterType>) => {
-      state.activityViewState = 'loading'
+      if (state.activityViewState !== 'init') {
+        state.activityViewState = 'reset'
+      }
       Object.keys(state.txns).forEach((key) => {
         const filterType = key as FilterType
         if (filterType !== 'pending' && filterType !== action.payload) {

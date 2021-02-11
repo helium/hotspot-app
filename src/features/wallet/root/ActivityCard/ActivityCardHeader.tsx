@@ -36,6 +36,7 @@ const ActivityCardHeader = ({ filter }: Props) => {
       </Box>
       <Box flexDirection="row" paddingRight="m">
         <ModalPicker
+          minWidth={150}
           flex={1}
           marginLeft="ms"
           prefix={t('transactions.view')}
