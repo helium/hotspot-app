@@ -59,18 +59,19 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
   }))
 
   const getData = useMemo(() => {
-    if (showSkeleton) {
-      return skeletonData
-    }
-
+    let data: (AnyTransaction | PendingTransaction)[] = txns
     if (filter === 'pending') {
-      return pendingTxns
+      data = pendingTxns
     }
 
     if (filter === 'all') {
-      return [...pendingTxns, ...txns]
+      data = [...pendingTxns, ...txns]
     }
-    return txns
+
+    if (showSkeleton) {
+      return skeletonData(data.length)
+    }
+    return data
   }, [filter, pendingTxns, txns, showSkeleton])
 
   const header = useCallback(() => <ActivityCardHeader filter={filter} />, [

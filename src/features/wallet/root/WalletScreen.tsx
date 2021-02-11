@@ -35,8 +35,11 @@ const WalletScreen = () => {
   }
 
   useEffect(() => {
-    setViewState(activityViewState)
-  }, [activityViewState])
+    if (viewState !== activityViewState) {
+      animateTransition()
+      setViewState(activityViewState)
+    }
+  }, [activityViewState, viewState])
 
   useEffect(() => {
     if (

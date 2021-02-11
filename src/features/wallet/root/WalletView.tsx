@@ -58,8 +58,14 @@ const WalletView = ({
   const [showSkeleton, setShowSkeleton] = useState(true)
 
   useEffect(() => {
-    setShowSkeleton(activityViewState !== 'has_activity')
-  }, [activityViewState])
+    if (activityViewState === 'loading' || status === 'idle') {
+      setShowSkeleton(true)
+      return
+    }
+    if (status === 'fulfilled' || status === 'rejected') {
+      setShowSkeleton(false)
+    }
+  }, [activityViewState, status])
 
   const handleSendPress = useCallback(() => {
     triggerNavHaptic()

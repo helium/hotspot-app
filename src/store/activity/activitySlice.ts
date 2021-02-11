@@ -34,6 +34,8 @@ const initialState: ActivityState = {
   activityViewState: 'loading',
 }
 
+export const ACTIVITY_FETCH_SIZE = 50
+
 type FetchTxns = { filter: FilterType; reset?: boolean }
 export const fetchTxns = createAsyncThunk<
   AnyTransaction[] | PendingTransaction[],
@@ -45,7 +47,7 @@ export const fetchTxns = createAsyncThunk<
   }
 
   const list = txnFetchers[filter]
-  return list.takeJSON(filter === 'pending' ? 1000 : 50)
+  return list.takeJSON(filter === 'pending' ? 1000 : ACTIVITY_FETCH_SIZE)
 })
 
 const activitySlice = createSlice({
