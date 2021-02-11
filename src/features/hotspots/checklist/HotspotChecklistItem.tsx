@@ -4,6 +4,67 @@ import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import Check from '../../../assets/images/checkPlain.svg'
 import { useColors } from '../../../theme/themeHooks'
+import { Colors } from '../../../theme/theme'
+
+type CompleteProps = {
+  complete?: boolean
+  colorString: Colors
+  colorHex: string
+  text: string
+}
+const CompletePill = ({
+  complete,
+  colorString,
+  colorHex,
+  text,
+}: CompleteProps) => (
+  <Box
+    backgroundColor="white"
+    borderRadius="s"
+    padding="xs"
+    flexDirection="row"
+    alignItems="center"
+    justifyContent="center"
+    opacity={complete ? 100 : 0}
+    width={80}
+  >
+    <Check color={colorHex} />
+    <Text variant="bold" color={colorString} fontSize={10} paddingStart="xs">
+      {text}
+    </Text>
+  </Box>
+)
+
+type AutoProps = {
+  textColor: Colors
+  showAuto?: boolean
+  backgroundColor: Colors
+  autoText?: string
+  auto: string
+}
+const AutoPill = ({
+  textColor,
+  showAuto,
+  backgroundColor,
+  autoText,
+  auto,
+}: AutoProps) => (
+  <Box flexDirection="row" alignItems="center">
+    <Box
+      backgroundColor={textColor}
+      borderRadius="s"
+      padding="xs"
+      opacity={showAuto ? 100 : 0}
+    >
+      <Text variant="bold" color={backgroundColor} fontSize={10}>
+        {auto}
+      </Text>
+    </Box>
+    <Text variant="body2" color={textColor} paddingStart="s" fontSize={10}>
+      {autoText}
+    </Text>
+  </Box>
+)
 
 type Props = {
   title: string
@@ -13,7 +74,6 @@ type Props = {
   showAuto?: boolean
   autoText?: string
 }
-
 const HotspotChecklistItem = ({
   title,
   description,
@@ -39,26 +99,13 @@ const HotspotChecklistItem = ({
         height={180}
       >
         <Box>
-          <Box flexDirection="row" alignItems="center">
-            <Box
-              backgroundColor={textColor}
-              borderRadius="s"
-              padding="xs"
-              opacity={showAuto ? 100 : 0}
-            >
-              <Text variant="bold" color={backgroundColor} fontSize={10}>
-                {t('checklist.auto')}
-              </Text>
-            </Box>
-            <Text
-              variant="body2"
-              color={textColor}
-              paddingStart="s"
-              fontSize={10}
-            >
-              {autoText}
-            </Text>
-          </Box>
+          <AutoPill
+            textColor={textColor}
+            showAuto={showAuto}
+            backgroundColor={backgroundColor}
+            autoText={autoText}
+            auto={t('checklist.auto')}
+          />
           <Text variant="h3" marginTop="m" color={textColor}>
             {title}
           </Text>
@@ -71,26 +118,12 @@ const HotspotChecklistItem = ({
             {description}
           </Text>
         </Box>
-        <Box
-          backgroundColor="white"
-          borderRadius="s"
-          padding="xs"
-          flexDirection="row"
-          alignItems="center"
-          justifyContent="center"
-          opacity={complete ? 100 : 0}
-          width={80}
-        >
-          <Check color={backgroundColorHex} />
-          <Text
-            variant="bold"
-            color={backgroundColor}
-            fontSize={10}
-            paddingStart="xs"
-          >
-            {completeText || t('checklist.complete')}
-          </Text>
-        </Box>
+        <CompletePill
+          complete={complete}
+          colorHex={backgroundColorHex}
+          colorString={backgroundColor}
+          text={completeText || t('checklist.complete')}
+        />
       </Box>
     </Box>
   )
