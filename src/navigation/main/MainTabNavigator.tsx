@@ -9,7 +9,6 @@ import TabBarIcon from './TabBarIcon'
 import More from '../../features/moreTab/MoreNavigator'
 import { RootState } from '../../store/rootReducer'
 import { useColors } from '../../theme/themeHooks'
-import Box from '../../components/Box'
 import { useAppDispatch } from '../../store/store'
 import WalletNavigator from '../../features/wallet/WalletNavigator'
 import { wp } from '../../utils/layout'
@@ -38,10 +37,11 @@ const MainTabs = () => {
     navigation.push('HotspotSetup')
   }, [isSettingUpHotspot, dispatch, navigation])
 
-  if (isLocked) return <Box backgroundColor="primaryBackground" flex={1} />
-
   return (
     <MainTab.Navigator
+      sceneContainerStyle={{
+        opacity: isLocked ? 0 : 1,
+      }}
       initialRouteName="Hotspots"
       lazy={false}
       tabBarOptions={{
