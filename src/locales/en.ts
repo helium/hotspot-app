@@ -695,4 +695,43 @@ export default {
       securities: 'Security Tokens',
     },
   },
+  checklist: {
+    blocks: {
+      not: 'Hotspot is not yet synced.',
+      full: 'Hotspot is fully synced.',
+      partial:
+        'Hotspot is {(count}} block behind the Helium blockchain and is roughly {{percent}}% synced.',
+      partial_plural:
+        'Hotspot is {(count}} blocks behind the Helium blockchain and is roughly {{percent}}% synced.',
+    },
+    status: {
+      online: 'Hotspot is online.',
+      offline: 'Hotspot is offline.',
+    },
+    challenger: {
+      success: 'Hotspot issued a challenge {{count}} block ago.',
+      success_plural: 'Hotspot issued a challenge {{count}} blocks ago.',
+      fail:
+        "Hotspot hasn't issued a challenge yet. Hotspots create challenges automatically.",
+    },
+    challenge_witness: {
+      success: 'Hotspot has witnessed a challenge recently.',
+      fail: "Hotspot hasn't witnessed a challenge recently.",
+    },
+    witness: {
+      success: 'Hotspot has been witnessed by {{count}} Hotspot.',
+      success_plural: 'Hotspot has been witnessed by {{count}} Hotspots.',
+      fail: 'Hotspot has no witnesses.',
+    },
+    challengee: {
+      success: 'Hotspot last participated in a challenge {{count}} block ago.',
+      success_plural:
+        'Hotspot last participated in a challenge {{count}} blocks ago.',
+      fail: "Hotspot hasn't participated in a challenge yet.",
+    },
+    data_transfer: {
+      success: 'Hotspot has transferred data packets recently.',
+      fail: "Hotspot hasn't transferred data packets recently.",
+    },
+  },
 }

@@ -23,6 +23,7 @@ import TouchableOpacityBox from '../../../components/BSTouchableOpacityBox'
 import HexBadge from './HexBadge'
 import HotspotMoreMenuButton from './HotspotMoreMenuButton'
 import Button from '../../../components/Button'
+import HotspotChecklist from '../checklist/HotspotChecklist'
 
 const shortAddress = (address?: string) => `${address?.slice(0, 5)}...`
 
@@ -45,6 +46,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
       challengeSums,
       challengeSum,
       challengeChange,
+      witnesses,
     },
   } = useSelector((state: RootState) => state)
 
@@ -153,6 +155,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
             </Text>
           </TouchableOpacityBox>
         </Box>
+        <HotspotChecklist hotspot={hotspot} witnesses={witnesses} />
         <TimelinePicker index={2} onTimelineChanged={setTimelineValue} />
         <HotspotDetailChart
           title={t('hotspot_details.reward_title')}
