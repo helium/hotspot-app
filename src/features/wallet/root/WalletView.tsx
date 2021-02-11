@@ -1,19 +1,16 @@
-import React, { useRef, memo, useCallback, useState, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
+import React, { useRef, memo, useCallback, useState, useEffect } from 'react'
 import Animated, {
   Extrapolate,
   interpolate,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated'
+
 import { useNavigation } from '@react-navigation/native'
 import BottomSheet from '@gorhom/bottom-sheet'
-import Search from '@assets/images/search.svg'
-import Qr from '@assets/images/qr.svg'
-import { ActivityIndicator } from 'react-native'
 import { AnyTransaction, PendingTransaction } from '@helium/http'
+import { ActivityIndicator } from 'react-native'
 import Box from '../../../components/Box'
-import Text from '../../../components/Text'
 import BarChart from '../../../components/BarChart'
 import BalanceCard from './BalanceCard/BalanceCard'
 import ActivityCard from './ActivityCard/ActivityCard'
@@ -24,49 +21,46 @@ import {
   WalletLayout,
 } from './walletLayout'
 import { triggerNavHaptic } from '../../../utils/haptic'
-import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import { hp } from '../../../utils/layout'
-import WalletIntroCarousel from './WalletIntroCarousel'
 import { Loading } from '../../../store/activity/activitySlice'
 import { FilterType } from './walletTypes'
+
+export type WalletViewState = 'loading' | 'no_activity' | 'has_activity'
 
 type Props = {
   layout: WalletLayout
   animationPoints: WalletAnimationPoints
-  hasActivity: boolean
+  walletViewState: WalletViewState
   txns: AnyTransaction[]
   pendingTxns: PendingTransaction[]
   filter: FilterType
   status: Loading
+  balanceSheetIndex: number
+  activityCardIndex: number
+  setActivityCardIndex: (index: number) => void
 }
 
 const WalletView = ({
   layout,
   animationPoints,
-  hasActivity,
+  walletViewState,
   txns,
   pendingTxns,
   filter,
   status,
+  balanceSheetIndex,
+  activityCardIndex,
+  setActivityCardIndex,
 }: Props) => {
-  const { t } = useTranslation()
   const navigation = useNavigation()
-
   const activityCard = useRef<BottomSheet>(null)
   const balanceSheet = useRef<BottomSheet>(null)
 
-  const [activityCardIndex, setActivityCardIndex] = useState(1)
-  const [balanceSheetIndex, setBalanceSheetIndex] = useState(0)
   const animatedCardIndex = useSharedValue<number>(1)
+  const [showSkeleton, setShowSkeleton] = useState(true)
 
-  const handlePress = useCallback(() => {
-    triggerNavHaptic()
-  }, [])
-
-  const navScan = useCallback(() => {
-    triggerNavHaptic()
-    navigation.navigate('Scan')
-  }, [navigation])
+  useEffect(() => {
+    setShowSkeleton(walletViewState !== 'has_activity')
+  }, [walletViewState])
 
   const handleSendPress = useCallback(() => {
     triggerNavHaptic()
@@ -74,7 +68,7 @@ const WalletView = ({
   }, [navigation])
 
   const toggleShowReceive = useCallback(() => {
-    if (hasActivity) {
+    if (walletViewState === 'has_activity') {
       const snapToIndex = activityCardIndex === 1 ? 0 : 1
       activityCard.current?.snapTo(snapToIndex)
     } else {
@@ -82,7 +76,7 @@ const WalletView = ({
       balanceSheet.current?.snapTo(snapToIndex)
     }
     triggerNavHaptic()
-  }, [activityCardIndex, balanceSheetIndex, hasActivity])
+  }, [activityCardIndex, balanceSheetIndex, walletViewState])
 
   const balanceCardStyles = useAnimatedStyle(
     () => ({
@@ -101,89 +95,33 @@ const WalletView = ({
     [animatedCardIndex, layout.chartHeight],
   )
 
-  const containerStyle = useMemo(() => ({ paddingTop: layout.notchHeight }), [
-    layout.notchHeight,
-  ])
+  if (walletViewState === 'no_activity') return null
+
+  if (showSkeleton) return <ActivityIndicator color="white" />
 
   return (
-    <Box flex={1} style={containerStyle}>
-      <Box
-        flexDirection="row"
-        justifyContent="space-between"
-        alignItems="center"
-        paddingHorizontal="l"
-        backgroundColor="primaryBackground"
-        zIndex={1}
-        height={layout.headerHeight}
-      >
-        <Text variant="h1" fontSize={22}>
-          {hasActivity ? t('wallet.title') : ' '}
-        </Text>
-
-        <Box flexDirection="row" justifyContent="space-between" width={85}>
-          <TouchableOpacityBox onPress={handlePress} padding="s">
-            <Search width={22} height={22} />
-          </TouchableOpacityBox>
-          <TouchableOpacityBox onPress={navScan} padding="s">
-            <Qr width={22} height={22} color="white" />
-          </TouchableOpacityBox>
-        </Box>
+    <>
+      <Box paddingHorizontal="l">
+        <BarChart height={layout.chartHeight} />
       </Box>
+      <Animated.View style={balanceCardStyles}>
+        <BalanceCard
+          onReceivePress={toggleShowReceive}
+          onSendPress={handleSendPress}
+        />
+      </Animated.View>
 
-      {hasActivity === undefined && (
-        <Box flex={1} justifyContent="center">
-          <ActivityIndicator color="white" />
-        </Box>
-      )}
-      {/* TODO: Get rid of this ActivityIndicator
-          Turn the below view into one that
-          takes a loading flag and show a
-          skeleton while  hasActivity === undefined
-      */}
-      {hasActivity && (
-        <>
-          <Box paddingHorizontal="l">
-            <BarChart height={layout.chartHeight} />
-          </Box>
-          <Animated.View style={balanceCardStyles}>
-            <BalanceCard
-              onReceivePress={toggleShowReceive}
-              onSendPress={handleSendPress}
-            />
-          </Animated.View>
-
-          <ActivityCard
-            filter={filter}
-            txns={txns}
-            pendingTxns={pendingTxns}
-            status={status}
-            ref={activityCard}
-            animationPoints={animationPoints}
-            animatedIndex={animatedCardIndex}
-            onChange={setActivityCardIndex}
-          />
-        </>
-      )}
-      {hasActivity === false && (
-        <>
-          <WalletIntroCarousel />
-          <BottomSheet
-            index={balanceSheetIndex}
-            onChange={setBalanceSheetIndex}
-            handleComponent={null}
-            backgroundComponent={null}
-            snapPoints={[hp(20), hp(55)]}
-            animateOnMount={false}
-            ref={balanceSheet}
-          >
-            <BalanceCard
-              onReceivePress={toggleShowReceive}
-              onSendPress={handleSendPress}
-            />
-          </BottomSheet>
-        </>
-      )}
-    </Box>
+      <ActivityCard
+        filter={filter}
+        txns={txns}
+        pendingTxns={pendingTxns}
+        status={status}
+        ref={activityCard}
+        animationPoints={animationPoints}
+        animatedIndex={animatedCardIndex}
+        onChange={setActivityCardIndex}
+      />
+    </>
   )
 }
 

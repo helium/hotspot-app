@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useRef, useState, useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import { AnyTransaction, PendingTransaction, PaymentV1 } from '@helium/http'
-import WalletView from './WalletView'
+import WalletViewContainer, { WalletViewState } from './WalletViewContainer'
 import Box from '../../../components/Box'
 import ActivityDetails from './ActivityDetails/ActivityDetails'
 import useVisible from '../../../utils/useVisible'
@@ -15,7 +15,9 @@ const WalletScreen = () => {
   const dispatch = useAppDispatch()
   const [transactionData, setTransactionData] = useState<AnyTransaction[]>([])
   const [pendingTxns, setPendingTxns] = useState<PendingTransaction[]>([])
-  const [hasActivity, setHasActivity] = useState<boolean | undefined>()
+  const [walletViewState, setWalletViewState] = useState<WalletViewState>(
+    'loading',
+  )
   const {
     activity: { txns, filter, detailTxn, requestMore },
     heliumData: { blockHeight },
@@ -26,10 +28,10 @@ const WalletScreen = () => {
   const prevBlockHeight = usePrevious(blockHeight)
   const prevAllTxnsStatus = usePrevious(txns.all.status)
 
-  const determineHasActivity = useCallback(() => {
+  const determineWalletViewState = useCallback(() => {
     // TODO: Have this check all filters. Data may update when they're on a filter other than ALL
 
-    if (hasActivity) {
+    if (walletViewState !== 'loading') {
       return
     }
 
@@ -37,17 +39,21 @@ const WalletScreen = () => {
       prevAllTxnsStatus === 'pending' &&
       (txns.all.status === 'fulfilled' || txns.all.status === 'rejected')
     ) {
-      const nextHasActivity = txns.all.data.length > 0
-      if (nextHasActivity !== hasActivity) {
-        animateTransition()
-        setHasActivity(nextHasActivity)
-      }
+      const nextWalletViewState: WalletViewState =
+        txns.all.data.length > 0 ? 'has_activity' : 'no_activity'
+      animateTransition()
+      setWalletViewState(nextWalletViewState)
     }
-  }, [hasActivity, prevAllTxnsStatus, txns.all.data.length, txns.all.status])
+  }, [
+    walletViewState,
+    prevAllTxnsStatus,
+    txns.all.data.length,
+    txns.all.status,
+  ])
 
   useEffect(() => {
-    determineHasActivity()
-  }, [determineHasActivity])
+    determineWalletViewState()
+  }, [determineWalletViewState])
 
   const updateTxnData = (data: AnyTransaction[]) => {
     animateTransition()
@@ -139,9 +145,9 @@ const WalletScreen = () => {
   return (
     <>
       <Box flex={1} backgroundColor="primaryBackground">
-        <WalletView
+        <WalletViewContainer
           status={txns[filter].status}
-          hasActivity={hasActivity}
+          walletViewState={walletViewState}
           txns={transactionData}
           pendingTxns={pendingTxns}
           filter={filter}
