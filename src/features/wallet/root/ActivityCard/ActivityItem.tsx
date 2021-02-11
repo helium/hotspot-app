@@ -53,8 +53,8 @@ const ActivityItem = ({
       borderBottomRightRadius={isLast ? 'm' : undefined}
     >
       <Box
-        width={50}
-        height={50}
+        width={ACTIVITY_ITEM_ROW_HEIGHT}
+        height={ACTIVITY_ITEM_ROW_HEIGHT}
         style={iconStyle}
         justifyContent="center"
         alignItems="center"

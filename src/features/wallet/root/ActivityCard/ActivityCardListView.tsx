@@ -19,7 +19,7 @@ import { useSpacing } from '../../../../theme/themeHooks'
 import useActivityItem from '../useActivityItem'
 import ActivityCardLoading from './ActivityCardLoading'
 import { SkeletonTxn } from './SkeletonData'
-import Box from '../../../../components/Box'
+import SkeletonActivityItem from './SkeletonActivityItem'
 
 type Props = {
   status: Loading
@@ -84,9 +84,7 @@ const ActivityCardListView = ({ data, status }: Props) => {
       }
 
       if (isSkeleton(item)) {
-        return (
-          <Box height={ACTIVITY_ITEM_ROW_HEIGHT} backgroundColor="purple100" />
-        )
+        return <SkeletonActivityItem isFirst={index === 0} isLast={isLast()} />
       }
 
       return (
