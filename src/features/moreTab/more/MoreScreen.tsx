@@ -28,7 +28,7 @@ import DiscordItem from './DiscordItem'
 import AppInfoItem from './AppInfoItem'
 import activitySlice from '../../../store/activity/activitySlice'
 import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
-import { useLanguage } from '../../../utils/i18n'
+import { SUPPORTED_LANGUAGUES, useLanguage } from '../../../utils/i18n'
 
 type Route = RouteProp<RootStackParamList & MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
@@ -227,12 +227,7 @@ const MoreScreen = () => {
             title: t('more.sections.account.language'),
             value: language,
             select: {
-              items: [
-                { label: 'English', value: 'en' },
-                { label: 'Chinese', value: 'zh' },
-                { label: 'Japanese', value: 'ja' },
-                { label: 'Korean', value: 'ko' },
-              ],
+              items: SUPPORTED_LANGUAGUES,
               onValueSelect: handleLanguageChange,
             },
           },

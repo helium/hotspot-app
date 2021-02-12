@@ -8,6 +8,13 @@ import ja from '../locales/ja'
 import zh from '../locales/zh'
 import { getSecureItem, setSecureItem } from './secureAccount'
 
+export const SUPPORTED_LANGUAGUES = [
+  { label: 'English', value: 'en' },
+  { label: '中文', value: 'zh' }, // chinese
+  { label: '日本人', value: 'ja' }, // japanese
+  { label: '한국어', value: 'ko' }, // korean
+]
+
 export const useLanguage = () => {
   const [language, setLanguage] = useState('en')
 
