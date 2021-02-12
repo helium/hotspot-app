@@ -28,6 +28,7 @@ import DiscordItem from './DiscordItem'
 import AppInfoItem from './AppInfoItem'
 import activitySlice from '../../../store/activity/activitySlice'
 import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
+import { useLanguage } from '../../../utils/i18n'
 
 type Route = RouteProp<RootStackParamList & MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
@@ -37,7 +38,7 @@ const MoreScreen = () => {
   const { version } = useDevice()
   const { app } = useSelector((state: RootState) => state)
   const authIntervals = useAuthIntervals()
-
+  const { changeLanguage, language } = useLanguage()
   const navigation = useNavigation<MoreNavigationProp & RootNavigationProp>()
   const spacing = useSpacing()
 
@@ -128,6 +129,13 @@ const MoreScreen = () => {
     )
   }, [t, dispatch])
 
+  const handleLanguageChange = useCallback(
+    (lng: string) => {
+      changeLanguage(lng)
+    },
+    [changeLanguage],
+  )
+
   const handleIntervalSelected = useCallback(
     (value: string) => {
       dispatch(appSlice.actions.updateAuthInterval(parseInt(value, 10)))
@@ -217,9 +225,15 @@ const MoreScreen = () => {
         data: [
           {
             title: t('more.sections.account.language'),
+            value: language,
             select: {
-              items: [{ label: 'English', value: 'English' }],
-              onValueSelect: () => {},
+              items: [
+                { label: 'English', value: 'en' },
+                { label: 'Chinese', value: 'zh' },
+                { label: 'Japanese', value: 'ja' },
+                { label: 'Korean', value: 'ko' },
+              ],
+              onValueSelect: handleLanguageChange,
             },
           },
           {
@@ -242,6 +256,8 @@ const MoreScreen = () => {
     authIntervals,
     handleIntervalSelected,
     handleRevealWords,
+    handleLanguageChange,
+    language,
   ])
 
   return (

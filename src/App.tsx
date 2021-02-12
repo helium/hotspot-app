@@ -36,10 +36,14 @@ import {
 } from './store/helium/heliumDataSlice'
 import sleep from './utils/sleep'
 import SecurityScreen from './features/security/SecurityScreen'
+import { useLanguage } from './utils/i18n'
 
 SplashScreen.preventAutoHideAsync()
 
 const App = () => {
+  const { initLanguage } = useLanguage()
+  initLanguage()
+
   if (Platform.OS === 'android') {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
       UIManager.setLayoutAnimationEnabledExperimental(true)

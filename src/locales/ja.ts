@@ -1,3 +1,3 @@
 export default {
-  back: 'Retour',
+  back: 'jBack',
 }
