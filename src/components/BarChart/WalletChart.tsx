@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { ActivityIndicator, TouchableWithoutFeedback } from 'react-native'
 import { round } from 'lodash'
 import { useSelector } from 'react-redux'
@@ -48,8 +48,10 @@ const WalletChart = ({ height }: Props) => {
 
   const { greenBright } = useColors()
 
+  const containerStyle = useMemo(() => ({ paddingVertical: padding / 2 }), [])
+
   return (
-    <Box justifyContent="space-around" style={{ paddingVertical: padding / 2 }}>
+    <Box justifyContent="space-around" style={containerStyle}>
       <Box
         flexDirection="row"
         justifyContent="space-between"

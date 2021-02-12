@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, memo } from 'react'
 import { Platform } from 'react-native'
 import {
   createStackNavigator,
@@ -77,4 +77,4 @@ const HomeStackScreen = () => {
   )
 }
 
-export default HomeStackScreen
+export default memo(HomeStackScreen)

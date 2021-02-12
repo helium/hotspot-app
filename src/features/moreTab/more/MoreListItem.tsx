@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { Linking, Switch } from 'react-native'
 import RNPickerSelect, { Item } from 'react-native-picker-select'
 import Text from '../../../components/Text'
@@ -105,4 +105,4 @@ const MoreListItem = ({
   )
 }
 
-export default MoreListItem
+export default memo(MoreListItem)

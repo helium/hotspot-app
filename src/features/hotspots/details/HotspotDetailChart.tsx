@@ -17,6 +17,7 @@ type Props = {
   data: ChartData[]
   color: string
   loading?: boolean
+  subTitle?: string
 }
 
 const PercentageBox = ({
@@ -80,6 +81,7 @@ const HotspotDetailChart = ({
   data,
   color,
   loading,
+  subTitle,
 }: Props) => {
   const { t } = useTranslation()
   const { redMedium, black, grayLight, grayMain } = useColors()
@@ -93,9 +95,22 @@ const HotspotDetailChart = ({
   }
   return (
     <Box marginBottom="m">
-      <Text variant="body1" color="black" marginVertical="s">
-        {title}
-      </Text>
+      <Box
+        flexDirection="row"
+        alignItems="center"
+        marginVertical="s"
+        width="100%"
+        marginEnd="s"
+      >
+        <Text variant="body1" color="black">
+          {title}
+        </Text>
+        {subTitle && (
+          <Text variant="body3" color="grayText" paddingLeft="xs">
+            {subTitle}
+          </Text>
+        )}
+      </Box>
       <Box
         backgroundColor="grayBox"
         padding="l"

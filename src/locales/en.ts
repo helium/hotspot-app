@@ -138,14 +138,6 @@ export default {
       fine_print:
         'RAK Hotspot Miners have special firmware preloaded by RAK. Double check your hardware is a RAK Hotspot Miner before proceeding.',
     },
-    start: {
-      title: 'Set up Hotspot',
-      subtitle:
-        'Hotspots allow you to earn HNT by building out The People’s Network.',
-      info: 'How does this work? ⓘ',
-      next: "Let's get started",
-      not_now: 'Not right now',
-    },
     education: {
       title: 'Placing\nyour Hotspot.',
       cards: [
@@ -429,6 +421,7 @@ export default {
     error: 'There was an error submitting this transaction. Please try again.',
     hotspot_label: 'Hotspot',
     last_activity: 'LAST REPORTED ACTIVITY: {{activity}}',
+    label_error: 'You do not have enough HNT in your account.',
   },
   more: {
     title: 'Settings',
@@ -460,7 +453,6 @@ export default {
       account: {
         title: 'Account',
         language: 'Language',
-        units: 'Units',
         signOut: 'Sign Out',
         signOutAlert: {
           title: 'Warning!',
@@ -622,10 +614,12 @@ export default {
   hotspot_details: {
     title: 'Hotspot Details',
     owner: 'Owned by {{address}}',
+    owner_you: 'Owned by you',
     pass_rate: 'PASS RATE',
     reward_title: 'HNT Rewards',
     witness_title: 'Average Witnesses',
     challenge_title: 'Challenges',
+    challenge_sub_title: '(witness, challenger, or challengee)',
     picker_title: 'Past',
     picker_options: ['24 Hours', '7 Days', '14 Days', '30 Days'],
     status_online: 'Online',

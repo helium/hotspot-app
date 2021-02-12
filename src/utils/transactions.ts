@@ -14,7 +14,7 @@ export const makePaymentTxn = async (
   amount: number,
   payeeB58: string,
   nonce: number,
-): Promise<string> => {
+): Promise<PaymentV2> => {
   const keypair = await getKeypair()
   const payee = Address.fromB58(payeeB58)
 
@@ -31,32 +31,29 @@ export const makePaymentTxn = async (
     nonce,
   })
 
-  const signedPaymentTxn = await paymentTxn.sign({ payer: keypair })
-  return signedPaymentTxn.toString()
+  return paymentTxn.sign({ payer: keypair })
 }
 
-export const makeAddGatewayTxn = async (partialTxnBin: string) => {
+export const makeAddGatewayTxn = async (
+  partialTxnBin: string,
+): Promise<AddGatewayV1> => {
   const addGatewayTxn = AddGatewayV1.fromString(partialTxnBin)
   const keypair = await getKeypair()
 
-  const signedTxn = await addGatewayTxn.sign({
+  return addGatewayTxn.sign({
     owner: keypair,
   })
-
-  const serialized = signedTxn.serialize()
-  return Buffer.from(serialized).toString('base64')
 }
 
-export const makeAssertLocTxn = async (partialTxnBin: string) => {
+export const makeAssertLocTxn = async (
+  partialTxnBin: string,
+): Promise<AssertLocationV1> => {
   const assertLocTxn = AssertLocationV1.fromString(partialTxnBin)
   const keypair = await getKeypair()
 
-  const signedTxn = await assertLocTxn.sign({
+  return assertLocTxn.sign({
     owner: keypair,
   })
-
-  const serialized = signedTxn.serialize()
-  return Buffer.from(serialized).toString('base64')
 }
 
 export const makeBurnTxn = async (
@@ -64,7 +61,7 @@ export const makeBurnTxn = async (
   payeeB58: string,
   nonce: number,
   memo: string,
-): Promise<string> => {
+): Promise<TokenBurnV1> => {
   const keypair = await getKeypair()
   const payee = Address.fromB58(payeeB58)
 
@@ -78,8 +75,7 @@ export const makeBurnTxn = async (
     memo,
   })
 
-  const signedTxn = await tokenBurnTxn.sign({ payer: keypair })
-  return signedTxn.toString()
+  return tokenBurnTxn.sign({ payer: keypair })
 }
 
 export const makeSellerTransferHotspotTxn = async (
@@ -87,7 +83,7 @@ export const makeSellerTransferHotspotTxn = async (
   buyerB58: string,
   seller: Address,
   amountToSeller: number,
-) => {
+): Promise<TransferHotspotV1> => {
   const keypair = await getKeypair()
 
   if (!keypair) throw new Error('missing keypair')
@@ -106,16 +102,14 @@ export const makeSellerTransferHotspotTxn = async (
     amountToSeller,
     buyerNonce: buyerAccount.speculativeNonce + 1,
   })
-  const signedTxn = await transferHotspotTxn.sign({ seller: keypair })
-  return signedTxn.toString()
+  return transferHotspotTxn.sign({ seller: keypair })
 }
 
 export const makeBuyerTransferHotspotTxn = async (
   transferHotspotTxn: TransferHotspotV1,
-) => {
+): Promise<TransferHotspotV1> => {
   const keypair = await getKeypair()
-  const signedTxn = await transferHotspotTxn.sign({ buyer: keypair })
-  return signedTxn.toString()
+  return transferHotspotTxn.sign({ buyer: keypair })
 }
 
 export const getPayer = (txn: AnyTransaction | PendingTransaction) => {

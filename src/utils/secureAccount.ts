@@ -11,12 +11,12 @@ const stringKeys = [
   'userPin',
   'authInterval',
   'walletApiToken',
+  'language',
 ] as const
 type StringKey = typeof stringKeys[number]
 
 const boolKeys = [
   'accountBackedUp',
-  'isEducated',
   'isSettingUpHotspot',
   'requirePin',
   'requirePinForPayment',

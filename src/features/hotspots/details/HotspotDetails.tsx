@@ -1,155 +1,74 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import animalName from 'angry-purple-tiger'
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import { random, times } from 'lodash'
-import { Linking, Share } from 'react-native'
-import { useActionSheet } from '@expo/react-native-action-sheet'
+import { Hotspot } from '@helium/http'
+import { Linking } from 'react-native'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
-import { HotspotStackParamList } from '../root/hotspotTypes'
 import StatusBadge from './StatusBadge'
 import TimelinePicker from './TimelinePicker'
 import HotspotDetailChart from './HotspotDetailChart'
 import { RootState } from '../../../store/rootReducer'
 import { useColors } from '../../../theme/themeHooks'
 import { getRewardChartData } from './RewardsHelper'
-import { ChartData } from '../../../components/BarChart/types'
 import { useAppDispatch } from '../../../store/store'
 import hotspotDetailsSlice, {
-  fetchHotspotRewards,
-  fetchHotspotWitnesses,
-  fetchHotspotWitnessSums,
+  fetchHotspotDetails,
 } from '../../../store/hotspotDetails/hotspotDetailsSlice'
-import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import MoreMenu from '../../../assets/images/moreMenu.svg'
-import BackButton from '../../../components/BackButton'
 import HotspotSettingsProvider from '../settings/HotspotSettingsProvider'
 import HotspotSettings from '../settings/HotspotSettings'
+import TouchableOpacityBox from '../../../components/BSTouchableOpacityBox'
+import HexBadge from './HexBadge'
+import HotspotMoreMenuButton from './HotspotMoreMenuButton'
+import Button from '../../../components/Button'
 
-const shortAddress = (address?: string) =>
-  `${address?.slice(0, 5)}...${address?.slice(
-    address?.length - 5,
-    address?.length,
-  )}`
+const shortAddress = (address?: string) => `${address?.slice(0, 5)}...`
 
-const data: Record<string, ChartData[]> = {
-  1: times(14).map((v, i) => ({
-    up: random(0, 100),
-    down: 0,
-    day: '',
-    id: [1, i].join('-'),
-  })),
-  2: times(14).map((v, i) => ({
-    up: random(0, 100),
-    down: 0,
-    day: '',
-    id: [2, i].join('-'),
-  })),
-}
-
-type HotspotDetailsRouteProp = RouteProp<
-  HotspotStackParamList,
-  'HotspotDetails'
->
-
-const HotspotDetails = () => {
-  const route = useRoute<HotspotDetailsRouteProp>()
-  const navigation = useNavigation()
-  const { hotspot } = route.params
+const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
   const { t } = useTranslation()
   const colors = useColors()
   const dispatch = useAppDispatch()
 
-  const navBack = () => {
-    navigation.goBack()
-  }
-
   const {
+    account: { account },
     hotspotDetails: {
       numDays,
       rewards,
       rewardSum,
       rewardsChange,
-      loadingRewards,
-      loadingWitnessSums,
+      loading,
       witnessSums,
       witnessAverage,
       witnessChange,
+      challengeSums,
+      challengeSum,
+      challengeChange,
     },
   } = useSelector((state: RootState) => state)
 
-  const [timelineIndex, setTimelineIndex] = useState(2)
-  const onTimelineChanged = (_value: string, index: number) => {
-    setTimelineIndex(index)
-  }
+  const [timelineValue, setTimelineValue] = useState(14)
 
   useEffect(() => {
-    let days
-    switch (timelineIndex) {
-      default:
-      case 0:
-        days = 1
-        break
-      case 1:
-        days = 7
-        break
-      case 2:
-        days = 14
-        break
-      case 3:
-        days = 30
-        break
-    }
-    dispatch(fetchHotspotRewards({ address: hotspot.address, numDays: days }))
-    dispatch(fetchHotspotWitnesses(hotspot.address))
+    if (!hotspot) return
+
     dispatch(
-      fetchHotspotWitnessSums({
-        address: hotspot.address,
-        numDays: days,
-      }),
+      fetchHotspotDetails({ address: hotspot.address, numDays: timelineValue }),
     )
-  }, [dispatch, hotspot.address, timelineIndex])
+  }, [dispatch, hotspot, timelineValue])
 
-  const { showActionSheetWithOptions } = useActionSheet()
+  const openExplorerOwner = useCallback(() => {
+    if (!hotspot) return
+    Linking.openURL(`https://explorer.helium.com/accounts/${hotspot.owner}`)
+  }, [hotspot])
 
-  type SettingsOption = { label: string; action?: () => void }
-  const onMoreMenuSelected = () => {
-    const explorerUrl = `https://explorer.helium.com/hotspots/${hotspot.address}`
-    const opts: SettingsOption[] = [
-      {
-        label: t('hotspot_details.options.settings'),
-        action: () =>
-          dispatch(hotspotDetailsSlice.actions.toggleShowSettings()),
-      },
-      {
-        label: t('hotspot_details.options.viewExplorer'),
-        action: () => Linking.openURL(explorerUrl),
-      },
-      {
-        label: t('hotspot_details.options.share'),
-        action: () => Share.share({ message: explorerUrl }),
-      },
-      {
-        label: t('generic.cancel'),
-      },
-    ]
+  const handleToggleSettings = useCallback(() => {
+    dispatch(hotspotDetailsSlice.actions.toggleShowSettings())
+  }, [dispatch])
 
-    showActionSheetWithOptions(
-      {
-        options: opts.map(({ label }) => label),
-        destructiveButtonIndex: opts.length - 1,
-      },
-      (buttonIndex) => {
-        opts[buttonIndex].action?.()
-      },
-    )
-  }
-
-  const formatDate = (timestamp: string) => {
-    let options
+  const witnessChartData = useMemo(() => {
+    let options: Intl.DateTimeFormatOptions
     if (numDays === 1) {
       options = {
         day: 'numeric',
@@ -163,38 +82,63 @@ const HotspotDetails = () => {
         month: 'short',
       }
     }
-    return new Date(timestamp).toLocaleDateString(undefined, options)
-  }
+    return (
+      witnessSums?.map((w) => ({
+        up: Math.round(w.avg),
+        down: 0,
+        day: new Date(w.timestamp).toLocaleDateString(undefined, options),
+        id: `witness-${numDays}-${w.timestamp}`,
+      })) || []
+    )
+  }, [numDays, witnessSums])
+
+  const challengeChartData = useMemo(() => {
+    let options: Intl.DateTimeFormatOptions
+    if (numDays === 1) {
+      options = {
+        day: 'numeric',
+        month: 'short',
+        hour: 'numeric',
+      }
+    } else {
+      options = {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+      }
+    }
+    return (
+      challengeSums?.map((w) => ({
+        up: Math.round(w.sum),
+        down: 0,
+        day: new Date(w.timestamp).toLocaleDateString(undefined, options),
+        id: `challenge-${numDays}-${w.timestamp}`,
+      })) || []
+    )
+  }, [numDays, challengeSums])
+
+  if (!hotspot) return null
 
   return (
     <BottomSheetScrollView>
-      <Box
-        paddingHorizontal="l"
-        flexDirection="row"
-        alignItems="flex-end"
-        justifyContent="space-between"
-      >
-        <BackButton
-          onPress={navBack}
-          color="grayLightText"
-          fontSize={12}
-          paddingHorizontal="none"
-        />
-
-        <TouchableOpacityBox
-          onPress={onMoreMenuSelected}
-          paddingVertical="s"
-          paddingLeft="l"
-        >
-          <MoreMenu />
-        </TouchableOpacityBox>
-      </Box>
-
       <Box paddingHorizontal="l" paddingBottom="l">
-        <Box marginBottom="m">
-          <Text variant="h2" color="black">
+        <Box
+          marginBottom="m"
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Text
+            variant="h2"
+            color="black"
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            flex={1}
+          >
             {animalName(hotspot.address)}
           </Text>
+
+          <HotspotMoreMenuButton hotspot={hotspot} />
         </Box>
         <Box
           flexDirection="row"
@@ -202,49 +146,58 @@ const HotspotDetails = () => {
           alignItems="center"
           marginBottom="xl"
         >
-          <StatusBadge online={hotspot.status?.online} />
-          <Text color="grayLightText">
-            {t('hotspot_details.owner', {
-              address: shortAddress(hotspot.owner),
-            })}
-          </Text>
+          <Box flexDirection="row">
+            <StatusBadge online={hotspot.status?.online} />
+            <HexBadge rewardScale={hotspot.rewardScale} />
+          </Box>
+          <TouchableOpacityBox onPress={openExplorerOwner}>
+            <Text color="grayLightText">
+              {hotspot.owner === account?.address
+                ? t('hotspot_details.owner_you')
+                : t('hotspot_details.owner', {
+                    address: shortAddress(hotspot.owner),
+                  })}
+            </Text>
+          </TouchableOpacityBox>
         </Box>
-        <TimelinePicker
-          index={timelineIndex}
-          onTimelineChanged={onTimelineChanged}
-        />
+        <TimelinePicker index={2} onTimelineChanged={setTimelineValue} />
         <HotspotDetailChart
           title={t('hotspot_details.reward_title')}
           number={rewardSum?.total.toFixed(2)}
           change={rewardsChange}
           color={colors.greenOnline}
           data={getRewardChartData(rewards, numDays)}
-          loading={loadingRewards}
+          loading={loading}
         />
         <HotspotDetailChart
           title={t('hotspot_details.witness_title')}
           number={witnessAverage?.toFixed(0)}
           change={witnessChange}
           color={colors.purpleMain}
-          data={
-            witnessSums?.map((w) => ({
-              up: Math.round(w.avg),
-              down: 0,
-              day: formatDate(w.timestamp),
-              id: `witness-${numDays}-${w.timestamp}`,
-            })) || []
-          }
-          loading={loadingWitnessSums}
+          data={witnessChartData}
+          loading={loading}
         />
         <HotspotDetailChart
           title={t('hotspot_details.challenge_title')}
-          percentage={78}
+          subTitle={t('hotspot_details.challenge_sub_title')}
+          number={challengeSum?.toFixed(0)}
+          change={challengeChange}
           color={colors.purpleMain}
-          data={data[2]}
+          data={challengeChartData}
+          loading={loading}
         />
+
+        <Box marginTop="m">
+          <Button
+            mode="contained"
+            variant="primary"
+            title="Settings"
+            onPress={handleToggleSettings}
+          />
+        </Box>
       </Box>
       <HotspotSettingsProvider>
-        <HotspotSettings />
+        <HotspotSettings hotspot={hotspot} />
       </HotspotSettingsProvider>
     </BottomSheetScrollView>
   )

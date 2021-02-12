@@ -37,6 +37,7 @@ type Props = {
   isSeller?: boolean
   transferData?: Transfer
   lastReportedActivity?: string
+  hasSufficientBalance?: boolean
 }
 
 const SendForm = ({
@@ -59,6 +60,7 @@ const SendForm = ({
   onUnlock,
   transferData,
   lastReportedActivity,
+  hasSufficientBalance,
 }: Props) => {
   const { t } = useTranslation()
   const { primaryMain } = useColors()
@@ -133,6 +135,7 @@ const SendForm = ({
         type="numeric"
         defaultValue={amount}
         onChange={onAmountChange}
+        value={amount}
         label={t('send.amount.label')}
         placeholder={t('send.amount.placeholder')}
         extra={
@@ -175,6 +178,7 @@ const SendForm = ({
         type="numeric"
         defaultValue={amount}
         onChange={onAmountChange}
+        value={amount}
         label={t('send.amount.label')}
         placeholder={t('send.amount.placeholder')}
         footer={amount ? <FeeFooter fee={fee} /> : undefined}
@@ -223,6 +227,7 @@ const SendForm = ({
         type="numeric"
         defaultValue={amount}
         onChange={onAmountChange}
+        value={amount}
         label={t('send.amount.label_transfer')}
         placeholder={t('send.amount.placeholder_transfer')}
       />
@@ -237,7 +242,9 @@ const SendForm = ({
       />
       <LockedField
         label={t('send.amount.label_transfer')}
-        value={transferData?.amountToSeller?.floatBalance.toString() || ''}
+        value={
+          transferData?.amountToSeller?.floatBalance?.toLocaleString() || '0'
+        }
         footer={<FeeFooter fee={fee} />}
       />
       <LockedField
@@ -262,6 +269,16 @@ const SendForm = ({
         {isSeller && type === 'transfer' && renderSellerTransferForm()}
         {!isSeller && type === 'transfer' && renderBuyerTransferForm()}
       </ScrollView>
+      {!hasSufficientBalance && (
+        <Text
+          variant="body3"
+          color="redMedium"
+          marginVertical="s"
+          textAlign="center"
+        >
+          {t('send.label_error')}
+        </Text>
+      )}
       <Button
         onPress={onSubmit}
         title={getButtonTitle()}

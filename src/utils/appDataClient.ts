@@ -42,8 +42,7 @@ export const getHotspots = async () => {
 }
 
 export const getHotspotDetails = async (address: string): Promise<Hotspot> => {
-  const { data } = await client.hotspots.get(address)
-  return data
+  return client.hotspots.get(address)
 }
 
 export const getHotspotRewardsSum = async (
@@ -81,6 +80,20 @@ export const getHotspotWitnessSums = async (params: {
   maxTime?: Date | NaturalDate
 }) => {
   const list = await client.hotspot(params.address).witnesses.sum.list({
+    minTime: params.minTime,
+    maxTime: params.maxTime,
+    bucket: params.bucket,
+  })
+  return list.take(MAX)
+}
+
+export const getHotspotChallengeSums = async (params: {
+  address: string
+  bucket: Bucket
+  minTime: Date | NaturalDate
+  maxTime?: Date | NaturalDate
+}) => {
+  const list = await client.hotspot(params.address).challenges.sum.list({
     minTime: params.minTime,
     maxTime: params.maxTime,
     bucket: params.bucket,

@@ -14,7 +14,7 @@ import ConfirmPinView from '../../components/ConfirmPinView'
 import { MoreNavigationProp } from '../moreTab/moreTypes'
 import { useAppDispatch } from '../../store/store'
 import appSlice from '../../store/user/appSlice'
-import Box from '../../components/Box'
+import SafeAreaBox from '../../components/SafeAreaBox'
 
 type Route = RouteProp<RootStackParamList, 'LockScreen'>
 
@@ -86,7 +86,7 @@ const LockScreen = () => {
   }, [])
 
   return (
-    <Box backgroundColor="primaryMain" flex={1}>
+    <SafeAreaBox backgroundColor="primaryBackground" flex={1}>
       <ConfirmPinView
         originalPin={pin || ''}
         title={t('auth.title')}
@@ -94,7 +94,7 @@ const LockScreen = () => {
         pinSuccess={handleSuccess}
         onCancel={shouldLock ? handleSignOut : moreNav.goBack}
       />
-    </Box>
+    </SafeAreaBox>
   )
 }
 
