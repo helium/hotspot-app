@@ -39,6 +39,7 @@ export const useLanguage = () => {
         ja: { translation: ja },
       },
       lng: lang,
+      fallbackLng: ['en'],
     })
 
     setLanguage(lang)
