@@ -41,7 +41,7 @@ const HotspotMoreMenuButton = ({ hotspot }: { hotspot: Hotspot }) => {
     showActionSheetWithOptions(
       {
         options: opts.map(({ label }) => label),
-        destructiveButtonIndex: opts.length - 1,
+        cancelButtonIndex: opts.length - 1,
       },
       (buttonIndex) => {
         opts[buttonIndex].action?.()

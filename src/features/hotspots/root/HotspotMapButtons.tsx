@@ -13,27 +13,30 @@ const HotspotMapButtons = ({
   animatedPosition,
   showWitnesses,
   toggleShowWitnesses,
+  isVisible = true,
 }: {
   animatedPosition: Animated.SharedValue<number>
   showWitnesses: boolean
   toggleShowWitnesses: () => void
+  isVisible?: boolean
 }) => {
   const style = useAnimatedStyle(
     () => ({
       position: 'absolute',
       bottom: -100,
+      opacity: isVisible ? 1 : 0,
       transform: [
         {
           translateY: interpolate(
             animatedPosition.value,
-            [0, 1],
-            [0, -520],
+            [-1, 0],
+            [0, -320],
             Extrapolate.CLAMP,
           ),
         },
       ],
     }),
-    [animatedPosition],
+    [animatedPosition, isVisible],
   )
 
   return (
