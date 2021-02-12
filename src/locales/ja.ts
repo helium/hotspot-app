@@ -1,3 +1,1 @@
-export default {
-  back: 'jBack',
-}
+export default {}
