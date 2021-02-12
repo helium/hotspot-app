@@ -18,21 +18,10 @@ import { useAppDispatch } from '../../../../store/store'
 import { useSpacing } from '../../../../theme/themeHooks'
 import useActivityItem from '../useActivityItem'
 import ActivityCardLoading from './ActivityCardLoading'
-import { SkeletonTxn } from './SkeletonData'
-import SkeletonActivityItem from './SkeletonActivityItem'
 
 type Props = {
   status: Loading
-  data: (AnyTransaction | PendingTransaction | SkeletonTxn)[]
-}
-
-function isSkeleton(
-  txn: AnyTransaction | PendingTransaction | SkeletonTxn,
-): txn is SkeletonTxn {
-  if ((txn as SkeletonTxn).type === 'skeleton') {
-    return true
-  }
-  return false
+  data: (AnyTransaction | PendingTransaction)[]
 }
 
 const ActivityCardListView = ({ data, status }: Props) => {
@@ -49,9 +38,7 @@ const ActivityCardListView = ({ data, status }: Props) => {
   }, [data, status])
 
   const handleActivityItemPressed = useCallback(
-    (item: AnyTransaction | PendingTransaction | SkeletonTxn) => () => {
-      if (isSkeleton(item)) return
-
+    (item: AnyTransaction | PendingTransaction) => () => {
       dispatch(activitySlice.actions.setDetailTxn(item))
     },
     [dispatch],
@@ -73,7 +60,7 @@ const ActivityCardListView = ({ data, status }: Props) => {
   )
 
   type Item = {
-    item: AnyTransaction | PendingTransaction | SkeletonTxn
+    item: AnyTransaction | PendingTransaction
     index: number
   }
 
@@ -81,10 +68,6 @@ const ActivityCardListView = ({ data, status }: Props) => {
     ({ item, index }: Item) => {
       const isLast = () => {
         return !!data && index === data?.length - 1
-      }
-
-      if (isSkeleton(item)) {
-        return <SkeletonActivityItem isFirst={index === 0} isLast={isLast()} />
       }
 
       return (
@@ -113,7 +96,7 @@ const ActivityCardListView = ({ data, status }: Props) => {
   )
 
   const keyExtractor = useCallback(
-    (item: AnyTransaction | PendingTransaction | SkeletonTxn) => {
+    (item: AnyTransaction | PendingTransaction) => {
       const txn = item as PendingTransaction
       return `${txn.hash}${txn.status}`
     },

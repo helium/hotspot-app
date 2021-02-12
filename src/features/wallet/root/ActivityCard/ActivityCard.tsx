@@ -15,7 +15,7 @@ import ActivityCardHeader from './ActivityCardHeader'
 import { Loading } from '../../../../store/activity/activitySlice'
 import { FilterType } from '../walletTypes'
 import ActivityCardListView from './ActivityCardListView'
-import { skeletonData } from './SkeletonData'
+import ActivityListSkeletonView from './ActivityListSkeletonView'
 
 type Props = {
   animationPoints: WalletAnimationPoints
@@ -68,11 +68,8 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
       data = [...pendingTxns, ...txns]
     }
 
-    if (showSkeleton) {
-      return skeletonData(data.length)
-    }
     return data
-  }, [filter, pendingTxns, txns, showSkeleton])
+  }, [filter, pendingTxns, txns])
 
   const header = useCallback(() => <ActivityCardHeader filter={filter} />, [
     filter,
@@ -94,7 +91,11 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
       onChange={onChange}
       animatedIndex={animatedIndex}
     >
-      <ActivityCardListView data={getData} status={status} />
+      {showSkeleton ? (
+        <ActivityListSkeletonView />
+      ) : (
+        <ActivityCardListView data={getData} status={status} />
+      )}
     </BottomSheet>
   )
 })
