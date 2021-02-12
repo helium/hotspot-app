@@ -108,6 +108,7 @@
     "react-redux": "^7.2.2",
     "redux-thunk": "^2.3.0",
     "rn-sliding-up-panel": "^2.4.4",
+    "use-debounce": "^5.2.0",
     "use-state-with-callback": "^2.0.3",
     "validator": "^13.5.1"
   },

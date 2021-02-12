@@ -7,7 +7,7 @@ import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import slides from './hotspotSetupSlides'
 import { wp } from '../../../utils/layout'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import CarouselItem, {
   CarouselItemData,
 } from '../../../components/CarouselItem'
@@ -37,7 +37,7 @@ const HotspotEducationScreen = () => {
   const renderButton = () => {
     if (viewedSlides) {
       return (
-        <Button
+        <DebouncedButton
           onPress={navNext}
           variant="primary"
           mode="contained"
@@ -46,7 +46,7 @@ const HotspotEducationScreen = () => {
       )
     }
     return (
-      <Button
+      <DebouncedButton
         variant="secondary"
         mode="text"
         onPress={navNext}
