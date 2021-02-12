@@ -1,16 +1,34 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Hotspot } from '@helium/http'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
-import Box from '../../../components/Box'
+import { Carousel } from 'react-native-snap-carousel'
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
 import { fetchChecklistActivity } from '../../../store/hotspotDetails/hotspotChecklistSlice'
 import HotspotChecklistItem from './HotspotChecklistItem'
+import { wp } from '../../../utils/layout'
+import Box from '../../../components/Box'
+import Text from '../../../components/Text'
+import CarotDown from '../../../assets/images/carot-down.svg'
+import CircleProgress from '../../../components/CircleProgress'
+import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import animateTransition from '../../../utils/animateTransition'
 
 type Props = {
   hotspot: Hotspot
   witnesses?: Hotspot[]
+}
+
+type ChecklistItem = {
+  key: string
+  title: string
+  description: string
+  complete?: boolean
+  showAuto?: boolean
+  autoText?: string
+  completeText?: string
+  background?: 1 | 2 | 3 | 4
 }
 
 const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
@@ -79,61 +97,147 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
       ? t('checklist.data_transfer.success')
       : t('checklist.data_transfer.fail')
 
+  const checklistData: ChecklistItem[] = [
+    {
+      key: 'checklist.blocks',
+      title: t('checklist.blocks.title'),
+      description: syncStatus(),
+      complete:
+        (blockHeight &&
+          hotspot?.status?.height &&
+          blockHeight - hotspot.status.height < 500) ||
+        false,
+      showAuto: true,
+      background: 1,
+    },
+    {
+      key: 'checklist.status',
+      title: t('checklist.status.title'),
+      description: hotspotStatus(),
+      complete: hotspot?.status?.online === 'online',
+      showAuto: false,
+      completeText: t('checklist.online'),
+      background: 1,
+    },
+    {
+      key: 'checklist.challenger',
+      title: t('checklist.challenger.title'),
+      description: challengerStatus(),
+      complete: challengerTxn !== undefined,
+      showAuto: true,
+      background: 2,
+    },
+    {
+      key: 'checklist.challenge_witness',
+      title: t('checklist.challenge_witness.title'),
+      description: challengeWitnessStatus(),
+      complete: witnessTxn !== undefined,
+      showAuto: true,
+      background: 4,
+    },
+    {
+      key: 'checklist.witness',
+      title: t('checklist.witness.title'),
+      description: witnessStatus(),
+      complete: witnesses && witnesses.length > 0,
+      showAuto: true,
+      autoText: t('checklist.auto_days'),
+      background: 4,
+    },
+    {
+      key: 'checklist.challengee',
+      title: t('checklist.challengee.title'),
+      description: challengeeStatus(),
+      complete: challengeeTxn !== undefined,
+      showAuto: true,
+      autoText: t('checklist.auto_hours'),
+      background: 3,
+    },
+    {
+      key: 'checklist.challengee',
+      title: t('checklist.data_transfer.title'),
+      description: dataTransferStatus(),
+      complete: dataTransferTxn !== undefined,
+      showAuto: true,
+      background: 3,
+    },
+  ]
+
+  let numComplete = 0
+  checklistData.forEach((i) => {
+    if (i.complete) {
+      numComplete += 1
+    }
+  })
+
+  const [hidden, setHidden] = useState(true)
+
+  const toggleHidden = () => {
+    animateTransition()
+    setHidden(!hidden)
+  }
+
+  const renderItem = ({ item }: { item: ChecklistItem }) => (
+    <HotspotChecklistItem
+      title={item.title}
+      description={item.description}
+      complete={item.complete}
+      showAuto={item.showAuto}
+      autoText={item.autoText}
+      completeText={item.completeText}
+      background={item.background}
+    />
+  )
+
   if (loadingActivity) {
+    // TODO: shimmer loading
     return null
   }
 
   return (
     <Box>
-      <HotspotChecklistItem
-        title={t('checklist.blocks.title')}
-        description={syncStatus()}
-        complete={
-          (blockHeight &&
-            hotspot?.status?.height &&
-            blockHeight - hotspot.status.height < 500) ||
-          false
-        }
-        showAuto
-      />
-      <HotspotChecklistItem
-        title={t('checklist.status.title')}
-        description={hotspotStatus()}
-        complete={hotspot?.status?.online === 'online'}
-        completeText={t('checklist.online')}
-      />
-      <HotspotChecklistItem
-        title={t('checklist.challenger.title')}
-        description={challengerStatus()}
-        complete={challengerTxn !== undefined}
-        showAuto
-      />
-      <HotspotChecklistItem
-        title={t('checklist.challenge_witness.title')}
-        description={challengeWitnessStatus()}
-        complete={witnessTxn !== undefined}
-        showAuto
-      />
-      <HotspotChecklistItem
-        title={t('checklist.witness.title')}
-        description={witnessStatus()}
-        complete={witnesses && witnesses.length > 0}
-        showAuto
-        autoText={t('checklist.auto_days')}
-      />
-      <HotspotChecklistItem
-        title={t('checklist.challengee.title')}
-        description={challengeeStatus()}
-        complete={challengeeTxn !== undefined}
-        showAuto
-        autoText={t('checklist.auto_hours')}
-      />
-      <HotspotChecklistItem
-        title={t('checklist.data_transfer.title')}
-        description={dataTransferStatus()}
-        complete={dataTransferTxn !== undefined}
-        showAuto
-      />
+      <Box
+        flexDirection="row"
+        marginStart="l"
+        marginBottom="m"
+        alignItems="center"
+      >
+        <CircleProgress
+          percentage={(numComplete / checklistData.length) * 100}
+          centerColor="white"
+        />
+        <TouchableOpacityBox
+          flexDirection="row"
+          alignItems="center"
+          onPress={toggleHidden}
+        >
+          <>
+            <Text variant="h5" color="black" marginStart="s">
+              {t('checklist.title')}
+            </Text>
+            <Box marginStart="s">
+              <CarotDown
+                color="black"
+                style={{
+                  transform: [{ rotateX: hidden ? '0deg' : '180deg' }],
+                }}
+              />
+            </Box>
+          </>
+        </TouchableOpacityBox>
+      </Box>
+      {!hidden && (
+        <Carousel
+          layout="default"
+          activeSlideAlignment="center"
+          vertical={false}
+          data={checklistData}
+          renderItem={renderItem}
+          sliderWidth={wp(100)}
+          itemWidth={wp(90)}
+          inactiveSlideScale={1}
+        />
+      )}
     </Box>
   )
 }

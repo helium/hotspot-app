@@ -3,7 +3,11 @@ import { useTranslation } from 'react-i18next'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import Check from '../../../assets/images/checkPlain.svg'
-import { useColors } from '../../../theme/themeHooks'
+import BackgroundOne from '../../../assets/images/checklist-bg-1.svg'
+import BackgroundTwo from '../../../assets/images/checklist-bg-2.svg'
+import BackgroundThree from '../../../assets/images/checklist-bg-3.svg'
+import BackgroundFour from '../../../assets/images/checklist-bg-4.svg'
+import { useColors, useSpacing } from '../../../theme/themeHooks'
 import { Colors } from '../../../theme/theme'
 
 type CompleteProps = {
@@ -26,7 +30,6 @@ const CompletePill = ({
     alignItems="center"
     justifyContent="center"
     opacity={complete ? 100 : 0}
-    width={80}
   >
     <Check color={colorHex} />
     <Text variant="bold" color={colorString} fontSize={10} paddingStart="xs">
@@ -73,6 +76,7 @@ type Props = {
   completeText?: string
   showAuto?: boolean
   autoText?: string
+  background?: 1 | 2 | 3 | 4
 }
 const HotspotChecklistItem = ({
   title,
@@ -81,16 +85,57 @@ const HotspotChecklistItem = ({
   completeText,
   showAuto,
   autoText,
+  background,
 }: Props) => {
   const { t } = useTranslation()
   const colors = useColors()
+  const spacing = useSpacing()
   const textColor = complete ? 'greenDarkText' : 'white'
   const backgroundColor = complete ? 'greenChecklist' : 'blueChecklist'
   const backgroundColorHex = complete
     ? colors.greenChecklist
     : colors.blueChecklist
+
+  const Background = () => {
+    switch (background) {
+      default:
+      case 1:
+        return (
+          <Box position="absolute" right={spacing.s} top={-30}>
+            <BackgroundOne
+              color={complete ? colors.greenDarkText : '#898DFF'}
+            />
+          </Box>
+        )
+      case 2:
+        return (
+          <Box position="absolute" right={spacing.s} top={-24}>
+            <BackgroundTwo
+              color={complete ? colors.greenDarkText : '#898DFF'}
+            />
+          </Box>
+        )
+      case 3:
+        return (
+          <Box position="absolute" right={spacing.s} top={-24}>
+            <BackgroundThree
+              color={complete ? colors.greenDarkText : 'white'}
+            />
+          </Box>
+        )
+      case 4:
+        return (
+          <Box position="absolute" right={-5} top={-55}>
+            <BackgroundFour
+              color={complete ? colors.greenDarkText : colors.white}
+            />
+          </Box>
+        )
+    }
+  }
+
   return (
-    <Box>
+    <Box marginHorizontal="xs">
       <Box
         padding="m"
         backgroundColor={backgroundColor}
@@ -98,6 +143,7 @@ const HotspotChecklistItem = ({
         justifyContent="space-between"
         height={180}
       >
+        <Background />
         <Box>
           <AutoPill
             textColor={textColor}
@@ -106,7 +152,7 @@ const HotspotChecklistItem = ({
             autoText={autoText}
             auto={t('checklist.auto')}
           />
-          <Text variant="h3" marginTop="m" color={textColor}>
+          <Text variant="h3" marginTop="l" color={textColor}>
             {title}
           </Text>
           <Text
@@ -118,12 +164,14 @@ const HotspotChecklistItem = ({
             {description}
           </Text>
         </Box>
-        <CompletePill
-          complete={complete}
-          colorHex={backgroundColorHex}
-          colorString={backgroundColor}
-          text={completeText || t('checklist.complete')}
-        />
+        <Box flexDirection="row">
+          <CompletePill
+            complete={complete}
+            colorHex={backgroundColorHex}
+            colorString={backgroundColor}
+            text={completeText || t('checklist.complete')}
+          />
+        </Box>
       </Box>
     </Box>
   )

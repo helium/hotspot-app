@@ -1,6 +1,6 @@
 import React, { memo, ReactText, useRef, useMemo } from 'react'
 import RNPickerSelect from 'react-native-picker-select'
-import CarotDown from '@assets/images/carot-down.svg'
+import CarotDown from '@assets/images/carot-down-picker.svg'
 import { BoxProps } from '@shopify/restyle'
 import { Platform } from 'react-native'
 import Box from './Box'

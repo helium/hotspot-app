@@ -123,11 +123,12 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
 
   return (
     <BottomSheetScrollView>
-      <Box paddingHorizontal="l" paddingBottom="l">
+      <Box paddingBottom="l">
         <Box
           marginBottom="m"
           flexDirection="row"
           justifyContent="space-between"
+          paddingHorizontal="l"
         >
           <Text variant="h2" color="black">
             {animalName(hotspot.address)}
@@ -140,6 +141,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
           justifyContent="space-between"
           alignItems="center"
           marginBottom="xl"
+          paddingHorizontal="l"
         >
           <Box flexDirection="row">
             <StatusBadge online={hotspot.status?.online} />
@@ -183,7 +185,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
           loading={loading}
         />
 
-        <Box marginTop="m">
+        <Box marginTop="m" paddingHorizontal="l">
           <Button
             mode="contained"
             variant="primary"

@@ -696,6 +696,7 @@ export default {
     },
   },
   checklist: {
+    title: 'Checklist',
     blocks: {
       not:
         'Hotspots must be fully synced before they can mine. New Hotspots can take up to 48 hours to sync.',
