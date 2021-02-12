@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
 import Card from '../../../components/Card'
 import Text from '../../../components/Text'
-import TouchableHighlightBox from '../../../components/TouchableHighlightBox'
+import { DebouncedTouchableHighlightBox } from '../../../components/TouchableHighlightBox'
 import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
 import Hotspot from '../../../assets/images/hotspot.svg'
 import RAK from '../../../assets/images/rak.svg'
@@ -18,6 +18,15 @@ const HotspotSetupSelectionScreen = () => {
   const { purpleMain } = useColors()
   const [pressing, setPressing] = useState<HotspotType | undefined>()
   const colors = useColors()
+
+  const navNext = useCallback(
+    (hotspotType: HotspotType) => () => {
+      navigation.push('HotspotSetupEducationScreen', {
+        hotspotType,
+      })
+    },
+    [navigation],
+  )
 
   return (
     <BackScreen backgroundColor="primaryBackground" padding="lx">
@@ -34,18 +43,14 @@ const HotspotSetupSelectionScreen = () => {
 
       <Box flexDirection="row" height={191} marginTop="s">
         <Card flex={1} variant="elevated" backgroundColor="white">
-          <TouchableHighlightBox
+          <DebouncedTouchableHighlightBox
             height="100%"
             width="100%"
             borderRadius="m"
             underlayColor={purpleMain}
             onPressIn={() => setPressing('Helium')}
             onPressOut={() => setPressing(undefined)}
-            onPress={() =>
-              navigation.push('HotspotSetupEducationScreen', {
-                hotspotType: 'Helium',
-              })
-            }
+            onPress={navNext('Helium')}
             alignItems="center"
             justifyContent="center"
           >
@@ -67,24 +72,20 @@ const HotspotSetupSelectionScreen = () => {
                 {t('hotspot_setup.selection.option_one')}
               </Text>
             </>
-          </TouchableHighlightBox>
+          </DebouncedTouchableHighlightBox>
         </Card>
 
         <Box marginRight="ms" />
 
         <Card flex={1} variant="elevated" backgroundColor="white">
-          <TouchableHighlightBox
+          <DebouncedTouchableHighlightBox
             height="100%"
             width="100%"
             borderRadius="m"
             underlayColor={purpleMain}
             onPressIn={() => setPressing('RAK')}
             onPressOut={() => setPressing(undefined)}
-            onPress={() =>
-              navigation.push('HotspotSetupEducationScreen', {
-                hotspotType: 'RAK',
-              })
-            }
+            onPress={navNext('RAK')}
             alignItems="center"
             justifyContent="center"
           >
@@ -106,7 +107,7 @@ const HotspotSetupSelectionScreen = () => {
                 {t('hotspot_setup.selection.option_two')}
               </Text>
             </>
-          </TouchableHighlightBox>
+          </DebouncedTouchableHighlightBox>
         </Card>
       </Box>
       <Box flex={1.5} />

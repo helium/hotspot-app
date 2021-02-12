@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { Platform } from 'react-native'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import BackScreen from '../../../components/BackScreen'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import Text from '../../../components/Text'
 import {
   HotspotSetupNavigationProp,
@@ -26,6 +26,11 @@ const HotspotSetupPowerScreen = () => {
   )
   const subtitle2 = t(
     `hotspot_setup.power.${hotspotType === 'RAK' ? 'rak_' : ''}subtitle_2`,
+  )
+
+  const navNext = useCallback(
+    () => navigation.push('HotspotSetupBluetoothInfoScreen', { hotspotType }),
+    [navigation, hotspotType],
   )
 
   useEffect(() => {
@@ -64,15 +69,13 @@ const HotspotSetupPowerScreen = () => {
       <Text marginBottom="xl" variant="subtitle" textAlign="center">
         {subtitle2}
       </Text>
-      <Button
+      <DebouncedButton
         marginTop="xxl"
         width="100%"
         variant="secondary"
         mode="contained"
         title={t('hotspot_setup.power.next')}
-        onPress={() =>
-          navigation.push('HotspotSetupBluetoothInfoScreen', { hotspotType })
-        }
+        onPress={navNext}
       />
     </BackScreen>
   )

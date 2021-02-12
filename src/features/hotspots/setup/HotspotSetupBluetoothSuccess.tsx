@@ -2,7 +2,6 @@ import { useNavigation } from '@react-navigation/native'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Device } from 'react-native-ble-plx'
-import { useDebouncedCallback } from 'use-debounce'
 import Box from '../../../components/Box'
 import HotspotPairingList from '../../../components/HotspotPairingList'
 import Text from '../../../components/Text'
@@ -15,15 +14,11 @@ const HotspotSetupBluetoothSuccess = () => {
   const navigation = useNavigation<HotspotSetupNavigationProp>()
   const { availableHotspots } = useConnectedHotspotContext()
 
-  const handleConnect = useDebouncedCallback(
-    (hotspot: Device) => {
-      navigation.replace('HotspotSetupConnectingScreen', {
-        hotspotId: hotspot.id,
-      })
-    },
-    1000,
-    { leading: true },
-  )
+  const handleConnect = async (hotspot: Device) => {
+    navigation.replace('HotspotSetupConnectingScreen', {
+      hotspotId: hotspot.id,
+    })
+  }
 
   return (
     <Box flex={1}>
@@ -48,7 +43,7 @@ const HotspotSetupBluetoothSuccess = () => {
       <Box flex={1} paddingHorizontal="lx" backgroundColor="purple200">
         <HotspotPairingList
           hotspots={Object.values(availableHotspots)}
-          onPress={handleConnect.callback}
+          onPress={handleConnect}
         />
       </Box>
     </Box>
