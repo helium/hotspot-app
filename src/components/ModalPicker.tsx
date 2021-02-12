@@ -13,6 +13,7 @@ type Props = BoxProps<Theme> & {
   selectedValue: string
   onValueChanged: (itemValue: ReactText, itemIndex: number) => void
   prefix?: string
+  minWidth?: number
 }
 
 const ModalPicker = ({
@@ -20,6 +21,7 @@ const ModalPicker = ({
   selectedValue,
   onValueChanged,
   prefix,
+  minWidth,
   ...boxProps
 }: Props) => {
   const textVariants = useTextVariants()
@@ -52,8 +54,9 @@ const ModalPicker = ({
         color: purpleMain,
         paddingVertical: 8,
       },
+      viewContainer: { minWidth },
     }),
-    [purpleMain, textVariants.h4],
+    [purpleMain, textVariants.h4, minWidth],
   )
   const placeholder = {}
   return (
