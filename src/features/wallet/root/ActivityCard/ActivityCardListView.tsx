@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import React, { useCallback, memo, useMemo } from 'react'
+import React, { useCallback, memo, useMemo, useState, useEffect } from 'react'
 import { useAsync } from 'react-async-hook'
 import {
   AnyTransaction,
@@ -19,20 +19,23 @@ import { useSpacing } from '../../../../theme/themeHooks'
 import useActivityItem from '../useActivityItem'
 import ActivityCardLoading from './ActivityCardLoading'
 
-type AllTxns = (AnyTransaction | PendingTransaction)[]
 type Props = {
-  isResetting: boolean
   status: Loading
-  data: AllTxns
+  data: (AnyTransaction | PendingTransaction)[]
 }
 
-const ActivityCardListView = ({ isResetting, data, status }: Props) => {
+const ActivityCardListView = ({ data, status }: Props) => {
   const { m } = useSpacing()
   const dispatch = useAppDispatch()
   const { result: address, loading } = useAsync(getSecureItem, ['address'])
   const { backgroundColor, title, listIcon, amount, time } = useActivityItem(
     address || '',
   )
+  const [hasNoResults, setHasNoResults] = useState(false)
+
+  useEffect(() => {
+    setHasNoResults(status === 'fulfilled' && data && data.length === 0)
+  }, [data, status])
 
   const handleActivityItemPressed = useCallback(
     (item: AnyTransaction | PendingTransaction) => () => {
@@ -66,6 +69,7 @@ const ActivityCardListView = ({ isResetting, data, status }: Props) => {
       const isLast = () => {
         return !!data && index === data?.length - 1
       }
+
       return (
         <ActivityItem
           hash={(item as AddGatewayV1).hash}
@@ -93,7 +97,8 @@ const ActivityCardListView = ({ isResetting, data, status }: Props) => {
 
   const keyExtractor = useCallback(
     (item: AnyTransaction | PendingTransaction) => {
-      return (item as AddGatewayV1).hash
+      const txn = item as PendingTransaction
+      return `${txn.hash}${txn.status}`
     },
     [],
   )
@@ -112,13 +117,8 @@ const ActivityCardListView = ({ isResetting, data, status }: Props) => {
   }, [m])
 
   const footer = useMemo(
-    () => (
-      <ActivityCardLoading
-        isLoading={isResetting || (status === 'pending' && !data?.length)}
-        hasNoResults={status === 'fulfilled' && data && data.length === 0}
-      />
-    ),
-    [data, isResetting, status],
+    () => <ActivityCardLoading hasNoResults={hasNoResults} />,
+    [hasNoResults],
   )
 
   if (loading) return null
@@ -136,24 +136,4 @@ const ActivityCardListView = ({ isResetting, data, status }: Props) => {
   )
 }
 
-export default memo(ActivityCardListView, (prevProps, nextProps) => {
-  const lengthEqual = prevProps.data.length === nextProps.data.length
-
-  if (!lengthEqual) {
-    return false
-  }
-
-  prevProps.data.forEach((txn, index) => {
-    const prevTxn = txn as PendingTransaction
-    const nextTxn = nextProps.data[index] as PendingTransaction
-
-    const hashEqual = nextTxn.hash === prevTxn.hash
-    const statusEqual = nextTxn.status === prevTxn.status
-
-    if (!hashEqual || !statusEqual) {
-      return false
-    }
-  })
-
-  return true
-})
+export default memo(ActivityCardListView)

@@ -3,7 +3,7 @@ import { FlatList, Image } from 'react-native'
 import { Device } from 'react-native-ble-plx'
 import Box from './Box'
 import Text from './Text'
-import TouchableOpacityBox from './TouchableOpacityBox'
+import { DebouncedTouchableOpacityBox } from './TouchableOpacityBox'
 import { useColors, useSpacing } from '../theme/themeHooks'
 import CarotRight from '../assets/images/carot-right.svg'
 import HeliumHotspot from '../assets/images/helium-hotspot.svg'
@@ -74,7 +74,7 @@ const HotspotPairingItem = ({
     }
   }
   return (
-    <TouchableOpacityBox
+    <DebouncedTouchableOpacityBox
       disabled={disabled}
       onPress={() => onPress(hotspot)}
       backgroundColor="white"
@@ -101,7 +101,7 @@ const HotspotPairingItem = ({
         </Text>
       </Box>
       <CarotRight color={colors.grayLight} />
-    </TouchableOpacityBox>
+    </DebouncedTouchableOpacityBox>
   )
 }
 

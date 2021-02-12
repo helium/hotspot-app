@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { LayoutChangeEvent } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { Hotspot } from '@helium/http'
@@ -34,15 +35,22 @@ type Props = {
 }
 
 const HotspotsView = ({ ownedHotspots }: Props) => {
-  const [listIsDismissed, setListIsDismissed] = useState(false)
   const navigation = useNavigation()
   const { t } = useTranslation()
   const dispatch = useDispatch()
+  const colors = useColors()
+
+  const [listIsDismissed, setListIsDismissed] = useState(false)
+
   const listRef = useRef<BottomSheetModal>(null)
   const detailsRef = useRef<BottomSheetModal>(null)
-  const colors = useColors()
-  const listSnapPoints = useMemo(() => ['74%'], [])
-  const detailSnapPoints = useMemo(() => [300, '75%'], [])
+
+  const [listHeight, setListHeight] = useState(0)
+  const listSnapPoints = useMemo(() => [listHeight], [listHeight])
+  const detailSnapPoints = useMemo(() => [100, '75%'], [])
+
+  const animatedListPosition = useSharedValue<number>(0)
+  const animatedDetailsPosition = useSharedValue<number>(0)
 
   useEffect(() => {
     dispatch(fetchHotspotsData())
@@ -65,8 +73,9 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
     return unsubscribe
   }, [navigation, dispatch])
 
-  const animatedListPosition = useSharedValue<number>(0)
-  const animatedDetailsPosition = useSharedValue<number>(0)
+  const handleLayoutList = useCallback((event: LayoutChangeEvent) => {
+    setListHeight(event.nativeEvent.layout.height - 166)
+  }, [])
 
   const handlePresentDetails = useCallback((hotspot: Hotspot) => {
     setSelectedHotspot(hotspot)
@@ -157,6 +166,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         borderTopLeftRadius="xl"
         borderTopRightRadius="xl"
         style={containerStyles}
+        onLayout={handleLayoutList}
         overflow="hidden"
       >
         <Map
@@ -177,6 +187,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
           animatedPosition={animatedDetailsPosition}
           showWitnesses={showWitnesses}
           toggleShowWitnesses={toggleShowWitnesses}
+          isVisible={!!selectedHotspot}
         />
         <ReAnimatedBox pointerEvents="none" style={backdropStyles} />
         <ReAnimatedBox
@@ -254,6 +265,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         handleComponent={BSHandle}
         onDismiss={handleDismissDetails}
         animatedIndex={animatedDetailsPosition}
+        dismissOnPanDown={false}
       >
         <HotspotDetails hotspot={selectedHotspot} />
       </BottomSheetModal>

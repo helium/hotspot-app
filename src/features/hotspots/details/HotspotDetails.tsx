@@ -128,9 +128,16 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
           marginBottom="m"
           flexDirection="row"
           justifyContent="space-between"
+          alignItems="center"
           paddingHorizontal="l"
         >
-          <Text variant="h2" color="black">
+          <Text
+            variant="h2"
+            color="black"
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            flex={1}
+          >
             {animalName(hotspot.address)}
           </Text>
 

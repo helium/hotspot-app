@@ -34,13 +34,17 @@ const ActivityCardHeader = ({ filter }: Props) => {
       <Box alignItems="center" padding="s">
         <CardHandle />
       </Box>
-      <ModalPicker
-        marginLeft="ms"
-        prefix={t('transactions.view')}
-        data={data}
-        selectedValue={filter}
-        onValueChanged={onFilterChanged}
-      />
+      <Box flexDirection="row" paddingRight="m">
+        <ModalPicker
+          minWidth={150}
+          flex={1}
+          marginLeft="ms"
+          prefix={t('transactions.view')}
+          data={data}
+          selectedValue={filter}
+          onValueChanged={onFilterChanged}
+        />
+      </Box>
     </Box>
   )
 }

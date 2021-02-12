@@ -1,24 +1,65 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import * as RNLocalize from 'react-native-localize'
+import { useCallback, useEffect, useState } from 'react'
 import en from '../locales/en'
-import es from '../locales/es'
-import fr from '../locales/fr'
+import ko from '../locales/ko'
+import ja from '../locales/ja'
+import zh from '../locales/zh'
+import { getSecureItem, setSecureItem } from './secureAccount'
 
-const locales = RNLocalize.getLocales()
+export const SUPPORTED_LANGUAGUES = [
+  { label: 'English', value: 'en' },
+  { label: '中文', value: 'zh' }, // chinese
+  { label: '日本人', value: 'ja' }, // japanese
+  { label: '한국어', value: 'ko' }, // korean
+]
 
-let lng = 'en'
-if (Array.isArray(locales)) {
-  lng = locales[0].languageTag
+export const useLanguage = () => {
+  const [language, setLanguage] = useState('en')
+
+  const initLanguage = useCallback(async () => {
+    const locales = RNLocalize.getLocales()
+
+    let phonelang = 'en'
+    if (Array.isArray(locales)) {
+      phonelang = locales[0].languageTag
+    }
+    let lang = await getSecureItem('language')
+    if (!lang) {
+      lang = phonelang
+      setSecureItem('language', lang)
+    }
+
+    i18n.use(initReactI18next).init({
+      resources: {
+        ko: { translation: ko },
+        en: { translation: en },
+        zh: { translation: zh },
+        ja: { translation: ja },
+      },
+      lng: lang,
+      fallbackLng: ['en'],
+    })
+
+    setLanguage(lang)
+  }, [])
+
+  useEffect(() => {
+    const setlang = async () => {
+      const lang = await getSecureItem('language')
+      setLanguage(lang || '')
+    }
+    setlang()
+  }, [])
+
+  const changeLanguage = (lang: string) => {
+    setLanguage(lang)
+    setSecureItem('language', lang)
+    i18n.changeLanguage(lang)
+  }
+
+  return { language, changeLanguage, initLanguage }
 }
-
-i18n.use(initReactI18next).init({
-  resources: {
-    en: { translation: en },
-    es: { translation: es },
-    fr: { translation: fr },
-  },
-  lng,
-})
 
 export default i18n
