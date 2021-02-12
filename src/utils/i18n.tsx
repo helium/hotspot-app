@@ -21,14 +21,14 @@ export const useLanguage = () => {
   const initLanguage = useCallback(async () => {
     const locales = RNLocalize.getLocales()
 
-    let phoneLng = 'en'
+    let phonelang = 'en'
     if (Array.isArray(locales)) {
-      phoneLng = locales[0].languageTag
+      phonelang = locales[0].languageTag
     }
-    let lng = await getSecureItem('language')
-    if (!lng) {
-      lng = phoneLng
-      setSecureItem('language', lng)
+    let lang = await getSecureItem('language')
+    if (!lang) {
+      lang = phonelang
+      setSecureItem('language', lang)
     }
 
     i18n.use(initReactI18next).init({
@@ -38,24 +38,24 @@ export const useLanguage = () => {
         zh: { translation: zh },
         ja: { translation: ja },
       },
-      lng,
+      lng: lang,
     })
 
-    setLanguage(lng)
+    setLanguage(lang)
   }, [])
 
   useEffect(() => {
-    const setLng = async () => {
-      const lng = await getSecureItem('language')
-      setLanguage(lng || '')
+    const setlang = async () => {
+      const lang = await getSecureItem('language')
+      setLanguage(lang || '')
     }
-    setLng()
+    setlang()
   }, [])
 
-  const changeLanguage = (lng: string) => {
-    setLanguage(lng)
-    setSecureItem('language', lng)
-    i18n.changeLanguage(lng)
+  const changeLanguage = (lang: string) => {
+    setLanguage(lang)
+    setSecureItem('language', lang)
+    i18n.changeLanguage(lang)
   }
 
   return { language, changeLanguage, initLanguage }
