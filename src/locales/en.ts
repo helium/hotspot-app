@@ -694,9 +694,9 @@ export default {
         'Hotspots must be fully synced before they can mine. New Hotspots can take up to 48 hours to sync.',
       full: 'Hotspot is fully synced.',
       partial:
-        'Hotspot is {(count}} block behind the Helium blockchain and is roughly {{percent}}% synced.',
+        'Hotspot is {{count}} block behind the Helium blockchain and is roughly {{percent}}% synced.',
       partial_plural:
-        'Hotspot is {(count}} blocks behind the Helium blockchain and is roughly {{percent}}% synced.',
+        'Hotspot is {{count}} blocks behind the Helium blockchain and is roughly {{percent}}% synced.',
       title: 'Sync to Blockchain',
     },
     status: {
@@ -721,7 +721,7 @@ export default {
       success: 'Hotspot has been witnessed by {{count}} Hotspot.',
       success_plural: 'Hotspot has been witnessed by {{count}} Hotspots.',
       fail:
-        "No Witness List yet. Hotspot may have recently refreshed its list or hasn't witnessed enough challenges.",
+        "No witness list yet. Hotspot may have recently refreshed its list or hasn't witnessed enough challenges.",
       title: 'Witness List',
     },
     challengee: {

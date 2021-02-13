@@ -169,7 +169,8 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
       numComplete += 1
     }
   })
-
+  checklistData.sort((a, b) => Number(b.complete) - Number(a.complete))
+  const firstIndex = checklistData.findIndex((i) => !i.complete)
   const [hidden, setHidden] = useState(true)
 
   const toggleHidden = () => {
@@ -229,6 +230,7 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
       {!hidden && (
         <Carousel
           layout="default"
+          firstItem={firstIndex === -1 ? 0 : firstIndex}
           activeSlideAlignment="center"
           vertical={false}
           data={checklistData}
