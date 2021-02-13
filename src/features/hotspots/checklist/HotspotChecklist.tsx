@@ -3,6 +3,7 @@ import { Hotspot } from '@helium/http'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { Carousel } from 'react-native-snap-carousel'
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
 import { fetchChecklistActivity } from '../../../store/hotspotDetails/hotspotChecklistSlice'
@@ -14,6 +15,7 @@ import CarotDown from '../../../assets/images/carot-down.svg'
 import CircleProgress from '../../../components/CircleProgress'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import animateTransition from '../../../utils/animateTransition'
+import { useSpacing } from '../../../theme/themeHooks'
 
 type Props = {
   hotspot: Hotspot
@@ -33,6 +35,7 @@ type ChecklistItem = {
 
 const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
   const dispatch = useAppDispatch()
+  const spacing = useSpacing()
   const { t } = useTranslation()
   const {
     heliumData: { blockHeight },
@@ -191,8 +194,25 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
   )
 
   if (loadingActivity) {
-    // TODO: shimmer loading
-    return null
+    return (
+      <SkeletonPlaceholder>
+        <SkeletonPlaceholder.Item
+          flexDirection="row"
+          alignItems="center"
+          marginStart={spacing.l}
+          marginBottom={spacing.m}
+        >
+          <SkeletonPlaceholder.Item width={32} height={32} borderRadius={32} />
+          <SkeletonPlaceholder.Item marginLeft={spacing.s}>
+            <SkeletonPlaceholder.Item
+              width={100}
+              height={20}
+              borderRadius={4}
+            />
+          </SkeletonPlaceholder.Item>
+        </SkeletonPlaceholder.Item>
+      </SkeletonPlaceholder>
+    )
   }
 
   return (
