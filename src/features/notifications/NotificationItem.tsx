@@ -5,6 +5,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated'
+import { useTranslation } from 'react-i18next'
 import Box from '../../components/Box'
 import HeliumBubble from '../../assets/images/heliumBubble.svg'
 import Text from '../../components/Text'
@@ -31,25 +32,21 @@ const NotificationItem = ({
   const viewed = !!notification.viewed_at
   const prevViewed = usePrevious(!!notification.viewed_at)
   const offset = isLast ? BOTTOM_SECTION_HEIGHT : 0
+  const { t } = useTranslation()
 
   const heightWithOffset = (hasViewed: boolean) =>
     (hasViewed ? COLLAPSED_HEIGHT : EXPANDED_HEIGHT) + offset
-
   const height = heightWithOffset(viewed)
-
   const heightPrev =
     prevViewed === undefined ? height : heightWithOffset(prevViewed)
-
   const heightSharedVal = useSharedValue(heightPrev)
-
   const animatedStyles = useAnimatedStyle(() => {
     return {
       height: heightSharedVal.value,
     }
   })
 
-  // Stripping tags from the body text preview. (Not sure if this is necessary)
-  const strippedBody = notification.body.replace(/(<([^>]+)>)/gi, '')
+  const isSingleItem = isFirst && isLast
 
   useEffect(() => {
     if (heightPrev !== height && prevViewed !== undefined) {
@@ -70,7 +67,7 @@ const NotificationItem = ({
           activeOpacity={0.9}
           marginLeft="s"
           flex={1}
-          backgroundColor="white"
+          backgroundColor={viewed ? 'purple100' : 'greenBright'}
           padding="lm"
           onPress={() => onNotificationSelected(notification)}
           borderBottomRightRadius={isLast ? 'm' : 'none'}
@@ -79,17 +76,21 @@ const NotificationItem = ({
           borderBottomWidth={!isLast ? 1 : 0}
           borderBottomColor="primaryBackground"
         >
-          <Text variant="body1Medium" color="black">
+          <Text
+            variant="body1Medium"
+            color={viewed ? 'grayExtraLight' : 'whitePurple'}
+          >
             {notification.title}
           </Text>
-          {!viewed && (
+          {!viewed && isSingleItem && (
             <Text
-              variant="body2Light"
+              variant="body1Light"
+              fontSize={16}
               color="black"
               marginTop="s"
               numberOfLines={1}
             >
-              {strippedBody}
+              {t('notifications.tapToReadMore')}
             </Text>
           )}
         </TouchableOpacityBox>
@@ -98,8 +99,8 @@ const NotificationItem = ({
         {isLast && (
           <>
             {!viewed && (
-              <Text variant="h7" marginRight="xs">
-                NEW
+              <Text variant="h7" marginRight="xs" textTransform="uppercase">
+                {t('generic.new')}
               </Text>
             )}
             <Text variant="body3" fontSize={12} color="grayExtraLight">

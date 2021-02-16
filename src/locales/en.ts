@@ -512,6 +512,7 @@ export default {
     day_header: 'Good\n{{timeOfDay}}.',
   },
   notifications: {
+    tapToReadMore: 'Tap to read more',
     share: 'SHARE',
     list: { title: 'Notifications' },
     none: {
