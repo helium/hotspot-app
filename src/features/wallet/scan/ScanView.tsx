@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useAsync } from 'react-async-hook'
 import { StyleSheet } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { Address } from '@helium/crypto-react-native'
@@ -122,7 +123,7 @@ const ScanView = () => {
               fontSize={18}
               marginBottom="s"
             >
-              Find a QR Code to scan
+              {t('send.scan.title')}
             </Text>
             <Box marginBottom="s">
               <Text
@@ -131,14 +132,13 @@ const ScanView = () => {
                 fontSize={16}
                 marginBottom="xxs"
               >
-                Send HNT
+                {t('send.scan.send')}
               </Text>
               <Text marginBottom="xs">
-                HNT can be burned into Data Credits to pay for device network
-                connectivity
+              {t('send.scan.send_description')}
               </Text>
               <Text variant="body2Bold" color="blueMain">
-                Learn More
+              {t('send.scan.learn_more')}
               </Text>
             </Box>
             <Box marginBottom="s">
@@ -148,14 +148,13 @@ const ScanView = () => {
                 fontSize={16}
                 marginBottom="xxs"
               >
-                Burn HNT to DC
+                {t('send.scan.burn')}
               </Text>
               <Text marginBottom="xs">
-                HNT can be burned into Data Credits to pay for device network
-                connectivity
+              {t('send.scan.burn_description')}
               </Text>
               <Text variant="body2Bold" color="blueMain">
-                Learn More
+              {t('send.scan.learn_more')}
               </Text>
             </Box>
             <Box marginBottom="s">
@@ -165,14 +164,13 @@ const ScanView = () => {
                 fontSize={16}
                 marginBottom="xxs"
               >
-                View my QR code
+                {t('send.scan.view')}
               </Text>
               <Text marginBottom="xs">
-                HNT can be burned into Data Credits to pay for device network
-                connectivity
+              {t('send.scan.view_description')}
               </Text>
               <Text variant="body2Bold" color="blueMain">
-                Learn More
+              {t('send.scan.learn_more')}
               </Text>
             </Box>
           </Box>
