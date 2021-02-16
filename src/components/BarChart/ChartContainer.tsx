@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { memo, useCallback, useState } from 'react'
 import { ActivityIndicator, View } from 'react-native'
 import Chart from './Chart'
 import { ChartData } from './types'
@@ -14,7 +14,6 @@ type Props = {
   labelColor?: string
   paddingTop?: number
   loading?: boolean
-  hasDownBars?: boolean
 }
 
 const ChartContainer = ({
@@ -27,16 +26,16 @@ const ChartContainer = ({
   labelColor,
   paddingTop,
   loading,
-  hasDownBars,
 }: Props) => {
   const [width, setWidth] = useState(0)
   const colors = useColors()
 
-  const handleLayout = (event: {
-    nativeEvent: { layout: { width: number } }
-  }) => {
-    setWidth(event.nativeEvent.layout.width)
-  }
+  const handleLayout = useCallback(
+    (event: { nativeEvent: { layout: { width: number } } }) => {
+      setWidth(event.nativeEvent.layout.width)
+    },
+    [],
+  )
 
   if (loading) {
     return (
@@ -60,11 +59,10 @@ const ChartContainer = ({
           upColor={upColor}
           downColor={downColor}
           labelColor={labelColor}
-          hasDownBars={hasDownBars}
         />
       )}
     </View>
   )
 }
 
-export default ChartContainer
+export default memo(ChartContainer)

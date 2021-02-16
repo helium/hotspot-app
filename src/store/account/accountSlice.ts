@@ -1,12 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { Account, Hotspot } from '@helium/http'
-import {
-  getHotspots,
-  getAccount,
-  getRewardsChart,
-} from '../../utils/appDataClient'
+import { getHotspots, getAccount } from '../../utils/appDataClient'
 import { getWallet, postWallet } from '../../utils/walletClient'
 import { ChartData, ChartRange } from '../../components/BarChart/types'
+import { FilterType } from '../../features/wallet/root/walletTypes'
 
 export type Notification = {
   account_address: string
@@ -27,7 +24,7 @@ export type Notification = {
 type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
 
 type ChartRangeData = { data: ChartData[]; loading: Loading }
-type RewardsChart = {
+type ActivityChart = {
   daily: ChartRangeData
   weekly: ChartRangeData
   monthly: ChartRangeData
@@ -39,7 +36,7 @@ export type AccountState = {
   account?: Account
   fetchDataStatus: Loading
   markNotificationStatus: Loading
-  rewardsChart: RewardsChart
+  activityChart: ActivityChart
 }
 
 const initialState: AccountState = {
@@ -47,7 +44,7 @@ const initialState: AccountState = {
   notifications: [],
   fetchDataStatus: 'idle',
   markNotificationStatus: 'idle',
-  rewardsChart: {
+  activityChart: {
     daily: { data: [], loading: 'idle' },
     weekly: { data: [], loading: 'idle' },
     monthly: { data: [], loading: 'idle' },
@@ -91,12 +88,13 @@ export const markNotificationsViewed = createAsyncThunk<Notification[]>(
   },
 )
 
-export const fetchRewardsChart = createAsyncThunk<ChartData[], ChartRange>(
-  'account/fetchRewardsChart',
-  async (range) => {
-    return getRewardsChart(range)
-  },
-)
+type ActivityChartParams = { range: ChartRange; filterType: FilterType }
+export const fetchActivityChart = createAsyncThunk<
+  ChartData[],
+  ActivityChartParams
+>('account/fetchActivityChart', async ({ range, filterType }) => {
+  return getWallet('wallet/chart', { range, type: filterType })
+})
 
 // This slice contains data related to the user account
 const accountSlice = createSlice({
@@ -136,15 +134,18 @@ const accountSlice = createSlice({
     builder.addCase(fetchNotifications.fulfilled, (state, { payload }) => {
       state.notifications = payload
     })
-    builder.addCase(fetchRewardsChart.pending, (state, { meta }) => {
-      state.rewardsChart[meta.arg].loading = 'pending'
+    builder.addCase(fetchActivityChart.pending, (state, { meta }) => {
+      state.activityChart[meta.arg.range].loading = 'pending'
     })
-    builder.addCase(fetchRewardsChart.fulfilled, (state, { meta, payload }) => {
-      state.rewardsChart[meta.arg].loading = 'fulfilled'
-      state.rewardsChart[meta.arg].data = payload
-    })
-    builder.addCase(fetchRewardsChart.rejected, (state, { meta }) => {
-      state.rewardsChart[meta.arg].loading = 'rejected'
+    builder.addCase(
+      fetchActivityChart.fulfilled,
+      (state, { meta, payload }) => {
+        state.activityChart[meta.arg.range].loading = 'fulfilled'
+        state.activityChart[meta.arg.range].data = payload
+      },
+    )
+    builder.addCase(fetchActivityChart.rejected, (state, { meta }) => {
+      state.activityChart[meta.arg.range].loading = 'rejected'
     })
   },
 })

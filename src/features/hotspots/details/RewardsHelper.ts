@@ -43,12 +43,12 @@ export const getRewardChartData = (
       chartData.push({
         up: parseFloat(amount.toFixed(2)),
         down: 0,
-        day: date.toLocaleDateString(undefined, {
+        label: date.toLocaleDateString(undefined, {
           day: 'numeric',
           month: 'short',
           hour: 'numeric',
         }),
-        id: `reward-${numDays}-${date}`,
+        timestamp: `reward-${numDays}-${date}`,
       })
     }
     return chartData
@@ -77,12 +77,12 @@ export const getRewardChartData = (
     chartData.push({
       up: parseFloat(amount.toFixed(2)),
       down: 0,
-      day: date.toLocaleDateString(undefined, {
+      label: date.toLocaleDateString(undefined, {
         weekday: 'short',
         day: 'numeric',
         month: 'short',
       }),
-      id: `reward-${numDays}-${date}`,
+      timestamp: `reward-${numDays}-${date}`,
     })
   }
   return chartData

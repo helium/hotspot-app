@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState, useMemo, useCallback } from 'react'
 import { ActivityIndicator, TouchableWithoutFeedback } from 'react-native'
 import { round } from 'lodash'
 import { useSelector } from 'react-redux'
@@ -12,7 +12,7 @@ import { triggerImpact } from '../../utils/haptic'
 import { useColors } from '../../theme/themeHooks'
 import { useAppDispatch } from '../../store/store'
 import { RootState } from '../../store/rootReducer'
-import { fetchRewardsChart } from '../../store/account/accountSlice'
+import { fetchActivityChart } from '../../store/account/accountSlice'
 
 type Props = {
   height: number
@@ -21,26 +21,30 @@ type Props = {
 const WalletChart = ({ height }: Props) => {
   const dispatch = useAppDispatch()
   const {
-    account: { rewardsChart },
+    account: { activityChart },
+    activity: { filter },
   } = useSelector((state: RootState) => state)
 
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
   const [timeframe, setTimeframe] = useState<ChartRange>('daily')
 
-  const { data } = rewardsChart[timeframe]
+  const data = useMemo(() => activityChart[timeframe].data, [
+    activityChart,
+    timeframe,
+  ])
 
   useEffect(() => {
-    dispatch(fetchRewardsChart(timeframe))
-  }, [dispatch, timeframe])
+    dispatch(fetchActivityChart({ range: timeframe, filterType: filter }))
+  }, [dispatch, timeframe, filter])
 
   const headerHeight = 30
   const padding = 20
-  const chartHeight = height - headerHeight - padding
+  const chartHeight = useMemo(() => height - headerHeight - padding, [height])
 
-  const changeTimeframe = (range: ChartRange) => {
+  const changeTimeframe = useCallback((range: ChartRange) => {
     setTimeframe(range)
     triggerImpact()
-  }
+  }, [])
 
   const handleFocusData = (chartData: ChartData | null): void => {
     setFocusedData(chartData)

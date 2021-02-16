@@ -1,4 +1,5 @@
-import Config from 'react-native-config'
+// import Config from 'react-native-config'
+import qs from 'qs'
 import { getWalletApiToken } from './secureAccount'
 import * as Logger from './logger'
 
@@ -11,7 +12,8 @@ const makeRequest = async (url: string, opts: RequestInit) => {
       throw new Error('no token')
     }
 
-    const route = [Config.WALLET_API_BASE_URL, url].join('/')
+    // const route = [Config.WALLET_API_BASE_URL, url].join('/')
+    const route = ['http://localhost:4000/api', url].join('/')
 
     const response = await fetch(route, {
       ...opts,
@@ -45,10 +47,16 @@ const makeRequest = async (url: string, opts: RequestInit) => {
   }
 }
 
-export const getWallet = async (url: string) =>
-  makeRequest(url, {
+export const getWallet = async (url: string, params?: unknown) => {
+  let fullUrl = url
+  if (params) {
+    fullUrl += '?'
+    fullUrl += qs.stringify(params)
+  }
+  return makeRequest(fullUrl, {
     method: 'GET',
   })
+}
 
 export const postWallet = async (url: string, data?: unknown) =>
   makeRequest(url, {
