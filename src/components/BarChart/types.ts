@@ -1,5 +1,6 @@
 export type ChartData = {
-  timestamp: string
+  id: string
+  timestamp?: string
   up: number
   down: number
   label: string

@@ -36,7 +36,6 @@ const BarChart = ({
 }: Props) => {
   const [focusedBar, setFocusedBar] = useState<ChartData | null>(null)
   const { greenBright, blueBright, white } = useColors()
-  const barOffset = useMemo(() => (showXAxisLabel ? 20 : 0), [showXAxisLabel])
 
   // trigger haptic feedback when the focused bar changes
   useEffect(() => {
@@ -51,49 +50,64 @@ const BarChart = ({
   // maxDown 13.555555555555555 maxBarHeight 141.63487135259257
   // vScale 1.0873028550760293
 
-  // SVG maths
+  // support charts that have no down values
+  const hasDownBars = useMemo(() => some(data, ({ down }) => down > 0), [data])
+
+  // pixel value of the height of x axis labels
+  const bottomOffset = useMemo(() => (showXAxisLabel ? 20 : 0), [
+    showXAxisLabel,
+  ])
+
+  // pixel value of bar width derived from container width and number of bars
   const barWidth = useMemo(() => width / (data.length + data.length - 1), [
     width,
     data.length,
   ])
+
+  // min bar height is the same as bar width to form circles
   const minBarHeight = useMemo(() => barWidth, [barWidth])
+
+  // the pixel value of the space between up and down bars
+  const barGap = useMemo(() => (hasDownBars ? barWidth / 1.5 : 0), [
+    hasDownBars,
+    barWidth,
+  ])
+
+  // raw max up value
   const maxUp = useMemo(() => maxBy(data, 'up')?.up || minBarHeight, [
     data,
     minBarHeight,
   ])
+
+  // raw max down value
   const maxDown = useMemo(() => maxBy(data, 'down')?.down || minBarHeight, [
     data,
     minBarHeight,
   ])
-  const hasDownBars = useMemo(() => some(data, ({ down }) => down > 0), [data])
-  const maxBarHeight = useMemo(
-    () => (hasDownBars ? maxUp + barWidth / 1.5 + maxDown : maxUp),
-    [hasDownBars, maxUp, barWidth, maxDown],
-  )
-  const vScale = useMemo(() => (height - barOffset) / maxBarHeight, [
-    height,
-    barOffset,
-    maxBarHeight,
-  ])
 
-  // console.log(
-  //   'width',
-  //   width,
-  //   'hasDownBars',
-  //   hasDownBars,
-  //   'barWidth',
-  //   barWidth,
-  //   'minBarHeight',
-  //   minBarHeight,
-  //   'maxUp',
-  //   maxUp,
-  //   'maxDown',
-  //   maxDown,
-  //   'maxBarHeight',
-  //   maxBarHeight,
-  //   'vScale',
-  //   vScale,
-  // )
+  // scaling factor used to turn raw values into pixel height values
+  const vScale = useMemo(() => {
+    const maxVerticalValue = hasDownBars ? maxUp + maxDown : maxUp
+    const usableHeight = height - bottomOffset - barGap
+    return usableHeight / maxVerticalValue
+  }, [height, bottomOffset, hasDownBars, maxUp, maxDown, barGap])
+
+  console.log(
+    'width',
+    width,
+    'hasDownBars',
+    hasDownBars,
+    'barWidth',
+    barWidth,
+    'minBarHeight',
+    minBarHeight,
+    'maxUp',
+    maxUp,
+    'maxDown',
+    maxDown,
+    'vScale',
+    vScale,
+  )
 
   const barHeight = useCallback(
     (value: number | undefined): number => {
@@ -155,30 +169,27 @@ const BarChart = ({
     >
       <Svg height="100%" width="100%">
         {data.map((v, i) => (
-          <React.Fragment key={`frag-${v.timestamp}`}>
+          <React.Fragment key={`frag-${v.id}`}>
             <Rect
               x={barWidth * (2 * i)}
               y={maxUp * vScale - barHeight(v?.up)}
+              // y={maxUp * vScale}
               rx={barWidth / 2}
               width={barWidth}
               height={barHeight(v?.up)}
               fill={upColor || greenBright}
-              opacity={
-                !focusedBar || focusedBar?.timestamp === v.timestamp ? 1 : 0.4
-              }
+              opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
             />
 
             {hasDownBars && (
               <Rect
                 x={barWidth * (2 * i)}
-                y={maxUp * vScale + barWidth / 1.5}
+                y={maxUp * vScale + barGap}
                 rx={barWidth / 2}
                 width={barWidth}
                 height={barHeight(v?.down)}
                 fill={downColor || blueBright}
-                opacity={
-                  !focusedBar || focusedBar?.timestamp === v.timestamp ? 1 : 0.4
-                }
+                opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
               />
             )}
 
@@ -191,9 +202,7 @@ const BarChart = ({
                 x={barWidth * (2 * i) + barWidth / 2}
                 y={height - 4}
                 textAnchor="middle"
-                opacity={
-                  focusedBar && focusedBar?.timestamp === v.timestamp ? 1 : 0.4
-                }
+                opacity={focusedBar && focusedBar?.id === v.id ? 1 : 0.4}
               >
                 {v.label}
               </Text>

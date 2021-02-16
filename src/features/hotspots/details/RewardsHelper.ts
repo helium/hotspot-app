@@ -48,7 +48,7 @@ export const getRewardChartData = (
           month: 'short',
           hour: 'numeric',
         }),
-        timestamp: `reward-${numDays}-${date}`,
+        id: `reward-${numDays}-${date}`,
       })
     }
     return chartData
@@ -82,7 +82,7 @@ export const getRewardChartData = (
         day: 'numeric',
         month: 'short',
       }),
-      timestamp: `reward-${numDays}-${date}`,
+      id: `reward-${numDays}-${date}`,
     })
   }
   return chartData
