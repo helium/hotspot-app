@@ -1,21 +1,11 @@
-import React, { memo, useEffect } from 'react'
+import React, { memo } from 'react'
 import { formatDistance, fromUnixTime } from 'date-fns'
-import Animated, {
-  withSpring,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated'
 import { useTranslation } from 'react-i18next'
 import Box from '../../components/Box'
 import HeliumBubble from '../../assets/images/heliumBubble.svg'
 import Text from '../../components/Text'
 import { Notification } from '../../store/account/accountSlice'
 import TouchableOpacityBox from '../../components/TouchableOpacityBox'
-import usePrevious from '../../utils/usePrevious'
-
-const COLLAPSED_HEIGHT = 61
-const EXPANDED_HEIGHT = 81
-const BOTTOM_SECTION_HEIGHT = 20
 
 type Props = {
   notification: Notification
@@ -30,33 +20,12 @@ const NotificationItem = ({
   onNotificationSelected,
 }: Props) => {
   const viewed = !!notification.viewed_at
-  const prevViewed = usePrevious(!!notification.viewed_at)
-  const offset = isLast ? BOTTOM_SECTION_HEIGHT : 0
   const { t } = useTranslation()
-
-  const heightWithOffset = (hasViewed: boolean) =>
-    (hasViewed ? COLLAPSED_HEIGHT : EXPANDED_HEIGHT) + offset
-  const height = heightWithOffset(viewed)
-  const heightPrev =
-    prevViewed === undefined ? height : heightWithOffset(prevViewed)
-  const heightSharedVal = useSharedValue(heightPrev)
-  const animatedStyles = useAnimatedStyle(() => {
-    return {
-      height: heightSharedVal.value,
-    }
-  })
 
   const isSingleItem = isFirst && isLast
 
-  useEffect(() => {
-    if (heightPrev !== height && prevViewed !== undefined) {
-      heightSharedVal.value = withSpring(height)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [height, heightPrev])
-
   return (
-    <Animated.View style={animatedStyles}>
+    <Box>
       <Box
         flexDirection="row"
         alignItems="flex-end"
@@ -111,12 +80,12 @@ const NotificationItem = ({
           </>
         )}
       </Box>
-    </Animated.View>
+    </Box>
   )
 }
 
-const areEqual = (prev: Props, next: Props) =>
-  prev.notification.id === next.notification.id &&
-  prev.notification.viewed_at === next.notification.viewed_at
+// const areEqual = (prev: Props, next: Props) =>
+//   prev.notification.id === next.notification.id &&
+//   prev.notification.viewed_at === next.notification.viewed_at
 
-export default memo(NotificationItem, areEqual)
+export default memo(NotificationItem)

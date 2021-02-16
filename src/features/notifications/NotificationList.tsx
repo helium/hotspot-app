@@ -8,6 +8,7 @@ import Text from '../../components/Text'
 import { Notification } from '../../store/account/accountSlice'
 import NotificationGroup from './NotificationGroup'
 import NotificationShow from './NotificationShow'
+import animateTransition from '../../utils/animateTransition'
 
 type Props = {
   notifications: Notification[]
@@ -40,8 +41,9 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
 
     const arr = Object.keys(grouped)
       .map((k) => grouped[k])
-      .sort((a) => a[0].time)
+      .sort((a, b) => b[0].time - a[0].time)
 
+    animateTransition()
     setGroupedNotifications(arr)
   }, [notifications])
 
@@ -63,7 +65,7 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
         refreshing={refreshing}
         style={{ flexGrow: 0 }}
         data={groupedNotifications}
-        keyExtractor={(item, idx) => `${item[0].id}.${idx}`}
+        keyExtractor={(item) => item[0].id.toString()}
         renderItem={({ item }) => (
           <NotificationGroup
             notifications={item}
