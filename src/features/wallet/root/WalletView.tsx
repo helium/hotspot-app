@@ -25,7 +25,6 @@ import {
   Loading,
 } from '../../../store/activity/activitySlice'
 import { FilterType } from './walletTypes'
-import animateTransition from '../../../utils/animateTransition'
 
 type Props = {
   layout: WalletLayout
@@ -60,12 +59,10 @@ const WalletView = ({
 
   useEffect(() => {
     if (activityViewState === 'init' || txnTypeStatus === 'idle') {
-      animateTransition()
       setShowSkeleton(true)
       return
     }
     if (txnTypeStatus === 'fulfilled' || txnTypeStatus === 'rejected') {
-      animateTransition()
       setShowSkeleton(false)
     }
   }, [activityViewState, txnTypeStatus])
