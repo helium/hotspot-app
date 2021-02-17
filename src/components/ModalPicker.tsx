@@ -28,10 +28,9 @@ const ModalPicker = ({
   const { purpleMain } = useColors()
   const pickerRef = useRef<RNPickerSelect>(null)
 
-  const touchableProps = useMemo(
-    () => ({ activeOpacity: 0.35, width: 250 }),
-    [],
-  )
+  const touchableProps = useMemo(() => ({ activeOpacity: 0.35, minWidth }), [
+    minWidth,
+  ])
   const pickerStyle = useMemo(
     () => ({
       iconContainer: {
