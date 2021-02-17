@@ -429,7 +429,7 @@ export default {
       burn: 'Burn HNT to DC',
       burn_description: 'HNT can be burned into Data Credits to pay for device network connectivity. DCs are non-transferable.',
       view: 'View QR Code',
-      view_description: 'Send the QR Code as an easy way to populate a transaction.',
+      view_description: 'Share your QR Code to deposit or receive HNT from others.',
       learn_more: 'Learn More',
     }
   },
