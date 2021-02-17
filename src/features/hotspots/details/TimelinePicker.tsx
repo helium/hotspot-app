@@ -37,6 +37,7 @@ const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
       alignItems="center"
       marginVertical="m"
       width="100%"
+      paddingHorizontal="l"
     >
       <Bars />
       <ModalPicker

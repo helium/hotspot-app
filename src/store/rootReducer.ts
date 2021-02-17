@@ -6,6 +6,7 @@ import heliumDataSlice from './helium/heliumDataSlice'
 import hotspotDetailsSlice from './hotspotDetails/hotspotDetailsSlice'
 import hotspotsSlice from './hotspots/hotspotsSlice'
 import activitySlice from './activity/activitySlice'
+import hotspotChecklistSlice from './hotspotDetails/hotspotChecklistSlice'
 
 const rootReducer = combineReducers({
   app: appSlice.reducer,
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   heliumData: heliumDataSlice.reducer,
   hotspotDetails: hotspotDetailsSlice.reducer,
   hotspots: hotspotsSlice.reducer,
+  hotspotChecklist: hotspotChecklistSlice.reducer,
 })
 
 export type RootState = ReturnType<typeof rootReducer>
