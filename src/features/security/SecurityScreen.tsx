@@ -43,11 +43,6 @@ const SecurityScreen = ({ visible }: Props) => {
     () =>
       ({
         position: 'absolute',
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-        height: '100%',
         opacity: fadeAnim.current,
       } as Animated.AnimatedProps<ImageStyle>),
     [],
@@ -64,7 +59,7 @@ const SecurityScreen = ({ visible }: Props) => {
   return (
     <AnimatedImage
       style={style}
-      source={require('../../assets/images/splash.png')}
+      source={require('../../assets/images/SplashScreen.png')}
     />
   )
 }
