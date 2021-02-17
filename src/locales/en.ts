@@ -718,10 +718,11 @@ export default {
       title: 'Witness a Challenge',
     },
     witness: {
-      success: 'Hotspot has been witnessed by {{count}} Hotspot.',
-      success_plural: 'Hotspot has been witnessed by {{count}} Hotspots.',
+      success: 'This Hotspot has {{count}} Hotspot in its witness list.',
+      success_plural:
+        'This Hotspot has {{count}} Hotspots in its witness list.',
       fail:
-        "No witness list yet. Hotspot may have recently refreshed its list or hasn't witnessed enough challenges.",
+        'No witnesses yet. Newly added Hotspots may take a few days to populate its witnesses.',
       title: 'Witness List',
     },
     challengee: {
@@ -739,7 +740,6 @@ export default {
       title: 'Transfer Data',
     },
     auto: 'AUTO',
-    auto_days: 'EVERY ~14 DAYS',
     auto_hours: 'EVERY FEW HOURS',
     complete: 'COMPLETE',
     online: 'ONLINE',
