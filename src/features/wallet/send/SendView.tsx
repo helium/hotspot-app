@@ -12,7 +12,6 @@ import { useAsync } from 'react-async-hook'
 import { useSelector } from 'react-redux'
 import { Hotspot } from '@helium/http'
 import { TransferHotspotV1 } from '@helium/transactions'
-import ens from '@ensdomains/ensjs'
 import { RootState } from '../../../store/rootReducer'
 import Box from '../../../components/Box'
 import { triggerNavHaptic } from '../../../utils/haptic'
@@ -50,6 +49,7 @@ import { getAddress } from '../../../utils/secureAccount'
 import Text from '../../../components/Text'
 import { fromNow } from '../../../utils/timeUtils'
 import useSubmitTxn from '../../../hooks/useSubmitTxn'
+import { ensLookup } from '../../../utils/explorerClient'
 
 type Props = {
   scanResult?: QrScanResult
@@ -65,6 +65,8 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
 
   const [type, setType] = useState<SendType>(sendType || 'payment')
   const [address, setAddress] = useState<string>('')
+  const [addressAlias, setAddressAlias] = useState<string>()
+  const [addressLoading, setAddressLoading] = useState(false)
   const [amount, setAmount] = useState<string>('')
   const [balanceAmount, setBalanceAmount] = useState<Balance<NetworkTokens>>(
     new Balance(0, CurrencyType.networkToken),
@@ -132,6 +134,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       if (scanResult?.amount) handleAmountChange(scanResult?.amount)
       if (scanResult?.memo) setMemo(scanResult?.memo)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scanResult])
 
   // compute equivalent dc amount for burn txns
@@ -389,9 +392,17 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
 
   const handleAddressChange = useCallback(async (newAddress: string) => {
     if (newAddress.match(/.*\.eth$/)) {
-      const ensAddress = await ens.name(newAddress).getAddress()
-      console.log('ens address', ensAddress)
+      setAddressLoading(true)
+      const { address: ensAddress } = await ensLookup(newAddress)
+      if (ensAddress) {
+        setAddressAlias(newAddress)
+        setAddress(ensAddress)
+        setAddressLoading(false)
+        return
+      }
     }
+    setAddressLoading(false)
+    setAddressAlias(undefined)
     setAddress(newAddress)
   }, [])
 
@@ -437,6 +448,8 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
           hasSufficientBalance={hasSufficientBalance}
           isLocked={isLocked}
           address={address}
+          addressAlias={addressAlias}
+          addressLoading={addressLoading}
           amount={amount}
           dcAmount={dcAmount}
           memo={memo}
