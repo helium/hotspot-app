@@ -28,7 +28,8 @@ import DiscordItem from './DiscordItem'
 import AppInfoItem from './AppInfoItem'
 import activitySlice from '../../../store/activity/activitySlice'
 import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
-import { SUPPORTED_LANGUAGUES, useLanguage } from '../../../utils/i18n'
+import { SUPPORTED_LANGUAGUES } from '../../../utils/i18n'
+import { useLanguageContext } from '../../../providers/LanguageProvider'
 
 type Route = RouteProp<RootStackParamList & MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
@@ -38,7 +39,7 @@ const MoreScreen = () => {
   const { version } = useDevice()
   const { app } = useSelector((state: RootState) => state)
   const authIntervals = useAuthIntervals()
-  const { changeLanguage, language } = useLanguage()
+  const { changeLanguage, language } = useLanguageContext()
   const navigation = useNavigation<MoreNavigationProp & RootNavigationProp>()
   const spacing = useSpacing()
 
