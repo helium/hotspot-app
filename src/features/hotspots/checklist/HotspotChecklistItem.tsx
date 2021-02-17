@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -96,7 +96,7 @@ const HotspotChecklistItem = ({
     ? colors.greenChecklist
     : colors.blueChecklist
 
-  const Background = () => {
+  const Background = useCallback(() => {
     switch (background) {
       default:
       case 1:
@@ -132,7 +132,7 @@ const HotspotChecklistItem = ({
           </Box>
         )
     }
-  }
+  }, [background, colors.greenDarkText, colors.white, complete, spacing.s])
 
   return (
     <Box marginHorizontal="xs">
@@ -177,4 +177,4 @@ const HotspotChecklistItem = ({
   )
 }
 
-export default HotspotChecklistItem
+export default memo(HotspotChecklistItem)

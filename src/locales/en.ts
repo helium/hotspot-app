@@ -722,7 +722,7 @@ export default {
       success_plural:
         'This Hotspot has {{count}} Hotspots in its witness list.',
       fail:
-        'No witnesses yet. Newly added Hotspots may take a few days to populate its witnesses.',
+        'No witnesses yet. Newly added Hotspots may take a few days to populate their witnesses.',
       title: 'Witness List',
     },
     challengee: {

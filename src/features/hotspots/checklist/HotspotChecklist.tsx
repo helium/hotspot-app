@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { Hotspot } from '@helium/http'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
@@ -53,7 +53,7 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const syncStatus = () => {
+  const syncStatus = useMemo(() => {
     if (!hotspot?.status?.height || !blockHeight) {
       return t('checklist.blocks.not')
     }
@@ -64,47 +64,65 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
       count: blockHeight - hotspot.status.height,
       percent: ((hotspot.status.height / blockHeight) * 100).toFixed(2),
     })
-  }
+  }, [blockHeight, hotspot?.status?.height, t])
 
-  const hotspotStatus = () =>
-    hotspot?.status?.online === 'online'
-      ? t('checklist.status.online')
-      : t('checklist.status.offline')
+  const hotspotStatus = useMemo(
+    () =>
+      hotspot?.status?.online === 'online'
+        ? t('checklist.status.online')
+        : t('checklist.status.offline'),
+    [hotspot?.status?.online, t],
+  )
 
-  const challengerStatus = () =>
-    challengerTxn && blockHeight
-      ? t('checklist.challenger.success', {
-          count: blockHeight - challengerTxn.height,
-        })
-      : t('checklist.challenger.fail')
+  const challengerStatus = useMemo(
+    () =>
+      challengerTxn && blockHeight
+        ? t('checklist.challenger.success', {
+            count: blockHeight - challengerTxn.height,
+          })
+        : t('checklist.challenger.fail'),
+    [blockHeight, challengerTxn, t],
+  )
 
-  const challengeWitnessStatus = () =>
-    witnessTxn
-      ? t('checklist.challenge_witness.success')
-      : t('checklist.challenge_witness.fail')
+  const challengeWitnessStatus = useMemo(
+    () =>
+      witnessTxn
+        ? t('checklist.challenge_witness.success')
+        : t('checklist.challenge_witness.fail'),
+    [t, witnessTxn],
+  )
 
-  const witnessStatus = () =>
-    witnesses && witnesses.length > 0
-      ? t('checklist.witness.success', { count: witnesses?.length })
-      : t('checklist.witness.fail')
+  const witnessStatus = useMemo(
+    () =>
+      witnesses && witnesses.length > 0
+        ? t('checklist.witness.success', { count: witnesses?.length })
+        : t('checklist.witness.fail'),
+    [t, witnesses],
+  )
 
-  const challengeeStatus = () =>
-    challengeeTxn && blockHeight
-      ? t('checklist.challengee.success', {
-          count: blockHeight - challengeeTxn.height,
-        })
-      : t('checklist.challengee.fail')
+  const challengeeStatus = useMemo(
+    () =>
+      challengeeTxn && blockHeight
+        ? t('checklist.challengee.success', {
+            count: blockHeight - challengeeTxn.height,
+          })
+        : t('checklist.challengee.fail'),
+    [blockHeight, challengeeTxn, t],
+  )
 
-  const dataTransferStatus = () =>
-    dataTransferTxn
-      ? t('checklist.data_transfer.success')
-      : t('checklist.data_transfer.fail')
+  const dataTransferStatus = useMemo(
+    () =>
+      dataTransferTxn
+        ? t('checklist.data_transfer.success')
+        : t('checklist.data_transfer.fail'),
+    [dataTransferTxn, t],
+  )
 
   const checklistData: ChecklistItem[] = [
     {
       key: 'checklist.blocks',
       title: t('checklist.blocks.title'),
-      description: syncStatus(),
+      description: syncStatus,
       complete:
         (blockHeight &&
           hotspot?.status?.height &&
@@ -116,7 +134,7 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
     {
       key: 'checklist.status',
       title: t('checklist.status.title'),
-      description: hotspotStatus(),
+      description: hotspotStatus,
       complete: hotspot?.status?.online === 'online',
       showAuto: false,
       completeText: t('checklist.online'),
@@ -125,7 +143,7 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
     {
       key: 'checklist.challenger',
       title: t('checklist.challenger.title'),
-      description: challengerStatus(),
+      description: challengerStatus,
       complete: challengerTxn !== undefined,
       showAuto: true,
       background: 2,
@@ -133,7 +151,7 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
     {
       key: 'checklist.challenge_witness',
       title: t('checklist.challenge_witness.title'),
-      description: challengeWitnessStatus(),
+      description: challengeWitnessStatus,
       complete: witnessTxn !== undefined,
       showAuto: true,
       background: 4,
@@ -141,7 +159,7 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
     {
       key: 'checklist.witness',
       title: t('checklist.witness.title'),
-      description: witnessStatus(),
+      description: witnessStatus,
       complete: witnesses && witnesses.length > 0,
       showAuto: true,
       background: 4,
@@ -149,7 +167,7 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
     {
       key: 'checklist.challengee',
       title: t('checklist.challengee.title'),
-      description: challengeeStatus(),
+      description: challengeeStatus,
       complete: challengeeTxn !== undefined,
       showAuto: true,
       autoText: t('checklist.auto_hours'),
@@ -158,7 +176,7 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
     {
       key: 'checklist.challengee',
       title: t('checklist.data_transfer.title'),
-      description: dataTransferStatus(),
+      description: dataTransferStatus,
       complete: dataTransferTxn !== undefined,
       showAuto: true,
       background: 3,
@@ -180,16 +198,19 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
     setHidden(!hidden)
   }
 
-  const renderItem = ({ item }: { item: ChecklistItem }) => (
-    <HotspotChecklistItem
-      title={item.title}
-      description={item.description}
-      complete={item.complete}
-      showAuto={item.showAuto}
-      autoText={item.autoText}
-      completeText={item.completeText}
-      background={item.background}
-    />
+  const renderItem = useCallback(
+    (item: { item: ChecklistItem }) => (
+      <HotspotChecklistItem
+        title={item.item.title}
+        description={item.item.description}
+        complete={item.item.complete}
+        showAuto={item.item.showAuto}
+        autoText={item.item.autoText}
+        completeText={item.item.completeText}
+        background={item.item.background}
+      />
+    ),
+    [],
   )
 
   if (loadingActivity) {
@@ -263,4 +284,4 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
   )
 }
 
-export default HotspotChecklist
+export default memo(HotspotChecklist)
