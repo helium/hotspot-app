@@ -7,11 +7,7 @@ import { ChartData } from './types'
 import { useColors } from '../../theme/themeHooks'
 
 // TODO
-// scale gap between bars
-// if all downs are 0, no gap
-// split the difference between the gaps when finding the data target
-// min height, circle
-// animate in
+// animate in?
 
 type Props = {
   width: number
@@ -44,11 +40,6 @@ const BarChart = ({
     }
     onFocus(focusedBar)
   }, [focusedBar, onFocus])
-
-  // width 366 hasDownBars true barWidth 13.555555555555555
-  // minBarHeight 13.555555555555555 maxUp 119.04227876
-  // maxDown 13.555555555555555 maxBarHeight 141.63487135259257
-  // vScale 1.0873028550760293
 
   // support charts that have no down values
   const hasDownBars = useMemo(() => some(data, ({ down }) => down > 0), [data])
@@ -92,29 +83,20 @@ const BarChart = ({
     return usableHeight / maxVerticalValue
   }, [height, bottomOffset, hasDownBars, maxUp, maxDown, barGap])
 
-  console.log(
-    'width',
-    width,
-    'hasDownBars',
-    hasDownBars,
-    'barWidth',
-    barWidth,
-    'minBarHeight',
-    minBarHeight,
-    'maxUp',
-    maxUp,
-    'maxDown',
-    maxDown,
-    'vScale',
-    vScale,
-  )
+  // pixel value of the tallest up bar
+  const maxUpBarHeight = useMemo(() => {
+    return max([maxUp * vScale, minBarHeight]) || 0
+  }, [maxUp, minBarHeight, vScale])
 
   const barHeight = useCallback(
     (value: number | undefined): number => {
       if (value === 0 || value === undefined) return 0
+      if (maxUpBarHeight === minBarHeight) {
+        return max([value * vScale - minBarHeight, minBarHeight]) || 0
+      }
       return max([value * vScale, minBarHeight]) || 0
     },
-    [minBarHeight, vScale],
+    [minBarHeight, vScale, maxUpBarHeight],
   )
 
   // maps x coordinates to elements in our data
@@ -172,8 +154,7 @@ const BarChart = ({
           <React.Fragment key={`frag-${v.id}`}>
             <Rect
               x={barWidth * (2 * i)}
-              y={maxUp * vScale - barHeight(v?.up)}
-              // y={maxUp * vScale}
+              y={maxUpBarHeight - barHeight(v?.up)}
               rx={barWidth / 2}
               width={barWidth}
               height={barHeight(v?.up)}
@@ -184,7 +165,7 @@ const BarChart = ({
             {hasDownBars && (
               <Rect
                 x={barWidth * (2 * i)}
-                y={maxUp * vScale + barGap}
+                y={maxUpBarHeight + barGap}
                 rx={barWidth / 2}
                 width={barWidth}
                 height={barHeight(v?.down)}
