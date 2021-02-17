@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Alert } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
@@ -12,6 +12,7 @@ import { useAsync } from 'react-async-hook'
 import { useSelector } from 'react-redux'
 import { Hotspot } from '@helium/http'
 import { TransferHotspotV1 } from '@helium/transactions'
+import ens from '@ensdomains/ensjs'
 import { RootState } from '../../../store/rootReducer'
 import Box from '../../../components/Box'
 import { triggerNavHaptic } from '../../../utils/haptic'
@@ -386,7 +387,15 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     }
   }
 
-  const handleAmountChange = (stringAmount: string) => {
+  const handleAddressChange = useCallback(async (newAddress: string) => {
+    if (newAddress.match(/.*\.eth$/)) {
+      const ensAddress = await ens.name(newAddress).getAddress()
+      console.log('ens address', ensAddress)
+    }
+    setAddress(newAddress)
+  }, [])
+
+  const handleAmountChange = useCallback((stringAmount: string) => {
     if (stringAmount === '.' || stringAmount.includes('NaN')) {
       setAmount('0.')
       setBalanceAmount(new Balance(0, CurrencyType.networkToken))
@@ -408,7 +417,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     setBalanceAmount(
       new Balance(parseFloat(rawAmount) * 100000000, CurrencyType.networkToken),
     )
-  }
+  }, [])
 
   return (
     <Box flex={1}>
@@ -434,7 +443,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
           fee={fee}
           transferData={transferData}
           lastReportedActivity={lastReportedActivity}
-          onAddressChange={setAddress}
+          onAddressChange={handleAddressChange}
           onAmountChange={handleAmountChange}
           onDcAmountChange={setDcAmount}
           onMemoChange={setMemo}
