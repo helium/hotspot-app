@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import React, { useCallback, memo, useMemo, useState, useEffect } from 'react'
+import React, { useCallback, memo, useMemo } from 'react'
 import { useAsync } from 'react-async-hook'
 import {
   AnyTransaction,
@@ -11,31 +11,24 @@ import animalName from 'angry-purple-tiger'
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
 import ActivityItem, { ACTIVITY_ITEM_ROW_HEIGHT } from './ActivityItem'
 import { getSecureItem } from '../../../../utils/secureAccount'
-import activitySlice, {
-  Loading,
-} from '../../../../store/activity/activitySlice'
+import activitySlice from '../../../../store/activity/activitySlice'
 import { useAppDispatch } from '../../../../store/store'
 import { useSpacing } from '../../../../theme/themeHooks'
 import useActivityItem from '../useActivityItem'
 import ActivityCardLoading from './ActivityCardLoading'
 
 type Props = {
-  status: Loading
+  hasNoResults: boolean
   data: (AnyTransaction | PendingTransaction)[]
 }
 
-const ActivityCardListView = ({ data, status }: Props) => {
+const ActivityCardListView = ({ data, hasNoResults }: Props) => {
   const { m } = useSpacing()
   const dispatch = useAppDispatch()
   const { result: address, loading } = useAsync(getSecureItem, ['address'])
   const { backgroundColor, title, listIcon, amount, time } = useActivityItem(
     address || '',
   )
-  const [hasNoResults, setHasNoResults] = useState(false)
-
-  useEffect(() => {
-    setHasNoResults(status === 'fulfilled' && data && data.length === 0)
-  }, [data, status])
 
   const handleActivityItemPressed = useCallback(
     (item: AnyTransaction | PendingTransaction) => () => {
@@ -54,10 +47,9 @@ const ActivityCardListView = ({ data, status }: Props) => {
     [amount],
   )
 
-  const requestMore = useCallback(
-    () => dispatch(activitySlice.actions.requestMoreActivity()),
-    [dispatch],
-  )
+  const requestMore = useCallback(() => {
+    dispatch(activitySlice.actions.requestMoreActivity())
+  }, [dispatch])
 
   type Item = {
     item: AnyTransaction | PendingTransaction

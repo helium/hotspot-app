@@ -36,14 +36,11 @@ import {
 } from './store/helium/heliumDataSlice'
 import sleep from './utils/sleep'
 import SecurityScreen from './features/security/SecurityScreen'
-import { useLanguage } from './utils/i18n'
+import LanguageProvider from './providers/LanguageProvider'
 
 SplashScreen.preventAutoHideAsync()
 
 const App = () => {
-  const { initLanguage } = useLanguage()
-  initLanguage()
-
   if (Platform.OS === 'android') {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
       UIManager.setLayoutAnimationEnabledExperimental(true)
@@ -166,33 +163,35 @@ const App = () => {
   }, [blockHeight, dispatch])
 
   return (
-    <ThemeProvider theme={theme}>
-      <BottomSheetModalProvider>
-        <ActionSheetProvider>
-          <BluetoothProvider>
-            <ConnectedHotspotProvider>
-              <SafeAreaProvider>
-                {/* TODO: Will need to adapt status bar for light/dark modes */}
-                {Platform.OS === 'ios' && (
-                  <StatusBar barStyle="light-content" />
-                )}
-                {Platform.OS === 'android' && (
-                  <StatusBar translucent backgroundColor="transparent" />
-                )}
-                <Portal.Host>
-                  <NavigationRoot />
-                </Portal.Host>
-              </SafeAreaProvider>
-              <SecurityScreen
-                visible={
-                  appStateStatus !== 'active' && appStateStatus !== 'unknown'
-                }
-              />
-            </ConnectedHotspotProvider>
-          </BluetoothProvider>
-        </ActionSheetProvider>
-      </BottomSheetModalProvider>
-    </ThemeProvider>
+    <LanguageProvider>
+      <ThemeProvider theme={theme}>
+        <BottomSheetModalProvider>
+          <ActionSheetProvider>
+            <BluetoothProvider>
+              <ConnectedHotspotProvider>
+                <SafeAreaProvider>
+                  {/* TODO: Will need to adapt status bar for light/dark modes */}
+                  {Platform.OS === 'ios' && (
+                    <StatusBar barStyle="light-content" />
+                  )}
+                  {Platform.OS === 'android' && (
+                    <StatusBar translucent backgroundColor="transparent" />
+                  )}
+                  <Portal.Host>
+                    <NavigationRoot />
+                  </Portal.Host>
+                </SafeAreaProvider>
+                <SecurityScreen
+                  visible={
+                    appStateStatus !== 'active' && appStateStatus !== 'unknown'
+                  }
+                />
+              </ConnectedHotspotProvider>
+            </BluetoothProvider>
+          </ActionSheetProvider>
+        </BottomSheetModalProvider>
+      </ThemeProvider>
+    </LanguageProvider>
   )
 }
 

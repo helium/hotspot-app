@@ -25,7 +25,6 @@ import {
   Loading,
 } from '../../../store/activity/activitySlice'
 import { FilterType } from './walletTypes'
-import animateTransition from '../../../utils/animateTransition'
 
 type Props = {
   layout: WalletLayout
@@ -57,18 +56,27 @@ const WalletView = ({
   const balanceSheet = useRef<BottomSheet>(null)
   const animatedCardIndex = useSharedValue<number>(1)
   const [showSkeleton, setShowSkeleton] = useState(true)
+  const [hasNoResults, setHasNoResults] = useState(false)
 
   useEffect(() => {
     if (activityViewState === 'init' || txnTypeStatus === 'idle') {
-      animateTransition()
       setShowSkeleton(true)
       return
     }
     if (txnTypeStatus === 'fulfilled' || txnTypeStatus === 'rejected') {
-      animateTransition()
       setShowSkeleton(false)
     }
-  }, [activityViewState, txnTypeStatus])
+  }, [activityViewState, pendingTxns, txnTypeStatus])
+
+  useEffect(() => {
+    const noResults =
+      txnTypeStatus === 'fulfilled' &&
+      pendingTxns &&
+      pendingTxns.length === 0 &&
+      txns &&
+      txns.length === 0
+    setHasNoResults(noResults)
+  }, [pendingTxns, txnTypeStatus, txns])
 
   const handleSendPress = useCallback(() => {
     triggerNavHaptic()
@@ -122,7 +130,7 @@ const WalletView = ({
         filter={filter}
         txns={txns}
         pendingTxns={pendingTxns}
-        status={txnTypeStatus}
+        hasNoResults={hasNoResults}
         ref={activityCard}
         animationPoints={animationPoints}
         animatedIndex={animatedCardIndex}

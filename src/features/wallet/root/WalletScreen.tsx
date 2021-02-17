@@ -36,17 +36,16 @@ const WalletScreen = () => {
 
   useEffect(() => {
     if (viewState !== activityViewState) {
-      animateTransition()
       setViewState(activityViewState)
     }
   }, [activityViewState, viewState])
 
   useEffect(() => {
-    if (
-      filter === 'pending' ||
-      txns[filter].status === 'pending' ||
-      txns[filter].status === 'idle'
-    ) {
+    if (filter === 'pending') {
+      setTransactionData([])
+      return
+    }
+    if (txns[filter].status === 'pending' || txns[filter].status === 'idle') {
       return
     }
     const { data } = txns[filter]
