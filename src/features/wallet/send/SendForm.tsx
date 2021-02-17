@@ -324,7 +324,7 @@ const AddressExtra = ({
   if (addressLoading) {
     return (
       <Box padding="s" position="absolute" right={0}>
-        <ActivityIndicator />
+        <ActivityIndicator color="gray" />
       </Box>
     )
   }
