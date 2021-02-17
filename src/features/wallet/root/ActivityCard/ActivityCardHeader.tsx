@@ -7,6 +7,7 @@ import ModalPicker from '../../../../components/ModalPicker'
 import { useAppDispatch } from '../../../../store/store'
 import activitySlice from '../../../../store/activity/activitySlice'
 import animateTransition from '../../../../utils/animateTransition'
+import accountSlice from '../../../../store/account/accountSlice'
 
 type Props = { filter: FilterType }
 const ActivityCardHeader = ({ filter }: Props) => {
@@ -24,6 +25,7 @@ const ActivityCardHeader = ({ filter }: Props) => {
     (_itemValue, itemIndex) => {
       const nextFilter = FilterKeys[itemIndex]
       animateTransition()
+      dispatch(accountSlice.actions.resetActivityChart())
       dispatch(activitySlice.actions.setFilter(nextFilter))
     },
     [dispatch],

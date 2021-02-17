@@ -104,6 +104,9 @@ const accountSlice = createSlice({
     signOut: () => {
       return { ...initialState }
     },
+    resetActivityChart: (state) => {
+      return { ...state, activityChart: initialState.activityChart }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchData.pending, (state, _action) => {
