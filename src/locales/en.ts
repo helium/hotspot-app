@@ -295,6 +295,8 @@ export default {
         'Hotspot miner is waiting to start. Please try again in a few minutes.',
       add_hotspot_error_body:
         'There was an error constructing the Add Hotspot transaction. Please try again.',
+      assert_loc_error_body:
+        'There was an error constructing the Assert Location transaction. Please try again.',
     },
     enable_location: {
       title: 'Set Hotspot\nLocation',

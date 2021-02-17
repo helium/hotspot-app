@@ -45,11 +45,11 @@ const HotspotTxnsProgressScreen = () => {
     navigation.navigate('MainTabs')
   }
 
-  const assertLocError = () => {
-    Alert.alert(
-      'Error',
-      'There was an error constructing the Assert Location transaction. Please try again.',
-    )
+  const assertLocError = async () => {
+    const titleKey = 'generic.error'
+    const messageKey = 'hotspot_setup.add_hotspot.assert_loc_error_body'
+    await showOKAlert({ titleKey, messageKey })
+    navigation.navigate('MainTabs')
   }
 
   const hotspotOnChain = async (address: string): Promise<boolean> => {
