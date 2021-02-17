@@ -293,6 +293,8 @@ export default {
       wait_error_title: 'Please Try Again',
       wait_error_body:
         'Hotspot miner is waiting to start. Please try again in a few minutes.',
+      add_hotspot_error_body:
+        'There was an error constructing the Add Hotspot transaction. Please try again.',
     },
     enable_location: {
       title: 'Set Hotspot\nLocation',
@@ -427,11 +429,13 @@ export default {
       send: 'Send HNT',
       send_description: 'Quickly scan a Helium address to send HNT.',
       burn: 'Burn HNT to DC',
-      burn_description: 'HNT can be burned into Data Credits to pay for device network connectivity. DCs are non-transferable.',
+      burn_description:
+        'HNT can be burned into Data Credits to pay for device network connectivity. DCs are non-transferable.',
       view: 'View QR Code',
-      view_description: 'Share your QR Code to deposit or receive HNT from others.',
+      view_description:
+        'Share your QR Code to deposit or receive HNT from others.',
       learn_more: 'Learn More',
-    }
+    },
   },
   more: {
     title: 'Settings',

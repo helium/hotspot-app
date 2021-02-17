@@ -13,6 +13,8 @@ import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotP
 import { getHotspotDetails } from '../../../utils/appDataClient'
 import { HotspotSetupStackParamList } from './hotspotSetupTypes'
 import { RootState } from '../../../store/rootReducer'
+import * as Logger from '../../../utils/logger'
+import useAlert from '../../../utils/useAlert'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotTxnsProgressScreen'>
 
@@ -25,15 +27,22 @@ const HotspotTxnsProgressScreen = () => {
   } = useRoute<Route>()
   const [lng, lat] = hotspotCoords
   const { connectedHotspot } = useSelector((state: RootState) => state)
-
+  const { showOKAlert } = useAlert()
   const { addGatewayTxn, assertLocationTxn } = useConnectedHotspotContext()
 
-  // TODO better error handling here?
-  const addGatewayError = () => {
-    Alert.alert(
-      'Error',
-      'There was an error constructing the Add Hotspot transaction. Please try again.',
-    )
+  const addGatewayError = async (error: string | false) => {
+    let titleKey = 'generic.error'
+    let messageKey = 'hotspot_setup.add_hotspot.add_hotspot_error_body'
+    if (error !== false) {
+      if (error === 'wait') {
+        messageKey = t('hotspot_setup.add_hotspot.wait_error_body')
+        titleKey = t('hotspot_setup.add_hotspot.wait_error_title')
+      } else {
+        messageKey = `Got error code ${error} from add_gw`
+      }
+    }
+    await showOKAlert({ titleKey, messageKey })
+    navigation.navigate('MainTabs')
   }
 
   const assertLocError = () => {
@@ -66,14 +75,14 @@ const HotspotTxnsProgressScreen = () => {
     if (!isOnChain) {
       // if so, construct and publish add gateway
       try {
-        const addGatewaySuccess = await addGatewayTxn()
-        if (!addGatewaySuccess) {
-          addGatewayError()
+        const addGatewayResponse = await addGatewayTxn()
+        if (addGatewayResponse !== true) {
+          addGatewayError(addGatewayResponse)
           return
         }
       } catch (error) {
-        addGatewayError()
-        console.error(error)
+        addGatewayError(false)
+        Logger.error(error)
         return
       }
     }
@@ -87,7 +96,7 @@ const HotspotTxnsProgressScreen = () => {
       }
     } catch (error) {
       assertLocError()
-      console.error(error)
+      Logger.error(error)
       return
     }
 

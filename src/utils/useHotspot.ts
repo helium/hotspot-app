@@ -340,20 +340,10 @@ const useHotspot = () => {
     const { value } = await readCharacteristic(characteristic)
     if (!value) return false
 
-    // TODO: Is this needed? What should we do if wait is detected?
-    // if (decodedValue.length < 20) {
-    //   if (decodedValue === 'wait') {
-    //     const message = t('hotspot_setup.add_hotspot.wait_error_body')
-    //     const title = t('hotspot_setup.add_hotspot.wait_error_title')
-    //     alertError(message, title)
-    //   } else {
-    //     alertError(`Got error code ${decodedValue} from add_gw`)
-    //   }
-    //   Logger.error(
-    //     new Error(`Got error code ${decodedValue} from add_gw`),
-    //   )
-    //   return null
-    // }
+    if (value.length < 20) {
+      Logger.error(new Error(`Got error code ${value} from add_gw`))
+      return value
+    }
 
     const txn = await makeAddGatewayTxn(value)
 
