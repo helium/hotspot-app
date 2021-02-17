@@ -18,6 +18,7 @@ import BSHandle from '../../../components/BSHandle'
 import { useSpacing } from '../../../theme/themeHooks'
 
 const ScanView = () => {
+  const { t } = useTranslation()
   const [scanned, setScanned] = useState(false)
   const navigation = useNavigation()
   const spacing = useSpacing()

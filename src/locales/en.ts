@@ -423,13 +423,13 @@ export default {
     last_activity: 'LAST REPORTED ACTIVITY: {{activity}}',
     label_error: 'You do not have enough HNT in your account.',
     scan: {
-      title: 'Find a QR Code to Scan',
+      title: 'Ways to use a QR Code',
       send: 'Send HNT',
       send_description: 'Quickly scan a Helium address to send HNT.',
       burn: 'Burn HNT to DC',
       burn_description: 'HNT can be burned into Data Credits to pay for device network connectivity. DCs are non-transferable.',
-      view: 'View My QR Code',
-      view_description: 'Save your QR code for others to save and send payments.',
+      view: 'View QR Code',
+      view_description: 'Send the QR Code as an easy way to populate a transaction.',
       learn_more: 'Learn More',
     }
   },
