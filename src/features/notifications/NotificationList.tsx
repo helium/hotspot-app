@@ -17,6 +17,9 @@ type Props = {
 }
 const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
   const { t } = useTranslation()
+  const [allNotifications, setAllNotifications] = useState<Array<Notification>>(
+    [],
+  )
   const [groupedNotifications, setGroupedNotifications] = useState<
     Array<Array<Notification>>
   >([])
@@ -26,14 +29,27 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
   ] = useState<Notification | null>(null)
 
   useEffect(() => {
-    // TODO: Figure out how to group these.
-    // Currently, they are grouped by the date-fns function formatDistance
-    // Then, sorted newest to oldest
-    // Seems good, but need to confirm
+    if (notifications.length !== allNotifications.length) {
+      setAllNotifications(notifications)
+      return
+    }
+    notifications.some((propNotif, index) => {
+      const notif = allNotifications[index]
+      const isEqual =
+        propNotif.id === notif.id && propNotif.viewed_at === notif.viewed_at
 
+      if (!isEqual) {
+        // data has changed update
+        setAllNotifications(notifications)
+      }
+      return isEqual
+    })
+  }, [allNotifications, notifications])
+
+  useEffect(() => {
     const now = new Date()
 
-    const grouped = groupBy(notifications, (notification) =>
+    const grouped = groupBy(allNotifications, (notification) =>
       formatDistance(fromUnixTime(notification.time), now, {
         addSuffix: true,
       }),
@@ -45,7 +61,7 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
 
     animateTransition()
     setGroupedNotifications(arr)
-  }, [notifications])
+  }, [allNotifications])
 
   return (
     <Box flex={1} alignContent="space-between">

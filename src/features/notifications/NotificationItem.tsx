@@ -84,8 +84,4 @@ const NotificationItem = ({
   )
 }
 
-// const areEqual = (prev: Props, next: Props) =>
-//   prev.notification.id === next.notification.id &&
-//   prev.notification.viewed_at === next.notification.viewed_at
-
 export default memo(NotificationItem)

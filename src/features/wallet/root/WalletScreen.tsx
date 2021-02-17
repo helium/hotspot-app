@@ -52,7 +52,7 @@ const WalletScreen = () => {
     if (data.length !== transactionData.length) {
       updateTxnData(data)
     } else if (data.length) {
-      data.every((txn, index) => {
+      data.some((txn, index) => {
         const prevTxn = txn as PaymentV1
         const nextTxn = transactionData[index] as PaymentV1
 
