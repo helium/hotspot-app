@@ -36,24 +36,23 @@ const WalletScreen = () => {
 
   useEffect(() => {
     if (viewState !== activityViewState) {
-      animateTransition()
       setViewState(activityViewState)
     }
   }, [activityViewState, viewState])
 
   useEffect(() => {
-    if (
-      filter === 'pending' ||
-      txns[filter].status === 'pending' ||
-      txns[filter].status === 'idle'
-    ) {
+    if (filter === 'pending') {
+      setTransactionData([])
+      return
+    }
+    if (txns[filter].status === 'pending' || txns[filter].status === 'idle') {
       return
     }
     const { data } = txns[filter]
     if (data.length !== transactionData.length) {
       updateTxnData(data)
     } else if (data.length) {
-      data.every((txn, index) => {
+      data.some((txn, index) => {
         const prevTxn = txn as PaymentV1
         const nextTxn = transactionData[index] as PaymentV1
 

@@ -12,7 +12,6 @@ import Animated from 'react-native-reanimated'
 import { AnyTransaction, PendingTransaction } from '@helium/http'
 import { WalletAnimationPoints } from '../walletLayout'
 import ActivityCardHeader from './ActivityCardHeader'
-import { Loading } from '../../../../store/activity/activitySlice'
 import { FilterType } from '../walletTypes'
 import ActivityCardListView from './ActivityCardListView'
 import ActivityListSkeletonView from './ActivityListSkeletonView'
@@ -24,7 +23,7 @@ type Props = {
   txns: AnyTransaction[]
   pendingTxns: PendingTransaction[]
   filter: FilterType
-  status: Loading
+  hasNoResults: boolean
   showSkeleton: boolean
 }
 
@@ -36,7 +35,7 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
     txns,
     pendingTxns,
     filter,
-    status,
+    hasNoResults,
     showSkeleton,
   } = props
   const { dragMax, dragMid, dragMin } = animationPoints
@@ -94,10 +93,19 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
       {showSkeleton ? (
         <ActivityListSkeletonView />
       ) : (
-        <ActivityCardListView data={getData} status={status} />
+        <ActivityCardListView data={getData} hasNoResults={hasNoResults} />
       )}
     </BottomSheet>
   )
 })
 
-export default memo(ActivityCard)
+export default memo(ActivityCard, (prev, next) => {
+  return (
+    prev.filter === next.filter &&
+    prev.onChange === next.onChange &&
+    prev.txns === next.txns &&
+    prev.pendingTxns === next.pendingTxns &&
+    prev.hasNoResults === next.hasNoResults &&
+    prev.showSkeleton === next.showSkeleton
+  )
+})

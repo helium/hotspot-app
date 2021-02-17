@@ -18,6 +18,11 @@ export const SUPPORTED_LANGUAGUES = [
 export const useLanguage = () => {
   const [language, setLanguage] = useState('en')
 
+  useEffect(() => {
+    initLanguage()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const initLanguage = useCallback(async () => {
     const locales = RNLocalize.getLocales()
 
@@ -59,7 +64,7 @@ export const useLanguage = () => {
     i18n.changeLanguage(lang)
   }
 
-  return { language, changeLanguage, initLanguage }
+  return { language, changeLanguage }
 }
 
 export default i18n
