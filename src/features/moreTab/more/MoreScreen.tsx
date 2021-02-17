@@ -202,15 +202,15 @@ const MoreScreen = () => {
         data: [
           {
             title: t('more.sections.learn.tokenEarnings'),
-            openUrl: 'https://docs.helium.com',
+            openUrl: 'https://docs.helium.com/blockchain/mining/#how-do-hotspots-earn-helium-tokens',
           },
           {
-            title: t('more.sections.learn.hotspotPlacement'),
-            openUrl: 'https://docs.helium.com',
+            title: t('more.sections.learn.heliumtoken'),
+            openUrl: 'https://docs.helium.com/blockchain/helium-token',
           },
           {
-            title: t('more.sections.learn.support'),
-            openUrl: 'https://docs.helium.com',
+            title: t('more.sections.learn.coverage'),
+            openUrl: 'https://explorer.helium.com/coverage',
           },
           {
             title: t('more.sections.learn.troubleshooting'),

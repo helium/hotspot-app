@@ -422,6 +422,16 @@ export default {
     hotspot_label: 'Hotspot',
     last_activity: 'LAST REPORTED ACTIVITY: {{activity}}',
     label_error: 'You do not have enough HNT in your account.',
+    scan: {
+      title: 'Ways to use a QR Code',
+      send: 'Send HNT',
+      send_description: 'Quickly scan a Helium address to send HNT.',
+      burn: 'Burn HNT to DC',
+      burn_description: 'HNT can be burned into Data Credits to pay for device network connectivity. DCs are non-transferable.',
+      view: 'View QR Code',
+      view_description: 'Share your QR Code to deposit or receive HNT from others.',
+      learn_more: 'Learn More',
+    }
   },
   more: {
     title: 'Settings',
@@ -445,6 +455,8 @@ export default {
       learn: {
         title: 'Learn',
         tokenEarnings: 'Token Earnings',
+        heliumtoken: 'Helium Token',
+        coverage: 'Network Coverage',
         hotspotPlacement: 'Hotspot Placement',
         support: 'Support',
         troubleshooting: 'Troubleshooting',
