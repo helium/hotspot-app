@@ -119,7 +119,10 @@ export const fetchHotspotDetails = createAsyncThunk<
   }
 
   const [hotspot, onboardingRecord] = await Promise.all([
-    getHotspotDetails(details.address),
+    getHotspotDetails(details.address).catch((e) => {
+      // Hotspot may not yet exist on the chain, let it fail silently
+      console.log('failed to get hotspot details', e)
+    }),
     getStaking(`hotspots/${details.onboardingAddress}`),
   ])
 

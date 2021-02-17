@@ -94,7 +94,7 @@ const HotspotDetailChart = ({
     setFocusedData(chartData)
   }
   return (
-    <Box marginBottom="m">
+    <Box marginBottom="m" paddingHorizontal="l">
       <Box
         flexDirection="row"
         alignItems="center"

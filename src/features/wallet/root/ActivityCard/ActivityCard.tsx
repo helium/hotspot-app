@@ -12,11 +12,9 @@ import Animated from 'react-native-reanimated'
 import { AnyTransaction, PendingTransaction } from '@helium/http'
 import { WalletAnimationPoints } from '../walletLayout'
 import ActivityCardHeader from './ActivityCardHeader'
-import { Loading } from '../../../../store/activity/activitySlice'
 import { FilterType } from '../walletTypes'
 import ActivityCardListView from './ActivityCardListView'
-
-type AllTxns = (AnyTransaction | PendingTransaction)[]
+import ActivityListSkeletonView from './ActivityListSkeletonView'
 
 type Props = {
   animationPoints: WalletAnimationPoints
@@ -24,9 +22,9 @@ type Props = {
   onChange?: (index: number) => void
   txns: AnyTransaction[]
   pendingTxns: PendingTransaction[]
-  isResetting: boolean
   filter: FilterType
-  status: Loading
+  hasNoResults: boolean
+  showSkeleton: boolean
 }
 
 const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
@@ -36,9 +34,9 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
     onChange,
     txns,
     pendingTxns,
-    isResetting,
     filter,
-    status,
+    hasNoResults,
+    showSkeleton,
   } = props
   const { dragMax, dragMid, dragMin } = animationPoints
   const sheet = useRef<BottomSheet>(null)
@@ -59,17 +57,18 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
     },
   }))
 
-  const getData = useMemo((): AllTxns => {
-    if (isResetting) return []
-
+  const getData = useMemo(() => {
+    let data: (AnyTransaction | PendingTransaction)[] = txns
     if (filter === 'pending') {
-      return pendingTxns
+      data = pendingTxns
     }
+
     if (filter === 'all') {
-      return [...pendingTxns, ...txns]
+      data = [...pendingTxns, ...txns]
     }
-    return txns
-  }, [filter, isResetting, pendingTxns, txns])
+
+    return data
+  }, [filter, pendingTxns, txns])
 
   const header = useCallback(() => <ActivityCardHeader filter={filter} />, [
     filter,
@@ -91,13 +90,22 @@ const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
       onChange={onChange}
       animatedIndex={animatedIndex}
     >
-      <ActivityCardListView
-        data={getData}
-        isResetting={isResetting}
-        status={status}
-      />
+      {showSkeleton ? (
+        <ActivityListSkeletonView />
+      ) : (
+        <ActivityCardListView data={getData} hasNoResults={hasNoResults} />
+      )}
     </BottomSheet>
   )
 })
 
-export default memo(ActivityCard)
+export default memo(ActivityCard, (prev, next) => {
+  return (
+    prev.filter === next.filter &&
+    prev.onChange === next.onChange &&
+    prev.txns === next.txns &&
+    prev.pendingTxns === next.pendingTxns &&
+    prev.hasNoResults === next.hasNoResults &&
+    prev.showSkeleton === next.showSkeleton
+  )
+})

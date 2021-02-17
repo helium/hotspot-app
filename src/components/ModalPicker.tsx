@@ -1,6 +1,6 @@
 import React, { memo, ReactText, useRef, useMemo } from 'react'
 import RNPickerSelect from 'react-native-picker-select'
-import CarotDown from '@assets/images/carot-down.svg'
+import CarotDown from '@assets/images/carot-down-picker.svg'
 import { BoxProps } from '@shopify/restyle'
 import { Platform } from 'react-native'
 import Box from './Box'
@@ -13,6 +13,7 @@ type Props = BoxProps<Theme> & {
   selectedValue: string
   onValueChanged: (itemValue: ReactText, itemIndex: number) => void
   prefix?: string
+  minWidth?: number
 }
 
 const ModalPicker = ({
@@ -20,6 +21,7 @@ const ModalPicker = ({
   selectedValue,
   onValueChanged,
   prefix,
+  minWidth,
   ...boxProps
 }: Props) => {
   const textVariants = useTextVariants()
@@ -52,8 +54,9 @@ const ModalPicker = ({
         color: purpleMain,
         paddingVertical: 8,
       },
+      viewContainer: { minWidth },
     }),
-    [purpleMain, textVariants.h4],
+    [purpleMain, textVariants.h4, minWidth],
   )
   const placeholder = {}
   return (

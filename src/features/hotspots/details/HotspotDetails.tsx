@@ -23,6 +23,7 @@ import TouchableOpacityBox from '../../../components/BSTouchableOpacityBox'
 import HexBadge from './HexBadge'
 import HotspotMoreMenuButton from './HotspotMoreMenuButton'
 import Button from '../../../components/Button'
+import HotspotChecklist from '../checklist/HotspotChecklist'
 
 const shortAddress = (address?: string) => `${address?.slice(0, 5)}...`
 
@@ -45,6 +46,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
       challengeSums,
       challengeSum,
       challengeChange,
+      witnesses,
     },
   } = useSelector((state: RootState) => state)
 
@@ -121,12 +123,13 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
 
   return (
     <BottomSheetScrollView>
-      <Box paddingHorizontal="l" paddingBottom="l">
+      <Box paddingBottom="l">
         <Box
           marginBottom="m"
           flexDirection="row"
           justifyContent="space-between"
           alignItems="center"
+          paddingHorizontal="l"
         >
           <Text
             variant="h2"
@@ -145,6 +148,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
           justifyContent="space-between"
           alignItems="center"
           marginBottom="xl"
+          paddingHorizontal="l"
         >
           <Box flexDirection="row">
             <StatusBadge online={hotspot.status?.online} />
@@ -160,6 +164,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
             </Text>
           </TouchableOpacityBox>
         </Box>
+        <HotspotChecklist hotspot={hotspot} witnesses={witnesses} />
         <TimelinePicker index={2} onTimelineChanged={setTimelineValue} />
         <HotspotDetailChart
           title={t('hotspot_details.reward_title')}
@@ -187,7 +192,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
           loading={loading}
         />
 
-        <Box marginTop="m">
+        <Box marginTop="m" paddingHorizontal="l">
           <Button
             mode="contained"
             variant="primary"

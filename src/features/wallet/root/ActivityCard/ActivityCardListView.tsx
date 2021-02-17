@@ -11,22 +11,18 @@ import animalName from 'angry-purple-tiger'
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
 import ActivityItem, { ACTIVITY_ITEM_ROW_HEIGHT } from './ActivityItem'
 import { getSecureItem } from '../../../../utils/secureAccount'
-import activitySlice, {
-  Loading,
-} from '../../../../store/activity/activitySlice'
+import activitySlice from '../../../../store/activity/activitySlice'
 import { useAppDispatch } from '../../../../store/store'
 import { useSpacing } from '../../../../theme/themeHooks'
 import useActivityItem from '../useActivityItem'
 import ActivityCardLoading from './ActivityCardLoading'
 
-type AllTxns = (AnyTransaction | PendingTransaction)[]
 type Props = {
-  isResetting: boolean
-  status: Loading
-  data: AllTxns
+  hasNoResults: boolean
+  data: (AnyTransaction | PendingTransaction)[]
 }
 
-const ActivityCardListView = ({ isResetting, data, status }: Props) => {
+const ActivityCardListView = ({ data, hasNoResults }: Props) => {
   const { m } = useSpacing()
   const dispatch = useAppDispatch()
   const { result: address, loading } = useAsync(getSecureItem, ['address'])
@@ -51,10 +47,9 @@ const ActivityCardListView = ({ isResetting, data, status }: Props) => {
     [amount],
   )
 
-  const requestMore = useCallback(
-    () => dispatch(activitySlice.actions.requestMoreActivity()),
-    [dispatch],
-  )
+  const requestMore = useCallback(() => {
+    dispatch(activitySlice.actions.requestMoreActivity())
+  }, [dispatch])
 
   type Item = {
     item: AnyTransaction | PendingTransaction
@@ -66,6 +61,7 @@ const ActivityCardListView = ({ isResetting, data, status }: Props) => {
       const isLast = () => {
         return !!data && index === data?.length - 1
       }
+
       return (
         <ActivityItem
           hash={(item as AddGatewayV1).hash}
@@ -93,7 +89,8 @@ const ActivityCardListView = ({ isResetting, data, status }: Props) => {
 
   const keyExtractor = useCallback(
     (item: AnyTransaction | PendingTransaction) => {
-      return (item as AddGatewayV1).hash
+      const txn = item as PendingTransaction
+      return `${txn.hash}${txn.status}`
     },
     [],
   )
@@ -112,13 +109,8 @@ const ActivityCardListView = ({ isResetting, data, status }: Props) => {
   }, [m])
 
   const footer = useMemo(
-    () => (
-      <ActivityCardLoading
-        isLoading={isResetting || (status === 'pending' && !data?.length)}
-        hasNoResults={status === 'fulfilled' && data && data.length === 0}
-      />
-    ),
-    [data, isResetting, status],
+    () => <ActivityCardLoading hasNoResults={hasNoResults} />,
+    [hasNoResults],
   )
 
   if (loading) return null
@@ -136,24 +128,4 @@ const ActivityCardListView = ({ isResetting, data, status }: Props) => {
   )
 }
 
-export default memo(ActivityCardListView, (prevProps, nextProps) => {
-  const lengthEqual = prevProps.data.length === nextProps.data.length
-
-  if (!lengthEqual) {
-    return false
-  }
-
-  prevProps.data.forEach((txn, index) => {
-    const prevTxn = txn as PendingTransaction
-    const nextTxn = nextProps.data[index] as PendingTransaction
-
-    const hashEqual = nextTxn.hash === prevTxn.hash
-    const statusEqual = nextTxn.status === prevTxn.status
-
-    if (!hashEqual || !statusEqual) {
-      return false
-    }
-  })
-
-  return true
-})
+export default memo(ActivityCardListView)

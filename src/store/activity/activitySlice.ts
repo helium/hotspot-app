@@ -5,6 +5,11 @@ import { initFetchers, txnFetchers } from '../../utils/appDataClient'
 import { FilterType } from '../../features/wallet/root/walletTypes'
 
 export type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
+export type ActivityViewState =
+  | 'init'
+  | 'reset'
+  | 'no_activity'
+  | 'has_activity'
 
 export type ActivityState = {
   txns: {
@@ -16,8 +21,8 @@ export type ActivityState = {
   }
   filter: FilterType
   detailTxn?: AnyTransaction | PendingTransaction
-  isResetting: boolean
   requestMore: boolean
+  activityViewState: ActivityViewState
 }
 
 const initialState: ActivityState = {
@@ -29,26 +34,25 @@ const initialState: ActivityState = {
     pending: { data: [], status: 'idle' },
   },
   filter: 'all',
-  isResetting: false,
   requestMore: false,
+  activityViewState: 'init',
 }
 
+export const ACTIVITY_FETCH_SIZE = 50
+
+type FetchTxns = { filter: FilterType; reset?: boolean }
 export const fetchTxns = createAsyncThunk<
   AnyTransaction[] | PendingTransaction[],
-  FilterType
->('activity/fetchAccountActivity', async (filter) => {
-  const list = txnFetchers[filter]
-  return list.takeJSON(filter === 'pending' ? 1000 : 50)
-})
-
-export const resetTxns = createAsyncThunk(
-  'activity/resetTxns',
-  async (_, { dispatch }) => {
-    dispatch(activitySlice.actions.resetTxns())
+  FetchTxns
+>('activity/fetchAccountActivity', async ({ filter, reset }, { dispatch }) => {
+  if (reset) {
     await initFetchers()
-    dispatch(activitySlice.actions.finishReset())
-  },
-)
+    dispatch(activitySlice.actions.resetTxnStatuses(filter))
+  }
+
+  const list = txnFetchers[filter]
+  return list.takeJSON(filter === 'pending' ? 1000 : ACTIVITY_FETCH_SIZE)
+})
 
 const activitySlice = createSlice({
   name: 'activity',
@@ -59,6 +63,19 @@ const activitySlice = createSlice({
     },
     requestMoreActivity: (state) => {
       state.requestMore = true
+    },
+    resetTxnStatuses: (state, action: PayloadAction<FilterType>) => {
+      if (state.activityViewState !== 'init') {
+        state.activityViewState = 'reset'
+      }
+      Object.keys(state.txns).forEach((key) => {
+        const filterType = key as FilterType
+        if (filterType !== 'pending' && filterType !== action.payload) {
+          // Don't reset pending, it updates on an interval, and we clear it manually
+          // Don't reset the requested filter type. We want that one to stay pending
+          state.txns[filterType].status = 'idle'
+        }
+      })
     },
     addPendingTransaction: (
       state,
@@ -75,36 +92,61 @@ const activitySlice = createSlice({
     clearDetailTxn: (state) => {
       return { ...state, detailTxn: undefined }
     },
-    resetTxns: (state) => {
-      state.isResetting = true
-      Object.keys(state.txns).forEach((key) => {
-        const filterType = key as FilterType
-        if (filterType !== 'pending') {
-          // Don't reset pending, we will clear it manually
-          state.txns[filterType].data = []
-        }
-      })
-    },
-    finishReset: (state) => {
-      state.isResetting = false
-    },
     signOut: () => {
       return { ...initialState }
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchTxns.pending, (state, { meta: { arg: filter } }) => {
-      state.txns[filter].status = 'pending'
-    })
-    builder.addCase(fetchTxns.rejected, (state, { meta: { arg: filter } }) => {
-      state.requestMore = false
-      state.txns[filter].status = 'rejected'
-    })
+    builder.addCase(
+      fetchTxns.pending,
+      (
+        state,
+        {
+          meta: {
+            arg: { filter },
+          },
+        },
+      ) => {
+        state.txns[filter].status = 'pending'
+      },
+    )
+    builder.addCase(
+      fetchTxns.rejected,
+      (
+        state,
+        {
+          meta: {
+            arg: { filter },
+          },
+        },
+      ) => {
+        state.requestMore = false
+        state.txns[filter].status = 'rejected'
+      },
+    )
     builder.addCase(
       fetchTxns.fulfilled,
-      (state, { payload, meta: { arg: filter } }) => {
+      (
+        state,
+        {
+          payload,
+          meta: {
+            arg: { filter, reset },
+          },
+        },
+      ) => {
         state.requestMore = false
         state.txns[filter].status = 'fulfilled'
+
+        if (reset && state.filter === filter) {
+          Object.keys(state.txns).forEach((key) => {
+            const filterType = key as FilterType
+            if (filterType !== 'pending') {
+              // Don't reset pending, we will clear it manually
+              state.txns[filterType].data = []
+            }
+          })
+        }
 
         if (payload.length === 0) return
 
@@ -127,6 +169,18 @@ const activitySlice = createSlice({
             'hash',
           )
           state.txns.pending.data = nextPending
+
+          // Determine if the user has any activity data
+          let hasData = false
+          Object.keys(state.txns).every((key) => {
+            const filterType = key as FilterType
+            const { data } = state.txns[filterType]
+            if (data.length > 0) {
+              hasData = true
+            }
+            return !hasData
+          })
+          state.activityViewState = hasData ? 'has_activity' : 'no_activity'
         }
       },
     )
