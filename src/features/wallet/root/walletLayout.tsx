@@ -16,7 +16,7 @@ export const withWalletLayout = (WrappedComponent: any) => (props: any) => {
           altCurrencyHeight: 60,
           navbarHeight: 49,
           bottomHeight: insets?.bottom || 0,
-          cardHandleHeight: 82,
+          cardHandleHeight: 14,
         }
 
         const walletAnimationPoints = {
@@ -38,7 +38,7 @@ export const withWalletLayout = (WrappedComponent: any) => (props: any) => {
             walletLayout.chartHeight -
             walletLayout.balanceHeight -
             walletLayout.cardHandleHeight,
-          dragMin: 0.1,
+          dragMin: 34,
         }
         return (
           <WrappedComponent

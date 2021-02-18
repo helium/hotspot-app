@@ -7,6 +7,7 @@ import Text from './Text'
 import { Colors, Theme } from '../theme/theme'
 import TouchableOpacityBox from './TouchableOpacityBox'
 import Box from './Box'
+import WithDebounce from './WithDebounce'
 
 type Props = BoxProps<Theme> & {
   mode?: 'text' | 'contained'
@@ -86,3 +87,5 @@ const Button = ({
 }
 
 export default Button
+
+export const DebouncedButton = WithDebounce(Button)

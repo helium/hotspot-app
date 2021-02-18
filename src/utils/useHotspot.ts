@@ -4,7 +4,11 @@ import validator from 'validator'
 import compareVersions from 'compare-versions'
 import { Balance, CurrencyType } from '@helium/currency'
 import { useSelector } from 'react-redux'
-import { Transaction } from '@helium/transactions'
+import {
+  AddGatewayV1,
+  AssertLocationV1,
+  Transaction,
+} from '@helium/transactions'
 import { useBluetoothContext } from '../providers/BluetoothProvider'
 import {
   FirmwareCharacteristic,
@@ -19,15 +23,10 @@ import {
   encodeAddGateway,
   encodeAssertLoc,
 } from './bluetooth/bluetoothDataParser'
-import {
-  getCurrentOraclePrice,
-  getHotspotDetails,
-  submitTransaction,
-} from './appDataClient'
+import { getCurrentOraclePrice, getHotspotDetails } from './appDataClient'
 import { getSecureItem } from './secureAccount'
 import { makeAddGatewayTxn, makeAssertLocTxn } from './transactions'
 import { calculateAddGatewayFee, calculateAssertLocFee } from './fees'
-import accountSlice from '../store/account/accountSlice'
 import connectedHotspotSlice, {
   fetchHotspotDetails,
   HotspotName,
@@ -37,8 +36,10 @@ import connectedHotspotSlice, {
 import { useAppDispatch } from '../store/store'
 import { RootState } from '../store/rootReducer'
 import * as Logger from './logger'
+import useSubmitTxn from '../hooks/useSubmitTxn'
 
 const useHotspot = () => {
+  const submitTxn = useSubmitTxn()
   const connectedHotspot = useRef<Device | null>(null)
   const [availableHotspots, setAvailableHotspots] = useState<
     Record<string, Device>
@@ -343,34 +344,24 @@ const useHotspot = () => {
     const { value } = await readCharacteristic(characteristic)
     if (!value) return false
 
-    // TODO: Is this needed? What should we do if wait is detected?
-    // if (decodedValue.length < 20) {
-    //   if (decodedValue === 'wait') {
-    //     const message = t('hotspot_setup.add_hotspot.wait_error_body')
-    //     const title = t('hotspot_setup.add_hotspot.wait_error_title')
-    //     alertError(message, title)
-    //   } else {
-    //     alertError(`Got error code ${decodedValue} from add_gw`)
-    //   }
-    //   Logger.error(
-    //     new Error(`Got error code ${decodedValue} from add_gw`),
-    //   )
-    //   return null
-    // }
+    if (value.length < 20) {
+      Logger.error(new Error(`Got error code ${value} from add_gw`))
+      return value
+    }
 
     const txn = await makeAddGatewayTxn(value)
 
-    const stakingServerSignedTxn = await getStakingSignedTransaction(
+    const stakingServerSignedTxnStr = await getStakingSignedTransaction(
       connectedHotspotDetails.onboardingAddress,
-      txn,
+      txn.toString(),
+    )
+
+    const stakingServerSignedTxn = AddGatewayV1.fromString(
+      stakingServerSignedTxnStr,
     )
 
     try {
-      const pendingTransaction = await submitTransaction(stakingServerSignedTxn)
-      pendingTransaction.txn = { fee }
-      pendingTransaction.status = 'pending'
-      pendingTransaction.type = 'add_gateway_v1'
-      dispatch(accountSlice.actions.addPendingTransaction(pendingTransaction))
+      const pendingTransaction = await submitTxn(stakingServerSignedTxn)
       return !!pendingTransaction
     } catch (error) {
       Logger.error(error)
@@ -417,17 +408,17 @@ const useHotspot = () => {
 
     const txn = await makeAssertLocTxn(value)
 
-    const stakingServerSignedTxn = await getStakingSignedTransaction(
+    const stakingServerSignedTxnStr = await getStakingSignedTransaction(
       connectedHotspotDetails.onboardingAddress,
-      txn,
+      txn.toString(),
+    )
+
+    const stakingServerSignedTxn = AssertLocationV1.fromString(
+      stakingServerSignedTxnStr,
     )
 
     try {
-      const pendingTransaction = await submitTransaction(stakingServerSignedTxn)
-      pendingTransaction.txn = { fee }
-      pendingTransaction.status = 'pending'
-      pendingTransaction.type = 'assert_location_v1'
-      dispatch(accountSlice.actions.addPendingTransaction(pendingTransaction))
+      const pendingTransaction = await submitTxn(stakingServerSignedTxn)
       return !!pendingTransaction
     } catch (error) {
       Logger.error(error)

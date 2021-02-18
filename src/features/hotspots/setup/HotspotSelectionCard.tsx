@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import Card from '../../../components/Card'
-import TouchableHighlightBox from '../../../components/TouchableHighlightBox'
+import { DebouncedTouchableHighlightBox } from '../../../components/TouchableHighlightBox'
 import Box from '../../../components/Box'
 import Hotspot from '../../../assets/images/hotspot.svg'
 import RAK from '../../../assets/images/rak.svg'
@@ -46,7 +46,7 @@ const HotspotSelectionCard = ({ hotspotType }: Props) => {
 
   return (
     <Card flex={1} variant="elevated" backgroundColor="white" margin="xs">
-      <TouchableHighlightBox
+      <DebouncedTouchableHighlightBox
         height="100%"
         width="100%"
         borderRadius="m"
@@ -71,7 +71,7 @@ const HotspotSelectionCard = ({ hotspotType }: Props) => {
             {t(`hotspot_setup.selection.${hotspotType.toLowerCase()}`)}
           </Text>
         </>
-      </TouchableHighlightBox>
+      </DebouncedTouchableHighlightBox>
     </Card>
   )
 }

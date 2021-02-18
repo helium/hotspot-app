@@ -1,20 +1,13 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { ActivityIndicator } from 'react-native'
 import Text from '../../../../components/Text'
 
 const ActivityCardLoading = ({
-  isLoading = false,
   hasNoResults = false,
 }: {
-  isLoading?: boolean
   hasNoResults?: boolean
 }) => {
   const { t } = useTranslation()
-
-  if (isLoading) {
-    return <ActivityIndicator />
-  }
 
   if (hasNoResults) {
     return (

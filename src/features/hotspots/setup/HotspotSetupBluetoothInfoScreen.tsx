@@ -3,7 +3,7 @@ import { Linking, Platform } from 'react-native'
 import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import BackScreen from '../../../components/BackScreen'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import Text from '../../../components/Text'
 import {
   HotspotSetupNavigationProp,
@@ -99,7 +99,7 @@ const HotspotSetupBluetoothInfoScreen = () => {
         {t(`hotspot_setup.pair.${hotspotType.toLowerCase()}_subtitle_2`)}
       </Text>
       <Box flex={1} width="100%" justifyContent="flex-end">
-        <Button
+        <DebouncedButton
           width="100%"
           variant="primary"
           mode="contained"

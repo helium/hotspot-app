@@ -3,13 +3,13 @@ import {
   Modal,
   Animated,
   Easing,
-  LayoutAnimation,
   KeyboardAvoidingView,
   Alert,
 } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import animalName from 'angry-purple-tiger'
+import { Hotspot } from '@helium/http'
 import BlurBox from '../../../components/BlurBox'
 import Card from '../../../components/Card'
 import Text from '../../../components/Text'
@@ -33,10 +33,11 @@ import hotspotDetailsSlice from '../../../store/hotspotDetails/hotspotDetailsSli
 import { useHotspotSettingsContext } from './HotspotSettingsProvider'
 import Box from '../../../components/Box'
 import BackButton from '../../../components/BackButton'
+import animateTransition from '../../../utils/animateTransition'
 
 type State = 'init' | 'scan' | 'transfer'
 
-const HotspotSettings = () => {
+const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
   const { t } = useTranslation()
   const [settingsState, setSettingsState] = useState<State>('init')
   const [title, setTitle] = useState<string>(t('hotspot_settings.title'))
@@ -47,7 +48,7 @@ const HotspotSettings = () => {
   const { showBack, goBack, disableBack } = useHotspotSettingsContext()
 
   const {
-    hotspotDetails: { hotspot, showSettings },
+    hotspotDetails: { showSettings },
   } = useSelector((state: RootState) => state)
 
   useEffect(() => {
@@ -66,7 +67,7 @@ const HotspotSettings = () => {
   }, [showSettings])
 
   const setNextState = (s: State) => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+    animateTransition()
     setSettingsState(s)
   }
 
@@ -211,9 +212,9 @@ const HotspotSettings = () => {
         left={0}
         bottom={0}
         right={0}
-        tint="dark"
+        blurAmount={70}
+        blurType="dark"
         position="absolute"
-        intensity={97}
       />
 
       <SafeAreaBox

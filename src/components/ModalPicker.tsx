@@ -1,6 +1,6 @@
-import React, { memo, ReactText, useRef } from 'react'
+import React, { memo, ReactText, useRef, useMemo } from 'react'
 import RNPickerSelect from 'react-native-picker-select'
-import CarotDown from '@assets/images/carot-down.svg'
+import CarotDown from '@assets/images/carot-down-picker.svg'
 import { BoxProps } from '@shopify/restyle'
 import { Platform } from 'react-native'
 import Box from './Box'
@@ -13,6 +13,7 @@ type Props = BoxProps<Theme> & {
   selectedValue: string
   onValueChanged: (itemValue: ReactText, itemIndex: number) => void
   prefix?: string
+  minWidth?: number
 }
 
 const ModalPicker = ({
@@ -20,12 +21,43 @@ const ModalPicker = ({
   selectedValue,
   onValueChanged,
   prefix,
+  minWidth,
   ...boxProps
 }: Props) => {
   const textVariants = useTextVariants()
   const { purpleMain } = useColors()
   const pickerRef = useRef<RNPickerSelect>(null)
 
+  const touchableProps = useMemo(() => ({ activeOpacity: 0.35, minWidth }), [
+    minWidth,
+  ])
+  const pickerStyle = useMemo(
+    () => ({
+      iconContainer: {
+        padding: 10,
+        top: Platform.OS === 'android' ? 12 : 8,
+      },
+      inputIOSContainer: {
+        paddingRight: 24,
+      },
+      inputAndroidContainer: {
+        paddingRight: 16,
+      },
+      inputIOS: {
+        ...textVariants.h4,
+        color: purpleMain,
+        paddingVertical: 8,
+      },
+      inputAndroid: {
+        ...textVariants.h4,
+        color: purpleMain,
+        paddingVertical: 8,
+      },
+      viewContainer: { minWidth },
+    }),
+    [purpleMain, textVariants.h4, minWidth],
+  )
+  const placeholder = {}
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
     <Box flexDirection="row" alignItems="center" {...boxProps}>
@@ -40,31 +72,10 @@ const ModalPicker = ({
       )}
       <RNPickerSelect
         ref={pickerRef}
-        placeholder={{}}
-        touchableWrapperProps={{ activeOpacity: 0.35 }}
+        placeholder={placeholder}
+        touchableWrapperProps={touchableProps}
         Icon={CarotDown}
-        style={{
-          iconContainer: {
-            padding: 10,
-            top: Platform.OS === 'android' ? 12 : 8,
-          },
-          inputIOSContainer: {
-            paddingRight: 24,
-          },
-          inputAndroidContainer: {
-            paddingRight: 16,
-          },
-          inputIOS: {
-            ...textVariants.h4,
-            color: purpleMain,
-            paddingVertical: 8,
-          },
-          inputAndroid: {
-            ...textVariants.h4,
-            color: purpleMain,
-            paddingVertical: 8,
-          },
-        }}
+        style={pickerStyle}
         items={data}
         value={selectedValue}
         onValueChange={onValueChanged}

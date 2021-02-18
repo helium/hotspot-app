@@ -11,6 +11,11 @@ export const useSpacing = () => {
   return spacing
 }
 
+export const useBorderRadii = () => {
+  const { borderRadii } = useTheme<Theme>()
+  return borderRadii
+}
+
 export const useTextVariants = () => {
   const { textVariants } = useTheme<Theme>()
   return textVariants

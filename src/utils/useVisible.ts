@@ -1,42 +1,60 @@
 import { useNavigation } from '@react-navigation/native'
-import { useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../store/rootReducer'
 import usePrevious from './usePrevious'
 
-type Props = { onAppear?: () => void; onDisappear: () => void }
-const useVisible = ({ onAppear, onDisappear }: Props) => {
+type Props = { onAppear?: () => void; onDisappear?: () => void }
+const useVisible = (props?: Props) => {
+  const { onAppear, onDisappear } = props || {}
   const {
     app: { appStateStatus },
   } = useSelector((state: RootState) => state)
   const navigation = useNavigation()
   const prevAppState = usePrevious(appStateStatus)
+  const [visible, setVisible] = useState(false)
+
+  const handleVisibility = useCallback(
+    (isVisible: boolean) => {
+      setVisible(isVisible)
+      if (isVisible) {
+        onAppear?.()
+      } else {
+        onDisappear?.()
+      }
+    },
+    [onDisappear, onAppear],
+  )
 
   useEffect(() => {
     if (appStateStatus === 'background' && prevAppState !== 'background') {
-      onDisappear?.()
+      handleVisibility(false)
     }
 
     if (appStateStatus === 'active' && prevAppState === 'background') {
-      onAppear?.()
+      handleVisibility(true)
     }
-  }, [appStateStatus, prevAppState, onAppear, onDisappear])
+  }, [appStateStatus, handleVisibility, prevAppState])
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
-      onDisappear?.()
+      handleVisibility(false)
     })
 
     return unsubscribe
-  }, [navigation, onDisappear])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handleVisibility])
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      onAppear?.()
+      handleVisibility(true)
     })
 
     return unsubscribe
-  }, [navigation, onAppear])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handleVisibility])
+
+  return visible
 }
 
 export default useVisible

@@ -1,37 +1,51 @@
-import React, { useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Box from '../../../components/Box'
 import Bars from '../../../assets/images/bars.svg'
 import ModalPicker from '../../../components/ModalPicker'
 
 type Props = {
-  index: number
-  onTimelineChanged: (value: string, index: number) => void
+  index?: number
+  onTimelineChanged?: (value: number) => void
 }
 
-const TimelinePicker = ({ index, onTimelineChanged }: Props) => {
+const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
   const { t } = useTranslation()
-  const options: Array<string> = t('hotspot_details.picker_options', {
-    returnObjects: true,
-  })
-  const [selectedValue, setSelectedValue] = useState(options[index])
+
+  const data = useMemo(() => {
+    const values = ['1', '7', '14', '30']
+    const labels: string[] = t('hotspot_details.picker_options', {
+      returnObjects: true,
+    })
+
+    return labels.map((label, i) => ({ label, value: values[i] }))
+  }, [t])
+
+  const [selectedOption, setSelectedOption] = useState(data[index])
+
+  const handleValueChanged = useCallback(
+    (value, i) => {
+      setSelectedOption(data[i])
+      onTimelineChanged?.(parseInt(data[i].value, 10))
+    },
+    [data, onTimelineChanged],
+  )
+
   return (
     <Box
       flexDirection="row"
       alignItems="center"
       marginVertical="m"
       width="100%"
+      paddingHorizontal="l"
     >
       <Bars />
       <ModalPicker
         marginHorizontal="xs"
         prefix={t('hotspot_details.picker_title')}
-        data={options.map((value) => ({ label: value, value }))}
-        selectedValue={selectedValue}
-        onValueChanged={(_value, i) => {
-          setSelectedValue(options[i])
-          onTimelineChanged(options[i], i)
-        }}
+        data={data}
+        selectedValue={selectedOption.value}
+        onValueChanged={handleValueChanged}
       />
     </Box>
   )

@@ -140,14 +140,6 @@ export default {
       fine_print:
         'RAK Hotspot Miners have special firmware preloaded by RAK. Double check your hardware is a RAK Hotspot Miner before proceeding.',
     },
-    start: {
-      title: 'Set up Hotspot',
-      subtitle:
-        'Hotspots allow you to earn HNT by building out The People’s Network.',
-      info: 'How does this work? ⓘ',
-      next: "Let's get started",
-      not_now: 'Not right now',
-    },
     education: {
       title: 'Placing\nyour Hotspot.',
       cards: [
@@ -323,6 +315,10 @@ export default {
       wait_error_title: 'Please Try Again',
       wait_error_body:
         'Hotspot miner is waiting to start. Please try again in a few minutes.',
+      add_hotspot_error_body:
+        'There was an error constructing the Add Hotspot transaction. Please try again.',
+      assert_loc_error_body:
+        'There was an error constructing the Assert Location transaction. Please try again.',
     },
     enable_location: {
       title: 'Set Hotspot\nLocation',
@@ -451,6 +447,19 @@ export default {
     error: 'There was an error submitting this transaction. Please try again.',
     hotspot_label: 'Hotspot',
     last_activity: 'LAST REPORTED ACTIVITY: {{activity}}',
+    label_error: 'You do not have enough HNT in your account.',
+    scan: {
+      title: 'Ways to use a QR Code',
+      send: 'Send HNT',
+      send_description: 'Quickly scan a Helium address to send HNT.',
+      burn: 'Burn HNT to DC',
+      burn_description:
+        'HNT can be burned into Data Credits to pay for device network connectivity. DCs are non-transferable.',
+      view: 'View QR Code',
+      view_description:
+        'Share your QR Code to deposit or receive HNT from others.',
+      learn_more: 'Learn More',
+    },
   },
   more: {
     title: 'Settings',
@@ -474,6 +483,8 @@ export default {
       learn: {
         title: 'Learn',
         tokenEarnings: 'Token Earnings',
+        heliumtoken: 'Helium Token',
+        coverage: 'Network Coverage',
         hotspotPlacement: 'Hotspot Placement',
         support: 'Support',
         troubleshooting: 'Troubleshooting',
@@ -482,7 +493,6 @@ export default {
       account: {
         title: 'Account',
         language: 'Language',
-        units: 'Units',
         signOut: 'Sign Out',
         signOutAlert: {
           title: 'Warning!',
@@ -530,6 +540,7 @@ export default {
     day_header: 'Good\n{{timeOfDay}}.',
   },
   notifications: {
+    tapToReadMore: 'Tap to read more',
     share: 'SHARE',
     list: { title: 'Notifications' },
     none: {
@@ -644,6 +655,7 @@ export default {
   hotspot_details: {
     title: 'Hotspot Details',
     owner: 'Owned by {{address}}',
+    owner_you: 'Owned by you',
     pass_rate: 'PASS RATE',
     reward_title: 'HNT Rewards',
     witness_title: 'Average Witnesses',
@@ -715,5 +727,62 @@ export default {
       data_credits: 'Packet Transfer',
       securities: 'Security Tokens',
     },
+  },
+  checklist: {
+    title: 'Checklist',
+    blocks: {
+      not:
+        'Hotspots must be fully synced before they can mine. New Hotspots can take up to 48 hours to sync.',
+      full: 'Hotspot is fully synced.',
+      partial:
+        'Hotspot is {{count}} block behind the Helium blockchain and is roughly {{percent}}% synced.',
+      partial_plural:
+        'Hotspot is {{count}} blocks behind the Helium blockchain and is roughly {{percent}}% synced.',
+      title: 'Sync to Blockchain',
+    },
+    status: {
+      online: 'Hotspot is connect to the internet.',
+      offline:
+        'Hotspot is not online. Hotspots must be online to sync and mine.',
+      title: 'Hotspot Status',
+    },
+    challenger: {
+      success: 'Hotspot issued a challenge {{count}} block ago.',
+      success_plural: 'Hotspot issued a challenge {{count}} blocks ago.',
+      fail:
+        "Hotspot hasn't issued a challenge yet. Hotspots create challenges automatically.",
+      title: 'Create a Challenge',
+    },
+    challenge_witness: {
+      success: 'Hotspot has witnessed a challenge recently.',
+      fail: 'Your Hotspot will listen for challenges from nearby Hotspots.',
+      title: 'Witness a Challenge',
+    },
+    witness: {
+      success: 'This Hotspot has {{count}} Hotspot in its witness list.',
+      success_plural:
+        'This Hotspot has {{count}} Hotspots in its witness list.',
+      fail:
+        'No witnesses yet. Newly added Hotspots may take a few days to populate their witnesses.',
+      title: 'Witness List',
+    },
+    challengee: {
+      success: 'Hotspot last participated in a challenge {{count}} block ago.',
+      success_plural:
+        'Hotspot last participated in a challenge {{count}} blocks ago.',
+      fail:
+        'It can take a few hours to pass a challenge once a witness list is created.',
+      title: 'Pass a Challenge',
+    },
+    data_transfer: {
+      success: 'Hotspot has transferred data packets recently.',
+      fail:
+        "Hotspots automatically transfer device data and earn HNT. This Hotspot hasn't transferred data yet.",
+      title: 'Transfer Data',
+    },
+    auto: 'AUTO',
+    auto_hours: 'EVERY FEW HOURS',
+    complete: 'COMPLETE',
+    online: 'ONLINE',
   },
 }

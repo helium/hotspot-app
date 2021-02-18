@@ -3,7 +3,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { ScrollView } from 'react-native'
 import BackScreen from '../../../components/BackScreen'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import Text from '../../../components/Text'
 import TextTransform from '../../../components/TextTransform'
 import {
@@ -56,7 +56,7 @@ const HotspotSetupDiagnosticsScreen = () => {
           i18nKey={diagnosticTextKey()}
         />
       </ScrollView>
-      <Button
+      <DebouncedButton
         variant="primary"
         mode="contained"
         title={t('generic.understand')}

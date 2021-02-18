@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useEffect } from 'react'
+import React, { useCallback, useMemo, useEffect, memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, SectionList } from 'react-native'
 import { useSelector } from 'react-redux'
@@ -28,6 +28,8 @@ import DiscordItem from './DiscordItem'
 import AppInfoItem from './AppInfoItem'
 import activitySlice from '../../../store/activity/activitySlice'
 import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
+import { SUPPORTED_LANGUAGUES } from '../../../utils/i18n'
+import { useLanguageContext } from '../../../providers/LanguageProvider'
 
 type Route = RouteProp<RootStackParamList & MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
@@ -37,7 +39,7 @@ const MoreScreen = () => {
   const { version } = useDevice()
   const { app } = useSelector((state: RootState) => state)
   const authIntervals = useAuthIntervals()
-
+  const { changeLanguage, language } = useLanguageContext()
   const navigation = useNavigation<MoreNavigationProp & RootNavigationProp>()
   const spacing = useSpacing()
 
@@ -128,6 +130,13 @@ const MoreScreen = () => {
     )
   }, [t, dispatch])
 
+  const handleLanguageChange = useCallback(
+    (lng: string) => {
+      changeLanguage(lng)
+    },
+    [changeLanguage],
+  )
+
   const handleIntervalSelected = useCallback(
     (value: string) => {
       dispatch(appSlice.actions.updateAuthInterval(parseInt(value, 10)))
@@ -194,15 +203,16 @@ const MoreScreen = () => {
         data: [
           {
             title: t('more.sections.learn.tokenEarnings'),
-            openUrl: 'https://docs.helium.com',
+            openUrl:
+              'https://docs.helium.com/blockchain/mining/#how-do-hotspots-earn-helium-tokens',
           },
           {
-            title: t('more.sections.learn.hotspotPlacement'),
-            openUrl: 'https://docs.helium.com',
+            title: t('more.sections.learn.heliumtoken'),
+            openUrl: 'https://docs.helium.com/blockchain/helium-token',
           },
           {
-            title: t('more.sections.learn.support'),
-            openUrl: 'https://docs.helium.com',
+            title: t('more.sections.learn.coverage'),
+            openUrl: 'https://explorer.helium.com/coverage',
           },
           {
             title: t('more.sections.learn.troubleshooting'),
@@ -217,16 +227,10 @@ const MoreScreen = () => {
         data: [
           {
             title: t('more.sections.account.language'),
+            value: language,
             select: {
-              items: [{ label: 'English', value: 'English' }],
-              onValueSelect: () => {},
-            },
-          },
-          {
-            title: t('more.sections.account.units'),
-            select: {
-              items: [{ label: 'Metric', value: 'Metric' }],
-              onValueSelect: () => {},
+              items: SUPPORTED_LANGUAGUES,
+              onValueSelect: handleLanguageChange,
             },
           },
           {
@@ -249,6 +253,8 @@ const MoreScreen = () => {
     authIntervals,
     handleIntervalSelected,
     handleRevealWords,
+    handleLanguageChange,
+    language,
   ])
 
   return (
@@ -291,4 +297,4 @@ const MoreScreen = () => {
   )
 }
 
-export default MoreScreen
+export default memo(MoreScreen)

@@ -14,6 +14,7 @@ const palette = {
   blueLight: '#51AEFF',
   blueMain: '#4BABFF',
   blueDark: '#232E39',
+  blueChecklist: '#474DFF',
 
   grayLight: '#DADADA',
   grayExtraLight: '#788AB4',
@@ -47,6 +48,8 @@ const palette = {
   greenMain: '#32C48D',
   greenDark: '#13162E',
   greenOnline: '#29D344',
+  greenDarkText: '#1B875E',
+  greenChecklist: '#26D694',
 
   orange: '#FF852F',
   yellow: '#FFCB46',

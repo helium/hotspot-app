@@ -10,8 +10,6 @@ PODS:
     - UMPermissionsInterface
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
-  - EXBlur (8.2.2):
-    - UMCore
   - EXConstants (9.2.0):
     - UMConstantsInterface
     - UMCore
@@ -59,8 +57,8 @@ PODS:
     - OpenSSL-Universal (= 1.0.2.20)
   - Flipper-Glog (0.3.6)
   - Flipper-PeerTalk (0.0.4)
-  - Flipper-RSocket (1.1.0):
-    - Flipper-Folly (~> 2.2)
+  - Flipper-RSocket (1.1.1):
+    - Flipper-Folly (~> 2.3)
   - FlipperKit (0.54.0):
     - FlipperKit/Core (= 0.54.0)
   - FlipperKit/Core (0.54.0):
@@ -284,6 +282,8 @@ PODS:
   - react-native-ble-plx (2.0.2):
     - MultiplatformBleAdapter (= 0.1.7)
     - React
+  - react-native-blur (0.8.0):
+    - React
   - react-native-config (1.4.2):
     - react-native-config/App (= 1.4.2)
   - react-native-config/App (1.4.2):
@@ -388,7 +388,7 @@ PODS:
     - React-Core
   - RNLocalize (1.4.3):
     - React-Core
-  - RNReanimated (2.0.0-rc.2):
+  - RNReanimated (2.0.0-rc.3):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -419,14 +419,14 @@ PODS:
     - Yoga
   - RNScreens (2.17.1):
     - React-Core
-  - RNSentry (2.1.1):
+  - RNSentry (2.2.0):
     - React-Core
-    - Sentry (= 6.0.9)
+    - Sentry (= 6.1.4)
   - RNSVG (12.1.0):
     - React
-  - Sentry (6.0.9):
-    - Sentry/Core (= 6.0.9)
-  - Sentry/Core (6.0.9)
+  - Sentry (6.1.4):
+    - Sentry/Core (= 6.1.4)
+  - Sentry/Core (6.1.4)
   - UMAppLoader (1.3.0)
   - UMBarCodeScannerInterface (5.3.0)
   - UMCameraInterface (5.3.0)
@@ -456,7 +456,6 @@ PODS:
 DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXBarCodeScanner (from `../node_modules/expo-barcode-scanner/ios`)
-  - EXBlur (from `../node_modules/expo-blur/ios`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
   - EXFileSystem (from `../node_modules/expo-file-system/ios`)
   - EXHaptics (from `../node_modules/expo-haptics/ios`)
@@ -470,7 +469,7 @@ DEPENDENCIES:
   - FBReactNativeSpec (from `../node_modules/react-native/Libraries/FBReactNativeSpec`)
   - Flipper (~> 0.54.0)
   - Flipper-DoubleConversion (= 1.1.7)
-  - Flipper-Folly (~> 2.2)
+  - Flipper-Folly (= 2.3.0)
   - Flipper-Glog (= 0.3.6)
   - Flipper-PeerTalk (~> 0.0.4)
   - Flipper-RSocket (~> 1.1)
@@ -505,6 +504,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - react-native-ble-plx (from `../node_modules/react-native-ble-plx`)
+  - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - react-native-config (from `../node_modules/react-native-config`)
   - "react-native-mapbox-gl (from `../node_modules/@react-native-mapbox-gl/maps`)"
   - react-native-onesignal (from `../node_modules/react-native-onesignal`)
@@ -574,8 +574,6 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXBarCodeScanner:
     :path: "../node_modules/expo-barcode-scanner/ios"
-  EXBlur:
-    :path: "../node_modules/expo-blur/ios"
   EXConstants:
     :path: "../node_modules/expo-constants/ios"
   EXFileSystem:
@@ -628,6 +626,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   react-native-ble-plx:
     :path: "../node_modules/react-native-ble-plx"
+  react-native-blur:
+    :path: "../node_modules/@react-native-community/blur"
   react-native-config:
     :path: "../node_modules/react-native-config"
   react-native-mapbox-gl:
@@ -718,7 +718,6 @@ SPEC CHECKSUMS:
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXBarCodeScanner: aa1eda7595b8258471ff733acdb18f62cfd85813
-  EXBlur: 569d38c2b0b7b000866d928bc36acadfdc02ea8e
   EXConstants: f486f6b4a36b86e47ab258d4d2b7b2699786fdce
   EXFileSystem: afe9b1fd937d30270bf5108ba44e2f4a1d1ad694
   EXHaptics: 6d2e09387f0eb4d3c8dc97ae905cbea8afe33651
@@ -735,7 +734,7 @@ SPEC CHECKSUMS:
   Flipper-Folly: e4493b013c02d9347d5e0cb4d128680239f6c78a
   Flipper-Glog: 1dfd6abf1e922806c52ceb8701a3599a79a200a6
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
-  Flipper-RSocket: 64e7431a55835eb953b0bf984ef3b90ae9fdddd7
+  Flipper-RSocket: a3acb8812d6adf127deb0a5edae2793b97e6b641
   FlipperKit: ab353d41aea8aae2ea6daaf813e67496642f3d7d
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
@@ -757,6 +756,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 93bd528844ad21dc07aab1c67cb10abae6df6949
   React-jsinspector: 58aef7155bc9a9683f5b60b35eccea8722a4f53a
   react-native-ble-plx: caac53ee98151ec81198239d591c203809a1ed6e
+  react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-config: c98128a72bc2c3a1ca72caec0b021f0fa944aa29
   react-native-mapbox-gl: eec7e5be5b874cfceb79fcfe24d595411015153a
   react-native-onesignal: a69eeb12486e7739ed8f180e6ddd915be77721ba
@@ -780,11 +780,11 @@ SPEC CHECKSUMS:
   RNDeviceInfo: 9538a884f862fe4aa0d7cead9f34e292d41ba8f6
   RNGestureHandler: 9b7e605a741412e20e13c512738a31bd1611759b
   RNLocalize: 7c7aeda16c01db7a0918981c14875c0a53be9b79
-  RNReanimated: e8a1520b15df106c96214161078c69e4a23b8b29
+  RNReanimated: ca4f28c765329144d68bdad126bf6b0b1afc7a5a
   RNScreens: b6c9607e6fe47c1b6e2f1910d2acd46dd7ecea3a
-  RNSentry: 6b46b6fc1d715a378fbaa5d7d43bc9ce99b500e5
+  RNSentry: 6aeba1adc242fd22a6826acae92f430697b47a9c
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
-  Sentry: 388c9dc093b2fd3a264466a5c5b21e25959610a9
+  Sentry: 9d055e2de30a77685e86b219acf02e59b82091fc
   UMAppLoader: 5db5dc03176c6238da9c8b3657a370137882a4ad
   UMBarCodeScannerInterface: 017672479f93de88d94c3a50dfb66b5348b65989
   UMCameraInterface: 22bd2c4bf15dcf68530368fa5704af7490818457
@@ -802,6 +802,6 @@ SPEC CHECKSUMS:
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 67821afdd1454b493d392312187f191c5b601b2d
+PODFILE CHECKSUM: ab900dcea00b918a9b1ba7d83897731e7e4cc3f4
 
 COCOAPODS: 1.9.3
