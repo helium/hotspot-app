@@ -4,6 +4,7 @@ import { Linking } from 'react-native'
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
+  BottomSheetModalProvider,
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet'
 import { useTranslation } from 'react-i18next'
@@ -82,70 +83,72 @@ const ActivityDetails = ({ detailTxn }: Props) => {
   const feeStr = fee(detailTxn)
 
   return (
-    <BottomSheetModal
-      ref={sheet}
-      snapPoints={['50%', '75%']}
-      handleComponent={renderHandle}
-      backdropComponent={BottomSheetBackdrop}
-      onDismiss={onClose}
-    >
-      <BottomSheetScrollView>
-        <Box padding="l" flex={1}>
-          <Text
-            variant="medium"
-            fontSize={32}
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            color={isFee(detailTxn) ? 'blueMain' : 'greenMain'}
-            alignSelf="flex-end"
-            marginBottom={!feeStr ? 'm' : 'none'}
-          >
-            {amount(detailTxn)}
-          </Text>
-
-          {!!feeStr && (
+    <BottomSheetModalProvider>
+      <BottomSheetModal
+        ref={sheet}
+        snapPoints={['50%', '75%']}
+        handleComponent={renderHandle}
+        backdropComponent={BottomSheetBackdrop}
+        onDismiss={onClose}
+      >
+        <BottomSheetScrollView>
+          <Box padding="l" flex={1}>
             <Text
-              variant="light"
-              fontSize={15}
-              color="blueBright"
+              variant="medium"
+              fontSize={32}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              color={isFee(detailTxn) ? 'blueMain' : 'greenMain'}
               alignSelf="flex-end"
-              marginBottom="m"
+              marginBottom={!feeStr ? 'm' : 'none'}
             >
-              {`${feeStr} ${t('generic.fee')}`}
+              {amount(detailTxn)}
             </Text>
-          )}
-          <Rewards item={detailTxn} />
-          <Payment item={detailTxn} address={address || ''} />
-          <Burn item={detailTxn} address={address || ''} />
-          <HotspotTransaction item={detailTxn} address={address || ''} />
-          <UnknownTransaction item={detailTxn} />
-          {block && (
-            <TouchableOpacityBox
-              backgroundColor={backgroundColorKey(detailTxn)}
-              height={63}
-              width="100%"
-              borderRadius="ms"
-              flexDirection="row"
-              alignItems="center"
-              justifyContent="center"
-              onPress={openExplorer}
-            >
+
+            {!!feeStr && (
               <Text
-                variant="medium"
-                fontSize={16}
-                color="white"
-                marginRight="s"
+                variant="light"
+                fontSize={15}
+                color="blueBright"
+                alignSelf="flex-end"
+                marginBottom="m"
               >
-                {`${t(
-                  'activity_details.view_block',
-                )} ${block?.toLocaleString()}`}
+                {`${feeStr} ${t('generic.fee')}`}
               </Text>
-              <LinkImg />
-            </TouchableOpacityBox>
-          )}
-        </Box>
-      </BottomSheetScrollView>
-    </BottomSheetModal>
+            )}
+            <Rewards item={detailTxn} />
+            <Payment item={detailTxn} address={address || ''} />
+            <Burn item={detailTxn} address={address || ''} />
+            <HotspotTransaction item={detailTxn} address={address || ''} />
+            <UnknownTransaction item={detailTxn} />
+            {block && (
+              <TouchableOpacityBox
+                backgroundColor={backgroundColorKey(detailTxn)}
+                height={63}
+                width="100%"
+                borderRadius="ms"
+                flexDirection="row"
+                alignItems="center"
+                justifyContent="center"
+                onPress={openExplorer}
+              >
+                <Text
+                  variant="medium"
+                  fontSize={16}
+                  color="white"
+                  marginRight="s"
+                >
+                  {`${t(
+                    'activity_details.view_block',
+                  )} ${block?.toLocaleString()}`}
+                </Text>
+                <LinkImg />
+              </TouchableOpacityBox>
+            )}
+          </Box>
+        </BottomSheetScrollView>
+      </BottomSheetModal>
+    </BottomSheetModalProvider>
   )
 }
 

@@ -105,7 +105,7 @@ const ActivityCardListView = ({ data, hasNoResults }: Props) => {
   )
 
   const contentContainerStyle = useMemo(() => {
-    return { paddingHorizontal: m }
+    return { paddingHorizontal: m, paddingBottom: 100 }
   }, [m])
 
   const footer = useMemo(
