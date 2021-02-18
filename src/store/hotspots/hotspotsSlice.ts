@@ -87,7 +87,6 @@ const hotspotsSlice = createSlice({
         payload,
       }: { payload: { order: HotspotSort; currentLocation?: LocationCoords } },
     ) => {
-      // console.log('payload', payload)
       return {
         ...state,
         hotspots: hotspotSorters[payload.order](state.hotspots as Hotspot[], {
