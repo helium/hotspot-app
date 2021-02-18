@@ -1165,10 +1165,10 @@
   dependencies:
     cross-spawn "^6.0.5"
 
-"@gorhom/bottom-sheet@^3.3.0":
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-3.3.0.tgz#27b015ba6d051f09536c84c73212297aaccbf8dc"
-  integrity sha512-EK9u3VMTGnP54nb+97vVIiDYKCsEGbO77NM+nmPEFtutgup8+BXRmxscOVxq+7vR/0BqIzrOg27Bo+bIaV2hqg==
+"@gorhom/bottom-sheet@^3.3.1":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-3.3.1.tgz#54ca63c96093f8951416e6c1b32fcac07ea8fe54"
+  integrity sha512-A0DKmapIuwZO0o12Zhv0jpFn8QzM+Zu/DYIRTXvhfn6BTB3Z6syfMzVe2IptPwFsFFGeMk81aaQG89VgqMv4bA==
   dependencies:
     "@gorhom/portal" "^0.2.0"
     invariant "^2.2.4"

@@ -150,7 +150,6 @@ const HotspotDetailChart = ({
                 upColor={color}
                 downColor={grayLight}
                 labelColor={black}
-                hasDownBars={false}
               />
               <Text variant="body3" color="black" paddingTop="xs">
                 {focusedData ? focusedData.day : ' '}

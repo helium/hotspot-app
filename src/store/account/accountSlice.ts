@@ -2,6 +2,8 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { Account, Hotspot } from '@helium/http'
 import { getHotspots, getAccount } from '../../utils/appDataClient'
 import { getWallet, postWallet } from '../../utils/walletClient'
+import { ChartData, ChartRange } from '../../components/BarChart/types'
+import { FilterType } from '../../features/wallet/root/walletTypes'
 
 export type Notification = {
   account_address: string
@@ -21,12 +23,20 @@ export type Notification = {
 
 type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
 
+type ChartRangeData = { data: ChartData[]; loading: Loading }
+type ActivityChart = {
+  daily: ChartRangeData
+  weekly: ChartRangeData
+  monthly: ChartRangeData
+}
+
 export type AccountState = {
   hotspots: Hotspot[]
   notifications: Notification[]
   account?: Account
   fetchDataStatus: Loading
   markNotificationStatus: Loading
+  activityChart: ActivityChart
 }
 
 const initialState: AccountState = {
@@ -34,6 +44,11 @@ const initialState: AccountState = {
   notifications: [],
   fetchDataStatus: 'idle',
   markNotificationStatus: 'idle',
+  activityChart: {
+    daily: { data: [], loading: 'idle' },
+    weekly: { data: [], loading: 'idle' },
+    monthly: { data: [], loading: 'idle' },
+  },
 }
 
 type AccountData = {
@@ -73,6 +88,14 @@ export const markNotificationsViewed = createAsyncThunk<Notification[]>(
   },
 )
 
+type ActivityChartParams = { range: ChartRange; filterType: FilterType }
+export const fetchActivityChart = createAsyncThunk<
+  ChartData[],
+  ActivityChartParams
+>('account/fetchActivityChart', async ({ range, filterType }) => {
+  return getWallet('wallet/chart', { range, type: filterType })
+})
+
 // This slice contains data related to the user account
 const accountSlice = createSlice({
   name: 'account',
@@ -80,6 +103,9 @@ const accountSlice = createSlice({
   reducers: {
     signOut: () => {
       return { ...initialState }
+    },
+    resetActivityChart: (state) => {
+      return { ...state, activityChart: initialState.activityChart }
     },
   },
   extraReducers: (builder) => {
@@ -110,6 +136,19 @@ const accountSlice = createSlice({
     })
     builder.addCase(fetchNotifications.fulfilled, (state, { payload }) => {
       state.notifications = payload
+    })
+    builder.addCase(fetchActivityChart.pending, (state, { meta }) => {
+      state.activityChart[meta.arg.range].loading = 'pending'
+    })
+    builder.addCase(
+      fetchActivityChart.fulfilled,
+      (state, { meta, payload }) => {
+        state.activityChart[meta.arg.range].loading = 'fulfilled'
+        state.activityChart[meta.arg.range].data = payload
+      },
+    )
+    builder.addCase(fetchActivityChart.rejected, (state, { meta }) => {
+      state.activityChart[meta.arg.range].loading = 'rejected'
     })
   },
 })

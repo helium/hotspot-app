@@ -132,9 +132,6 @@ export const getHotspotActivityList = async (
   gateway: string,
   filterType: HotspotActivityType,
 ) => {
-  const address = getAddress()
-  if (!address) return
-
   const params = { filterTypes: HotspotActivityFilters[filterType] }
   return client.hotspot(gateway).activity.list(params)
 }

@@ -1,17 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, memo, useCallback, useMemo } from 'react'
 import Svg, { Text, Rect } from 'react-native-svg'
 import { PanResponder, Animated, GestureResponderEvent } from 'react-native'
-import { maxBy, clamp, max } from 'lodash'
+import { maxBy, clamp, max, some } from 'lodash'
 import { triggerImpact } from '../../utils/haptic'
 import { ChartData } from './types'
 import { useColors } from '../../theme/themeHooks'
 
 // TODO
-// scale gap between bars
-// if all downs are 0, no gap
-// split the difference between the gaps when finding the data target
-// min height, circle
-// animate in
+// animate in?
 
 type Props = {
   width: number
@@ -22,7 +18,6 @@ type Props = {
   upColor?: string
   downColor?: string
   labelColor?: string
-  hasDownBars?: boolean
 }
 
 const BarChart = ({
@@ -34,11 +29,9 @@ const BarChart = ({
   labelColor,
   upColor,
   downColor,
-  hasDownBars = true,
 }: Props) => {
   const [focusedBar, setFocusedBar] = useState<ChartData | null>(null)
   const { greenBright, blueBright, white } = useColors()
-  const barOffset = showXAxisLabel ? 20 : 0
 
   // trigger haptic feedback when the focused bar changes
   useEffect(() => {
@@ -48,45 +41,112 @@ const BarChart = ({
     onFocus(focusedBar)
   }, [focusedBar, onFocus])
 
-  // SVG maths
-  const barWidth = width / (data.length + data.length - 1)
-  const minBarHeight = barWidth
-  const maxUp = maxBy(data, 'up')?.up || minBarHeight
-  const maxDown = maxBy(data, 'down')?.down || minBarHeight
-  const maxBarHeight = hasDownBars ? maxUp + barWidth / 1.5 + maxDown : maxUp
-  const vScale = (height - barOffset) / maxBarHeight
+  // support charts that have no down values
+  const hasDownBars = useMemo(() => some(data, ({ down }) => down > 0), [data])
 
-  const barHeight = (value: number | undefined): number => {
-    if (value === 0 || value === undefined) return 0
-    return max([value * vScale, minBarHeight]) || 0
-  }
+  // pixel value of the height of x axis labels
+  const bottomOffset = useMemo(() => (showXAxisLabel ? 20 : 0), [
+    showXAxisLabel,
+  ])
+
+  // pixel value of bar width derived from container width and number of bars
+  const barWidth = useMemo(() => width / (data.length + data.length - 1), [
+    width,
+    data.length,
+  ])
+
+  // min bar height is the same as bar width to form circles
+  const minBarHeight = useMemo(() => barWidth, [barWidth])
+
+  // the pixel value of the space between up and down bars
+  const barGap = useMemo(() => (hasDownBars ? barWidth / 1.5 : 0), [
+    hasDownBars,
+    barWidth,
+  ])
+
+  // raw max up value
+  const maxUp = useMemo(() => maxBy(data, 'up')?.up || minBarHeight, [
+    data,
+    minBarHeight,
+  ])
+
+  // raw max down value
+  const maxDown = useMemo(() => maxBy(data, 'down')?.down || minBarHeight, [
+    data,
+    minBarHeight,
+  ])
+
+  // scaling factor used to turn raw values into pixel height values
+  const vScale = useMemo(() => {
+    const maxVerticalValue = hasDownBars ? maxUp + maxDown : maxUp
+    const usableHeight = height - bottomOffset - barGap
+    return usableHeight / maxVerticalValue
+  }, [height, bottomOffset, hasDownBars, maxUp, maxDown, barGap])
+
+  // pixel value of the tallest down bar
+  const maxDownBarHeight = useMemo(() => {
+    return max([maxDown * vScale, minBarHeight]) || 0
+  }, [maxDown, minBarHeight, vScale])
+
+  // pixel value of the tallest up bar
+  const maxUpBarHeight = useMemo(() => {
+    if (maxDownBarHeight === minBarHeight) {
+      return max([maxUp * vScale - minBarHeight, minBarHeight]) || 0
+    }
+    return max([maxUp * vScale, minBarHeight]) || 0
+  }, [maxDownBarHeight, maxUp, minBarHeight, vScale])
+
+  const barHeight = useCallback(
+    (value: number | undefined): number => {
+      if (value === 0 || value === undefined) return 0
+      if (
+        maxUpBarHeight === minBarHeight ||
+        maxDownBarHeight === minBarHeight
+      ) {
+        return max([value * vScale - minBarHeight, minBarHeight]) || 0
+      }
+      return max([value * vScale, minBarHeight]) || 0
+    },
+    [minBarHeight, vScale, maxUpBarHeight, maxDownBarHeight],
+  )
 
   // maps x coordinates to elements in our data
-  const findDataIndex = (xCoord: number): number =>
-    clamp(Math.floor(xCoord / (barWidth * 2)), 0, data.length)
+  const findDataIndex = useCallback(
+    (xCoord: number): number => {
+      return clamp(Math.floor(xCoord / (barWidth * 2)), 0, data.length)
+    },
+    [barWidth, data.length],
+  )
 
   // handle initial touch events to the chart that haven't
   // yet been registered by the pan responder
-  const handleTouchStart = (evt: GestureResponderEvent) => {
-    const dataIndex = findDataIndex(evt.nativeEvent.locationX)
-    setFocusedBar(data[dataIndex])
-  }
-
-  const handleTouchEnd = () => {
-    setFocusedBar(null)
-  }
-
-  // pan responder is responsible for the slide interaction
-  const panResponder = PanResponder.create({
-    onMoveShouldSetPanResponder: () => true,
-    onPanResponderMove: (evt) => {
+  const handleTouchStart = useCallback(
+    (evt: GestureResponderEvent) => {
       const dataIndex = findDataIndex(evt.nativeEvent.locationX)
       setFocusedBar(data[dataIndex])
     },
-    onPanResponderRelease: () => {
-      setFocusedBar(null)
-    },
-  })
+    [data, findDataIndex],
+  )
+
+  const handleTouchEnd = useCallback(() => {
+    setFocusedBar(null)
+  }, [])
+
+  // pan responder is responsible for the slide interaction
+  const panResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onMoveShouldSetPanResponder: () => true,
+        onPanResponderMove: (evt) => {
+          const dataIndex = findDataIndex(evt.nativeEvent.locationX)
+          setFocusedBar(data[dataIndex])
+        },
+        onPanResponderRelease: () => {
+          setFocusedBar(null)
+        },
+      }),
+    [data, findDataIndex],
+  )
 
   return (
     <Animated.View
@@ -105,7 +165,7 @@ const BarChart = ({
           <React.Fragment key={`frag-${v.id}`}>
             <Rect
               x={barWidth * (2 * i)}
-              y={maxUp * vScale - barHeight(v?.up)}
+              y={maxUpBarHeight - barHeight(v?.up)}
               rx={barWidth / 2}
               width={barWidth}
               height={barHeight(v?.up)}
@@ -116,7 +176,7 @@ const BarChart = ({
             {hasDownBars && (
               <Rect
                 x={barWidth * (2 * i)}
-                y={maxUp * vScale + barWidth / 1.5}
+                y={maxUpBarHeight + barGap}
                 rx={barWidth / 2}
                 width={barWidth}
                 height={barHeight(v?.down)}
@@ -136,7 +196,7 @@ const BarChart = ({
                 textAnchor="middle"
                 opacity={focusedBar && focusedBar?.id === v.id ? 1 : 0.4}
               >
-                {v.day}
+                {v.label}
               </Text>
             )}
           </React.Fragment>
@@ -146,4 +206,4 @@ const BarChart = ({
   )
 }
 
-export default BarChart
+export default memo(BarChart)
