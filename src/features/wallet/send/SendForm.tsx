@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView } from 'react-native'
+import { ActivityIndicator, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Address } from '@helium/crypto-react-native'
 import Balance, { NetworkTokens } from '@helium/currency'
@@ -22,6 +22,8 @@ type Props = {
   isLocked: boolean
   type: SendType
   address: string
+  addressAlias?: string
+  addressLoading?: boolean
   amount: string
   dcAmount: string
   memo: string
@@ -46,6 +48,8 @@ const SendForm = ({
   isSeller,
   type,
   address,
+  addressAlias,
+  addressLoading = false,
   amount,
   dcAmount,
   memo,
@@ -115,21 +119,13 @@ const SendForm = ({
         label={t('send.address.label')}
         placeholder={t('send.address.placeholder')}
         extra={
-          isValidAddress ? (
-            <Box padding="s" position="absolute" right={0}>
-              <Check />
-            </Box>
-          ) : (
-            <TouchableOpacityBox
-              onPress={onScanPress}
-              padding="s"
-              position="absolute"
-              right={0}
-            >
-              <QrCode width={16} color={primaryMain} />
-            </TouchableOpacityBox>
-          )
+          <AddressExtra
+            addressLoading={addressLoading}
+            isValidAddress={isValidAddress}
+            onScanPress={onScanPress}
+          />
         }
+        footer={<AddressAliasFooter addressAlias={addressAlias} />}
       />
       <InputField
         type="numeric"
@@ -298,6 +294,56 @@ const FeeFooter = ({ fee }: { fee: Balance<NetworkTokens> }) => {
         +{fee.toString(8)} {t('generic.fee').toUpperCase()}
       </Text>
     </Box>
+  )
+}
+
+const AddressAliasFooter = ({ addressAlias }: { addressAlias?: string }) => {
+  if (!addressAlias) return null
+
+  return (
+    <Box marginTop="xs">
+      <Text variant="mono" color="grayText" fontSize={11}>
+        {addressAlias}
+      </Text>
+    </Box>
+  )
+}
+
+type AddressExtraProps = {
+  addressLoading?: boolean
+  isValidAddress?: boolean
+  onScanPress: () => void
+}
+const AddressExtra = ({
+  addressLoading,
+  isValidAddress,
+  onScanPress,
+}: AddressExtraProps) => {
+  const colors = useColors()
+
+  if (addressLoading) {
+    return (
+      <Box padding="s" position="absolute" right={0}>
+        <ActivityIndicator color="gray" />
+      </Box>
+    )
+  }
+  if (isValidAddress) {
+    return (
+      <Box padding="s" position="absolute" right={0}>
+        <Check />
+      </Box>
+    )
+  }
+  return (
+    <TouchableOpacityBox
+      onPress={onScanPress}
+      padding="s"
+      position="absolute"
+      right={0}
+    >
+      <QrCode width={16} color={colors.primaryMain} />
+    </TouchableOpacityBox>
   )
 }
 

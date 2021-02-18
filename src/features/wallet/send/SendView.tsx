@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Alert } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
@@ -49,6 +49,7 @@ import { getAddress } from '../../../utils/secureAccount'
 import Text from '../../../components/Text'
 import { fromNow } from '../../../utils/timeUtils'
 import useSubmitTxn from '../../../hooks/useSubmitTxn'
+import { ensLookup } from '../../../utils/explorerClient'
 
 type Props = {
   scanResult?: QrScanResult
@@ -64,6 +65,8 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
 
   const [type, setType] = useState<SendType>(sendType || 'payment')
   const [address, setAddress] = useState<string>('')
+  const [addressAlias, setAddressAlias] = useState<string>()
+  const [addressLoading, setAddressLoading] = useState(false)
   const [amount, setAmount] = useState<string>('')
   const [balanceAmount, setBalanceAmount] = useState<Balance<NetworkTokens>>(
     new Balance(0, CurrencyType.networkToken),
@@ -131,6 +134,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       if (scanResult?.amount) handleAmountChange(scanResult?.amount)
       if (scanResult?.memo) setMemo(scanResult?.memo)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scanResult])
 
   // compute equivalent dc amount for burn txns
@@ -386,7 +390,23 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     }
   }
 
-  const handleAmountChange = (stringAmount: string) => {
+  const handleAddressChange = useCallback(async (newAddress: string) => {
+    if (newAddress.match(/.*\.eth$/)) {
+      setAddressLoading(true)
+      const { address: ensAddress } = await ensLookup(newAddress)
+      if (ensAddress) {
+        setAddressAlias(newAddress)
+        setAddress(ensAddress)
+        setAddressLoading(false)
+        return
+      }
+    }
+    setAddressLoading(false)
+    setAddressAlias(undefined)
+    setAddress(newAddress)
+  }, [])
+
+  const handleAmountChange = useCallback((stringAmount: string) => {
     if (stringAmount === '.' || stringAmount.includes('NaN')) {
       setAmount('0.')
       setBalanceAmount(new Balance(0, CurrencyType.networkToken))
@@ -408,7 +428,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     setBalanceAmount(
       new Balance(parseFloat(rawAmount) * 100000000, CurrencyType.networkToken),
     )
-  }
+  }, [])
 
   return (
     <Box flex={1}>
@@ -428,13 +448,15 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
           hasSufficientBalance={hasSufficientBalance}
           isLocked={isLocked}
           address={address}
+          addressAlias={addressAlias}
+          addressLoading={addressLoading}
           amount={amount}
           dcAmount={dcAmount}
           memo={memo}
           fee={fee}
           transferData={transferData}
           lastReportedActivity={lastReportedActivity}
-          onAddressChange={setAddress}
+          onAddressChange={handleAddressChange}
           onAmountChange={handleAmountChange}
           onDcAmountChange={setDcAmount}
           onMemoChange={setMemo}
