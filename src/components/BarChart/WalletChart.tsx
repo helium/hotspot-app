@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react'
+import React, { useEffect, useState, useMemo, useCallback, memo } from 'react'
 import { ActivityIndicator, TouchableWithoutFeedback } from 'react-native'
 import { round } from 'lodash'
 import { useSelector } from 'react-redux'
@@ -41,14 +41,17 @@ const WalletChart = ({ height }: Props) => {
   const padding = 20
   const chartHeight = useMemo(() => height - headerHeight - padding, [height])
 
-  const changeTimeframe = useCallback((range: ChartRange) => {
-    setTimeframe(range)
-    triggerImpact()
-  }, [])
+  const changeTimeframe = useCallback(
+    (range: ChartRange) => () => {
+      setTimeframe(range)
+      triggerImpact()
+    },
+    [],
+  )
 
-  const handleFocusData = (chartData: ChartData | null): void => {
+  const handleFocusData = useCallback((chartData: ChartData | null): void => {
     setFocusedData(chartData)
-  }
+  }, [])
 
   const { greenBright } = useColors()
 
@@ -80,11 +83,11 @@ const WalletChart = ({ height }: Props) => {
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  width: 50,
+                  width: 200,
                 }}
               >
-                <CarotRight width={12} height={12} style={{ marginRight: 4 }} />
-                <Text variant="body2" marginLeft="xs">
+                <CarotRight width={12} height={12} />
+                <Text variant="body2" marginLeft="s">
                   {round(focusedData?.down, 2).toLocaleString()}
                 </Text>
               </Box>
@@ -92,17 +95,17 @@ const WalletChart = ({ height }: Props) => {
           )}
         </Box>
         <Box flex={1} flexDirection="row" justifyContent="space-between">
-          <TouchableWithoutFeedback onPress={() => changeTimeframe('daily')}>
+          <TouchableWithoutFeedback onPress={changeTimeframe('daily')}>
             <Text variant="body1" opacity={timeframe === 'daily' ? 1 : 0.3}>
               14D
             </Text>
           </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback onPress={() => changeTimeframe('weekly')}>
+          <TouchableWithoutFeedback onPress={changeTimeframe('weekly')}>
             <Text variant="body1" opacity={timeframe === 'weekly' ? 1 : 0.3}>
               12W
             </Text>
           </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback onPress={() => changeTimeframe('monthly')}>
+          <TouchableWithoutFeedback onPress={changeTimeframe('monthly')}>
             <Text variant="body1" opacity={timeframe === 'monthly' ? 1 : 0.3}>
               12M
             </Text>
@@ -116,7 +119,7 @@ const WalletChart = ({ height }: Props) => {
           justifyContent="center"
           position="absolute"
         >
-          <ActivityIndicator />
+          <ActivityIndicator color="gray" />
         </Box>
       )}
       <ChartContainer
@@ -128,4 +131,4 @@ const WalletChart = ({ height }: Props) => {
   )
 }
 
-export default WalletChart
+export default memo(WalletChart)

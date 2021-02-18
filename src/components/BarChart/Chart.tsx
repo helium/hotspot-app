@@ -83,20 +83,31 @@ const BarChart = ({
     return usableHeight / maxVerticalValue
   }, [height, bottomOffset, hasDownBars, maxUp, maxDown, barGap])
 
+  // pixel value of the tallest down bar
+  const maxDownBarHeight = useMemo(() => {
+    return max([maxDown * vScale, minBarHeight]) || 0
+  }, [maxDown, minBarHeight, vScale])
+
   // pixel value of the tallest up bar
   const maxUpBarHeight = useMemo(() => {
+    if (maxDownBarHeight === minBarHeight) {
+      return max([maxUp * vScale - minBarHeight, minBarHeight]) || 0
+    }
     return max([maxUp * vScale, minBarHeight]) || 0
-  }, [maxUp, minBarHeight, vScale])
+  }, [maxDownBarHeight, maxUp, minBarHeight, vScale])
 
   const barHeight = useCallback(
     (value: number | undefined): number => {
       if (value === 0 || value === undefined) return 0
-      if (maxUpBarHeight === minBarHeight) {
+      if (
+        maxUpBarHeight === minBarHeight ||
+        maxDownBarHeight === minBarHeight
+      ) {
         return max([value * vScale - minBarHeight, minBarHeight]) || 0
       }
       return max([value * vScale, minBarHeight]) || 0
     },
-    [minBarHeight, vScale, maxUpBarHeight],
+    [minBarHeight, vScale, maxUpBarHeight, maxDownBarHeight],
   )
 
   // maps x coordinates to elements in our data
