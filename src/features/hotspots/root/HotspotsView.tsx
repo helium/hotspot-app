@@ -108,6 +108,38 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
     dispatch(hotspotDetailsSlice.actions.clearHotspotDetails())
   }, [dispatch])
 
+  useEffect(() => {
+    const navParent = navigation.dangerouslyGetParent()
+    if (!navParent) return
+
+    let unsubTabPress
+
+    const setupTabPressListener = () => {
+      const unsubscribe = navParent.addListener('tabPress', (e) => {
+        console.log('e', e)
+        // Prevent default behavior
+        // e.preventDefault()
+
+        handleBack()
+      })
+
+      return unsubscribe
+    }
+
+    navigation.addListener('focus', () => {
+      unsubTabPress = setupTabPressListener()
+    })
+
+    navigation.addListener('blur', () => {
+      // if (!unsubTabPress) return
+      unsubTabPress?.()
+      unsubTabPress = undefined
+    })
+
+    setupTabPressListener()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const onMapHotspotSelected = useCallback((properties: GeoJsonProperties) => {
     const hotspot = {
       ...properties,
