@@ -108,6 +108,19 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
     dispatch(hotspotDetailsSlice.actions.clearHotspotDetails())
   }, [dispatch])
 
+  useEffect(() => {
+    const navParent = navigation.dangerouslyGetParent()
+    if (!navParent) return
+
+    const unsubscribe = navParent.addListener('tabPress', () => {
+      if (navigation.isFocused()) {
+        handleBack()
+      }
+    })
+
+    return unsubscribe
+  }, [handleBack, navigation])
+
   const onMapHotspotSelected = useCallback((properties: GeoJsonProperties) => {
     const hotspot = {
       ...properties,
