@@ -23,7 +23,7 @@ export const withWalletLayout = (WrappedComponent: any) => (props: any) => {
           dragMax:
             wh -
             walletLayout.notchHeight -
-            walletLayout.bottomHeight -
+            40 -
             walletLayout.navbarHeight -
             walletLayout.headerHeight -
             walletLayout.balanceHeight +
@@ -38,7 +38,7 @@ export const withWalletLayout = (WrappedComponent: any) => (props: any) => {
             walletLayout.chartHeight -
             walletLayout.balanceHeight -
             walletLayout.cardHandleHeight,
-          dragMin: 34,
+          dragMin: insets?.bottom || 1,
         }
         return (
           <WrappedComponent
