@@ -60,6 +60,7 @@ const AccountCreatePinScreen = () => {
         onNumberPress={(num) => {
           setPin((val) => (val.length < 6 ? val + num : val))
         }}
+        onCancel={pinReset ? navigation.goBack : undefined}
       />
       <Box flex={1} />
     </Box>
