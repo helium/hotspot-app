@@ -203,7 +203,8 @@ const MoreScreen = () => {
         data: [
           {
             title: t('more.sections.learn.tokenEarnings'),
-            openUrl: 'https://docs.helium.com/blockchain/mining/#how-do-hotspots-earn-helium-tokens',
+            openUrl:
+              'https://docs.helium.com/blockchain/mining/#how-do-hotspots-earn-helium-tokens',
           },
           {
             title: t('more.sections.learn.heliumtoken'),

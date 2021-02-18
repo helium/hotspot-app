@@ -135,11 +135,9 @@ const ScanView = () => {
               >
                 {t('send.scan.send')}
               </Text>
-              <Text marginBottom="xs">
-              {t('send.scan.send_description')}
-              </Text>
+              <Text marginBottom="xs">{t('send.scan.send_description')}</Text>
               <Text variant="body2Bold" color="blueMain">
-              {t('send.scan.learn_more')}
+                {t('send.scan.learn_more')}
               </Text>
             </Box>
             <Box marginBottom="s">
@@ -151,11 +149,9 @@ const ScanView = () => {
               >
                 {t('send.scan.burn')}
               </Text>
-              <Text marginBottom="xs">
-              {t('send.scan.burn_description')}
-              </Text>
+              <Text marginBottom="xs">{t('send.scan.burn_description')}</Text>
               <Text variant="body2Bold" color="blueMain">
-              {t('send.scan.learn_more')}
+                {t('send.scan.learn_more')}
               </Text>
             </Box>
             <Box marginBottom="s">
@@ -167,11 +163,9 @@ const ScanView = () => {
               >
                 {t('send.scan.view')}
               </Text>
-              <Text marginBottom="xs">
-              {t('send.scan.view_description')}
-              </Text>
+              <Text marginBottom="xs">{t('send.scan.view_description')}</Text>
               <Text variant="body2Bold" color="blueMain">
-              {t('send.scan.learn_more')}
+                {t('send.scan.learn_more')}
               </Text>
             </Box>
           </Box>
