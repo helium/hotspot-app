@@ -427,11 +427,13 @@ export default {
       send: 'Send HNT',
       send_description: 'Quickly scan a Helium address to send HNT.',
       burn: 'Burn HNT to DC',
-      burn_description: 'HNT can be burned into Data Credits to pay for device network connectivity. DCs are non-transferable.',
+      burn_description:
+        'HNT can be burned into Data Credits to pay for device network connectivity. DCs are non-transferable.',
       view: 'View QR Code',
-      view_description: 'Share your QR Code to deposit or receive HNT from others.',
+      view_description:
+        'Share your QR Code to deposit or receive HNT from others.',
       learn_more: 'Learn More',
-    }
+    },
   },
   more: {
     title: 'Settings',
@@ -493,6 +495,12 @@ export default {
       reward_summary_plural:
         'Your {{count}} Hotspots mined {{hntAmount}} in the past 24 hours.',
       your_hotspots: 'Your Hotspots',
+      filter: {
+        new: 'Newest Hotspots',
+        near: 'Nearest Hotspots',
+        earn: 'Top Earning Hotspots',
+        offline: 'Offline Hotspots',
+      },
     },
     empty: {
       body: "You haven't added or followed any Hotspots yet.",

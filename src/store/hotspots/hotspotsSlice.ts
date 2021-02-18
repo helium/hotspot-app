@@ -1,7 +1,40 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { Hotspot, Sum } from '@helium/http'
 import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
+import { orderBy, sortBy } from 'lodash'
 import { getHotspotRewardsSum, getHotspots } from '../../utils/appDataClient'
+import { distance, LocationCoords } from '../../utils/location'
+
+export enum HotspotSort {
+  New = 'new',
+  Near = 'near',
+  Earn = 'earn',
+  Offline = 'offline',
+}
+
+type Rewards = Record<string, Sum>
+
+type SorterContext = { rewards?: Rewards; location?: LocationCoords }
+type HotspotSorter = (hotspots: Hotspot[], context?: SorterContext) => Hotspot[]
+const hotspotSorters: Record<HotspotSort, HotspotSorter> = {
+  [HotspotSort.New]: (hotspots) => orderBy(hotspots, 'blockAdded', 'desc'),
+  [HotspotSort.Near]: (hotspots, context) => {
+    if (!context?.location) {
+      return hotspots
+    }
+    return sortBy(hotspots, [
+      (h) => distance(context.location, { latitude: h.lat, longitude: h.lng }),
+    ])
+  },
+  [HotspotSort.Earn]: (hotspots, context) => {
+    if (!context || !context.rewards) {
+      return hotspots
+    }
+    return sortBy(hotspots, [(h) => -context.rewards[h.address].total])
+  },
+  [HotspotSort.Offline]: (hotspots) =>
+    orderBy(hotspots, ['status.online', 'offline']),
+}
 
 export const fetchHotspotsData = createAsyncThunk(
   'hotspots/fetchRewards',
@@ -28,12 +61,15 @@ export const fetchHotspotsData = createAsyncThunk(
 )
 
 type HotspotsSliceState = {
-  hotspots?: Hotspot[]
-  rewards?: Record<string, Sum>
+  hotspots: Hotspot[]
+  order: HotspotSort
+  rewards?: Rewards
   totalRewards: Balance<NetworkTokens>
   loadingRewards: boolean
 }
 const initialState: HotspotsSliceState = {
+  hotspots: [],
+  order: HotspotSort.New,
   loadingRewards: false,
   totalRewards: new Balance(0, CurrencyType.networkToken),
 }
@@ -45,10 +81,25 @@ const hotspotsSlice = createSlice({
     signOut: () => {
       return { ...initialState }
     },
+    changeOrder: (
+      state,
+      {
+        payload,
+      }: { payload: { order: HotspotSort; currentLocation?: LocationCoords } },
+    ) => {
+      // console.log('payload', payload)
+      return {
+        ...state,
+        hotspots: hotspotSorters[payload.order](state.hotspots as Hotspot[], {
+          rewards: state.rewards as Rewards,
+          location: payload.currentLocation,
+        }),
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchHotspotsData.fulfilled, (state, action) => {
-      state.hotspots = action.payload.hotspots
+      state.hotspots = hotspotSorters[state.order](action.payload.hotspots)
       state.rewards = action.payload.rewards
       state.totalRewards = action.payload.total
       state.loadingRewards = false

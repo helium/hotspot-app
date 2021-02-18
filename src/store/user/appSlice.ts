@@ -6,9 +6,7 @@ import {
   deleteSecureItem,
   signOut,
 } from '../../utils/secureAccount'
-import { getCurrentPosition } from '../../utils/location'
-
-type Location = { latitude: number; longitude: number }
+import { getCurrentPosition, LocationCoords } from '../../utils/location'
 
 export type AppState = {
   isBackedUp: boolean
@@ -20,7 +18,7 @@ export type AppState = {
   lastIdle: number | null
   isLocked: boolean
   isRequestingPermission: boolean
-  currentLocation?: Location
+  currentLocation?: LocationCoords
   isLoadingLocation: boolean
   appStateStatus: AppStateStatus
 }
