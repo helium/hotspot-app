@@ -670,6 +670,8 @@ export default {
       viewExplorer: 'View on Explorer',
       share: 'Share',
     },
+    no_location_title: 'No Asserted Location',
+    no_location_body: 'Pair with the Hotspot to begin.',
   },
   transfer: {
     title: 'Transfer Hotspot',

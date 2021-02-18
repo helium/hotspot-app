@@ -157,6 +157,9 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
     [],
   )
 
+  const hasLocation =
+    selectedHotspot?.lat !== undefined && selectedHotspot?.lng !== undefined
+
   return (
     <Box flex={1} flexDirection="column" justifyContent="space-between">
       <Box
@@ -171,7 +174,9 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
       >
         <Map
           ownedHotspots={ownedHotspots}
-          selectedHotspots={selectedHotspot ? [selectedHotspot] : undefined}
+          selectedHotspots={
+            selectedHotspot && hasLocation ? [selectedHotspot] : undefined
+          }
           zoomLevel={14}
           mapCenter={
             selectedHotspot
@@ -182,12 +187,14 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
           animationMode="moveTo"
           offsetCenterRatio={2.0}
           onFeatureSelected={onMapHotspotSelected}
+          interactive={hasLocation}
+          showNoLocation={!hasLocation}
         />
         <HotspotMapButtons
           animatedPosition={animatedDetailsPosition}
           showWitnesses={showWitnesses}
           toggleShowWitnesses={toggleShowWitnesses}
-          isVisible={!!selectedHotspot}
+          isVisible={!!selectedHotspot && hasLocation}
         />
         <ReAnimatedBox pointerEvents="none" style={backdropStyles} />
         <ReAnimatedBox
