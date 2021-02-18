@@ -11,7 +11,6 @@ import StatusBadge from './StatusBadge'
 import TimelinePicker from './TimelinePicker'
 import HotspotDetailChart from './HotspotDetailChart'
 import { RootState } from '../../../store/rootReducer'
-import { useColors } from '../../../theme/themeHooks'
 import { getRewardChartData } from './RewardsHelper'
 import { useAppDispatch } from '../../../store/store'
 import hotspotDetailsSlice, {
@@ -29,7 +28,6 @@ const shortAddress = (address?: string) => `${address?.slice(0, 5)}...`
 
 const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
   const { t } = useTranslation()
-  const colors = useColors()
   const dispatch = useAppDispatch()
 
   const {
@@ -88,7 +86,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
       witnessSums?.map((w) => ({
         up: Math.round(w.avg),
         down: 0,
-        day: new Date(w.timestamp).toLocaleDateString(undefined, options),
+        label: new Date(w.timestamp).toLocaleDateString(undefined, options),
         id: `witness-${numDays}-${w.timestamp}`,
       })) || []
     )
@@ -113,7 +111,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
       challengeSums?.map((w) => ({
         up: Math.round(w.sum),
         down: 0,
-        day: new Date(w.timestamp).toLocaleDateString(undefined, options),
+        label: new Date(w.timestamp).toLocaleDateString(undefined, options),
         id: `challenge-${numDays}-${w.timestamp}`,
       })) || []
     )
@@ -170,7 +168,6 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
           title={t('hotspot_details.reward_title')}
           number={rewardSum?.total.toFixed(2)}
           change={rewardsChange}
-          color={colors.greenOnline}
           data={getRewardChartData(rewards, numDays)}
           loading={loading}
         />
@@ -178,7 +175,6 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
           title={t('hotspot_details.witness_title')}
           number={witnessAverage?.toFixed(0)}
           change={witnessChange}
-          color={colors.purpleMain}
           data={witnessChartData}
           loading={loading}
         />
@@ -187,7 +183,6 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
           subTitle={t('hotspot_details.challenge_sub_title')}
           number={challengeSum?.toFixed(0)}
           change={challengeChange}
-          color={colors.purpleMain}
           data={challengeChartData}
           loading={loading}
         />
