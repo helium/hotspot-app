@@ -130,6 +130,7 @@ const WalletViewContainer = ({
             ref={balanceSheet}
           >
             <BalanceCard
+              layout={layout}
               onReceivePress={toggleShowReceive}
               onSendPress={handleSendPress}
             />

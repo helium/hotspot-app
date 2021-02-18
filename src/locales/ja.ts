@@ -43,15 +43,14 @@ export default {
       forgot: '単語を忘れた場合',
       failed: {
         title: '申し訳ありません...',
-        subtitle_1: "再入力されたシードフレーズが正しくありません。",
+        subtitle_1: '再入力されたシードフレーズが正しくありません。',
         subtitle_2: 'もう一度実行してください。',
         try_again: 'もう一度実行してください',
       },
     },
     create_pin: {
       title: 'PINコードを設定',
-      subtitle:
-        '最後にPINコードを設定して、アカウントの保護を強化します。',
+      subtitle: '最後にPINコードを設定して、アカウントの保護を強化します。',
     },
     confirm_pin: {
       title: 'PINを再入力してください',
@@ -62,7 +61,7 @@ export default {
       subtitle:
         'アカウントやHotspotに重要な更新が発生した場合に通知が届きます。',
       mining: 'Hotspotはマイニングツールです',
-      later: "後で設定する",
+      later: '後で設定する',
     },
   },
   learn: {
@@ -90,7 +89,7 @@ export default {
           'ビーコンはHotspotによって送信される特別なパケットです。隣接する他のHotspotはこれらのパケットをリッスンできます。\n\nこの信号により、ネットワークはどのHotspotがどのHotspotの受信範囲内に存在するのかを特定できます。隣接するHotspotは「ウィットネス」と呼ばれます。あなたのビーコンをリッスンするHotspotは、ウィットネスリストに追加されます。',
       },
     ],
-    next: "ガイドを読みました",
+    next: 'ガイドを読みました',
   },
   generic: {
     done: '完了',
@@ -143,7 +142,7 @@ export default {
       subtitle:
         'Hotspotを使用すると、The People’s Networkを構築してHNTを獲得できます。',
       info: 'その仕組みは？',
-      next: "開始する",
+      next: '開始する',
       not_now: '今はやめておく',
     },
     education: {
@@ -155,14 +154,14 @@ export default {
             'Hotspotは、他のHotspotから300メートル以上離れていて周囲に遮蔽物のない環境に配置する必要があります。 ',
         },
         {
-          title: "閉じた場所に配置しない",
+          title: '閉じた場所に配置しない',
           subtitle:
-            "Hotspotはナイトテーブルや本棚にしまい込まないようにします。窓の横などに配置してください。",
+            'Hotspotはナイトテーブルや本棚にしまい込まないようにします。窓の横などに配置してください。',
         },
         {
           title: '建物で信号がブロックされないようにする',
           subtitle:
-            "近くの建物が近隣のデバイスの信号をブロックし、Hotspotが信号を受信しにくくなる場合があります。",
+            '近くの建物が近隣のデバイスの信号をブロックし、Hotspotが信号を受信しにくくなる場合があります。',
         },
         {
           title: '網戸の近くに配置しない',
@@ -170,7 +169,7 @@ export default {
             'Hotspotは金属網から離して配置するようにしてください。金属網は無線信号を著しくブロックする場合があります。',
         },
       ],
-      next: "ガイドを読みました",
+      next: 'ガイドを読みました',
     },
     diagnostics: {
       title: '診断',
@@ -179,21 +178,20 @@ export default {
     },
     power: {
       title: '電源オン',
-      next: "電源が入っています",
+      next: '電源が入っています',
       subtitle_1: 'アンテナを取り付け、付属の電源アダプターに差し込みます。',
       rak_subtitle_1:
         '付属の電源アダプターを窓の近くにあるコンセントに差し込みます。',
-      subtitle_2:
-        'Hotspotが起動し、準備が完了するとライトが緑色になります。',
+      subtitle_2: 'Hotspotが起動し、準備が完了するとライトが緑色になります。',
       rak_subtitle_2:
         'RAK Hotspot Minerの電源がオンになると、赤いLEDライトが点きます。',
     },
     pair: {
       title: 'Bluetooth',
-      subtitle_1:
-        'Hotspotの黒いボタンを押します。ライトが青に変わります。',
+      subtitle_1: 'Hotspotの黒いボタンを押します。ライトが青に変わります。',
       rak_subtitle_1: 'RAK Hotspot Minerにペアリングボタンはありません。',
-      subtitle_2: "続行する前に携帯電話のBluetoothがオンになっていることを確認します",
+      subtitle_2:
+        '続行する前に携帯電話のBluetoothがオンになっていることを確認します',
       rak_subtitle_2:
         'RAK Hotspot Minerの電源がオンになると、自動的にBluetoothが5分間有効になります。\n\nHotspotが完全に起動するまでに最大で1分かかる場合があります。\n\n「次へ」を押してスキャンします。',
       alert_no_permissions: {
@@ -227,8 +225,7 @@ export default {
     wifi_scan: {
       title: 'Wi-Fi',
       settings_title: 'Wi-Fi設定',
-      subtitle:
-        'Hotspotを接続するWi-Fiネットワークを選択します。',
+      subtitle: 'Hotspotを接続するWi-Fiネットワークを選択します。',
       ethernet: '代わりにイーサネットを使用する',
       connection_failed: '接続に失敗しました。もう一度実行してください',
       disconnect_failed: '切断に失敗しました。もう一度実行してください',
@@ -236,7 +233,8 @@ export default {
         'Hotspotは<green>オンライン</green>になっており、 %{network}に接続されています。',
       scan_fail_subtitle:
         'Hotspotで近隣のWi-Fiネットワークが検出できませんでした。ルーターがオンラインになっていて近隣に設置されていることを確認してください。',
-      tip: '<blue>Wi-Fiが非表示に設定されている</blue>かどうかを確認しましたか？',
+      tip:
+        '<blue>Wi-Fiが非表示に設定されている</blue>かどうかを確認しましたか？',
       saved_networks: '構成済みネットワーク',
       available_networks: '利用可能なネットワーク',
       disconnect_help:
@@ -266,7 +264,7 @@ export default {
         'このHotspotは、以下のものに自動接続しなくなります： ',
     },
     ethernet: {
-      title: "イーサネットを使用する",
+      title: 'イーサネットを使用する',
       subtitle:
         'インターネットルーターで利用可能なアクティブなポートに、Hotspotを接続します。',
       secure: 'イーサネットケーブルをしっかりと接続してください',
@@ -274,7 +272,8 @@ export default {
     },
     firmware_update: {
       title: '更新を利用できます',
-      subtitle: '続行する前に、Hotspotのファームウェアを更新する必要があります。',
+      subtitle:
+        '続行する前に、Hotspotのファームウェアを更新する必要があります。',
       current_version: '現在のバージョン',
       required_version: '必要なバージョン',
       explanation:
@@ -306,13 +305,14 @@ export default {
       title: 'Hotspotの\n位置情報を設定',
       subtitle:
         'Hotspotの位置情報を設定する必要があります。これは携帯電話を使用して行うことができます。',
-      p_1: 'まず、当社が携帯電話の位置情報にアクセスするための許可をリクエストします。',
+      p_1:
+        'まず、当社が携帯電話の位置情報にアクセスするための許可をリクエストします。',
       settings_p_1:
-        "Hotspotの位置情報を更新するために、当社は位置情報に関する追加のアクセス許可が必要になります。",
+        'Hotspotの位置情報を更新するために、当社は位置情報に関する追加のアクセス許可が必要になります。',
       settings_p_2:
-        "下のボタンをタップし、「設定」に移動します。「位置情報」で「アプリの使用時」をタップします。",
+        '下のボタンをタップし、「設定」に移動します。「位置情報」で「アプリの使用時」をタップします。',
       next: 'アクセス許可をリクエストする',
-      cancel: "後で設定する",
+      cancel: '後で設定する',
     },
     location_fee: {
       title: '位置情報の設定料金',
@@ -324,13 +324,14 @@ export default {
       pending_p_1:
         'Hotspotの「位置情報を確認」トランザクションが保留中のものがブロックチェーンに存在します。',
       pending_p_2:
-        "Hotspotの位置情報を変更する場合は、前のトランザクションが完了してから行ってください。",
+        'Hotspotの位置情報を変更する場合は、前のトランザクションが完了してから行ってください。',
       balance: '残高：',
       fee: '料金：',
       no_funds: 'アカウントのHNTの残高が不足しています',
       calculating_text: 'HNTの量を計算しています',
       error_title: 'エラー',
-      error_body: '料金データの読み込み中にエラーが発生しました。もう一度実行してください。',
+      error_body:
+        '料金データの読み込み中にエラーが発生しました。もう一度実行してください。',
       next: 'Hotspotを登録',
       fee_next: '料金の支払いとHotspotの登録',
     },
@@ -360,7 +361,7 @@ export default {
     confirm: {
       title: 'シードフレーズを確認',
       subtitle:
-        "入力した12個の単語は以下のとおりです。必要に応じて、単語をタップして更新できます。",
+        '入力した12個の単語は以下のとおりです。必要に応じて、単語をタップして更新できます。',
       next: 'シードフレーズを申請',
     },
     complete: {
@@ -369,7 +370,7 @@ export default {
     },
     alert: {
       title: 'エラー',
-      body: "このシードフレーズはHeliumアカウントに対応していません",
+      body: 'このシードフレーズはHeliumアカウントに対応していません',
     },
   },
   wallet: {
@@ -412,7 +413,8 @@ export default {
       transfer_complete: '転送を完了',
     },
     qrInfo: 'QR情報',
-    error: 'このトランザクションの申請中にエラーが発生しました。もう一度実行してください。',
+    error:
+      'このトランザクションの申請中にエラーが発生しました。もう一度実行してください。',
     hotspot_label: 'Hotspot',
     last_activity: '最後に報告されたアクティビティ：{{activity}}',
   },
@@ -471,13 +473,14 @@ export default {
     },
     owned: {
       title: 'Hotspot',
-      reward_summary: 'Hotspotは過去24時間で{{hntAmount}}HNTをマイニングしました。',
+      reward_summary:
+        'Hotspotは過去24時間で{{hntAmount}}HNTをマイニングしました。',
       reward_summary_plural:
         '{{count}}個のHotspotは過去24時間で{{hntAmount}}HNTをマイニングしました。',
       your_hotspots: 'Hotspot',
     },
     empty: {
-      body: "まだHotspotを追加もフォローもしていません。",
+      body: 'まだHotspotを追加もフォローもしていません。',
     },
   },
   permissions: {
@@ -597,7 +600,7 @@ export default {
       cost: '位置情報を再アサートするためのコストは以下のとおりです：',
       insufficient_funds:
         'このアサートを行うための資金が\nありません。HNTを取得してください。',
-      confirm_location: "Hotspotの位置情報の変更を確認してください",
+      confirm_location: 'Hotspotの位置情報の変更を確認してください',
       charge: '以下の料金が請求されます：{{amount}}。',
       pending_message: '位置情報の更新を保留しています。',
       assert_pending: 'アサートを保留しています...',
@@ -630,7 +633,8 @@ export default {
     button_title: '転送を続行',
     input_placeholder: 'ここにHotspot名を入力してください...',
     exists_alert_title: '転送データがすでに存在します',
-    exists_alert_body: 'このHotspotのアクティブな転送データが保留になっています。',
+    exists_alert_body:
+      'このHotspotのアクティブな転送データが保留になっています。',
     amount_changed_alert_title: 'リクエスト量が変更されました',
     amount_changed_alert_body:
       '販売者がリクエストした量が変更されました。新しいリクエスト量は{{amount}} HNTです。',

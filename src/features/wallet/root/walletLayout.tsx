@@ -16,7 +16,7 @@ export const withWalletLayout = (WrappedComponent: any) => (props: any) => {
           chartHeight: hp(25),
           balanceHeight: hp(18),
           balanceInnerTranslate: hp(1),
-          altCurrencyHeight: 49, // TODO: Use this value in balance card
+          altCurrencyHeight: 49,
           navbarHeight: tabBarHeight,
           bottomHeight: insets?.bottom || 1,
           cardHandleHeight: 48,
