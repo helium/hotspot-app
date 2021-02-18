@@ -131,8 +131,10 @@ export default {
     selection: {
       title: 'Choose\nyour Hotspot.',
       subtitle: 'What kind of Hotspot do you\nwish to add?',
-      option_one: 'Helium\nHotspot',
-      option_two: 'RAK\nHotspot Miner',
+      helium: 'Helium\nHotspot',
+      rak: 'RAK\nHotspot Miner',
+      nebrain: 'Nebra\nIndoor Hotspot',
+      nebraout: 'Nebra\nOutdoor Hotspot',
       third_party_header: 'Other Hotspots',
       helium_edition: 'For the Helium Network',
       fine_print:
@@ -168,26 +170,46 @@ export default {
       title: 'Diagnostics',
       p_1:
         '<b><white>Diagnostic support allows Helium to identify issues with your Hotspot in a secure way.</white></b>\n\nHelium will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@helium.com</b></purple> from the email used to purchase the Hotspot.',
+      nebra_p_1:
+        '<b><white>Diagnostic support allows Nebra LTD to identify issues with your Hotspot in a secure way.</white></b>\n\nNebra will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@nebra.com</b></purple> from the email used to purchase the Hotspot.',
     },
     power: {
       title: 'Power Up',
       next: "I'm powered up",
-      subtitle_1: 'Attach the antenna and plug in the provided power adapter.',
+      helium_subtitle_1:
+        'Attach the antenna and plug in the provided power adapter.',
       rak_subtitle_1:
         'Plug in the provided power adapter into an outlet near a window.',
-      subtitle_2:
+      nebrain_subtitle_1:
+        'Attach the antenna and plug in the provided power adapter near a window.',
+      nebraout_subtitle_1:
+        'Attach the antenna and connect to an appropriate power source.',
+      helium_subtitle_2:
         'Your Hotspot will boot up, and its light will become Green when ready.',
       rak_subtitle_2:
         'The RAK Hotspot Miner will show a red LED light once it’s powered on.',
+      nebrain_subtitle_2:
+        'The Nebra Indoor Hotspot will have a green LED light up once it’s powered on.',
+      nebraout_subtitle_2:
+        'The Nebra Outdoor Hotspot will have multiple lights come on once it’s powered on.',
     },
     pair: {
       title: 'Bluetooth',
-      subtitle_1:
+      helium_subtitle_1:
         'Press the black button on your Hotspot. Its light should turn blue.',
       rak_subtitle_1: 'There is no pairing button on the RAK Hotspot Miner.',
-      subtitle_2: "Ensure your phone's bluetooth is on before proceeding",
+      nebrain_subtitle_1:
+        'Hold down the button on the back of the Nebra Indoor Hotspot until it starts flashing.',
+      nebraout_subtitle_1:
+        'There is no pairing button on the Nebra Outdoor Hotspot.',
+      helium_subtitle_2:
+        "Ensure your phone's bluetooth is on before proceeding",
       rak_subtitle_2:
         'Bluetooth is automatically enabled for 5 minutes after the RAK Hotspot Miner is powered on.\n\nHotspot can take up to 1 minute to fully boot up.\n\nPress Next to scan.',
+      nebrain_subtitle_2:
+        'Once the LED is slowly blinking and is ready to pair.\n\nPress Next to scan.',
+      nebraout_subtitle_2:
+        'Bluetooth is automatically enabled for 10 minutes after the Nebra Outdoor Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.\n\nPress Next to scan.',
       alert_no_permissions: {
         title: 'Authorize Bluetooth',
         body:

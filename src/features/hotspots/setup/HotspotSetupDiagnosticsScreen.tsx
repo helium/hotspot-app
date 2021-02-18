@@ -21,6 +21,19 @@ const HotspotSetupDiagnosticsScreen = () => {
   const { params } = useRoute<Route>()
   const { t } = useTranslation()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
+
+  const diagnosticTextKey = () => {
+    switch (params.hotspotType) {
+      default:
+      case 'Helium':
+      case 'RAK':
+        return 'hotspot_setup.diagnostics.p_1'
+      case 'NEBRAIN':
+      case 'NEBRAOUT':
+        return 'hotspot_setup.diagnostics.nebra_p_1'
+    }
+  }
+
   return (
     <BackScreen
       backgroundColor="primaryBackground"
@@ -40,7 +53,7 @@ const HotspotSetupDiagnosticsScreen = () => {
         <TextTransform
           variant="subtitle"
           marginTop="m"
-          i18nKey="hotspot_setup.diagnostics.p_1"
+          i18nKey={diagnosticTextKey()}
         />
       </ScrollView>
       <DebouncedButton
