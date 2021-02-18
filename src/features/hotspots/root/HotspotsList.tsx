@@ -3,24 +3,19 @@ import { BottomSheetSectionList } from '@gorhom/bottom-sheet'
 import { Hotspot } from '@helium/http'
 import Balance, { CurrencyType } from '@helium/currency'
 import { useSelector } from 'react-redux'
-import { useTranslation } from 'react-i18next'
 import Box from '../../../components/Box'
 import HotspotListItem from '../../../components/HotspotListItem'
 import { RootState } from '../../../store/rootReducer'
-import Text from '../../../components/Text'
 import WelcomeOverview from './WelcomeOverview'
+import HotspotsPicker from './HotspotsPicker'
 
 const HotspotsList = ({
-  hotspots,
   onSelectHotspot,
 }: {
-  hotspots: Hotspot[]
   onSelectHotspot: (hotspot: Hotspot) => void
 }) => {
-  const { t } = useTranslation()
-
   const {
-    hotspots: { rewards },
+    hotspots: { hotspots, rewards },
   } = useSelector((state: RootState) => state)
 
   const handlePress = useCallback(
@@ -33,7 +28,6 @@ const HotspotsList = ({
   const sections = useMemo(
     () => [
       {
-        title: 'Your Hotspots',
         data: hotspots,
       },
     ],
@@ -49,12 +43,10 @@ const HotspotsList = ({
         borderTopLeftRadius="m"
         backgroundColor="white"
       >
-        <Text variant="subtitleBold" color="black" paddingStart="l">
-          {t('hotspots.owned.your_hotspots')}
-        </Text>
+        <HotspotsPicker />
       </Box>
     ),
-    [t],
+    [],
   )
 
   const renderItem = useCallback(

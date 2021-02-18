@@ -521,6 +521,12 @@ export default {
       reward_summary_plural:
         'Your {{count}} Hotspots mined {{hntAmount}} in the past 24 hours.',
       your_hotspots: 'Your Hotspots',
+      filter: {
+        new: 'Newest Hotspots',
+        near: 'Nearest Hotspots',
+        earn: 'Top Earning Hotspots',
+        offline: 'Offline Hotspots',
+      },
     },
     empty: {
       body: "You haven't added or followed any Hotspots yet.",
