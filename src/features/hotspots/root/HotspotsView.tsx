@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { LayoutChangeEvent } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
@@ -265,10 +272,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         onDismiss={handleDismissList}
         animatedIndex={animatedListPosition}
       >
-        <HotspotsList
-          hotspots={ownedHotspots}
-          onSelectHotspot={handlePresentDetails}
-        />
+        <HotspotsList onSelectHotspot={handlePresentDetails} />
       </BottomSheetModal>
 
       <BottomSheetModal
@@ -286,4 +290,4 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
   )
 }
 
-export default HotspotsView
+export default memo(HotspotsView)

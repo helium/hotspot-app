@@ -1,5 +1,12 @@
 import { useNavigation } from '@react-navigation/native'
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, {
+  useMemo,
+  memo,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 import { Position } from 'geojson'
 import Search from '@assets/images/search.svg'
@@ -82,6 +89,12 @@ const HotspotSetupPickLocationScreen = () => {
     searchModal.current?.dismiss()
   }, [])
 
+  const pinContainer = useMemo(
+    () => ({ marginTop: -29, marginLeft: -25 / 2 }),
+    [],
+  )
+  const searchSnapPoints = useMemo(() => ['85%'], [])
+
   return (
     <SafeAreaBox
       flex={1}
@@ -110,7 +123,7 @@ const HotspotSetupPickLocationScreen = () => {
           position="absolute"
           top="50%"
           left="50%"
-          style={{ marginTop: -29, marginLeft: -25 / 2 }}
+          style={pinContainer}
           width={25}
           height={29}
           justifyContent="flex-end"
@@ -151,7 +164,7 @@ const HotspotSetupPickLocationScreen = () => {
       <BottomSheetModalProvider>
         <BottomSheetModal
           ref={searchModal}
-          snapPoints={['85%']}
+          snapPoints={searchSnapPoints}
           handleComponent={BSHandle}
           backdropComponent={BottomSheetBackdrop}
         >
@@ -162,4 +175,4 @@ const HotspotSetupPickLocationScreen = () => {
   )
 }
 
-export default HotspotSetupPickLocationScreen
+export default memo(HotspotSetupPickLocationScreen)
