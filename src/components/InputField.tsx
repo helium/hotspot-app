@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { TouchableWithoutFeedback, TextInput } from 'react-native'
+import { TextInput, TouchableWithoutFeedback } from 'react-native'
 import Box from './Box'
 import Text from './Text'
 import InputLock from '../assets/images/input-lock.svg'
@@ -66,6 +66,7 @@ const InputField = ({
             multiline
             blurOnSubmit
             autoCompleteType="off"
+            textContentType="none"
             autoCapitalize="none"
             autoCorrect={false}
             dataDetectorTypes="none"
