@@ -1,7 +1,14 @@
 import { useNavigation } from '@react-navigation/native'
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Position } from 'geojson'
+import Search from '@assets/images/search.svg'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+  BottomSheetBackdrop,
+} from '@gorhom/bottom-sheet'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
 import ImageBox from '../../../components/ImageBox'
@@ -13,6 +20,10 @@ import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Info from '../../../assets/images/info.svg'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import { useSpacing } from '../../../theme/themeHooks'
+import BSHandle from '../../../components/BSHandle'
+import AddressSearchModal from './AddressSearchModal'
+import { PlaceGeography } from '../../../utils/googlePlaces'
 
 const HotspotSetupPickLocationScreen = () => {
   const { t } = useTranslation()
@@ -23,6 +34,9 @@ const HotspotSetupPickLocationScreen = () => {
   const [hasGPSLocation, setHasGPSLocation] = useState(false)
   const [locationName, setLocationName] = useState('')
   const [zoomLevel, setZoomLevel] = useState(2)
+  const spacing = useSpacing()
+  const insets = useSafeAreaInsets()
+  const searchModal = useRef<BottomSheetModal>(null)
 
   useEffect(() => {
     const sleepThenEnable = async () => {
@@ -43,18 +57,30 @@ const HotspotSetupPickLocationScreen = () => {
     }
   }, [])
 
-  const navNext = () => {
+  const navNext = useCallback(() => {
     navigation.navigate('HotspotSetupConfirmLocationScreen', {
       hotspotCoords: markerCenter,
       locationName,
     })
-  }
+  }, [locationName, markerCenter, navigation])
 
-  const onDidFinishLoadingMap = (latitude: number, longitude: number) => {
-    setZoomLevel(16)
-    setHasGPSLocation(true)
-    setMapCenter([longitude, latitude])
-  }
+  const onDidFinishLoadingMap = useCallback(
+    (latitude: number, longitude: number) => {
+      setZoomLevel(16)
+      setHasGPSLocation(true)
+      setMapCenter([longitude, latitude])
+    },
+    [],
+  )
+
+  const handleSearchPress = useCallback(() => {
+    searchModal.current?.present()
+  }, [])
+
+  const handleSelectPlace = useCallback((placeGeography: PlaceGeography) => {
+    setMapCenter([placeGeography.lng, placeGeography.lat])
+    searchModal.current?.dismiss()
+  }, [])
 
   return (
     <SafeAreaBox
@@ -62,6 +88,16 @@ const HotspotSetupPickLocationScreen = () => {
       edges={['bottom']}
       backgroundColor="primaryBackground"
     >
+      <TouchableOpacityBox
+        onPress={handleSearchPress}
+        position="absolute"
+        padding="m"
+        top={insets.top + spacing.s}
+        right={spacing.m}
+        zIndex={1}
+      >
+        <Search width={30} height={30} />
+      </TouchableOpacityBox>
       <Box flex={1.2}>
         <Map
           mapCenter={mapCenter}
@@ -112,6 +148,16 @@ const HotspotSetupPickLocationScreen = () => {
           title={t('hotspot_setup.location.next')}
         />
       </Box>
+      <BottomSheetModalProvider>
+        <BottomSheetModal
+          ref={searchModal}
+          snapPoints={['85%']}
+          handleComponent={BSHandle}
+          backdropComponent={BottomSheetBackdrop}
+        >
+          <AddressSearchModal onSelectPlace={handleSelectPlace} />
+        </BottomSheetModal>
+      </BottomSheetModalProvider>
     </SafeAreaBox>
   )
 }
