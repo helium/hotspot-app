@@ -103,7 +103,9 @@ const App = () => {
   )
 
   const loadInitialData = useCallback(async () => {
-    dispatch(restoreUser())
+    if (!isRestored) {
+      dispatch(restoreUser())
+    }
     dispatch(fetchInitialData())
 
     if (!isRestored && !isBackedUp) {

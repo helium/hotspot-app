@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react'
+import React, { useState, useRef, useEffect, useCallback, memo } from 'react'
 import { Animated } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import Text from './Text'
@@ -69,6 +69,14 @@ const ConfirmPinView = ({
     return unsubscribe
   }, [navigation])
 
+  const handleBackspace = useCallback(() => {
+    setPin((val) => val.slice(0, -1))
+  }, [])
+
+  const handleNumber = useCallback((num: number) => {
+    setPin((val) => (val.length < 6 ? val + num : val))
+  }, [])
+
   return (
     <Box
       backgroundColor="primaryBackground"
@@ -88,16 +96,12 @@ const ConfirmPinView = ({
       </Animated.View>
       <Keypad
         onCancel={onCancel}
-        onBackspacePress={() => {
-          setPin((val) => val.slice(0, -1))
-        }}
-        onNumberPress={(num) => {
-          setPin((val) => (val.length < 6 ? val + num : val))
-        }}
+        onBackspacePress={handleBackspace}
+        onNumberPress={handleNumber}
       />
       <Box flex={1} />
     </Box>
   )
 }
 
-export default ConfirmPinView
+export default memo(ConfirmPinView)

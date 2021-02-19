@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react'
+import React, { useEffect, useCallback, memo } from 'react'
 import { Alert } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
@@ -98,4 +98,4 @@ const LockScreen = () => {
   )
 }
 
-export default LockScreen
+export default memo(LockScreen)

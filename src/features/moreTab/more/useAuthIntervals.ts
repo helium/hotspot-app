@@ -12,7 +12,7 @@ export default () => {
   return [
     {
       label: t('more.sections.security.authIntervals.immediately'),
-      value: 0,
+      value: 5 * MILLIS_IN_SECOND,
     },
     {
       label: t('more.sections.security.authIntervals.after_1_min'),
