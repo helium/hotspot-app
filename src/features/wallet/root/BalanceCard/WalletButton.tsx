@@ -31,13 +31,13 @@ const WalletButton = ({ variant, onPress, disabled }: Props) => {
       >
         {variant === 'send' && (
           <Send
-            width={wp(5.5)}
+            height={17.5}
             color={disabled ? colors.purple500 : colors.blueBright}
           />
         )}
         {variant === 'receive' && (
           <Receive
-            width={wp(5.5)}
+            height={17.5}
             color={disabled ? colors.purple500 : colors.greenBright}
           />
         )}
