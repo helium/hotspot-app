@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import haptic from '../utils/haptic'
 import Box from './Box'
@@ -38,7 +38,7 @@ const Keypad = ({ onNumberPress, onCancel, onBackspacePress }: Props) => {
   const { t } = useTranslation()
   const colors = useColors()
 
-  const renderDynamicButton = () => {
+  const renderDynamicButton = useMemo(() => {
     if (onCancel) {
       return (
         <Key onPressIn={onCancel}>
@@ -54,7 +54,19 @@ const Keypad = ({ onNumberPress, onCancel, onBackspacePress }: Props) => {
       )
     }
     return <Box flexBasis="33%" />
-  }
+  }, [onCancel, t])
+
+  const onPressIn = useCallback(
+    (value: number) => () => {
+      haptic()
+      onNumberPress(value)
+    },
+    [onNumberPress],
+  )
+  const handleBackspace = useCallback(() => {
+    haptic()
+    onBackspacePress()
+  }, [onBackspacePress])
 
   return (
     <Box
@@ -68,26 +80,20 @@ const Keypad = ({ onNumberPress, onCancel, onBackspacePress }: Props) => {
           alignItems="center"
           marginBottom="xs"
           flexBasis="33%"
-          onPressIn={() => {
-            haptic()
-            onNumberPress(idx + 1)
-          }}
+          onPressIn={onPressIn(idx + 1)}
           key={idx}
         >
           <Text variant="keypad">{idx + 1}</Text>
         </TouchableCircle>
       ))}
 
-      {renderDynamicButton()}
+      {renderDynamicButton}
 
       <TouchableCircle
         alignItems="center"
         marginBottom="xs"
         flexBasis="33%"
-        onPressIn={() => {
-          haptic()
-          onNumberPress(0)
-        }}
+        onPressIn={onPressIn(0)}
       >
         <Text variant="keypad">{0}</Text>
       </TouchableCircle>
@@ -95,10 +101,7 @@ const Keypad = ({ onNumberPress, onCancel, onBackspacePress }: Props) => {
         alignItems="center"
         marginBottom="xs"
         flexBasis="33%"
-        onPressIn={() => {
-          haptic()
-          onBackspacePress()
-        }}
+        onPressIn={handleBackspace}
       >
         <Backspace color={colors.white} height={24} width={24} />
       </TouchableCircle>

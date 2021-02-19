@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import Text from '../../../components/Text'
@@ -38,6 +38,14 @@ const AccountCreatePinScreen = () => {
     return unsubscribe
   }, [navigation])
 
+  const handleBackspace = useCallback(() => {
+    setPin((val) => val.slice(0, -1))
+  }, [])
+
+  const handleNumber = useCallback((num: number) => {
+    setPin((val) => (val.length < 6 ? val + num : val))
+  }, [])
+
   return (
     <Box
       backgroundColor="primaryBackground"
@@ -54,12 +62,8 @@ const AccountCreatePinScreen = () => {
       <Text variant="body1">{t('account_setup.create_pin.subtitle')}</Text>
       <PinDisplay length={pin.length} marginVertical="xl" />
       <Keypad
-        onBackspacePress={() => {
-          setPin((val) => val.slice(0, -1))
-        }}
-        onNumberPress={(num) => {
-          setPin((val) => (val.length < 6 ? val + num : val))
-        }}
+        onBackspacePress={handleBackspace}
+        onNumberPress={handleNumber}
         onCancel={pinReset ? navigation.goBack : undefined}
       />
       <Box flex={1} />
