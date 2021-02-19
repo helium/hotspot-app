@@ -1,10 +1,10 @@
 import React, {
   memo,
-  useRef,
-  useState,
+  useCallback,
   useEffect,
   useMemo,
-  useCallback,
+  useRef,
+  useState,
 } from 'react'
 import MapboxGL, {
   OnPressEvent,
@@ -15,10 +15,14 @@ import { Feature, GeoJsonProperties, Point, Position } from 'geojson'
 import { Hotspot } from '@helium/http'
 import { BoxProps } from '@shopify/restyle'
 import { StyleProp, ViewStyle } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import Box from './Box'
+import Text from './Text'
+import NoLocation from '../assets/images/no-location.svg'
 import { hotspotsToFeatures } from '../utils/mapUtils'
 import CurrentLocationButton from './CurrentLocationButton'
 import { Theme } from '../theme/theme'
+import { useColors } from '../theme/themeHooks'
 
 const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
 
@@ -41,6 +45,7 @@ type Props = BoxProps<Theme> & {
   minZoomLevel?: number
   interactive?: boolean
   showUserLocation?: boolean
+  showNoLocation?: boolean
 }
 const Map = ({
   onMapMoved,
@@ -60,8 +65,11 @@ const Map = ({
   minZoomLevel = 0,
   interactive = true,
   onFeatureSelected = () => {},
+  showNoLocation,
   ...props
 }: Props) => {
+  const colors = useColors()
+  const { t } = useTranslation()
   const map = useRef<MapboxGL.MapView>(null)
   const camera = useRef<MapboxGL.Camera>(null)
   const [loaded, setLoaded] = useState(false)
@@ -214,6 +222,26 @@ const Map = ({
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
     <Box {...props}>
+      {showNoLocation && (
+        <Box
+          position="absolute"
+          zIndex={100}
+          top={0}
+          left={0}
+          right={0}
+          bottom={250}
+          justifyContent="center"
+          alignItems="center"
+        >
+          <NoLocation color={colors.blueChecklist} />
+          <Text variant="h2" color="white" marginTop="m">
+            {t('hotspot_details.no_location_title')}
+          </Text>
+          <Text variant="body2" color="purpleMuted" marginTop="s">
+            {t('hotspot_details.no_location_body')}
+          </Text>
+        </Box>
+      )}
       <MapboxGL.MapView
         ref={map}
         onRegionDidChange={onRegionDidChange}
