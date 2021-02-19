@@ -177,11 +177,12 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
     [],
   )
 
-  const hasLocation = useMemo(
-    () =>
-      selectedHotspot?.lat !== undefined && selectedHotspot?.lng !== undefined,
-    [selectedHotspot],
-  )
+  const hasLocation = useMemo(() => {
+    if (!selectedHotspot) return true
+    return (
+      selectedHotspot?.lat !== undefined && selectedHotspot?.lng !== undefined
+    )
+  }, [selectedHotspot])
   const selectedHotspots = useMemo(
     () => (selectedHotspot && hasLocation ? [selectedHotspot] : undefined),
     [selectedHotspot, hasLocation],
