@@ -141,10 +141,10 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.helium.wallet.v3"
+        applicationId "com.helium.wallet"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
+        versionCode 9000000
         versionName "3.0.0"
     }
     splits {
