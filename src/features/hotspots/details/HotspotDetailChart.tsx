@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TFunction } from 'i18next'
 import { ActivityIndicator, Platform } from 'react-native'
@@ -15,7 +15,6 @@ type Props = {
   change?: number
   percentage?: number
   data: ChartData[]
-  color: string
   loading?: boolean
   subTitle?: string
 }
@@ -53,7 +52,14 @@ const NumberBox = ({
   change?: number
 }) => (
   <>
-    <Text variant="light" fontSize={28} color="black" marginBottom="s">
+    <Text
+      variant="light"
+      fontSize={32}
+      color="grayDarkText"
+      marginBottom="s"
+      numberOfLines={1}
+      adjustsFontSizeToFit
+    >
       {focusedData ? focusedData.up : number}
     </Text>
     {change !== undefined && !focusedData ? (
@@ -76,23 +82,24 @@ const NumberBox = ({
 const HotspotDetailChart = ({
   title,
   number,
-  change,
+  change = 0,
   percentage,
   data,
-  color,
   loading,
   subTitle,
 }: Props) => {
   const { t } = useTranslation()
-  const { redMedium, black, grayLight, grayMain } = useColors()
+  const { black, grayLight, grayMain, purpleMain, greenOnline } = useColors()
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
-  const onFocus = (chartData: ChartData | null) => {
+
+  const onFocus = useCallback((chartData: ChartData | null) => {
     if (Platform.OS === 'ios') {
       // this animation causes layout issues on Android
       animateTransition()
     }
     setFocusedData(chartData)
-  }
+  }, [])
+
   return (
     <Box marginBottom="m" paddingHorizontal="l">
       <Box
@@ -114,7 +121,7 @@ const HotspotDetailChart = ({
       <Box
         backgroundColor="grayBox"
         padding="l"
-        borderRadius="m"
+        borderRadius="l"
         flexDirection="row"
         justifyContent={loading ? 'center' : 'space-between'}
         alignItems="center"
@@ -133,8 +140,8 @@ const HotspotDetailChart = ({
                 />
               ) : (
                 <NumberBox
-                  negativeColor={redMedium}
-                  positiveColor={color}
+                  negativeColor={purpleMain}
+                  positiveColor={greenOnline}
                   focusedData={focusedData}
                   number={number}
                   change={change}
@@ -143,17 +150,18 @@ const HotspotDetailChart = ({
             </Box>
             <Box width="60%">
               <ChartContainer
-                height={75}
+                height={90}
                 data={data}
                 onFocus={onFocus}
                 showXAxisLabel={false}
-                upColor={color}
+                upColor={change >= 0 ? greenOnline : purpleMain}
                 downColor={grayLight}
                 labelColor={black}
               />
-              <Text variant="body3" color="black" paddingTop="xs">
+              {/* TODO removing this for now to fit the design better */}
+              {/* <Text variant="body3" color="black" paddingTop="xs">
                 {focusedData ? focusedData.day : ' '}
-              </Text>
+              </Text> */}
             </Box>
           </>
         )}

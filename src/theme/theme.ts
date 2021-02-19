@@ -25,6 +25,7 @@ const palette = {
   grayBox: '#F6F7FE',
   grayBlack: '#1C1C1C',
   grayText: '#667394',
+  grayDarkText: '#515686',
   grayLightText: '#A7AACD',
 
   redMain: '#F97570',
