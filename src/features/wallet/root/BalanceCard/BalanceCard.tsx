@@ -12,13 +12,15 @@ import { getAddress } from '../../../../utils/secureAccount'
 import { hp, wp } from '../../../../utils/layout'
 import CopyAddressButton from './AddressCopyButton'
 import ShareButton from './ShareButton'
+import { WalletLayout } from '../walletLayout'
 
 type Props = {
   onReceivePress: () => void
   onSendPress: () => void
+  layout: WalletLayout
 }
 
-const BalanceCard = ({ onReceivePress, onSendPress }: Props) => {
+const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
   const { result: address, loading: loadingAddress } = useAsync(getAddress, [])
   const {
     account: { account },
@@ -36,7 +38,7 @@ const BalanceCard = ({ onReceivePress, onSendPress }: Props) => {
       paddingHorizontal="l"
       borderRadius="l"
     >
-      <Box height={hp(18)} justifyContent="center">
+      <Box height={layout.balanceHeight} justifyContent="center">
         <AnimatedBox
           flexDirection="row"
           justifyContent="space-between"
@@ -76,7 +78,11 @@ const BalanceCard = ({ onReceivePress, onSendPress }: Props) => {
           </Box>
         </AnimatedBox>
 
-        <Box flexDirection="row" marginTop="m">
+        <Box
+          flexDirection="row"
+          paddingTop="m"
+          height={layout.altCurrencyHeight}
+        >
           <CurrencyBadge
             variant="dc"
             amount={account?.dcBalance?.integerBalance || 0}

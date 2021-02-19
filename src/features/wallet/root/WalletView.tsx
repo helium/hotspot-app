@@ -120,6 +120,7 @@ const WalletView = ({
       </Box>
       <Animated.View style={balanceCardStyles}>
         <BalanceCard
+          layout={layout}
           onReceivePress={toggleShowReceive}
           onSendPress={handleSendPress}
         />
