@@ -3,6 +3,7 @@ import {
   PendingTransaction,
   PaymentV2 as HttpPaymentV2,
   AssertLocationV1 as HttpAssertLocationV1,
+  AddGatewayV1 as HttpAddGatewayV1,
 } from '@helium/http'
 import {
   AddGatewayV1,
@@ -103,6 +104,26 @@ const populatePendingTxn = (
       gatewaySignature: '',
       fee: new Balance(pending.fee, CurrencyType.dataCredit),
     } as HttpAssertLocationV1
+
+    return data
+  }
+
+  if (txn instanceof AddGatewayV1) {
+    const pending = txn as AddGatewayV1
+
+    const data = {
+      type: pending.type,
+      stakingFee: new Balance(pending.stakingFee, CurrencyType.dataCredit),
+      payerSignature: '',
+      payer: pending.payer?.b58 || '',
+      ownerSignature: '',
+      owner: pending.owner?.b58 || '',
+      height: blockHeight,
+      hash,
+      gateway: pending.gateway?.b58 || '',
+      gatewaySignature: '',
+      fee: new Balance(pending.fee, CurrencyType.dataCredit),
+    } as HttpAddGatewayV1
 
     return data
   }
