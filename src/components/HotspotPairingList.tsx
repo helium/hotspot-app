@@ -19,6 +19,9 @@ const imagesByHotspotName: Record<string, any> = {
   'Nebra Outdoor Hotspot': (
     <Image source={require('../assets/images/nebra-outdoor-hotspot.png')} />
   ),
+  'SyncroB.it Hotspot': (
+    <Image source={require('../assets/images/syncrobit-hotspot.png')} />
+  ),
 }
 
 const HotspotPairingList = ({
