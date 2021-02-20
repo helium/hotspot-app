@@ -135,7 +135,7 @@ export default {
       rak: 'RAK\nHotspot Miner',
       nebrain: 'Nebra\nIndoor Hotspot',
       nebraout: 'Nebra\nOutdoor Hotspot',
-      syncrobit: 'SyncroB.it Hotspot',
+      syncrobit: 'SyncroB.it\nHotspot',
       third_party_header: 'Other Hotspots',
       helium_edition: 'For the Helium Network',
       fine_print:
