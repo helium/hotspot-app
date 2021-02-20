@@ -131,7 +131,22 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  * on project.ext.react, JavaScript will not be compiled to Hermes Bytecode
  * and the benefits of using Hermes will therefore be sharply reduced.
  */
-def enableHermes = project.ext.react.get("enableHermes", false);
+def enableHermes = project.ext.react.get("enableHermes", false)
+
+/**
+ * Used to increment the version code for Microsoft App Center builds
+ */
+def getVersionCode = { ->
+    def isAppCenter = System.getenv('APPCENTER_BUILD_ID') != null
+    if (isAppCenter) {
+        try {
+            def appcenterBuildId = Integer.parseInt(System.getenv('APPCENTER_BUILD_ID'))
+            def versionCodeOffset = Integer.parseInt(System.getenv('VERSION_CODE_OFFSET'))
+            return versionCodeOffset + appcenterBuildId
+        } catch (ignored) {}
+    }
+    return 4400000 // default higher for local builds - app center is 4300000 + build number
+}
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -145,7 +160,7 @@ android {
         applicationId "com.helium.wallet"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 9000000
+        versionCode getVersionCode()
         versionName "3.0.0"
     }
     splits {
