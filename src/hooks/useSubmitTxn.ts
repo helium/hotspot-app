@@ -1,9 +1,13 @@
 import Balance, { CurrencyType } from '@helium/currency'
-import { PendingTransaction, PaymentV2 as HttpPayment } from '@helium/http'
+import {
+  PendingTransaction,
+  PaymentV2 as HttpPaymentV2,
+  AssertLocationV1 as HttpAssertLocationV1,
+} from '@helium/http'
 import {
   AddGatewayV1,
   AssertLocationV1,
-  PaymentV2 as PaymentTxn,
+  PaymentV2,
   TokenBurnV1,
   TransferHotspotV1,
 } from '@helium/transactions'
@@ -15,7 +19,7 @@ import { useAppDispatch } from '../store/store'
 import { submitTransaction } from '../utils/appDataClient'
 
 type SignableTransaction =
-  | PaymentTxn
+  | PaymentV2
   | AddGatewayV1
   | AssertLocationV1
   | TokenBurnV1
@@ -55,8 +59,8 @@ const populatePendingTxn = (
   blockHeight: number,
   hash: string,
 ) => {
-  if (txn instanceof PaymentTxn) {
-    const pending = txn as PaymentTxn
+  if (txn instanceof PaymentV2) {
+    const pending = txn as PaymentV2
 
     const data = {
       type: pending.type,
@@ -69,7 +73,7 @@ const populatePendingTxn = (
       })),
       height: blockHeight,
       hash,
-    } as HttpPayment
+    } as HttpPaymentV2
 
     let totalAmount = new Balance(0, CurrencyType.networkToken)
     data.payments.forEach((p) => {
@@ -77,6 +81,28 @@ const populatePendingTxn = (
     })
 
     data.totalAmount = totalAmount
+
+    return data
+  }
+
+  if (txn instanceof AssertLocationV1) {
+    const pending = txn as AssertLocationV1
+
+    const data = {
+      type: pending.type,
+      stakingFee: new Balance(pending.stakingFee, CurrencyType.dataCredit),
+      payerSignature: '',
+      payer: pending.payer?.b58 || '',
+      ownerSignature: '',
+      owner: pending.owner?.b58 || '',
+      nonce: pending.nonce,
+      location: pending.location,
+      height: blockHeight,
+      hash,
+      gateway: pending.gateway?.b58 || '',
+      gatewaySignature: '',
+      fee: new Balance(pending.fee, CurrencyType.dataCredit),
+    } as HttpAssertLocationV1
 
     return data
   }

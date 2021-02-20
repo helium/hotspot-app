@@ -45,6 +45,8 @@ const HotspotTransaction = ({ item, address }: Props) => {
   )
     return null
 
+  const gateway = addGateway.gateway || addGateway?.txn?.gateway
+
   return (
     <Box flex={1} marginBottom="xl">
       <Box
@@ -55,7 +57,7 @@ const HotspotTransaction = ({ item, address }: Props) => {
       >
         <LittleHotspot />
         <Text variant="medium" fontSize={15} color="black" marginLeft="s">
-          {animalName(addGateway.gateway)}
+          {gateway ? animalName(gateway) : 'Hotspot'}
         </Text>
       </Box>
 
@@ -63,7 +65,11 @@ const HotspotTransaction = ({ item, address }: Props) => {
         <PaymentItem
           isFirst
           isLast
-          text={`${geoInfo?.city}, ${geoInfo?.region}`}
+          text={
+            geoInfo
+              ? `${geoInfo?.city}, ${geoInfo?.region}`
+              : assertLoc?.txn?.location
+          }
           subText={geoInfo?.country}
           mode="location"
         />
