@@ -1,17 +1,16 @@
-import React, { useRef, memo, useCallback, useState, useMemo } from 'react'
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
 import BottomSheet from '@gorhom/bottom-sheet'
-import Search from '@assets/images/search.svg'
 import Qr from '@assets/images/qr.svg'
 import { AnyTransaction, PendingTransaction } from '@helium/http'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import BalanceCard from './BalanceCard/BalanceCard'
 import {
-  withWalletLayout,
   WalletAnimationPoints,
   WalletLayout,
+  withWalletLayout,
 } from './walletLayout'
 import { triggerNavHaptic } from '../../../utils/haptic'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
@@ -51,10 +50,6 @@ const WalletViewContainer = ({
 
   const [activityCardIndex, setActivityCardIndex] = useState(1)
   const [balanceSheetIndex, setBalanceSheetIndex] = useState(0)
-
-  const handlePress = useCallback(() => {
-    triggerNavHaptic()
-  }, [])
 
   const navScan = useCallback(() => {
     triggerNavHaptic()
@@ -96,10 +91,7 @@ const WalletViewContainer = ({
           {t('wallet.title')}
         </Text>
 
-        <Box flexDirection="row" justifyContent="space-between" width={85}>
-          <TouchableOpacityBox onPress={handlePress} padding="s">
-            <Search width={22} height={22} />
-          </TouchableOpacityBox>
+        <Box flexDirection="row" justifyContent="flex-end">
           <TouchableOpacityBox onPress={navScan} padding="s">
             <Qr width={22} height={22} color="white" />
           </TouchableOpacityBox>
