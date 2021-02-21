@@ -41,6 +41,7 @@ const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
     >
       <Bars />
       <ModalPicker
+        minWidth={110}
         marginHorizontal="xs"
         prefix={t('hotspot_details.picker_title')}
         data={data}
