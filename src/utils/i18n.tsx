@@ -8,6 +8,24 @@ import ja from '../locales/ja'
 import zh from '../locales/zh'
 import { getSecureItem, setSecureItem } from './secureAccount'
 
+const locales = RNLocalize.getLocales()
+
+let phoneLang = 'en'
+if (Array.isArray(locales)) {
+  phoneLang = locales[0].languageTag
+}
+
+i18n.use(initReactI18next).init({
+  resources: {
+    ko: { translation: ko },
+    en: { translation: en },
+    zh: { translation: zh },
+    ja: { translation: ja },
+  },
+  lng: phoneLang,
+  fallbackLng: ['en'],
+})
+
 export const SUPPORTED_LANGUAGUES = [
   { label: 'English', value: 'en' },
   { label: '中文', value: 'zh' }, // chinese
@@ -24,38 +42,11 @@ export const useLanguage = () => {
   }, [])
 
   const initLanguage = useCallback(async () => {
-    const locales = RNLocalize.getLocales()
-
-    let phonelang = 'en'
-    if (Array.isArray(locales)) {
-      phonelang = locales[0].languageTag
+    const lang = await getSecureItem('language')
+    if (lang) {
+      changeLanguage(lang)
     }
-    let lang = await getSecureItem('language')
-    if (!lang) {
-      lang = phonelang
-      setSecureItem('language', lang)
-    }
-
-    i18n.use(initReactI18next).init({
-      resources: {
-        ko: { translation: ko },
-        en: { translation: en },
-        zh: { translation: zh },
-        ja: { translation: ja },
-      },
-      lng: lang,
-      fallbackLng: ['en'],
-    })
-
-    setLanguage(lang)
-  }, [])
-
-  useEffect(() => {
-    const setlang = async () => {
-      const lang = await getSecureItem('language')
-      setLanguage(lang || '')
-    }
-    setlang()
+    setLanguage(lang || phoneLang)
   }, [])
 
   const changeLanguage = (lang: string) => {
