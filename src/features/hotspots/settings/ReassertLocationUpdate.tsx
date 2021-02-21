@@ -155,7 +155,6 @@ const ReassertLocationUpdate = ({
         top={0}
         left={0}
         right={0}
-        // backgroundColor="redMain"
       >
         <Text
           variant="bold"

@@ -7,7 +7,6 @@ const makeRequest = async (url: string, opts: RequestInit) => {
   Logger.breadcrumb(`request: ${opts.method} ${url}`)
   try {
     const token = await getWalletApiToken()
-    // const token = undefined
     if (!token) {
       Logger.breadcrumb('no token')
       throw new Error('no token')
