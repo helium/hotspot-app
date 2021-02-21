@@ -15,6 +15,7 @@ import ReassertLocationFee from './ReassertLocationFee'
 import ReassertLocationUpdate from './ReassertLocationUpdate'
 import * as Logger from '../../../utils/logger'
 import { useHotspotSettingsContext } from './HotspotSettingsProvider'
+import ReassertAddressSearch from './ReassertAddressSearch'
 
 type Coords = { latitude: number; longitude: number }
 const DEFAULT_FEE_DATA = {
@@ -27,9 +28,9 @@ const DEFAULT_FEE_DATA = {
 }
 type Props = { onFinished: () => void }
 const ReassertLocation = ({ onFinished }: Props) => {
-  const [state, setState] = useState<'fee' | 'update' | 'confirm' | 'success'>(
-    'fee',
-  )
+  const [state, setState] = useState<
+    'fee' | 'update' | 'confirm' | 'success' | 'search'
+  >('fee')
   const [locationAddress, setLocationAddress] = useState<
     LocationGeocodedAddress | undefined
   >()
@@ -125,7 +126,7 @@ const ReassertLocation = ({ onFinished }: Props) => {
           locationAddress={locationAddress}
           onChangeLocation={() => {
             animateTransition()
-            setState('update')
+            setState('search')
           }}
         />
       )
@@ -142,6 +143,8 @@ const ReassertLocation = ({ onFinished }: Props) => {
           }}
         />
       )
+    case 'search':
+      return <ReassertAddressSearch />
     case 'confirm':
       return (
         <ReassertLocationUpdate
