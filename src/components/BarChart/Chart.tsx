@@ -136,7 +136,9 @@ const BarChart = ({
   const panResponder = useMemo(
     () =>
       PanResponder.create({
-        onMoveShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponder: (e, gestureState) => {
+          return Math.abs(gestureState.dy) < 10
+        },
         onPanResponderMove: (evt) => {
           const dataIndex = findDataIndex(evt.nativeEvent.locationX)
           setFocusedBar(data[dataIndex])
