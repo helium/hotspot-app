@@ -14,7 +14,6 @@ import {
 import { useTranslation } from 'react-i18next'
 import Balance, { DataCredits, NetworkTokens } from '@helium/currency'
 import { startCase } from 'lodash'
-import { useSelector } from 'react-redux'
 import { useColors } from '../../../theme/themeHooks'
 import { isPayer } from '../../../utils/transactions'
 import Rewards from '../../../assets/images/rewards.svg'
@@ -25,8 +24,7 @@ import ReceivedHnt from '../../../assets/images/receivedHNT.svg'
 import Location from '../../../assets/images/location.svg'
 import Burn from '../../../assets/images/burn.svg'
 import shortLocale from '../../../utils/formatDistance'
-import { locale } from '../../../utils/i18n'
-import { RootState } from '../../../store/rootReducer'
+import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
 
 export const TxnTypeKeys = [
   'rewards_v1',
@@ -42,9 +40,6 @@ type TxnType = typeof TxnTypeKeys[number]
 const useActivityItem = (address: string) => {
   const colors = useColors()
   const { t } = useTranslation()
-  const {
-    app: { groupSeparator, decimalSeparator },
-  } = useSelector((state: RootState) => state)
 
   const isSending = useCallback(
     (item: AnyTransaction | PendingTransaction) => {
@@ -209,7 +204,7 @@ const useActivityItem = (address: string) => {
         decimalSeparator,
       })}`
     },
-    [decimalSeparator, groupSeparator],
+    [],
   )
 
   const fee = useCallback(

@@ -137,20 +137,6 @@ const MoreScreen = () => {
     [changeLanguage],
   )
 
-  const handleGroupSeparatorChange = useCallback(
-    (value: string) => {
-      dispatch(appSlice.actions.updateGroupSeparator(value))
-    },
-    [dispatch],
-  )
-
-  const handleDecimalSeparatorChange = useCallback(
-    (value: string) => {
-      dispatch(appSlice.actions.updateDecimalSeparator(value))
-    },
-    [dispatch],
-  )
-
   const handleIntervalSelected = useCallback(
     (value: string) => {
       dispatch(appSlice.actions.updateAuthInterval(parseInt(value, 10)))
@@ -248,28 +234,6 @@ const MoreScreen = () => {
             },
           },
           {
-            title: t('numbers.setting_thousands'),
-            value: app.groupSeparator,
-            select: {
-              items: [
-                { label: t('numbers.comma'), value: ',' },
-                { label: t('numbers.period'), value: '.' },
-              ],
-              onValueSelect: handleGroupSeparatorChange,
-            },
-          },
-          {
-            title: t('numbers.setting_decimal'),
-            value: app.decimalSeparator,
-            select: {
-              items: [
-                { label: t('numbers.period'), value: '.' },
-                { label: t('numbers.comma'), value: ',' },
-              ],
-              onValueSelect: handleDecimalSeparatorChange,
-            },
-          },
-          {
             title: t('more.sections.account.signOut'),
             onPress: handleSignOut,
             destructive: true,
@@ -282,15 +246,11 @@ const MoreScreen = () => {
     t,
     handlePinRequired,
     app.isPinRequired,
-    app.groupSeparator,
-    app.decimalSeparator,
     app.authInterval,
     app.isPinRequiredForPayment,
     handleRevealWords,
     language,
     handleLanguageChange,
-    handleGroupSeparatorChange,
-    handleDecimalSeparatorChange,
     handleSignOut,
     version,
     authIntervals,

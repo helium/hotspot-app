@@ -10,7 +10,9 @@ import { getSecureItem, setSecureItem } from './secureAccount'
 
 const locales = RNLocalize.getLocales()
 
-export const numberFormatSettings = RNLocalize.getNumberFormatSettings()
+const numberFormatSettings = RNLocalize.getNumberFormatSettings()
+export const groupSeparator = numberFormatSettings.groupingSeparator
+export const { decimalSeparator } = numberFormatSettings
 
 let phoneLang = 'en'
 if (Array.isArray(locales)) {

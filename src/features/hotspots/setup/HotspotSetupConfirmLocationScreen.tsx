@@ -16,6 +16,7 @@ import Map from '../../../components/Map'
 import Text from '../../../components/Text'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import { RootState } from '../../../store/rootReducer'
+import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
 
 type Route = RouteProp<
   HotspotSetupStackParamList,
@@ -27,7 +28,6 @@ const HotspotSetupConfirmLocationScreen = () => {
   const navigation = useNavigation<HotspotSetupNavigationProp>()
   const { loadLocationFeeData } = useConnectedHotspotContext()
   const {
-    app: { groupSeparator, decimalSeparator },
     account: { account },
   } = useSelector((state: RootState) => state)
   const { loading, result } = useAsync(loadLocationFeeData, [])

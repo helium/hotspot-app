@@ -5,6 +5,7 @@ import Box from '../../../components/Box'
 import EmojiBlip from '../../../components/EmojiBlip'
 import Text from '../../../components/Text'
 import { RootState } from '../../../store/rootReducer'
+import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
 
 const TimeOfDayTitle = ({ date }: { date: Date }) => {
   const { t } = useTranslation()
@@ -27,7 +28,6 @@ const WelcomeOverview = () => {
   const { t } = useTranslation()
 
   const {
-    app: { groupSeparator, decimalSeparator },
     hotspots: { hotspots, totalRewards },
   } = useSelector((state: RootState) => state)
 

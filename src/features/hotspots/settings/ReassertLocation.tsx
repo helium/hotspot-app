@@ -15,6 +15,7 @@ import ReassertLocationFee from './ReassertLocationFee'
 import ReassertLocationUpdate from './ReassertLocationUpdate'
 import * as Logger from '../../../utils/logger'
 import { useHotspotSettingsContext } from './HotspotSettingsProvider'
+import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
 
 type Coords = { latitude: number; longitude: number }
 const DEFAULT_FEE_DATA = {
@@ -36,7 +37,7 @@ const ReassertLocation = ({ onFinished }: Props) => {
   const [updatedLocation, setUpdatedLocation] = useState<Coords | undefined>()
   const dispatch = useAppDispatch()
   const {
-    app: { currentLocation, groupSeparator, decimalSeparator },
+    app: { currentLocation },
   } = useSelector((s: RootState) => s)
 
   const { loadLocationFeeData } = useConnectedHotspotContext()

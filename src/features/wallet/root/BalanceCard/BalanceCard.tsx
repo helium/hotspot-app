@@ -13,6 +13,7 @@ import { hp, wp } from '../../../../utils/layout'
 import CopyAddressButton from './AddressCopyButton'
 import ShareButton from './ShareButton'
 import { WalletLayout } from '../walletLayout'
+import { decimalSeparator, groupSeparator } from '../../../../utils/i18n'
 
 type Props = {
   onReceivePress: () => void
@@ -23,7 +24,6 @@ type Props = {
 const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
   const { result: address, loading: loadingAddress } = useAsync(getAddress, [])
   const {
-    app: { decimalSeparator, groupSeparator },
     account: { account },
   } = useSelector((state: RootState) => state)
 

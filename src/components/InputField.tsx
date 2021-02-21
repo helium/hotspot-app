@@ -1,11 +1,10 @@
 import React, { useRef } from 'react'
 import { TextInput, TouchableWithoutFeedback } from 'react-native'
 import CurrencyInput from 'react-native-currency-input'
-import { useSelector } from 'react-redux'
 import Box from './Box'
 import Text from './Text'
 import InputLock from '../assets/images/input-lock.svg'
-import { RootState } from '../store/rootReducer'
+import { decimalSeparator, groupSeparator } from '../utils/i18n'
 
 // TODO want to use this but need to forward refs
 // import TextInput from '../../../components/TextInput'
@@ -42,9 +41,6 @@ const InputField = ({
   numberPlaceholder,
 }: Props) => {
   const inputRef = useRef<TextInput | null>(null)
-  const {
-    app: { decimalSeparator, groupSeparator },
-  } = useSelector((state: RootState) => state)
 
   const handleFocus = () => {
     inputRef.current?.focus()

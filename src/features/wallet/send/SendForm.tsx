@@ -16,7 +16,7 @@ import LockedHeader from '../../../components/LockedHeader'
 import LockedField from '../../../components/LockedField'
 import { SendType } from './sendTypes'
 import { Transfer } from '../../hotspots/transfers/TransferRequests'
-import { locale } from '../../../utils/i18n'
+import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
 
 type Props = {
   isValid: boolean
@@ -295,7 +295,8 @@ const FeeFooter = ({ fee }: { fee: Balance<NetworkTokens> }) => {
   return (
     <Box marginTop="xs">
       <Text variant="mono" color="grayText" fontSize={11}>
-        +{fee.toString(8)} {t('generic.fee').toUpperCase()}
+        +{fee.toString(8, { decimalSeparator, groupSeparator })}{' '}
+        {t('generic.fee').toUpperCase()}
       </Text>
     </Box>
   )

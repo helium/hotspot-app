@@ -50,6 +50,7 @@ import Text from '../../../components/Text'
 import { fromNow } from '../../../utils/timeUtils'
 import useSubmitTxn from '../../../hooks/useSubmitTxn'
 import { ensLookup } from '../../../utils/explorerClient'
+import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
 
 type Props = {
   scanResult?: QrScanResult
@@ -300,7 +301,10 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       Alert.alert(
         t('transfer.amount_changed_alert_title'),
         t('transfer.amount_changed_alert_body', {
-          amount: transfer?.amountToSeller?.floatBalance.toString(),
+          amount: transfer?.amountToSeller?.toString(undefined, {
+            groupSeparator,
+            decimalSeparator,
+          }),
         }),
       )
       throw new Error('transfer amount changed')

@@ -7,7 +7,6 @@ import {
   signOut,
 } from '../../utils/secureAccount'
 import { getCurrentPosition, LocationCoords } from '../../utils/location'
-import { numberFormatSettings } from '../../utils/i18n'
 
 export type AppState = {
   isBackedUp: boolean
@@ -22,8 +21,6 @@ export type AppState = {
   currentLocation?: LocationCoords
   isLoadingLocation: boolean
   appStateStatus: AppStateStatus
-  groupSeparator: string
-  decimalSeparator: string
 }
 const initialState: AppState = {
   isBackedUp: false,
@@ -37,8 +34,6 @@ const initialState: AppState = {
   isRequestingPermission: false,
   isLoadingLocation: false,
   appStateStatus: 'unknown',
-  groupSeparator: numberFormatSettings.groupingSeparator,
-  decimalSeparator: numberFormatSettings.decimalSeparator,
 }
 
 type Restore = {
@@ -47,8 +42,6 @@ type Restore = {
   isPinRequiredForPayment: boolean
   authInterval: number
   isLocked: boolean
-  groupSeparator: string
-  decimalSeparator: string
 }
 
 export const restoreUser = createAsyncThunk<Restore>(
@@ -59,8 +52,6 @@ export const restoreUser = createAsyncThunk<Restore>(
       getSecureItem('requirePin'),
       getSecureItem('requirePinForPayment'),
       getSecureItem('authInterval'),
-      getSecureItem('groupSeparator'),
-      getSecureItem('decimalSeparator'),
     ])
     return {
       isBackedUp: vals[0],
@@ -68,15 +59,12 @@ export const restoreUser = createAsyncThunk<Restore>(
       isPinRequiredForPayment: vals[2],
       authInterval: vals[3] ? parseInt(vals[3], 10) : 0,
       isLocked: vals[1],
-      groupSeparator: vals[4] || numberFormatSettings.groupingSeparator,
-      decimalSeparator: vals[5] || numberFormatSettings.decimalSeparator,
     }
   },
 )
 
-export const getLocation = createAsyncThunk<Location>(
-  'app/location',
-  async () => getCurrentPosition(),
+export const getLocation = createAsyncThunk('app/location', async () =>
+  getCurrentPosition(),
 )
 
 // This slice contains data related to the state of the app
@@ -105,14 +93,6 @@ const appSlice = createSlice({
     updateAuthInterval: (state, action: PayloadAction<number>) => {
       state.authInterval = action.payload
       setSecureItem('authInterval', action.payload.toString())
-    },
-    updateGroupSeparator: (state, action: PayloadAction<string>) => {
-      state.groupSeparator = action.payload
-      setSecureItem('groupSeparator', action.payload.toString())
-    },
-    updateDecimalSeparator: (state, action: PayloadAction<string>) => {
-      state.decimalSeparator = action.payload
-      setSecureItem('decimalSeparator', action.payload.toString())
     },
     disablePin: (state) => {
       deleteSecureItem('requirePin')
