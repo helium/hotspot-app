@@ -3,9 +3,9 @@ import { Alert } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
 import Balance, {
-  NetworkTokens,
   CurrencyType,
   DataCredits,
+  NetworkTokens,
 } from '@helium/currency'
 import { Address } from '@helium/crypto-react-native'
 import { useAsync } from 'react-async-hook'
@@ -67,11 +67,11 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   const [address, setAddress] = useState<string>('')
   const [addressAlias, setAddressAlias] = useState<string>()
   const [addressLoading, setAddressLoading] = useState(false)
-  const [amount, setAmount] = useState<string>('')
+  const [amount, setAmount] = useState<number | null>(null)
   const [balanceAmount, setBalanceAmount] = useState<Balance<NetworkTokens>>(
     new Balance(0, CurrencyType.networkToken),
   )
-  const [dcAmount, setDcAmount] = useState<string>('')
+  const [dcAmount, setDcAmount] = useState<number>(0)
   const [memo, setMemo] = useState<string>('')
   const [isLocked, setIsLocked] = useState(false)
   const [isValid, setIsValid] = useState(false)
@@ -131,7 +131,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       setIsLocked(!!scanResult?.amount)
       setType(scanResult.type)
       setAddress(scanResult.address)
-      if (scanResult?.amount) handleAmountChange(scanResult?.amount)
+      if (scanResult?.amount) setAmount(parseFloat(scanResult?.amount))
       if (scanResult?.memo) setMemo(scanResult?.memo)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -143,7 +143,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       const balanceDc = await networkTokensToDataCredits(balanceAmount)
       // TODO option to not return currency ticker in balance
       // TODO might need to round up in DC conversion in he-js
-      setDcAmount(balanceDc.toString(0).slice(0, -3))
+      setDcAmount(Math.ceil(balanceDc.floatBalance))
     }
   }, [type, balanceAmount])
 
@@ -245,14 +245,14 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     if (!balance) return
 
     if (fee > balance) {
-      handleAmountChange(balance.floatBalance.toString())
+      setAmount(balance.floatBalance)
       return
     }
 
     const maxAmount = balance.minus(fee)
 
     // TODO option to not return currency ticker in balance
-    handleAmountChange(maxAmount.toString(8).slice(0, -4))
+    setAmount(maxAmount.floatBalance)
   }
 
   const unlockForm = () => {
@@ -406,28 +406,9 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     setAddress(newAddress)
   }, [])
 
-  const handleAmountChange = useCallback((stringAmount: string) => {
-    if (stringAmount === '.' || stringAmount.includes('NaN')) {
-      setAmount('0.')
-      setBalanceAmount(new Balance(0, CurrencyType.networkToken))
-      return
-    }
-    const rawAmount = stringAmount.split(',').join('')
-    const rawInteger = (stringAmount.split('.')[0] || stringAmount)
-      .split(',')
-      .join('')
-    const integer = parseInt(rawInteger, 10).toLocaleString()
-    let decimal = stringAmount.split('.')[1]
-    if (integer === 'NaN') {
-      setAmount('')
-      setBalanceAmount(new Balance(0, CurrencyType.networkToken))
-      return
-    }
-    if (decimal && decimal.length >= 9) decimal = decimal.slice(0, 8)
-    setAmount(stringAmount.includes('.') ? `${integer}.${decimal}` : integer)
-    setBalanceAmount(
-      new Balance(parseFloat(rawAmount) * 100000000, CurrencyType.networkToken),
-    )
+  const handleAmountChange = useCallback((value: number) => {
+    setAmount(value)
+    setBalanceAmount(new Balance(value * 100000000, CurrencyType.networkToken))
   }, [])
 
   return (

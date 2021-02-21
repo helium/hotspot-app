@@ -793,4 +793,10 @@ export default {
     complete: 'COMPLETE',
     online: 'ONLINE',
   },
+  numbers: {
+    setting_thousands: 'Thousands Separator',
+    setting_decimal: 'Decimal Separator',
+    comma: 'Comma',
+    period: 'Period',
+  },
 }

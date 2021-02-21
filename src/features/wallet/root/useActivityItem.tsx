@@ -1,15 +1,15 @@
 import React, { useCallback } from 'react'
 import { format, formatDistanceToNow, fromUnixTime } from 'date-fns'
 import {
-  RewardsV1,
   AddGatewayV1,
-  AssertLocationV1,
-  PaymentV2,
-  PaymentV1,
-  TransferHotspotV1,
-  TokenBurnV1,
   AnyTransaction,
+  AssertLocationV1,
+  PaymentV1,
+  PaymentV2,
   PendingTransaction,
+  RewardsV1,
+  TokenBurnV1,
+  TransferHotspotV1,
 } from '@helium/http'
 import { useTranslation } from 'react-i18next'
 import Balance, { DataCredits, NetworkTokens } from '@helium/currency'
@@ -24,6 +24,7 @@ import ReceivedHnt from '../../../assets/images/receivedHNT.svg'
 import Location from '../../../assets/images/location.svg'
 import Burn from '../../../assets/images/burn.svg'
 import shortLocale from '../../../utils/formatDistance'
+import { locale } from '../../../utils/i18n'
 
 export const TxnTypeKeys = [
   'rewards_v1',
@@ -189,7 +190,7 @@ const useActivityItem = (address: string) => {
 
     if (typeof amount === 'number') {
       if (amount === 0) return '0'
-      return `${prefix}${amount.toLocaleString('en-US', {
+      return `${prefix}${amount.toLocaleString(locale, {
         maximumFractionDigits: 8,
       })}`
     }

@@ -1,5 +1,5 @@
-import { PaymentV1, AnyTransaction, PendingTransaction } from '@helium/http'
-import React, { useEffect, useRef, useCallback, memo } from 'react'
+import { AnyTransaction, PaymentV1, PendingTransaction } from '@helium/http'
+import React, { memo, useCallback, useEffect, useRef } from 'react'
 import { Linking } from 'react-native'
 import {
   BottomSheetBackdrop,
@@ -23,6 +23,7 @@ import { getSecureItem } from '../../../../utils/secureAccount'
 import UnknownTransaction from './UnknownTransaction'
 import { useAppDispatch } from '../../../../store/store'
 import activitySlice from '../../../../store/activity/activitySlice'
+import { locale } from '../../../../utils/i18n'
 
 const DF = 'MM/dd/yyyy hh:mm a'
 type Props = { detailTxn?: AnyTransaction | PendingTransaction }
@@ -138,9 +139,9 @@ const ActivityDetails = ({ detailTxn }: Props) => {
                   color="white"
                   marginRight="s"
                 >
-                  {`${t(
-                    'activity_details.view_block',
-                  )} ${block?.toLocaleString()}`}
+                  {`${t('activity_details.view_block')} ${block?.toLocaleString(
+                    locale,
+                  )}`}
                 </Text>
                 <LinkImg />
               </TouchableOpacityBox>

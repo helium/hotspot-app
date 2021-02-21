@@ -1,8 +1,11 @@
 import React, { useRef } from 'react'
 import { TextInput, TouchableWithoutFeedback } from 'react-native'
+import CurrencyInput from 'react-native-currency-input'
+import { useSelector } from 'react-redux'
 import Box from './Box'
 import Text from './Text'
 import InputLock from '../assets/images/input-lock.svg'
+import { RootState } from '../store/rootReducer'
 
 // TODO want to use this but need to forward refs
 // import TextInput from '../../../components/TextInput'
@@ -13,10 +16,14 @@ type Props = {
   extra?: any
   footer?: any
   type?: 'default' | 'numeric'
-  onChange: (text: string) => void
+  onChange?: (text: string) => void
+  onChangeNumber?: (text: number) => void
   locked?: boolean
   defaultValue?: string
   value?: string
+  numberValue?: number | null
+  numberPrecision?: number
+  numberPlaceholder?: string
 }
 
 const InputField = ({
@@ -29,8 +36,15 @@ const InputField = ({
   locked = false,
   defaultValue,
   value,
+  numberValue = null,
+  onChangeNumber,
+  numberPrecision = 8,
+  numberPlaceholder,
 }: Props) => {
   const inputRef = useRef<TextInput | null>(null)
+  const {
+    app: { decimalSeparator, groupSeparator },
+  } = useSelector((state: RootState) => state)
 
   const handleFocus = () => {
     inputRef.current?.focus()
@@ -57,30 +71,57 @@ const InputField = ({
           {extra !== undefined && extra}
         </Box>
         <Box paddingVertical="s">
-          <TextInput
-            placeholder={placeholder}
-            ref={inputRef}
-            onChangeText={onChange}
-            defaultValue={defaultValue}
-            editable={!locked}
-            multiline
-            blurOnSubmit
-            autoCompleteType="off"
-            textContentType="none"
-            autoCapitalize="none"
-            autoCorrect={false}
-            dataDetectorTypes="none"
-            keyboardAppearance="dark"
-            keyboardType={type}
-            value={value}
-            style={{
-              fontFamily: 'InputMono-Regular',
-              fontSize: 15,
-              lineHeight: 20,
-              letterSpacing: 0.7,
-            }}
-            returnKeyType="done"
-          />
+          {type === 'numeric' ? (
+            <CurrencyInput
+              placeholder={numberPlaceholder || `0${decimalSeparator}00000000`}
+              ref={inputRef}
+              value={numberValue}
+              onChangeValue={onChangeNumber}
+              delimiter={groupSeparator}
+              separator={decimalSeparator}
+              precision={numberPrecision}
+              ignoreNegative
+              blurOnSubmit
+              autoCompleteType="off"
+              textContentType="none"
+              autoCapitalize="none"
+              autoCorrect={false}
+              dataDetectorTypes="none"
+              keyboardAppearance="dark"
+              style={{
+                fontFamily: 'InputMono-Regular',
+                fontSize: 15,
+                lineHeight: 20,
+                letterSpacing: 0.7,
+              }}
+              returnKeyType="done"
+            />
+          ) : (
+            <TextInput
+              placeholder={placeholder}
+              ref={inputRef}
+              onChangeText={onChange}
+              defaultValue={defaultValue}
+              editable={!locked}
+              multiline
+              blurOnSubmit
+              autoCompleteType="off"
+              textContentType="none"
+              autoCapitalize="none"
+              autoCorrect={false}
+              dataDetectorTypes="none"
+              keyboardAppearance="dark"
+              keyboardType={type}
+              value={value}
+              style={{
+                fontFamily: 'InputMono-Regular',
+                fontSize: 15,
+                lineHeight: 20,
+                letterSpacing: 0.7,
+              }}
+              returnKeyType="done"
+            />
+          )}
         </Box>
         {footer !== undefined && footer}
       </Box>

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useEffect, memo } from 'react'
+import React, { memo, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, SectionList } from 'react-native'
 import { useSelector } from 'react-redux'
@@ -137,6 +137,20 @@ const MoreScreen = () => {
     [changeLanguage],
   )
 
+  const handleGroupSeparatorChange = useCallback(
+    (value: string) => {
+      dispatch(appSlice.actions.updateGroupSeparator(value))
+    },
+    [dispatch],
+  )
+
+  const handleDecimalSeparatorChange = useCallback(
+    (value: string) => {
+      dispatch(appSlice.actions.updateDecimalSeparator(value))
+    },
+    [dispatch],
+  )
+
   const handleIntervalSelected = useCallback(
     (value: string) => {
       dispatch(appSlice.actions.updateAuthInterval(parseInt(value, 10)))
@@ -234,6 +248,28 @@ const MoreScreen = () => {
             },
           },
           {
+            title: t('numbers.setting_thousands'),
+            value: app.groupSeparator,
+            select: {
+              items: [
+                { label: t('numbers.comma'), value: ',' },
+                { label: t('numbers.period'), value: '.' },
+              ],
+              onValueSelect: handleGroupSeparatorChange,
+            },
+          },
+          {
+            title: t('numbers.setting_decimal'),
+            value: app.decimalSeparator,
+            select: {
+              items: [
+                { label: t('numbers.period'), value: '.' },
+                { label: t('numbers.comma'), value: ',' },
+              ],
+              onValueSelect: handleDecimalSeparatorChange,
+            },
+          },
+          {
             title: t('more.sections.account.signOut'),
             onPress: handleSignOut,
             destructive: true,
@@ -243,18 +279,24 @@ const MoreScreen = () => {
       },
     ]
   }, [
-    app,
-    handleSignOut,
-    version,
-    handlePinRequiredForPayment,
     t,
     handlePinRequired,
-    handleResetPin,
+    app.isPinRequired,
+    app.groupSeparator,
+    app.decimalSeparator,
+    app.authInterval,
+    app.isPinRequiredForPayment,
+    handleRevealWords,
+    language,
+    handleLanguageChange,
+    handleGroupSeparatorChange,
+    handleDecimalSeparatorChange,
+    handleSignOut,
+    version,
     authIntervals,
     handleIntervalSelected,
-    handleRevealWords,
-    handleLanguageChange,
-    language,
+    handleResetPin,
+    handlePinRequiredForPayment,
   ])
 
   return (

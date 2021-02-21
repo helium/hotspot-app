@@ -10,6 +10,8 @@ import { getSecureItem, setSecureItem } from './secureAccount'
 
 const locales = RNLocalize.getLocales()
 
+export const numberFormatSettings = RNLocalize.getNumberFormatSettings()
+
 let phoneLang = 'en'
 if (Array.isArray(locales)) {
   phoneLang = locales[0].languageTag
@@ -25,6 +27,8 @@ i18n.use(initReactI18next).init({
   lng: phoneLang,
   fallbackLng: ['en'],
 })
+
+export const locale = phoneLang
 
 export const SUPPORTED_LANGUAGUES = [
   { label: 'English', value: 'en' },
