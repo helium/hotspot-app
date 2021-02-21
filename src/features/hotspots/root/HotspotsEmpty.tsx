@@ -1,6 +1,7 @@
 import { useNavigation } from '@react-navigation/native'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+import { Linking } from 'react-native'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
 import HotspotIcon from '../../../assets/images/blueHotspotIcon.svg'
@@ -10,6 +11,8 @@ import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 const HotspotsEmpty = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<RootNavigationProp>()
+  const goToExplorer = () =>
+    Linking.openURL('https://explorer.helium.com/coverage')
   return (
     <Box justifyContent="center" flex={1} padding="l">
       <HotspotIcon />
@@ -27,10 +30,7 @@ const HotspotsEmpty = () => {
         variant="primary"
         title={t('hotspots.new.setup')}
       />
-      <Button
-        // onPress={this.goToHotspotExplorer}
-        title={t('hotspots.new.explorer')}
-      />
+      <Button onPress={goToExplorer} title={t('hotspots.new.explorer')} />
     </Box>
   )
 }

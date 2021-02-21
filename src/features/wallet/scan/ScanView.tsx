@@ -13,11 +13,15 @@ import { wp } from '../../../utils/layout'
 import Close from '../../../assets/images/close.svg'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { triggerNavHaptic, triggerNotification } from '../../../utils/haptic'
-import { QrScanResult } from './scanTypes'
+import { QrScanResult, ScanType } from './scanTypes'
 import BSHandle from '../../../components/BSHandle'
 import { useSpacing } from '../../../theme/themeHooks'
 
-const ScanView = () => {
+type Props = {
+  scanType?: ScanType
+  showBottomSheet?: boolean
+}
+const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
   const { t } = useTranslation()
   const [scanned, setScanned] = useState(false)
   const navigation = useNavigation()
@@ -59,7 +63,7 @@ const ScanView = () => {
   const parseBarCodeData = (data: string): QrScanResult => {
     if (Address.isValid(data)) {
       return {
-        type: 'payment',
+        type: scanType,
         address: data,
       }
     }
@@ -115,62 +119,64 @@ const ScanView = () => {
       <Box flex={0.7} justifyContent="center" alignItems="center">
         <Crosshair width={wp(65)} height={wp(65)} color="white" />
       </Box>
-      <BottomSheet snapPoints={[260, 400]} handleComponent={BSHandle}>
-        <BottomSheetScrollView style={{ padding: spacing.m }}>
-          <Box>
-            <Text
-              variant="subtitleBold"
-              color="black"
-              fontSize={18}
-              marginBottom="s"
-            >
-              {t('send.scan.title')}
-            </Text>
-            <Box marginBottom="s">
+      {showBottomSheet && (
+        <BottomSheet snapPoints={[260, 400]} handleComponent={BSHandle}>
+          <BottomSheetScrollView style={{ padding: spacing.m }}>
+            <Box>
               <Text
                 variant="subtitleBold"
                 color="black"
-                fontSize={16}
-                marginBottom="xxs"
+                fontSize={18}
+                marginBottom="s"
               >
-                {t('send.scan.send')}
+                {t('send.scan.title')}
               </Text>
-              <Text marginBottom="xs">{t('send.scan.send_description')}</Text>
-              <Text variant="body2Bold" color="blueMain">
-                {t('send.scan.learn_more')}
-              </Text>
+              <Box marginBottom="s">
+                <Text
+                  variant="subtitleBold"
+                  color="black"
+                  fontSize={16}
+                  marginBottom="xxs"
+                >
+                  {t('send.scan.send')}
+                </Text>
+                <Text marginBottom="xs">{t('send.scan.send_description')}</Text>
+                <Text variant="body2Bold" color="blueMain">
+                  {t('send.scan.learn_more')}
+                </Text>
+              </Box>
+              <Box marginBottom="s">
+                <Text
+                  variant="subtitleBold"
+                  color="black"
+                  fontSize={16}
+                  marginBottom="xxs"
+                >
+                  {t('send.scan.burn')}
+                </Text>
+                <Text marginBottom="xs">{t('send.scan.burn_description')}</Text>
+                <Text variant="body2Bold" color="blueMain">
+                  {t('send.scan.learn_more')}
+                </Text>
+              </Box>
+              <Box marginBottom="s">
+                <Text
+                  variant="subtitleBold"
+                  color="black"
+                  fontSize={16}
+                  marginBottom="xxs"
+                >
+                  {t('send.scan.view')}
+                </Text>
+                <Text marginBottom="xs">{t('send.scan.view_description')}</Text>
+                <Text variant="body2Bold" color="blueMain">
+                  {t('send.scan.learn_more')}
+                </Text>
+              </Box>
             </Box>
-            <Box marginBottom="s">
-              <Text
-                variant="subtitleBold"
-                color="black"
-                fontSize={16}
-                marginBottom="xxs"
-              >
-                {t('send.scan.burn')}
-              </Text>
-              <Text marginBottom="xs">{t('send.scan.burn_description')}</Text>
-              <Text variant="body2Bold" color="blueMain">
-                {t('send.scan.learn_more')}
-              </Text>
-            </Box>
-            <Box marginBottom="s">
-              <Text
-                variant="subtitleBold"
-                color="black"
-                fontSize={16}
-                marginBottom="xxs"
-              >
-                {t('send.scan.view')}
-              </Text>
-              <Text marginBottom="xs">{t('send.scan.view_description')}</Text>
-              <Text variant="body2Bold" color="blueMain">
-                {t('send.scan.learn_more')}
-              </Text>
-            </Box>
-          </Box>
-        </BottomSheetScrollView>
-      </BottomSheet>
+          </BottomSheetScrollView>
+        </BottomSheet>
+      )}
     </Box>
   )
 }

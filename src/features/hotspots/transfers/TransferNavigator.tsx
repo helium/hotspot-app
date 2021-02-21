@@ -30,7 +30,11 @@ const TransferNavigator = ({ route }: Props) => {
         component={SendScreen}
         initialParams={{ type: 'transfer', hotspot, isSeller }}
       />
-      <TransferStack.Screen name="SendScan" component={ScanScreen} />
+      <TransferStack.Screen
+        name="SendScan"
+        component={ScanScreen}
+        initialParams={{ type: 'transfer', showBottomSheet: false }}
+      />
       <TransferStack.Screen
         name="SendComplete"
         component={SendCompleteScreen}
