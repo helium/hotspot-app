@@ -83,11 +83,7 @@ const BalanceCard = ({ onReceivePress, onSendPress }: Props) => {
           />
           <CurrencyBadge
             variant="hst"
-            amount={
-              account?.secBalance
-                ? parseFloat(account.secBalance.toString())
-                : 0
-            }
+            amount={account?.secBalance?.floatBalance || 0}
           />
         </Box>
       </Box>
