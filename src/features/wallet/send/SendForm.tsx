@@ -25,13 +25,13 @@ type Props = {
   address: string
   addressAlias?: string
   addressLoading?: boolean
-  amount: number | null
-  dcAmount: number
+  amount: string
+  dcAmount: string
   memo: string
   fee: Balance<NetworkTokens>
   onAddressChange: (text: string) => void
-  onAmountChange: (text: number) => void
-  onDcAmountChange: (text: number) => void
+  onAmountChange: (text: string) => void
+  onDcAmountChange: (text: string) => void
   onMemoChange: (text: string) => void
   onScanPress: () => void
   onSendMaxPress: () => void
@@ -91,7 +91,7 @@ const SendForm = ({
       <LockedField label={t('send.address.label')} value={address} />
       <LockedField
         label={t('send.amount.label')}
-        value={amount ? amount.toLocaleString(locale) : ''}
+        value={amount}
         footer={amount ? <FeeFooter fee={fee} /> : undefined}
         bottom
       />
@@ -104,13 +104,10 @@ const SendForm = ({
       <LockedField label={t('send.address.label')} value={address} />
       <LockedField
         label={t('send.amount.label')}
-        value={amount ? amount.toLocaleString(locale) : ''}
+        value={amount}
         footer={amount ? <FeeFooter fee={fee} /> : undefined}
       />
-      <LockedField
-        label={t('send.dcAmount.label')}
-        value={dcAmount.toLocaleString(locale)}
-      />
+      <LockedField label={t('send.dcAmount.label')} value={dcAmount} />
       <LockedField label={t('send.memo.label')} value={memo} bottom />
     </Box>
   )
@@ -133,8 +130,9 @@ const SendForm = ({
       />
       <InputField
         type="numeric"
-        onChangeNumber={onAmountChange}
-        numberValue={amount}
+        defaultValue={amount}
+        onChange={onAmountChange}
+        value={amount}
         label={t('send.amount.label')}
         placeholder={t('send.amount.placeholder')}
         extra={
@@ -175,18 +173,17 @@ const SendForm = ({
       />
       <InputField
         type="numeric"
-        onChangeNumber={onAmountChange}
-        numberValue={amount}
+        defaultValue={amount}
+        onChange={onAmountChange}
+        value={amount}
         label={t('send.amount.label')}
         placeholder={t('send.amount.placeholder')}
         footer={amount ? <FeeFooter fee={fee} /> : undefined}
       />
       <InputField
         type="numeric"
-        numberValue={dcAmount}
-        onChangeNumber={onDcAmountChange}
-        numberPrecision={0}
-        numberPlaceholder="0"
+        defaultValue={dcAmount}
+        onChange={onDcAmountChange}
         label={t('send.dcAmount.label')}
         placeholder={t('send.dcAmount.placeholder')}
       />
@@ -225,8 +222,9 @@ const SendForm = ({
       />
       <InputField
         type="numeric"
-        onChangeNumber={onAmountChange}
-        numberValue={amount}
+        defaultValue={amount}
+        onChange={onAmountChange}
+        value={amount}
         label={t('send.amount.label_transfer')}
         placeholder={t('send.amount.placeholder_transfer')}
       />
