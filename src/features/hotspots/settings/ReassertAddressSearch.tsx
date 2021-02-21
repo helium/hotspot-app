@@ -1,16 +1,17 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { memo, useCallback, useMemo, useState } from 'react'
 import { Keyboard, SectionList, TextInput } from 'react-native'
 import { useDebouncedCallback } from 'use-debounce'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import { useSpacing } from '../../../theme/themeHooks'
+import { useColors, useSpacing } from '../../../theme/themeHooks'
 import {
   autocompleteAddress,
   AutocompleteSearchResult,
   getPlaceGeography,
   PlaceGeography,
 } from '../../../utils/googlePlaces'
+import { hp } from '../../../utils/layout'
 
 type Props = {
   onSelectPlace: (placeGeography: PlaceGeography) => void
@@ -18,6 +19,7 @@ type Props = {
 
 const ReassertAddressSearch = ({ onSelectPlace }: Props) => {
   const spacing = useSpacing()
+  const colors = useColors()
 
   const [searchResults, setSearchResults] = useState<
     AutocompleteSearchResult[]
@@ -64,12 +66,13 @@ const ReassertAddressSearch = ({ onSelectPlace }: Props) => {
         <TextInput
           onChangeText={handleSearchChange}
           placeholder="Search for an address or place"
+          placeholderTextColor={colors.grayLightText}
           autoFocus
           autoCorrect={false}
         />
       </Box>
     )
-  }, [handleSearchChange])
+  }, [colors.grayLightText, handleSearchChange])
 
   const renderItem = useCallback(
     ({ item: searchResult }) => {
@@ -100,15 +103,17 @@ const ReassertAddressSearch = ({ onSelectPlace }: Props) => {
   )
 
   return (
-    <SectionList
-      keyExtractor={(item) => item.placeId}
-      sections={sections}
-      renderSectionHeader={renderHeader}
-      renderItem={renderItem}
-      contentContainerStyle={contentContainerStyle}
-      keyboardShouldPersistTaps="handled"
-    />
+    <Box minHeight={hp(50)} padding="l" paddingTop="lx">
+      <SectionList
+        keyExtractor={(item) => item.placeId}
+        sections={sections}
+        renderSectionHeader={renderHeader}
+        renderItem={renderItem}
+        contentContainerStyle={contentContainerStyle}
+        keyboardShouldPersistTaps="handled"
+      />
+    </Box>
   )
 }
 
-export default ReassertAddressSearch
+export default memo(ReassertAddressSearch)

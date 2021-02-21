@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo, useState } from 'react'
 import { BottomSheetSectionList } from '@gorhom/bottom-sheet'
 import { Keyboard, TextInput } from 'react-native'
-import { useDebouncedCallback } from 'use-debounce/lib'
+import { useDebouncedCallback } from 'use-debounce'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'

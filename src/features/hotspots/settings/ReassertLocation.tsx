@@ -16,6 +16,7 @@ import ReassertLocationUpdate from './ReassertLocationUpdate'
 import * as Logger from '../../../utils/logger'
 import { useHotspotSettingsContext } from './HotspotSettingsProvider'
 import ReassertAddressSearch from './ReassertAddressSearch'
+import { PlaceGeography } from '../../../utils/googlePlaces'
 
 type Coords = { latitude: number; longitude: number }
 const DEFAULT_FEE_DATA = {
@@ -114,6 +115,18 @@ const ReassertLocation = ({ onFinished }: Props) => {
     onFinished()
   }
 
+  const handleSearch = useCallback(() => {
+    animateTransition()
+    setState('search')
+  }, [])
+
+  const handleSearchSelectPlace = useCallback((place: PlaceGeography) => {
+    const { lat, lng } = place
+    setUpdatedLocation({ latitude: lat, longitude: lng })
+    animateTransition()
+    setState('confirm')
+  }, [])
+
   const amount = feeData.isFree
     ? 'O DC'
     : feeData.totalStakingAmountDC.toString()
@@ -126,7 +139,7 @@ const ReassertLocation = ({ onFinished }: Props) => {
           locationAddress={locationAddress}
           onChangeLocation={() => {
             animateTransition()
-            setState('search')
+            setState('update')
           }}
         />
       )
@@ -136,6 +149,7 @@ const ReassertLocation = ({ onFinished }: Props) => {
           amount={amount}
           key={state}
           onCancel={handleBack}
+          onSearch={handleSearch}
           locationSelected={(latitude, longitude) => {
             setUpdatedLocation({ latitude, longitude })
             animateTransition()
@@ -144,7 +158,7 @@ const ReassertLocation = ({ onFinished }: Props) => {
         />
       )
     case 'search':
-      return <ReassertAddressSearch />
+      return <ReassertAddressSearch onSelectPlace={handleSearchSelectPlace} />
     case 'confirm':
       return (
         <ReassertLocationUpdate
@@ -154,6 +168,7 @@ const ReassertLocation = ({ onFinished }: Props) => {
           confirming
           coords={updatedLocation}
           onFailure={handleFailure}
+          onSearch={handleSearch}
           onSuccess={() => {
             setState('success')
           }}

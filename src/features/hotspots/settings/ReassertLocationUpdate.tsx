@@ -1,19 +1,7 @@
-import React, {
-  memo,
-  useEffect,
-  useState,
-  useCallback,
-  useMemo,
-  useRef,
-} from 'react'
+import React, { memo, useEffect, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Position } from 'geojson'
 import { useSelector } from 'react-redux'
-import {
-  BottomSheetBackdrop,
-  BottomSheetModal,
-  BottomSheetModalProvider,
-} from '@gorhom/bottom-sheet'
 import Search from '@assets/images/search.svg'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -29,8 +17,6 @@ import { RootState } from '../../../store/rootReducer'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import sleep from '../../../utils/sleep'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import AddressSearchModal from '../../../components/AddressSearchModal'
-import BSHandle from '../../../components/BSHandle'
 
 type Props = {
   confirming?: boolean
@@ -40,6 +26,7 @@ type Props = {
   onCancel: () => void
   onSuccess?: () => void
   onFailure?: (err: unknown) => void
+  onSearch?: () => void
 }
 const ReassertLocationUpdate = ({
   confirming,
@@ -49,6 +36,7 @@ const ReassertLocationUpdate = ({
   onSuccess,
   onFailure,
   onCancel,
+  onSearch,
 }: Props) => {
   const { t } = useTranslation()
   const [markerCenter, setMarkerCenter] = useState([0, 0])
@@ -60,7 +48,6 @@ const ReassertLocationUpdate = ({
     connectedHotspot: { address: hotspotAddress, details },
   } = useSelector((s: RootState) => s)
   const { assertLocationTxn } = useConnectedHotspotContext()
-  const searchModal = useRef<BottomSheetModal>(null)
 
   const onMapMoved = useCallback(async (newCoords?: Position) => {
     if (newCoords) {
@@ -130,15 +117,8 @@ const ReassertLocationUpdate = ({
   }, [submitOnboardingTxns])
 
   const handleSearchPress = useCallback(() => {
-    searchModal.current?.present()
-  }, [])
-
-  const searchSnapPoints = useMemo(() => ['85%'], [])
-
-  const handleSelectPlace = useCallback((placeGeography: PlaceGeography) => {
-    // setMapCenter([placeGeography.lng, placeGeography.lat])
-    searchModal.current?.dismiss()
-  }, [])
+    onSearch?.()
+  }, [onSearch])
 
   useEffect(() => {
     const sleepThenEnable = async () => {
@@ -264,14 +244,6 @@ const ReassertLocationUpdate = ({
           />
         </Box>
       </Box>
-      <BottomSheetModal
-        ref={searchModal}
-        snapPoints={searchSnapPoints}
-        handleComponent={BSHandle}
-        backdropComponent={BottomSheetBackdrop}
-      >
-        <AddressSearchModal onSelectPlace={handleSelectPlace} />
-      </BottomSheetModal>
     </Box>
   )
 }
