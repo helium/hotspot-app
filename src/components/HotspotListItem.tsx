@@ -1,11 +1,13 @@
 import { Hotspot } from '@helium/http'
 import Balance, { NetworkTokens } from '@helium/currency'
 import animalName from 'angry-purple-tiger'
+import { useTranslation } from 'react-i18next'
+import CheckCircle from '@assets/images/check-circle.svg'
+import Attention from '@assets/images/attention.svg'
+import CarotRight from '@assets/images/carot-right.svg'
 import React from 'react'
 import TouchableOpacityBox from './BSTouchableOpacityBox'
 import Box from './Box'
-import CheckCircle from '../assets/images/check-circle.svg'
-import CarotRight from '../assets/images/carot-right.svg'
 import Text from './Text'
 import { decimalSeparator, groupSeparator } from '../utils/i18n'
 
@@ -22,6 +24,8 @@ const HotspotListItem = ({
   totalReward,
   showCarot = false,
 }: HotspotListItemProps) => {
+  const { t } = useTranslation()
+
   return (
     <TouchableOpacityBox
       backgroundColor="grayBox"
@@ -30,7 +34,6 @@ const HotspotListItem = ({
       alignItems="center"
       padding="m"
       borderRadius="m"
-      height={75}
       onPress={() => onPress?.(hotspot)}
     >
       <Box
@@ -40,11 +43,15 @@ const HotspotListItem = ({
         flex={1}
       >
         <Box flexDirection="column">
-          <Box flexDirection="row" alignItems="center">
-            <CheckCircle width={17} height={17} />
+          <Box flexDirection="row" alignItems="center" marginBottom="xxs">
+            {hotspot.status?.online === 'online' ? (
+              <CheckCircle width={17} height={17} />
+            ) : (
+              <Attention width={17} height={17} />
+            )}
             <Text
               variant="body2Medium"
-              color="black"
+              color="offblack"
               paddingStart="s"
               ellipsizeMode="tail"
               numberOfLines={2}
@@ -53,7 +60,19 @@ const HotspotListItem = ({
               {animalName(hotspot.address)}
             </Text>
           </Box>
-          <Text variant="body2" color="purpleMain" paddingTop="s">
+          <Box marginTop="xs">
+            <Text variant="body3Light" color="blueGray">
+              {hotspot.location
+                ? `${hotspot.geocode?.longStreet}, ${hotspot.geocode?.longCity}, ${hotspot.geocode?.shortCountry}`
+                : t('hotspot_details.no_location_title')}
+            </Text>
+          </Box>
+          <Text
+            variant="body1Light"
+            fontSize={16}
+            color="purpleMain"
+            paddingTop="s"
+          >
             {`+${totalReward.toString(2, {
               groupSeparator,
               decimalSeparator,
