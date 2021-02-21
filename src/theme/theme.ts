@@ -8,6 +8,7 @@ const palette = {
   white: '#FFFFFF',
   whiteTransparent: '#FFFFFF66',
   offwhite: '#F9FAFC',
+  offblack: '#1E2051',
 
   blueGrayLight: '#CDD7E5',
   blueGray: '#33414E',
@@ -262,6 +263,11 @@ export const theme = createTheme({
     body2Medium: { ...textVariants.body2, ...textVariants.medium },
     body2Bold: { ...textVariants.body2, ...textVariants.bold },
     body2Mono: { ...textVariants.body2, ...textVariants.mono },
+
+    body3Light: { ...textVariants.body3, ...textVariants.light },
+    body3Medium: { ...textVariants.body3, ...textVariants.medium },
+    body3Bold: { ...textVariants.body3, ...textVariants.bold },
+    body3Mono: { ...textVariants.body3, ...textVariants.mono },
 
     subtitleLight: {
       ...textVariants.subtitle,
