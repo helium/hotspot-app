@@ -42,6 +42,9 @@ const ActivityCardListView = ({ data, hasNoResults }: Props) => {
       if (item instanceof AssertLocationV1 || item instanceof AddGatewayV1) {
         return animalName(item.gateway)
       }
+      if (item?.txn?.gateway) {
+        return animalName(item.txn.gateway)
+      }
       return amount(item)
     },
     [amount],

@@ -31,6 +31,8 @@ const HotspotSetupDiagnosticsScreen = () => {
       case 'NEBRAIN':
       case 'NEBRAOUT':
         return 'hotspot_setup.diagnostics.nebra_p_1'
+      case 'SYNCROBIT':
+        return 'hotspot_setup.diagnostics.syncrobit_p_1'
     }
   }
 
