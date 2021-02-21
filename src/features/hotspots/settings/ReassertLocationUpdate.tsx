@@ -2,6 +2,7 @@ import React, { memo, useEffect, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Position } from 'geojson'
 import { useSelector } from 'react-redux'
+import Search from '@assets/images/search.svg'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import Map from '../../../components/Map'
@@ -15,6 +16,7 @@ import CircleLoader from '../../../components/CircleLoader'
 import { RootState } from '../../../store/rootReducer'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import sleep from '../../../utils/sleep'
+import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 
 type Props = {
   confirming?: boolean
@@ -24,6 +26,7 @@ type Props = {
   onCancel: () => void
   onSuccess?: () => void
   onFailure?: (err: unknown) => void
+  onSearch?: () => void
 }
 const ReassertLocationUpdate = ({
   confirming,
@@ -33,6 +36,7 @@ const ReassertLocationUpdate = ({
   onSuccess,
   onFailure,
   onCancel,
+  onSearch,
 }: Props) => {
   const { t } = useTranslation()
   const [markerCenter, setMarkerCenter] = useState([0, 0])
@@ -44,6 +48,7 @@ const ReassertLocationUpdate = ({
     connectedHotspot: { address: hotspotAddress, details },
   } = useSelector((s: RootState) => s)
   const { assertLocationTxn } = useConnectedHotspotContext()
+
   const onMapMoved = useCallback(async (newCoords?: Position) => {
     if (newCoords) {
       setMarkerCenter(newCoords)
@@ -57,20 +62,24 @@ const ReassertLocationUpdate = ({
     }
   }, [])
 
-  const finish = (success: boolean, message?: unknown) => {
-    setLoading(false)
-    if (success) {
-      onSuccess?.()
-    } else {
-      onFailure?.(
-        message ||
-          `There was an error updating location for hotspot ${
-            hotspotAddress || ''
-          }`,
-      )
-    }
-  }
-  const submitOnboardingTxns = async () => {
+  const finish = useCallback(
+    (success: boolean, message?: unknown) => {
+      setLoading(false)
+      if (success) {
+        onSuccess?.()
+      } else {
+        onFailure?.(
+          message ||
+            `There was an error updating location for hotspot ${
+              hotspotAddress || ''
+            }`,
+        )
+      }
+    },
+    [hotspotAddress, onFailure, onSuccess],
+  )
+
+  const submitOnboardingTxns = useCallback(async () => {
     const isOnChain = !!details // verify the hotspot exists
     if (!hotspotAddress || !isOnChain || !coords) {
       finish(false)
@@ -91,13 +100,25 @@ const ReassertLocationUpdate = ({
     } catch (error) {
       onFailure?.(error)
     }
-  }
+  }, [
+    assertLocationTxn,
+    coords,
+    details,
+    finish,
+    hotspotAddress,
+    onFailure,
+    onSuccess,
+  ])
 
-  const handleAssert = () => {
+  const handleAssert = useCallback(() => {
     animateTransition()
     setLoading(true)
     submitOnboardingTxns()
-  }
+  }, [submitOnboardingTxns])
+
+  const handleSearchPress = useCallback(() => {
+    onSearch?.()
+  }, [onSearch])
 
   useEffect(() => {
     const sleepThenEnable = async () => {
@@ -126,7 +147,15 @@ const ReassertLocationUpdate = ({
         </Box>
       )}
 
-      <Box position="absolute" zIndex={10000} top={0} left={0} right={0}>
+      <Box
+        position="absolute"
+        flexDirection="row"
+        justifyContent="space-between"
+        zIndex={10000}
+        top={0}
+        left={0}
+        right={0}
+      >
         <Text
           variant="bold"
           fontSize={15}
@@ -136,6 +165,9 @@ const ReassertLocationUpdate = ({
         >
           {locationName}
         </Text>
+        <TouchableOpacityBox onPress={handleSearchPress} padding="lm">
+          <Search width={30} height={30} />
+        </TouchableOpacityBox>
       </Box>
 
       <Map

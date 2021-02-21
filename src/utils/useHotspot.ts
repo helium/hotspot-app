@@ -372,8 +372,12 @@ const useHotspot = () => {
   }
 
   const assertLocationTxn = async (lat: number, lng: number) => {
-    if (!connectedHotspot.current || !connectedHotspotDetails.onboardingAddress)
+    if (
+      !connectedHotspot.current ||
+      !connectedHotspotDetails.onboardingAddress
+    ) {
       return false
+    }
 
     const isFree = hasFreeLocationAssert()
 
@@ -382,15 +386,19 @@ const useHotspot = () => {
       uuid,
       connectedHotspot.current,
     )
-    if (!characteristic) return false
+    if (!characteristic) {
+      return false
+    }
 
     const owner = await getSecureItem('address')
     const payer = isFree
       ? connectedHotspotDetails.onboardingRecord?.maker.address
       : ''
-    if (!payer || !owner) return false
+    if (!owner || payer === undefined) {
+      return false
+    }
 
-    const nonce = connectedHotspotDetails?.details?.nonce || 0
+    const nonce = (connectedHotspotDetails?.details?.nonce || 0) + 1
     const { fee } = calculateAssertLocFee(owner, payer, nonce)
     const amount = Transaction.stakingFeeTxnAssertLocationV1
 
@@ -410,18 +418,22 @@ const useHotspot = () => {
 
     const txn = await makeAssertLocTxn(value)
 
-    const stakingServerSignedTxnStr = await getStakingSignedTransaction(
-      connectedHotspotDetails.onboardingAddress,
-      txn.toString(),
-    )
+    let finalTxn = txn
 
-    const stakingServerSignedTxn = AssertLocationV1.fromString(
-      stakingServerSignedTxnStr,
-    )
+    if (isFree) {
+      const stakingServerSignedTxn = await getStakingSignedTransaction(
+        connectedHotspotDetails.onboardingAddress,
+        txn.toString(),
+      )
+      finalTxn = AssertLocationV1.fromString(stakingServerSignedTxn)
+    }
+
+    console.log('staking server signed', finalTxn)
 
     try {
-      const pendingTransaction = await submitTxn(stakingServerSignedTxn)
+      const pendingTransaction = await submitTxn(finalTxn)
       return !!pendingTransaction
+      return true
     } catch (error) {
       Logger.error(error)
       return false

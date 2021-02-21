@@ -1,24 +1,26 @@
 import React, { memo, useCallback, useMemo, useState } from 'react'
-import { BottomSheetSectionList } from '@gorhom/bottom-sheet'
-import { Keyboard, TextInput } from 'react-native'
+import { Keyboard, SectionList, TextInput } from 'react-native'
 import { useDebouncedCallback } from 'use-debounce'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import { useSpacing } from '../../../theme/themeHooks'
+import { useColors, useSpacing } from '../../../theme/themeHooks'
 import {
   autocompleteAddress,
   AutocompleteSearchResult,
   getPlaceGeography,
   PlaceGeography,
 } from '../../../utils/googlePlaces'
+import { hp } from '../../../utils/layout'
 
 type Props = {
   onSelectPlace: (placeGeography: PlaceGeography) => void
 }
 
-const AddressSearchModal = ({ onSelectPlace }: Props) => {
+const ReassertAddressSearch = ({ onSelectPlace }: Props) => {
   const spacing = useSpacing()
+  const colors = useColors()
+
   const [searchResults, setSearchResults] = useState<
     AutocompleteSearchResult[]
   >([])
@@ -64,12 +66,13 @@ const AddressSearchModal = ({ onSelectPlace }: Props) => {
         <TextInput
           onChangeText={handleSearchChange}
           placeholder="Search for an address or place"
+          placeholderTextColor={colors.grayLightText}
           autoFocus
           autoCorrect={false}
         />
       </Box>
     )
-  }, [handleSearchChange])
+  }, [colors.grayLightText, handleSearchChange])
 
   const renderItem = useCallback(
     ({ item: searchResult }) => {
@@ -100,15 +103,17 @@ const AddressSearchModal = ({ onSelectPlace }: Props) => {
   )
 
   return (
-    <BottomSheetSectionList
-      keyExtractor={(item) => item.placeId}
-      sections={sections}
-      renderSectionHeader={renderHeader}
-      renderItem={renderItem}
-      contentContainerStyle={contentContainerStyle}
-      keyboardShouldPersistTaps="handled"
-    />
+    <Box minHeight={hp(50)} padding="l" paddingTop="lx">
+      <SectionList
+        keyExtractor={(item) => item.placeId}
+        sections={sections}
+        renderSectionHeader={renderHeader}
+        renderItem={renderItem}
+        contentContainerStyle={contentContainerStyle}
+        keyboardShouldPersistTaps="handled"
+      />
+    </Box>
   )
 }
 
-export default memo(AddressSearchModal)
+export default memo(ReassertAddressSearch)
