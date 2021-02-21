@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback, memo } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { ActivityIndicator, TouchableWithoutFeedback } from 'react-native'
 import { round } from 'lodash'
 import { useSelector } from 'react-redux'
@@ -13,6 +13,7 @@ import { useColors } from '../../theme/themeHooks'
 import { useAppDispatch } from '../../store/store'
 import { RootState } from '../../store/rootReducer'
 import { fetchActivityChart } from '../../store/account/accountSlice'
+import { locale } from '../../utils/i18n'
 
 type Props = {
   height: number
@@ -75,7 +76,7 @@ const WalletChart = ({ height }: Props) => {
                   strokeWidth={2}
                 />
                 <Text variant="body2" marginLeft="xs">
-                  {round(focusedData?.up, 2).toLocaleString()}
+                  {round(focusedData?.up, 2).toLocaleString(locale)}
                 </Text>
               </Box>
 
@@ -88,7 +89,7 @@ const WalletChart = ({ height }: Props) => {
               >
                 <CarotRight width={12} height={12} />
                 <Text variant="body2" marginLeft="s">
-                  {round(focusedData?.down, 2).toLocaleString()}
+                  {round(focusedData?.down, 2).toLocaleString(locale)}
                 </Text>
               </Box>
             </>

@@ -5,6 +5,7 @@ import Box from '../../../components/Box'
 import EmojiBlip from '../../../components/EmojiBlip'
 import Text from '../../../components/Text'
 import { RootState } from '../../../store/rootReducer'
+import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
 
 const TimeOfDayTitle = ({ date }: { date: Date }) => {
   const { t } = useTranslation()
@@ -43,7 +44,10 @@ const WelcomeOverview = () => {
       <Text variant="body1Light" paddingTop="m" paddingRight="xl" color="black">
         {t('hotspots.owned.reward_summary', {
           count: (hotspots || []).length,
-          hntAmount: totalRewards.toString(2),
+          hntAmount: totalRewards.toString(2, {
+            groupSeparator,
+            decimalSeparator,
+          }),
         })}
       </Text>
     </Box>

@@ -8,6 +8,7 @@ import Text from '../../../components/Text'
 import ChartContainer from '../../../components/BarChart/ChartContainer'
 import { useColors } from '../../../theme/themeHooks'
 import animateTransition from '../../../utils/animateTransition'
+import { locale } from '../../../utils/i18n'
 
 type Props = {
   title: string
@@ -33,7 +34,7 @@ const PercentageBox = ({
       {t('hotspot_details.pass_rate')}
     </Text>
     <Text variant="light" fontSize={32} color="black" marginBottom="s">
-      {`${focusedData ? focusedData.up : percentage}%`}
+      {`${focusedData ? focusedData.up.toLocaleString(locale) : percentage}%`}
     </Text>
   </>
 )
@@ -60,7 +61,9 @@ const NumberBox = ({
       numberOfLines={1}
       adjustsFontSizeToFit
     >
-      {focusedData ? focusedData.up : number}
+      {focusedData
+        ? focusedData.up.toLocaleString(locale)
+        : parseFloat(number || '0').toLocaleString(locale)}
     </Text>
     {change !== undefined && !focusedData ? (
       <Box
@@ -72,7 +75,10 @@ const NumberBox = ({
         alignSelf="baseline"
       >
         <Text color="white" variant="body2Bold">
-          {`${change < 0 ? '' : '+'}${change.toFixed(2).toString()}%`}
+          {`${change < 0 ? '' : '+'}${change.toLocaleString(locale, {
+            maximumFractionDigits: 2,
+            minimumFractionDigits: 2,
+          })}%`}
         </Text>
       </Box>
     ) : null}

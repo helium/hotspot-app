@@ -1,4 +1,4 @@
-import { Keypair, Mnemonic, Address } from '@helium/crypto-react-native'
+import { Address, Keypair, Mnemonic } from '@helium/crypto-react-native'
 import * as SecureStore from 'expo-secure-store'
 import * as Logger from './logger'
 

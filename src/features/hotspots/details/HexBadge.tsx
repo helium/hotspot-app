@@ -3,6 +3,7 @@ import { Linking } from 'react-native'
 import Hex from '@assets/images/hex.svg'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import { locale } from '../../../utils/i18n'
 
 type Props = {
   rewardScale?: number
@@ -31,7 +32,10 @@ const HexBadge = ({ rewardScale }: Props) => {
     >
       <Hex color="white" width={14} />
       <Text color="white" variant="body2Medium">
-        {rewardScale.toFixed(2)}
+        {rewardScale.toLocaleString(locale, {
+          maximumFractionDigits: 2,
+          minimumFractionDigits: 2,
+        })}
       </Text>
     </TouchableOpacityBox>
   )

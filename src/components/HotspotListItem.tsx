@@ -9,6 +9,7 @@ import React from 'react'
 import TouchableOpacityBox from './BSTouchableOpacityBox'
 import Box from './Box'
 import Text from './Text'
+import { decimalSeparator, groupSeparator } from '../utils/i18n'
 
 type HotspotListItemProps = {
   onPress?: (hotspot: Hotspot) => void
@@ -72,7 +73,10 @@ const HotspotListItem = ({
             color="purpleMain"
             paddingTop="s"
           >
-            {`+${totalReward.toString(2)}`}
+            {`+${totalReward.toString(2, {
+              groupSeparator,
+              decimalSeparator,
+            })}`}
           </Text>
         </Box>
         <Box flexDirection="row" alignItems="center" justifyContent="center">

@@ -13,6 +13,7 @@ import { hp, wp } from '../../../../utils/layout'
 import CopyAddressButton from './AddressCopyButton'
 import ShareButton from './ShareButton'
 import { WalletLayout } from '../walletLayout'
+import { decimalSeparator, groupSeparator } from '../../../../utils/i18n'
 
 type Props = {
   onReceivePress: () => void
@@ -28,7 +29,9 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
 
   const hasBalance = account?.balance?.integerBalance !== 0
   const [integerPart, decimalPart] =
-    account?.balance?.toString().split('.') || []
+    account?.balance
+      ?.toString(undefined, { decimalSeparator, groupSeparator })
+      .split(decimalSeparator) || []
 
   return (
     <Box
@@ -60,7 +63,9 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
               opacity={0.4}
               lineHeight={25}
             >
-              .{hasBalance ? decimalPart : '00000000 HNT'}
+              {`${decimalSeparator}${
+                hasBalance ? decimalPart : '00000000 HNT'
+              }`}
             </Text>
           </Box>
 

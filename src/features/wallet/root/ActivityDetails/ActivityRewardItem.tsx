@@ -6,6 +6,7 @@ import HeliumReward from '@assets/images/heliumReward.svg'
 import LittleHotspot from '@assets/images/littleHotspot.svg'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
+import { decimalSeparator, groupSeparator } from '../../../../utils/i18n'
 
 type Reward = {
   type: string
@@ -87,7 +88,10 @@ const ActivityRewardItem = ({
               color="greenMain"
               marginLeft="s"
             >
-              {`+${reward.amount.toString()}`}
+              {`+${reward.amount.toString(undefined, {
+                groupSeparator,
+                decimalSeparator,
+              })}`}
             </Text>
           </Box>
         </Box>

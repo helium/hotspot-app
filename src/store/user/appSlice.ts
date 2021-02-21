@@ -1,9 +1,9 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppStateStatus } from 'react-native'
 import {
+  deleteSecureItem,
   getSecureItem,
   setSecureItem,
-  deleteSecureItem,
   signOut,
 } from '../../utils/secureAccount'
 import { getCurrentPosition, LocationCoords } from '../../utils/location'
@@ -63,9 +63,8 @@ export const restoreUser = createAsyncThunk<Restore>(
   },
 )
 
-export const getLocation = createAsyncThunk<Location>(
-  'app/location',
-  async () => getCurrentPosition(),
+export const getLocation = createAsyncThunk('app/location', async () =>
+  getCurrentPosition(),
 )
 
 // This slice contains data related to the state of the app

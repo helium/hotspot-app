@@ -50,6 +50,7 @@ import Text from '../../../components/Text'
 import { fromNow } from '../../../utils/timeUtils'
 import useSubmitTxn from '../../../hooks/useSubmitTxn'
 import { ensLookup } from '../../../utils/explorerClient'
+import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
 
 type Props = {
   scanResult?: QrScanResult
@@ -143,9 +144,14 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   useAsync(async () => {
     if (type === 'dc_burn') {
       const balanceDc = await networkTokensToDataCredits(balanceAmount)
-      // TODO option to not return currency ticker in balance
       // TODO might need to round up in DC conversion in he-js
-      setDcAmount(balanceDc.toString(0).slice(0, -3))
+      setDcAmount(
+        balanceDc.toString(0, {
+          decimalSeparator,
+          groupSeparator,
+          showTicker: false,
+        }),
+      )
     }
   }, [type, balanceAmount])
 
@@ -247,14 +253,24 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     if (!balance) return
 
     if (fee > balance) {
-      handleAmountChange(balance.floatBalance.toString())
+      handleAmountChange(
+        balance.toString(8, {
+          decimalSeparator,
+          groupSeparator,
+          showTicker: false,
+        }),
+      )
       return
     }
 
     const maxAmount = balance.minus(fee)
-
-    // TODO option to not return currency ticker in balance
-    handleAmountChange(maxAmount.toString(8).slice(0, -4))
+    handleAmountChange(
+      maxAmount.toString(8, {
+        decimalSeparator,
+        groupSeparator,
+        showTicker: false,
+      }),
+    )
   }
 
   const unlockForm = () => {
@@ -299,7 +315,11 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       Alert.alert(
         t('transfer.amount_changed_alert_title'),
         t('transfer.amount_changed_alert_body', {
-          amount: transfer?.amountToSeller?.floatBalance.toString(),
+          amount: transfer?.amountToSeller?.toString(undefined, {
+            groupSeparator,
+            decimalSeparator,
+            showTicker: false,
+          }),
         }),
       )
       throw new Error('transfer amount changed')
@@ -409,26 +429,32 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   }, [])
 
   const handleAmountChange = useCallback((stringAmount: string) => {
-    if (stringAmount === '.' || stringAmount.includes('NaN')) {
-      setAmount('0.')
+    if (stringAmount === decimalSeparator || stringAmount.includes('NaN')) {
+      setAmount(`0${decimalSeparator}`)
       setBalanceAmount(new Balance(0, CurrencyType.networkToken))
       return
     }
-    const rawAmount = stringAmount.split(',').join('')
-    const rawInteger = (stringAmount.split('.')[0] || stringAmount)
-      .split(',')
+    const rawInteger = (stringAmount.split(decimalSeparator)[0] || stringAmount)
+      .split(groupSeparator)
       .join('')
-    const integer = parseInt(rawInteger, 10).toLocaleString()
-    let decimal = stringAmount.split('.')[1]
+    const integer = parseInt(rawInteger, 10).toLocaleString(locale)
+    let decimal = stringAmount.split(decimalSeparator)[1]
     if (integer === 'NaN') {
       setAmount('')
       setBalanceAmount(new Balance(0, CurrencyType.networkToken))
       return
     }
     if (decimal && decimal.length >= 9) decimal = decimal.slice(0, 8)
-    setAmount(stringAmount.includes('.') ? `${integer}.${decimal}` : integer)
+    setAmount(
+      stringAmount.includes(decimalSeparator)
+        ? `${integer}${decimalSeparator}${decimal}`
+        : integer,
+    )
     setBalanceAmount(
-      new Balance(parseFloat(rawAmount) * 100000000, CurrencyType.networkToken),
+      Balance.fromFloat(
+        parseFloat(`${rawInteger}.${decimal}`),
+        CurrencyType.networkToken,
+      ),
     )
   }, [])
 
