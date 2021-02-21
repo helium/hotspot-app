@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useEffect, memo } from 'react'
+import React, { memo, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, SectionList } from 'react-native'
 import { useSelector } from 'react-redux'
@@ -243,18 +243,20 @@ const MoreScreen = () => {
       },
     ]
   }, [
-    app,
-    handleSignOut,
-    version,
-    handlePinRequiredForPayment,
     t,
     handlePinRequired,
-    handleResetPin,
+    app.isPinRequired,
+    app.authInterval,
+    app.isPinRequiredForPayment,
+    handleRevealWords,
+    language,
+    handleLanguageChange,
+    handleSignOut,
+    version,
     authIntervals,
     handleIntervalSelected,
-    handleRevealWords,
-    handleLanguageChange,
-    language,
+    handleResetPin,
+    handlePinRequiredForPayment,
   ])
 
   return (

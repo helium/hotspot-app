@@ -187,8 +187,7 @@ export default {
         'Attach the antenna and plug in the provided power adapter near a window.',
       nebraout_subtitle_1:
         'Attach the antenna and connect to an appropriate power source.',
-      syncrobit_subtitle_1:
-        'Attach the antenna and plug in the device',
+      syncrobit_subtitle_1: 'Attach the antenna and plug in the device',
       helium_subtitle_2:
         'Your Hotspot will boot up, and its light will become Green when ready.',
       rak_subtitle_2:
@@ -198,7 +197,7 @@ export default {
       nebraout_subtitle_2:
         'The Nebra Outdoor Hotspot will have multiple lights come on once it’s powered on.',
       syncrobit_subtitle_2:
-        'The SyncroB.it Hotspot LED bar will light up blue once it’s powered on.'
+        'The SyncroB.it Hotspot LED bar will light up blue once it’s powered on.',
     },
     pair: {
       title: 'Bluetooth',

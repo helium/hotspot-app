@@ -16,6 +16,7 @@ import Map from '../../../components/Map'
 import Text from '../../../components/Text'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import { RootState } from '../../../store/rootReducer'
+import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
 
 type Route = RouteProp<
   HotspotSetupStackParamList,
@@ -127,7 +128,10 @@ const HotspotSetupConfirmLocationScreen = () => {
                 variant="body1Light"
                 color={hasSufficientBalance ? 'greenBright' : 'redMain'}
               >
-                {account?.balance?.toString(2)}
+                {account?.balance?.toString(2, {
+                  groupSeparator,
+                  decimalSeparator,
+                })}
               </Text>
             </Box>
 
