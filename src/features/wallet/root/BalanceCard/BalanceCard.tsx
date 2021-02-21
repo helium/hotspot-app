@@ -23,12 +23,15 @@ type Props = {
 const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
   const { result: address, loading: loadingAddress } = useAsync(getAddress, [])
   const {
+    app: { decimalSeparator, groupSeparator },
     account: { account },
   } = useSelector((state: RootState) => state)
 
   const hasBalance = account?.balance?.integerBalance !== 0
   const [integerPart, decimalPart] =
-    account?.balance?.toString().split('.') || []
+    account?.balance
+      ?.toString(undefined, { decimalSeparator, groupSeparator })
+      .split(decimalSeparator) || []
 
   return (
     <Box
@@ -60,7 +63,9 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
               opacity={0.4}
               lineHeight={25}
             >
-              .{hasBalance ? decimalPart : '00000000 HNT'}
+              {`${decimalSeparator}${
+                hasBalance ? decimalPart : '00000000 HNT'
+              }`}
             </Text>
           </Box>
 

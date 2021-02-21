@@ -27,6 +27,7 @@ const WelcomeOverview = () => {
   const { t } = useTranslation()
 
   const {
+    app: { groupSeparator, decimalSeparator },
     hotspots: { hotspots, totalRewards },
   } = useSelector((state: RootState) => state)
 
@@ -43,7 +44,10 @@ const WelcomeOverview = () => {
       <Text variant="body1Light" paddingTop="m" paddingRight="xl" color="black">
         {t('hotspots.owned.reward_summary', {
           count: (hotspots || []).length,
-          hntAmount: totalRewards.toString(2),
+          hntAmount: totalRewards.toString(2, {
+            groupSeparator,
+            decimalSeparator,
+          }),
         })}
       </Text>
     </Box>

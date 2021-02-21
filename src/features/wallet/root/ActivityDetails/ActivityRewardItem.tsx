@@ -4,8 +4,10 @@ import Balance, { NetworkTokens } from '@helium/currency'
 import animalHash from 'angry-purple-tiger'
 import HeliumReward from '@assets/images/heliumReward.svg'
 import LittleHotspot from '@assets/images/littleHotspot.svg'
+import { useSelector } from 'react-redux'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
+import { RootState } from '../../../../store/rootReducer'
 
 type Reward = {
   type: string
@@ -28,6 +30,9 @@ const ActivityRewardItem = ({
   isSecurityToken,
 }: Props) => {
   const { t } = useTranslation()
+  const {
+    app: { groupSeparator, decimalSeparator },
+  } = useSelector((state: RootState) => state)
 
   const title = (reward: Reward) => {
     if (isSecurityToken) {
@@ -87,7 +92,10 @@ const ActivityRewardItem = ({
               color="greenMain"
               marginLeft="s"
             >
-              {`+${reward.amount.toString()}`}
+              {`+${reward.amount.toString(undefined, {
+                groupSeparator,
+                decimalSeparator,
+              })}`}
             </Text>
           </Box>
         </Box>

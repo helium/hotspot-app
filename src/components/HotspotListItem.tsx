@@ -2,11 +2,13 @@ import { Hotspot } from '@helium/http'
 import Balance, { NetworkTokens } from '@helium/currency'
 import animalName from 'angry-purple-tiger'
 import React from 'react'
+import { useSelector } from 'react-redux'
 import TouchableOpacityBox from './BSTouchableOpacityBox'
 import Box from './Box'
 import CheckCircle from '../assets/images/check-circle.svg'
 import CarotRight from '../assets/images/carot-right.svg'
 import Text from './Text'
+import { RootState } from '../store/rootReducer'
 
 type HotspotListItemProps = {
   onPress?: (hotspot: Hotspot) => void
@@ -21,6 +23,9 @@ const HotspotListItem = ({
   totalReward,
   showCarot = false,
 }: HotspotListItemProps) => {
+  const {
+    app: { groupSeparator, decimalSeparator },
+  } = useSelector((state: RootState) => state)
   return (
     <TouchableOpacityBox
       backgroundColor="grayBox"
@@ -53,7 +58,10 @@ const HotspotListItem = ({
             </Text>
           </Box>
           <Text variant="body2" color="purpleMain" paddingTop="s">
-            {`+${totalReward.toString(2)}`}
+            {`+${totalReward.toString(2, {
+              groupSeparator,
+              decimalSeparator,
+            })}`}
           </Text>
         </Box>
         <Box flexDirection="row" alignItems="center" justifyContent="center">

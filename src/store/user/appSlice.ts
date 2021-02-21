@@ -7,7 +7,7 @@ import {
   signOut,
 } from '../../utils/secureAccount'
 import { getCurrentPosition, LocationCoords } from '../../utils/location'
-import { locale, numberFormatSettings } from '../../utils/i18n'
+import { numberFormatSettings } from '../../utils/i18n'
 
 export type AppState = {
   isBackedUp: boolean
@@ -54,7 +54,6 @@ type Restore = {
 export const restoreUser = createAsyncThunk<Restore>(
   'app/restoreUser',
   async () => {
-    console.log(numberFormatSettings, locale)
     const vals = await Promise.all([
       getSecureItem('accountBackedUp'),
       getSecureItem('requirePin'),

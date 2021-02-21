@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import Balance, { CurrencyType } from '@helium/currency'
 import { LocationGeocodedAddress } from 'expo-location'
-import React, { useState, useEffect, memo, useCallback } from 'react'
+import React, { memo, useCallback, useEffect, useState } from 'react'
 import { useAsync } from 'react-async-hook'
 import { useSelector } from 'react-redux'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
@@ -36,7 +36,7 @@ const ReassertLocation = ({ onFinished }: Props) => {
   const [updatedLocation, setUpdatedLocation] = useState<Coords | undefined>()
   const dispatch = useAppDispatch()
   const {
-    app: { currentLocation },
+    app: { currentLocation, groupSeparator, decimalSeparator },
   } = useSelector((s: RootState) => s)
 
   const { loadLocationFeeData } = useConnectedHotspotContext()
@@ -115,7 +115,10 @@ const ReassertLocation = ({ onFinished }: Props) => {
 
   const amount = feeData.isFree
     ? 'O DC'
-    : feeData.totalStakingAmountDC.toString()
+    : feeData.totalStakingAmountDC.toString(0, {
+        groupSeparator,
+        decimalSeparator,
+      })
 
   switch (state) {
     case 'fee':

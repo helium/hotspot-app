@@ -3,7 +3,7 @@ import { useAsync } from 'react-async-hook'
 import { useTranslation } from 'react-i18next'
 import { capitalize, round, times } from 'lodash'
 import { useSelector } from 'react-redux'
-import { formatDistance, fromUnixTime, getUnixTime, format } from 'date-fns'
+import { format, formatDistance, fromUnixTime, getUnixTime } from 'date-fns'
 import animalHash from 'angry-purple-tiger'
 import { ScrollView } from 'react-native-gesture-handler'
 import Box from '../../../components/Box'
@@ -23,6 +23,7 @@ import CircleLoader from '../../../components/CircleLoader'
 import { hp } from '../../../utils/layout'
 import { useHotspotSettingsContext } from './HotspotSettingsProvider'
 import animateTransition from '../../../utils/animateTransition'
+import { locale } from '../../../utils/i18n'
 
 type Info = {
   percentSynced: number
@@ -190,7 +191,7 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
       dialable: diagnostics?.dialable || '',
       natType: capitalize(diagnostics?.nat_type || ''),
       ip: capitalize(diagnostics?.ip || ''),
-      height: info.height.toString(),
+      height: info.height.toLocaleString(locale),
       lastChallengeDate: format(fromUnixTime(info.lastChallengeTime), DF),
       reportGenerated: format(fromUnixTime(info.currentTime), DF),
       gateway: address || '',

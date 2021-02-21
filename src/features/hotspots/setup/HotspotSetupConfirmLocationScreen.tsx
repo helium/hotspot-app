@@ -27,6 +27,7 @@ const HotspotSetupConfirmLocationScreen = () => {
   const navigation = useNavigation<HotspotSetupNavigationProp>()
   const { loadLocationFeeData } = useConnectedHotspotContext()
   const {
+    app: { groupSeparator, decimalSeparator },
     account: { account },
   } = useSelector((state: RootState) => state)
   const { loading, result } = useAsync(loadLocationFeeData, [])
@@ -127,7 +128,10 @@ const HotspotSetupConfirmLocationScreen = () => {
                 variant="body1Light"
                 color={hasSufficientBalance ? 'greenBright' : 'redMain'}
               >
-                {account?.balance?.toString(2)}
+                {account?.balance?.toString(2, {
+                  groupSeparator,
+                  decimalSeparator,
+                })}
               </Text>
             </Box>
 

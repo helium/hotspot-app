@@ -14,6 +14,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import Balance, { DataCredits, NetworkTokens } from '@helium/currency'
 import { startCase } from 'lodash'
+import { useSelector } from 'react-redux'
 import { useColors } from '../../../theme/themeHooks'
 import { isPayer } from '../../../utils/transactions'
 import Rewards from '../../../assets/images/rewards.svg'
@@ -25,6 +26,7 @@ import Location from '../../../assets/images/location.svg'
 import Burn from '../../../assets/images/burn.svg'
 import shortLocale from '../../../utils/formatDistance'
 import { locale } from '../../../utils/i18n'
+import { RootState } from '../../../store/rootReducer'
 
 export const TxnTypeKeys = [
   'rewards_v1',
@@ -40,6 +42,9 @@ type TxnType = typeof TxnTypeKeys[number]
 const useActivityItem = (address: string) => {
   const colors = useColors()
   const { t } = useTranslation()
+  const {
+    app: { groupSeparator, decimalSeparator },
+  } = useSelector((state: RootState) => state)
 
   const isSending = useCallback(
     (item: AnyTransaction | PendingTransaction) => {
@@ -182,23 +187,30 @@ const useActivityItem = (address: string) => {
     [isSending, address],
   )
 
-  const formatAmount = (
-    prefix: '-' | '+',
-    amount?: Balance<DataCredits | NetworkTokens> | number,
-  ) => {
-    if (!amount) return ''
+  const formatAmount = useCallback(
+    (
+      prefix: '-' | '+',
+      amount?: Balance<DataCredits | NetworkTokens> | number,
+    ) => {
+      if (!amount) return ''
 
-    if (typeof amount === 'number') {
-      if (amount === 0) return '0'
-      return `${prefix}${amount.toLocaleString(locale, {
-        maximumFractionDigits: 8,
+      if (typeof amount === 'number') {
+        if (amount === 0) return '0'
+        return `${prefix}${amount.toLocaleString(locale, {
+          maximumFractionDigits: 8,
+        })}`
+      }
+
+      if (amount?.floatBalance === 0)
+        return amount.toString(undefined, { groupSeparator, decimalSeparator })
+
+      return `${prefix}${amount?.toString(8, {
+        groupSeparator,
+        decimalSeparator,
       })}`
-    }
-
-    if (amount?.floatBalance === 0) return amount.toString()
-
-    return `${prefix}${amount?.toString(8)}`
-  }
+    },
+    [decimalSeparator, groupSeparator],
+  )
 
   const fee = useCallback(
     (item: AnyTransaction | PendingTransaction) => {
@@ -232,7 +244,7 @@ const useActivityItem = (address: string) => {
 
       return formatAmount('-', (item as AddGatewayV1).fee)
     },
-    [address, isSelling],
+    [address, formatAmount, isSelling],
   )
 
   const amount = useCallback(
@@ -286,7 +298,7 @@ const useActivityItem = (address: string) => {
       }
       return ''
     },
-    [address, isFee, isSelling],
+    [address, formatAmount, isFee, isSelling],
   )
 
   const time = useCallback(
