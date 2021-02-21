@@ -3,10 +3,10 @@ import { BoxProps } from '@shopify/restyle'
 import React, { useRef } from 'react'
 import {
   Animated,
-  TouchableWithoutFeedback,
-  TouchableWithoutFeedbackProps,
   Easing,
   GestureResponderEvent,
+  TouchableWithoutFeedback,
+  TouchableWithoutFeedbackProps,
 } from 'react-native'
 import { Theme } from '../theme/theme'
 import Box from './Box'
@@ -50,7 +50,7 @@ const TouchableCircle = ({ children, onPressIn, ...rest }: Props) => {
             height="100%"
             width="100%"
             borderRadius="round"
-            backgroundColor="white"
+            backgroundColor="whiteTransparent"
           />
 
           {children}

@@ -3,9 +3,9 @@ import { Alert } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
 import Balance, {
-  NetworkTokens,
   CurrencyType,
   DataCredits,
+  NetworkTokens,
 } from '@helium/currency'
 import { Address } from '@helium/crypto-react-native'
 import { useAsync } from 'react-async-hook'
@@ -128,11 +128,13 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   // process scan results
   useEffect(() => {
     if (scanResult) {
-      setIsLocked(!!scanResult?.amount)
+      if (scanResult.type !== 'transfer') {
+        setIsLocked(!!scanResult?.amount)
+        if (scanResult?.amount) handleAmountChange(scanResult?.amount)
+        if (scanResult?.memo) setMemo(scanResult?.memo)
+      }
       setType(scanResult.type)
       setAddress(scanResult.address)
-      if (scanResult?.amount) handleAmountChange(scanResult?.amount)
-      if (scanResult?.memo) setMemo(scanResult?.memo)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scanResult])

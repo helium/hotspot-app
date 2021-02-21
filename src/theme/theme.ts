@@ -6,6 +6,7 @@ import { TextProps } from 'react-native'
 const palette = {
   black: '#000000',
   white: '#FFFFFF',
+  whiteTransparent: '#FFFFFF66',
   offwhite: '#F9FAFC',
 
   blueGrayLight: '#CDD7E5',
