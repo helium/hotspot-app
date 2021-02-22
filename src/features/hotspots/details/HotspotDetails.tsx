@@ -148,7 +148,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
           marginBottom="xl"
           paddingHorizontal="l"
         >
-          <Box flexDirection="row">
+          <Box flexDirection="row" height={32}>
             <StatusBadge online={hotspot.status?.online} />
             <HexBadge rewardScale={hotspot.rewardScale} />
           </Box>
