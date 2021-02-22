@@ -14,6 +14,7 @@ const StatusBadge = ({ online = 'offline' }: Props) => {
       paddingHorizontal="s"
       borderRadius="s"
       justifyContent="center"
+      height="100%"
     >
       <Text color="white" variant="body2Medium">
         {t(
