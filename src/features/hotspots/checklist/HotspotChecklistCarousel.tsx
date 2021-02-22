@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react'
 import { Carousel } from 'react-native-snap-carousel'
 import { Platform } from 'react-native'
-import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
+import { FlatList } from 'react-native-gesture-handler'
 import HotspotChecklistItem from './HotspotChecklistItem'
 import { wp } from '../../../utils/layout'
 
@@ -45,7 +45,7 @@ const HotspotChecklistCarousel = ({ checklistData }: Props) => {
   )
   if (isAndroid) {
     return (
-      <BottomSheetFlatList
+      <FlatList
         data={checklistData}
         initialScrollIndex={firstIndex}
         renderItem={renderItem}
