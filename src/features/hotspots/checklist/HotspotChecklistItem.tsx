@@ -9,6 +9,7 @@ import BackgroundThree from '../../../assets/images/checklist-bg-3.svg'
 import BackgroundFour from '../../../assets/images/checklist-bg-4.svg'
 import { useColors, useSpacing } from '../../../theme/themeHooks'
 import { Colors } from '../../../theme/theme'
+import { wp } from '../../../utils/layout'
 
 type CompleteProps = {
   complete?: boolean
@@ -77,6 +78,7 @@ type Props = {
   showAuto?: boolean
   autoText?: string
   background?: 1 | 2 | 3 | 4
+  isAndroid: boolean
 }
 const HotspotChecklistItem = ({
   title,
@@ -86,6 +88,7 @@ const HotspotChecklistItem = ({
   showAuto,
   autoText,
   background,
+  isAndroid,
 }: Props) => {
   const { t } = useTranslation()
   const colors = useColors()
@@ -135,13 +138,18 @@ const HotspotChecklistItem = ({
   }, [background, colors.greenDarkText, colors.white, complete, spacing.s])
 
   return (
-    <Box marginHorizontal="xs">
+    <Box
+      marginHorizontal={isAndroid ? undefined : 'xs'}
+      width={isAndroid ? wp(100) : undefined}
+      padding={isAndroid ? 's' : undefined}
+    >
       <Box
         padding="m"
         backgroundColor={backgroundColor}
         borderRadius="l"
         justifyContent="space-between"
-        height={180}
+        height={isAndroid ? 196 : 180}
+        overflow="hidden"
       >
         <Background />
         <Box>
