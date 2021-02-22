@@ -47,7 +47,6 @@ const HotspotChecklistCarousel = ({ checklistData }: Props) => {
     return (
       <FlatList
         data={checklistData}
-        initialScrollIndex={firstIndex}
         renderItem={renderItem}
         horizontal
         keyExtractor={keyExtractor}
