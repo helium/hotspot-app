@@ -1,14 +1,11 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 import { Hotspot } from '@helium/http'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
-import { Carousel } from 'react-native-snap-carousel'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
 import { fetchChecklistActivity } from '../../../store/hotspotDetails/hotspotChecklistSlice'
-import HotspotChecklistItem from './HotspotChecklistItem'
-import { wp } from '../../../utils/layout'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import CarotDown from '../../../assets/images/carot-down.svg'
@@ -16,21 +13,13 @@ import CircleProgress from '../../../components/CircleProgress'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import animateTransition from '../../../utils/animateTransition'
 import { useSpacing } from '../../../theme/themeHooks'
+import HotspotChecklistCarousel, {
+  ChecklistItem,
+} from './HotspotChecklistCarousel'
 
 type Props = {
   hotspot: Hotspot
   witnesses?: Hotspot[]
-}
-
-type ChecklistItem = {
-  key: string
-  title: string
-  description: string
-  complete?: boolean
-  showAuto?: boolean
-  autoText?: string
-  completeText?: string
-  background?: 1 | 2 | 3 | 4
 }
 
 const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
@@ -190,28 +179,12 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
     }
   })
   checklistData.sort((a, b) => Number(b.complete) - Number(a.complete))
-  const firstIndex = checklistData.findIndex((i) => !i.complete)
   const [hidden, setHidden] = useState(true)
 
   const toggleHidden = () => {
     animateTransition()
     setHidden(!hidden)
   }
-
-  const renderItem = useCallback(
-    (item: { item: ChecklistItem }) => (
-      <HotspotChecklistItem
-        title={item.item.title}
-        description={item.item.description}
-        complete={item.item.complete}
-        showAuto={item.item.showAuto}
-        autoText={item.item.autoText}
-        completeText={item.item.completeText}
-        background={item.item.background}
-      />
-    ),
-    [],
-  )
 
   if (loadingActivity) {
     return (
@@ -267,19 +240,7 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
           </>
         </TouchableOpacityBox>
       </Box>
-      {!hidden && (
-        <Carousel
-          layout="default"
-          firstItem={firstIndex === -1 ? 0 : firstIndex}
-          activeSlideAlignment="center"
-          vertical={false}
-          data={checklistData}
-          renderItem={renderItem}
-          sliderWidth={wp(100)}
-          itemWidth={wp(90)}
-          inactiveSlideScale={1}
-        />
-      )}
+      {!hidden && <HotspotChecklistCarousel checklistData={checklistData} />}
     </Box>
   )
 }

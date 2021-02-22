@@ -3,7 +3,7 @@ import { Linking } from 'react-native'
 import Hex from '@assets/images/hex.svg'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import { locale } from '../../../utils/i18n'
+import { decimalSeparator, locale } from '../../../utils/i18n'
 
 type Props = {
   rewardScale?: number
@@ -17,25 +17,29 @@ const HexBadge = ({ rewardScale }: Props) => {
 
   if (!rewardScale) return null
 
+  const scaleString =
+    rewardScale === 1
+      ? `1${decimalSeparator}00`
+      : rewardScale.toLocaleString(locale, {
+          maximumFractionDigits: 2,
+          minimumFractionDigits: 2,
+        })
+
   return (
     <TouchableOpacityBox
       onPress={handlePress}
       backgroundColor="purpleMain"
-      padding="s"
       borderRadius="s"
       flexDirection="row"
       justifyContent="space-between"
       alignItems="center"
-      width={66}
-      height={33}
+      paddingStart="s"
+      height="100%"
       marginLeft="s"
     >
       <Hex color="white" width={14} />
-      <Text color="white" variant="body2Medium">
-        {rewardScale.toLocaleString(locale, {
-          maximumFractionDigits: 2,
-          minimumFractionDigits: 2,
-        })}
+      <Text color="white" variant="body2Medium" padding="s">
+        {scaleString}
       </Text>
     </TouchableOpacityBox>
   )
