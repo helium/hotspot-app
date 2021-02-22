@@ -33,6 +33,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
   const {
     account: { account },
     hotspotDetails: {
+      hotspot: hotspotDetailsHotspot,
       numDays,
       rewards,
       rewardSum,
@@ -149,7 +150,11 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
           paddingHorizontal="l"
         >
           <Box flexDirection="row">
-            <StatusBadge online={hotspot.status?.online} />
+            <StatusBadge
+              online={
+                hotspot?.status?.online || hotspotDetailsHotspot?.status?.online
+              }
+            />
             <HexBadge rewardScale={hotspot.rewardScale} />
           </Box>
           <TouchableOpacityBox onPress={openExplorerOwner}>

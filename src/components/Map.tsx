@@ -6,7 +6,10 @@ import React, {
   useRef,
   useState,
 } from 'react'
+import { useSelector } from 'react-redux'
+import { useAsync } from 'react-async-hook'
 import MapboxGL, {
+  CircleLayerStyle,
   OnPressEvent,
   RegionPayload,
   SymbolLayerStyle,
@@ -23,6 +26,9 @@ import { hotspotsToFeatures } from '../utils/mapUtils'
 import CurrentLocationButton from './CurrentLocationButton'
 import { Theme } from '../theme/theme'
 import { useColors } from '../theme/themeHooks'
+import { useAppDispatch } from '../store/store'
+import { RootState } from '../store/rootReducer'
+import { fetchNetworkHotspots } from '../store/networkHotspots/networkHotspotsSlice'
 
 const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
 
@@ -68,6 +74,7 @@ const Map = ({
   showNoLocation,
   ...props
 }: Props) => {
+  const dispatch = useAppDispatch()
   const colors = useColors()
   const { t } = useTranslation()
   const map = useRef<MapboxGL.MapView>(null)
@@ -75,13 +82,34 @@ const Map = ({
   const [loaded, setLoaded] = useState(false)
   const [userCoords, setUserCoords] = useState({ latitude: 0, longitude: 0 })
   const [centerOffset, setCenterOffset] = useState(0)
+  const styles = useMemo(() => makeStyles(colors), [colors])
+
+  const {
+    networkHotspots: { networkHotspots },
+  } = useSelector((state: RootState) => state)
+
+  useAsync(async () => {
+    if (loaded) {
+      const center = await map.current?.getCenter()
+      if (center) {
+        dispatch(
+          fetchNetworkHotspots({ lat: center[1], lng: center[0], dist: 5000 }),
+        )
+      }
+    }
+  }, [loaded, dispatch])
 
   const onRegionDidChange = useCallback(async () => {
     if (onMapMoved) {
       const center = await map.current?.getCenter()
       onMapMoved(center)
+      if (center) {
+        dispatch(
+          fetchNetworkHotspots({ lat: center[1], lng: center[0], dist: 5000 }),
+        )
+      }
     }
-  }, [onMapMoved])
+  }, [dispatch, onMapMoved])
 
   const centerUserLocation = useCallback(() => {
     camera.current?.setCamera({
@@ -191,11 +219,14 @@ const Map = ({
     witnesses,
   ])
 
+  const networkHotspotFeatures = useMemo(
+    () => hotspotsToFeatures(networkHotspots),
+    [networkHotspots],
+  )
+
   const mapImages = useMemo(
     () => ({
-      markerOwned: require('../assets/images/owned-hotspot-marker.png'),
       markerSelected: require('../assets/images/selected-hotspot-marker.png'),
-      markerWitness: require('../assets/images/witness-marker.png'),
       markerLocation: require('../assets/images/locationPurple.png'),
     }),
     [],
@@ -215,9 +246,20 @@ const Map = ({
         type: 'FeatureCollection',
         features: selectedHotspotFeatures,
       } as GeoJSON.FeatureCollection,
+      networkHotspotFeatures: {
+        type: 'FeatureCollection',
+        features: networkHotspotFeatures,
+      } as GeoJSON.FeatureCollection,
     }),
-    [ownedHotspotFeatures, witnessFeatures, selectedHotspotFeatures],
+    [
+      ownedHotspotFeatures,
+      witnessFeatures,
+      selectedHotspotFeatures,
+      networkHotspotFeatures,
+    ],
   )
+
+  console.log('network hotspots', networkHotspotFeatures)
 
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
@@ -233,7 +275,7 @@ const Map = ({
           justifyContent="center"
           alignItems="center"
         >
-          <NoLocation color={colors.blueChecklist} />
+          <NoLocation color={colors.purpleMain} />
           <Text variant="h2" color="white" marginTop="m">
             {t('hotspot_details.no_location_title')}
           </Text>
@@ -275,18 +317,28 @@ const Map = ({
         />
         <MapboxGL.Images images={mapImages} />
         <MapboxGL.ShapeSource
+          id="networkHotspots"
+          shape={shapeSources.networkHotspotFeatures}
+          onPress={onShapeSourcePress}
+        >
+          <MapboxGL.CircleLayer
+            id="markerNetwork"
+            style={styles.markerNetwork}
+          />
+        </MapboxGL.ShapeSource>
+        <MapboxGL.ShapeSource
           id="ownedHotspots"
           shape={shapeSources.ownedHotspotFeatures}
           onPress={onShapeSourcePress}
         >
-          <MapboxGL.SymbolLayer id="markerOwned" style={styles.markerOwned} />
+          <MapboxGL.CircleLayer id="markerOwned" style={styles.markerOwned} />
         </MapboxGL.ShapeSource>
         <MapboxGL.ShapeSource
           id="witnesses"
           shape={shapeSources.witnessFeatures}
           onPress={onShapeSourcePress}
         >
-          <MapboxGL.SymbolLayer
+          <MapboxGL.CircleLayer
             id="markerWitness"
             style={styles.markerWitness}
           />
@@ -309,7 +361,7 @@ const Map = ({
   )
 }
 
-const styles = {
+const makeStyles = (colors) => ({
   map: {
     width: '100%',
     height: '100%',
@@ -320,21 +372,23 @@ const styles = {
     iconOffset: [0, -25 / 2],
   } as StyleProp<SymbolLayerStyle>,
   markerWitness: {
-    iconImage: 'markerWitness',
-    iconAllowOverlap: true,
-    iconSize: 1,
-  } as StyleProp<SymbolLayerStyle>,
+    circleColor: colors.gold,
+    circleRadius: 6,
+  } as StyleProp<CircleLayerStyle>,
   markerOwned: {
-    iconImage: 'markerOwned',
-    iconAllowOverlap: true,
-    iconSize: 1,
-  } as StyleProp<SymbolLayerStyle>,
+    circleColor: colors.purpleMain,
+    circleRadius: 6,
+  } as StyleProp<CircleLayerStyle>,
   markerSelected: {
     iconImage: 'markerSelected',
     iconAllowOverlap: true,
     iconSize: 1,
   } as StyleProp<SymbolLayerStyle>,
-}
+  markerNetwork: {
+    circleColor: colors.purpleMuted,
+    circleRadius: 6,
+  } as StyleProp<CircleLayerStyle>,
+})
 
 const hotspotsEqual = (prev: Hotspot[], next: Hotspot[]) => {
   if (prev.length !== next.length) return false
@@ -349,6 +403,7 @@ const hotspotsEqual = (prev: Hotspot[], next: Hotspot[]) => {
   return true
 }
 
+// export default Map
 export default memo(Map, (prevProps, nextProps) => {
   const {
     mapCenter: prevMapCenter,

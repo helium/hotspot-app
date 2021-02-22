@@ -91,10 +91,10 @@ const HotspotChecklistItem = ({
   const colors = useColors()
   const spacing = useSpacing()
   const textColor = complete ? 'greenDarkText' : 'white'
-  const backgroundColor = complete ? 'greenChecklist' : 'blueChecklist'
+  const backgroundColor = complete ? 'greenChecklist' : 'purpleMain'
   const backgroundColorHex = complete
     ? colors.greenChecklist
-    : colors.blueChecklist
+    : colors.purpleMain
 
   const Background = useCallback(() => {
     switch (background) {
