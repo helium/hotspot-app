@@ -73,10 +73,10 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showSettings])
 
-  const setNextState = (s: State) => {
+  const setNextState = useCallback((s: State) => {
     animateTransition()
     setSettingsState(s)
-  }
+  }, [])
 
   const handleClose = useCallback(() => {
     disableBack()
@@ -151,18 +151,19 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
     activeTransfer?.gateway,
     cancelTransfer,
     hasActiveTransfer,
+    setNextState,
     t,
   ])
 
   const onCloseTransfer = useCallback(() => {
     setNextState('init')
-  }, [])
+  }, [setNextState])
 
   useEffect(() => {
     if (!showSettings) {
       setNextState('init')
     }
-  }, [showSettings])
+  }, [setNextState, showSettings])
 
   useEffect(() => {
     getState()
@@ -173,7 +174,7 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
     [],
   )
 
-  const startScan = useCallback(() => setNextState('scan'), [])
+  const startScan = useCallback(() => setNextState('scan'), [setNextState])
 
   const firstCard = useMemo(() => {
     if (settingsState === 'scan') {
@@ -270,33 +271,28 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
           margin="ms"
           style={{ transform: [{ translateY: slideUpAnimRef.current }] }}
         >
-          <KeyboardAvoidingView
-            behavior="position"
-            keyboardVerticalOffset={220}
-          >
-            {settingsState !== 'transfer' && (
-              <Text
-                variant="h2"
-                lineHeight={27}
-                color="white"
-                marginBottom="ms"
-              >
-                {title}
-              </Text>
-            )}
+          {settingsState !== 'transfer' && (
+            <Text variant="h2" lineHeight={27} color="white" marginBottom="ms">
+              {title}
+            </Text>
+          )}
 
-            {settingsState !== 'transfer' && (
-              <Card variant="modal" backgroundColor="white">
-                {firstCard}
-              </Card>
-            )}
+          {settingsState !== 'transfer' && (
+            <Card variant="modal" backgroundColor="white">
+              {firstCard}
+            </Card>
+          )}
 
-            {settingsState !== 'scan' && (
+          {settingsState !== 'scan' && (
+            <KeyboardAvoidingView
+              behavior="position"
+              keyboardVerticalOffset={220}
+            >
               <Card variant="modal" backgroundColor="white" marginTop="l">
                 {secondCard}
               </Card>
-            )}
-          </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+          )}
         </AnimatedBox>
       </SafeAreaBox>
     </Modal>
