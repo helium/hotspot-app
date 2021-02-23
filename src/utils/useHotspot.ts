@@ -81,6 +81,8 @@ const useHotspot = () => {
         return 'Nebra Indoor Hotspot'
       case 'NEBRAOUT':
         return 'Nebra Indoor Hotspot'
+      case 'Bobcat':
+        return 'Bobcat Miner 300'
       default:
       case 'Helium':
         return 'Helium Hotspot'
