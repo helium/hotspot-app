@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { Account, Hotspot } from '@helium/http'
 import { getHotspots, getAccount } from '../../utils/appDataClient'
 import { getWallet, postWallet } from '../../utils/walletClient'
@@ -37,6 +37,7 @@ export type AccountState = {
   fetchDataStatus: Loading
   markNotificationStatus: Loading
   activityChart: ActivityChart
+  activityChartRange: ChartRange
 }
 
 const initialState: AccountState = {
@@ -49,6 +50,7 @@ const initialState: AccountState = {
     weekly: { data: [], loading: 'idle' },
     monthly: { data: [], loading: 'idle' },
   },
+  activityChartRange: 'daily',
 }
 
 type AccountData = {
@@ -106,6 +108,9 @@ const accountSlice = createSlice({
     },
     resetActivityChart: (state) => {
       return { ...state, activityChart: initialState.activityChart }
+    },
+    setActivityChartRange: (state, action: PayloadAction<ChartRange>) => {
+      return { ...state, activityChartRange: action.payload }
     },
   },
   extraReducers: (builder) => {

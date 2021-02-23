@@ -25,7 +25,7 @@ import NavigationRoot from './navigation/NavigationRoot'
 import { useAppDispatch } from './store/store'
 import appSlice, { restoreUser } from './store/user/appSlice'
 import { RootState } from './store/rootReducer'
-import { fetchData } from './store/account/accountSlice'
+import { fetchActivityChart, fetchData } from './store/account/accountSlice'
 import BluetoothProvider from './providers/BluetoothProvider'
 import ConnectedHotspotProvider from './providers/ConnectedHotspotProvider'
 import * as Logger from './utils/logger'
@@ -67,7 +67,8 @@ const App = () => {
       isLocked,
       appStateStatus,
     },
-    account: { fetchDataStatus },
+    account: { fetchDataStatus, activityChartRange },
+    activity: { filter },
     heliumData: { blockHeight },
   } = useSelector((state: RootState) => state)
 
@@ -105,14 +106,19 @@ const App = () => {
     if (!isRestored) {
       dispatch(restoreUser())
     }
+    // fetch common data
     dispatch(fetchInitialData())
 
     if (!isRestored && !isBackedUp) {
       return
     }
 
+    // fetch account specific data if logged in
     dispatch(fetchData())
-  }, [dispatch, isBackedUp, isRestored])
+    dispatch(
+      fetchActivityChart({ range: activityChartRange, filterType: filter }),
+    )
+  }, [activityChartRange, dispatch, filter, isBackedUp, isRestored])
 
   useEffect(() => {
     loadInitialData()
@@ -161,7 +167,10 @@ const App = () => {
 
   useEffect(() => {
     dispatch(fetchData())
-  }, [blockHeight, dispatch])
+    dispatch(
+      fetchActivityChart({ range: activityChartRange, filterType: filter }),
+    )
+  }, [activityChartRange, blockHeight, dispatch, filter])
 
   return (
     <ThemeProvider theme={theme}>
