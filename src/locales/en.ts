@@ -546,7 +546,7 @@ export default {
     location: {
       title: 'Location Permission',
       message:
-        'Helium Wallet needs access to your location for Bluetooth LE discovery.',
+        'Helium needs access to your location for Bluetooth discovery and to enable location assertion. This information will never be sold or shared.',
     },
   },
   time: {

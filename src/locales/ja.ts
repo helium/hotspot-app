@@ -148,12 +148,12 @@ export default {
         {
           title: '閉じた場所に配置しない',
           subtitle:
-          'Hotspotはナイトテーブルや本棚にしまい込まないようにします。窓の横などに配置してください。',
+            'Hotspotはナイトテーブルや本棚にしまい込まないようにします。窓の横などに配置してください。',
         },
         {
           title: '建物で信号がブロックされないようにする',
           subtitle:
-          '近くの建物が近隣のデバイスの信号をブロックし、Hotspotが信号を受信しにくくなる場合があります。',
+            '近くの建物が近隣のデバイスの信号をブロックし、Hotspotが信号を受信しにくくなる場合があります。',
         },
         {
           title: '網戸の近くに配置しない',
@@ -174,17 +174,16 @@ export default {
       subtitle_1: 'アンテナを取り付け、付属の電源アダプターに差し込みます。',
       rak_subtitle_1:
         '付属の電源アダプターを窓の近くにあるコンセントに差し込みます。',
-      subtitle_2:
-        'Hotspotが起動し、準備が完了するとライトが緑色になります。',
+      subtitle_2: 'Hotspotが起動し、準備が完了するとライトが緑色になります。',
       rak_subtitle_2:
         'RAK Hotspot Minerの電源がオンになると、赤いLEDライトが点きます。',
     },
     pair: {
       title: 'Bluetooth',
-      subtitle_1:
-        'Hotspotの黒いボタンを押します。ライトが青に変わります。',
+      subtitle_1: 'Hotspotの黒いボタンを押します。ライトが青に変わります。',
       rak_subtitle_1: 'RAK Hotspot Minerにペアリングボタンはありません。',
-      subtitle_2: '続行する前に携帯電話のBluetoothがオンになっていることを確認します',
+      subtitle_2:
+        '続行する前に携帯電話のBluetoothがオンになっていることを確認します',
       rak_subtitle_2:
         'RAK Hotspot Minerの電源がオンになると、自動的にBluetoothが5分間有効になります。\n\nHotspotが完全に起動するまでに最大で1分かかる場合があります。\n\n「次へ」を押してスキャンします。',
       alert_no_permissions: {
@@ -222,10 +221,12 @@ export default {
       ethernet: '代わりにイーサネットを使用する',
       connection_failed: '接続に失敗しました。もう一度実行してください',
       disconnect_failed: '切断に失敗しました。もう一度実行してください',
-      connected: 'Hotspotは<green>オンライン</green>になっており、%{network}に接続されています。',
+      connected:
+        'Hotspotは<green>オンライン</green>になっており、%{network}に接続されています。',
       scan_fail_subtitle:
         'Hotspotで近隣のWi-Fiネットワークが検出できませんでした。ルーターがオンラインになっていて近隣に設置されていることを確認してください。',
-      tip: '<blue>Wi-Fiが非表示に設定されている</blue>かどうかを確認しましたか？',
+      tip:
+        '<blue>Wi-Fiが非表示に設定されている</blue>かどうかを確認しましたか？',
       saved_networks: '構成済みネットワーク',
       available_networks: '利用可能なネットワーク',
       disconnect_help:
@@ -263,7 +264,8 @@ export default {
     },
     firmware_update: {
       title: '更新を利用できます',
-      subtitle: '続行する前に、Hotspotのファームウェアを更新する必要があります。',
+      subtitle:
+        '続行する前に、Hotspotのファームウェアを更新する必要があります。',
       current_version: '現在のバージョン',
       required_version: '必要なバージョン',
       explanation:
@@ -295,11 +297,12 @@ export default {
       title: 'Hotspotの\n位置情報を設定',
       subtitle:
         'Hotspotの位置情報を設定する必要があります。これは携帯電話を使用して行うことができます。',
-      p_1: 'まず、当社が携帯電話の位置情報にアクセスするための許可をリクエストします。',
+      p_1:
+        'まず、当社が携帯電話の位置情報にアクセスするための許可をリクエストします。',
       settings_p_1:
-      'Hotspotの位置情報を更新するために、当社は位置情報に関する追加のアクセス許可が必要になります。',
+        'Hotspotの位置情報を更新するために、当社は位置情報に関する追加のアクセス許可が必要になります。',
       settings_p_2:
-      '下のボタンをタップし、「設定」に移動します。「位置情報」で「アプリの使用時」をタップします。',
+        '下のボタンをタップし、「設定」に移動します。「位置情報」で「アプリの使用時」をタップします。',
       next: 'アクセス許可をリクエストする',
       cancel: '後で設定する',
     },
@@ -313,13 +316,14 @@ export default {
       pending_p_1:
         'Hotspotの「位置情報を確認」トランザクションが保留中のものがブロックチェーンに存在します。',
       pending_p_2:
-      'Hotspotの位置情報を変更する場合は、前のトランザクションが完了してから行ってください。',
+        'Hotspotの位置情報を変更する場合は、前のトランザクションが完了してから行ってください。',
       balance: '残高：',
       fee: '料金：',
       no_funds: 'アカウントのHNTの残高が不足しています',
       calculating_text: 'HNTの量を計算しています',
       error_title: 'エラー',
-      error_body: '料金データの読み込み中にエラーが発生しました。もう一度実行してください。',
+      error_body:
+        '料金データの読み込み中にエラーが発生しました。もう一度実行してください。',
       next: 'Hotspotを登録',
       fee_next: '料金の支払いとHotspotの登録',
     },
@@ -335,7 +339,8 @@ export default {
     },
     error: {
       alertTitle: 'サーバーが応答できません',
-      alertMessage: 'サーバーへのリクエストがタイムアウトしたため、現在Hotspotを追加できません。\n\nsupport@helium.comに連絡し、MACアドレス%{mac}を伝えてください。',
+      alertMessage:
+        'サーバーへのリクエストがタイムアウトしたため、現在Hotspotを追加できません。\n\nsupport@helium.comに連絡し、MACアドレス%{mac}を伝えてください。',
     },
   },
   account_import: {
@@ -348,7 +353,7 @@ export default {
     confirm: {
       title: 'シードフレーズを確認',
       subtitle:
-      '入力した12個の単語は以下のとおりです。必要に応じて、単語をタップして更新できます。',
+        '入力した12個の単語は以下のとおりです。必要に応じて、単語をタップして更新できます。',
       next: 'シードフレーズを申請',
     },
     complete: {
@@ -371,11 +376,13 @@ export default {
       { title: 'Send HNT', body: 'Scan a QR code or enter details manually.' },
       {
         title: 'アカウントのグラフを作成',
-        body: '緑色はHNTがアカウントに<green>追加されている</green>ことを示します。',
+        body:
+          '緑色はHNTがアカウントに<green>追加されている</green>ことを示します。',
       },
       {
         title: 'アカウントのグラフを作成',
-        body: '青色はHNTがアカウントから<blue>引き出されている</blue>ことを示します。',
+        body:
+          '青色はHNTがアカウントから<blue>引き出されている</blue>ことを示します。',
       },
     ],
   },
@@ -414,7 +421,8 @@ export default {
       transfer_complete: '転送を完了',
     },
     qrInfo: 'QR情報',
-    error: 'このトランザクションの申請中にエラーが発生しました。もう一度実行してください。',
+    error:
+      'このトランザクションの申請中にエラーが発生しました。もう一度実行してください。',
     hotspot_label: 'Hotspot',
     last_activity: '最後に報告されたアクティビティ：{{activity}}',
     label_error: 'アカウントに十分なHNTがありません。',
@@ -423,11 +431,13 @@ export default {
       send: 'HNTを送信',
       send_description: 'HeliumアドレスをすばやくスキャンしてHNTを送信します。',
       burn: 'HNTをDCにバーン',
-      burn_description: 'HNTをData Creditにバーンして、デバイスネットワークの接続料金を支払うことができます。DCは転送できません。',
+      burn_description:
+        'HNTをData Creditにバーンして、デバイスネットワークの接続料金を支払うことができます。DCは転送できません。',
       view: 'QRコードを表示',
-      view_description: 'QRコードを共有して、他のユーザーからHNTを入金するか受け取ります。',
+      view_description:
+        'QRコードを共有して、他のユーザーからHNTを入金するか受け取ります。',
       learn_more: '詳細',
-    }
+    },
   },
   more: {
     title: '設定',
@@ -485,7 +495,8 @@ export default {
     },
     owned: {
       title: 'Hotspot',
-      reward_summary: 'Hotspotは過去24時間で{{hntAmount}}HNTをマイニングしました。',
+      reward_summary:
+        'Hotspotは過去24時間で{{hntAmount}}HNTをマイニングしました。',
       reward_summary_plural:
         '{{count}}個のHotspotは過去24時間で{{hntAmount}}HNTをマイニングしました。',
       your_hotspots: 'Hotspot',
@@ -496,9 +507,9 @@ export default {
   },
   permissions: {
     location: {
-      title: '位置情報のアクセス許可',
+      title: '場所の許可',
       message:
-        'Bluetooth LEを検出するため、Heliumウォレットはあなたの位置情報にアクセスする必要があります。',
+        'Helium あなたの場所にアクセスする必要があります Bluetooth 検出し、ロケーションアサーションを有効にします。 この情報が販売または共有されることはありません。',
     },
   },
   time: {
@@ -647,7 +658,8 @@ export default {
     button_title: '転送を続行',
     input_placeholder: 'ここにHotspot名を入力してください...',
     exists_alert_title: '転送データがすでに存在します',
-    exists_alert_body: 'このHotspotのアクティブな転送データが保留になっています。',
+    exists_alert_body:
+      'このHotspotのアクティブな転送データが保留になっています。',
     amount_changed_alert_title: 'リクエスト量が変更されました',
     amount_changed_alert_body:
       '販売者がリクエストした量が変更されました。新しいリクエスト量は{{amount}} HNTです。',
@@ -718,7 +730,7 @@ export default {
       success: 'Hotspotが{{count}}ブロック前にChallengeを発行しました。',
       success_plural: 'Hotspotが{{count}}ブロック前にChallengeを発行しました。',
       fail:
-      'HotspotはまだChallengeを発行していません。Hotspotは自動的にChallengeを作成します。',
+        'HotspotはまだChallengeを発行していません。Hotspotは自動的にChallengeを作成します。',
       title: 'Challengeを作成',
     },
     challenge_witness: {
@@ -727,7 +739,8 @@ export default {
       title: 'Challengeをウィットネスする',
     },
     witness: {
-      success: 'このHotspotはウィットネスリストに{{count}}個のHotspotがあります。',
+      success:
+        'このHotspotはウィットネスリストに{{count}}個のHotspotがあります。',
       success_plural:
         'このHotspotはウィットネスリストに{{count}}個のHotspotがあります。',
       fail:
@@ -735,7 +748,8 @@ export default {
       title: 'ウィットネスリスト',
     },
     challengee: {
-      success: 'Hotspotは{{count}}ブロック前のChallengeに最後に追加されました。',
+      success:
+        'Hotspotは{{count}}ブロック前のChallengeに最後に追加されました。',
       success_plural:
         'Hotspotは{{count}}ブロック前のChallengeに最後に追加されました。',
       fail:
@@ -745,7 +759,7 @@ export default {
     data_transfer: {
       success: 'Hotspotは最近データパケットを転送しました。',
       fail:
-      'Hotspotは自動的にデバイスデータを転送してHNTを獲得します。このHotspotはまだデータを転送していません。',
+        'Hotspotは自動的にデバイスデータを転送してHNTを獲得します。このHotspotはまだデータを転送していません。',
       title: 'データを転送',
     },
     auto: '自動',
