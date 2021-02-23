@@ -1,6 +1,7 @@
 import { getCurrentPositionAsync } from 'expo-location'
-import React, { useCallback, useMemo, memo } from 'react'
+import React, { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
 import Box from '../../../components/Box'
 import ModalPicker from '../../../components/ModalPicker'
 import hotspotsSlice, {
@@ -8,11 +9,15 @@ import hotspotsSlice, {
 } from '../../../store/hotspots/hotspotsSlice'
 import { useAppDispatch } from '../../../store/store'
 import usePermissionManager from '../../../utils/usePermissionManager'
+import { RootState } from '../../../store/rootReducer'
 
 const HotspotsPicker = () => {
   const { t, i18n } = useTranslation()
   const dispatch = useAppDispatch()
   const { requestLocationPermission } = usePermissionManager()
+  const {
+    hotspots: { order },
+  } = useSelector((state: RootState) => state)
 
   const checkLocationPermissions = useCallback(async () => {
     const enabled = await requestLocationPermission()
@@ -23,12 +28,17 @@ const HotspotsPicker = () => {
   }, [requestLocationPermission])
 
   const handleValueChanged = useCallback(
-    async (order) => {
-      if (order === HotspotSort.Near) {
+    async (newOrder) => {
+      if (newOrder === HotspotSort.Near) {
         const currentLocation = await checkLocationPermissions()
-        dispatch(hotspotsSlice.actions.changeOrder({ order, currentLocation }))
+        dispatch(
+          hotspotsSlice.actions.changeOrder({
+            order: newOrder,
+            currentLocation,
+          }),
+        )
       } else {
-        dispatch(hotspotsSlice.actions.changeOrder({ order }))
+        dispatch(hotspotsSlice.actions.changeOrder({ order: newOrder }))
       }
     },
     [checkLocationPermissions, dispatch],
@@ -69,11 +79,11 @@ const HotspotsPicker = () => {
       paddingHorizontal="l"
     >
       <ModalPicker
-        marginHorizontal="xs"
         // can't assume other languages will have the same prefix
         // structure so we'll just leave it out for non-en
         prefix={i18n.language === 'en' ? 'Your' : undefined}
         data={data}
+        selectedValue={order}
         onValueChanged={handleValueChanged}
       />
     </Box>

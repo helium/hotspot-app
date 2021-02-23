@@ -64,6 +64,7 @@ type HotspotsSliceState = {
   hotspots: Hotspot[]
   order: HotspotSort
   rewards?: Rewards
+  location?: LocationCoords
   totalRewards: Balance<NetworkTokens>
   loadingRewards: boolean
 }
@@ -89,6 +90,8 @@ const hotspotsSlice = createSlice({
     ) => {
       return {
         ...state,
+        order: payload.order,
+        location: payload.currentLocation,
         hotspots: hotspotSorters[payload.order](state.hotspots as Hotspot[], {
           rewards: state.rewards as Rewards,
           location: payload.currentLocation,
@@ -98,7 +101,10 @@ const hotspotsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchHotspotsData.fulfilled, (state, action) => {
-      state.hotspots = hotspotSorters[state.order](action.payload.hotspots)
+      state.hotspots = hotspotSorters[state.order](action.payload.hotspots, {
+        rewards: action.payload.rewards,
+        location: state.location,
+      })
       state.rewards = action.payload.rewards
       state.totalRewards = action.payload.total
       state.loadingRewards = false

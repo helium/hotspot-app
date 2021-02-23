@@ -541,6 +541,10 @@ export default {
     empty: {
       body: "You haven't added or followed any Hotspots yet.",
     },
+    list: {
+      no_offline: 'NO OFFLINE HOTSPOTS',
+      online: 'ONLINE HOTSPOTS',
+    },
   },
   permissions: {
     location: {
