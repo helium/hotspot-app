@@ -31,7 +31,11 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
   const hasBalance = account?.balance?.integerBalance !== 0
   const [integerPart, decimalPart] =
     account?.balance
-      ?.toString(8, { decimalSeparator, groupSeparator, showTicker: false })
+      ?.toString(undefined, {
+        decimalSeparator,
+        groupSeparator,
+        showTicker: false,
+      })
       .split(decimalSeparator) || []
 
   return (
