@@ -2,6 +2,7 @@ import React from 'react'
 import { useAsync } from 'react-async-hook'
 import QRCode from 'react-qr-code'
 import { useSelector } from 'react-redux'
+import { CurrencyType } from '@helium/currency'
 import { RootState } from '../../../../store/rootReducer'
 import Box from '../../../../components/Box'
 import AnimatedBox from '../../../../components/AnimatedBox'
@@ -30,7 +31,7 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
   const hasBalance = account?.balance?.integerBalance !== 0
   const [integerPart, decimalPart] =
     account?.balance
-      ?.toString(undefined, { decimalSeparator, groupSeparator })
+      ?.toString(8, { decimalSeparator, groupSeparator, showTicker: false })
       .split(decimalSeparator) || []
 
   return (
@@ -63,9 +64,12 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
               opacity={0.4}
               lineHeight={25}
             >
-              {`${decimalSeparator}${
-                hasBalance ? decimalPart : '00000000 HNT'
-              }`}
+              {[
+                decimalSeparator,
+                decimalPart || '00000000',
+                ' ',
+                CurrencyType.networkToken.ticker,
+              ].join('')}
             </Text>
           </Box>
 
