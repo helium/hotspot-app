@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Device } from 'react-native-ble-plx'
+import { BleError, Device, Subscription } from 'react-native-ble-plx'
 import validator from 'validator'
 import compareVersions from 'compare-versions'
 import { Balance, CurrencyType } from '@helium/currency'
@@ -221,10 +221,11 @@ const useHotspot = () => {
     return response
   }
 
+  type CallbackType = (success: 'invalid' | 'error' | 'connected') => void
   const setWifiCredentials = async (
     ssid: string,
     password: string,
-    callback?: (success: 'invalid' | 'error' | 'connected') => void,
+    callback?: CallbackType,
   ) => {
     if (!connectedHotspot.current) return
     const uuid = HotspotCharacteristic.WIFI_CONNECT_UUID
@@ -239,30 +240,44 @@ const useHotspot = () => {
 
     await writeCharacteristic(characteristic, encoded)
 
-    const subscription = characteristic?.monitor((error, c) => {
+    let cb: CallbackType | null | undefined = callback
+    const doCallback = (
+      type: 'invalid' | 'error' | 'connected',
+      error?: BleError,
+    ) => {
       if (error) {
         Logger.error(error)
-        subscription?.remove()
-        callback?.('error')
       }
 
-      if (!c?.value) return
-
-      const response = parseChar(c.value, uuid)
-      if (response === 'connecting') return
-
-      if (response === 'connected') {
-        dispatch(connectedHotspotSlice.actions.setConnectedHotspotWifi(ssid))
-      }
-
+      cb?.(type)
+      cb = null // prevent multiple callbacks. Android throws an error when the subscription is removed.
       subscription?.remove()
-      if (response === 'connected' || response === 'invalid') {
-        callback?.(response)
-        return
-      }
+      subscription = null
+    }
 
-      callback?.('error')
-    })
+    let subscription: Subscription | null = characteristic?.monitor(
+      (error, c) => {
+        if (error) {
+          doCallback('error', error)
+        }
+
+        if (!c?.value) return
+
+        const response = parseChar(c.value, uuid)
+        if (response === 'connecting') return
+
+        if (response === 'connected') {
+          dispatch(connectedHotspotSlice.actions.setConnectedHotspotWifi(ssid))
+        }
+
+        if (response === 'connected' || response === 'invalid') {
+          doCallback(response)
+          return
+        }
+
+        doCallback('error')
+      },
+    )
   }
 
   const checkFirmwareCurrent = async (): Promise<boolean> => {
