@@ -38,7 +38,8 @@ export default {
     },
     confirm: {
       title: '确认助记词\n',
-      subtitle: '以下哪个词是您的<b><purple>{{ordinal}}助记词?</purple></b>',
+      subtitle:
+        '以下哪个词是您的<b><purple>{{ordinal}}助记词?</purple></b>',
       forgot: '我忘记了助记词',
       failed: {
         title: '很抱歉...',
@@ -49,7 +50,8 @@ export default {
     },
     create_pin: {
       title: '设置 Pin 码',
-      subtitle: '作为最后的安全步骤，我们使用 PIN 码安全保护您的帐户。',
+      subtitle:
+        '作为最后的安全步骤，我们使用 PIN 码安全保护您的帐户。',
     },
     confirm_pin: {
       title: '重复 PIN',
@@ -57,7 +59,8 @@ export default {
     },
     enable_notifications: {
       title: '启用通知',
-      subtitle: '如果您的帐户或 Hotspot 有重要更新，您会收到提醒通知。',
+      subtitle:
+        '如果您的帐户或 Hotspot 有重要更新，您会收到提醒通知。',
       mining: 'Hotspot 正在挖矿中',
       later: '不，谢谢，稍后设置',
     },
@@ -67,21 +70,21 @@ export default {
     slides: [
       {
         topTitle: '监听信标',
-        topBody: '您的 Hotspot 将监听 Hotspot 邻近的信标',
+        topBody: '您的 Hotspot 将监听邻近 Hotspot 的信标',
         bottomTitle: '信标如何运作?',
         bottomBody:
           '信标是由 Hotspot 发送的特殊数据包，任何其他邻近的 Hotspot 均可监听到。\n\n本网络通过这些信号确定哪些 Hotspot 在相互的接收范围内。这些“邻居”被称作“见证人”，监听您信标的 Hotspot 会添加到您的“见证人列表”中。',
       },
       {
         topTitle: '监听信标',
-        topBody: '您的 Hotspot 将监听 Hotspot 邻近的信标',
+        topBody: '您的 Hotspot 将监听邻近 Hotspot 的信标',
         bottomTitle: '信标如何运作?',
         bottomBody:
           '信标是由 Hotspot 发送的特殊数据包，任何其他邻近的 Hotspot 均可监听到。\n\n本网络通过这些信号确定哪些 Hotspot 在相互的接收范围内。这些“邻居”被称作“见证人”，监听您信标的 Hotspot 会添加到您的“见证人列表”中。',
       },
       {
         topTitle: '监听信标',
-        topBody: '您的 Hotspot 将监听 Hotspot 邻近的信标',
+        topBody: '您的 Hotspot 将监听邻近 Hotspot 的信标',
         bottomTitle: '信标如何运作?',
         bottomBody:
           '信标是由 Hotspot 发送的特殊数据包，任何其他邻近的 Hotspot 均可监听到。\n\n本网络通过这些信号确定哪些 Hotspot 在相互的接收范围内。这些“邻居”被称作“见证人”，监听您信标的 Hotspot 会添加到您的“见证人列表”中。',
@@ -135,13 +138,6 @@ export default {
       fine_print:
         'RAK Hotspot Miner 具有 RAK 预加载的专用固件。继续操作之前，请仔细检查所用的硬件是否为 RAK Hotspot Miner。',
     },
-    start: {
-      title: '设置 Hotspot',
-      subtitle: 'Hotspot 允许您通过构建 People’s Network 赚取 HNT。',
-      info: '它是如何运作的? ⓘ',
-      next: '让我们开始吧',
-      not_now: '稍后再说',
-    },
     education: {
       title: '放置\n您的 Hotspot。',
       cards: [
@@ -152,11 +148,13 @@ export default {
         },
         {
           title: '别把我藏在暗处',
-          subtitle: '不要将 Hotspot 放在床头柜或书柜里。请将其放在靠窗的位置。',
+          subtitle:
+          '不要将 Hotspot 放在床头柜或书柜里。请将其放在靠窗的位置。',
         },
         {
           title: '建筑物可能阻碍我的信号传播',
-          subtitle: '周边建筑物可能削弱 Hotspot 对邻近设备的覆盖。',
+          subtitle:
+          '周边建筑物可能削弱 Hotspot 对邻近设备的覆盖。',
         },
         {
           title: '还有，我最讨厌防虫网了!',
@@ -175,24 +173,30 @@ export default {
       title: '开机',
       next: '我已开机',
       subtitle_1: '连接天线，插接随附的电源适配器。',
-      rak_subtitle_1: '将电源适配器插入靠窗的插座。',
-      subtitle_2: '您的 Hotspot 将随即启动，就绪后会亮起绿色指示灯。',
-      rak_subtitle_2: '开机后，RAK Hotspot Miner 将亮起红色 LED 指示灯。',
+      rak_subtitle_1:
+        '将电源适配器插入靠窗的插座。',
+      subtitle_2:
+        '您的 Hotspot 将随即启动，就绪后会亮起绿色指示灯。',
+      rak_subtitle_2:
+        '开机后，RAK Hotspot Miner 将亮起红色 LED 指示灯。',
     },
     pair: {
       title: '蓝牙',
-      subtitle_1: '按下 Hotspot 上的黑色按钮。指示灯应变成蓝色。',
+      subtitle_1:
+        '按下 Hotspot 上的黑色按钮。指示灯应变成蓝色。',
       rak_subtitle_1: 'RAK Hotspot Miner 上没有配对按钮。',
       subtitle_2: '继续操作之前，请确保开启您手机上的蓝牙',
       rak_subtitle_2:
         'RAK Hotspot Miner 开机后，蓝牙会自动启用 5 分钟。\n\nHotspot 最多需要 1 分钟即可完全启动。\n\n按“下一步”开始扫描。',
       alert_no_permissions: {
         title: '授权蓝牙',
-        body: 'Helium 需要蓝牙使用权限。您可以在“设置”中启用蓝牙权限。',
+        body:
+          'Helium 需要蓝牙使用权限。您可以在“设置”中启用蓝牙权限。',
       },
       alert_ble_off: {
         title: '启用蓝牙',
-        body: '要开始配对，请开启蓝牙。保持蓝牙开启，直到完成注册。',
+        body:
+          '要开始配对，请开启蓝牙。保持蓝牙开启，直到完成注册。',
       },
       scan: '扫描我的 Hotspot',
     },
@@ -209,23 +213,26 @@ export default {
     ble_error: {
       title: '找不到 Hotspot',
       enablePairing: '启用配对模式',
-      pairingInstructions: '请参考制造商说明以启用蓝牙',
+      pairingInstructions:
+        '请参考制造商说明以启用蓝牙',
     },
     wifi_scan: {
       title: 'Wi-Fi',
       settings_title: 'Wi-Fi 设置',
-      subtitle: '选择您想要 Hotspot 连接的 Wi-Fi 网络。',
+      subtitle:
+        '选择您想要 Hotspot 连接的 Wi-Fi 网络。',
       ethernet: '改用以太网',
       connection_failed: '连接失败，请重试',
       disconnect_failed: '断开连接失败，请重试',
       connected:
-        '您的 Hotspot 处于<green>在线</green>状态，已连接至  %{network}。',
+        '您的 Hotspot 处于<green>在线</green>状态，已连接至 %{network}。',
       scan_fail_subtitle:
         '您的 Hotspot 附近没有发现 Wi-Fi 网络。检查您的路由器是否在线和附近状况。',
       tip: '确认检查过您的 <blue>Wi-Fi 是否被设置为“隐藏”</blue>?',
       saved_networks: '配置网络',
       available_networks: '可用网络',
-      disconnect_help: '要更新密码或连接到新的网络，请先忽略旧的网络。',
+      disconnect_help:
+        '要更新密码或连接到新的网络，请先忽略旧的网络。',
       disconnect: '忽略网络',
     },
     disconnect_dialog: {
@@ -235,9 +242,11 @@ export default {
     wifi_password: {
       join_title: '输入密码',
       update_title: '更新 Wi-Fi',
-      message: 'Hotspot 当前已连接到此网络。更改密码可能导致 Hotspot 离线。',
+      message:
+        'Hotspot 当前已连接到此网络。更改密码可能导致 Hotspot 离线。',
       error_title: '密码无效',
-      subtitle: '输入您的 Wi-Fi 凭据并将 Hotspot 连接到此网络。',
+      subtitle:
+        '输入您的 Wi-Fi 凭据并将 Hotspot 连接到此网络。',
       placeholder: '密码',
       show_password: '显示密码',
       hide_password: '隐藏密码',
@@ -245,11 +254,13 @@ export default {
       forget: '忘记',
       forget_network: '忽略网络',
       forget_alert_title: '要忽略网络?',
-      forget_alert_message: 'Hotspot 将不再自动连接到 ',
+      forget_alert_message:
+        'Hotspot 将不再自动连接到 ',
     },
     ethernet: {
       title: '使用以太网',
-      subtitle: '将 Hotspot 设备插入活跃可用的路由器端口。',
+      subtitle:
+        '将 Hotspot 设备插入活跃可用的路由器端口。',
       secure: '请安全连接以太网线',
       next: '我的 Hotspot 已连接',
     },
@@ -269,35 +280,43 @@ export default {
       checking_status: '正在检查 Hotspot 状态...',
       already_added:
         '您已经将此 Hotspot 添加至您的钱包。进入下一页，声明 Hotspot 位置。',
-      not_owned: '您尚未拥有此 Hotspot ，无法将其添加到钱包。',
+      not_owned:
+        '您尚未拥有此 Hotspot ，无法将其添加到钱包。',
       label: '当前添加 HOTSPOT 费用（使用 Data Credits 支付）',
       help_link: '什么是 Data Credits?',
       support_title: '什么是 Data Credits?',
-      support_answer: '通过 Helium 网络发送数据时需要支付 Data Credits。',
+      support_answer:
+        '通过 Helium 网络发送数据时需要支付 Data Credits。',
       error:
         '无法继续添加 Hotspot。如果您是从 Helium 购买的 Hotspot，请联系 support@helium.com 并附上 mac 地址 {{mac}}',
       back: '返回 Hotspot 配对',
       wait_error_title: '请重试',
-      wait_error_body: 'Hotspot Miner 即将启动。请稍后重试。',
+      wait_error_body:
+        'Hotspot Miner 即将启动。请稍后重试。',
     },
     enable_location: {
       title: '设定 Hotspot\n位置',
       subtitle:
         '我们需要为您的 Hotspot 设定位置。可以通过您的手机完成这一操作。',
       p_1: '首先，我们需要您手机的位置权限。',
-      settings_p_1: '要更新 Hotspot 位置，我们需要更多位置权限。',
+      settings_p_1:
+      '要更新 Hotspot 位置，我们需要更多位置权限。',
       settings_p_2:
-        '点击下方按钮进入“设置”。在“位置”下，点击“使用应用程序时”。',
+      '点击下方按钮进入“设置”。在“位置”下，点击“使用应用程序时”。',
       next: '请求权限',
       cancel: '不，谢谢，稍后设置',
     },
     location_fee: {
       title: '位置费用',
       subtitle_free: '您的位置费用（10 美元）已预付。',
-      subtitle_fee: '确认此位置需要支付 10 美元的位置费用（使用 DC 支付）。',
-      confirm_location: '确认所选位置正确无误，然后注册您的 Hotspot.。',
-      pending_p_1: '您的 Hotspot 在区块链中有一个待处理的确认位置交易。',
-      pending_p_2: '若想变更 Hotspot 位置，请等候上一个交易完成再更新位置。',
+      subtitle_fee:
+        '确认此位置需要支付 10 美元的位置费用（使用 DC 支付）。',
+      confirm_location:
+        '确认所选位置正确无误，然后注册您的 Hotspot.。',
+      pending_p_1:
+        '您的 Hotspot 在区块链中有一个待处理的确认位置交易。',
+      pending_p_2:
+      '若想变更 Hotspot 位置，请等候上一个交易完成再更新位置。',
       balance: '余额:',
       fee: '费用:',
       no_funds: '您的帐户中的 HNT 余额不足',
@@ -313,7 +332,8 @@ export default {
     },
     progress: {
       title: '正在注册 Hotspot',
-      subtitle: '这可能需要几分钟，您可以随时关闭此屏幕。',
+      subtitle:
+        '这可能需要几分钟，您可以随时关闭此屏幕。',
       next: '前往“钱包”',
     },
     error: {
@@ -331,7 +351,8 @@ export default {
     },
     confirm: {
       title: '确认助记词',
-      subtitle: '这是您输入的 12 个助记词。如有必要，可点击助记字词进行更新。',
+      subtitle:
+      '这是您输入的 12 个助记词。如有必要，可点击助记字词进行更新。',
       next: '提交助记词',
     },
     complete: {
@@ -347,6 +368,20 @@ export default {
     title: '我的钱包',
     copiedToClipboard: '{{address}} 已复制到剪贴板',
     share: '分享',
+    intro_body:
+      '此“帐户”选项卡可作为虚拟钱包存放您所持有的任何 HNT 或 Data Credits。',
+    intro_slides: [
+      { title: '收取 HNT', body: '访问您的地址或二维码。' },
+      { title: '发送 HNT', body: '扫描二维码或手动输入详细信息。' },
+      {
+        title: '显示帐户明细表',
+        body: '绿色表示您的帐户正在<green>增加</green>的 HNT。',
+      },
+      {
+        title: '显示帐户明细表',
+        body: '蓝色表示您的帐户正在<blue>减少</blue>的 HNT。',
+      },
+    ],
   },
   send: {
     title: {
@@ -386,6 +421,17 @@ export default {
     error: '提交此交易时出错。请重试。',
     hotspot_label: 'Hotspot',
     last_activity: '上次报告的活动: {{activity}}',
+    label_error: '您的帐户 HNT 余额不足。',
+    scan: {
+      title: '二维码使用方式',
+      send: '发送 HNT',
+      send_description: '快速扫描 Helium 地址以发送 HNT。',
+      burn: '烧 HNT 币至 DC',
+      burn_description: '将 HNT 可烧币转换为 Data Credits，用于支付设备网络连接费用。DC 不可转让。',
+      view: '查看二维码',
+      view_description: '分享您的二维码以存入或收取他人的 HNT。',
+      learn_more: '了解更多',
+    }
   },
   more: {
     title: '设置',
@@ -409,6 +455,8 @@ export default {
       learn: {
         title: '学习',
         tokenEarnings: '代币收入',
+        heliumtoken: 'Helium 代币',
+        coverage: '网络覆盖',
         hotspotPlacement: 'Hotspot 部署',
         support: '支持',
         troubleshooting: '故障排除',
@@ -417,7 +465,6 @@ export default {
       account: {
         title: '帐户',
         language: '语言',
-        units: '单位',
         signOut: '注销',
         signOutAlert: {
           title: '警告!',
@@ -454,7 +501,8 @@ export default {
   permissions: {
     location: {
       title: '位置权限',
-      message: 'Helium 钱包需要您的位置权限才能执行蓝牙 LE 发现。',
+      message:
+        'Helium 钱包需要您的位置权限才能执行蓝牙 LE 发现。',
     },
   },
   time: {
@@ -464,6 +512,7 @@ export default {
     day_header: '{{timeOfDay}}好。\n',
   },
   notifications: {
+    tapToReadMore: '轻触以阅读更多',
     share: '分享',
     list: { title: 'Notifications' },
     none: {
@@ -497,7 +546,8 @@ export default {
     title: 'Hotspot 设置',
     pairing: {
       title: '需要 Hotspot 配对',
-      subtitle: '按下 Helium Hotspot 上的按钮，或重启 RAK Hotspot Miner。',
+      subtitle:
+        '按下 Helium Hotspot 上的按钮，或重启 RAK Hotspot Miner。',
       scan: '扫描我的 Hotspot',
     },
     transfer: {
@@ -536,7 +586,8 @@ export default {
       report_generated: '生成的报告',
       send_to_support: '发送报告至支持部门',
       help_link: '阅读更多寻求其他可行解决方案',
-      email_client_missing: '找不到已安装的兼容电子邮件客户端',
+      email_client_missing:
+        '找不到已安装的兼容电子邮件客户端',
       other_info: '其他信息',
     },
     wifi: {
@@ -563,7 +614,8 @@ export default {
       change_location: '更改位置',
       confirm: '我确认',
       cost: '重新声明位置的费用为:',
-      insufficient_funds: '您没有可用资金进行此次声明。\n获取 HNT。',
+      insufficient_funds:
+        '您没有可用资金进行此次声明。\n获取 HNT。',
       confirm_location: '请确认您的 Hotspot 位置更改',
       charge: '需要收取 {{amount}}。',
       pending_message: '位置更新待处理。',
@@ -575,10 +627,12 @@ export default {
   hotspot_details: {
     title: 'Hotspot 详细信息',
     owner: '拥有者: {{address}}',
+    owner_you: '你拥有',
     pass_rate: '通过率',
     reward_title: 'HNT 奖励',
-    witness_title: '见证人',
+    witness_title: '普通见证人',
     challenge_title: 'Challenges',
+    challenge_sub_title: '（见证人、challenger 或 challengee）',
     picker_title: '过去',
     picker_options: ['24 小时', '7 天', '14 天', '30 天'],
     status_online: '在线',
@@ -608,8 +662,10 @@ export default {
     incomplete_alert_body:
       '无法完成此转让。请确认您是授权买家，或联系卖家了解更多信息。',
     canceled_alert_title: '转让已取消',
-    canceled_alert_body: '此转让不再处于活动状态。请联系卖家了解更多信息。',
-    fine_print: '一旦买家接受并完成交易，Hotspot 即被转让。',
+    canceled_alert_body:
+      '此转让不再处于活动状态。请联系卖家了解更多信息。',
+    fine_print:
+      '一旦买家接受并完成交易，Hotspot 即被转让。',
     notification_button: '查看交易',
     cancel: {
       button_title: '取消转让',
@@ -643,5 +699,62 @@ export default {
       data_credits: '数据包传输',
       securities: '安全代币',
     },
+  },
+  checklist: {
+    title: '检查清单',
+    blocks: {
+      not:
+        'Hotspot 必须完全同步后才能挖矿。新 Hotspot 同步最多需要 48 个小时。',
+      full: 'Hotspot 已完全同步。',
+      partial:
+        'Hotspot 在 Helium 区块链中共有 {{count}} 个区块，现已同步约 {{percent}}%。',
+      partial_plural:
+        'Hotspot 在 Helium 区块链中共有 {{count}} 个区块，现已同步约 {{percent}}%。',
+      title: '同步至区块链',
+    },
+    status: {
+      online: 'Hotspot 已联网。',
+      offline:
+        'Hotspot 不在线。Hotspot 必须在线才能同步和挖矿。',
+      title: 'Hotspot 状态',
+    },
+    challenger: {
+      success: 'Hotspot 在 {{count}} 个区块前曾发出 Challenge。',
+      success_plural: 'Hotspot 在 {{count}} 个区块前曾发出 Challenge。',
+      fail:
+      'Hotspot 尚未发出 Challenge。Hotspot 会自动创建 Challenge。',
+      title: '创建 Challenge',
+    },
+    challenge_witness: {
+      success: 'Hotspot 近期已见证一项 Challenge。',
+      fail: '您的 Hotspot 将监听邻近 Hotspot 的 Challenge。',
+      title: '见证 Challenge',
+    },
+    witness: {
+      success: '此 Hotspot 的见证人列表中有 {{count}} 个 Hotspot。',
+      success_plural:
+        '此 Hotspot 的见证人列表中有 {{count}} 个 Hotspot。',
+      fail:
+        '尚无见证人。新添加的 Hotspot 可能需要几天时间来填充见证人。',
+      title: '见证人列表',
+    },
+    challengee: {
+      success: 'Hotspot 在 {{count}} 个区块前曾参与过一项 Challenge。',
+      success_plural:
+        'Hotspot 在 {{count}} 个区块前曾参与过一项 Challenge。',
+      fail:
+        '创建见证人列表后，可能需要几个小时才能通过一项 Challenge。',
+      title: '通过 Challenge',
+    },
+    data_transfer: {
+      success: 'Hotspot 近期已传输数据包。',
+      fail:
+      'Hotspot 会自动传输设备数据并赚取 HNT。此 Hotspot 尚未传输数据。',
+      title: '传输数据',
+    },
+    auto: '自动',
+    auto_hours: '每隔数小时',
+    complete: '完成',
+    online: '在线',
   },
 }

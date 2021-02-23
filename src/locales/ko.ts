@@ -37,7 +37,7 @@ export default {
       next: '단어를 모두 적었습니다',
     },
     confirm: {
-      title: '단어\n확인',
+      title: '단어를\n확인하세요',
       subtitle:
         '다음 중 귀하의 <b><purple>{{ordinal}} 단어는 무엇인가요?</purple></b>',
       forgot: '단어를 잊어버림',
@@ -50,7 +50,8 @@ export default {
     },
     create_pin: {
       title: 'PIN 코드 설정',
-      subtitle: '마지막 보안 단계로 PIN 코드를 사용하여 계정을 보호해 주세요.',
+      subtitle:
+        '마지막 보안 단계로 PIN 코드를 사용하여 계정을 보호해 주세요.',
     },
     confirm_pin: {
       title: 'PIN 반복',
@@ -72,21 +73,21 @@ export default {
         topBody: 'Hotspot은 근처 Hotspot의 Beacon을 수신합니다',
         bottomTitle: 'Beacon은 어떻게 작동하나요?',
         bottomBody:
-          'Beacon은 Hotspot이 전송하는 특수 패킷으로 다른 인접 Hotspot에서 수신할 수 있습니다.\n\n이러한 신호를 통해 네트워크는 서로 수신 범위 내에 있는 Hotspot을 확인할 수 있습니다. 이러한 인접한 Hotspot을 ’감시’라고 하며 귀하의 Beacon을 수신하는 Hotspot이 감시 목록에 추가됩니다.',
+          'Beacon은 Hotspot이 전송하는 특수 패킷으로 다른 인접 Hotspot에서 수신할 수 있습니다.\n\n이러한 신호를 통해 네트워크는 서로 수신 범위 내에 있는 Hotspot을 확인할 수 있습니다. 이러한 인접한 Hotspot을 "감시"라고 하며 귀하의 Beacon을 수신하는 Hotspot이 감시 목록에 추가됩니다.',
       },
       {
         topTitle: 'Beacon 수신',
         topBody: 'Hotspot은 근처 Hotspot의 Beacon을 수신합니다',
         bottomTitle: 'Beacon은 어떻게 작동하나요?',
         bottomBody:
-          'Beacon은 Hotspot이 전송하는 특수 패킷으로 다른 인접 Hotspot에서 수신할 수 있습니다.\n\n이러한 신호를 통해 네트워크는 서로 수신 범위 내에 있는 Hotspot을 확인할 수 있습니다. 이러한 인접한 Hotspot을 ’감시’라고 하며 귀하의 Beacon을 수신하는 Hotspot이 감시 목록에 추가됩니다.',
+          'Beacon은 Hotspot이 전송하는 특수 패킷으로 다른 인접 Hotspot에서 수신할 수 있습니다.\n\n이러한 신호를 통해 네트워크는 서로 수신 범위 내에 있는 Hotspot을 확인할 수 있습니다. 이러한 인접한 Hotspot을 "감시"라고 하며 귀하의 Beacon을 수신하는 Hotspot이 감시 목록에 추가됩니다.',
       },
       {
         topTitle: 'Beacon 수신',
         topBody: 'Hotspot은 근처 Hotspot의 Beacon을 수신합니다',
         bottomTitle: 'Beacon은 어떻게 작동하나요?',
         bottomBody:
-          'Beacon은 Hotspot이 전송하는 특수 패킷으로 다른 인접 Hotspot에서 수신할 수 있습니다.\n\n이러한 신호를 통해 네트워크는 서로 수신 범위 내에 있는 Hotspot을 확인할 수 있습니다. 이러한 인접한 Hotspot을 ’감시’라고 하며 귀하의 Beacon을 수신하는 Hotspot이 감시 목록에 추가됩니다.',
+          'Beacon은 Hotspot이 전송하는 특수 패킷으로 다른 인접 Hotspot에서 수신할 수 있습니다.\n\n이러한 신호를 통해 네트워크는 서로 수신 범위 내에 있는 Hotspot을 확인할 수 있습니다. 이러한 인접한 Hotspot을 "감시"라고 하며 귀하의 Beacon을 수신하는 Hotspot이 감시 목록에 추가됩니다.',
       },
     ],
     next: '가이드를 읽었음',
@@ -128,7 +129,7 @@ export default {
   },
   hotspot_setup: {
     selection: {
-      title: 'Hotspot\n선택',
+      title: 'Hotspot\n선택.',
       subtitle: '어떤 종류의 Hotspot을\n추가하시겠어요?',
       option_one: 'Helium\nHotspot',
       option_two: 'RAK\nHotspot Miner',
@@ -137,16 +138,8 @@ export default {
       fine_print:
         'RAK Hotspot Miner에는 RAK가 사전 로드한 특수 펌웨어가 설치되어 있습니다. 계속하기 전에 하드웨어가 RAK Hotspot Miner인지 다시 확인하세요.',
     },
-    start: {
-      title: 'Hotspot 설정',
-      subtitle:
-        'The People’s Network를 구축하여 Hotspot을 사용하면 HNT를 획득할 수 있습니다.',
-      info: '어떻게 작동하나요? ⓘ',
-      next: '시작합니다',
-      not_now: '나중에',
-    },
     education: {
-      title: 'Hotspot\n배치',
+      title: 'Hotspot\n배치.',
       cards: [
         {
           title: '좋은 장소에 배치하세요',
@@ -156,12 +149,12 @@ export default {
         {
           title: '숨기지 마세요',
           subtitle:
-            'Hotspot을 침실용 탁자나 책장에 숨겨서는 안 됩니다. 그 대신 창가에 두세요.',
+          'Hotspot을 침실용 탁자나 책장에 숨겨서는 안 됩니다. 그 대신 창가에 두세요.',
         },
         {
           title: '건물이 신호를 차단할 수 있습니다',
           subtitle:
-            '주변 건물로 인해 주변 기기에 대한 Hotspot의 커버리지가 감소될 수 있습니다.',
+          '주변 건물로 인해 주변 기기에 대한 Hotspot의 커버리지가 감소될 수 있습니다.',
         },
         {
           title: '마지막으로 오류가 발생하지 않도록 주의하세요.',
@@ -180,8 +173,10 @@ export default {
       title: '전원 켜기',
       next: '전원을 켰습니다',
       subtitle_1: '안테나를 부착하고 제공된 전원 어댑터를 끼웁니다.',
-      rak_subtitle_1: '제공된 전원 어댑터를 창가 부근의 콘센트에 끼웁니다.',
-      subtitle_2: 'Hotspot이 부팅되고 준비되면 표시등이 녹색으로 바뀝니다.',
+      rak_subtitle_1:
+        '제공된 전원 어댑터를 창가 부근의 콘센트에 끼웁니다.',
+      subtitle_2:
+        'Hotspot이 부팅되고 준비되면 표시등이 녹색으로 바뀝니다.',
       rak_subtitle_2:
         '전원이 켜지면 RAK Hotspot Miner에 빨간색 LED 표시등이 표시됩니다.',
     },
@@ -224,7 +219,8 @@ export default {
     wifi_scan: {
       title: 'Wi-Fi',
       settings_title: 'Wi-Fi 설정',
-      subtitle: 'Hotspot을 연결하려는 Wi-Fi 네트워크를 선택합니다.',
+      subtitle:
+        'Hotspot을 연결하려는 Wi-Fi 네트워크를 선택합니다.',
       ethernet: '그 대신에 이더넷을 사용합니다',
       connection_failed: '연결에 실패했습니다. 다시 시도해 주세요',
       disconnect_failed: '분리에 실패했습니다. 다시 시도해 주세요',
@@ -258,11 +254,13 @@ export default {
       forget: '잊어버림',
       forget_network: '네트워크 삭제',
       forget_alert_title: '네트워크를 삭제하시겠어요?',
-      forget_alert_message: '이 Hotspot은 더 이상 자동으로 연결되지 않습니다 ',
+      forget_alert_message:
+        '이 Hotspot은 더 이상 자동으로 연결되지 않습니다 ',
     },
     ethernet: {
       title: '이더넷을 사용하세요',
-      subtitle: 'Hotspot을 인터넷 라우터의 사용 가능한 활성 포트에 연결합니다.',
+      subtitle:
+        'Hotspot을 인터넷 라우터의 사용 가능한 활성 포트에 연결합니다.',
       secure: '이더넷 케이블을 단단히 연결하세요',
       next: 'Hotspot이 연결되었습니다',
     },
@@ -302,9 +300,9 @@ export default {
         'Hotspot의 위치를 설정해야 합니다. 휴대전화를 사용하여 이 작업을 수행할 수 있습니다.',
       p_1: '먼저 휴대전화의 위치에 액세스할 수 있는 권한을 요청받게 됩니다.',
       settings_p_1:
-        'Hotspot 위치를 업데이트하려면 추가 위치 권한이 필요합니다.',
+      'Hotspot 위치를 업데이트하려면 추가 위치 권한이 필요합니다.',
       settings_p_2:
-        "아래 버튼을 탭하면 설정으로 이동합니다. 'Location(위치)'에서 'While using the App(앱을 사용하는 동안)'을 탭합니다.",
+      '아래 버튼을 탭하면 설정으로 이동합니다. "Location(위치)"에서 "While using the App(앱을 사용하는 동안)"을 탭합니다.',
       next: '권한 요청',
       cancel: '아니요, 나중에 설정하겠습니다',
     },
@@ -313,18 +311,18 @@ export default {
       subtitle_free: '위치 수수료($10)가 선불 결제되었습니다.',
       subtitle_fee:
         '이 위치를 확인하려면 $10의 위치 수수료(DC)를 지불해야 합니다.',
-      confirm_location: '선택한 위치가 올바른지 확인하고 Hotspot을 등록하세요.',
+      confirm_location:
+        '선택한 위치가 올바른지 확인하고 Hotspot을 등록하세요.',
       pending_p_1:
         '이 Hotspot에는 블록체인에서 보류 중인 위치 확인 트랜잭션이 있습니다.',
       pending_p_2:
-        'Hotspot의 위치를 변경하려면 이전 트랜잭션이 완료될 때까지 기다린 후 위치를 업데이트하세요.',
+      'Hotspot의 위치를 변경하려면 이전 트랜잭션이 완료될 때까지 기다린 후 위치를 업데이트하세요.',
       balance: '잔액:',
       fee: '수수료:',
       no_funds: '계정 잔액에 HNT가 부족합니다',
       calculating_text: 'HNT 금액 계산',
       error_title: '오류 발생',
-      error_body:
-        '수수료 데이터를 로드하는 중에 오류가 발생했습니다. 다시 시도해 주세요.',
+      error_body: '수수료 데이터를 로드하는 중에 오류가 발생했습니다. 다시 시도해 주세요.',
       next: 'Hotspot 등록',
       fee_next: '수수료 지불 및 Hotspot 등록',
     },
@@ -334,13 +332,14 @@ export default {
     },
     progress: {
       title: 'Hotspot 등록',
-      subtitle: '몇 분 정도 걸릴 수 있으므로 이 화면을 닫아도 됩니다.',
+      subtitle:
+        '몇 분 정도 걸릴 수 있으므로 이 화면을 닫아도 됩니다.',
       next: '지갑으로 이동',
     },
     error: {
       alertTitle: '서버가 응답할 수 없음',
       alertMessage:
-        '서버 요청 시간이 초과되어 현재 Hotspot을 추가할 수 없습니다.\n\nsupport@helium.com에 문의하고 MAC 주소( %{mac})를 적어주시기 바랍니다.',
+        '서버 요청 시간이 초과되어 현재 귀하의 Hotspot을 추가할 수 없습니다.\n\nsupport@helium.com에 문의하고 MAC 주소(%{mac})를 적어주시기 바랍니다.',
     },
   },
   account_import: {
@@ -353,7 +352,7 @@ export default {
     confirm: {
       title: '시드 문구 확인',
       subtitle:
-        '입력하신 12개의 단어는 다음과 같습니다. 필요한 경우 단어를 탭하여 업데이트할 수 있습니다.',
+      '입력하신 12개의 단어는 다음과 같습니다. 필요한 경우 단어를 탭하여 업데이트할 수 있습니다.',
       next: '시드 문구 제출',
     },
     complete: {
@@ -369,6 +368,20 @@ export default {
     title: '내 지갑',
     copiedToClipboard: '{{address}}이(가) 클립 보드에 복사됨',
     share: '공유',
+    intro_body:
+      '이 계정 탭은 귀하가 보유한 HNT 또는 Data Credit에 대한 가상 지갑 역할을 수행합니다.',
+    intro_slides: [
+      { title: 'HNT 수신', body: '주소 또는 QR 코드에 액세스하세요.' },
+      { title: 'HNT 전송', body: 'QR 코드를 스캔하거나 세부사항을 직접 입력하세요.' },
+      {
+        title: '사용자 계정 차트',
+        body: '녹색은 귀하의 계정에 <green>추가</green>되는 HNT를 나타냅니다.',
+      },
+      {
+        title: '사용자 계정 차트',
+        body: '파란색은 귀하의 계정에서 <blue>차감</blue>되는 HNT를 나타냅니다.',
+      },
+    ],
   },
   send: {
     title: {
@@ -405,10 +418,20 @@ export default {
       transfer_complete: '이체 완료',
     },
     qrInfo: 'QR 정보',
-    error:
-      '이 트랜잭션을 제출하는 중에 오류가 발생했습니다. 다시 시도해 주세요.',
+    error: '이 트랜잭션을 제출하는 중에 오류가 발생했습니다. 다시 시도해 주세요.',
     hotspot_label: 'Hotspot',
     last_activity: '마지막으로 보고된 활동: {{activity}}',
+    label_error: '귀하의 계정에 충분한 HNT가 없습니다.',
+    scan: {
+      title: 'QR 코드 사용 방법',
+      send: 'HNT 전송',
+      send_description: 'Helium 주소를 빠르게 스캔하여 HNT를 전송합니다.',
+      burn: 'HNT를 DC로 소진',
+      burn_description: '장치 네트워크 연결 비용을 지불하기 위해 HNT를 Data Credit으로 소진할 수 있습니다. Data Credit은 양도할 수 없습니다.',
+      view: 'QR 코드 보기',
+      view_description: 'QR 코드를 공유하여 HNT를 예치하거나 다른 사람으로부터 전송받을 수 있습니다.',
+      learn_more: '자세히 알아보기',
+    }
   },
   more: {
     title: '설정',
@@ -432,6 +455,8 @@ export default {
       learn: {
         title: '알아보기',
         tokenEarnings: '토큰 획득',
+        heliumtoken: 'Helium 토큰',
+        coverage: '네트워크 커버리지',
         hotspotPlacement: 'Hotspot 배치',
         support: '지원',
         troubleshooting: '문제 해결',
@@ -440,7 +465,6 @@ export default {
       account: {
         title: '계정',
         language: '언어',
-        units: '단위',
         signOut: '로그아웃',
         signOutAlert: {
           title: '경고!',
@@ -465,8 +489,7 @@ export default {
     },
     owned: {
       title: '내 Hotspot',
-      reward_summary:
-        '지난 24시간 동안 귀하의 Hotspot이 {{hntAmount}}을(를) 채굴했습니다.',
+      reward_summary: '지난 24시간 동안 귀하의 Hotspot이 {{hntAmount}}을(를) 채굴했습니다.',
       reward_summary_plural:
         '지난 24시간 동안 Hotspot {{count}}개가 {{hntAmount}}을(를) 채굴했습니다.',
       your_hotspots: '귀하의 Hotspot',
@@ -489,6 +512,7 @@ export default {
     day_header: '안녕하세요, 현재\n{{timeOfDay}}입니다.',
   },
   notifications: {
+    tapToReadMore: '탭하여 자세히 알아보기',
     share: '공유',
     list: { title: 'Notifications' },
     none: {
@@ -584,9 +608,9 @@ export default {
     },
     reassert: {
       remaining:
-        '무료</purple></b> Hotspot 위치 확인 업데이트가 <b><purple>{{count}}개 남아 있습니다.',
+        '무료 </purple></b> Hotspot 위치 확인 업데이트가 <b><purple>{{count}}개 남아 있습니다.',
       remaining_plural:
-        '무료</purple></b> Hotspot 위치 확인 업데이트가 <b><purple>{{count}}개 남아 있습니다.',
+        '무료 </purple></b> Hotspot 위치 확인 업데이트가 <b><purple>{{count}}개 남아 있습니다.',
       change_location: '위치 변경',
       confirm: '확인함',
       cost: '위치를 재확인하는 데 드는 비용:',
@@ -602,11 +626,13 @@ export default {
   },
   hotspot_details: {
     title: 'Hotspot 세부 정보',
-    owner: '소유자: {{address}}',
+    owner: '{{address}}이(가) 소유함',
+    owner_you: '사용자가 소유함',
     pass_rate: '통과 비율',
     reward_title: 'HNT 보상',
-    witness_title: '감시',
+    witness_title: '평균 감시',
     challenge_title: 'Challenge',
+    challenge_sub_title: '(감시, challenger, 또는 challengee)',
     picker_title: '이전',
     picker_options: ['24시간', '7일', '14일', '30일'],
     status_online: '온라인',
@@ -638,7 +664,8 @@ export default {
     canceled_alert_title: '전송이 취소됨',
     canceled_alert_body:
       '이 전송은 더 이상 활성화되지 않습니다. 판매자에게 자세한 내용을 문의하세요.',
-    fine_print: '구매자가 트랜잭션을 수락하고 완료하면 Hotspot이 전송됩니다.',
+    fine_print:
+      '구매자가 트랜잭션을 수락하고 완료하면 Hotspot이 전송됩니다.',
     notification_button: '트랜잭션 보기',
     cancel: {
       button_title: '전송 취소',
@@ -672,5 +699,62 @@ export default {
       data_credits: '패킷 전송',
       securities: 'Security Token',
     },
+  },
+  checklist: {
+    title: '체크리스트',
+    blocks: {
+      not:
+        'Hotspot은 채굴에 앞서 반드시 완전히 동기화되어야 합니다. 새 Hotspot은 동기화에 최대 48시간이 소요될 수 있습니다.',
+      full: 'Hotspot이 완전히 동기화되었습니다.',
+      partial:
+        'Hotspot은 Helium 블록체인에 블록 {{count}}개가 더 요구되며 대략{{percent}}% 정도 동기화되었습니다.',
+      partial_plural:
+        'Hotspot은 Helium 블록체인에 블록 {{count}}개가 더 요구되며 대략 {{percent}}% 정도 동기화되었습니다.',
+      title: '블록체인 동기화',
+    },
+    status: {
+      online: 'Hotspot이 인터넷에 연결되어 있습니다.',
+      offline:
+        'Hotspot이 온라인 상태가 아닙니다. 동기화 및 채굴을 위해서는 Hotspot이 온라인 상태여야 합니다.',
+      title: 'Hotspot 상태',
+    },
+    challenger: {
+      success: 'Hotspot이 블록 {{count}}개 전에 Challenge를 발행했습니다.',
+      success_plural: 'Hotspot이 블록 {{count}}개 전에 Challenge를 발행했습니다.',
+      fail:
+      'Hotspot이 Challenge를 아직 발행하지 않았습니다. Hotspot은 Challenge를 자동으로 생성합니다.',
+      title: 'Challenge 생성',
+    },
+    challenge_witness: {
+      success: 'Hotspot이 최근 Challenge를 감시했습니다.',
+      fail: 'Hotspot이 근처 Hotspot의 Challenge를 수신합니다.',
+      title: 'Challenge 감시',
+    },
+    witness: {
+      success: '이 Hotspot의 감시 목록에는 Hotspot {{count}}개가 있습니다.',
+      success_plural:
+        '이 Hotspot의 감시 목록에는 Hotspot {{count}}개가 있습니다.',
+      fail:
+        '아직 감시가 없습니다. 새로 추가된 Hotspot이 감시를 생성하는 데 며칠이 소요될 수 있습니다.',
+      title: '감시 목록',
+    },
+    challengee: {
+      success: 'Hotspot이 블록 {{count}}개 전에 마지막으로 Challenge에 참여했습니다.',
+      success_plural:
+        'Hotspot이 블록 {{count}}개 전에 마지막으로 Challenge에 참여했습니다.',
+      fail:
+        '감시 목록이 생성되면 Challenge를 통과하는 데 몇 시간이 소요될 수 있습니다.',
+      title: 'Challenge 통과',
+    },
+    data_transfer: {
+      success: 'Hotspot이 최근 데이터 패킷을 전송했습니다.',
+      fail:
+      'Hotspot이 자동으로 장치 데이터를 전송하고 HNT를 획득합니다. 이 Hotspot은 아직 데이터를 전송하지 않았습니다.',
+      title: '데이터 전송',
+    },
+    auto: '자동',
+    auto_hours: '몇 시간마다',
+    complete: '완료',
+    online: '온라인',
   },
 }
