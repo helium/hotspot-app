@@ -16,31 +16,30 @@ import { triggerNavHaptic } from '../../../utils/haptic'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { hp } from '../../../utils/layout'
 import WalletIntroCarousel from './WalletIntroCarousel'
-import {
-  ActivityViewState,
-  Loading,
-} from '../../../store/activity/activitySlice'
-import { FilterType } from './walletTypes'
+import { Loading } from '../../../store/activity/activitySlice'
+import { ActivityViewState, FilterType } from './walletTypes'
 import WalletView from './WalletView'
 
 type Props = {
   layout: WalletLayout
   animationPoints: WalletAnimationPoints
-  activityViewState: ActivityViewState
   txns: AnyTransaction[]
   pendingTxns: PendingTransaction[]
   filter: FilterType
   txnTypeStatus: Loading
+  showSkeleton: boolean
+  activityViewState: ActivityViewState
 }
 
 const WalletViewContainer = ({
   layout,
   animationPoints,
-  activityViewState,
   txns,
   pendingTxns,
   filter,
   txnTypeStatus,
+  showSkeleton,
+  activityViewState,
 }: Props) => {
   const { t } = useTranslation()
   const navigation = useNavigation()
@@ -70,7 +69,7 @@ const WalletViewContainer = ({
       balanceSheet.current?.snapTo(snapToIndex)
     }
     triggerNavHaptic()
-  }, [activityCardIndex, activityViewState, balanceSheetIndex])
+  }, [activityCardIndex, balanceSheetIndex, activityViewState])
 
   const containerStyle = useMemo(() => ({ paddingTop: layout.notchHeight }), [
     layout.notchHeight,
@@ -97,18 +96,22 @@ const WalletViewContainer = ({
           </TouchableOpacityBox>
         </Box>
       </Box>
-      <WalletView
-        layout={layout}
-        animationPoints={animationPoints}
-        activityViewState={activityViewState}
-        txns={txns}
-        pendingTxns={pendingTxns}
-        filter={filter}
-        txnTypeStatus={txnTypeStatus}
-        balanceSheetIndex={balanceSheetIndex}
-        activityCardIndex={activityCardIndex}
-        setActivityCardIndex={setActivityCardIndex}
-      />
+      {(activityViewState === 'activity' ||
+        activityViewState === 'undetermined') && (
+        <WalletView
+          layout={layout}
+          animationPoints={animationPoints}
+          activityViewState={activityViewState}
+          showSkeleton={showSkeleton}
+          txns={txns}
+          pendingTxns={pendingTxns}
+          filter={filter}
+          txnTypeStatus={txnTypeStatus}
+          balanceSheetIndex={balanceSheetIndex}
+          activityCardIndex={activityCardIndex}
+          setActivityCardIndex={setActivityCardIndex}
+        />
+      )}
       {activityViewState === 'no_activity' && (
         <>
           <WalletIntroCarousel />

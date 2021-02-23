@@ -20,20 +20,16 @@ import {
   WalletLayout,
 } from './walletLayout'
 import { triggerNavHaptic } from '../../../utils/haptic'
-import {
-  ActivityViewState,
-  Loading,
-} from '../../../store/activity/activitySlice'
-import { FilterType } from './walletTypes'
+import { ActivityViewState, FilterType } from './walletTypes'
 
 type Props = {
   layout: WalletLayout
   animationPoints: WalletAnimationPoints
+  showSkeleton: boolean
   activityViewState: ActivityViewState
   txns: AnyTransaction[]
   pendingTxns: PendingTransaction[]
   filter: FilterType
-  txnTypeStatus: Loading
   balanceSheetIndex: number
   activityCardIndex: number
   setActivityCardIndex: (index: number) => void
@@ -42,11 +38,11 @@ type Props = {
 const WalletView = ({
   layout,
   animationPoints,
+  showSkeleton,
   activityViewState,
   txns,
   pendingTxns,
   filter,
-  txnTypeStatus,
   balanceSheetIndex,
   activityCardIndex,
   setActivityCardIndex,
@@ -55,28 +51,16 @@ const WalletView = ({
   const activityCard = useRef<BottomSheet>(null)
   const balanceSheet = useRef<BottomSheet>(null)
   const animatedCardIndex = useSharedValue<number>(1)
-  const [showSkeleton, setShowSkeleton] = useState(true)
   const [hasNoResults, setHasNoResults] = useState(false)
 
   useEffect(() => {
-    if (activityViewState === 'init' || txnTypeStatus === 'idle') {
-      setShowSkeleton(true)
-      return
-    }
-    if (txnTypeStatus === 'fulfilled' || txnTypeStatus === 'rejected') {
-      setShowSkeleton(false)
-    }
-  }, [activityViewState, pendingTxns, txnTypeStatus])
-
-  useEffect(() => {
     const noResults =
-      txnTypeStatus === 'fulfilled' &&
-      pendingTxns &&
+      activityViewState === 'activity' &&
+      !showSkeleton &&
       pendingTxns.length === 0 &&
-      txns &&
       txns.length === 0
     setHasNoResults(noResults)
-  }, [pendingTxns, txnTypeStatus, txns])
+  }, [activityViewState, pendingTxns.length, showSkeleton, txns.length])
 
   const handleSendPress = useCallback(() => {
     triggerNavHaptic()
@@ -84,7 +68,7 @@ const WalletView = ({
   }, [navigation])
 
   const toggleShowReceive = useCallback(() => {
-    if (activityViewState === 'has_activity') {
+    if (activityViewState === 'activity') {
       const snapToIndex = activityCardIndex === 1 ? 0 : 1
       activityCard.current?.snapTo(snapToIndex)
     } else {
@@ -112,7 +96,6 @@ const WalletView = ({
   )
 
   if (activityViewState === 'no_activity') return null
-
   return (
     <>
       <Box paddingHorizontal="l">

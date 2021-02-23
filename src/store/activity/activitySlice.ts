@@ -5,37 +5,42 @@ import { initFetchers, txnFetchers } from '../../utils/appDataClient'
 import { FilterType } from '../../features/wallet/root/walletTypes'
 
 export type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
-export type ActivityViewState =
-  | 'init'
-  | 'reset'
-  | 'no_activity'
-  | 'has_activity'
 
 export type ActivityState = {
   txns: {
-    all: { data: AnyTransaction[]; status: Loading }
-    hotspot: { data: AnyTransaction[]; status: Loading }
-    mining: { data: AnyTransaction[]; status: Loading }
-    payment: { data: AnyTransaction[]; status: Loading }
-    pending: { data: PendingTransaction[]; status: Loading }
+    all: { data: AnyTransaction[]; status: Loading; hasInitialLoad: boolean }
+    hotspot: {
+      data: AnyTransaction[]
+      status: Loading
+      hasInitialLoad: boolean
+    }
+    mining: { data: AnyTransaction[]; status: Loading; hasInitialLoad: boolean }
+    payment: {
+      data: AnyTransaction[]
+      status: Loading
+      hasInitialLoad: boolean
+    }
+    pending: {
+      data: PendingTransaction[]
+      status: Loading
+      hasInitialLoad: boolean
+    }
   }
   filter: FilterType
   detailTxn?: AnyTransaction | PendingTransaction
   requestMore: boolean
-  activityViewState: ActivityViewState
 }
 
 const initialState: ActivityState = {
   txns: {
-    all: { data: [], status: 'idle' },
-    hotspot: { data: [], status: 'idle' },
-    mining: { data: [], status: 'idle' },
-    payment: { data: [], status: 'idle' },
-    pending: { data: [], status: 'idle' },
+    all: { data: [], status: 'idle', hasInitialLoad: false },
+    hotspot: { data: [], status: 'idle', hasInitialLoad: false },
+    mining: { data: [], status: 'idle', hasInitialLoad: false },
+    payment: { data: [], status: 'idle', hasInitialLoad: false },
+    pending: { data: [], status: 'idle', hasInitialLoad: false },
   },
   filter: 'all',
   requestMore: false,
-  activityViewState: 'init',
 }
 
 export const ACTIVITY_FETCH_SIZE = 50
@@ -65,9 +70,6 @@ const activitySlice = createSlice({
       state.requestMore = true
     },
     resetTxnStatuses: (state, action: PayloadAction<FilterType>) => {
-      if (state.activityViewState !== 'init') {
-        state.activityViewState = 'reset'
-      }
       Object.keys(state.txns).forEach((key) => {
         const filterType = key as FilterType
         if (filterType !== 'pending' && filterType !== action.payload) {
@@ -120,6 +122,9 @@ const activitySlice = createSlice({
           },
         },
       ) => {
+        if (!state.txns[filter].hasInitialLoad) {
+          state.txns[filter].hasInitialLoad = true
+        }
         state.requestMore = false
         state.txns[filter].status = 'rejected'
       },
@@ -137,6 +142,9 @@ const activitySlice = createSlice({
       ) => {
         state.requestMore = false
         state.txns[filter].status = 'fulfilled'
+        if (!state.txns[filter].hasInitialLoad) {
+          state.txns[filter].hasInitialLoad = true
+        }
 
         if (reset && state.filter === filter) {
           Object.keys(state.txns).forEach((key) => {
@@ -169,18 +177,6 @@ const activitySlice = createSlice({
             'hash',
           )
           state.txns.pending.data = nextPending
-
-          // Determine if the user has any activity data
-          let hasData = false
-          Object.keys(state.txns).every((key) => {
-            const filterType = key as FilterType
-            const { data } = state.txns[filterType]
-            if (data.length > 0) {
-              hasData = true
-            }
-            return !hasData
-          })
-          state.activityViewState = hasData ? 'has_activity' : 'no_activity'
         }
       },
     )
