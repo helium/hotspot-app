@@ -313,7 +313,7 @@ export default {
       already_added:
         'You already added this hotspot to your wallet. Continue to the next screen to assert its location.',
       not_owned:
-        'You do not own this hotspot and cannot add it to your wallet.',
+        'It looks like you’re adding a hosted hotspot; you can connect to Wi-Fi but it will not show in your app.',
       label: 'CURRENT ADD HOTSPOT FEE (PAID IN DATA CREDITS)',
       help_link: 'What are Data Credits?',
       support_title: 'What are Data Credits?',
