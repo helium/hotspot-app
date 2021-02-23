@@ -1,13 +1,18 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { Position } from 'geojson'
 import { getWallet } from '../../utils/walletClient'
-
-type GeoBounds = { lat: number; lng: number; dist: number }
 
 export const fetchNetworkHotspots = createAsyncThunk<
   NetworkHotspot[],
-  GeoBounds
->('networkHotspots/fetch', async (params) => {
-  const networkHotspots = await getWallet('hotspots', params)
+  Position[]
+>('networkHotspots/fetch', async (bounds) => {
+  const [[swlng, swlat], [nelng, nelat]] = bounds
+  const networkHotspots = await getWallet('hotspots', {
+    swlng,
+    swlat,
+    nelng,
+    nelat,
+  })
   return networkHotspots.map((h: HTTPNetworkHotspot) => ({
     ...h,
     lat: parseFloat(h.lat),
@@ -33,11 +38,11 @@ type HTTPNetworkHotspot = {
 
 type NetworkHotspotsSliceState = {
   loading: boolean
-  networkHotspots: NetworkHotspot[]
+  networkHotspots: Record<string, NetworkHotspot>
 }
 const initialState: NetworkHotspotsSliceState = {
   loading: false,
-  networkHotspots: [],
+  networkHotspots: {},
 }
 
 const networkHotspotsSlice = createSlice({
@@ -50,7 +55,9 @@ const networkHotspotsSlice = createSlice({
     })
     builder.addCase(fetchNetworkHotspots.fulfilled, (state, action) => {
       state.loading = false
-      state.networkHotspots = action.payload
+      action.payload.forEach((networkHotspot) => {
+        state.networkHotspots[networkHotspot.address] = networkHotspot
+      })
     })
     builder.addCase(fetchNetworkHotspots.rejected, (state, _action) => {
       state.loading = false

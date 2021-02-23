@@ -52,6 +52,7 @@ type Props = BoxProps<Theme> & {
   interactive?: boolean
   showUserLocation?: boolean
   showNoLocation?: boolean
+  showNearbyHotspots?: boolean
 }
 const Map = ({
   onMapMoved,
@@ -72,6 +73,7 @@ const Map = ({
   interactive = true,
   onFeatureSelected = () => {},
   showNoLocation,
+  showNearbyHotspots = false,
   ...props
 }: Props) => {
   const dispatch = useAppDispatch()
@@ -89,12 +91,10 @@ const Map = ({
   } = useSelector((state: RootState) => state)
 
   useAsync(async () => {
-    if (loaded) {
-      const center = await map.current?.getCenter()
-      if (center) {
-        dispatch(
-          fetchNetworkHotspots({ lat: center[1], lng: center[0], dist: 5000 }),
-        )
+    if (showNearbyHotspots && loaded) {
+      const bounds = await map.current?.getVisibleBounds()
+      if (bounds) {
+        dispatch(fetchNetworkHotspots(bounds))
       }
     }
   }, [loaded, dispatch])
@@ -103,13 +103,14 @@ const Map = ({
     if (onMapMoved) {
       const center = await map.current?.getCenter()
       onMapMoved(center)
-      if (center) {
-        dispatch(
-          fetchNetworkHotspots({ lat: center[1], lng: center[0], dist: 5000 }),
-        )
+    }
+    if (showNearbyHotspots) {
+      const bounds = await map.current?.getVisibleBounds()
+      if (bounds) {
+        dispatch(fetchNetworkHotspots(bounds))
       }
     }
-  }, [dispatch, onMapMoved])
+  }, [dispatch, onMapMoved, showNearbyHotspots])
 
   const centerUserLocation = useCallback(() => {
     camera.current?.setCamera({
@@ -190,6 +191,8 @@ const Map = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userCoords, loaded, offsetCenterRatio])
 
+  // TODO maybe disable this fly effect? it makes exploring around
+  // a litte tricky
   useEffect(() => {
     const hasWitnesses = witnesses ? witnesses.length > 0 : false
     const selectedHotspot = selectedHotspots && selectedHotspots[0]
@@ -220,8 +223,11 @@ const Map = ({
   ])
 
   const networkHotspotFeatures = useMemo(
-    () => hotspotsToFeatures(networkHotspots),
-    [networkHotspots],
+    () =>
+      showNearbyHotspots
+        ? hotspotsToFeatures(Object.values(networkHotspots))
+        : [],
+    [networkHotspots, showNearbyHotspots],
   )
 
   const mapImages = useMemo(
@@ -258,8 +264,6 @@ const Map = ({
       networkHotspotFeatures,
     ],
   )
-
-  console.log('network hotspots', networkHotspotFeatures)
 
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
@@ -403,7 +407,6 @@ const hotspotsEqual = (prev: Hotspot[], next: Hotspot[]) => {
   return true
 }
 
-// export default Map
 export default memo(Map, (prevProps, nextProps) => {
   const {
     mapCenter: prevMapCenter,
