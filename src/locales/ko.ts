@@ -50,8 +50,7 @@ export default {
     },
     create_pin: {
       title: 'PIN 코드 설정',
-      subtitle:
-        '마지막 보안 단계로 PIN 코드를 사용하여 계정을 보호해 주세요.',
+      subtitle: '마지막 보안 단계로 PIN 코드를 사용하여 계정을 보호해 주세요.',
     },
     confirm_pin: {
       title: 'PIN 반복',
@@ -149,12 +148,12 @@ export default {
         {
           title: '숨기지 마세요',
           subtitle:
-          'Hotspot을 침실용 탁자나 책장에 숨겨서는 안 됩니다. 그 대신 창가에 두세요.',
+            'Hotspot을 침실용 탁자나 책장에 숨겨서는 안 됩니다. 그 대신 창가에 두세요.',
         },
         {
           title: '건물이 신호를 차단할 수 있습니다',
           subtitle:
-          '주변 건물로 인해 주변 기기에 대한 Hotspot의 커버리지가 감소될 수 있습니다.',
+            '주변 건물로 인해 주변 기기에 대한 Hotspot의 커버리지가 감소될 수 있습니다.',
         },
         {
           title: '마지막으로 오류가 발생하지 않도록 주의하세요.',
@@ -173,10 +172,8 @@ export default {
       title: '전원 켜기',
       next: '전원을 켰습니다',
       subtitle_1: '안테나를 부착하고 제공된 전원 어댑터를 끼웁니다.',
-      rak_subtitle_1:
-        '제공된 전원 어댑터를 창가 부근의 콘센트에 끼웁니다.',
-      subtitle_2:
-        'Hotspot이 부팅되고 준비되면 표시등이 녹색으로 바뀝니다.',
+      rak_subtitle_1: '제공된 전원 어댑터를 창가 부근의 콘센트에 끼웁니다.',
+      subtitle_2: 'Hotspot이 부팅되고 준비되면 표시등이 녹색으로 바뀝니다.',
       rak_subtitle_2:
         '전원이 켜지면 RAK Hotspot Miner에 빨간색 LED 표시등이 표시됩니다.',
     },
@@ -219,8 +216,7 @@ export default {
     wifi_scan: {
       title: 'Wi-Fi',
       settings_title: 'Wi-Fi 설정',
-      subtitle:
-        'Hotspot을 연결하려는 Wi-Fi 네트워크를 선택합니다.',
+      subtitle: 'Hotspot을 연결하려는 Wi-Fi 네트워크를 선택합니다.',
       ethernet: '그 대신에 이더넷을 사용합니다',
       connection_failed: '연결에 실패했습니다. 다시 시도해 주세요',
       disconnect_failed: '분리에 실패했습니다. 다시 시도해 주세요',
@@ -254,13 +250,11 @@ export default {
       forget: '잊어버림',
       forget_network: '네트워크 삭제',
       forget_alert_title: '네트워크를 삭제하시겠어요?',
-      forget_alert_message:
-        '이 Hotspot은 더 이상 자동으로 연결되지 않습니다 ',
+      forget_alert_message: '이 Hotspot은 더 이상 자동으로 연결되지 않습니다 ',
     },
     ethernet: {
       title: '이더넷을 사용하세요',
-      subtitle:
-        'Hotspot을 인터넷 라우터의 사용 가능한 활성 포트에 연결합니다.',
+      subtitle: 'Hotspot을 인터넷 라우터의 사용 가능한 활성 포트에 연결합니다.',
       secure: '이더넷 케이블을 단단히 연결하세요',
       next: 'Hotspot이 연결되었습니다',
     },
@@ -300,9 +294,9 @@ export default {
         'Hotspot의 위치를 설정해야 합니다. 휴대전화를 사용하여 이 작업을 수행할 수 있습니다.',
       p_1: '먼저 휴대전화의 위치에 액세스할 수 있는 권한을 요청받게 됩니다.',
       settings_p_1:
-      'Hotspot 위치를 업데이트하려면 추가 위치 권한이 필요합니다.',
+        'Hotspot 위치를 업데이트하려면 추가 위치 권한이 필요합니다.',
       settings_p_2:
-      '아래 버튼을 탭하면 설정으로 이동합니다. "Location(위치)"에서 "While using the App(앱을 사용하는 동안)"을 탭합니다.',
+        '아래 버튼을 탭하면 설정으로 이동합니다. "Location(위치)"에서 "While using the App(앱을 사용하는 동안)"을 탭합니다.',
       next: '권한 요청',
       cancel: '아니요, 나중에 설정하겠습니다',
     },
@@ -311,18 +305,18 @@ export default {
       subtitle_free: '위치 수수료($10)가 선불 결제되었습니다.',
       subtitle_fee:
         '이 위치를 확인하려면 $10의 위치 수수료(DC)를 지불해야 합니다.',
-      confirm_location:
-        '선택한 위치가 올바른지 확인하고 Hotspot을 등록하세요.',
+      confirm_location: '선택한 위치가 올바른지 확인하고 Hotspot을 등록하세요.',
       pending_p_1:
         '이 Hotspot에는 블록체인에서 보류 중인 위치 확인 트랜잭션이 있습니다.',
       pending_p_2:
-      'Hotspot의 위치를 변경하려면 이전 트랜잭션이 완료될 때까지 기다린 후 위치를 업데이트하세요.',
+        'Hotspot의 위치를 변경하려면 이전 트랜잭션이 완료될 때까지 기다린 후 위치를 업데이트하세요.',
       balance: '잔액:',
       fee: '수수료:',
       no_funds: '계정 잔액에 HNT가 부족합니다',
       calculating_text: 'HNT 금액 계산',
       error_title: '오류 발생',
-      error_body: '수수료 데이터를 로드하는 중에 오류가 발생했습니다. 다시 시도해 주세요.',
+      error_body:
+        '수수료 데이터를 로드하는 중에 오류가 발생했습니다. 다시 시도해 주세요.',
       next: 'Hotspot 등록',
       fee_next: '수수료 지불 및 Hotspot 등록',
     },
@@ -332,8 +326,7 @@ export default {
     },
     progress: {
       title: 'Hotspot 등록',
-      subtitle:
-        '몇 분 정도 걸릴 수 있으므로 이 화면을 닫아도 됩니다.',
+      subtitle: '몇 분 정도 걸릴 수 있으므로 이 화면을 닫아도 됩니다.',
       next: '지갑으로 이동',
     },
     error: {
@@ -352,7 +345,7 @@ export default {
     confirm: {
       title: '시드 문구 확인',
       subtitle:
-      '입력하신 12개의 단어는 다음과 같습니다. 필요한 경우 단어를 탭하여 업데이트할 수 있습니다.',
+        '입력하신 12개의 단어는 다음과 같습니다. 필요한 경우 단어를 탭하여 업데이트할 수 있습니다.',
       next: '시드 문구 제출',
     },
     complete: {
@@ -372,14 +365,18 @@ export default {
       '이 계정 탭은 귀하가 보유한 HNT 또는 Data Credit에 대한 가상 지갑 역할을 수행합니다.',
     intro_slides: [
       { title: 'HNT 수신', body: '주소 또는 QR 코드에 액세스하세요.' },
-      { title: 'HNT 전송', body: 'QR 코드를 스캔하거나 세부사항을 직접 입력하세요.' },
+      {
+        title: 'HNT 전송',
+        body: 'QR 코드를 스캔하거나 세부사항을 직접 입력하세요.',
+      },
       {
         title: '사용자 계정 차트',
         body: '녹색은 귀하의 계정에 <green>추가</green>되는 HNT를 나타냅니다.',
       },
       {
         title: '사용자 계정 차트',
-        body: '파란색은 귀하의 계정에서 <blue>차감</blue>되는 HNT를 나타냅니다.',
+        body:
+          '파란색은 귀하의 계정에서 <blue>차감</blue>되는 HNT를 나타냅니다.',
       },
     ],
   },
@@ -418,7 +415,8 @@ export default {
       transfer_complete: '이체 완료',
     },
     qrInfo: 'QR 정보',
-    error: '이 트랜잭션을 제출하는 중에 오류가 발생했습니다. 다시 시도해 주세요.',
+    error:
+      '이 트랜잭션을 제출하는 중에 오류가 발생했습니다. 다시 시도해 주세요.',
     hotspot_label: 'Hotspot',
     last_activity: '마지막으로 보고된 활동: {{activity}}',
     label_error: '귀하의 계정에 충분한 HNT가 없습니다.',
@@ -427,11 +425,13 @@ export default {
       send: 'HNT 전송',
       send_description: 'Helium 주소를 빠르게 스캔하여 HNT를 전송합니다.',
       burn: 'HNT를 DC로 소진',
-      burn_description: '장치 네트워크 연결 비용을 지불하기 위해 HNT를 Data Credit으로 소진할 수 있습니다. Data Credit은 양도할 수 없습니다.',
+      burn_description:
+        '장치 네트워크 연결 비용을 지불하기 위해 HNT를 Data Credit으로 소진할 수 있습니다. Data Credit은 양도할 수 없습니다.',
       view: 'QR 코드 보기',
-      view_description: 'QR 코드를 공유하여 HNT를 예치하거나 다른 사람으로부터 전송받을 수 있습니다.',
+      view_description:
+        'QR 코드를 공유하여 HNT를 예치하거나 다른 사람으로부터 전송받을 수 있습니다.',
       learn_more: '자세히 알아보기',
-    }
+    },
   },
   more: {
     title: '설정',
@@ -489,7 +489,8 @@ export default {
     },
     owned: {
       title: '내 Hotspot',
-      reward_summary: '지난 24시간 동안 귀하의 Hotspot이 {{hntAmount}}을(를) 채굴했습니다.',
+      reward_summary:
+        '지난 24시간 동안 귀하의 Hotspot이 {{hntAmount}}을(를) 채굴했습니다.',
       reward_summary_plural:
         '지난 24시간 동안 Hotspot {{count}}개가 {{hntAmount}}을(를) 채굴했습니다.',
       your_hotspots: '귀하의 Hotspot',
@@ -502,7 +503,7 @@ export default {
     location: {
       title: '위치 권한',
       message:
-        'Helium 지갑은 Bluetooth LE 검색을 위해 사용자의 위치에 액세스해야 합니다.',
+        'Helium 귀하의 위치에 대한 액세스가 필요합니다 Bluetooth 검색하고 위치 주장을 활성화합니다. 이 정보는 판매되거나 공유되지 않습니다.',
     },
   },
   time: {
@@ -664,8 +665,7 @@ export default {
     canceled_alert_title: '전송이 취소됨',
     canceled_alert_body:
       '이 전송은 더 이상 활성화되지 않습니다. 판매자에게 자세한 내용을 문의하세요.',
-    fine_print:
-      '구매자가 트랜잭션을 수락하고 완료하면 Hotspot이 전송됩니다.',
+    fine_print: '구매자가 트랜잭션을 수락하고 완료하면 Hotspot이 전송됩니다.',
     notification_button: '트랜잭션 보기',
     cancel: {
       button_title: '전송 취소',
@@ -720,9 +720,10 @@ export default {
     },
     challenger: {
       success: 'Hotspot이 블록 {{count}}개 전에 Challenge를 발행했습니다.',
-      success_plural: 'Hotspot이 블록 {{count}}개 전에 Challenge를 발행했습니다.',
+      success_plural:
+        'Hotspot이 블록 {{count}}개 전에 Challenge를 발행했습니다.',
       fail:
-      'Hotspot이 Challenge를 아직 발행하지 않았습니다. Hotspot은 Challenge를 자동으로 생성합니다.',
+        'Hotspot이 Challenge를 아직 발행하지 않았습니다. Hotspot은 Challenge를 자동으로 생성합니다.',
       title: 'Challenge 생성',
     },
     challenge_witness: {
@@ -739,7 +740,8 @@ export default {
       title: '감시 목록',
     },
     challengee: {
-      success: 'Hotspot이 블록 {{count}}개 전에 마지막으로 Challenge에 참여했습니다.',
+      success:
+        'Hotspot이 블록 {{count}}개 전에 마지막으로 Challenge에 참여했습니다.',
       success_plural:
         'Hotspot이 블록 {{count}}개 전에 마지막으로 Challenge에 참여했습니다.',
       fail:
@@ -749,7 +751,7 @@ export default {
     data_transfer: {
       success: 'Hotspot이 최근 데이터 패킷을 전송했습니다.',
       fail:
-      'Hotspot이 자동으로 장치 데이터를 전송하고 HNT를 획득합니다. 이 Hotspot은 아직 데이터를 전송하지 않았습니다.',
+        'Hotspot이 자동으로 장치 데이터를 전송하고 HNT를 획득합니다. 이 Hotspot은 아직 데이터를 전송하지 않았습니다.',
       title: '데이터 전송',
     },
     auto: '자동',
