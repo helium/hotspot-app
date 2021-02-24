@@ -1,14 +1,12 @@
-import React, { useRef, memo, useCallback, useState, useEffect } from 'react'
+import React, { memo, useState, useEffect } from 'react'
 import Animated, {
   Extrapolate,
   interpolate,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated'
-
-import { useNavigation } from '@react-navigation/native'
-import BottomSheet from '@gorhom/bottom-sheet'
 import { AnyTransaction, PendingTransaction } from '@helium/http'
+import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types'
 import Box from '../../../components/Box'
 import BarChart from '../../../components/BarChart'
 import BalanceCard from './BalanceCard/BalanceCard'
@@ -19,80 +17,46 @@ import {
   WalletAnimationPoints,
   WalletLayout,
 } from './walletLayout'
-import { triggerNavHaptic } from '../../../utils/haptic'
-import {
-  ActivityViewState,
-  Loading,
-} from '../../../store/activity/activitySlice'
-import { FilterType } from './walletTypes'
+import { ActivityViewState, FilterType } from './walletTypes'
 
 type Props = {
   layout: WalletLayout
   animationPoints: WalletAnimationPoints
+  showSkeleton: boolean
   activityViewState: ActivityViewState
   txns: AnyTransaction[]
   pendingTxns: PendingTransaction[]
   filter: FilterType
-  txnTypeStatus: Loading
-  balanceSheetIndex: number
-  activityCardIndex: number
   setActivityCardIndex: (index: number) => void
+  onReceivePress: () => void
+  onSendPress: () => void
+  activityCardRef: React.RefObject<BottomSheetMethods>
 }
 
 const WalletView = ({
   layout,
   animationPoints,
+  showSkeleton,
   activityViewState,
   txns,
   pendingTxns,
   filter,
-  txnTypeStatus,
-  balanceSheetIndex,
-  activityCardIndex,
   setActivityCardIndex,
+  onReceivePress,
+  onSendPress,
+  activityCardRef,
 }: Props) => {
-  const navigation = useNavigation()
-  const activityCard = useRef<BottomSheet>(null)
-  const balanceSheet = useRef<BottomSheet>(null)
   const animatedCardIndex = useSharedValue<number>(1)
-  const [showSkeleton, setShowSkeleton] = useState(true)
   const [hasNoResults, setHasNoResults] = useState(false)
 
   useEffect(() => {
-    if (activityViewState === 'init' || txnTypeStatus === 'idle') {
-      setShowSkeleton(true)
-      return
-    }
-    if (txnTypeStatus === 'fulfilled' || txnTypeStatus === 'rejected') {
-      setShowSkeleton(false)
-    }
-  }, [activityViewState, pendingTxns, txnTypeStatus])
-
-  useEffect(() => {
     const noResults =
-      txnTypeStatus === 'fulfilled' &&
-      pendingTxns &&
+      activityViewState === 'activity' &&
+      !showSkeleton &&
       pendingTxns.length === 0 &&
-      txns &&
       txns.length === 0
     setHasNoResults(noResults)
-  }, [pendingTxns, txnTypeStatus, txns])
-
-  const handleSendPress = useCallback(() => {
-    triggerNavHaptic()
-    navigation.navigate('Send')
-  }, [navigation])
-
-  const toggleShowReceive = useCallback(() => {
-    if (activityViewState === 'has_activity') {
-      const snapToIndex = activityCardIndex === 1 ? 0 : 1
-      activityCard.current?.snapTo(snapToIndex)
-    } else {
-      const snapToIndex = balanceSheetIndex === 1 ? 0 : 1
-      balanceSheet.current?.snapTo(snapToIndex)
-    }
-    triggerNavHaptic()
-  }, [activityCardIndex, activityViewState, balanceSheetIndex])
+  }, [activityViewState, pendingTxns.length, showSkeleton, txns.length])
 
   const balanceCardStyles = useAnimatedStyle(
     () => ({
@@ -112,7 +76,6 @@ const WalletView = ({
   )
 
   if (activityViewState === 'no_activity') return null
-
   return (
     <>
       <Box paddingHorizontal="l">
@@ -121,8 +84,8 @@ const WalletView = ({
       <Animated.View style={balanceCardStyles}>
         <BalanceCard
           layout={layout}
-          onReceivePress={toggleShowReceive}
-          onSendPress={handleSendPress}
+          onReceivePress={onReceivePress}
+          onSendPress={onSendPress}
         />
       </Animated.View>
 
@@ -132,7 +95,7 @@ const WalletView = ({
         txns={txns}
         pendingTxns={pendingTxns}
         hasNoResults={hasNoResults}
-        ref={activityCard}
+        ref={activityCardRef}
         animationPoints={animationPoints}
         animatedIndex={animatedCardIndex}
         onChange={setActivityCardIndex}

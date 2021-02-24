@@ -15,11 +15,13 @@ export const withWalletLayout = (WrappedComponent: any) => (props: any) => {
           headerHeight: 46,
           chartHeight: hp(25),
           balanceHeight: hp(18),
+          qrSendHeight: hp(14),
           balanceInnerTranslate: hp(1),
           altCurrencyHeight: 49,
           navbarHeight: tabBarHeight,
           bottomHeight: insets?.bottom || 1,
           cardHandleHeight: 48,
+          sendShareArea: 124,
         }
         const belowStatusBar =
           wh -
@@ -41,10 +43,25 @@ export const withWalletLayout = (WrappedComponent: any) => (props: any) => {
             walletLayout.chartHeight,
           dragMin: walletLayout.bottomHeight,
         }
+
+        const collapsed =
+          walletLayout.navbarHeight -
+          walletLayout.altCurrencyHeight +
+          walletLayout.balanceHeight
+        const expanded =
+          walletLayout.navbarHeight +
+          walletLayout.balanceHeight +
+          walletLayout.altCurrencyHeight +
+          walletLayout.sendShareArea +
+          walletLayout.qrSendHeight
+
+        const sendSnapPoints = [collapsed, expanded]
+
         return (
           <WrappedComponent
             layout={walletLayout}
             animationPoints={walletAnimationPoints}
+            sendSnapPoints={sendSnapPoints}
             {...props}
           />
         )
@@ -68,4 +85,6 @@ export type WalletLayout = {
   altCurrencyHeight: number
   navbarHeight: number
   bottomHeight: number
+  qrSendHeight: number
+  sendShareArea: number
 }

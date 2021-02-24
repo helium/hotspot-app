@@ -14,39 +14,39 @@ import {
 } from './walletLayout'
 import { triggerNavHaptic } from '../../../utils/haptic'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import { hp } from '../../../utils/layout'
 import WalletIntroCarousel from './WalletIntroCarousel'
-import {
-  ActivityViewState,
-  Loading,
-} from '../../../store/activity/activitySlice'
-import { FilterType } from './walletTypes'
+import { Loading } from '../../../store/activity/activitySlice'
+import { ActivityViewState, FilterType } from './walletTypes'
 import WalletView from './WalletView'
 
 type Props = {
   layout: WalletLayout
   animationPoints: WalletAnimationPoints
-  activityViewState: ActivityViewState
+  sendSnapPoints: number[]
   txns: AnyTransaction[]
   pendingTxns: PendingTransaction[]
   filter: FilterType
   txnTypeStatus: Loading
+  showSkeleton: boolean
+  activityViewState: ActivityViewState
 }
 
 const WalletViewContainer = ({
   layout,
   animationPoints,
-  activityViewState,
+  sendSnapPoints,
   txns,
   pendingTxns,
   filter,
   txnTypeStatus,
+  showSkeleton,
+  activityViewState,
 }: Props) => {
   const { t } = useTranslation()
   const navigation = useNavigation()
 
-  const activityCard = useRef<BottomSheet>(null)
-  const balanceSheet = useRef<BottomSheet>(null)
+  const activityCardRef = useRef<BottomSheet>(null)
+  const balanceSheetRef = useRef<BottomSheet>(null)
 
   const [activityCardIndex, setActivityCardIndex] = useState(1)
   const [balanceSheetIndex, setBalanceSheetIndex] = useState(0)
@@ -62,12 +62,12 @@ const WalletViewContainer = ({
   }, [navigation])
 
   const toggleShowReceive = useCallback(() => {
-    if (activityViewState) {
-      const snapToIndex = activityCardIndex === 1 ? 0 : 1
-      activityCard.current?.snapTo(snapToIndex)
+    if (activityViewState === 'no_activity') {
+      const snapToIndex = balanceSheetIndex >= 1 ? 0 : 1
+      balanceSheetRef.current?.snapTo(snapToIndex)
     } else {
-      const snapToIndex = balanceSheetIndex === 1 ? 0 : 1
-      balanceSheet.current?.snapTo(snapToIndex)
+      const snapToIndex = activityCardIndex >= 1 ? 0 : 1
+      activityCardRef.current?.snapTo(snapToIndex)
     }
     triggerNavHaptic()
   }, [activityCardIndex, activityViewState, balanceSheetIndex])
@@ -97,18 +97,24 @@ const WalletViewContainer = ({
           </TouchableOpacityBox>
         </Box>
       </Box>
-      <WalletView
-        layout={layout}
-        animationPoints={animationPoints}
-        activityViewState={activityViewState}
-        txns={txns}
-        pendingTxns={pendingTxns}
-        filter={filter}
-        txnTypeStatus={txnTypeStatus}
-        balanceSheetIndex={balanceSheetIndex}
-        activityCardIndex={activityCardIndex}
-        setActivityCardIndex={setActivityCardIndex}
-      />
+
+      {(activityViewState === 'activity' ||
+        activityViewState === 'undetermined') && (
+        <WalletView
+          layout={layout}
+          animationPoints={animationPoints}
+          activityViewState={activityViewState}
+          showSkeleton={showSkeleton}
+          txns={txns}
+          pendingTxns={pendingTxns}
+          filter={filter}
+          txnTypeStatus={txnTypeStatus}
+          setActivityCardIndex={setActivityCardIndex}
+          onReceivePress={toggleShowReceive}
+          onSendPress={handleSendPress}
+          activityCardRef={activityCardRef}
+        />
+      )}
       {activityViewState === 'no_activity' && (
         <>
           <WalletIntroCarousel />
@@ -117,9 +123,9 @@ const WalletViewContainer = ({
             onChange={setBalanceSheetIndex}
             handleComponent={null}
             backgroundComponent={null}
-            snapPoints={[hp(20), hp(55)]}
+            snapPoints={sendSnapPoints}
             animateOnMount={false}
-            ref={balanceSheet}
+            ref={balanceSheetRef}
           >
             <BalanceCard
               layout={layout}

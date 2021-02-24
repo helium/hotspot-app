@@ -14,3 +14,5 @@ export const Filters = {
   hotspot: ['add_gateway_v1', 'assert_location_v1', 'transfer_hotspot_v1'],
   pending: [],
 } as Record<FilterType, string[]>
+
+export type ActivityViewState = 'undetermined' | 'no_activity' | 'activity'
