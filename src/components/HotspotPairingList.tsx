@@ -22,6 +22,9 @@ const imagesByHotspotName: Record<string, any> = {
   'Bobcat Miner 300': (
     <Image source={require('../assets/images/bobcat300.png')} />
   ),
+  'SyncroB.it Hotspot': (
+    <Image source={require('../assets/images/syncrobit-hotspot.png')} />
+  ),
 }
 
 const HotspotPairingList = ({

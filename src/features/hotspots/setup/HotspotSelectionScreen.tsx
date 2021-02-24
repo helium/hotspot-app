@@ -30,6 +30,7 @@ const HotspotSetupSelectionScreen = () => {
         </Box>
         <Box flexDirection="row" height={191}>
           <HotspotSelectionCard hotspotType="Bobcat" />
+          <HotspotSelectionCard hotspotType="SYNCROBIT" />
         </Box>
       </ScrollView>
     </BackScreen>

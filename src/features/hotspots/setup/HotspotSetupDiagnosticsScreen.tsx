@@ -33,6 +33,8 @@ const HotspotSetupDiagnosticsScreen = () => {
         return 'hotspot_setup.diagnostics.nebra_p_1'
       case 'Bobcat':
         return 'hotspot_setup.diagnostics.bobcat_p_1'
+      case 'SYNCROBIT':
+        return 'hotspot_setup.diagnostics.syncrobit_p_1'
     }
   }
 
