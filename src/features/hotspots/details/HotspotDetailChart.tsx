@@ -81,7 +81,16 @@ const NumberBox = ({
           })}%`}
         </Text>
       </Box>
-    ) : null}
+    ) : (
+      <Text
+        variant="body3"
+        color="grayDarkText"
+        padding="xs"
+        adjustsFontSizeToFit
+      >
+        {focusedData ? focusedData.label : ''}
+      </Text>
+    )}
   </>
 )
 
@@ -164,10 +173,6 @@ const HotspotDetailChart = ({
                 downColor={grayLight}
                 labelColor={black}
               />
-              {/* TODO removing this for now to fit the design better */}
-              {/* <Text variant="body3" color="black" paddingTop="xs">
-                {focusedData ? focusedData.day : ' '}
-              </Text> */}
             </Box>
           </>
         )}
