@@ -1,4 +1,4 @@
-import React, { useEffect, memo } from 'react'
+import React, { memo, useEffect } from 'react'
 import { Platform } from 'react-native'
 import {
   createStackNavigator,
@@ -19,6 +19,11 @@ const HomeStackScreen = () => {
   useEffect(() => {
     OneSignal.promptForPushNotificationsWithUserResponse(() => {})
   }, [])
+
+  const isIOS = Platform.OS === 'ios'
+  const modalTransition = isIOS
+    ? TransitionPresets.ModalPresentationIOS
+    : TransitionPresets.FadeFromBottomAndroid
 
   return (
     <HomeStack.Navigator
@@ -46,8 +51,8 @@ const HomeStackScreen = () => {
         component={ScanNavigator}
         options={{
           headerShown: false,
-          cardOverlayEnabled: true,
-          ...TransitionPresets.ModalPresentationIOS,
+          cardOverlayEnabled: isIOS,
+          ...modalTransition,
         }}
       />
       <HomeStack.Screen
@@ -55,8 +60,8 @@ const HomeStackScreen = () => {
         component={SendNavigator}
         options={{
           headerShown: false,
-          cardOverlayEnabled: true,
-          ...TransitionPresets.ModalPresentationIOS,
+          cardOverlayEnabled: isIOS,
+          ...modalTransition,
         }}
       />
       <HomeStack.Screen
@@ -64,8 +69,8 @@ const HomeStackScreen = () => {
         component={TransferNavigator}
         options={{
           headerShown: false,
-          cardOverlayEnabled: true,
-          ...TransitionPresets.ModalPresentationIOS,
+          cardOverlayEnabled: isIOS,
+          ...modalTransition,
         }}
       />
       <HomeStack.Screen
