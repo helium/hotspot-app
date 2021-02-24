@@ -14,10 +14,10 @@ const Dropdown = ({ children, title }: Props) => {
   return (
     <Box>
       <TouchableOpacityBox flexDirection="row" onPress={() => setOpen(!open)}>
-        <Text variant="body1" color="grayBlack">
+        <Text variant="body1" color="grayBlack" marginRight="s">
           {upperCase(title)}
         </Text>
-        <Box height={12} justifyContent="center">
+        <Box height={12} marginTop="xxs" justifyContent="center">
           <ImageBox
             style={
               !open && {
