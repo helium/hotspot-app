@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { ActivityIndicator, TouchableWithoutFeedback } from 'react-native'
-import { round } from 'lodash'
+import { isEqual, round } from 'lodash'
 import { useSelector } from 'react-redux'
 import ChartContainer from './ChartContainer'
 import CarotLeft from '../../assets/images/carot-left.svg'
@@ -12,7 +12,9 @@ import { triggerImpact } from '../../utils/haptic'
 import { useColors } from '../../theme/themeHooks'
 import { useAppDispatch } from '../../store/store'
 import { RootState } from '../../store/rootReducer'
-import { fetchActivityChart } from '../../store/account/accountSlice'
+import accountSlice, {
+  fetchActivityChart,
+} from '../../store/account/accountSlice'
 import { locale } from '../../utils/i18n'
 
 type Props = {
@@ -22,21 +24,22 @@ type Props = {
 const WalletChart = ({ height }: Props) => {
   const dispatch = useAppDispatch()
   const {
-    account: { activityChart },
+    account: { activityChart, activityChartRange },
     activity: { filter },
-  } = useSelector((state: RootState) => state)
+  } = useSelector((state: RootState) => state, selectorIsEqual)
 
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
-  const [timeframe, setTimeframe] = useState<ChartRange>('daily')
 
-  const data = useMemo(() => activityChart[timeframe].data, [
+  const data = useMemo(() => activityChart[activityChartRange].data, [
     activityChart,
-    timeframe,
+    activityChartRange,
   ])
 
   useEffect(() => {
-    dispatch(fetchActivityChart({ range: timeframe, filterType: filter }))
-  }, [dispatch, timeframe, filter])
+    dispatch(
+      fetchActivityChart({ range: activityChartRange, filterType: filter }),
+    )
+  }, [dispatch, filter, activityChartRange])
 
   const headerHeight = 30
   const padding = 20
@@ -44,10 +47,10 @@ const WalletChart = ({ height }: Props) => {
 
   const changeTimeframe = useCallback(
     (range: ChartRange) => () => {
-      setTimeframe(range)
+      dispatch(accountSlice.actions.setActivityChartRange(range))
       triggerImpact()
     },
-    [],
+    [dispatch],
   )
 
   const handleFocusData = useCallback((chartData: ChartData | null): void => {
@@ -97,17 +100,26 @@ const WalletChart = ({ height }: Props) => {
         </Box>
         <Box flex={1} flexDirection="row" justifyContent="space-between">
           <TouchableWithoutFeedback onPress={changeTimeframe('daily')}>
-            <Text variant="body1" opacity={timeframe === 'daily' ? 1 : 0.3}>
+            <Text
+              variant="body1"
+              opacity={activityChartRange === 'daily' ? 1 : 0.3}
+            >
               14D
             </Text>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback onPress={changeTimeframe('weekly')}>
-            <Text variant="body1" opacity={timeframe === 'weekly' ? 1 : 0.3}>
+            <Text
+              variant="body1"
+              opacity={activityChartRange === 'weekly' ? 1 : 0.3}
+            >
               12W
             </Text>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback onPress={changeTimeframe('monthly')}>
-            <Text variant="body1" opacity={timeframe === 'monthly' ? 1 : 0.3}>
+            <Text
+              variant="body1"
+              opacity={activityChartRange === 'monthly' ? 1 : 0.3}
+            >
               12M
             </Text>
           </TouchableWithoutFeedback>
@@ -130,6 +142,18 @@ const WalletChart = ({ height }: Props) => {
       />
     </Box>
   )
+}
+
+const selectorIsEqual = (prev: RootState, next: RootState) => {
+  const activityChartEqual = isEqual(
+    prev.account.activityChart,
+    next.account.activityChart,
+  )
+  const rangeEqual =
+    prev.account.activityChartRange === next.account.activityChartRange
+  const filterEqual = prev.activity.filter === next.activity.filter
+
+  return activityChartEqual && rangeEqual && filterEqual
 }
 
 export default memo(WalletChart)
