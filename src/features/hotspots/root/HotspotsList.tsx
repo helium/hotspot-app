@@ -29,50 +29,52 @@ const HotspotsList = ({
     [onSelectHotspot],
   )
 
-  const sections = useMemo(
-    () => [
-      {
-        data: hotspots,
-      },
-    ],
+  const hasOfflineHotspot = useMemo(
+    () => hotspots.some((h: Hotspot) => h.status?.online !== 'online'),
     [hotspots],
   )
 
-  const renderHeader = useCallback(
-    ({ section }) => {
-      const hasOfflineHotspot = section.data.some(
-        (h: Hotspot) => h.status?.online !== 'online',
-      )
-      return (
-        <Box
-          paddingTop="s"
-          paddingBottom="m"
-          borderTopRightRadius="m"
-          borderTopLeftRadius="m"
-          backgroundColor="white"
-        >
-          <HotspotsPicker />
-          {order === HotspotSort.Offline && !hasOfflineHotspot ? (
-            <Box paddingHorizontal="l">
-              <Text
-                variant="body3Medium"
-                color="grayDark"
-                marginTop="xs"
-                marginBottom="xl"
-                letterSpacing={1}
-              >
-                {t('hotspots.list.no_offline')}
-              </Text>
-              <Text variant="body3Medium" color="grayDark" letterSpacing={1}>
-                {t('hotspots.list.online')}
-              </Text>
-            </Box>
-          ) : null}
-        </Box>
-      )
-    },
-    [t, order],
-  )
+  const sections = useMemo(() => {
+    let data = hotspots
+    if (order === HotspotSort.Offline && hasOfflineHotspot) {
+      data = hotspots.filter((h) => h.status?.online !== 'online')
+    }
+    return [
+      {
+        data,
+      },
+    ]
+  }, [hasOfflineHotspot, order, hotspots])
+
+  const renderHeader = useCallback(() => {
+    return (
+      <Box
+        paddingTop="s"
+        paddingBottom="m"
+        borderTopRightRadius="m"
+        borderTopLeftRadius="m"
+        backgroundColor="white"
+      >
+        <HotspotsPicker />
+        {order === HotspotSort.Offline && !hasOfflineHotspot ? (
+          <Box paddingHorizontal="l">
+            <Text
+              variant="body3Medium"
+              color="grayDark"
+              marginTop="xs"
+              marginBottom="xl"
+              letterSpacing={1}
+            >
+              {t('hotspots.list.no_offline')}
+            </Text>
+            <Text variant="body3Medium" color="grayDark" letterSpacing={1}>
+              {t('hotspots.list.online')}
+            </Text>
+          </Box>
+        ) : null}
+      </Box>
+    )
+  }, [hasOfflineHotspot, t, order])
 
   const renderItem = useCallback(
     ({ item }) => (
