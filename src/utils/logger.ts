@@ -14,6 +14,9 @@ export const setUser = (userAddress: string) => {
 }
 
 export const error = (e: unknown) => {
+  if (__DEV__) {
+    console.error(e)
+  }
   Sentry.captureException(e)
 }
 

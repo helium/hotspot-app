@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { ActivityIndicator, TouchableWithoutFeedback } from 'react-native'
-import { round } from 'lodash'
+import { isEqual, round } from 'lodash'
 import { useSelector } from 'react-redux'
 import ChartContainer from './ChartContainer'
 import CarotLeft from '../../assets/images/carot-left.svg'
@@ -26,7 +26,7 @@ const WalletChart = ({ height }: Props) => {
   const {
     account: { activityChart, activityChartRange },
     activity: { filter },
-  } = useSelector((state: RootState) => state)
+  } = useSelector((state: RootState) => state, selectorIsEqual)
 
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
 
@@ -142,6 +142,18 @@ const WalletChart = ({ height }: Props) => {
       />
     </Box>
   )
+}
+
+const selectorIsEqual = (prev: RootState, next: RootState) => {
+  const activityChartEqual = isEqual(
+    prev.account.activityChart,
+    next.account.activityChart,
+  )
+  const rangeEqual =
+    prev.account.activityChartRange === next.account.activityChartRange
+  const filterEqual = prev.activity.filter === next.activity.filter
+
+  return activityChartEqual && rangeEqual && filterEqual
 }
 
 export default memo(WalletChart)
