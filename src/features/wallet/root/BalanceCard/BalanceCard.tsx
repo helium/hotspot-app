@@ -35,11 +35,12 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
 
   return (
     <Box
-      flex={1}
       backgroundColor="purple200"
       paddingVertical="xs"
       paddingHorizontal="l"
-      borderRadius="l"
+      borderTopRightRadius="l"
+      borderTopLeftRadius="l"
+      flex={1}
     >
       <Box height={layout.balanceHeight} justifyContent="center">
         <AnimatedBox
@@ -100,14 +101,14 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
       </Box>
 
       <Box
-        flex={1}
         justifyContent="flex-start"
         alignItems="center"
-        paddingTop="m"
+        marginVertical="m"
+        minHeight={layout.qrSendHeight + layout.sendShareArea}
       >
         <Box backgroundColor="white" padding="s" borderRadius="m">
           {!loadingAddress && (
-            <QRCode value={address?.b58 || ''} size={hp(14)} />
+            <QRCode value={address?.b58 || ''} size={layout.qrSendHeight} />
           )}
         </Box>
         <Box width="100%" marginTop="m" alignItems="center">
