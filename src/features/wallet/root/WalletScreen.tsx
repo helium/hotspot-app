@@ -37,6 +37,14 @@ const WalletScreen = () => {
   }, [])
 
   useEffect(() => {
+    const preloadData = () => {
+      dispatch(fetchTxns({ filter: 'all', reset: true }))
+      dispatch(fetchTxns({ filter: 'pending' }))
+    }
+    preloadData()
+  }, [dispatch])
+
+  useEffect(() => {
     if (filter === 'pending') {
       setTransactionData([])
       return
@@ -81,14 +89,12 @@ const WalletScreen = () => {
     if (!allLoaded || !pendingLoaded) return
 
     if (pendingData.length || allData.length) {
-      animateTransition()
       setActivityViewState('activity')
     } else if (
       !pendingData.length &&
       !allData.length &&
       activityViewState !== 'no_activity'
     ) {
-      animateTransition()
       setActivityViewState('no_activity')
     }
   }, [filter, activityViewState, txns])
@@ -98,10 +104,12 @@ const WalletScreen = () => {
       !txns[filter].hasInitialLoad || !txns.pending.hasInitialLoad
 
     if (nextShowSkeleton !== showSkeleton) {
-      animateTransition()
+      if (visible) {
+        animateTransition()
+      }
       setShowSkeleton(nextShowSkeleton)
     }
-  }, [filter, showSkeleton, txns])
+  }, [filter, showSkeleton, txns, visible])
 
   useEffect(() => {
     // Fetch pending txns on an interval of 5s

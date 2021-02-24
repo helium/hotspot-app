@@ -1,4 +1,5 @@
 import { LayoutAnimation } from 'react-native'
 
-export default () =>
+export default () => {
   LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+}
