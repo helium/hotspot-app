@@ -16,12 +16,14 @@ export type HotspotType =
   | 'RAK'
   | 'NEBRAIN'
   | 'NEBRAOUT'
+  | 'Bobcat'
   | 'SYNCROBIT'
 export type HotspotName =
   | 'RAK Hotspot Miner'
   | 'Helium Hotspot'
   | 'Nebra Indoor Hotspot'
   | 'Nebra Outdoor Hotspot'
+  | 'Bobcat Miner 300'
   | 'SyncroB.it Hotspot'
 
 type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'

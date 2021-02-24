@@ -8,6 +8,7 @@ import Hotspot from '../../../assets/images/hotspot.svg'
 import RAK from '../../../assets/images/rak.svg'
 import NEBRAIN from '../../../assets/images/nebra-in.svg'
 import NEBRAOUT from '../../../assets/images/nebra-out.svg'
+import BOBCAT from '../../../assets/images/bobcat.svg'
 import SYNCROBIT from '../../../assets/images/syncrobit.svg'
 import Text from '../../../components/Text'
 import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
@@ -42,6 +43,8 @@ const HotspotSelectionCard = ({ hotspotType }: Props) => {
         return <NEBRAIN color={color} />
       case 'NEBRAOUT':
         return <NEBRAOUT color={color} />
+      case 'Bobcat':
+        return <BOBCAT color={color} />
       case 'SYNCROBIT':
         return <SYNCROBIT color={color} />
     }
