@@ -135,6 +135,7 @@ export default {
       rak: 'RAK\nHotspot Miner',
       nebrain: 'Nebra\nIndoor Hotspot',
       nebraout: 'Nebra\nOutdoor Hotspot',
+      bobcat: 'Bobcat\nMiner 300',
       syncrobit: 'SyncroB.it\nHotspot',
       third_party_header: 'Other Hotspots',
       helium_edition: 'For the Helium Network',
@@ -173,6 +174,8 @@ export default {
         '<b><white>Diagnostic support allows Helium to identify issues with your Hotspot in a secure way.</white></b>\n\nHelium will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@helium.com</b></purple> from the email used to purchase the Hotspot.',
       nebra_p_1:
         '<b><white>Diagnostic support allows Nebra LTD to identify issues with your Hotspot in a secure way.</white></b>\n\nNebra will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@nebra.com</b></purple> from the email used to purchase the Hotspot.',
+      bobcat_p_1:
+        '<b><white>Diagnostic support allows Bobcat to identify issues with your Hotspot in a secure way.</white></b>\n\nBobcat will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@bobcat.com</b></purple> from the email used to purchase the Hotspot.',
       syncrobit_p_1:
         '<b><white>Diagnostic support allows SyncroB.it to identify issues with your Hotspot in a secure way.</white></b>\n\nSyncroB.it will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@syncrob.it</b></purple> from the email used to purchase the Hotspot.',
     },
@@ -187,6 +190,8 @@ export default {
         'Attach the antenna and plug in the provided power adapter near a window.',
       nebraout_subtitle_1:
         'Attach the antenna and connect to an appropriate power source.',
+      bobcat_subtitle_1:
+        'Plug in the provided power adapter into an outlet near a window and screw in the provided antenna on the back of the Hotspot.',
       syncrobit_subtitle_1: 'Attach the antenna and plug in the device',
       helium_subtitle_2:
         'Your Hotspot will boot up, and its light will become Green when ready.',
@@ -196,6 +201,8 @@ export default {
         'The Nebra Indoor Hotspot will have a green LED light up once it’s powered on.',
       nebraout_subtitle_2:
         'The Nebra Outdoor Hotspot will have multiple lights come on once it’s powered on.',
+      bobcat_subtitle_2:
+        'The Hotspot is ready when the light goes from red to green.',
       syncrobit_subtitle_2:
         'The SyncroB.it Hotspot LED bar will light up blue once it’s powered on.',
     },
@@ -208,6 +215,8 @@ export default {
         'Hold down the button on the back of the Nebra Indoor Hotspot until it starts flashing.',
       nebraout_subtitle_1:
         'There is no pairing button on the Nebra Outdoor Hotspot.',
+      bobcat_subtitle_1:
+        'Use the provided pin to press the BT Button on the back of the Hotspot and hold for 5 seconds.',
       syncrobit_subtitle_1:
         'There is no pairing button on the SyncroB.it Hotspot.',
       helium_subtitle_2:
@@ -218,6 +227,8 @@ export default {
         'Once the LED is slowly blinking and is ready to pair.\n\nPress Next to scan.',
       nebraout_subtitle_2:
         'Bluetooth is automatically enabled for 10 minutes after the Nebra Outdoor Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.\n\nPress Next to scan.',
+      bobcat_subtitle_2:
+        'The hotspot is ready to pair when the light goes from green to blue.\n\nMake sure your phone’s Bluetooth is turned on!',
       syncrobit_subtitle_2:
         'Bluetooth is automatically enabled for 5 minutes after the SyncroB.it Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.\n\nPress Next to scan.',
       alert_no_permissions: {

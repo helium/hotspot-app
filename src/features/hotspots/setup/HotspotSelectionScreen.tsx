@@ -28,8 +28,9 @@ const HotspotSetupSelectionScreen = () => {
           <HotspotSelectionCard hotspotType="NEBRAIN" />
           <HotspotSelectionCard hotspotType="NEBRAOUT" />
         </Box>
-        <Box flexDirection="row" width="50%" height={191}>
+        <Box flexDirection="row" height={191}>
           <HotspotSelectionCard hotspotType="SYNCROBIT" />
+          <HotspotSelectionCard hotspotType="Bobcat" />
         </Box>
       </ScrollView>
     </BackScreen>
