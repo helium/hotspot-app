@@ -92,15 +92,14 @@ export const makeSellerTransferHotspotTxn = async (
   const buyer = Address.fromB58(buyerB58)
   const buyerAccount = await getAccount(buyerB58)
 
-  if (!buyerAccount || !buyerAccount.speculativeNonce)
-    throw new Error('missing buyer speculativeNonce')
+  if (!buyerAccount) throw new Error('missing buyer account')
 
   const transferHotspotTxn = new TransferHotspotV1({
     gateway,
     seller,
     buyer,
     amountToSeller,
-    buyerNonce: buyerAccount.speculativeNonce + 1,
+    buyerNonce: (buyerAccount.speculativeNonce || 0) + 1,
   })
   return transferHotspotTxn.sign({ seller: keypair })
 }

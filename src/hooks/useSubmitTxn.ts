@@ -4,6 +4,7 @@ import {
   PaymentV2 as HttpPaymentV2,
   AssertLocationV1 as HttpAssertLocationV1,
   AddGatewayV1 as HttpAddGatewayV1,
+  TransferHotspotV1 as HttpTransferHotspotV1,
 } from '@helium/http'
 import {
   AddGatewayV1,
@@ -128,6 +129,21 @@ const populatePendingTxn = (
     return data
   }
 
+  if (txn instanceof TransferHotspotV1) {
+    const pending = txn as TransferHotspotV1
+
+    const data = {
+      type: pending.type,
+      buyer: pending.buyer?.b58 || '',
+      seller: pending.seller?.b58 || '',
+      height: blockHeight,
+      hash,
+      gateway: pending.gateway?.b58 || '',
+      fee: new Balance(pending.fee, CurrencyType.dataCredit),
+    } as HttpTransferHotspotV1
+
+    return data
+  }
   return txn
 }
 
