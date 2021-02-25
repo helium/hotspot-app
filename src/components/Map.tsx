@@ -19,6 +19,7 @@ import { Hotspot } from '@helium/http'
 import { BoxProps } from '@shopify/restyle'
 import { StyleProp, ViewStyle } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import { isEqual } from 'lodash'
 import Box from './Box'
 import Text from './Text'
 import NoLocation from '../assets/images/no-location.svg'
@@ -86,9 +87,10 @@ const Map = ({
   const [centerOffset, setCenterOffset] = useState(0)
   const styles = useMemo(() => makeStyles(colors), [colors])
 
-  const {
-    networkHotspots: { networkHotspots },
-  } = useSelector((state: RootState) => state)
+  const networkHotspots = useSelector(
+    (state: RootState) => state.networkHotspots.networkHotspots,
+    isEqual,
+  )
 
   useAsync(async () => {
     if (showNearbyHotspots && loaded) {
