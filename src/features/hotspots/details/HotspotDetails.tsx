@@ -33,6 +33,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
   const {
     account: { account },
     hotspotDetails: {
+      hotspot: hotspotDetailsHotspot,
       numDays,
       rewards,
       rewardSum,
@@ -139,7 +140,9 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
             {animalName(hotspot.address)}
           </Text>
 
-          <HotspotMoreMenuButton hotspot={hotspot} />
+          {hotspot.owner === account?.address && (
+            <HotspotMoreMenuButton hotspot={hotspot} />
+          )}
         </Box>
         <Box
           flexDirection="row"
@@ -149,7 +152,11 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
           paddingHorizontal="l"
         >
           <Box flexDirection="row" height={32}>
-            <StatusBadge online={hotspot.status?.online} />
+            <StatusBadge
+              online={
+                hotspot?.status?.online || hotspotDetailsHotspot?.status?.online
+              }
+            />
             <HexBadge rewardScale={hotspot.rewardScale} />
           </Box>
           <TouchableOpacityBox onPress={openExplorerOwner}>
@@ -187,14 +194,16 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
           loading={loading}
         />
 
-        <Box marginTop="m" paddingHorizontal="l">
-          <Button
-            mode="contained"
-            variant="primary"
-            title="Settings"
-            onPress={handleToggleSettings}
-          />
-        </Box>
+        {hotspot.owner === account?.address && (
+          <Box marginTop="m" paddingHorizontal="l">
+            <Button
+              mode="contained"
+              variant="primary"
+              title="Settings"
+              onPress={handleToggleSettings}
+            />
+          </Box>
+        )}
       </Box>
       <HotspotSettingsProvider>
         <HotspotSettings hotspot={hotspot} />

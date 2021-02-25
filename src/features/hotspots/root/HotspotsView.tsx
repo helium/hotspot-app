@@ -218,6 +218,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
           onFeatureSelected={onMapHotspotSelected}
           interactive={hasLocation}
           showNoLocation={!hasLocation}
+          showNearbyHotspots
         />
         <HotspotMapButtons
           animatedPosition={animatedDetailsPosition}
