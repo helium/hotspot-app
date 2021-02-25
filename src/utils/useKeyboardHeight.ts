@@ -11,6 +11,7 @@ const useKeyboard = () => {
   }
 
   function onKeyboardDidHide(): void {
+    animateTransition()
     setKeyboardHeight(0)
   }
 

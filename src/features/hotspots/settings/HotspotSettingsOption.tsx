@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
 import Text from '../../../components/Text'
@@ -39,4 +39,4 @@ const HotspotSettingsOption = ({
     </Box>
   )
 }
-export default HotspotSettingsOption
+export default memo(HotspotSettingsOption)
