@@ -591,7 +591,7 @@ export default {
     pairing: {
       title: 'Hotspot Pairing Required',
       subtitle:
-        'Press the button on your Helium Hotspot, or power-cycle your RAK Hotspot Miner.',
+        'Press the button or power-cycle your Helium or 3rd party Hotspot.',
       scan: 'Scan for my Hotspot',
     },
     transfer: {
