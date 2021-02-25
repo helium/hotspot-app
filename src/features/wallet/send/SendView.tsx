@@ -289,6 +289,10 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       seller,
       balanceAmount.integerBalance,
     )
+    if (!partialTxn) {
+      Alert.alert(t('generic.error'), t('send.error'))
+      throw new Error('failed to create seller TransferHotspotV1 transaction')
+    }
     const transfer = createTransfer(
       hotspot.address,
       seller?.b58,
