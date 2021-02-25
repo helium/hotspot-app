@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import {
-  AnyTransaction,
-  PendingTransaction,
   AddGatewayV1,
+  AnyTransaction,
   AssertLocationV1,
+  PendingTransaction,
   TransferHotspotV1,
 } from '@helium/http'
 import animalName from 'angry-purple-tiger'
@@ -26,7 +26,6 @@ const isTransfer = (
 
 type Props = { item: AnyTransaction | PendingTransaction; address: string }
 const HotspotTransaction = ({ item, address }: Props) => {
-  console.log(JSON.stringify(item, null, 2))
   const [geoInfo, setGeoInfo] = useState<LocationGeocodedAddress | undefined>()
 
   let assertLoc: AssertLocationV1 | null = null
