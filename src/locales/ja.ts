@@ -372,8 +372,8 @@ export default {
     intro_body:
       'このアカウントタブは、保持しているHNTまたはData Credit用の仮想ウォレットとして機能します。',
     intro_slides: [
-      { title: 'Receive HNT', body: 'Access your address or QR code.' },
-      { title: 'Send HNT', body: 'Scan a QR code or enter details manually.' },
+      { title: 'HNT を受信', body: 'アドレスまたは QR コードにアクセスします。' },
+      { title: 'HNT を送信', body: 'QR コードをスキャンするか、手動で詳細を入力します。' },
       {
         title: 'アカウントのグラフを作成',
         body:
