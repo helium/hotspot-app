@@ -30,6 +30,7 @@ import activitySlice from '../../../store/activity/activitySlice'
 import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
 import { SUPPORTED_LANGUAGUES } from '../../../utils/i18n'
 import { useLanguageContext } from '../../../providers/LanguageProvider'
+import { EXPLORER_BASE_URL } from '../../../utils/config'
 
 type Route = RouteProp<RootStackParamList & MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
@@ -212,7 +213,7 @@ const MoreScreen = () => {
           },
           {
             title: t('more.sections.learn.coverage'),
-            openUrl: 'https://explorer.helium.com/coverage',
+            openUrl: `${EXPLORER_BASE_URL}/coverage`,
           },
           {
             title: t('more.sections.learn.troubleshooting'),

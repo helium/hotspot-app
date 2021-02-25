@@ -7,6 +7,7 @@ import MoreMenu from '@assets/images/moreMenu.svg'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { useAppDispatch } from '../../../store/store'
 import hotspotDetailsSlice from '../../../store/hotspotDetails/hotspotDetailsSlice'
+import { EXPLORER_BASE_URL } from '../../../utils/config'
 
 const HotspotMoreMenuButton = ({ hotspot }: { hotspot: Hotspot }) => {
   const { t } = useTranslation()
@@ -18,7 +19,7 @@ const HotspotMoreMenuButton = ({ hotspot }: { hotspot: Hotspot }) => {
   const onMoreSelected = useCallback(() => {
     if (!hotspot) return
 
-    const explorerUrl = `https://explorer.helium.com/hotspots/${hotspot.address}`
+    const explorerUrl = `${EXPLORER_BASE_URL}/hotspots/${hotspot.address}`
     const opts: SettingsOption[] = [
       {
         label: t('hotspot_details.options.settings'),

@@ -24,6 +24,7 @@ import UnknownTransaction from './UnknownTransaction'
 import { useAppDispatch } from '../../../../store/store'
 import activitySlice from '../../../../store/activity/activitySlice'
 import { locale } from '../../../../utils/i18n'
+import { EXPLORER_BASE_URL } from '../../../../utils/config'
 
 const DF = 'MM/dd/yyyy hh:mm a'
 type Props = { detailTxn?: AnyTransaction | PendingTransaction }
@@ -72,10 +73,7 @@ const ActivityDetails = ({ detailTxn }: Props) => {
   }, [detailTxn, detailIcon, title, time, backgroundColor])
 
   const openExplorer = useCallback(
-    () =>
-      Linking.openURL(
-        `https://explorer.helium.com/blocks/${block?.toString()}`,
-      ),
+    () => Linking.openURL(`${EXPLORER_BASE_URL}/blocks/${block?.toString()}`),
     [block],
   )
 

@@ -320,4 +320,6 @@ export const darkTheme: Theme = {
 }
 
 export type Theme = typeof theme
+export type TextVariant = keyof Theme['textVariants']
+export type Spacing = keyof Theme['spacing']
 export type Colors = keyof Theme['colors']
