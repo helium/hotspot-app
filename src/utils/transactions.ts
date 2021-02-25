@@ -1,14 +1,15 @@
 import { Address } from '@helium/crypto-react-native'
-import { PendingTransaction, AnyTransaction } from '@helium/http'
+import { AnyTransaction, PendingTransaction } from '@helium/http'
 import {
-  PaymentV2,
   AddGatewayV1,
-  TokenBurnV1,
   AssertLocationV1,
+  PaymentV2,
+  TokenBurnV1,
   TransferHotspotV1,
 } from '@helium/transactions'
 import { getKeypair } from './secureAccount'
 import { getAccount } from './appDataClient'
+import * as Logger from './logger'
 
 export const makePaymentTxn = async (
   amount: number,
@@ -83,16 +84,22 @@ export const makeSellerTransferHotspotTxn = async (
   buyerB58: string,
   seller: Address,
   amountToSeller: number,
-): Promise<TransferHotspotV1> => {
+): Promise<TransferHotspotV1 | undefined> => {
   const keypair = await getKeypair()
 
-  if (!keypair) throw new Error('missing keypair')
+  if (!keypair) {
+    Logger.breadcrumb('makeSellerTransferHotspotTxn: missing keypair')
+    return undefined
+  }
 
   const gateway = Address.fromB58(gatewayB58)
   const buyer = Address.fromB58(buyerB58)
   const buyerAccount = await getAccount(buyerB58)
 
-  if (!buyerAccount) throw new Error('missing buyer account')
+  if (!buyerAccount) {
+    Logger.breadcrumb('makeSellerTransferHotspotTxn: missing buyer account')
+    return undefined
+  }
 
   const transferHotspotTxn = new TransferHotspotV1({
     gateway,
