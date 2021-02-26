@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { Address } from '@helium/crypto-react-native'
+import { useSelector } from 'react-redux'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import Crosshair from './Crosshair'
@@ -16,6 +17,7 @@ import { triggerNavHaptic, triggerNotification } from '../../../utils/haptic'
 import { QrScanResult, ScanType } from './scanTypes'
 import BSHandle from '../../../components/BSHandle'
 import { useSpacing } from '../../../theme/themeHooks'
+import { RootState } from '../../../store/rootReducer'
 
 type Props = {
   scanType?: ScanType
@@ -26,6 +28,9 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
   const [scanned, setScanned] = useState(false)
   const navigation = useNavigation()
   const spacing = useSpacing()
+  const {
+    app: { isPinRequiredForPayment },
+  } = useSelector((state: RootState) => state)
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -54,7 +59,14 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
       setScanned(true)
       triggerNotification('success')
 
-      navigation.navigate('Send', { scanResult })
+      if (isPinRequiredForPayment) {
+        navigation.navigate('LockScreen', {
+          requestType: 'send',
+          scanResult,
+        })
+      } else {
+        navigation.navigate('Send', { scanResult })
+      }
     } catch (error) {
       handleFailedScan()
     }

@@ -21,7 +21,7 @@ type Route = RouteProp<RootStackParamList, 'LockScreen'>
 const LockScreen = () => {
   const { t } = useTranslation()
   const {
-    params: { lock: shouldLock, requestType },
+    params: { lock: shouldLock, requestType, scanResult },
   } = useRoute<Route>()
   const rootNav = useNavigation<RootNavigationProp>()
   const moreNav = useNavigation<MoreNavigationProp>()
@@ -37,13 +37,21 @@ const LockScreen = () => {
         rootNav.goBack()
       })
     } else if (requestType === 'send') {
-      rootNav.navigate('Send')
+      rootNav.navigate('Send', { scanResult })
     } else {
       moreNav.navigate('MoreScreen', {
         pinVerifiedFor: requestType,
       })
     }
-  }, [moreNav, requestType, rootNav, setLocked, shouldLock, dispatch])
+  }, [
+    shouldLock,
+    requestType,
+    setLocked,
+    dispatch,
+    rootNav,
+    scanResult,
+    moreNav,
+  ])
 
   const handleSignOut = useCallback(() => {
     Alert.alert(
