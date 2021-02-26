@@ -44,9 +44,12 @@ const WifiSetup = ({ network, onFinished }: Props) => {
 
   return (
     <Box padding="l">
-      <Text variant="h4" color="black">
-        {network}
-      </Text>
+      <Box flexDirection="row" justifyContent="space-between">
+        <Text variant="h4" color="black">
+          {network}
+        </Text>
+        {loading && <CircleLoader loaderSize={24} />}
+      </Box>
       <TextInput
         marginVertical="lx"
         editable={!loading}
@@ -83,7 +86,6 @@ const WifiSetup = ({ network, onFinished }: Props) => {
         }
       />
       {Platform.OS === 'ios' && <Box height={keyboardHeight} />}
-      {loading && <CircleLoader marginTop="l" />}
     </Box>
   )
 }

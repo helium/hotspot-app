@@ -115,7 +115,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
   if (!hotspot) return null
 
   return (
-    <BottomSheetScrollView>
+    <BottomSheetScrollView keyboardShouldPersistTaps="always">
       <Box paddingBottom="l">
         <Box
           marginBottom="m"

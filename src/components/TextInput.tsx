@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React from 'react'
+import React, { useMemo } from 'react'
 import {
   createRestyleComponent,
   VariantProps,
@@ -27,18 +27,18 @@ type Props = React.ComponentProps<typeof TextInput> & {
 const TI = ({ variant, placeholderTextColor, ...rest }: Props) => {
   const colors = useColors()
 
-  const getPlaceholderTextColor = () => {
+  const getPlaceholderTextColor = useMemo(() => {
     if (placeholderTextColor) return colors[placeholderTextColor]
 
     if (variant === 'regular') {
       return colors.inputPlaceholderText
     }
     return undefined
-  }
+  }, [colors, placeholderTextColor, variant])
 
   return (
     <TextInput
-      placeholderTextColor={getPlaceholderTextColor()}
+      placeholderTextColor={getPlaceholderTextColor}
       variant={variant}
       {...rest}
     />
