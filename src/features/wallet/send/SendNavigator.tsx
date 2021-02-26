@@ -15,12 +15,13 @@ type Props = {
 }
 const SendNavigator = ({ route }: Props) => {
   const scanResult = route?.params?.scanResult
+  const sendParams = { scanResult }
   return (
     <SendStack.Navigator headerMode="none">
       <SendStack.Screen
         name="Send"
         component={SendScreen}
-        initialParams={{ scanResult }}
+        initialParams={sendParams}
       />
       <SendStack.Screen name="SendScan" component={ScanScreen} />
       <SendStack.Screen name="SendComplete" component={SendCompleteScreen} />
