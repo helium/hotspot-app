@@ -318,6 +318,12 @@ export default {
         'Your Hotspot will check for updates automatically. This can take about 10 minutes. Leave it plugged in and check back later.',
       next: 'Got it',
     },
+    onboarding_error: {
+      title: 'Onboarding Error',
+      subtitle:
+        'Unable to find Hotspot in the Onboarding Server. Please contact the Hotspot manufacturer for next steps.',
+      next: 'Exit Setup',
+    },
     add_hotspot: {
       title: 'Add Hotspot',
       subtitle:

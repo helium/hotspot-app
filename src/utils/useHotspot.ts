@@ -28,6 +28,7 @@ import { getSecureItem } from './secureAccount'
 import { makeAddGatewayTxn, makeAssertLocTxn } from './transactions'
 import { calculateAddGatewayFee, calculateAssertLocFee } from './fees'
 import connectedHotspotSlice, {
+  AllHotspotDetails,
   fetchHotspotDetails,
   HotspotName,
   HotspotStatus,
@@ -184,6 +185,11 @@ const useHotspot = () => {
     }
 
     const response = await dispatch(fetchHotspotDetails(details))
+    if (
+      !(response.payload as AllHotspotDetails).onboardingRecord?.onboardingKey
+    ) {
+      return false
+    }
     return !!response.payload
   }
 
