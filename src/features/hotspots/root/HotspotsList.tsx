@@ -1,13 +1,16 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { memo, useCallback, useMemo } from 'react'
 import { BottomSheetSectionList } from '@gorhom/bottom-sheet'
 import { Hotspot } from '@helium/http'
 import Balance, { CurrencyType } from '@helium/currency'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import Box from '../../../components/Box'
+import Text from '../../../components/Text'
 import HotspotListItem from '../../../components/HotspotListItem'
 import { RootState } from '../../../store/rootReducer'
 import WelcomeOverview from './WelcomeOverview'
 import HotspotsPicker from './HotspotsPicker'
+import { HotspotSort } from '../../../store/hotspots/hotspotsSlice'
 
 const HotspotsList = ({
   onSelectHotspot,
@@ -15,8 +18,9 @@ const HotspotsList = ({
   onSelectHotspot: (hotspot: Hotspot) => void
 }) => {
   const {
-    hotspots: { hotspots, rewards },
+    hotspots: { hotspots, rewards, order },
   } = useSelector((state: RootState) => state)
+  const { t } = useTranslation()
 
   const handlePress = useCallback(
     (hotspot: Hotspot) => {
@@ -25,17 +29,25 @@ const HotspotsList = ({
     [onSelectHotspot],
   )
 
-  const sections = useMemo(
-    () => [
-      {
-        data: hotspots,
-      },
-    ],
+  const hasOfflineHotspot = useMemo(
+    () => hotspots.some((h: Hotspot) => h.status?.online !== 'online'),
     [hotspots],
   )
 
-  const renderHeader = useCallback(
-    () => (
+  const sections = useMemo(() => {
+    let data = hotspots
+    if (order === HotspotSort.Offline && hasOfflineHotspot) {
+      data = hotspots.filter((h) => h.status?.online !== 'online')
+    }
+    return [
+      {
+        data,
+      },
+    ]
+  }, [hasOfflineHotspot, order, hotspots])
+
+  const renderHeader = useCallback(() => {
+    return (
       <Box
         paddingTop="s"
         paddingBottom="m"
@@ -44,10 +56,25 @@ const HotspotsList = ({
         backgroundColor="white"
       >
         <HotspotsPicker />
+        {order === HotspotSort.Offline && !hasOfflineHotspot ? (
+          <Box paddingHorizontal="l">
+            <Text
+              variant="body3Medium"
+              color="grayDark"
+              marginTop="xs"
+              marginBottom="xl"
+              letterSpacing={1}
+            >
+              {t('hotspots.list.no_offline')}
+            </Text>
+            <Text variant="body3Medium" color="grayDark" letterSpacing={1}>
+              {t('hotspots.list.online')}
+            </Text>
+          </Box>
+        ) : null}
       </Box>
-    ),
-    [],
-  )
+    )
+  }, [hasOfflineHotspot, t, order])
 
   const renderItem = useCallback(
     ({ item }) => (
@@ -87,4 +114,4 @@ const HotspotsList = ({
   )
 }
 
-export default HotspotsList
+export default memo(HotspotsList)
