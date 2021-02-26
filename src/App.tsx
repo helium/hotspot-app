@@ -1,13 +1,13 @@
 import 'react-native-gesture-handler'
-import React, { useEffect, useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import {
-  Platform,
-  StatusBar,
   AppState,
   AppStateStatus,
-  UIManager,
   LogBox,
+  Platform,
+  StatusBar,
+  UIManager,
 } from 'react-native'
 import { ThemeProvider } from '@shopify/restyle'
 
@@ -25,14 +25,14 @@ import NavigationRoot from './navigation/NavigationRoot'
 import { useAppDispatch } from './store/store'
 import appSlice, { restoreUser } from './store/user/appSlice'
 import { RootState } from './store/rootReducer'
-import { fetchActivityChart, fetchData } from './store/account/accountSlice'
+import { fetchData } from './store/account/accountSlice'
 import BluetoothProvider from './providers/BluetoothProvider'
 import ConnectedHotspotProvider from './providers/ConnectedHotspotProvider'
 import * as Logger from './utils/logger'
 import { configChainVars } from './utils/appDataClient'
 import {
-  fetchInitialData,
   fetchBlockHeight,
+  fetchInitialData,
 } from './store/helium/heliumDataSlice'
 import sleep from './utils/sleep'
 import SecurityScreen from './features/security/SecurityScreen'
@@ -67,8 +67,7 @@ const App = () => {
       isLocked,
       appStateStatus,
     },
-    account: { fetchDataStatus, activityChartRange },
-    activity: { filter },
+    account: { fetchDataStatus },
     heliumData: { blockHeight },
   } = useSelector((state: RootState) => state)
 
@@ -105,20 +104,10 @@ const App = () => {
   const loadInitialData = useCallback(async () => {
     if (!isRestored) {
       dispatch(restoreUser())
+    } else {
+      dispatch(fetchInitialData())
     }
-    // fetch common data
-    dispatch(fetchInitialData())
-
-    if (!isRestored && !isBackedUp) {
-      return
-    }
-
-    // fetch account specific data if logged in
-    dispatch(fetchData())
-    dispatch(
-      fetchActivityChart({ range: activityChartRange, filterType: filter }),
-    )
-  }, [activityChartRange, dispatch, filter, isBackedUp, isRestored])
+  }, [dispatch, isRestored])
 
   useEffect(() => {
     loadInitialData()
@@ -166,11 +155,11 @@ const App = () => {
   }, [dispatch])
 
   useEffect(() => {
-    dispatch(fetchData())
-    dispatch(
-      fetchActivityChart({ range: activityChartRange, filterType: filter }),
-    )
-  }, [activityChartRange, blockHeight, dispatch, filter])
+    // fetch account data when logged in and block changes
+    if (isBackedUp && blockHeight) {
+      dispatch(fetchData())
+    }
+  }, [blockHeight, dispatch, isBackedUp])
 
   return (
     <ThemeProvider theme={theme}>

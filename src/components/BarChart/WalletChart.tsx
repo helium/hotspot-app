@@ -26,6 +26,7 @@ const WalletChart = ({ height }: Props) => {
   const {
     account: { activityChart, activityChartRange },
     activity: { filter },
+    heliumData: { blockHeight },
   } = useSelector((state: RootState) => state, selectorIsEqual)
 
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
@@ -39,7 +40,7 @@ const WalletChart = ({ height }: Props) => {
     dispatch(
       fetchActivityChart({ range: activityChartRange, filterType: filter }),
     )
-  }, [dispatch, filter, activityChartRange])
+  }, [dispatch, filter, activityChartRange, blockHeight])
 
   const headerHeight = 30
   const padding = 20
@@ -152,8 +153,10 @@ const selectorIsEqual = (prev: RootState, next: RootState) => {
   const rangeEqual =
     prev.account.activityChartRange === next.account.activityChartRange
   const filterEqual = prev.activity.filter === next.activity.filter
+  const heightEqual =
+    prev.heliumData.blockHeight === next.heliumData.blockHeight
 
-  return activityChartEqual && rangeEqual && filterEqual
+  return activityChartEqual && rangeEqual && filterEqual && heightEqual
 }
 
 export default memo(WalletChart)
