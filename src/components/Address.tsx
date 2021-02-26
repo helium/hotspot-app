@@ -117,6 +117,7 @@ const Address = ({
         onLongPress={copyAddress}
       >
         <Text
+          maxFontSizeMultiplier={1.3}
           variant={variant}
           fontSize={fontSize}
           color={color}

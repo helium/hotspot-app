@@ -73,6 +73,7 @@ const Button = ({
         justifyContent="center"
       >
         <Text
+          maxFontSizeMultiplier={1.2}
           alignSelf="center"
           paddingVertical={height ? undefined : 'lm'}
           variant={getTextVariant()}

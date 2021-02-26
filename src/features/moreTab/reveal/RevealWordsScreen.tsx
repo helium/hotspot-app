@@ -29,8 +29,10 @@ const RevealWordsScreen = () => {
       alignItems="center"
       flexDirection="row"
     >
-      <Text variant="h1" color="purpleLight">{`${index + 1}. `}</Text>
-      <Text variant="h1" color="purpleDark">
+      <Text variant="h1" color="purpleLight" maxFontSizeMultiplier={1}>{`${
+        index + 1
+      }. `}</Text>
+      <Text variant="h1" color="purpleDark" maxFontSizeMultiplier={1}>
         {upperFirst(item)}
       </Text>
     </Card>
@@ -43,8 +45,11 @@ const RevealWordsScreen = () => {
       paddingHorizontal="lx"
     >
       <Box flex={1} />
-      <Text variant="h1">{t('account_setup.passphrase.title')}</Text>
+      <Text variant="h1" maxFontSizeMultiplier={1}>
+        {t('account_setup.passphrase.title')}
+      </Text>
       <TextTransform
+        maxFontSizeMultiplier={1}
         marginVertical="l"
         variant="subtitle"
         i18nKey="account_setup.passphrase.subtitle"

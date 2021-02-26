@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
-import { KeyboardAvoidingView } from 'react-native'
+import { KeyboardAvoidingView, StyleSheet } from 'react-native'
 import BackScreen from '../../../components/BackScreen'
 import Text from '../../../components/Text'
 import {
@@ -32,16 +32,29 @@ const HotspotSetupWifiScreen = () => {
 
   return (
     <BackScreen>
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoidingView}
+        behavior="padding"
+      >
         <Box flex={1} justifyContent="center" paddingBottom="xxl">
           <Box flexDirection="row" justifyContent="center" marginBottom="m">
             <Password />
           </Box>
           <Box>
-            <Text variant="h1" textAlign="center" marginBottom="m">
+            <Text
+              variant="h1"
+              textAlign="center"
+              marginBottom="m"
+              maxFontSizeMultiplier={1}
+            >
               {t('hotspot_setup.wifi_password.join_title')}
             </Text>
-            <Text variant="subtitleLight" textAlign="center" marginBottom="xl">
+            <Text
+              variant="subtitleLight"
+              textAlign="center"
+              marginBottom="xl"
+              maxFontSizeMultiplier={1.2}
+            >
               {t('hotspot_setup.wifi_password.subtitle')}
             </Text>
             <Text variant="body1Bold" marginBottom="s">
@@ -80,3 +93,5 @@ const HotspotSetupWifiScreen = () => {
 }
 
 export default HotspotSetupWifiScreen
+
+const styles = StyleSheet.create({ keyboardAvoidingView: { flex: 1 } })

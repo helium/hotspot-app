@@ -46,10 +46,10 @@ const PhraseChip = ({
   return (
     <TouchableHighlightBox
       backgroundColor={getBackgroundColor()}
-      onPress={() => {}}
       borderRadius="l"
       paddingVertical="m"
       maxWidth="30%"
+      justifyContent="center"
       underlayColor={purpleMain}
       disabled={selected || disabled}
       onHideUnderlay={() => setUnderlayShowing(false)}

@@ -55,7 +55,7 @@ const HotspotSetupConfirmLocationScreen = () => {
   return (
     <BackScreen>
       <Box flex={1} justifyContent="center" paddingBottom="xxl">
-        <Text variant="h1" marginBottom="l">
+        <Text variant="h1" marginBottom="l" maxFontSizeMultiplier={1}>
           {t('hotspot_setup.location_fee.title')}
         </Text>
         {isFree ? (
@@ -79,6 +79,7 @@ const HotspotSetupConfirmLocationScreen = () => {
           marginBottom={{ phone: 'xl', smallPhone: 'ms' }}
           numberOfLines={2}
           adjustsFontSizeToFit
+          maxFontSizeMultiplier={1.3}
         >
           {t('hotspot_setup.location_fee.confirm_location')}
         </Text>

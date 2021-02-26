@@ -288,7 +288,11 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
               behavior="position"
               keyboardVerticalOffset={220}
             >
-              <Card variant="modal" backgroundColor="white" marginTop="l">
+              <Card
+                variant="modal"
+                backgroundColor="white"
+                marginTop={settingsState === 'transfer' ? 'none' : 'l'}
+              >
                 {secondCard}
               </Card>
             </KeyboardAvoidingView>

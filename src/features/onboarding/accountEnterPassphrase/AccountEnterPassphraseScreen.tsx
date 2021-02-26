@@ -121,10 +121,10 @@ const AccountEnterPassphraseScreen = () => {
         alignItems="center"
         flexDirection="row"
       >
-        <Text variant="h1" color="purpleLight">
+        <Text variant="h1" color="purpleLight" maxFontSizeMultiplier={1}>
           {`${index + 1}. `}
         </Text>
-        <Text variant="h1" color="purpleDark">
+        <Text variant="h1" color="purpleDark" maxFontSizeMultiplier={1}>
           {step === index && word ? upperFirst(word) : '?????'}
         </Text>
       </Card>
@@ -138,7 +138,12 @@ const AccountEnterPassphraseScreen = () => {
       paddingHorizontal="lx"
     >
       <Box flex={2} />
-      <Text variant="h1" numberOfLines={2} adjustsFontSizeToFit>
+      <Text
+        variant="h1"
+        numberOfLines={2}
+        adjustsFontSizeToFit
+        maxFontSizeMultiplier={1}
+      >
         {t('account_setup.confirm.title')}
       </Text>
       <Box flex={0.5} />

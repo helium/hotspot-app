@@ -25,11 +25,15 @@ const AccountPassphraseWarningScreen = () => {
           marginVertical="lx"
           variant="h1"
           numberOfLines={2}
+          maxFontSizeMultiplier={1}
           adjustsFontSizeToFit
         >
           {t('account_setup.warning.title')}
         </Text>
         <TextTransform
+          maxFontSizeMultiplier={1}
+          numberOfLines={4}
+          adjustsFontSizeToFit
           variant="subtitle"
           i18nKey="account_setup.warning.subtitle"
         />

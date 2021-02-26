@@ -56,18 +56,29 @@ const HotspotTransfer = ({
             <CloseModal color="gray" />
           </TouchableOpacityBox>
         </Box>
-        <Text variant="h2" paddingTop="m">
+        <Text variant="h2" paddingTop="m" maxFontSizeMultiplier={1}>
           {t('transfer.title')}
         </Text>
-        <Text variant="body1" paddingTop="m">
+        <Text variant="body1" paddingTop="m" maxFontSizeMultiplier={1}>
           {t('transfer.heading')}
         </Text>
       </Box>
       <Box padding="l" minHeight={340}>
-        <Text variant="body2" color="black" marginBottom="l">
+        <Text
+          variant="body2"
+          color="black"
+          marginBottom="l"
+          maxFontSizeMultiplier={1.2}
+        >
           {t('transfer.body')}
         </Text>
-        <Text variant="h5" color="black" paddingBottom="l">
+        <Text
+          variant="h5"
+          color="black"
+          paddingBottom="l"
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
           {hotspotName.toUpperCase()}
         </Text>
         <TextInput
