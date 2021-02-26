@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useRef, useEffect } from 'react'
+import React, { memo, useRef, useEffect } from 'react'
 import { Animated, Easing } from 'react-native'
 import { BoxProps } from '@shopify/restyle'
 import Box from './Box'
@@ -76,4 +76,4 @@ const CircleLoader = ({ text, minHeight, ...props }: Props) => {
   )
 }
 
-export default CircleLoader
+export default memo(CircleLoader)

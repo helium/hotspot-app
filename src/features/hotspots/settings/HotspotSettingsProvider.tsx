@@ -1,6 +1,7 @@
 import React, {
   createContext,
   ReactNode,
+  useCallback,
   useContext,
   useRef,
   useState,
@@ -17,18 +18,18 @@ const useHotspotSettings = () => {
   const [showBack, setShowBack] = useState(false)
   const backHandler = useRef<() => void | undefined>()
 
-  const enableBack = (handler: () => void) => {
+  const enableBack = useCallback((handler: () => void) => {
     setShowBack(true)
     backHandler.current = handler
-  }
+  }, [])
 
-  const disableBack = () => {
+  const disableBack = useCallback(() => {
     setShowBack(false)
-  }
+  }, [])
 
-  const goBack = () => {
+  const goBack = useCallback(() => {
     backHandler?.current?.()
-  }
+  }, [])
 
   return { showBack, enableBack, disableBack, goBack }
 }

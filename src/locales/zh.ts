@@ -475,7 +475,7 @@ export default {
     location: {
       title: '位置权限',
       message:
-        'Helium 需要访问您的位置 Bluetooth 发现并启用位置声明。 此信息将永远不会出售或共享。',
+        'Helium需要访问您的位置，以便蓝牙发现和启用位置断言。这些信息永远不会被出售或分享。',
     },
   },
   time: {
