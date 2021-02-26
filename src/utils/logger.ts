@@ -21,6 +21,9 @@ export const error = (e: unknown) => {
 }
 
 export const breadcrumb = (message: string) => {
+  if (__DEV__) {
+    console.log(message)
+  }
   Sentry.addBreadcrumb({
     message,
   })
