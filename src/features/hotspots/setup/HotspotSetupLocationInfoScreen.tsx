@@ -44,6 +44,7 @@ const HotspotSetupLocationInfoScreen = () => {
           <Text
             variant="h1"
             marginBottom="m"
+            maxFontSizeMultiplier={1}
             numberOfLines={2}
             adjustsFontSizeToFit
           >
@@ -52,12 +53,18 @@ const HotspotSetupLocationInfoScreen = () => {
           <Text
             variant="subtitle"
             marginBottom="l"
+            maxFontSizeMultiplier={1.1}
             numberOfLines={3}
             adjustsFontSizeToFit
           >
             {t('hotspot_setup.enable_location.subtitle')}
           </Text>
-          <Text variant="body1Light" numberOfLines={2} adjustsFontSizeToFit>
+          <Text
+            variant="body1Light"
+            numberOfLines={2}
+            adjustsFontSizeToFit
+            maxFontSizeMultiplier={1.2}
+          >
             {t('hotspot_setup.enable_location.p_1')}
           </Text>
         </Box>

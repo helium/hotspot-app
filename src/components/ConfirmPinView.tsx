@@ -86,7 +86,7 @@ const ConfirmPinView = ({
       alignItems="center"
     >
       <Box flex={1} />
-      <Text marginBottom="m" variant="h1">
+      <Text marginBottom="m" variant="h1" maxFontSizeMultiplier={1}>
         {title}
       </Text>
 

@@ -260,16 +260,21 @@ const MoreScreen = () => {
     handlePinRequiredForPayment,
   ])
 
+  const contentContainer = useMemo(
+    () => ({
+      paddingHorizontal: spacing.m,
+      paddingBottom: spacing.xxxl,
+    }),
+    [spacing.m, spacing.xxxl],
+  )
+
   return (
     <SafeAreaBox backgroundColor="primaryBackground">
       <Text variant="h3" marginVertical="m" paddingHorizontal="l">
         {t('more.title')}
       </Text>
       <SectionList
-        contentContainerStyle={{
-          paddingHorizontal: spacing.m,
-          paddingBottom: spacing.xxl,
-        }}
+        contentContainerStyle={contentContainer}
         sections={SectionData}
         keyExtractor={(item, index) => item.title + index}
         renderItem={({ item, index, section }) => (

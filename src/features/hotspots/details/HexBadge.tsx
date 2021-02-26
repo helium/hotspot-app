@@ -38,7 +38,7 @@ const HexBadge = ({ rewardScale }: Props) => {
       marginLeft="s"
     >
       <Hex color="white" width={14} />
-      <Text color="white" variant="body2Medium" padding="s">
+      <Text color="white" variant="body2Medium" paddingHorizontal="s">
         {scaleString}
       </Text>
     </TouchableOpacityBox>

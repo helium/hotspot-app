@@ -49,7 +49,7 @@ const WalletIntroCarousel = () => {
     index: number
     item: CarouselItem
   }) => (
-    <Box borderRadius="m" marginStart="l" height={90} flexDirection="row">
+    <Box borderRadius="m" marginStart="l" flexDirection="row">
       <Box
         backgroundColor="purple500"
         padding="m"
@@ -57,10 +57,18 @@ const WalletIntroCarousel = () => {
         borderTopLeftRadius="m"
         borderBottomLeftRadius="m"
       >
-        <Text variant="regular" paddingBottom="xs" color="white">
+        <Text
+          variant="regular"
+          paddingBottom="xs"
+          color="white"
+          maxFontSizeMultiplier={1.2}
+        >
           {item.title}
         </Text>
-        {parseMarkup(item.body, <Text variant="body2" color="grayText" />)}
+        {parseMarkup(
+          item.body,
+          <Text variant="body2" maxFontSizeMultiplier={1.2} color="grayText" />,
+        )}
       </Box>
       <Box
         backgroundColor="purple300"
@@ -86,6 +94,7 @@ const WalletIntroCarousel = () => {
       <Text
         variant="body1"
         color="grayText"
+        maxFontSizeMultiplier={1.2}
         paddingHorizontal="l"
         paddingBottom="xl"
       >

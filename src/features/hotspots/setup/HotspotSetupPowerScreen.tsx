@@ -47,6 +47,7 @@ const HotspotSetupPowerScreen = () => {
         variant="h1"
         numberOfLines={2}
         adjustsFontSizeToFit
+        maxFontSizeMultiplier={1}
         marginBottom="l"
         textAlign="center"
       >
@@ -54,13 +55,19 @@ const HotspotSetupPowerScreen = () => {
       </Text>
       <Text
         marginBottom="lx"
+        maxFontSizeMultiplier={1.2}
         variant="subtitleBold"
         textAlign="center"
         color="white"
       >
         {t(`hotspot_setup.power.${hotspotType.toLowerCase()}_subtitle_1`)}
       </Text>
-      <Text marginBottom="xl" variant="subtitle" textAlign="center">
+      <Text
+        marginBottom="xl"
+        maxFontSizeMultiplier={1.2}
+        variant="subtitle"
+        textAlign="center"
+      >
         {t(`hotspot_setup.power.${hotspotType.toLowerCase()}_subtitle_2`)}
       </Text>
       <DebouncedButton

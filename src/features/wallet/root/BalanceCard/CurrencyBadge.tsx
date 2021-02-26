@@ -17,7 +17,7 @@ const CurrencyBadge = ({ variant, amount }: Props) => (
     borderRadius="m"
     alignItems="center"
     justifyContent="center"
-    padding="s"
+    paddingHorizontal="s"
     marginRight="m"
   >
     {variant === 'dc' && <DC height={16} />}

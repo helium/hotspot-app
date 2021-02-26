@@ -98,7 +98,7 @@ const WalletViewContainer = ({
         zIndex={1}
         height={layout.headerHeight}
       >
-        <Text variant="h1" fontSize={22}>
+        <Text variant="h1" fontSize={22} maxFontSizeMultiplier={1.2}>
           {t('wallet.title')}
         </Text>
 

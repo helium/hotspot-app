@@ -18,7 +18,7 @@ const TimeOfDayTitle = ({ date }: { date: Date }) => {
     timeOfDay = t('time.evening')
   }
   return (
-    <Text variant="h1" color="purpleMain">
+    <Text variant="h1" color="purpleMain" maxFontSizeMultiplier={1}>
       {t('time.day_header', { timeOfDay })}
     </Text>
   )

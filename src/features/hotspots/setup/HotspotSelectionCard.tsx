@@ -73,6 +73,8 @@ const HotspotSelectionCard = ({ hotspotType }: Props) => {
             numberOfLines={2}
             adjustsFontSizeToFit
             lineHeight={19}
+            paddingHorizontal="ms"
+            maxFontSizeMultiplier={1.1}
           >
             {t(`hotspot_setup.selection.${hotspotType.toLowerCase()}`)}
           </Text>

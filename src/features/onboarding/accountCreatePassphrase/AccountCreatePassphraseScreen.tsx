@@ -52,8 +52,10 @@ const AccountCreatePassphraseScreen = () => {
       alignItems="center"
       flexDirection="row"
     >
-      <Text variant="h1" color="purpleLight">{`${index + 1}. `}</Text>
-      <Text variant="h1" color="purpleDark">
+      <Text variant="h1" color="purpleLight" maxFontSizeMultiplier={1}>{`${
+        index + 1
+      }. `}</Text>
+      <Text variant="h1" color="purpleDark" maxFontSizeMultiplier={1}>
         {upperFirst(item)}
       </Text>
     </Card>
@@ -62,10 +64,13 @@ const AccountCreatePassphraseScreen = () => {
   return (
     <BackScreen flex={1} backgroundColor="primaryBackground" paddingTop="none">
       <Box flex={1} />
-      <Text variant="h1">{t('account_setup.passphrase.title')}</Text>
+      <Text variant="h1" maxFontSizeMultiplier={1}>
+        {t('account_setup.passphrase.title')}
+      </Text>
       <TextTransform
         marginVertical="l"
         variant="subtitle"
+        maxFontSizeMultiplier={1}
         i18nKey="account_setup.passphrase.subtitle"
       />
       <Box

@@ -56,6 +56,7 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
           <Box>
             <Text
               adjustsFontSizeToFit
+              maxFontSizeMultiplier={1.2}
               color="white"
               fontSize={hp(4.5)}
               fontWeight="300"

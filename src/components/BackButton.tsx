@@ -35,7 +35,13 @@ const BackButton = ({
       {...props}
     >
       <BackArrow height={arrowSize} width={arrowSize} color={colors[color]} />
-      <Text marginLeft="xs" color={color} variant="bold" fontSize={fontSize}>
+      <Text
+        marginLeft="xs"
+        color={color}
+        variant="bold"
+        fontSize={fontSize}
+        maxFontSizeMultiplier={1.1}
+      >
         {t('back')}
       </Text>
     </TouchableOpacityBox>

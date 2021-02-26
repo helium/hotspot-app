@@ -55,7 +55,12 @@ const AccountCreatePinScreen = () => {
       alignItems="center"
     >
       <Box flex={1} />
-      <Text marginBottom="m" variant="h1">
+      <Text
+        marginBottom="m"
+        variant="h1"
+        numberOfLines={1}
+        adjustsFontSizeToFit
+      >
         {t('account_setup.create_pin.title')}
       </Text>
 
