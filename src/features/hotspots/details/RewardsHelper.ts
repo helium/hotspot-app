@@ -47,6 +47,7 @@ export const getRewardChartData = (
           day: 'numeric',
           month: 'short',
           hour: 'numeric',
+          minute: 'numeric',
         }),
         id: `reward-${numDays}-${date}`,
       })
