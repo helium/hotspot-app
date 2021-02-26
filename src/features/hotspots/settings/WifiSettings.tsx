@@ -34,6 +34,7 @@ const WifiSettings = ({ onNetworkSelected }: Props) => {
   const { showOKCancelAlert } = useAlert()
   const [networks, setNetworks] = useState<string[]>([])
   const [configuredNetworks, setConfiguredNetworks] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
 
   const scanWifi = useCallback(async () => {
     const wifiNetworks = await scanForWifiNetworks()
@@ -41,38 +42,40 @@ const WifiSettings = ({ onNetworkSelected }: Props) => {
     animateTransition()
     setNetworks(wifiNetworks || [])
     setConfiguredNetworks(configured || [])
+    setLoading(false)
   }, [scanForWifiNetworks])
+
+  const maybeForgetConfiguredNetwork = useCallback(
+    async (networkToForget?: string) => {
+      if (!networkToForget) return
+      const decision = await showOKCancelAlert({
+        titleKey: 'hotspot_setup.disconnect_dialog.title',
+        messageKey: 'hotspot_setup.disconnect_dialog.body',
+        messageOptions: { wifiName: networkToForget },
+        okKey: 'generic.forget',
+      })
+
+      if (!decision) {
+        return
+      }
+      await removeConfiguredWifi(networkToForget)
+    },
+    [removeConfiguredWifi, showOKCancelAlert],
+  )
 
   const handleNetworkSelected = useCallback(
     async (nextWifi: string) => {
-      if (wifi || configuredNetworks.length) {
-        const wifiName = wifi || configuredNetworks[0]
-        const decision = await showOKCancelAlert({
-          titleKey: 'hotspot_setup.disconnect_dialog.title',
-          messageKey: 'hotspot_setup.disconnect_dialog.body',
-          messageOptions: { wifiName },
-          okKey: 'generic.forget',
-        })
-        if (!decision || !wifi) {
-          return
-        }
-        await removeConfiguredWifi(wifi)
-      }
+      await maybeForgetConfiguredNetwork(
+        wifi || (configuredNetworks.length ? configuredNetworks[0] : undefined),
+      )
       onNetworkSelected(nextWifi)
     },
-    [
-      configuredNetworks,
-      onNetworkSelected,
-      removeConfiguredWifi,
-      showOKCancelAlert,
-      wifi,
-    ],
+    [configuredNetworks, maybeForgetConfiguredNetwork, onNetworkSelected, wifi],
   )
 
   useEffect(() => {
     scanWifi()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [scanWifi])
 
   useEffect(() => {
     if (ethernetOnline) {
@@ -84,6 +87,7 @@ const WifiSettings = ({ onNetworkSelected }: Props) => {
       setNetworkStatus('wifiConnected')
       return
     }
+
     if (configuredNetworks.length) {
       setNetworkStatus('wifiConfigured')
       return
@@ -140,22 +144,28 @@ const WifiSettings = ({ onNetworkSelected }: Props) => {
         height={49}
         alignItems="center"
       >
-        <Text
-          variant="medium"
-          fontSize={15}
-          color={networkStatus === 'notConnected' ? 'grayMain' : 'black'}
-          flex={1}
-        >
-          {networkStatus === 'ethernet' && t('hotspot_settings.wifi.ethernet')}
-          {networkStatus === 'wifiConnected' && wifi}
-          {networkStatus === 'wifiConfigured' && configuredNetworks[0]}
-          {networkStatus === 'notConnected' &&
-            t('hotspot_settings.wifi.not_connected')}
-        </Text>
-
-        {networkStatus === 'notConnected' && <NotConnected />}
-        {networkStatus !== 'notConnected' && (
-          <Paired color={greenBright} height={18} width={18} />
+        {!loading && (
+          <>
+            <Text
+              variant="medium"
+              fontSize={15}
+              color={networkStatus === 'notConnected' ? 'grayMain' : 'black'}
+              flex={1}
+            >
+              {networkStatus === 'ethernet' &&
+                t('hotspot_settings.wifi.ethernet')}
+              {networkStatus === 'wifiConnected' && wifi}
+              {networkStatus === 'wifiConfigured' && configuredNetworks[0]}
+              {networkStatus === 'notConnected' &&
+                t('hotspot_settings.wifi.not_connected')}
+            </Text>
+            {(networkStatus === 'notConnected' ||
+              networkStatus === 'wifiConfigured') && <NotConnected />}
+            {(networkStatus === 'wifiConnected' ||
+              networkStatus === 'ethernet') && (
+              <Paired color={greenBright} height={18} width={18} />
+            )}
+          </>
         )}
       </Card>
 
