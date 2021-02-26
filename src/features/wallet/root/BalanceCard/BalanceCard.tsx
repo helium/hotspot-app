@@ -11,10 +11,10 @@ import CurrencyBadge from './CurrencyBadge'
 import WalletButton from './WalletButton'
 import { getAddress } from '../../../../utils/secureAccount'
 import { hp, wp } from '../../../../utils/layout'
-import CopyAddressButton from './AddressCopyButton'
 import ShareButton from './ShareButton'
 import { WalletLayout } from '../walletLayout'
 import { decimalSeparator, groupSeparator } from '../../../../utils/i18n'
+import Address from '../../../../components/Address'
 
 type Props = {
   onReceivePress: () => void
@@ -120,7 +120,14 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
           )}
         </Box>
         <Box width="100%" marginTop="m" alignItems="center">
-          <CopyAddressButton address={address?.b58} />
+          <Address
+            address={address?.b58}
+            maxWidth={200}
+            color="white"
+            variant="body1Mono"
+            padding="s"
+            clickToCopy
+          />
           <ShareButton address={address?.b58 || ''} />
         </Box>
       </Box>

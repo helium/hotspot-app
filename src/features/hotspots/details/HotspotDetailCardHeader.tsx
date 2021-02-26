@@ -11,6 +11,7 @@ import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { useAppDispatch } from '../../../store/store'
 import hotspotDetailsSlice from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import { RootState } from '../../../store/rootReducer'
+import { EXPLORER_BASE_URL } from '../../../utils/config'
 
 const HotspotDetailCardHeader = () => {
   const { t } = useTranslation()
@@ -25,7 +26,7 @@ const HotspotDetailCardHeader = () => {
   const onMoreSelected = () => {
     if (!hotspot) return
 
-    const explorerUrl = `https://explorer.helium.com/hotspots/${hotspot.address}`
+    const explorerUrl = `${EXPLORER_BASE_URL}/hotspots/${hotspot.address}`
     const opts: SettingsOption[] = [
       {
         label: t('hotspot_details.options.settings'),

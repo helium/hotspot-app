@@ -4,7 +4,6 @@ import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { Hotspot } from '@helium/http'
-import { Linking } from 'react-native'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import StatusBadge from './StatusBadge'
@@ -18,13 +17,11 @@ import hotspotDetailsSlice, {
 } from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import HotspotSettingsProvider from '../settings/HotspotSettingsProvider'
 import HotspotSettings from '../settings/HotspotSettings'
-import TouchableOpacityBox from '../../../components/BSTouchableOpacityBox'
 import HexBadge from './HexBadge'
 import HotspotMoreMenuButton from './HotspotMoreMenuButton'
 import Button from '../../../components/Button'
 import HotspotChecklist from '../checklist/HotspotChecklist'
-
-const shortAddress = (address?: string) => `${address?.slice(0, 5)}...`
+import Address from '../../../components/Address'
 
 const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
   const { t } = useTranslation()
@@ -58,11 +55,6 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
       fetchHotspotDetails({ address: hotspot.address, numDays: timelineValue }),
     )
   }, [dispatch, hotspot, timelineValue])
-
-  const openExplorerOwner = useCallback(() => {
-    if (!hotspot) return
-    Linking.openURL(`https://explorer.helium.com/accounts/${hotspot.owner}`)
-  }, [hotspot])
 
   const handleToggleSettings = useCallback(() => {
     dispatch(hotspotDetailsSlice.actions.toggleShowSettings())
@@ -161,15 +153,20 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
             />
             <HexBadge rewardScale={hotspot.rewardScale} />
           </Box>
-          <TouchableOpacityBox onPress={openExplorerOwner}>
-            <Text color="grayLightText">
-              {hotspot.owner === account?.address
+          <Address
+            address={hotspot.owner}
+            ellipsizeMode="tail"
+            variant="regular"
+            text={
+              hotspot.owner === account?.address
                 ? t('hotspot_details.owner_you')
                 : t('hotspot_details.owner', {
-                    address: shortAddress(hotspot.owner),
-                  })}
-            </Text>
-          </TouchableOpacityBox>
+                    address: hotspot.owner,
+                  })
+            }
+            maxWidth={128}
+            color="grayLightText"
+          />
         </Box>
         <HotspotChecklist hotspot={hotspot} witnesses={witnesses} />
         <TimelinePicker index={2} onTimelineChanged={setTimelineValue} />

@@ -126,6 +126,8 @@ export default {
     forget: 'Forget',
     error: 'Error',
     loading: 'Loading...',
+    copy: 'Copy',
+    address: 'Address',
   },
   hotspot_setup: {
     selection: {

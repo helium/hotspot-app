@@ -8,3 +8,5 @@ declare module '*.svg' {
 declare module 'angry-purple-tiger' {
   export default function fn(value: string): string
 }
+
+declare module '@burstware/react-native-portal'

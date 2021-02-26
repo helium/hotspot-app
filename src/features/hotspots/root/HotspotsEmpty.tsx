@@ -7,12 +7,12 @@ import Button from '../../../components/Button'
 import HotspotIcon from '../../../assets/images/blueHotspotIcon.svg'
 import Text from '../../../components/Text'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
+import { EXPLORER_BASE_URL } from '../../../utils/config'
 
 const HotspotsEmpty = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<RootNavigationProp>()
-  const goToExplorer = () =>
-    Linking.openURL('https://explorer.helium.com/coverage')
+  const goToExplorer = () => Linking.openURL(`${EXPLORER_BASE_URL}/coverage`)
   return (
     <Box justifyContent="center" flex={1} padding="l">
       <HotspotIcon />

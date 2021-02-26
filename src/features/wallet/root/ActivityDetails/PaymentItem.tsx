@@ -2,6 +2,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
+import Address from '../../../../components/Address'
 
 type Props = {
   text: string
@@ -52,16 +53,7 @@ const PaymentItem = ({
         flex={1}
         marginHorizontal="ms"
       >
-        <Text
-          selectable={false}
-          variant="medium"
-          fontSize={14}
-          color="black"
-          numberOfLines={1}
-          ellipsizeMode="middle"
-        >
-          {text}
-        </Text>
+        <Address address={text} />
         {(isMyAccount || subText) && (
           <Text
             variant="light"
