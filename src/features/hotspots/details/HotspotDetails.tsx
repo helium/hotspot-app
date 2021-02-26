@@ -75,6 +75,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
         day: 'numeric',
         month: 'short',
         hour: 'numeric',
+        minute: 'numeric',
       }
     } else {
       options = {
