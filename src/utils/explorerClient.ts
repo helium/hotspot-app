@@ -1,10 +1,10 @@
-/* eslint-disable import/prefer-default-export */
 import * as Logger from './logger'
+import { EXPLORER_BASE_URL } from './config'
 
 const makeRequest = async (url: string, opts: RequestInit) => {
   Logger.breadcrumb(`request: ${opts.method} ${url}`)
   try {
-    const route = ['https://explorer.helium.com/api', url].join('/')
+    const route = [`${EXPLORER_BASE_URL}/api`, url].join('/')
 
     const response = await fetch(route, {
       ...opts,
@@ -16,11 +16,9 @@ const makeRequest = async (url: string, opts: RequestInit) => {
     })
 
     if (!response.ok) {
-      const error = new Error(
-        `Bad response, status:${response.status} message:${response.statusText}`,
-      )
-      Logger.error(error)
-      throw error
+      const errorMessage = `Bad response, status:${response.status} message:${response.statusText}`
+      Logger.breadcrumb(errorMessage)
+      throw new Error(errorMessage)
     }
 
     const text = await response.text()
@@ -32,7 +30,6 @@ const makeRequest = async (url: string, opts: RequestInit) => {
     }
   } catch (error) {
     Logger.breadcrumb('fetch failed')
-    Logger.error(error)
     throw error
   }
 }

@@ -21,7 +21,7 @@ const makeRequest = async (url: string, opts: RequestInit = {}) => {
       throw new Error(text)
     }
   } catch (error) {
-    Logger.error(error)
+    Logger.breadcrumb(error)
     throw error
   }
 }
