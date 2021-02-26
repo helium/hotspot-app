@@ -52,7 +52,7 @@ const MoreListItem = ({
   }
 
   const trackColor = useMemo(
-    () => ({ false: colors.purple400, true: colors.purpleMain }),
+    () => ({ false: colors.purple300, true: colors.purpleMain }),
     [colors],
   )
 
