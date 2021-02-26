@@ -1,4 +1,11 @@
-import React, { useEffect, memo, useRef, useState } from 'react'
+import React, {
+  useEffect,
+  memo,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react'
 import {
   Modal,
   Animated,
@@ -66,15 +73,15 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showSettings])
 
-  const setNextState = (s: State) => {
+  const setNextState = useCallback((s: State) => {
     animateTransition()
     setSettingsState(s)
-  }
+  }, [])
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     disableBack()
     dispatch(hotspotDetailsSlice.actions.toggleShowSettings())
-  }
+  }, [disableBack, dispatch])
 
   const [hasActiveTransfer, setHasActiveTransfer] = useState<boolean>()
   const [activeTransfer, setActiveTransfer] = useState<Transfer>()
@@ -92,7 +99,7 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
     fetchTransfer()
   }, [hotspot])
 
-  const getTransferButtonTitle = () => {
+  const transferButtonTitle = useMemo(() => {
     if (hasActiveTransfer === undefined) {
       return ''
     }
@@ -100,9 +107,9 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
       return t('transfer.cancel.button_title')
     }
     return t('hotspot_settings.transfer.begin')
-  }
+  }, [hasActiveTransfer, t])
 
-  const cancelTransfer = async () => {
+  const cancelTransfer = useCallback(async () => {
     if (!hotspot) return
     const deleteResponse = await deleteTransfer(hotspot.address, false)
     if (deleteResponse) {
@@ -114,9 +121,9 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
         t('transfer.cancel.failed_alert_body'),
       )
     }
-  }
+  }, [hotspot, t])
 
-  const onPressTransferSetting = () => {
+  const onPressTransferSetting = useCallback(() => {
     if (hasActiveTransfer) {
       Alert.alert(
         t('transfer.cancel.alert_title'),
@@ -139,31 +146,39 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
     } else {
       setNextState('transfer')
     }
-  }
+  }, [
+    activeTransfer?.buyer,
+    activeTransfer?.gateway,
+    cancelTransfer,
+    hasActiveTransfer,
+    setNextState,
+    t,
+  ])
 
-  const onCloseTransfer = () => {
+  const onCloseTransfer = useCallback(() => {
     setNextState('init')
-  }
+  }, [setNextState])
 
   useEffect(() => {
     if (!showSettings) {
       setNextState('init')
     }
-  }, [showSettings])
+  }, [setNextState, showSettings])
 
   useEffect(() => {
     getState()
   }, [getState])
 
-  if (!hotspot) return null
+  const updateTitle = useCallback(
+    (nextTitle: string) => setTitle(nextTitle),
+    [],
+  )
 
-  const getFirstCard = () => {
+  const startScan = useCallback(() => setNextState('scan'), [setNextState])
+
+  const firstCard = useMemo(() => {
     if (settingsState === 'scan') {
-      return (
-        <HotspotDiagnostics
-          updateTitle={(nextTitle: string) => setTitle(nextTitle)}
-        />
-      )
+      return <HotspotDiagnostics updateTitle={updateTitle} />
     }
     return (
       <HotspotSettingsOption
@@ -171,12 +186,12 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
         subtitle={t('hotspot_settings.pairing.subtitle')}
         buttonLabel={t('hotspot_settings.pairing.scan')}
         variant="primary"
-        onPress={() => setNextState('scan')}
+        onPress={startScan}
       />
     )
-  }
+  }, [settingsState, startScan, t, updateTitle])
 
-  const getSecondCard = () => {
+  const secondCard = useMemo(() => {
     if (settingsState === 'transfer') {
       return (
         <HotspotTransfer
@@ -191,13 +206,24 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
       <HotspotSettingsOption
         title={t('hotspot_settings.transfer.title')}
         subtitle={t('hotspot_settings.transfer.subtitle')}
-        buttonLabel={getTransferButtonTitle()}
+        buttonLabel={transferButtonTitle}
         buttonDisabled={hasActiveTransfer === undefined}
         variant="secondary"
         onPress={onPressTransferSetting}
       />
     )
-  }
+  }, [
+    handleClose,
+    hasActiveTransfer,
+    hotspot,
+    onCloseTransfer,
+    onPressTransferSetting,
+    settingsState,
+    t,
+    transferButtonTitle,
+  ])
+
+  if (!hotspot) return null
 
   return (
     <Modal
@@ -245,33 +271,28 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
           margin="ms"
           style={{ transform: [{ translateY: slideUpAnimRef.current }] }}
         >
-          <KeyboardAvoidingView
-            behavior="position"
-            keyboardVerticalOffset={220}
-          >
-            {settingsState !== 'transfer' && (
-              <Text
-                variant="h2"
-                lineHeight={27}
-                color="white"
-                marginBottom="ms"
-              >
-                {title}
-              </Text>
-            )}
+          {settingsState !== 'transfer' && (
+            <Text variant="h2" lineHeight={27} color="white" marginBottom="ms">
+              {title}
+            </Text>
+          )}
 
-            {settingsState !== 'transfer' && (
-              <Card variant="modal" backgroundColor="white">
-                {getFirstCard()}
-              </Card>
-            )}
+          {settingsState !== 'transfer' && (
+            <Card variant="modal" backgroundColor="white">
+              {firstCard}
+            </Card>
+          )}
 
-            {settingsState !== 'scan' && (
+          {settingsState !== 'scan' && (
+            <KeyboardAvoidingView
+              behavior="position"
+              keyboardVerticalOffset={220}
+            >
               <Card variant="modal" backgroundColor="white" marginTop="l">
-                {getSecondCard()}
+                {secondCard}
               </Card>
-            )}
-          </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+          )}
         </AnimatedBox>
       </SafeAreaBox>
     </Modal>

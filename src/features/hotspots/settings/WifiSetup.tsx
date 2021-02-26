@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, memo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Platform } from 'react-native'
 import Box from '../../../components/Box'
@@ -20,7 +20,7 @@ const WifiSetup = ({ network, onFinished }: Props) => {
   const { setWifiCredentials } = useConnectedHotspotContext()
   const { showOKAlert } = useAlert()
 
-  const handleSetWifi = async () => {
+  const handleSetWifi = useCallback(async () => {
     setLoading(true)
     setWifiCredentials(network, password, async (response) => {
       if (response === 'connected') {
@@ -36,7 +36,11 @@ const WifiSetup = ({ network, onFinished }: Props) => {
         showOKAlert({ titleKey: 'Your password is invalid' })
       }
     })
-  }
+  }, [network, onFinished, password, setWifiCredentials, showOKAlert])
+
+  const toggleSecureEntry = useCallback(() => {
+    setSecureTextEntry(!secureTextEntry)
+  }, [secureTextEntry])
 
   return (
     <Box padding="l">
@@ -56,9 +60,10 @@ const WifiSetup = ({ network, onFinished }: Props) => {
         autoCompleteType="off"
         autoCapitalize="none"
         blurOnSubmit={false}
-        returnKeyType="next"
+        returnKeyType="join"
         secureTextEntry={secureTextEntry}
         autoFocus
+        onSubmitEditing={handleSetWifi}
       />
       <Button
         onPress={handleSetWifi}
@@ -68,7 +73,7 @@ const WifiSetup = ({ network, onFinished }: Props) => {
         title={t('generic.connect')}
       />
       <Button
-        onPress={() => setSecureTextEntry(!secureTextEntry)}
+        onPress={toggleSecureEntry}
         variant="primary"
         mode="text"
         title={
@@ -83,4 +88,4 @@ const WifiSetup = ({ network, onFinished }: Props) => {
   )
 }
 
-export default WifiSetup
+export default memo(WifiSetup)

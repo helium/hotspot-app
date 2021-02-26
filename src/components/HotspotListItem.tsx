@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import CheckCircle from '@assets/images/check-circle.svg'
 import Attention from '@assets/images/attention.svg'
 import CarotRight from '@assets/images/carot-right.svg'
-import React from 'react'
+import React, { memo } from 'react'
 import TouchableOpacityBox from './BSTouchableOpacityBox'
 import Box from './Box'
 import Text from './Text'
@@ -91,4 +91,4 @@ const HotspotListItem = ({
   )
 }
 
-export default HotspotListItem
+export default memo(HotspotListItem)

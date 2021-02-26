@@ -7,6 +7,7 @@ import hotspotDetailsSlice from './hotspotDetails/hotspotDetailsSlice'
 import hotspotsSlice from './hotspots/hotspotsSlice'
 import activitySlice from './activity/activitySlice'
 import hotspotChecklistSlice from './hotspotDetails/hotspotChecklistSlice'
+import networkHotspotsSlice from './networkHotspots/networkHotspotsSlice'
 
 const rootReducer = combineReducers({
   app: appSlice.reducer,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   hotspotDetails: hotspotDetailsSlice.reducer,
   hotspots: hotspotsSlice.reducer,
   hotspotChecklist: hotspotChecklistSlice.reducer,
+  networkHotspots: networkHotspotsSlice.reducer,
 })
 
 export type RootState = ReturnType<typeof rootReducer>

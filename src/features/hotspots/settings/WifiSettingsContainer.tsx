@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback, useEffect, memo } from 'react'
 import animateTransition from '../../../utils/animateTransition'
 import WifiSettings from './WifiSettings'
 import WifiSetup from './WifiSetup'
@@ -10,10 +10,10 @@ const WifiSettingsContainer = ({ onFinished }: Props) => {
 
   const { enableBack } = useHotspotSettingsContext()
 
-  const handleNetworkSelected = (wifi: string) => {
+  const handleNetworkSelected = useCallback((wifi: string) => {
     setSelectedNetwork(wifi)
     animateTransition()
-  }
+  }, [])
 
   const handleBack = useCallback(() => {
     animateTransition()
@@ -34,4 +34,4 @@ const WifiSettingsContainer = ({ onFinished }: Props) => {
   return <WifiSettings onNetworkSelected={handleNetworkSelected} />
 }
 
-export default WifiSettingsContainer
+export default memo(WifiSettingsContainer)
