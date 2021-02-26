@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, memo } from 'react'
+import React, { memo, useCallback, useEffect } from 'react'
 import { Alert } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
@@ -36,6 +36,8 @@ const LockScreen = () => {
         dispatch(appSlice.actions.lock(false))
         rootNav.goBack()
       })
+    } else if (requestType === 'send') {
+      rootNav.navigate('Send')
     } else {
       moreNav.navigate('MoreScreen', {
         pinVerifiedFor: requestType,

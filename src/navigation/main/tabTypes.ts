@@ -15,6 +15,7 @@ export type LockScreenRequestType =
   | 'resetPin'
   | 'unlock'
   | 'revealWords'
+  | 'send'
 
 export type RootStackParamList = {
   MainTabs: undefined | { pinVerifiedFor: LockScreenRequestType }

@@ -78,7 +78,8 @@ const MoreListItem = ({
         <Switch
           value={value as boolean}
           onValueChange={onToggle}
-          trackColor={{ false: colors.purpleMain, true: colors.purpleMain }}
+          trackColor={{ false: '#303351', true: colors.purpleMain }}
+          thumbColor="#FFFFFF"
         />
       )}
       {select && (
