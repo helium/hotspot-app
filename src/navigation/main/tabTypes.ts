@@ -1,4 +1,5 @@
 import { StackNavigationProp } from '@react-navigation/stack'
+import { QrScanResult } from '../../features/wallet/scan/scanTypes'
 
 export type MainTabType = 'Hotspots' | 'Wallet' | 'Notifications' | 'More'
 
@@ -15,13 +16,20 @@ export type LockScreenRequestType =
   | 'resetPin'
   | 'unlock'
   | 'revealWords'
+  | 'send'
 
 export type RootStackParamList = {
   MainTabs: undefined | { pinVerifiedFor: LockScreenRequestType }
-  LockScreen: { requestType: LockScreenRequestType; lock?: boolean }
+  LockScreen: {
+    requestType: LockScreenRequestType
+    lock?: boolean
+    scanResult?: QrScanResult
+  }
   HotspotSetup: undefined
   Scan: undefined
-  Send: undefined
+  Send: {
+    scanResult?: QrScanResult
+  }
 }
 
 export type RootNavigationProp = StackNavigationProp<RootStackParamList>

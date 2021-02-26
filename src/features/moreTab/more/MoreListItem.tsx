@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import React, { memo, useMemo } from 'react'
 import { Linking, Switch } from 'react-native'
 import RNPickerSelect, { Item } from 'react-native-picker-select'
 import Text from '../../../components/Text'
@@ -51,6 +51,11 @@ const MoreListItem = ({
     }
   }
 
+  const trackColor = useMemo(
+    () => ({ false: colors.purple300, true: colors.purpleMain }),
+    [colors],
+  )
+
   return (
     <TouchableOpacityBox
       flexDirection="row"
@@ -78,7 +83,8 @@ const MoreListItem = ({
         <Switch
           value={value as boolean}
           onValueChange={onToggle}
-          trackColor={{ false: colors.purpleMain, true: colors.purpleMain }}
+          trackColor={trackColor}
+          thumbColor={colors.white}
         />
       )}
       {select && (

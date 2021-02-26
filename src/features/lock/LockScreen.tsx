@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, memo } from 'react'
+import React, { memo, useCallback, useEffect } from 'react'
 import { Alert } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
@@ -21,7 +21,7 @@ type Route = RouteProp<RootStackParamList, 'LockScreen'>
 const LockScreen = () => {
   const { t } = useTranslation()
   const {
-    params: { lock: shouldLock, requestType },
+    params: { lock: shouldLock, requestType, scanResult },
   } = useRoute<Route>()
   const rootNav = useNavigation<RootNavigationProp>()
   const moreNav = useNavigation<MoreNavigationProp>()
@@ -36,12 +36,22 @@ const LockScreen = () => {
         dispatch(appSlice.actions.lock(false))
         rootNav.goBack()
       })
+    } else if (requestType === 'send') {
+      rootNav.navigate('Send', { scanResult })
     } else {
       moreNav.navigate('MoreScreen', {
         pinVerifiedFor: requestType,
       })
     }
-  }, [moreNav, requestType, rootNav, setLocked, shouldLock, dispatch])
+  }, [
+    shouldLock,
+    requestType,
+    setLocked,
+    dispatch,
+    rootNav,
+    scanResult,
+    moreNav,
+  ])
 
   const handleSignOut = useCallback(() => {
     Alert.alert(
