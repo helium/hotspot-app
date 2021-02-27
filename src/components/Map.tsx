@@ -125,18 +125,6 @@ const Map = ({
     })
   }, [userCoords])
 
-  const flyTo = useCallback(
-    async (lat?: number, lng?: number, duration?: number) => {
-      if (!lat || !lng) return
-
-      camera.current?.flyTo(
-        [lng, lat - centerOffset],
-        duration || animationDuration,
-      )
-    },
-    [animationDuration, centerOffset],
-  )
-
   const handleUserLocationUpdate = useCallback(
     (loc) => {
       if (!loc?.coords || (userCoords.latitude && userCoords.longitude)) {
@@ -166,11 +154,10 @@ const Map = ({
     (event: OnPressEvent) => {
       const { properties } = event.features[0]
       if (properties) {
-        flyTo(properties.lat, properties.lng)
         onFeatureSelected(properties)
       }
     },
-    [flyTo, onFeatureSelected],
+    [onFeatureSelected],
   )
 
   useEffect(() => {
@@ -193,22 +180,16 @@ const Map = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userCoords, loaded, offsetCenterRatio])
 
-  // TODO maybe disable this fly effect? it makes exploring around
-  // a litte tricky
   useEffect(() => {
-    const hasWitnesses = witnesses ? witnesses.length > 0 : false
-    const selectedHotspot = selectedHotspots && selectedHotspots[0]
-    if (selectedHotspot) {
-      camera?.current?.setCamera({
-        centerCoordinate: [
-          selectedHotspot?.lng || 0,
-          (selectedHotspot?.lat || 0) - centerOffset,
-        ],
-        zoomLevel: hasWitnesses ? 11 : zoomLevel || 16,
-        animationDuration: 500,
-      })
+    const setWitnessZoomLevel = async () => {
+      const hasWitnesses = witnesses ? witnesses.length > 0 : false
+      const zoom = await map?.current?.getZoom()
+      if (hasWitnesses && zoom && zoom > 12) {
+        camera?.current?.zoomTo(12, animationDuration)
+      }
     }
-  }, [witnesses, centerOffset, selectedHotspots, zoomLevel])
+    setWitnessZoomLevel()
+  }, [witnesses, animationDuration])
 
   const ownedHotspotFeatures = useMemo(
     () => hotspotsToFeatures(ownedHotspots),
@@ -267,6 +248,10 @@ const Map = ({
     ],
   )
 
+  const defaultCameraSettings = {
+    zoomLevel,
+  }
+
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
     <Box {...props}>
@@ -314,9 +299,9 @@ const Map = ({
         )}
         <MapboxGL.Camera
           ref={camera}
-          zoomLevel={zoomLevel}
           maxZoomLevel={maxZoomLevel}
           minZoomLevel={minZoomLevel}
+          defaultSettings={defaultCameraSettings}
           animationMode={animationMode}
           animationDuration={animationDuration}
           centerCoordinate={[mapCenter[0], mapCenter[1] - centerOffset]}

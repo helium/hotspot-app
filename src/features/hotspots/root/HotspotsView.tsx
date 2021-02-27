@@ -48,6 +48,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
   const colors = useColors()
 
   const [listIsDismissed, setListIsDismissed] = useState(false)
+  const [detailsSnapIndex, setDetailsSnapIndex] = useState(1)
 
   const listRef = useRef<BottomSheetModal>(null)
   const detailsRef = useRef<BottomSheetModal>(null)
@@ -91,17 +92,20 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
 
   const handleDismissList = useCallback(() => {
     setSelectedHotspot(ownedHotspots[0])
+    setDetailsSnapIndex(0)
     detailsRef.current?.present()
     setListIsDismissed(true)
   }, [ownedHotspots])
 
   const handlePressMyHotspots = useCallback(() => {
     setSelectedHotspot(ownedHotspots[0])
+    setDetailsSnapIndex(1)
     detailsRef.current?.present()
   }, [ownedHotspots])
 
   const handleDismissDetails = useCallback(() => {
     setSelectedHotspot(undefined)
+    setDetailsSnapIndex(1)
     dispatch(hotspotDetailsSlice.actions.clearHotspotDetails())
     if (listIsDismissed) {
       listRef.current?.present()
@@ -213,8 +217,9 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
           zoomLevel={14}
           mapCenter={mapCenter}
           witnesses={showWitnesses ? witnesses : []}
-          animationMode="moveTo"
-          offsetCenterRatio={2.0}
+          animationMode="easeTo"
+          animationDuration={500}
+          offsetCenterRatio={2.2}
           onFeatureSelected={onMapHotspotSelected}
           interactive={hasLocation}
           showNoLocation={!hasLocation}
@@ -295,7 +300,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
       <BottomSheetModal
         ref={detailsRef}
         snapPoints={detailSnapPoints}
-        index={0}
+        index={detailsSnapIndex}
         handleComponent={BSHandle}
         onDismiss={handleDismissDetails}
         animatedIndex={animatedDetailsPosition}
