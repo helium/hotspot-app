@@ -151,7 +151,11 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
                 hotspot?.status?.online || hotspotDetailsHotspot?.status?.online
               }
             />
-            <HexBadge rewardScale={hotspot.rewardScale} />
+            <HexBadge
+              rewardScale={
+                hotspot.rewardScale || hotspotDetailsHotspot?.rewardScale
+              }
+            />
           </Box>
           <Address
             address={hotspot.owner}
