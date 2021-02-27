@@ -2,7 +2,6 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native'
 import { uniq } from 'lodash'
 import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Alert } from 'react-native'
 import Box from '../../../components/Box'
 import RadarLoader from '../../../components/Loaders/RadarLoader'
 import SafeAreaBox from '../../../components/SafeAreaBox'
@@ -40,9 +39,7 @@ const HotspotSetupConnectingScreen = () => {
 
       // check for valid onboarding record
       if (!success) {
-        // TODO actual screen for this
-        Alert.alert('Error', 'Invalid onboarding record')
-        navigation.goBack()
+        navigation.navigate('OnboardingErrorScreen')
         return
       }
 

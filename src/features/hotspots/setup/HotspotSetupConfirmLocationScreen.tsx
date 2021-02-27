@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
@@ -16,6 +16,7 @@ import Map from '../../../components/Map'
 import Text from '../../../components/Text'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import { RootState } from '../../../store/rootReducer'
+import * as Logger from '../../../utils/logger'
 import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
 
 type Route = RouteProp<
@@ -30,15 +31,22 @@ const HotspotSetupConfirmLocationScreen = () => {
   const {
     account: { account },
   } = useSelector((state: RootState) => state)
-  const { loading, result } = useAsync(loadLocationFeeData, [])
+  const { loading, result, error } = useAsync(loadLocationFeeData, [])
 
   const {
     params: { hotspotCoords, locationName },
   } = useRoute<Route>()
 
-  const navNext = async () => {
+  useEffect(() => {
+    if (error) {
+      Logger.error(error)
+      navigation.navigate('OnboardingErrorScreen')
+    }
+  }, [error, navigation])
+
+  const navNext = useCallback(async () => {
     navigation.replace('HotspotTxnsProgressScreen', { hotspotCoords })
-  }
+  }, [hotspotCoords, navigation])
 
   if (loading || !result) {
     return (

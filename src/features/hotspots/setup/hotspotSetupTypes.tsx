@@ -10,6 +10,7 @@ export type HotspotSetupStackParamList = {
   HotspotSetupScanningScreen: { hotspotType: HotspotType }
   HotspotSetupPickHotspotScreen: { hotspotType: HotspotType }
   HotspotSetupConnectingScreen: { hotspotId: string }
+  OnboardingErrorScreen: undefined
   HotspotSetupPickWifiScreen: {
     networks: string[]
     connectedNetworks: string[]

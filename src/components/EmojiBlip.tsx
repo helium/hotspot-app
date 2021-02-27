@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import React, { memo, useCallback, useMemo } from 'react'
 import Blip from '@assets/images/blip.svg'
 import Emoji from 'react-native-emoji'
 import { sample } from 'lodash'
@@ -21,21 +21,30 @@ const emojis = {
   ],
 }
 
-const EmojiBlip = ({ date }: { date: Date }) => {
-  const emojiOptions = [...emojis.anytime]
-  const hour = date.getHours()
+const EmojiBlip = ({ date, name }: { date?: Date; name?: string }) => {
+  const pickEmoji = useCallback(() => {
+    if (!date) return '100'
 
-  if (hour >= 4 && hour < 12) {
-    emojiOptions.push(...emojis.morning)
-  }
-  if (hour >= 12 && hour < 15) {
-    emojiOptions.push(...emojis.lunch)
-  }
-  if (hour >= 18 || hour < 4) {
-    emojiOptions.push(...emojis.evening)
-  }
+    const emojiOptions = [...emojis.anytime]
+    const hour = date.getHours()
 
-  const emojiName = sample(emojiOptions) || '100'
+    if (hour >= 4 && hour < 12) {
+      emojiOptions.push(...emojis.morning)
+    }
+    if (hour >= 12 && hour < 15) {
+      emojiOptions.push(...emojis.lunch)
+    }
+    if (hour >= 18 || hour < 4) {
+      emojiOptions.push(...emojis.evening)
+    }
+
+    return sample(emojiOptions)
+  }, [date])
+
+  const emojiName = useMemo(() => name || pickEmoji() || '100', [
+    name,
+    pickEmoji,
+  ])
 
   return (
     <Box width={70} marginBottom="m">
