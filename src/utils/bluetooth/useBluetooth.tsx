@@ -54,7 +54,7 @@ const useBluetooth = () => {
       return device
     } catch (e) {
       Logger.error(e)
-      return hotspotDevice
+      throw e
     }
   }
 
@@ -66,7 +66,7 @@ const useBluetooth = () => {
       (error, device) => {
         if (error) {
           Logger.error(error)
-          return
+          throw error
         }
 
         if (device?.localName) {
@@ -95,7 +95,7 @@ const useBluetooth = () => {
       return device
     } catch (e) {
       Logger.error(e)
-      return hotspotDevice
+      throw e
     }
   }
 
@@ -124,6 +124,7 @@ const useBluetooth = () => {
       return characteristic
     } catch (e) {
       Logger.error(e)
+      throw e
     }
   }
 
@@ -154,14 +155,14 @@ const useBluetooth = () => {
       }
 
       Logger.breadcrumb(
-        `Successfully read Characteristic: ${characteristic.uuid} for service: ${characteristic.serviceUUID}`,
+        `Successfully read Characteristic: ${characteristic.uuid} for service: ${characteristic.serviceUUID} with value ${value.value}`,
       )
 
       return value
     } catch (e) {
       Logger.error(e)
+      throw e
     }
-    return characteristic
   }
 
   const writeCharacteristic = async (
@@ -174,11 +175,12 @@ const useBluetooth = () => {
     try {
       const c = await characteristic.writeWithResponse(payload)
       Logger.breadcrumb(
-        `Successfully wrote Characteristic: ${c.uuid} for service: ${c.serviceUUID}`,
+        `Successfully wrote Characteristic: ${c.uuid} for service: ${c.serviceUUID} with value ${c.value}`,
       )
       return c
     } catch (e) {
       Logger.error(e)
+      throw e
     }
   }
 

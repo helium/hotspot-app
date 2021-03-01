@@ -107,11 +107,13 @@ const ReassertLocation = ({ onFinished }: Props) => {
     getLoc()
   }, [updatedLocation])
 
-  const handleFailure = async (error: unknown) => {
+  const handleFailure = async (error: Error | string) => {
     Logger.error(error)
     await showOKAlert({
       titleKey: 'hotspot_settings.reassert.failTitle',
-      messageKey: 'hotspot_settings.reassert.failSubtitle',
+      messageKey: error
+        ? error.toString()
+        : 'hotspot_settings.reassert.failSubtitle',
     })
     onFinished()
   }

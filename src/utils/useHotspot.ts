@@ -229,42 +229,43 @@ const useHotspot = () => {
     return response
   }
 
-  type CallbackType = (success: 'invalid' | 'error' | 'connected') => void
+  type CallbackType = (
+    success: 'invalid' | 'error' | 'connected',
+    error?: string | Error,
+  ) => void
   const setWifiCredentials = async (
     ssid: string,
     password: string,
     callback?: CallbackType,
   ) => {
-    if (!connectedHotspot.current) return
-    const uuid = HotspotCharacteristic.WIFI_CONNECT_UUID
-    const encoded = encodeWifiConnect(ssid, password)
+    if (!connectedHotspot.current) throw new Error('No device found')
 
-    const characteristic = await findCharacteristic(
-      uuid,
-      connectedHotspot.current,
-    )
+    try {
+      let cb: CallbackType | null | undefined = callback
+      const doCallback = (
+        type: 'invalid' | 'error' | 'connected',
+        error?: BleError,
+      ) => {
+        if (error) {
+          Logger.error(error)
+        }
 
-    if (!characteristic) return
-
-    await writeCharacteristic(characteristic, encoded)
-
-    let cb: CallbackType | null | undefined = callback
-    const doCallback = (
-      type: 'invalid' | 'error' | 'connected',
-      error?: BleError,
-    ) => {
-      if (error) {
-        Logger.error(error)
+        cb?.(type, error)
+        cb = null // prevent multiple callbacks. Android throws an error when the subscription is removed.
+        subscription?.remove()
+        subscription = null
       }
 
-      cb?.(type)
-      cb = null // prevent multiple callbacks. Android throws an error when the subscription is removed.
-      subscription?.remove()
-      subscription = null
-    }
+      const uuid = HotspotCharacteristic.WIFI_CONNECT_UUID
+      const encoded = encodeWifiConnect(ssid, password)
 
-    let subscription: Subscription | null = characteristic?.monitor(
-      (error, c) => {
+      const wifiChar = await findCharacteristic(uuid, connectedHotspot.current)
+
+      if (!wifiChar) return
+
+      await writeCharacteristic(wifiChar, encoded)
+
+      let subscription: Subscription | null = wifiChar?.monitor((error, c) => {
         if (error) {
           doCallback('error', error)
         }
@@ -284,8 +285,10 @@ const useHotspot = () => {
         }
 
         doCallback('error')
-      },
-    )
+      })
+    } catch (e) {
+      callback?.('error', e)
+    }
   }
 
   const checkFirmwareCurrent = async (): Promise<boolean> => {
@@ -390,7 +393,7 @@ const useHotspot = () => {
       return !!pendingTransaction
     } catch (error) {
       Logger.error(error)
-      return false
+      throw error
     }
   }
 
@@ -451,15 +454,12 @@ const useHotspot = () => {
       finalTxn = AssertLocationV1.fromString(stakingServerSignedTxn)
     }
 
-    console.log('staking server signed', finalTxn)
-
     try {
       const pendingTransaction = await submitTxn(finalTxn)
       return !!pendingTransaction
-      return true
     } catch (error) {
       Logger.error(error)
-      return false
+      throw error
     }
   }
 

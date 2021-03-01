@@ -25,7 +25,7 @@ type Props = {
   locationSelected?: (latitude: number, longitude: number) => void
   onCancel: () => void
   onSuccess?: () => void
-  onFailure?: (err: unknown) => void
+  onFailure?: (err: Error | string) => void
   onSearch?: () => void
 }
 const ReassertLocationUpdate = ({
@@ -63,7 +63,7 @@ const ReassertLocationUpdate = ({
   }, [])
 
   const finish = useCallback(
-    (success: boolean, message?: unknown) => {
+    (success: boolean, message?: Error | string) => {
       setLoading(false)
       if (success) {
         onSuccess?.()

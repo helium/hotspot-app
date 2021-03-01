@@ -30,7 +30,7 @@ const HotspotTxnsProgressScreen = () => {
   const { showOKAlert } = useAlert()
   const { addGatewayTxn, assertLocationTxn } = useConnectedHotspotContext()
 
-  const addGatewayError = async (error: string | false) => {
+  const addGatewayError = async (error: Error | string | false) => {
     let titleKey = 'generic.error'
     let messageKey = 'hotspot_setup.add_hotspot.add_hotspot_error_body'
     if (error !== false) {
@@ -38,17 +38,24 @@ const HotspotTxnsProgressScreen = () => {
         messageKey = t('hotspot_setup.add_hotspot.wait_error_body')
         titleKey = t('hotspot_setup.add_hotspot.wait_error_title')
       } else {
-        messageKey = `Got error code ${error} from add_gw`
+        messageKey = `Got error ${error.toString()} from add_gw`
       }
     }
     await showOKAlert({ titleKey, messageKey })
     navigation.navigate('MainTabs')
   }
 
-  const assertLocError = async () => {
+  const assertLocError = async (error?: Error | string) => {
     const titleKey = 'generic.error'
-    const messageKey = 'hotspot_setup.add_hotspot.assert_loc_error_body'
-    await showOKAlert({ titleKey, messageKey })
+    let messageKey = t('hotspot_setup.add_hotspot.assert_loc_error_body')
+    if (error) {
+      messageKey = error.toString()
+    }
+    await showOKAlert({
+      titleKey,
+      messageKey,
+    })
+
     navigation.navigate('MainTabs')
   }
 
@@ -81,7 +88,7 @@ const HotspotTxnsProgressScreen = () => {
           return
         }
       } catch (error) {
-        addGatewayError(false)
+        addGatewayError(error)
         Logger.error(error)
         return
       }
@@ -95,7 +102,7 @@ const HotspotTxnsProgressScreen = () => {
         return
       }
     } catch (error) {
-      assertLocError()
+      assertLocError(error)
       Logger.error(error)
       return
     }

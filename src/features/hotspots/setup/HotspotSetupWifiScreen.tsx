@@ -20,7 +20,6 @@ const HotspotSetupWifiScreen = () => {
   const {
     params: { network },
   } = useRoute<Route>()
-  // const network = 'Panic at the Cisco'
   const [password, setPassword] = useState('')
 
   const navNext = async () => {
