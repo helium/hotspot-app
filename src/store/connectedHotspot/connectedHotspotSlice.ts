@@ -11,13 +11,15 @@ import {
 import { getStaking } from '../../utils/stakingClient'
 
 export type HotspotStatus = 'owned' | 'global' | 'new' | 'error' | 'initial'
-export type HotspotType =
-  | 'Helium'
-  | 'RAK'
-  | 'NEBRAIN'
-  | 'NEBRAOUT'
-  | 'Bobcat'
-  | 'SYNCROBIT'
+export const HotspotTypeKeys = [
+  'Helium',
+  'RAK',
+  'NEBRAIN',
+  'NEBRAOUT',
+  'SYNCROBIT',
+  'Bobcat',
+] as const
+export type HotspotType = typeof HotspotTypeKeys[number]
 export type HotspotName =
   | 'RAK Hotspot Miner'
   | 'Helium Hotspot'
