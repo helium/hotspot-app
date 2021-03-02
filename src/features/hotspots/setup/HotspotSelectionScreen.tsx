@@ -1,15 +1,50 @@
-import React, { useMemo } from 'react'
+import { useNavigation } from '@react-navigation/native'
+import React, { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ScrollView } from 'react-native'
+import { FlatList } from 'react-native-gesture-handler'
 import { Edge } from 'react-native-safe-area-context'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
-import HotspotSelectionCard from './HotspotSelectionCard'
+import {
+  HotspotType,
+  HotspotTypeKeys,
+} from '../../../store/connectedHotspot/connectedHotspotSlice'
+import HotspotSelectionListItem from './HotspotSelectionListItem'
+import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
+
+const ItemSeparatorComponent = () => (
+  <Box height={1} backgroundColor="primaryBackground" />
+)
 
 const HotspotSetupSelectionScreen = () => {
   const { t } = useTranslation()
+  const navigation = useNavigation<HotspotSetupNavigationProp>()
   const edges = useMemo((): Edge[] => ['top', 'left', 'right'], [])
+
+  const handlePress = useCallback(
+    (hotspotType: HotspotType) => () =>
+      navigation.push('HotspotSetupEducationScreen', { hotspotType }),
+    [navigation],
+  )
+
+  const keyExtractor = useCallback((item) => item, [])
+
+  const renderItem = useCallback(
+    ({ item, index }) => {
+      const isFirst = index === 0
+      const isLast = index === HotspotTypeKeys.length - 1
+      return (
+        <HotspotSelectionListItem
+          isFirst={isFirst}
+          isLast={isLast}
+          hotspotType={item}
+          onPress={handlePress(item)}
+        />
+      )
+    },
+    [handlePress],
+  )
 
   return (
     <BackScreen
@@ -30,20 +65,12 @@ const HotspotSetupSelectionScreen = () => {
       >
         {t('hotspot_setup.selection.subtitle')}
       </Text>
-      <ScrollView>
-        <Box flexDirection="row" height={191}>
-          <HotspotSelectionCard hotspotType="Helium" />
-          <HotspotSelectionCard hotspotType="RAK" />
-        </Box>
-        <Box flexDirection="row" height={191}>
-          <HotspotSelectionCard hotspotType="NEBRAIN" />
-          <HotspotSelectionCard hotspotType="NEBRAOUT" />
-        </Box>
-        <Box flexDirection="row" height={191} paddingBottom="l">
-          <HotspotSelectionCard hotspotType="SYNCROBIT" />
-          <HotspotSelectionCard hotspotType="Bobcat" />
-        </Box>
-      </ScrollView>
+      <FlatList
+        ItemSeparatorComponent={ItemSeparatorComponent}
+        data={HotspotTypeKeys}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+      />
     </BackScreen>
   )
 }
