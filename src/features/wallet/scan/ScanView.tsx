@@ -13,7 +13,7 @@ import Crosshair from './Crosshair'
 import { wp } from '../../../utils/layout'
 import Close from '../../../assets/images/close.svg'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import { triggerNavHaptic, triggerNotification } from '../../../utils/haptic'
+import useHaptic from '../../../utils/useHaptic'
 import { QrScanResult, ScanType } from './scanTypes'
 import BSHandle from '../../../components/BSHandle'
 import { useSpacing } from '../../../theme/themeHooks'
@@ -25,6 +25,7 @@ type Props = {
 }
 const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
   const { t } = useTranslation()
+  const { triggerNavHaptic, triggerNotification } = useHaptic()
   const [scanned, setScanned] = useState(false)
   const navigation = useNavigation()
   const spacing = useSpacing()

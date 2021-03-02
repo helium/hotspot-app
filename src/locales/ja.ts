@@ -474,7 +474,7 @@ export default {
         troubleshooting: 'トラブルシューティング',
         joinDiscord: 'Helium Discordに参加',
       },
-      account: {
+      app: {
         title: 'アカウント',
         language: '言語',
         signOut: 'サインアウト',

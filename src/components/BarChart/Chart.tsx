@@ -2,7 +2,7 @@ import React, { useState, useEffect, memo, useCallback, useMemo } from 'react'
 import Svg, { Text, Rect } from 'react-native-svg'
 import { PanResponder, Animated, GestureResponderEvent } from 'react-native'
 import { maxBy, clamp, max, some } from 'lodash'
-import { triggerImpact } from '../../utils/haptic'
+import useHaptic from '../../utils/useHaptic'
 import { ChartData } from './types'
 import { useColors } from '../../theme/themeHooks'
 
@@ -32,6 +32,7 @@ const BarChart = ({
 }: Props) => {
   const [focusedBar, setFocusedBar] = useState<ChartData | null>(null)
   const { greenBright, blueBright, white } = useColors()
+  const { triggerImpact } = useHaptic()
 
   // trigger haptic feedback when the focused bar changes
   useEffect(() => {
@@ -39,7 +40,7 @@ const BarChart = ({
       triggerImpact()
     }
     onFocus(focusedBar)
-  }, [focusedBar, onFocus])
+  }, [focusedBar, onFocus, triggerImpact])
 
   // support charts that have no down values
   const hasDownBars = useMemo(() => some(data, ({ down }) => down > 0), [data])

@@ -20,6 +20,7 @@ const boolKeys = [
   'isSettingUpHotspot',
   'requirePin',
   'requirePinForPayment',
+  'hapticDisabled',
 ] as const
 type BooleanKey = typeof boolKeys[number]
 

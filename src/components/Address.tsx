@@ -13,7 +13,7 @@ import Text from './Text'
 import { Colors, Spacing, TextVariant } from '../theme/theme'
 import TouchableOpacityBox from './TouchableOpacityBox'
 import { EXPLORER_BASE_URL } from '../utils/config'
-import { triggerNavHaptic } from '../utils/haptic'
+import useHaptic from '../utils/useHaptic'
 import Box from './Box'
 
 type Props = {
@@ -42,6 +42,7 @@ const Address = ({
   padding,
 }: Props) => {
   const { t } = useTranslation()
+  const { triggerNavHaptic } = useHaptic()
   const { showActionSheetWithOptions } = useActionSheet()
   const toastPosition = useSharedValue(-100)
   const toastStyle = useAnimatedStyle(() => {
