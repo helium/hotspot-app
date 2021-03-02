@@ -4,6 +4,7 @@ import { LocationGeocodedAddress } from 'expo-location'
 import React, { memo, useCallback, useEffect, useState } from 'react'
 import { useAsync } from 'react-async-hook'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
@@ -18,6 +19,7 @@ import { useHotspotSettingsContext } from './HotspotSettingsProvider'
 import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
 import ReassertAddressSearch from './ReassertAddressSearch'
 import { PlaceGeography } from '../../../utils/googlePlaces'
+import { HotspotErrorCode } from '../../../utils/useHotspot'
 
 type Coords = { latitude: number; longitude: number }
 const DEFAULT_FEE_DATA = {
@@ -48,6 +50,7 @@ const ReassertLocation = ({ onFinished }: Props) => {
     loadLocationFeeData,
     [],
   )
+  const { t } = useTranslation()
   const { enableBack } = useHotspotSettingsContext()
 
   const { showOKAlert } = useAlert()
@@ -108,13 +111,26 @@ const ReassertLocation = ({ onFinished }: Props) => {
   }, [updatedLocation])
 
   const handleFailure = async (error: Error | string) => {
+    let titleKey = 'generic.error'
+    let messageKey = t('hotspot_setup.add_hotspot.assert_loc_error_body')
+    if (error instanceof Error) {
+      messageKey = error.message
+
+      if (messageKey === HotspotErrorCode.WAIT) {
+        messageKey = t('hotspot_setup.add_hotspot.wait_error_body')
+        titleKey = t('hotspot_setup.add_hotspot.wait_error_title')
+      } else if (messageKey === HotspotErrorCode.GATEWAY_NOT_FOUND) {
+        messageKey = t('hotspot_setup.add_hotspot.gateway_not_found_error_body')
+        titleKey = t('hotspot_setup.add_hotspot.gateway_not_found_error_title')
+      }
+    }
+
     Logger.error(error)
     await showOKAlert({
-      titleKey: 'hotspot_settings.reassert.failTitle',
-      messageKey: error
-        ? error.toString()
-        : 'hotspot_settings.reassert.failSubtitle',
+      titleKey,
+      messageKey,
     })
+
     onFinished()
   }
 

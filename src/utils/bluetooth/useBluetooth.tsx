@@ -6,7 +6,6 @@ import {
   Device,
   LogLevel,
 } from 'react-native-ble-plx'
-import { decode } from 'base-64'
 import sleep from '../sleep'
 import {
   FirmwareCharacteristic,
@@ -130,35 +129,19 @@ const useBluetooth = () => {
 
   const readCharacteristic = async (
     characteristic: Characteristic,
-    tries = 1,
   ): Promise<Characteristic> => {
     Logger.breadcrumb(
       `Read Characteristic: ${characteristic.uuid} for service: ${characteristic.serviceUUID}`,
     )
     try {
-      const value = await characteristic.read()
-      if (!value.value) return value
-
-      const parsedValue = decode(value.value)
-
-      if (parsedValue === 'wait') {
-        if (tries - 1 === 0) {
-          Logger.error(
-            new Error(`Got wait from hotspot: parsedValue = ${parsedValue}`),
-          )
-          return value
-        }
-
-        await sleep(1000)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        return await readCharacteristic(characteristic, tries - 1)
-      }
+      const charWithValue = await characteristic.read()
+      if (!charWithValue.value) throw new Error('Characteristic value is empty')
 
       Logger.breadcrumb(
-        `Successfully read Characteristic: ${characteristic.uuid} for service: ${characteristic.serviceUUID} with value ${value.value}`,
+        `Successfully read Characteristic: ${characteristic.uuid} for service: ${characteristic.serviceUUID} with value ${charWithValue.value}`,
       )
 
-      return value
+      return charWithValue
     } catch (e) {
       Logger.error(e)
       throw e
@@ -188,7 +171,6 @@ const useBluetooth = () => {
     characteristicUuid: HotspotCharacteristic | FirmwareCharacteristic,
     hotspotDevice: Device,
     service: Service = Service.MAIN_UUID,
-    tries = 1,
   ) => {
     const characteristic = await findCharacteristic(
       characteristicUuid,
@@ -197,7 +179,7 @@ const useBluetooth = () => {
     )
     if (!characteristic) return
 
-    const readChar = await readCharacteristic(characteristic, tries)
+    const readChar = await readCharacteristic(characteristic)
     return readChar?.value || undefined
   }
 

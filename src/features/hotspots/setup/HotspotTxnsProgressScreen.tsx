@@ -15,6 +15,7 @@ import { HotspotSetupStackParamList } from './hotspotSetupTypes'
 import { RootState } from '../../../store/rootReducer'
 import * as Logger from '../../../utils/logger'
 import useAlert from '../../../utils/useAlert'
+import { HotspotErrorCode } from '../../../utils/useHotspot'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotTxnsProgressScreen'>
 
@@ -30,26 +31,35 @@ const HotspotTxnsProgressScreen = () => {
   const { showOKAlert } = useAlert()
   const { addGatewayTxn, assertLocationTxn } = useConnectedHotspotContext()
 
-  const addGatewayError = async (error: Error | string | false) => {
+  const addGatewayError = async (error: Error | false) => {
     let titleKey = 'generic.error'
     let messageKey = 'hotspot_setup.add_hotspot.add_hotspot_error_body'
     if (error !== false) {
-      if (error === 'wait') {
+      if (error.message === HotspotErrorCode.WAIT) {
         messageKey = t('hotspot_setup.add_hotspot.wait_error_body')
         titleKey = t('hotspot_setup.add_hotspot.wait_error_title')
       } else {
-        messageKey = `Got error ${error.toString()} from add_gw`
+        messageKey = error.toString()
       }
     }
     await showOKAlert({ titleKey, messageKey })
     navigation.navigate('MainTabs')
   }
 
-  const assertLocError = async (error?: Error | string) => {
-    const titleKey = 'generic.error'
+  const assertLocError = async (error?: Error) => {
+    let titleKey = 'generic.error'
     let messageKey = t('hotspot_setup.add_hotspot.assert_loc_error_body')
     if (error) {
-      messageKey = error.toString()
+      messageKey = error.message
+
+      if (messageKey === HotspotErrorCode.WAIT) {
+        messageKey = t('hotspot_setup.add_hotspot.wait_error_body')
+        titleKey = t('hotspot_setup.add_hotspot.wait_error_title')
+      } else if (messageKey === HotspotErrorCode.GATEWAY_NOT_FOUND) {
+        // TODO: Should we prompt the user to retry?
+        messageKey = t('hotspot_setup.add_hotspot.gateway_not_found_error_body')
+        titleKey = t('hotspot_setup.add_hotspot.gateway_not_found_error_title')
+      }
     }
     await showOKAlert({
       titleKey,

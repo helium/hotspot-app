@@ -9,6 +9,7 @@ import {
   AssertLocationV1,
   Transaction,
 } from '@helium/transactions'
+import { decode } from 'base-64'
 import { useBluetoothContext } from '../providers/BluetoothProvider'
 import {
   FirmwareCharacteristic,
@@ -38,6 +39,11 @@ import { useAppDispatch } from '../store/store'
 import { RootState } from '../store/rootReducer'
 import * as Logger from './logger'
 import useSubmitTxn from '../hooks/useSubmitTxn'
+
+export enum HotspotErrorCode {
+  WAIT = 'wait',
+  GATEWAY_NOT_FOUND = 'gw_not_found',
+}
 
 const useHotspot = () => {
   const submitTxn = useSubmitTxn()
@@ -372,9 +378,18 @@ const useHotspot = () => {
     const { value } = await readCharacteristic(characteristic)
     if (!value) return false
 
-    if (value.length < 20) {
-      Logger.error(new Error(`Got error code ${value} from add_gw`))
-      return value
+    const parsedValue = decode(value)
+    let errorMessage: string | null = null
+    if (parsedValue === HotspotErrorCode.WAIT) {
+      errorMessage = parsedValue
+    } else if (parsedValue.length < 20) {
+      errorMessage = `Got error code ${value} from add_gw`
+    }
+
+    if (errorMessage) {
+      const error = new Error(errorMessage)
+      Logger.error(error)
+      throw error
     }
 
     const txn = await makeAddGatewayTxn(value)
@@ -441,6 +456,23 @@ const useHotspot = () => {
     await writeCharacteristic(characteristic, encodedPayload)
     const { value } = await readCharacteristic(characteristic)
     if (!value) return false
+
+    const parsedValue = decode(value)
+    let errorMessage: string | null = null
+    if (
+      parsedValue === HotspotErrorCode.WAIT ||
+      parsedValue === HotspotErrorCode.GATEWAY_NOT_FOUND
+    ) {
+      errorMessage = parsedValue
+    } else if (parsedValue.length < 20) {
+      errorMessage = `Got error code ${parsedValue} from assert location`
+    }
+
+    if (errorMessage) {
+      const error = new Error(errorMessage)
+      Logger.error(error)
+      throw error
+    }
 
     const txn = await makeAssertLocTxn(value)
 

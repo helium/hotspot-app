@@ -98,17 +98,9 @@ const ReassertLocationUpdate = ({
       }
       onSuccess?.()
     } catch (error) {
-      onFailure?.(error)
+      finish(false, error)
     }
-  }, [
-    assertLocationTxn,
-    coords,
-    details,
-    finish,
-    hotspotAddress,
-    onFailure,
-    onSuccess,
-  ])
+  }, [assertLocationTxn, coords, details, finish, hotspotAddress, onSuccess])
 
   const handleAssert = useCallback(() => {
     animateTransition()
