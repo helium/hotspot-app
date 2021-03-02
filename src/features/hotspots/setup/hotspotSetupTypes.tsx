@@ -24,8 +24,9 @@ export type HotspotSetupStackParamList = {
     hotspotCoords: number[]
     locationName: string
   }
-  HotspotTxnsProgressScreen: {
-    hotspotCoords: number[]
+  HotspotSetupSkipLocationScreen: undefined
+  HotspotTxnsProgressScreen?: {
+    hotspotCoords?: number[]
   }
 }
 
