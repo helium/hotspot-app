@@ -14,7 +14,7 @@ import { Hotspot } from '@helium/http'
 import { TransferHotspotV1 } from '@helium/transactions'
 import { RootState } from '../../../store/rootReducer'
 import Box from '../../../components/Box'
-import { triggerNavHaptic } from '../../../utils/haptic'
+import useHaptic from '../../../utils/useHaptic'
 import { QrScanResult } from '../scan/scanTypes'
 import SendHeader from './SendHeader'
 import { SendType } from './sendTypes'
@@ -63,7 +63,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   const navigation = useNavigation()
   const { t } = useTranslation()
   const submitTxn = useSubmitTxn()
-
+  const { triggerNavHaptic } = useHaptic()
   const [type, setType] = useState<SendType>(sendType || 'payment')
   const [address, setAddress] = useState<string>('')
   const [addressAlias, setAddressAlias] = useState<string>()

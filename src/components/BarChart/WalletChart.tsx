@@ -8,7 +8,7 @@ import CarotRight from '../../assets/images/carot-right.svg'
 import Box from '../Box'
 import Text from '../Text'
 import { ChartData, ChartRange } from './types'
-import { triggerImpact } from '../../utils/haptic'
+import useHaptic from '../../utils/useHaptic'
 import { useColors } from '../../theme/themeHooks'
 import { useAppDispatch } from '../../store/store'
 import { RootState } from '../../store/rootReducer'
@@ -23,6 +23,7 @@ type Props = {
 
 const WalletChart = ({ height }: Props) => {
   const dispatch = useAppDispatch()
+  const { triggerImpact } = useHaptic()
   const {
     account: { activityChart, activityChartRange },
     activity: { filter },
@@ -51,7 +52,7 @@ const WalletChart = ({ height }: Props) => {
       dispatch(accountSlice.actions.setActivityChartRange(range))
       triggerImpact()
     },
-    [dispatch],
+    [dispatch, triggerImpact],
   )
 
   const handleFocusData = useCallback((chartData: ChartData | null): void => {

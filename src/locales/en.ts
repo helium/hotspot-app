@@ -519,8 +519,9 @@ export default {
         troubleshooting: 'Troubleshooting',
         joinDiscord: 'Join Helium Discord',
       },
-      account: {
-        title: 'Account',
+      app: {
+        title: 'App',
+        enableHapticFeedback: 'Enable Haptic Feedback',
         language: 'Language',
         signOut: 'Sign Out',
         signOutAlert: {

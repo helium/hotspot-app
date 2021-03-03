@@ -435,7 +435,7 @@ export default {
         troubleshooting: '故障排除',
         joinDiscord: '加入 Helium Discord',
       },
-      account: {
+      app: {
         title: '帐户',
         language: '语言',
         signOut: '注销',
