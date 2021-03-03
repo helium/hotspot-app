@@ -22,7 +22,7 @@ const WifiSetup = ({ network, onFinished }: Props) => {
 
   const handleSetWifi = useCallback(async () => {
     setLoading(true)
-    setWifiCredentials(network, password, async (response) => {
+    setWifiCredentials(network, password, async (response, error) => {
       if (response === 'connected') {
         onFinished()
         return
@@ -31,9 +31,19 @@ const WifiSetup = ({ network, onFinished }: Props) => {
       setLoading(false)
 
       if (response === 'error') {
-        showOKAlert({ titleKey: 'something went wrong' })
-      } else if (response === 'invalid') {
-        showOKAlert({ titleKey: 'Your password is invalid' })
+        await showOKAlert({
+          titleKey: 'generic.error',
+          messageKey: error?.toString() || 'generic.something_went_wrong',
+        })
+        onFinished()
+        return
+      }
+
+      if (response === 'invalid') {
+        showOKAlert({
+          titleKey: 'generic.error',
+          messageKey: 'generic.invalid_password',
+        })
       }
     })
   }, [network, onFinished, password, setWifiCredentials, showOKAlert])

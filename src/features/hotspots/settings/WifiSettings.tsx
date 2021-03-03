@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState } from 'react'
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import animalHash from 'angry-purple-tiger'
@@ -15,11 +15,12 @@ import { hp } from '../../../utils/layout'
 import Chevron from '../../../assets/images/chevron-right.svg'
 import useAlert from '../../../utils/useAlert'
 import animateTransition from '../../../utils/animateTransition'
+import CircleLoader from '../../../components/CircleLoader'
 
 const ItemSeparatorComponent = () => <Box height={1} backgroundColor="white" />
 
-type Props = { onNetworkSelected: (wifi: string) => void }
-const WifiSettings = ({ onNetworkSelected }: Props) => {
+type Props = { onNetworkSelected: (wifi: string) => void; onError: () => void }
+const WifiSettings = ({ onNetworkSelected, onError }: Props) => {
   const [networkStatus, setNetworkStatus] = useState<
     'ethernet' | 'wifiConnected' | 'wifiConfigured' | 'notConnected'
   >('notConnected')
@@ -31,19 +32,31 @@ const WifiSettings = ({ onNetworkSelected }: Props) => {
     scanForWifiNetworks,
     removeConfiguredWifi,
   } = useConnectedHotspotContext()
-  const { showOKCancelAlert } = useAlert()
+  const { showOKCancelAlert, showOKAlert } = useAlert()
   const [networks, setNetworks] = useState<string[]>([])
   const [configuredNetworks, setConfiguredNetworks] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
+  const errorShown = useRef(false)
 
   const scanWifi = useCallback(async () => {
-    const wifiNetworks = await scanForWifiNetworks()
-    const configured = await scanForWifiNetworks(true)
-    animateTransition()
-    setNetworks(wifiNetworks || [])
-    setConfiguredNetworks(configured || [])
-    setLoading(false)
-  }, [scanForWifiNetworks])
+    try {
+      const wifiNetworks = await scanForWifiNetworks()
+      const configured = await scanForWifiNetworks(true)
+      animateTransition()
+      setNetworks(wifiNetworks || [])
+      setConfiguredNetworks(configured || [])
+      setLoading(false)
+    } catch (e) {
+      if (errorShown.current) return
+
+      errorShown.current = true
+      await showOKAlert({
+        titleKey: 'generic.error',
+        messageKey: e.toString(),
+      })
+      onError()
+    }
+  }, [scanForWifiNetworks, showOKAlert, onError])
 
   const maybeForgetConfiguredNetwork = useCallback(
     async (networkToForget?: string) => {
@@ -58,6 +71,9 @@ const WifiSettings = ({ onNetworkSelected }: Props) => {
       if (!decision) {
         return
       }
+
+      animateTransition()
+      setLoading(true)
       await removeConfiguredWifi(networkToForget)
     },
     [removeConfiguredWifi, showOKCancelAlert],
@@ -75,7 +91,8 @@ const WifiSettings = ({ onNetworkSelected }: Props) => {
 
   useEffect(() => {
     scanWifi()
-  }, [scanWifi])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     if (ethernetOnline) {
@@ -134,9 +151,17 @@ const WifiSettings = ({ onNetworkSelected }: Props) => {
         {animalHash(address || '')}
       </Text>
 
-      <Text variant="medium" fontSize={15} color="black" marginBottom="m">
-        {t('hotspot_settings.wifi.connected_via')}
-      </Text>
+      <Box
+        flexDirection="row"
+        justifyContent="space-between"
+        height={48}
+        alignItems="center"
+      >
+        <Text variant="medium" fontSize={15} color="black">
+          {t('hotspot_settings.wifi.connected_via')}
+        </Text>
+        {loading && <CircleLoader loaderSize={24} />}
+      </Box>
 
       <Card
         variant="regular"

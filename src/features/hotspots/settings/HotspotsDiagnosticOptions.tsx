@@ -77,11 +77,23 @@ const HotspotDiagnosticOptions = ({ hotspot, optionSelected }: Props) => {
             {k === 'wifi' && <Wifi />}
             {k === 'reassert' && <Reassert />}
             {k === 'firmware' && <Firmware />}
-            <Text variant="body1" color="black" marginLeft="ms" flex={1}>
+            <Text
+              variant="body1"
+              color="black"
+              marginLeft="ms"
+              flex={1}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+            >
               {t(`hotspot_settings.options.${k}`)}
             </Text>
             {k === 'firmware' && (
-              <Text variant="body1" color="purpleMain">
+              <Text
+                variant="body2"
+                color="purpleMain"
+                numberOfLines={1}
+                adjustsFontSizeToFit
+              >
                 {firmware?.version}
               </Text>
             )}

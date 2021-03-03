@@ -31,7 +31,12 @@ const WifiSettingsContainer = ({ onFinished }: Props) => {
   if (selectedNetwork) {
     return <WifiSetup network={selectedNetwork} onFinished={onFinished} />
   }
-  return <WifiSettings onNetworkSelected={handleNetworkSelected} />
+  return (
+    <WifiSettings
+      onNetworkSelected={handleNetworkSelected}
+      onError={onFinished}
+    />
+  )
 }
 
 export default memo(WifiSettingsContainer)

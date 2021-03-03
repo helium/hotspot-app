@@ -128,6 +128,8 @@ export default {
     loading: 'Loading...',
     copy: 'Copy',
     address: 'Address',
+    invalid_password: 'You password is incorrect',
+    something_went_wrong: 'Something went wrong',
   },
   hotspot_setup: {
     selection: {
