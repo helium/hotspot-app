@@ -27,6 +27,8 @@ export type HotspotSetupStackParamList = {
   HotspotTxnsProgressScreen: {
     hotspotCoords: number[]
   }
+  NotHotspotOwnerErrorScreen: undefined
+  OwnedHotspotErrorScreen: undefined
 }
 
 export type HotspotSetupNavigationProp = StackNavigationProp<HotspotSetupStackParamList>

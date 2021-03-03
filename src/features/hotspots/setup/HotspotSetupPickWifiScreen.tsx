@@ -2,6 +2,7 @@ import React from 'react'
 import { FlatList } from 'react-native'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
 import BackScreen from '../../../components/BackScreen'
 import Text from '../../../components/Text'
 import {
@@ -15,6 +16,10 @@ import { useColors } from '../../../theme/themeHooks'
 import Button from '../../../components/Button'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Checkmark from '../../../assets/images/check.svg'
+import { getAddress, getHotspotDetails } from '../../../utils/appDataClient'
+import * as Logger from '../../../utils/logger'
+import useAlert from '../../../utils/useAlert'
+import { RootState } from '../../../store/rootReducer'
 
 const WifiItem = ({
   name,
@@ -56,12 +61,28 @@ type Route = RouteProp<HotspotSetupStackParamList, 'HotspotSetupPickWifiScreen'>
 const HotspotSetupPickWifiScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
+  const { connectedHotspot } = useSelector((state: RootState) => state)
   const {
     params: { networks, connectedNetworks },
   } = useRoute<Route>()
+  const { showOKAlert } = useAlert()
 
-  const navSkip = () => {
-    navigation.navigate('HotspotSetupLocationInfoScreen')
+  const navSkip = async () => {
+    if (connectedHotspot.address) {
+      const address = await getAddress()
+      const hotspot = await getHotspotDetails(connectedHotspot.address)
+      if (hotspot && hotspot.owner === address) {
+        navigation.navigate('OwnedHotspotErrorScreen')
+      } else if (hotspot && hotspot.owner !== address) {
+        navigation.navigate('NotHotspotOwnerErrorScreen')
+      } else {
+        navigation.navigate('HotspotSetupLocationInfoScreen')
+      }
+    } else {
+      Logger.error('no connectedHotspot address when skipping wifi')
+      showOKAlert({ titleKey: 'something went wrong' })
+      navigation.goBack()
+    }
   }
 
   const navNext = (network: string) => {

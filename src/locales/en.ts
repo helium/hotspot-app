@@ -396,6 +396,17 @@ export default {
       alertMessage:
         'Request to servers have timed out and we cannot add your Hotspot at this time.\n\nPlease contact support@helium.com and note MAC address %{mac}.',
     },
+    not_owner: {
+      title: 'Unable to proceed with setup',
+      subtitle_1: 'Hotspot belongs to another account.',
+      subtitle_2: "If you're a Host updating Wi-Fi, you may exit setup now.",
+    },
+    owned_hotspot: {
+      title: 'You already own this Hotspot',
+      subtitle_1: 'Looks like this Hotspot is already onboarded.',
+      subtitle_2:
+        'To update your Hotspot’s Wi-Fi or location, go to your Hotspot’s Settings.',
+    },
   },
   account_import: {
     word_entry: {
