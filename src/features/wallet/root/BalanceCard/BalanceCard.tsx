@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import { useAsync } from 'react-async-hook'
 import QRCode from 'react-qr-code'
 import { useSelector } from 'react-redux'
-import { CurrencyType } from '@helium/currency'
+import { isEqual } from 'lodash'
 import { RootState } from '../../../../store/rootReducer'
 import Box from '../../../../components/Box'
 import AnimatedBox from '../../../../components/AnimatedBox'
@@ -13,8 +13,8 @@ import { getAddress } from '../../../../utils/secureAccount'
 import { hp, wp } from '../../../../utils/layout'
 import ShareButton from './ShareButton'
 import { WalletLayout } from '../walletLayout'
-import { decimalSeparator, groupSeparator } from '../../../../utils/i18n'
 import Address from '../../../../components/Address'
+import useCurrency from '../../../../utils/useCurrency'
 
 type Props = {
   onReceivePress: () => void
@@ -24,19 +24,23 @@ type Props = {
 
 const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
   const { result: address, loading: loadingAddress } = useAsync(getAddress, [])
-  const {
-    account: { account },
-  } = useSelector((state: RootState) => state)
+  const [balanceInfo, setBalanceInfo] = useState<{
+    hasBalance: boolean
+    integerPart: string
+    decimalPart: string
+  }>({ hasBalance: false, integerPart: '0', decimalPart: '00000000' })
+  const { displayValue } = useCurrency()
+  const account = useSelector(
+    (state: RootState) => state.account.account,
+    isEqual,
+  )
 
-  const hasBalance = account?.balance?.integerBalance !== 0
-  const [integerPart, decimalPart] =
-    account?.balance
-      ?.toString(undefined, {
-        decimalSeparator,
-        groupSeparator,
-        showTicker: false,
-      })
-      .split(decimalSeparator) || []
+  useEffect(() => {
+    const hasBalance = account?.balance?.integerBalance !== 0
+    if (account?.balance && hasBalance) {
+      setBalanceInfo({ hasBalance, ...displayValue(account.balance, true) })
+    }
+  }, [account?.balance, displayValue])
 
   return (
     <Box
@@ -61,7 +65,7 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
               fontSize={hp(4.5)}
               fontWeight="300"
             >
-              {hasBalance ? integerPart : '0'}
+              {balanceInfo.integerPart}
             </Text>
             <Text
               color="white"
@@ -70,12 +74,7 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
               opacity={0.4}
               lineHeight={25}
             >
-              {[
-                decimalSeparator,
-                decimalPart || '00000000',
-                ' ',
-                CurrencyType.networkToken.ticker,
-              ].join('')}
+              {balanceInfo.decimalPart}
             </Text>
           </Box>
 
@@ -88,7 +87,7 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
             <WalletButton
               variant="send"
               onPress={onSendPress}
-              disabled={!hasBalance}
+              disabled={!balanceInfo.hasBalance}
             />
           </Box>
         </AnimatedBox>
@@ -136,4 +135,4 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
   )
 }
 
-export default BalanceCard
+export default memo(BalanceCard)

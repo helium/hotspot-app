@@ -130,6 +130,7 @@ export default {
     address: 'Address',
     invalid_password: 'You password is incorrect',
     something_went_wrong: 'Something went wrong',
+    hnt_to_currency: '{{currencyType}}. Data from CoinGecko',
   },
   hotspot_setup: {
     selection: {

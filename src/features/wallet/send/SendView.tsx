@@ -26,7 +26,7 @@ import {
   calculateTransferTxnFee,
   useFees,
 } from '../../../utils/fees'
-import { networkTokensToDataCredits } from '../../../utils/currency'
+import useCurrency from '../../../utils/useCurrency'
 import {
   makeBurnTxn,
   makeBuyerTransferHotspotTxn,
@@ -62,6 +62,7 @@ type Props = {
 const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   const navigation = useNavigation()
   const { t } = useTranslation()
+  const { networkTokensToDataCredits } = useCurrency()
   const submitTxn = useSubmitTxn()
   const { triggerNavHaptic } = useHaptic()
   const [type, setType] = useState<SendType>(sendType || 'payment')
