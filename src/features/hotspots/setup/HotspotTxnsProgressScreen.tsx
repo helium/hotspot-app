@@ -102,6 +102,8 @@ const HotspotTxnsProgressScreen = () => {
         handleError(error, 'assert_location')
         Logger.error(error)
       }
+    } else {
+      setFinished(true)
     }
   }
 
