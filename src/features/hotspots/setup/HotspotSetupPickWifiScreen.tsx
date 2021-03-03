@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { FlatList } from 'react-native'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
@@ -67,7 +67,7 @@ const HotspotSetupPickWifiScreen = () => {
   } = useRoute<Route>()
   const { showOKAlert } = useAlert()
 
-  const navSkip = async () => {
+  const navSkip = useCallback(async () => {
     if (connectedHotspot.address) {
       const address = await getAddress()
       const hotspot = await getHotspotDetails(connectedHotspot.address)
@@ -80,10 +80,13 @@ const HotspotSetupPickWifiScreen = () => {
       }
     } else {
       Logger.error('no connectedHotspot address when skipping wifi')
-      showOKAlert({ titleKey: 'something went wrong' })
+      showOKAlert({
+        titleKey: 'generic.error',
+        messageKey: 'hotspot_setup.onboarding_error.disconnected',
+      })
       navigation.goBack()
     }
-  }
+  }, [connectedHotspot.address, navigation, showOKAlert])
 
   const navNext = (network: string) => {
     navigation.navigate('HotspotSetupWifiScreen', { network })

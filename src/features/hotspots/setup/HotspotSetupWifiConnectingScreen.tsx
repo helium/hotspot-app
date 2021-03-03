@@ -48,7 +48,7 @@ const HotspotSetupWifiConnectingScreen = () => {
     [navigation, showOKAlert],
   )
 
-  const goToNextStep = async () => {
+  const goToNextStep = useCallback(async () => {
     if (connectedHotspot.address) {
       const address = await getAddress()
       const hotspot = await getHotspotDetails(connectedHotspot.address)
@@ -61,12 +61,15 @@ const HotspotSetupWifiConnectingScreen = () => {
       }
     } else {
       Logger.error('no connectedHotspot address after connecting to wifi')
-      showOKAlert({ titleKey: 'something went wrong' })
+      showOKAlert({
+        titleKey: 'generic.error',
+        messageKey: 'hotspot_setup.onboarding_error.disconnected',
+      })
       navigation.goBack()
     }
-  }
+  }, [connectedHotspot.address, navigation, showOKAlert])
 
-  const connectToWifi = () => {
+  const connectToWifi = useCallback(() => {
     setWifiCredentials(network, password, async (response, error) => {
       if (response === 'error') {
         showOKAlert({
@@ -81,10 +84,17 @@ const HotspotSetupWifiConnectingScreen = () => {
         })
         navigation.goBack()
       } else {
-        goToNextStep()
+        await goToNextStep()
       }
     })
-  }
+  }, [
+    goToNextStep,
+    navigation,
+    network,
+    password,
+    setWifiCredentials,
+    showOKAlert,
+  ])
 
   const forgetWifi = async () => {
     try {

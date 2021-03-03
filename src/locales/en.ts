@@ -325,6 +325,8 @@ export default {
       subtitle:
         'Unable to find Hotspot in the Onboarding Server. Please contact the Hotspot manufacturer for next steps.',
       next: 'Exit Setup',
+      disconnected:
+        'There was an error connecting to the Hotspot. Please try again.',
     },
     add_hotspot: {
       title: 'Add Hotspot',
