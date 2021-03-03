@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native'
 import Text from './Text'
 import PinDisplay from './PinDisplay'
 import Keypad from './Keypad'
-import haptic from '../utils/haptic'
+import useHaptic from '../utils/useHaptic'
 import Box from './Box'
 
 type Props = {
@@ -21,6 +21,7 @@ const ConfirmPinView = ({
   originalPin,
   onCancel,
 }: Props) => {
+  const { triggerImpact } = useHaptic()
   const success = useRef(false)
   const [pin, setPin] = useState('')
   const shakeAnim = useRef(new Animated.Value(0))
@@ -46,8 +47,8 @@ const ConfirmPinView = ({
       move('center'),
     ]).start(() => setPin(''))
 
-    haptic()
-  }, [])
+    triggerImpact()
+  }, [triggerImpact])
 
   useEffect(() => {
     if (pin.length === 6) {

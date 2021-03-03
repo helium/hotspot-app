@@ -128,17 +128,19 @@ export default {
     loading: 'Loading...',
     copy: 'Copy',
     address: 'Address',
+    invalid_password: 'You password is incorrect',
+    something_went_wrong: 'Something went wrong',
   },
   hotspot_setup: {
     selection: {
       title: 'Choose\nyour Hotspot.',
       subtitle: 'What kind of Hotspot do you\nwish to add?',
-      helium: 'Helium\nHotspot',
-      rak: 'RAK\nHotspot Miner',
-      nebrain: 'Nebra\nIndoor Hotspot',
-      nebraout: 'Nebra\nOutdoor Hotspot',
-      bobcat: 'Bobcat\nMiner 300',
-      syncrobit: 'SyncroB.it\nHotspot',
+      helium: 'Helium Hotspot',
+      rak: 'RAK Hotspot Miner',
+      nebrain: 'Nebra Indoor Hotspot',
+      nebraout: 'Nebra Outdoor Hotspot',
+      bobcat: 'Bobcat Miner 300',
+      syncrobit: 'SyncroB.it Hotspot',
       third_party_header: 'Other Hotspots',
       helium_edition: 'For the Helium Network',
       fine_print:
@@ -524,8 +526,9 @@ export default {
         troubleshooting: 'Troubleshooting',
         joinDiscord: 'Join Helium Discord',
       },
-      account: {
-        title: 'Account',
+      app: {
+        title: 'App',
+        enableHapticFeedback: 'Enable Haptic Feedback',
         language: 'Language',
         signOut: 'Sign Out',
         signOutAlert: {

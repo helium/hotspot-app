@@ -462,7 +462,7 @@ export default {
         troubleshooting: '문제 해결',
         joinDiscord: 'Helium Discord 참여',
       },
-      account: {
+      app: {
         title: '계정',
         language: '언어',
         signOut: '로그아웃',

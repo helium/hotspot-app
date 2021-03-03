@@ -24,6 +24,8 @@ import { hp } from '../../../utils/layout'
 import { useHotspotSettingsContext } from './HotspotSettingsProvider'
 import animateTransition from '../../../utils/animateTransition'
 import { locale } from '../../../utils/i18n'
+import useAlert from '../../../utils/useAlert'
+import usePrevious from '../../../utils/usePrevious'
 
 type Info = {
   percentSynced: number
@@ -62,10 +64,12 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
   } = useConnectedHotspotContext()
   const [loading, setLoading] = useState(true)
   const [info, setInfo] = useState(initialInfo)
+  const { showOKAlert } = useAlert()
   const [lineItems, setLineItems] = useState<
     { attribute: string; value?: string }[]
   >([])
-  const { result: diagnostics } = useAsync(getDiagnosticInfo, [])
+  const { result: diagnostics, error } = useAsync(getDiagnosticInfo, [])
+  const prevError = usePrevious(error)
   const { version } = useDevice()
   const { t } = useTranslation()
   const {
@@ -85,6 +89,19 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
   useEffect(() => {
     enableBack(() => onFinished())
   }, [enableBack, onFinished])
+
+  useEffect(() => {
+    const handleError = async () => {
+      if (error && !prevError) {
+        await showOKAlert({
+          titleKey: 'generic.error',
+          messageKey: error.toString(),
+        })
+        onFinished()
+      }
+    }
+    handleError()
+  }, [error, onFinished, showOKAlert, prevError])
 
   useEffect(() => {
     setLineItems([

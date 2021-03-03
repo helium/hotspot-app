@@ -5,10 +5,11 @@ import ShareImg from '@assets/images/share.svg'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
 import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
-import { triggerNavHaptic } from '../../../../utils/haptic'
+import useHaptic from '../../../../utils/useHaptic'
 
 const ShareButton = ({ address }: { address: string }) => {
   const { t } = useTranslation()
+  const { triggerNavHaptic } = useHaptic()
 
   const handlePress = () => {
     Share.share({ message: address })

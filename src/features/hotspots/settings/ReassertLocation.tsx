@@ -4,6 +4,8 @@ import { LocationGeocodedAddress } from 'expo-location'
 import React, { memo, useCallback, useEffect, useState } from 'react'
 import { useAsync } from 'react-async-hook'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
+import { isString } from 'lodash'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
@@ -13,11 +15,11 @@ import { reverseGeocode } from '../../../utils/location'
 import useAlert from '../../../utils/useAlert'
 import ReassertLocationFee from './ReassertLocationFee'
 import ReassertLocationUpdate from './ReassertLocationUpdate'
-import * as Logger from '../../../utils/logger'
 import { useHotspotSettingsContext } from './HotspotSettingsProvider'
 import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
 import ReassertAddressSearch from './ReassertAddressSearch'
 import { PlaceGeography } from '../../../utils/googlePlaces'
+import { HotspotErrorCode } from '../../../utils/useHotspot'
 
 type Coords = { latitude: number; longitude: number }
 const DEFAULT_FEE_DATA = {
@@ -48,6 +50,7 @@ const ReassertLocation = ({ onFinished }: Props) => {
     loadLocationFeeData,
     [],
   )
+  const { t } = useTranslation()
   const { enableBack } = useHotspotSettingsContext()
 
   const { showOKAlert } = useAlert()
@@ -107,14 +110,36 @@ const ReassertLocation = ({ onFinished }: Props) => {
     getLoc()
   }, [updatedLocation])
 
-  const handleFailure = async (error: unknown) => {
-    Logger.error(error)
-    await showOKAlert({
-      titleKey: 'hotspot_settings.reassert.failTitle',
-      messageKey: 'hotspot_settings.reassert.failSubtitle',
-    })
-    onFinished()
-  }
+  const handleFinish = useCallback(
+    async (assertResponse: Error | string | boolean) => {
+      if (assertResponse === true) {
+        animateTransition()
+        setState('success')
+        return
+      }
+
+      let titleKey = 'generic.error'
+      let messageKey = 'hotspot_setup.add_hotspot.add_hotspot_error_body'
+      if (isString(assertResponse)) {
+        if (assertResponse === HotspotErrorCode.WAIT) {
+          titleKey = t('hotspot_setup.add_hotspot.wait_error_title')
+          messageKey = t('hotspot_setup.add_hotspot.wait_error_body')
+        } else {
+          messageKey = `Got error code ${assertResponse} from assert location`
+        }
+      } else if (assertResponse !== false) {
+        messageKey = assertResponse.toString()
+      }
+
+      await showOKAlert({
+        titleKey,
+        messageKey,
+      })
+
+      onFinished()
+    },
+    [onFinished, showOKAlert, t],
+  )
 
   const handleSearch = useCallback(() => {
     animateTransition()
@@ -171,11 +196,8 @@ const ReassertLocation = ({ onFinished }: Props) => {
           onCancel={handleBack}
           confirming
           coords={updatedLocation}
-          onFailure={handleFailure}
+          onFinish={handleFinish}
           onSearch={handleSearch}
-          onSuccess={() => {
-            setState('success')
-          }}
         />
       )
     case 'success':

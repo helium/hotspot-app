@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Alert, SectionList } from 'react-native'
 import { useSelector } from 'react-redux'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
+import { isEqual } from 'lodash'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { RootState } from '../../../store/rootReducer'
@@ -38,7 +39,7 @@ const MoreScreen = () => {
   const { params } = useRoute<Route>()
   const dispatch = useAppDispatch()
   const { version } = useDevice()
-  const { app } = useSelector((state: RootState) => state)
+  const app = useSelector((state: RootState) => state.app, isEqual)
   const authIntervals = useAuthIntervals()
   const { changeLanguage, language } = useLanguageContext()
   const navigation = useNavigation<MoreNavigationProp & RootNavigationProp>()
@@ -106,10 +107,14 @@ const MoreScreen = () => {
     navigation.push('LockScreen', { requestType: 'resetPin' })
   }, [navigation])
 
+  const handleHaptic = useCallback(() => {
+    dispatch(appSlice.actions.updateHapticEnabled(!app.isHapticDisabled))
+  }, [dispatch, app.isHapticDisabled])
+
   const handleSignOut = useCallback(() => {
     Alert.alert(
-      t('more.sections.account.signOutAlert.title'),
-      t('more.sections.account.signOutAlert.body'),
+      t('more.sections.app.signOutAlert.title'),
+      t('more.sections.app.signOutAlert.body'),
       [
         {
           text: t('generic.cancel'),
@@ -223,11 +228,11 @@ const MoreScreen = () => {
         footer: <DiscordItem />,
       },
       {
-        title: t('more.sections.account.title'),
+        title: t('more.sections.app.title'),
         icon: <Account />,
         data: [
           {
-            title: t('more.sections.account.language'),
+            title: t('more.sections.app.language'),
             value: language,
             select: {
               items: SUPPORTED_LANGUAGUES,
@@ -235,7 +240,12 @@ const MoreScreen = () => {
             },
           },
           {
-            title: t('more.sections.account.signOut'),
+            title: t('more.sections.app.enableHapticFeedback'),
+            onToggle: handleHaptic,
+            value: !app.isHapticDisabled,
+          },
+          {
+            title: t('more.sections.app.signOut'),
             onPress: handleSignOut,
             destructive: true,
           },
@@ -247,11 +257,13 @@ const MoreScreen = () => {
     t,
     handlePinRequired,
     app.isPinRequired,
+    app.isHapticDisabled,
     app.authInterval,
     app.isPinRequiredForPayment,
     handleRevealWords,
     language,
     handleLanguageChange,
+    handleHaptic,
     handleSignOut,
     version,
     authIntervals,
