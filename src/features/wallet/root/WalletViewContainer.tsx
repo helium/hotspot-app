@@ -13,7 +13,7 @@ import {
   WalletLayout,
   withWalletLayout,
 } from './walletLayout'
-import { triggerNavHaptic } from '../../../utils/haptic'
+import useHaptic from '../../../utils/useHaptic'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import WalletIntroCarousel from './WalletIntroCarousel'
 import { Loading } from '../../../store/activity/activitySlice'
@@ -49,6 +49,7 @@ const WalletViewContainer = ({
   const {
     app: { isPinRequiredForPayment },
   } = useSelector((state: RootState) => state)
+  const { triggerNavHaptic } = useHaptic()
 
   const activityCardRef = useRef<BottomSheet>(null)
   const balanceSheetRef = useRef<BottomSheet>(null)
@@ -59,7 +60,7 @@ const WalletViewContainer = ({
   const navScan = useCallback(() => {
     triggerNavHaptic()
     navigation.navigate('Scan')
-  }, [navigation])
+  }, [navigation, triggerNavHaptic])
 
   const handleSendPress = useCallback(() => {
     triggerNavHaptic()
@@ -70,7 +71,7 @@ const WalletViewContainer = ({
     } else {
       navigation.navigate('Send')
     }
-  }, [isPinRequiredForPayment, navigation])
+  }, [isPinRequiredForPayment, navigation, triggerNavHaptic])
 
   const toggleShowReceive = useCallback(() => {
     if (activityViewState === 'no_activity') {
@@ -81,7 +82,12 @@ const WalletViewContainer = ({
       activityCardRef.current?.snapTo(snapToIndex)
     }
     triggerNavHaptic()
-  }, [activityCardIndex, activityViewState, balanceSheetIndex])
+  }, [
+    activityCardIndex,
+    activityViewState,
+    balanceSheetIndex,
+    triggerNavHaptic,
+  ])
 
   const containerStyle = useMemo(() => ({ paddingTop: layout.notchHeight }), [
     layout.notchHeight,

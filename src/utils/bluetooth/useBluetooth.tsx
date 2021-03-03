@@ -6,7 +6,6 @@ import {
   Device,
   LogLevel,
 } from 'react-native-ble-plx'
-import { decode } from 'base-64'
 import sleep from '../sleep'
 import {
   FirmwareCharacteristic,
@@ -54,7 +53,7 @@ const useBluetooth = () => {
       return device
     } catch (e) {
       Logger.error(e)
-      return hotspotDevice
+      throw e
     }
   }
 
@@ -66,7 +65,7 @@ const useBluetooth = () => {
       (error, device) => {
         if (error) {
           Logger.error(error)
-          return
+          throw error
         }
 
         if (device?.localName) {
@@ -95,7 +94,7 @@ const useBluetooth = () => {
       return device
     } catch (e) {
       Logger.error(e)
-      return hotspotDevice
+      throw e
     }
   }
 
@@ -124,44 +123,29 @@ const useBluetooth = () => {
       return characteristic
     } catch (e) {
       Logger.error(e)
+      throw e
     }
   }
 
   const readCharacteristic = async (
     characteristic: Characteristic,
-    tries = 1,
   ): Promise<Characteristic> => {
     Logger.breadcrumb(
       `Read Characteristic: ${characteristic.uuid} for service: ${characteristic.serviceUUID}`,
     )
     try {
-      const value = await characteristic.read()
-      if (!value.value) return value
-
-      const parsedValue = decode(value.value)
-
-      if (parsedValue === 'wait') {
-        if (tries - 1 === 0) {
-          Logger.error(
-            new Error(`Got wait from hotspot: parsedValue = ${parsedValue}`),
-          )
-          return value
-        }
-
-        await sleep(1000)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        return await readCharacteristic(characteristic, tries - 1)
-      }
+      const charWithValue = await characteristic.read()
+      if (!charWithValue.value) throw new Error('Characteristic value is empty')
 
       Logger.breadcrumb(
-        `Successfully read Characteristic: ${characteristic.uuid} for service: ${characteristic.serviceUUID}`,
+        `Successfully read Characteristic: ${characteristic.uuid} for service: ${characteristic.serviceUUID} with value ${charWithValue.value}`,
       )
 
-      return value
+      return charWithValue
     } catch (e) {
       Logger.error(e)
+      throw e
     }
-    return characteristic
   }
 
   const writeCharacteristic = async (
@@ -174,11 +158,12 @@ const useBluetooth = () => {
     try {
       const c = await characteristic.writeWithResponse(payload)
       Logger.breadcrumb(
-        `Successfully wrote Characteristic: ${c.uuid} for service: ${c.serviceUUID}`,
+        `Successfully wrote Characteristic: ${c.uuid} for service: ${c.serviceUUID} with value ${c.value}`,
       )
       return c
     } catch (e) {
       Logger.error(e)
+      throw e
     }
   }
 
@@ -186,7 +171,6 @@ const useBluetooth = () => {
     characteristicUuid: HotspotCharacteristic | FirmwareCharacteristic,
     hotspotDevice: Device,
     service: Service = Service.MAIN_UUID,
-    tries = 1,
   ) => {
     const characteristic = await findCharacteristic(
       characteristicUuid,
@@ -195,7 +179,7 @@ const useBluetooth = () => {
     )
     if (!characteristic) return
 
-    const readChar = await readCharacteristic(characteristic, tries)
+    const readChar = await readCharacteristic(characteristic)
     return readChar?.value || undefined
   }
 

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { uniq } from 'lodash'
 import { useAsync } from 'react-async-hook'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
@@ -40,6 +40,14 @@ const HotspotSetupWifiConnectingScreen = () => {
 
   const { showOKAlert } = useAlert()
 
+  const handleError = useCallback(
+    async (messageKey: string) => {
+      await showOKAlert({ titleKey: 'generic.error', messageKey })
+      navigation.goBack()
+    },
+    [navigation, showOKAlert],
+  )
+
   const goToNextStep = async () => {
     if (connectedHotspot.address) {
       const address = await getAddress()
@@ -59,14 +67,18 @@ const HotspotSetupWifiConnectingScreen = () => {
   }
 
   const connectToWifi = () => {
-    setWifiCredentials(network, password, async (response) => {
+    setWifiCredentials(network, password, async (response, error) => {
       if (response === 'error') {
-        // TODO: Handle Failure
-        showOKAlert({ titleKey: 'something went wrong' })
+        showOKAlert({
+          titleKey: 'generic.error',
+          messageKey: error?.toString() || 'generic.something_went_wrong',
+        })
         navigation.goBack()
       } else if (response === 'invalid') {
-        // TODO: Handle incorrect password
-        showOKAlert({ titleKey: 'Your password is invalid' })
+        showOKAlert({
+          titleKey: 'generic.error',
+          messageKey: 'generic.invalid_password',
+        })
         navigation.goBack()
       } else {
         goToNextStep()
@@ -75,9 +87,13 @@ const HotspotSetupWifiConnectingScreen = () => {
   }
 
   const forgetWifi = async () => {
-    const connectedNetworks = uniq((await scanForWifiNetworks(true)) || [])
-    if (connectedNetworks.length > 0) {
-      await removeConfiguredWifi(connectedNetworks[0])
+    try {
+      const connectedNetworks = uniq((await scanForWifiNetworks(true)) || [])
+      if (connectedNetworks.length > 0) {
+        await removeConfiguredWifi(connectedNetworks[0])
+      }
+    } catch (e) {
+      handleError(e)
     }
   }
 

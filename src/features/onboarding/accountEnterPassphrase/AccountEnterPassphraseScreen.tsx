@@ -23,7 +23,7 @@ import TextTransform from '../../../components/TextTransform'
 import Card from '../../../components/Card'
 import sleep from '../../../utils/sleep'
 import { wp } from '../../../utils/layout'
-import { triggerNotification } from '../../../utils/haptic'
+import useHaptic from '../../../utils/useHaptic'
 import animateTransition from '../../../utils/animateTransition'
 
 const testIndices = __DEV__
@@ -47,6 +47,7 @@ const AccountEnterPassphraseScreen = () => {
   const [challengeWords, setChallengeWords] = useState<Array<string>>([])
   const carouselRef = useRef<Carousel<CarouselItemData>>(null)
   const { t } = useTranslation()
+  const { triggerNotification } = useHaptic()
   const navigation = useNavigation<OnboardingNavigationProp>()
 
   const findTargetWord = useCallback(

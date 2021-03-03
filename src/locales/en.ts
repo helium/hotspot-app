@@ -128,6 +128,8 @@ export default {
     loading: 'Loading...',
     copy: 'Copy',
     address: 'Address',
+    invalid_password: 'You password is incorrect',
+    something_went_wrong: 'Something went wrong',
   },
   hotspot_setup: {
     selection: {
@@ -396,6 +398,11 @@ export default {
       alertMessage:
         'Request to servers have timed out and we cannot add your Hotspot at this time.\n\nPlease contact support@helium.com and note MAC address %{mac}.',
     },
+    skip_location: {
+      title: 'Add Hotspot',
+      subtitle_1: 'You have decided to assert location later.',
+      subtitle_2: 'Update your location later from settings.',
+    },
     not_owner: {
       title: 'Unable to proceed with setup',
       subtitle_1: 'Hotspot belongs to another account.',
@@ -530,8 +537,9 @@ export default {
         troubleshooting: 'Troubleshooting',
         joinDiscord: 'Join Helium Discord',
       },
-      account: {
-        title: 'Account',
+      app: {
+        title: 'App',
+        enableHapticFeedback: 'Enable Haptic Feedback',
         language: 'Language',
         signOut: 'Sign Out',
         signOutAlert: {

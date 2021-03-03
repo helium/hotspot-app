@@ -9,6 +9,7 @@ import {
   AssertLocationV1,
   Transaction,
 } from '@helium/transactions'
+import { decode } from 'base-64'
 import { useBluetoothContext } from '../providers/BluetoothProvider'
 import {
   FirmwareCharacteristic,
@@ -38,6 +39,14 @@ import { useAppDispatch } from '../store/store'
 import { RootState } from '../store/rootReducer'
 import * as Logger from './logger'
 import useSubmitTxn from '../hooks/useSubmitTxn'
+
+export enum HotspotErrorCode {
+  WAIT = 'wait',
+  UNKNOWN = 'unknown',
+  BAD_ARGS = 'badargs',
+  ERROR = 'error',
+  GATEWAY_NOT_FOUND = 'gw_not_found', // This may no longer be relevant, but it's not hurting anything check for it
+}
 
 const useHotspot = () => {
   const submitTxn = useSubmitTxn()
@@ -229,42 +238,43 @@ const useHotspot = () => {
     return response
   }
 
-  type CallbackType = (success: 'invalid' | 'error' | 'connected') => void
+  type CallbackType = (
+    success: 'invalid' | 'error' | 'connected',
+    error?: string | Error,
+  ) => void
   const setWifiCredentials = async (
     ssid: string,
     password: string,
     callback?: CallbackType,
   ) => {
-    if (!connectedHotspot.current) return
-    const uuid = HotspotCharacteristic.WIFI_CONNECT_UUID
-    const encoded = encodeWifiConnect(ssid, password)
+    if (!connectedHotspot.current) throw new Error('No device found')
 
-    const characteristic = await findCharacteristic(
-      uuid,
-      connectedHotspot.current,
-    )
+    try {
+      let cb: CallbackType | null | undefined = callback
+      const doCallback = (
+        type: 'invalid' | 'error' | 'connected',
+        error?: BleError,
+      ) => {
+        if (error) {
+          Logger.error(error)
+        }
 
-    if (!characteristic) return
-
-    await writeCharacteristic(characteristic, encoded)
-
-    let cb: CallbackType | null | undefined = callback
-    const doCallback = (
-      type: 'invalid' | 'error' | 'connected',
-      error?: BleError,
-    ) => {
-      if (error) {
-        Logger.error(error)
+        cb?.(type, error)
+        cb = null // prevent multiple callbacks. Android throws an error when the subscription is removed.
+        subscription?.remove()
+        subscription = null
       }
 
-      cb?.(type)
-      cb = null // prevent multiple callbacks. Android throws an error when the subscription is removed.
-      subscription?.remove()
-      subscription = null
-    }
+      const uuid = HotspotCharacteristic.WIFI_CONNECT_UUID
+      const encoded = encodeWifiConnect(ssid, password)
 
-    let subscription: Subscription | null = characteristic?.monitor(
-      (error, c) => {
+      const wifiChar = await findCharacteristic(uuid, connectedHotspot.current)
+
+      if (!wifiChar) return
+
+      await writeCharacteristic(wifiChar, encoded)
+
+      let subscription: Subscription | null = wifiChar?.monitor((error, c) => {
         if (error) {
           doCallback('error', error)
         }
@@ -284,8 +294,10 @@ const useHotspot = () => {
         }
 
         doCallback('error')
-      },
-    )
+      })
+    } catch (e) {
+      callback?.('error', e)
+    }
   }
 
   const checkFirmwareCurrent = async (): Promise<boolean> => {
@@ -348,7 +360,7 @@ const useHotspot = () => {
     return transaction
   }
 
-  const addGatewayTxn = async () => {
+  const addGatewayTxn = async (): Promise<string | boolean> => {
     if (!connectedHotspot.current || !connectedHotspotDetails.onboardingAddress)
       return false
     const uuid = HotspotCharacteristic.ADD_GATEWAY_UUID
@@ -369,9 +381,12 @@ const useHotspot = () => {
     const { value } = await readCharacteristic(characteristic)
     if (!value) return false
 
-    if (value.length < 20) {
-      Logger.error(new Error(`Got error code ${value} from add_gw`))
-      return value
+    const parsedValue = decode(value)
+    if (parsedValue in HotspotErrorCode || parsedValue.length < 20) {
+      Logger.error(
+        `Got error code ${parsedValue} from add_gateway. Raw data = ${value}`,
+      )
+      return parsedValue
     }
 
     const txn = await makeAddGatewayTxn(value)
@@ -390,7 +405,7 @@ const useHotspot = () => {
       return !!pendingTransaction
     } catch (error) {
       Logger.error(error)
-      return false
+      throw error
     }
   }
 
@@ -439,6 +454,14 @@ const useHotspot = () => {
     const { value } = await readCharacteristic(characteristic)
     if (!value) return false
 
+    const parsedValue = decode(value)
+    if (parsedValue in HotspotErrorCode || parsedValue.length < 20) {
+      Logger.error(
+        `Got error code ${parsedValue} from assert_location. Raw data = ${value}`,
+      )
+      return parsedValue
+    }
+
     const txn = await makeAssertLocTxn(value)
 
     let finalTxn = txn
@@ -451,15 +474,12 @@ const useHotspot = () => {
       finalTxn = AssertLocationV1.fromString(stakingServerSignedTxn)
     }
 
-    console.log('staking server signed', finalTxn)
-
     try {
       const pendingTransaction = await submitTxn(finalTxn)
       return !!pendingTransaction
-      return true
     } catch (error) {
       Logger.error(error)
-      return false
+      throw error
     }
   }
 

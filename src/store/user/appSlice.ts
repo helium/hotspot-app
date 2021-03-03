@@ -10,6 +10,7 @@ import { getCurrentPosition, LocationCoords } from '../../utils/location'
 
 export type AppState = {
   isBackedUp: boolean
+  isHapticDisabled: boolean
   isSettingUpHotspot: boolean
   isRestored: boolean
   isPinRequired: boolean
@@ -24,6 +25,7 @@ export type AppState = {
 }
 const initialState: AppState = {
   isBackedUp: false,
+  isHapticDisabled: false,
   isSettingUpHotspot: false,
   isRestored: false,
   isPinRequired: false,
@@ -42,6 +44,7 @@ type Restore = {
   isPinRequiredForPayment: boolean
   authInterval: number
   isLocked: boolean
+  isHapticDisabled: boolean
 }
 
 export const restoreUser = createAsyncThunk<Restore>(
@@ -52,6 +55,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       getSecureItem('requirePin'),
       getSecureItem('requirePinForPayment'),
       getSecureItem('authInterval'),
+      getSecureItem('hapticDisabled'),
     ])
     return {
       isBackedUp: vals[0],
@@ -59,6 +63,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       isPinRequiredForPayment: vals[2],
       authInterval: vals[3] ? parseInt(vals[3], 10) : 0,
       isLocked: vals[1],
+      isHapticDisabled: vals[4],
     }
   },
 )
@@ -89,6 +94,10 @@ const appSlice = createSlice({
     requirePinForPayment: (state, action: PayloadAction<boolean>) => {
       state.isPinRequiredForPayment = action.payload
       setSecureItem('requirePinForPayment', action.payload)
+    },
+    updateHapticEnabled: (state, action: PayloadAction<boolean>) => {
+      state.isHapticDisabled = action.payload
+      setSecureItem('hapticDisabled', action.payload)
     },
     updateAuthInterval: (state, action: PayloadAction<number>) => {
       state.authInterval = action.payload

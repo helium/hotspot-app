@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Alert } from 'react-native'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
+import { isString } from 'lodash'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
 import RingLoader from '../../../components/Loaders/RingLoader'
@@ -15,6 +16,7 @@ import { HotspotSetupStackParamList } from './hotspotSetupTypes'
 import { RootState } from '../../../store/rootReducer'
 import * as Logger from '../../../utils/logger'
 import useAlert from '../../../utils/useAlert'
+import { HotspotErrorCode } from '../../../utils/useHotspot'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotTxnsProgressScreen'>
 
@@ -22,32 +24,30 @@ const HotspotTxnsProgressScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<RootNavigationProp>()
   const [finished, setFinished] = useState(false)
-  const {
-    params: { hotspotCoords },
-  } = useRoute<Route>()
-  const [lng, lat] = hotspotCoords
+  const { params } = useRoute<Route>()
+  const hotspotCoords = params?.hotspotCoords
   const { connectedHotspot } = useSelector((state: RootState) => state)
   const { showOKAlert } = useAlert()
   const { addGatewayTxn, assertLocationTxn } = useConnectedHotspotContext()
 
-  const addGatewayError = async (error: string | false) => {
+  const handleError = async (
+    error: false | Error | string,
+    source: 'assert_location' | 'add_gateway',
+  ) => {
     let titleKey = 'generic.error'
     let messageKey = 'hotspot_setup.add_hotspot.add_hotspot_error_body'
-    if (error !== false) {
-      if (error === 'wait') {
+
+    if (isString(error)) {
+      if (error === HotspotErrorCode.WAIT) {
         messageKey = t('hotspot_setup.add_hotspot.wait_error_body')
         titleKey = t('hotspot_setup.add_hotspot.wait_error_title')
       } else {
-        messageKey = `Got error code ${error} from add_gw`
+        messageKey = `Got error code ${error} from ${source}`
       }
+    } else if (error !== false) {
+      messageKey = error.toString()
     }
-    await showOKAlert({ titleKey, messageKey })
-    navigation.navigate('MainTabs')
-  }
 
-  const assertLocError = async () => {
-    const titleKey = 'generic.error'
-    const messageKey = 'hotspot_setup.add_hotspot.assert_loc_error_body'
     await showOKAlert({ titleKey, messageKey })
     navigation.navigate('MainTabs')
   }
@@ -77,30 +77,34 @@ const HotspotTxnsProgressScreen = () => {
       try {
         const addGatewayResponse = await addGatewayTxn()
         if (addGatewayResponse !== true) {
-          addGatewayError(addGatewayResponse)
+          handleError(addGatewayResponse, 'add_gateway')
           return
         }
       } catch (error) {
-        addGatewayError(false)
+        handleError(error, 'add_gateway')
         Logger.error(error)
         return
       }
     }
 
     // construct and publish assert location
-    try {
-      const assertLocTxnSuccess = await assertLocationTxn(lat, lng)
-      if (!assertLocTxnSuccess) {
-        assertLocError()
-        return
-      }
-    } catch (error) {
-      assertLocError()
-      Logger.error(error)
-      return
-    }
+    if (hotspotCoords) {
+      const [lng, lat] = hotspotCoords
+      try {
+        const assertLocTxnResponse = await assertLocationTxn(lat, lng)
+        if (assertLocTxnResponse === true) {
+          setFinished(true)
+          return
+        }
 
-    setFinished(true)
+        handleError(assertLocTxnResponse, 'assert_location')
+      } catch (error) {
+        handleError(error, 'assert_location')
+        Logger.error(error)
+      }
+    } else {
+      setFinished(true)
+    }
   }
 
   useEffect(() => {

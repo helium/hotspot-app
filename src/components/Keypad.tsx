@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import haptic from '../utils/haptic'
+import useHaptic from '../utils/useHaptic'
 import Box from './Box'
 import Text from './Text'
 import TouchableCircle from './TouchableCircle'
@@ -19,15 +19,19 @@ const Key = ({
   children: React.ReactNode
   onPressIn: () => void
 }) => {
+  const { triggerImpact } = useHaptic()
+
+  const handlePressIn = useCallback(() => {
+    triggerImpact()
+    onPressIn()
+  }, [onPressIn, triggerImpact])
+
   return (
     <TouchableCircle
       alignItems="center"
       marginBottom="xs"
       flexBasis="33%"
-      onPressIn={() => {
-        haptic()
-        onPressIn()
-      }}
+      onPressIn={handlePressIn}
     >
       {children}
     </TouchableCircle>
@@ -35,6 +39,7 @@ const Key = ({
 }
 
 const Keypad = ({ onNumberPress, onCancel, onBackspacePress }: Props) => {
+  const { triggerImpact } = useHaptic()
   const { t } = useTranslation()
   const colors = useColors()
 
@@ -58,15 +63,15 @@ const Keypad = ({ onNumberPress, onCancel, onBackspacePress }: Props) => {
 
   const onPressIn = useCallback(
     (value: number) => () => {
-      haptic()
+      triggerImpact()
       onNumberPress(value)
     },
-    [onNumberPress],
+    [onNumberPress, triggerImpact],
   )
   const handleBackspace = useCallback(() => {
-    haptic()
+    triggerImpact()
     onBackspacePress()
-  }, [onBackspacePress])
+  }, [onBackspacePress, triggerImpact])
 
   return (
     <Box
