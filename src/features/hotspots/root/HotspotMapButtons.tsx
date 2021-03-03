@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useMemo } from 'react'
 import Animated, {
   Extrapolate,
   interpolate,
@@ -9,8 +9,6 @@ import EyeCircleButtonYellow from '@assets/images/eye-circle-button-yellow.svg'
 import { ActivityIndicator } from 'react-native'
 import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import usePrevious from '../../../utils/usePrevious'
-import animateTransition from '../../../utils/animateTransition'
 
 const HotspotMapButtons = ({
   animatedPosition,
@@ -25,7 +23,6 @@ const HotspotMapButtons = ({
   isVisible?: boolean
   loading: boolean
 }) => {
-  const prevLoading = usePrevious(loading)
   const style = useAnimatedStyle(
     () => ({
       position: 'absolute',
@@ -45,11 +42,13 @@ const HotspotMapButtons = ({
     [animatedPosition, isVisible],
   )
 
-  useEffect(() => {
-    if (prevLoading !== loading) {
-      animateTransition()
-    }
-  }, [loading, prevLoading])
+  const loadingStyle = useMemo(
+    () => ({
+      backgroundColor: showWitnesses ? '#FCC945' : '#555A82',
+      borderRadius: 22,
+    }),
+    [showWitnesses],
+  )
 
   return (
     <Animated.View style={style}>
@@ -61,12 +60,16 @@ const HotspotMapButtons = ({
         )}
         {loading && (
           <Box
-            height={44}
+            height={43}
             width={43}
             alignItems="center"
             justifyContent="center"
+            style={loadingStyle}
           >
-            <ActivityIndicator color="white" />
+            <ActivityIndicator
+              size="small"
+              color={showWitnesses ? 'white' : 'black'}
+            />
           </Box>
         )}
 
