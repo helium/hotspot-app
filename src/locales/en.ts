@@ -346,9 +346,6 @@ export default {
       wait_error_title: 'Please Try Again',
       wait_error_body:
         'Hotspot miner is waiting to start. Please try again in a few minutes.',
-      gateway_not_found_error_title: 'Please Try Again',
-      gateway_not_found_error_body:
-        'Gateway could not be found. Please try again in a few minutes.',
       add_hotspot_error_body:
         'There was an error constructing the Add Hotspot transaction. Please try again.',
       assert_loc_error_body:

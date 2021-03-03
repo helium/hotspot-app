@@ -24,8 +24,7 @@ type Props = {
   coords?: { latitude: number; longitude: number }
   locationSelected?: (latitude: number, longitude: number) => void
   onCancel: () => void
-  onSuccess?: () => void
-  onFailure?: (err: Error | string) => void
+  onFinish?: (assertResponse: Error | string | boolean) => void
   onSearch?: () => void
 }
 const ReassertLocationUpdate = ({
@@ -33,8 +32,7 @@ const ReassertLocationUpdate = ({
   coords,
   amount,
   locationSelected,
-  onSuccess,
-  onFailure,
+  onFinish,
   onCancel,
   onSearch,
 }: Props) => {
@@ -62,27 +60,10 @@ const ReassertLocationUpdate = ({
     }
   }, [])
 
-  const finish = useCallback(
-    (success: boolean, message?: Error | string) => {
-      setLoading(false)
-      if (success) {
-        onSuccess?.()
-      } else {
-        onFailure?.(
-          message ||
-            `There was an error updating location for hotspot ${
-              hotspotAddress || ''
-            }`,
-        )
-      }
-    },
-    [hotspotAddress, onFailure, onSuccess],
-  )
-
   const submitOnboardingTxns = useCallback(async () => {
     const isOnChain = !!details // verify the hotspot exists
     if (!hotspotAddress || !isOnChain || !coords) {
-      finish(false)
+      onFinish?.(false)
       return
     }
 
@@ -92,15 +73,11 @@ const ReassertLocationUpdate = ({
         coords.latitude,
         coords.longitude,
       )
-      if (!assertLocTxnSuccess) {
-        finish(false)
-        return
-      }
-      onSuccess?.()
+      onFinish?.(assertLocTxnSuccess)
     } catch (error) {
-      finish(false, error)
+      onFinish?.(error)
     }
-  }, [assertLocationTxn, coords, details, finish, hotspotAddress, onSuccess])
+  }, [assertLocationTxn, coords, details, hotspotAddress, onFinish])
 
   const handleAssert = useCallback(() => {
     animateTransition()

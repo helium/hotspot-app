@@ -42,7 +42,10 @@ import useSubmitTxn from '../hooks/useSubmitTxn'
 
 export enum HotspotErrorCode {
   WAIT = 'wait',
-  GATEWAY_NOT_FOUND = 'gw_not_found',
+  UNKNOWN = 'unknown',
+  BAD_ARGS = 'badargs',
+  ERROR = 'error',
+  GATEWAY_NOT_FOUND = 'gw_not_found', // This may no longer be relevant, but it's not hurting anything check for it
 }
 
 const useHotspot = () => {
@@ -357,7 +360,7 @@ const useHotspot = () => {
     return transaction
   }
 
-  const addGatewayTxn = async () => {
+  const addGatewayTxn = async (): Promise<string | boolean> => {
     if (!connectedHotspot.current || !connectedHotspotDetails.onboardingAddress)
       return false
     const uuid = HotspotCharacteristic.ADD_GATEWAY_UUID
@@ -379,17 +382,11 @@ const useHotspot = () => {
     if (!value) return false
 
     const parsedValue = decode(value)
-    let errorMessage: string | null = null
-    if (parsedValue === HotspotErrorCode.WAIT) {
-      errorMessage = parsedValue
-    } else if (parsedValue.length < 20) {
-      errorMessage = `Got error code ${value} from add_gw`
-    }
-
-    if (errorMessage) {
-      const error = new Error(errorMessage)
-      Logger.error(error)
-      throw error
+    if (parsedValue in HotspotErrorCode || parsedValue.length < 20) {
+      Logger.error(
+        `Got error code ${parsedValue} from add_gateway. Raw data = ${value}`,
+      )
+      return parsedValue
     }
 
     const txn = await makeAddGatewayTxn(value)
@@ -458,20 +455,11 @@ const useHotspot = () => {
     if (!value) return false
 
     const parsedValue = decode(value)
-    let errorMessage: string | null = null
-    if (
-      parsedValue === HotspotErrorCode.WAIT ||
-      parsedValue === HotspotErrorCode.GATEWAY_NOT_FOUND
-    ) {
-      errorMessage = parsedValue
-    } else if (parsedValue.length < 20) {
-      errorMessage = `Got error code ${parsedValue} from assert location`
-    }
-
-    if (errorMessage) {
-      const error = new Error(errorMessage)
-      Logger.error(error)
-      throw error
+    if (parsedValue in HotspotErrorCode || parsedValue.length < 20) {
+      Logger.error(
+        `Got error code ${parsedValue} from assert_location. Raw data = ${value}`,
+      )
+      return parsedValue
     }
 
     const txn = await makeAssertLocTxn(value)
