@@ -41,6 +41,7 @@ const HotspotSetupLocationInfoScreen = () => {
         edges={['bottom']}
         backgroundColor="primaryBackground"
         padding="l"
+        flex={2}
       >
         <ScrollView>
           <Box flex={1}>

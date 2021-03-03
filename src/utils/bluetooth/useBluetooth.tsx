@@ -134,14 +134,13 @@ const useBluetooth = () => {
       `Read Characteristic: ${characteristic.uuid} for service: ${characteristic.serviceUUID}`,
     )
     try {
-      const charWithValue = await characteristic.read()
-      if (!charWithValue.value) throw new Error('Characteristic value is empty')
+      const readChar = await characteristic.read()
 
       Logger.breadcrumb(
-        `Successfully read Characteristic: ${characteristic.uuid} for service: ${characteristic.serviceUUID} with value ${charWithValue.value}`,
+        `Successfully read Characteristic: ${characteristic.uuid} for service: ${characteristic.serviceUUID} with value ${readChar.value}`,
       )
 
-      return charWithValue
+      return readChar
     } catch (e) {
       Logger.error(e)
       throw e
@@ -156,11 +155,11 @@ const useBluetooth = () => {
       `Write Characteristic: ${characteristic.uuid} for service: ${characteristic.serviceUUID}`,
     )
     try {
-      const c = await characteristic.writeWithResponse(payload)
+      const writeChar = await characteristic.writeWithResponse(payload)
       Logger.breadcrumb(
-        `Successfully wrote Characteristic: ${c.uuid} for service: ${c.serviceUUID} with value ${c.value}`,
+        `Successfully wrote Characteristic: ${writeChar.uuid} for service: ${writeChar.serviceUUID} with value ${writeChar.value}`,
       )
-      return c
+      return writeChar
     } catch (e) {
       Logger.error(e)
       throw e
