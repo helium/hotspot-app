@@ -16,9 +16,6 @@ import { useColors } from '../../../theme/themeHooks'
 import Button from '../../../components/Button'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Checkmark from '../../../assets/images/check.svg'
-import { getAddress, getHotspotDetails } from '../../../utils/appDataClient'
-import * as Logger from '../../../utils/logger'
-import useAlert from '../../../utils/useAlert'
 import { RootState } from '../../../store/rootReducer'
 
 const WifiItem = ({
@@ -65,28 +62,16 @@ const HotspotSetupPickWifiScreen = () => {
   const {
     params: { networks, connectedNetworks },
   } = useRoute<Route>()
-  const { showOKAlert } = useAlert()
 
-  const navSkip = useCallback(async () => {
-    if (connectedHotspot.address) {
-      const address = await getAddress()
-      const hotspot = await getHotspotDetails(connectedHotspot.address)
-      if (hotspot && hotspot.owner === address) {
-        navigation.navigate('OwnedHotspotErrorScreen')
-      } else if (hotspot && hotspot.owner !== address) {
-        navigation.navigate('NotHotspotOwnerErrorScreen')
-      } else {
-        navigation.navigate('HotspotSetupLocationInfoScreen')
-      }
+  const navSkip = useCallback(() => {
+    if (connectedHotspot.status === 'owned') {
+      navigation.navigate('OwnedHotspotErrorScreen')
+    } else if (connectedHotspot.status === 'global') {
+      navigation.navigate('NotHotspotOwnerErrorScreen')
     } else {
-      Logger.error('no connectedHotspot address when skipping wifi')
-      showOKAlert({
-        titleKey: 'generic.error',
-        messageKey: 'hotspot_setup.onboarding_error.disconnected',
-      })
-      navigation.goBack()
+      navigation.navigate('HotspotSetupLocationInfoScreen')
     }
-  }, [connectedHotspot.address, navigation, showOKAlert])
+  }, [connectedHotspot.status, navigation])
 
   const navNext = (network: string) => {
     navigation.navigate('HotspotSetupWifiScreen', { network })
@@ -105,13 +90,13 @@ const HotspotSetupPickWifiScreen = () => {
           {t('hotspot_setup.wifi_scan.subtitle')}
         </Text>
       </Box>
-      <Box paddingHorizontal="lx" flex={1} backgroundColor="purple200">
+      <Box paddingHorizontal="l" flex={1} backgroundColor="purple200">
         <FlatList
           data={networks}
           keyExtractor={(item) => item}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={
-            <Box marginTop="lx">
+            <Box marginTop="l">
               {connectedNetworks.length > 0 && (
                 <Box marginBottom="m">
                   <Text variant="body1Bold" marginBottom="s">
@@ -142,17 +127,13 @@ const HotspotSetupPickWifiScreen = () => {
               onPress={() => navNext(item)}
             />
           )}
-          ListFooterComponent={
-            <Box>
-              <Button
-                variant="primary"
-                mode="contained"
-                title={t('hotspot_setup.wifi_scan.ethernet')}
-                marginTop="l"
-                onPress={navSkip}
-              />
-            </Box>
-          }
+        />
+        <Button
+          variant="primary"
+          mode="contained"
+          title={t('hotspot_setup.wifi_scan.ethernet')}
+          marginVertical="m"
+          onPress={navSkip}
         />
       </Box>
     </BackScreen>

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useRef, useState } from 'react'
 import { BleError, Device, Subscription } from 'react-native-ble-plx'
 import validator from 'validator'
 import compareVersions from 'compare-versions'
@@ -10,6 +10,7 @@ import {
   Transaction,
 } from '@helium/transactions'
 import { decode } from 'base-64'
+import { Hotspot } from '@helium/http'
 import { useBluetoothContext } from '../providers/BluetoothProvider'
 import {
   FirmwareCharacteristic,
@@ -18,13 +19,13 @@ import {
 } from './bluetooth/bluetoothTypes'
 import { getStaking, postStaking } from './stakingClient'
 import {
-  parseChar,
-  encodeWifiConnect,
-  encodeWifiRemove,
   encodeAddGateway,
   encodeAssertLoc,
+  encodeWifiConnect,
+  encodeWifiRemove,
+  parseChar,
 } from './bluetooth/bluetoothDataParser'
-import { getCurrentOraclePrice, getHotspotDetails } from './appDataClient'
+import { getAddress, getCurrentOraclePrice } from './appDataClient'
 import { getSecureItem } from './secureAccount'
 import { makeAddGatewayTxn, makeAssertLocTxn } from './transactions'
 import { calculateAddGatewayFee, calculateAssertLocFee } from './fees'
@@ -194,12 +195,14 @@ const useHotspot = () => {
     }
 
     const response = await dispatch(fetchHotspotDetails(details))
-    if (
-      !(response.payload as AllHotspotDetails).onboardingRecord?.onboardingKey
-    ) {
+    const payload = response.payload as AllHotspotDetails
+
+    await updateHotspotStatus(payload?.hotspot)
+
+    if (!payload?.onboardingRecord?.onboardingKey) {
       return false
     }
-    return !!response.payload
+    return !!payload
   }
 
   const scanForWifiNetworks = async (configured = false) => {
@@ -325,24 +328,13 @@ const useHotspot = () => {
     return compareVersions.compare(deviceFirmwareVersion, minVersion, '>=')
   }
 
-  const updateHotspotStatus = async () => {
-    const { address } = connectedHotspotDetails
-    if (!address) return
-
+  const updateHotspotStatus = async (hotspot?: Hotspot) => {
+    const address = await getAddress()
     let status: HotspotStatus = 'new'
-    try {
-      const hotspot = await getHotspotDetails(address)
-      if (hotspot.owner === address) {
-        status = 'owned'
-      } else if (hotspot && hotspot.owner !== address) {
-        status = 'global'
-      }
-    } catch (error) {
-      Logger.error(error)
-      const notFound = error?.response?.status === 404
-      if (!notFound) {
-        status = 'error'
-      }
+    if (hotspot && hotspot.owner === address) {
+      status = 'owned'
+    } else if (hotspot && hotspot.owner !== address) {
+      status = 'global'
     }
     dispatch(connectedHotspotSlice.actions.setConnectedHotspotStatus(status))
   }
@@ -562,7 +554,6 @@ const useHotspot = () => {
     removeConfiguredWifi,
     setWifiCredentials,
     checkFirmwareCurrent,
-    updateHotspotStatus,
     addGatewayTxn,
     assertLocationTxn,
     loadLocationFeeData,

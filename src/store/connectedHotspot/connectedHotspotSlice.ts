@@ -116,8 +116,8 @@ export const fetchHotspotActivity = createAsyncThunk<
 })
 
 export type AllHotspotDetails = {
-  hotspot: Hotspot
-  onboardingRecord: OnboardingRecord
+  hotspot?: Hotspot
+  onboardingRecord?: OnboardingRecord
 }
 export const fetchHotspotDetails = createAsyncThunk<
   AllHotspotDetails,
