@@ -542,6 +542,7 @@ export default {
       app: {
         title: 'App',
         enableHapticFeedback: 'Enable Haptic Feedback',
+        convertHntToCurrency: 'Convert HNT to Currency',
         language: 'Language',
         signOut: 'Sign Out',
         signOutAlert: {

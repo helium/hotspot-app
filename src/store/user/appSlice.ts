@@ -11,6 +11,7 @@ import { getCurrentPosition, LocationCoords } from '../../utils/location'
 export type AppState = {
   isBackedUp: boolean
   isHapticDisabled: boolean
+  convertHntToCurrency: boolean
   isSettingUpHotspot: boolean
   isRestored: boolean
   isPinRequired: boolean
@@ -26,6 +27,7 @@ export type AppState = {
 const initialState: AppState = {
   isBackedUp: false,
   isHapticDisabled: false,
+  convertHntToCurrency: false,
   isSettingUpHotspot: false,
   isRestored: false,
   isPinRequired: false,
@@ -45,6 +47,7 @@ type Restore = {
   authInterval: number
   isLocked: boolean
   isHapticDisabled: boolean
+  convertHntToCurrency: boolean
 }
 
 export const restoreUser = createAsyncThunk<Restore>(
@@ -56,6 +59,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       getSecureItem('requirePinForPayment'),
       getSecureItem('authInterval'),
       getSecureItem('hapticDisabled'),
+      getSecureItem('convertHntToCurrency'),
     ])
     return {
       isBackedUp: vals[0],
@@ -64,6 +68,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       authInterval: vals[3] ? parseInt(vals[3], 10) : 0,
       isLocked: vals[1],
       isHapticDisabled: vals[4],
+      convertHntToCurrency: vals[5],
     }
   },
 )
@@ -98,6 +103,10 @@ const appSlice = createSlice({
     updateHapticEnabled: (state, action: PayloadAction<boolean>) => {
       state.isHapticDisabled = action.payload
       setSecureItem('hapticDisabled', action.payload)
+    },
+    updateConvertHntToCurrency: (state, action: PayloadAction<boolean>) => {
+      state.convertHntToCurrency = action.payload
+      setSecureItem('convertHntToCurrency', action.payload)
     },
     updateAuthInterval: (state, action: PayloadAction<number>) => {
       state.authInterval = action.payload
