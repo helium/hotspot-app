@@ -68,7 +68,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
   const [showWitnesses, toggleShowWitnesses] = useToggle(false)
 
   const {
-    hotspotDetails: { witnesses },
+    hotspotDetails: { witnesses, loading },
   } = useSelector((state: RootState) => state)
 
   const [selectedHotspot, setSelectedHotspot] = useState<Hotspot>()
@@ -229,6 +229,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
           animatedPosition={animatedDetailsPosition}
           showWitnesses={showWitnesses}
           toggleShowWitnesses={toggleShowWitnesses}
+          loading={loading}
           isVisible={!!selectedHotspot && hasLocation}
         />
         <ReAnimatedBox pointerEvents="none" style={backdropStyles} />
