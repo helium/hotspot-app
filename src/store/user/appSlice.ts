@@ -104,6 +104,10 @@ const appSlice = createSlice({
       state.isHapticDisabled = action.payload
       setSecureItem('hapticDisabled', action.payload)
     },
+    toggleConvertHntToCurrency: (state) => {
+      state.convertHntToCurrency = !state.convertHntToCurrency
+      setSecureItem('convertHntToCurrency', state.convertHntToCurrency)
+    },
     updateConvertHntToCurrency: (state, action: PayloadAction<boolean>) => {
       state.convertHntToCurrency = action.payload
       setSecureItem('convertHntToCurrency', action.payload)
