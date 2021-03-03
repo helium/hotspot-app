@@ -53,6 +53,8 @@
 	<string>Allow Helium to use your location to add your Helium Hotspots to the network</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Allow Helium to use the camera to scan QR codes</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Allow Helium to use the microphone</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>NotoSerif-Bold.ttf</string>
