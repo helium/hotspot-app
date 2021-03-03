@@ -19,6 +19,8 @@ import HotspotSetupConfirmLocationScreen from './HotspotSetupConfirmLocationScre
 import HotspotSetupPickWifiScreen from './HotspotSetupPickWifiScreen'
 import OnboardingErrorScreen from './OnboardingErrorScreen'
 import HotspotSetupSkipLocationScreen from './HotspotSetupSkipLocationScreen'
+import NotHotspotOwnerError from './NotHotspotOwnerError'
+import OwnedHotspotError from './OwnedHotspotError'
 
 const HotspotSetupStack = createStackNavigator()
 
@@ -100,6 +102,14 @@ const HotspotSetup = () => {
         name="HotspotTxnsProgressScreen"
         component={HotspotTxnsProgressScreen}
         options={{ gestureEnabled: false }}
+      />
+      <HotspotSetupStack.Screen
+        name="NotHotspotOwnerErrorScreen"
+        component={NotHotspotOwnerError}
+      />
+      <HotspotSetupStack.Screen
+        name="OwnedHotspotErrorScreen"
+        component={OwnedHotspotError}
       />
     </HotspotSetupStack.Navigator>
   )

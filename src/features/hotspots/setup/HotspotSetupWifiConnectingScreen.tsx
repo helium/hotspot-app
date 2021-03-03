@@ -3,6 +3,7 @@ import { uniq } from 'lodash'
 import { useAsync } from 'react-async-hook'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
 import RingLoader from '../../../components/Loaders/RingLoader'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import useAlert from '../../../utils/useAlert'
@@ -13,6 +14,9 @@ import {
 import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import SafeAreaBox from '../../../components/SafeAreaBox'
+import { getAddress, getHotspotDetails } from '../../../utils/appDataClient'
+import { RootState } from '../../../store/rootReducer'
+import * as Logger from '../../../utils/logger'
 
 type Route = RouteProp<
   HotspotSetupStackParamList,
@@ -22,6 +26,7 @@ type Route = RouteProp<
 const HotspotSetupWifiConnectingScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
+  const { connectedHotspot } = useSelector((state: RootState) => state)
 
   const {
     params: { network, password },
@@ -43,7 +48,28 @@ const HotspotSetupWifiConnectingScreen = () => {
     [navigation, showOKAlert],
   )
 
-  const connectToWifi = () => {
+  const goToNextStep = useCallback(async () => {
+    if (connectedHotspot.address) {
+      const address = await getAddress()
+      const hotspot = await getHotspotDetails(connectedHotspot.address)
+      if (hotspot && hotspot.owner === address) {
+        navigation.replace('OwnedHotspotErrorScreen')
+      } else if (hotspot && hotspot.owner !== address) {
+        navigation.replace('NotHotspotOwnerErrorScreen')
+      } else {
+        navigation.replace('HotspotSetupLocationInfoScreen')
+      }
+    } else {
+      Logger.error('no connectedHotspot address after connecting to wifi')
+      showOKAlert({
+        titleKey: 'generic.error',
+        messageKey: 'hotspot_setup.onboarding_error.disconnected',
+      })
+      navigation.goBack()
+    }
+  }, [connectedHotspot.address, navigation, showOKAlert])
+
+  const connectToWifi = useCallback(() => {
     setWifiCredentials(network, password, async (response, error) => {
       if (response === 'error') {
         showOKAlert({
@@ -58,10 +84,17 @@ const HotspotSetupWifiConnectingScreen = () => {
         })
         navigation.goBack()
       } else {
-        navigation.replace('HotspotSetupLocationInfoScreen')
+        await goToNextStep()
       }
     })
-  }
+  }, [
+    goToNextStep,
+    navigation,
+    network,
+    password,
+    setWifiCredentials,
+    showOKAlert,
+  ])
 
   const forgetWifi = async () => {
     try {

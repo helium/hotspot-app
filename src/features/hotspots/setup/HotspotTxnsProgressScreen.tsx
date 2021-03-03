@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { Alert } from 'react-native'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
@@ -63,10 +62,10 @@ const HotspotTxnsProgressScreen = () => {
 
   const submitOnboardingTxns = async () => {
     if (!connectedHotspot.address) {
-      Alert.alert(
-        'Error',
-        'There was an error connecting to the Hotspot. Please try again.',
-      )
+      showOKAlert({
+        titleKey: 'generic.error',
+        messageKey: 'hotspot_setup.onboarding_error.disconnected',
+      })
       return
     }
 
