@@ -398,6 +398,11 @@ export default {
       alertMessage:
         'Request to servers have timed out and we cannot add your Hotspot at this time.\n\nPlease contact support@helium.com and note MAC address %{mac}.',
     },
+    skip_location: {
+      title: 'Add Hotspot',
+      subtitle_1: 'You have decided to assert location later.',
+      subtitle_2: 'Update your location later from settings.',
+    },
   },
   account_import: {
     word_entry: {

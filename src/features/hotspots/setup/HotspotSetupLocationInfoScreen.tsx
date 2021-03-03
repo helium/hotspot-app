@@ -1,6 +1,7 @@
 import { useNavigation } from '@react-navigation/native'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+import { ScrollView } from 'react-native'
 import Button from '../../../components/Button'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
@@ -22,6 +23,10 @@ const HotspotSetupLocationInfoScreen = () => {
     }
   }
 
+  const skipLocationAssert = async () => {
+    navigation.navigate('HotspotSetupSkipLocationScreen')
+  }
+
   return (
     <Box flex={1}>
       <Box backgroundColor="primaryBackground" flex={1}>
@@ -37,42 +42,50 @@ const HotspotSetupLocationInfoScreen = () => {
         backgroundColor="primaryBackground"
         padding="l"
       >
-        <Box flex={1}>
-          <Box marginBottom="m">
-            <LocationPin />
+        <ScrollView>
+          <Box flex={1}>
+            <Box marginBottom="m">
+              <LocationPin />
+            </Box>
+            <Text
+              variant="h1"
+              marginBottom="m"
+              maxFontSizeMultiplier={1}
+              numberOfLines={2}
+              adjustsFontSizeToFit
+            >
+              {t('hotspot_setup.enable_location.title')}
+            </Text>
+            <Text
+              variant="subtitle"
+              marginBottom="l"
+              maxFontSizeMultiplier={1.1}
+              numberOfLines={3}
+              adjustsFontSizeToFit
+            >
+              {t('hotspot_setup.enable_location.subtitle')}
+            </Text>
+            <Text
+              variant="body1Light"
+              numberOfLines={2}
+              adjustsFontSizeToFit
+              maxFontSizeMultiplier={1.2}
+            >
+              {t('hotspot_setup.enable_location.p_1')}
+            </Text>
           </Box>
-          <Text
-            variant="h1"
-            marginBottom="m"
-            maxFontSizeMultiplier={1}
-            numberOfLines={2}
-            adjustsFontSizeToFit
-          >
-            {t('hotspot_setup.enable_location.title')}
-          </Text>
-          <Text
-            variant="subtitle"
-            marginBottom="l"
-            maxFontSizeMultiplier={1.1}
-            numberOfLines={3}
-            adjustsFontSizeToFit
-          >
-            {t('hotspot_setup.enable_location.subtitle')}
-          </Text>
-          <Text
-            variant="body1Light"
-            numberOfLines={2}
-            adjustsFontSizeToFit
-            maxFontSizeMultiplier={1.2}
-          >
-            {t('hotspot_setup.enable_location.p_1')}
-          </Text>
-        </Box>
+        </ScrollView>
         <Button
           onPress={checkLocationPermissions}
           variant="primary"
           mode="contained"
           title={t('hotspot_setup.enable_location.next')}
+        />
+        <Button
+          onPress={skipLocationAssert}
+          variant="primary"
+          mode="text"
+          title={t('hotspot_setup.enable_location.cancel')}
         />
       </SafeAreaBox>
     </Box>

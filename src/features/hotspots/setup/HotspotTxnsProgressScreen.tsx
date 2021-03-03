@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Alert } from 'react-native'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
@@ -24,10 +24,8 @@ const HotspotTxnsProgressScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<RootNavigationProp>()
   const [finished, setFinished] = useState(false)
-  const {
-    params: { hotspotCoords },
-  } = useRoute<Route>()
-  const [lng, lat] = hotspotCoords
+  const { params } = useRoute<Route>()
+  const hotspotCoords = params?.hotspotCoords
   const { connectedHotspot } = useSelector((state: RootState) => state)
   const { showOKAlert } = useAlert()
   const { addGatewayTxn, assertLocationTxn } = useConnectedHotspotContext()
@@ -90,17 +88,22 @@ const HotspotTxnsProgressScreen = () => {
     }
 
     // construct and publish assert location
-    try {
-      const assertLocTxnResponse = await assertLocationTxn(lat, lng)
-      if (assertLocTxnResponse === true) {
-        setFinished(true)
-        return
-      }
+    if (hotspotCoords) {
+      const [lng, lat] = hotspotCoords
+      try {
+        const assertLocTxnResponse = await assertLocationTxn(lat, lng)
+        if (assertLocTxnResponse === true) {
+          setFinished(true)
+          return
+        }
 
-      handleError(assertLocTxnResponse, 'assert_location')
-    } catch (error) {
-      handleError(error, 'assert_location')
-      Logger.error(error)
+        handleError(assertLocTxnResponse, 'assert_location')
+      } catch (error) {
+        handleError(error, 'assert_location')
+        Logger.error(error)
+      }
+    } else {
+      setFinished(true)
     }
   }
 
