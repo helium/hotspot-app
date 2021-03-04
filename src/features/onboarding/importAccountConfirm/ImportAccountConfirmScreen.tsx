@@ -47,10 +47,20 @@ const ImportAccountConfirmScreen = () => {
   return (
     <BackScreen>
       <Box paddingHorizontal="l">
-        <Text variant="h1" numberOfLines={2} adjustsFontSizeToFit>
+        <Text
+          variant="h1"
+          numberOfLines={2}
+          adjustsFontSizeToFit
+          maxFontSizeMultiplier={1}
+        >
           {t('account_import.confirm.title')}
         </Text>
-        <Text variant="body2Light" marginTop="s" marginBottom="xl">
+        <Text
+          variant="body2Light"
+          marginTop="s"
+          marginBottom={{ smallPhone: 's', phone: 'xl' }}
+          maxFontSizeMultiplier={1.2}
+        >
           {t('account_import.confirm.subtitle')}
         </Text>
       </Box>
