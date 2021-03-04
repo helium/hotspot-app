@@ -5,7 +5,7 @@ For a list of issues and prioritization, please go to our [Project page](https:/
 
 ## Get the app
 
-Release versions of the app are available here:
+### Release versions of the app are available here:
 
 - [Hotspot App for iOS](https://apps.apple.com/us/app/helium-hotspot/id1450463605)
   on the iTunes App Store
@@ -14,6 +14,11 @@ Release versions of the app are available here:
   - Or if you don't use Google Play, you can [download an
     APK](https://install.appcenter.ms/orgs/helium/apps/hotspot-app-android/distribution_groups/public)
     from the official AppCenter build.
+
+### Beta Versions of the app are available here:
+
+- [TestFlight for iOS](https://testflight.apple.com/join/qX0kqa9j)
+- [Beta for Android](https://play.google.com/apps/testing/com.helium.wallet), or sign up via the Google Play Store Beta button.
 
 ## What to expect in the new Hotspot App
 
