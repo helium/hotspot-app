@@ -14,12 +14,14 @@ const initialState = {
   removeConfiguredWifi: async () => undefined,
   setWifiCredentials: async () => undefined,
   checkFirmwareCurrent: async () => false,
-  updateHotspotStatus: async () => undefined,
   addGatewayTxn: async () => false,
   loadLocationFeeData: async () => ({
     isFree: false,
     hasSufficientBalance: false,
     totalStakingAmount: new Balance(0, CurrencyType.default),
+    totalStakingAmountDC: new Balance(0, CurrencyType.dataCredit),
+    totalStakingAmountUsd: new Balance(0, CurrencyType.usd),
+    remainingFreeAsserts: 0,
   }),
   assertLocationTxn: async () => false,
 }

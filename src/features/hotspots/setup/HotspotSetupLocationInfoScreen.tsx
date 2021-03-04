@@ -11,6 +11,7 @@ import LocationPin from '../../../assets/images/location-pin.svg'
 import Box from '../../../components/Box'
 import { ww } from '../../../utils/layout'
 import ImageBox from '../../../components/ImageBox'
+import BackButton from '../../../components/BackButton'
 
 const HotspotSetupLocationInfoScreen = () => {
   const { t } = useTranslation()
@@ -23,8 +24,12 @@ const HotspotSetupLocationInfoScreen = () => {
     }
   }
 
-  const skipLocationAssert = async () => {
+  const skipLocationAssert = () => {
     navigation.navigate('HotspotSetupSkipLocationScreen')
+  }
+
+  const goBack = () => {
+    navigation.goBack()
   }
 
   return (
@@ -35,6 +40,7 @@ const HotspotSetupLocationInfoScreen = () => {
           left={-(ww - 585 / 2)}
           source={require('../../../assets/images/world.png')}
         />
+        <BackButton marginTop="l" paddingHorizontal="m" onPress={goBack} />
       </Box>
       <SafeAreaBox
         height={496}

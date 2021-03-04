@@ -14,9 +14,7 @@ import {
 import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import SafeAreaBox from '../../../components/SafeAreaBox'
-import { getAddress, getHotspotDetails } from '../../../utils/appDataClient'
 import { RootState } from '../../../store/rootReducer'
-import * as Logger from '../../../utils/logger'
 
 type Route = RouteProp<
   HotspotSetupStackParamList,
@@ -48,26 +46,15 @@ const HotspotSetupWifiConnectingScreen = () => {
     [navigation, showOKAlert],
   )
 
-  const goToNextStep = useCallback(async () => {
-    if (connectedHotspot.address) {
-      const address = await getAddress()
-      const hotspot = await getHotspotDetails(connectedHotspot.address)
-      if (hotspot && hotspot.owner === address) {
-        navigation.replace('OwnedHotspotErrorScreen')
-      } else if (hotspot && hotspot.owner !== address) {
-        navigation.replace('NotHotspotOwnerErrorScreen')
-      } else {
-        navigation.replace('HotspotSetupLocationInfoScreen')
-      }
+  const goToNextStep = useCallback(() => {
+    if (connectedHotspot.status === 'owned') {
+      navigation.replace('OwnedHotspotErrorScreen')
+    } else if (connectedHotspot.status === 'global') {
+      navigation.replace('NotHotspotOwnerErrorScreen')
     } else {
-      Logger.error('no connectedHotspot address after connecting to wifi')
-      showOKAlert({
-        titleKey: 'generic.error',
-        messageKey: 'hotspot_setup.onboarding_error.disconnected',
-      })
-      navigation.goBack()
+      navigation.replace('HotspotSetupLocationInfoScreen')
     }
-  }, [connectedHotspot.address, navigation, showOKAlert])
+  }, [connectedHotspot.status, navigation])
 
   const connectToWifi = useCallback(() => {
     setWifiCredentials(network, password, async (response, error) => {
@@ -84,7 +71,7 @@ const HotspotSetupWifiConnectingScreen = () => {
         })
         navigation.goBack()
       } else {
-        await goToNextStep()
+        goToNextStep()
       }
     })
   }, [
