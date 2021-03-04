@@ -4,7 +4,6 @@ import { Hotspot } from '@helium/http'
 import Balance, { CurrencyType } from '@helium/currency'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
-import { isEqual } from 'lodash'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import HotspotListItem from '../../../components/HotspotListItem'
@@ -20,9 +19,10 @@ const HotspotsList = ({
   onSelectHotspot: (hotspot: Hotspot) => void
 }) => {
   const { hntBalanceToDisplayVal } = useCurrency()
-  const {
-    hotspots: { rewards, order, hotspots },
-  } = useSelector((state: RootState) => state, isEqual)
+  const hotspots = useSelector((state: RootState) => state.hotspots.hotspots)
+  const rewards = useSelector((state: RootState) => state.hotspots.rewards)
+  const order = useSelector((state: RootState) => state.hotspots.order)
+
   const { t } = useTranslation()
 
   const handlePress = useCallback(

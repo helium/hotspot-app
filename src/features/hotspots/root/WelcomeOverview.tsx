@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import { isEqual } from 'lodash'
+import React, { useEffect, useState, memo, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import Box from '../../../components/Box'
 import EmojiBlip from '../../../components/EmojiBlip'
 import Text from '../../../components/Text'
 import { RootState } from '../../../store/rootReducer'
-import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
+import useCurrency from '../../../utils/useCurrency'
 
 const TimeOfDayTitle = ({ date }: { date: Date }) => {
   const { t } = useTranslation()
@@ -26,10 +27,26 @@ const TimeOfDayTitle = ({ date }: { date: Date }) => {
 
 const WelcomeOverview = () => {
   const { t } = useTranslation()
+  const { hntBalanceToDisplayVal, toggleConvertHntToCurrency } = useCurrency()
 
-  const {
-    hotspots: { hotspots, totalRewards },
-  } = useSelector((state: RootState) => state)
+  const hotspots = useSelector(
+    (state: RootState) => state.hotspots.hotspots,
+    isEqual,
+  )
+
+  const totalRewards = useSelector(
+    (state: RootState) => state.hotspots.totalRewards,
+    isEqual,
+  )
+
+  const bodyText = useMemo(
+    () =>
+      t('hotspots.owned.reward_summary', {
+        count: hotspots?.length || 0,
+        hntAmount: hntBalanceToDisplayVal(totalRewards),
+      }),
+    [hntBalanceToDisplayVal, hotspots?.length, t, totalRewards],
+  )
 
   const [date, setDate] = useState(new Date())
   useEffect(() => {
@@ -41,17 +58,17 @@ const WelcomeOverview = () => {
     <Box padding="l" paddingTop="m">
       <EmojiBlip date={date} />
       <TimeOfDayTitle date={date} />
-      <Text variant="body1Light" paddingTop="m" paddingRight="xl" color="black">
-        {t('hotspots.owned.reward_summary', {
-          count: (hotspots || []).length,
-          hntAmount: totalRewards.toString(2, {
-            groupSeparator,
-            decimalSeparator,
-          }),
-        })}
+      <Text
+        variant="body1Light"
+        paddingTop="m"
+        paddingRight="xl"
+        color="black"
+        onPress={toggleConvertHntToCurrency}
+      >
+        {bodyText}
       </Text>
     </Box>
   )
 }
 
-export default WelcomeOverview
+export default memo(WelcomeOverview)

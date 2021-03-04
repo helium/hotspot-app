@@ -7,6 +7,7 @@ import { isEqual, round } from 'lodash'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
+import { useDebouncedCallback } from 'use-debounce'
 import { fetchCurrentOraclePrice } from '../store/helium/heliumDataSlice'
 import { RootState } from '../store/rootReducer'
 import { useAppDispatch } from '../store/store'
@@ -37,9 +38,15 @@ const useCurrency = () => {
     isEqual,
   )
 
-  const toggleConvertHntToCurrency = useCallback(() => {
-    dispatch(appSlice.actions.toggleConvertHntToCurrency())
-  }, [dispatch])
+  const toggle = useCallback(
+    () => dispatch(appSlice.actions.toggleConvertHntToCurrency()),
+    [dispatch],
+  )
+
+  const toggleConvertHntToCurrency = useDebouncedCallback(toggle, 700, {
+    leading: true,
+    trailing: false,
+  }).callback
 
   const networkTokensToDataCredits = useCallback(
     (amount: Balance<NetworkTokens>): Balance<DataCredits> | null => {
