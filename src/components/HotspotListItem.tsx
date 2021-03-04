@@ -9,7 +9,7 @@ import React, { memo } from 'react'
 import TouchableOpacityBox from './BSTouchableOpacityBox'
 import Box from './Box'
 import Text from './Text'
-import { decimalSeparator, groupSeparator } from '../utils/i18n'
+import useCurrency from '../utils/useCurrency'
 
 type HotspotListItemProps = {
   onPress?: (hotspot: Hotspot) => void
@@ -25,6 +25,8 @@ const HotspotListItem = ({
   showCarot = false,
 }: HotspotListItemProps) => {
   const { t } = useTranslation()
+
+  const { displayValue, toggleConvertHntToCurrency } = useCurrency()
 
   return (
     <TouchableOpacityBox
@@ -68,15 +70,17 @@ const HotspotListItem = ({
             </Text>
           </Box>
           <Text
+            onPress={toggleConvertHntToCurrency}
             variant="body1Light"
             fontSize={16}
             color="purpleMain"
             paddingTop="s"
+            paddingEnd="s"
+            paddingBottom="s"
+            marginBottom="n_s"
+            alignSelf="flex-start"
           >
-            {`+${totalReward.toString(2, {
-              groupSeparator,
-              decimalSeparator,
-            })}`}
+            {`+${displayValue(totalReward)}`}
           </Text>
         </Box>
         <Box flexDirection="row" alignItems="center" justifyContent="center">

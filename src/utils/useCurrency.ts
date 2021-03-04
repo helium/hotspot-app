@@ -9,6 +9,8 @@ import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { RootState } from '../store/rootReducer'
+import { useAppDispatch } from '../store/store'
+import appSlice from '../store/user/appSlice'
 import { getCurrentOraclePrice } from './appDataClient'
 import {
   currencyType,
@@ -20,6 +22,7 @@ import {
 const useCurrency = () => {
   const { t } = useTranslation()
   const { formatCurrency } = useLanguage()
+  const dispatch = useAppDispatch()
   const currentPrices = useSelector(
     (state: RootState) => state.heliumData.currentPrices,
     isEqual,
@@ -30,6 +33,10 @@ const useCurrency = () => {
     isEqual,
   )
 
+  const toggleConvertHntToCurrency = useCallback(() => {
+    dispatch(appSlice.actions.toggleConvertHntToCurrency())
+  }, [dispatch])
+
   const networkTokensToDataCredits = useCallback(
     async (amount: Balance<NetworkTokens>): Promise<Balance<DataCredits>> => {
       const { price: oraclePrice } = await getCurrentOraclePrice()
@@ -38,19 +45,28 @@ const useCurrency = () => {
     [],
   )
 
-  type StringReturn = (balance: Balance<NetworkTokens>, split: false) => string
+  type StringReturn = (
+    balance: Balance<NetworkTokens>,
+    split?: false | undefined,
+    maxDecimalPlaces?: number,
+  ) => string
   type PartsReturn = (
     balance: Balance<NetworkTokens>,
-    split: true,
+    split?: true,
+    maxDecimalPlaces?: number,
   ) => { integerPart: string; decimalPart: string }
 
   const displayValue = useCallback(
-    (balance: Balance<NetworkTokens>, split: boolean) => {
+    (
+      balance: Balance<NetworkTokens>,
+      split?: boolean,
+      maxDecimalPlaces = 2,
+    ) => {
       const localeCurrency = currencyType
       const multiplier = currentPrices?.[localeCurrency.toLowerCase()] || 0
 
-      const showHNT = !convert || !multiplier
-      if (showHNT) {
+      const showAsHnt = !convert || !multiplier
+      if (showAsHnt) {
         if (split) {
           const [intStr, decStr] = balance
             .toString(undefined, {
@@ -69,7 +85,11 @@ const useCurrency = () => {
 
           return { integerPart: intStr, decimalPart }
         }
-        return balance.toString(8)
+
+        return `${balance.toString(maxDecimalPlaces, {
+          groupSeparator,
+          decimalSeparator,
+        })}`
       }
 
       const convertedValue = formatCurrency(multiplier * balance.floatBalance)
@@ -83,7 +103,11 @@ const useCurrency = () => {
     [convert, currentPrices, formatCurrency, t],
   ) as StringReturn & PartsReturn
 
-  return { networkTokensToDataCredits, displayValue }
+  return {
+    networkTokensToDataCredits,
+    displayValue,
+    toggleConvertHntToCurrency,
+  }
 }
 
 export default useCurrency

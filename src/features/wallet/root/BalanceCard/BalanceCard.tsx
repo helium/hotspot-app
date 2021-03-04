@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import { useAsync } from 'react-async-hook'
 import QRCode from 'react-qr-code'
 import { useSelector } from 'react-redux'
@@ -15,8 +15,6 @@ import ShareButton from './ShareButton'
 import { WalletLayout } from '../walletLayout'
 import Address from '../../../../components/Address'
 import useCurrency from '../../../../utils/useCurrency'
-import { useAppDispatch } from '../../../../store/store'
-import appSlice from '../../../../store/user/appSlice'
 
 type Props = {
   onReceivePress: () => void
@@ -31,12 +29,11 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
     integerPart: string
     decimalPart: string
   }>({ hasBalance: false, integerPart: '0', decimalPart: '00000000' })
-  const { displayValue } = useCurrency()
+  const { displayValue, toggleConvertHntToCurrency } = useCurrency()
   const account = useSelector(
     (state: RootState) => state.account.account,
     isEqual,
   )
-  const dispatch = useAppDispatch()
 
   useEffect(() => {
     const hasBalance = account?.balance?.integerBalance !== 0
@@ -44,10 +41,6 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
       setBalanceInfo({ hasBalance, ...displayValue(account.balance, true) })
     }
   }, [account?.balance, displayValue])
-
-  const toggleHntConversion = useCallback(() => {
-    dispatch(appSlice.actions.toggleConvertHntToCurrency())
-  }, [dispatch])
 
   return (
     <Box
@@ -64,7 +57,7 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Box onTouchStart={toggleHntConversion}>
+          <Box onTouchStart={toggleConvertHntToCurrency}>
             <Text
               adjustsFontSizeToFit
               maxFontSizeMultiplier={1.2}
