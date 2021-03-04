@@ -1,6 +1,6 @@
 {
   "name": "Helium",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -18,7 +18,10 @@
     "pod-install": "cd ios && pod _1.9.3_ install && cd ..",
     "clean-install": "watchman watch-del-all && rm -rf $TMPDIR/react-native-packager-cache-* && rm -rf $TMPDIR/metro-bundler-cache-* && rm -rf node_modules/ && yarn cache clean && yarn install && yarn android-clean && yarn ios-clean && yarn pod-install",
     "clean-start": "yarn start -- --reset-cache",
-    "patch-install": "yarn install && npx patch-package"
+    "patch-install": "yarn install && npx patch-package",
+    "bump-patch": "npx react-native bump-version --skip-code-for all --type patch",
+    "bump-minor": "npx react-native bump-version --skip-code-for all --type minor",
+    "bump-major": "npx react-native bump-version --skip-code-for all --type major"
   },
   "husky": {
     "hooks": {
@@ -148,6 +151,7 @@
     "metro-react-native-babel-preset": "^0.59.0",
     "prettier": "^2.0.5",
     "prettier-eslint": "^11.0.0",
+    "react-native-cli-bump-version": "^1.1.0",
     "react-native-svg-transformer": "^0.14.3",
     "react-test-renderer": "16.13.1",
     "reactotron-react-native": "^5.0.0",
