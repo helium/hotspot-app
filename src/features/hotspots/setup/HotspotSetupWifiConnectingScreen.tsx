@@ -48,11 +48,11 @@ const HotspotSetupWifiConnectingScreen = () => {
 
   const goToNextStep = useCallback(() => {
     if (connectedHotspot.status === 'owned') {
-      navigation.navigate('OwnedHotspotErrorScreen')
+      navigation.replace('OwnedHotspotErrorScreen')
     } else if (connectedHotspot.status === 'global') {
-      navigation.navigate('NotHotspotOwnerErrorScreen')
+      navigation.replace('NotHotspotOwnerErrorScreen')
     } else {
-      navigation.navigate('HotspotSetupLocationInfoScreen')
+      navigation.replace('HotspotSetupLocationInfoScreen')
     }
   }, [connectedHotspot.status, navigation])
 
