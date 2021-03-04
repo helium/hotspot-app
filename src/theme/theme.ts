@@ -286,7 +286,7 @@ export const theme = createTheme({
       borderRadius: 'm',
     },
     light: {
-      backgroundColor: 'grayBox',
+      backgroundColor: 'offwhite',
       fontFamily: Font.main.regular,
       fontSize: 18,
       color: 'black',
