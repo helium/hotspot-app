@@ -33,7 +33,13 @@ const PercentageBox = ({
     <Text variant="body3" color="grayLightText" marginBottom="s">
       {t('hotspot_details.pass_rate')}
     </Text>
-    <Text variant="light" fontSize={32} color="black" marginBottom="s">
+    <Text
+      variant="light"
+      fontSize={32}
+      color="black"
+      marginBottom="s"
+      maxFontSizeMultiplier={1}
+    >
       {`${focusedData ? focusedData.up.toLocaleString(locale) : percentage}%`}
     </Text>
   </>
@@ -56,6 +62,7 @@ const NumberBox = ({
     <Text
       variant="light"
       fontSize={32}
+      maxFontSizeMultiplier={1}
       color="grayDarkText"
       marginBottom="s"
       numberOfLines={1}
@@ -74,7 +81,7 @@ const NumberBox = ({
         borderRadius="s"
         alignSelf="baseline"
       >
-        <Text color="white" variant="body2Bold">
+        <Text color="white" variant="body2Bold" maxFontSizeMultiplier={1.1}>
           {`${change < 0 ? '' : '+'}${change.toLocaleString(locale, {
             maximumFractionDigits: 2,
             minimumFractionDigits: 2,
@@ -87,6 +94,7 @@ const NumberBox = ({
         color="grayDarkText"
         padding="xs"
         adjustsFontSizeToFit
+        maxFontSizeMultiplier={1.1}
       >
         {focusedData ? focusedData.label : ''}
       </Text>
@@ -124,11 +132,16 @@ const HotspotDetailChart = ({
         width="100%"
         marginEnd="s"
       >
-        <Text variant="body1" color="black">
+        <Text variant="body1" color="black" maxFontSizeMultiplier={1.2}>
           {title}
         </Text>
         {subTitle && (
-          <Text variant="body3" color="grayText" paddingLeft="xs">
+          <Text
+            variant="body3"
+            color="grayText"
+            paddingLeft="xs"
+            maxFontSizeMultiplier={1.2}
+          >
             {subTitle}
           </Text>
         )}

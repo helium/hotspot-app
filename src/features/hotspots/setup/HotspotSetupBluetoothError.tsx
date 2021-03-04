@@ -26,6 +26,7 @@ const HotspotSetupBluetoothError = () => {
         </Box>
         <Text
           variant="h1"
+          maxFontSizeMultiplier={1}
           numberOfLines={2}
           adjustsFontSizeToFit
           marginBottom="xxl"

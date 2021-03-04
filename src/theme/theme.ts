@@ -220,7 +220,7 @@ export const theme = createTheme({
   },
   breakpoints: {
     smallPhone: 0,
-    phone: 375,
+    phone: 400,
     tablet: 768,
   },
   cardVariants: {

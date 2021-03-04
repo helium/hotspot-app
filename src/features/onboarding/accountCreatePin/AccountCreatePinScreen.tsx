@@ -58,13 +58,16 @@ const AccountCreatePinScreen = () => {
       <Text
         marginBottom="m"
         variant="h1"
+        maxFontSizeMultiplier={1}
         numberOfLines={1}
         adjustsFontSizeToFit
       >
         {t('account_setup.create_pin.title')}
       </Text>
 
-      <Text variant="body1">{t('account_setup.create_pin.subtitle')}</Text>
+      <Text variant="body1" maxFontSizeMultiplier={1.2}>
+        {t('account_setup.create_pin.subtitle')}
+      </Text>
       <PinDisplay length={pin.length} marginVertical="xl" />
       <Keypad
         onBackspacePress={handleBackspace}

@@ -68,7 +68,13 @@ const AccountImportCompleteScreen = () => {
           ref={lottieRef}
         />
       </Box>
-      <Text variant="h1" color="white" marginBottom="m" textAlign="center">
+      <Text
+        variant="h1"
+        color="white"
+        marginBottom="m"
+        textAlign="center"
+        maxFontSizeMultiplier={1}
+      >
         {t('account_import.complete.title')}
       </Text>
       <Text variant="body2Light" color="white" textAlign="center">

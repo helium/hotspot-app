@@ -226,15 +226,15 @@ export default {
       helium_subtitle_2:
         "Ensure your phone's bluetooth is on before proceeding",
       rak_subtitle_2:
-        'Bluetooth is automatically enabled for 5 minutes after the RAK Hotspot Miner is powered on.\n\nHotspot can take up to 1 minute to fully boot up.\n\nPress Next to scan.',
+        'Bluetooth is automatically enabled for 5 minutes after the RAK Hotspot Miner is powered on.\n\nHotspot can take up to 1 minute to fully boot up.',
       nebrain_subtitle_2:
         'Once the LED is slowly blinking and is ready to pair.\n\nPress Next to scan.',
       nebraout_subtitle_2:
-        'Bluetooth is automatically enabled for 10 minutes after the Nebra Outdoor Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.\n\nPress Next to scan.',
+        'Bluetooth is automatically enabled for 10 minutes after the Nebra Outdoor Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.',
       bobcat_subtitle_2:
         'The hotspot is ready to pair when the light goes from green to blue.\n\nMake sure your phone’s Bluetooth is turned on!',
       syncrobit_subtitle_2:
-        'Bluetooth is automatically enabled for 5 minutes after the SyncroB.it Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.\n\nPress Next to scan.',
+        'Bluetooth is automatically enabled for 5 minutes after the SyncroB.it Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.',
       alert_no_permissions: {
         title: 'Authorize Bluetooth',
         body:

@@ -66,14 +66,16 @@ const HotspotSetupBluetoothInfoScreen = () => {
   return (
     <BackScreen
       backgroundColor="primaryBackground"
-      padding="lx"
+      paddingHorizontal="lx"
+      paddingTop={{ phone: 'xl', smallPhone: 'none' }}
+      paddingBottom={{ phone: 'xl', smallPhone: 'm' }}
       alignItems="center"
       justifyContent="flex-end"
     >
       <Bluetooth />
       <Text
-        marginTop={{ phone: 'xl', smallPhone: 'm' }}
-        maxFontSizeMultiplier={1.1}
+        marginTop={{ phone: 'xl', smallPhone: 's' }}
+        maxFontSizeMultiplier={1}
         variant="h1"
         numberOfLines={2}
         adjustsFontSizeToFit
@@ -83,8 +85,8 @@ const HotspotSetupBluetoothInfoScreen = () => {
         {t('hotspot_setup.pair.title')}
       </Text>
       <Text
-        maxFontSizeMultiplier={1.1}
-        marginBottom={{ phone: 'lx', smallPhone: 'm' }}
+        maxFontSizeMultiplier={1.05}
+        marginBottom={{ phone: 'lx', smallPhone: 's' }}
         variant="subtitleBold"
         textAlign="center"
         color="white"
@@ -92,7 +94,7 @@ const HotspotSetupBluetoothInfoScreen = () => {
         {t(`hotspot_setup.pair.${hotspotType.toLowerCase()}_subtitle_1`)}
       </Text>
       <Text
-        maxFontSizeMultiplier={1.2}
+        maxFontSizeMultiplier={1.05}
         marginBottom="xl"
         variant="subtitle"
         textAlign="center"

@@ -75,6 +75,7 @@ const HotspotEducationScreen = () => {
         variant="h1"
         numberOfLines={2}
         paddingHorizontal="lx"
+        maxFontSizeMultiplier={1}
         marginVertical={{ smallPhone: 's', phone: 'lx' }}
         adjustsFontSizeToFit
       >

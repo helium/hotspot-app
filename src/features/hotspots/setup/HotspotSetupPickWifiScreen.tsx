@@ -83,10 +83,20 @@ const HotspotSetupPickWifiScreen = () => {
         <Box flexDirection="row" justifyContent="center" marginBottom="lm">
           <Wifi />
         </Box>
-        <Text variant="h1" textAlign="center" marginBottom="m">
+        <Text
+          variant="h1"
+          textAlign="center"
+          marginBottom="m"
+          maxFontSizeMultiplier={1}
+        >
           {t('hotspot_setup.wifi_scan.title')}
         </Text>
-        <Text variant="subtitleLight" textAlign="center" marginBottom="m">
+        <Text
+          variant="subtitleLight"
+          textAlign="center"
+          marginBottom="m"
+          maxFontSizeMultiplier={1.1}
+        >
           {t('hotspot_setup.wifi_scan.subtitle')}
         </Text>
       </Box>
@@ -99,7 +109,11 @@ const HotspotSetupPickWifiScreen = () => {
             <Box marginTop="l">
               {connectedNetworks.length > 0 && (
                 <Box marginBottom="m">
-                  <Text variant="body1Bold" marginBottom="s">
+                  <Text
+                    variant="body1Bold"
+                    marginBottom="s"
+                    maxFontSizeMultiplier={1.2}
+                  >
                     {t('hotspot_setup.wifi_scan.saved_networks')}
                   </Text>
                   {connectedNetworks.map((network, index) => (
@@ -114,7 +128,11 @@ const HotspotSetupPickWifiScreen = () => {
                   ))}
                 </Box>
               )}
-              <Text variant="body1Bold" marginBottom="s">
+              <Text
+                variant="body1Bold"
+                marginBottom="s"
+                maxFontSizeMultiplier={1.2}
+              >
                 {t('hotspot_setup.wifi_scan.available_networks')}
               </Text>
             </Box>

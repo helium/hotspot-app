@@ -11,6 +11,7 @@ import {
   HotspotSetupStackParamList,
 } from './hotspotSetupTypes'
 import Clipboard from '../../../assets/images/clipboard.svg'
+import Box from '../../../components/Box'
 
 type Route = RouteProp<
   HotspotSetupStackParamList,
@@ -41,24 +42,29 @@ const HotspotSetupDiagnosticsScreen = () => {
   return (
     <BackScreen
       backgroundColor="primaryBackground"
+      paddingTop="none"
       paddingBottom="s"
       paddingHorizontal="lx"
     >
       <ScrollView>
-        <Clipboard />
-        <Text
-          variant="h1"
-          numberOfLines={1}
-          adjustsFontSizeToFit
-          marginVertical="l"
-        >
-          {t('hotspot_setup.diagnostics.title')}
-        </Text>
-        <TextTransform
-          variant="subtitle"
-          marginTop="m"
-          i18nKey={diagnosticTextKey()}
-        />
+        <Box paddingVertical="lx">
+          <Clipboard />
+          <Text
+            variant="h1"
+            numberOfLines={1}
+            maxFontSizeMultiplier={1}
+            adjustsFontSizeToFit
+            marginVertical="l"
+          >
+            {t('hotspot_setup.diagnostics.title')}
+          </Text>
+          <TextTransform
+            maxFontSizeMultiplier={1.1}
+            variant="subtitle"
+            marginTop="m"
+            i18nKey={diagnosticTextKey()}
+          />
+        </Box>
       </ScrollView>
       <DebouncedButton
         variant="primary"
