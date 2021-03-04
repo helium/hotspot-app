@@ -1,22 +1,22 @@
-/* eslint-disable import/prefer-default-export */
 import Balance, {
   CurrencyType,
   DataCredits,
   NetworkTokens,
 } from '@helium/currency'
-import { isEqual } from 'lodash'
+import { isEqual, round } from 'lodash'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
+import { fetchCurrentOraclePrice } from '../store/helium/heliumDataSlice'
 import { RootState } from '../store/rootReducer'
 import { useAppDispatch } from '../store/store'
 import appSlice from '../store/user/appSlice'
-import { getCurrentOraclePrice } from './appDataClient'
 import {
   currencyType,
   decimalSeparator,
   groupSeparator,
   useLanguage,
+  locale,
 } from './i18n'
 
 const useCurrency = () => {
@@ -25,6 +25,10 @@ const useCurrency = () => {
   const dispatch = useAppDispatch()
   const currentPrices = useSelector(
     (state: RootState) => state.heliumData.currentPrices,
+    isEqual,
+  )
+  const oraclePrice = useSelector(
+    (state: RootState) => state.heliumData.currentOraclePrice?.price,
     isEqual,
   )
 
@@ -38,11 +42,29 @@ const useCurrency = () => {
   }, [dispatch])
 
   const networkTokensToDataCredits = useCallback(
-    async (amount: Balance<NetworkTokens>): Promise<Balance<DataCredits>> => {
-      const { price: oraclePrice } = await getCurrentOraclePrice()
+    (amount: Balance<NetworkTokens>): Balance<DataCredits> | null => {
+      if (!oraclePrice) {
+        dispatch(fetchCurrentOraclePrice())
+        return null
+      }
       return amount.toDataCredits(oraclePrice)
     },
-    [],
+    [dispatch, oraclePrice],
+  )
+
+  const hntToDisplayVal = useCallback(
+    (amount: number, maxDecimalPlaces = 2) => {
+      const multiplier = currentPrices?.[currencyType.toLowerCase()] || 0
+      const showAsHnt = !convert || !multiplier
+
+      if (showAsHnt) {
+        return round(amount, maxDecimalPlaces).toLocaleString(locale)
+      }
+
+      const convertedValue = multiplier * amount
+      return formatCurrency(convertedValue)
+    },
+    [convert, currentPrices, formatCurrency],
   )
 
   type StringReturn = (
@@ -55,15 +77,13 @@ const useCurrency = () => {
     split?: true,
     maxDecimalPlaces?: number,
   ) => { integerPart: string; decimalPart: string }
-
-  const displayValue = useCallback(
+  const hntBalanceToDisplayVal = useCallback(
     (
       balance: Balance<NetworkTokens>,
       split?: boolean,
       maxDecimalPlaces = 2,
     ) => {
-      const localeCurrency = currencyType
-      const multiplier = currentPrices?.[localeCurrency.toLowerCase()] || 0
+      const multiplier = currentPrices?.[currencyType.toLowerCase()] || 0
 
       const showAsHnt = !convert || !multiplier
       if (showAsHnt) {
@@ -92,21 +112,23 @@ const useCurrency = () => {
         })}`
       }
 
-      const convertedValue = formatCurrency(multiplier * balance.floatBalance)
+      const convertedValue = multiplier * balance.floatBalance
+      const formattedValue = formatCurrency(convertedValue)
 
       if (split) {
         const decimalPart = t('generic.hnt_to_currency', { currencyType })
-        return { integerPart: convertedValue, decimalPart }
+        return { integerPart: formattedValue, decimalPart }
       }
-      return convertedValue
+      return formattedValue
     },
     [convert, currentPrices, formatCurrency, t],
   ) as StringReturn & PartsReturn
 
   return {
     networkTokensToDataCredits,
-    displayValue,
+    hntBalanceToDisplayVal,
     toggleConvertHntToCurrency,
+    hntToDisplayVal,
   }
 }
 

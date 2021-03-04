@@ -95,5 +95,6 @@ export default memo(
     prev.isFirst === next.isFirst &&
     prev.isLast === next.isLast &&
     prev.time === next.time &&
-    prev.title === next.title,
+    prev.title === next.title &&
+    prev.subtitle === next.subtitle,
 )

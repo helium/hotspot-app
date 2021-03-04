@@ -29,7 +29,7 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
     integerPart: string
     decimalPart: string
   }>({ hasBalance: false, integerPart: '0', decimalPart: '00000000' })
-  const { displayValue, toggleConvertHntToCurrency } = useCurrency()
+  const { hntBalanceToDisplayVal, toggleConvertHntToCurrency } = useCurrency()
   const account = useSelector(
     (state: RootState) => state.account.account,
     isEqual,
@@ -38,9 +38,12 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
   useEffect(() => {
     const hasBalance = account?.balance?.integerBalance !== 0
     if (account?.balance && hasBalance) {
-      setBalanceInfo({ hasBalance, ...displayValue(account.balance, true) })
+      setBalanceInfo({
+        hasBalance,
+        ...hntBalanceToDisplayVal(account.balance, true),
+      })
     }
-  }, [account?.balance, displayValue])
+  }, [account?.balance, hntBalanceToDisplayVal])
 
   return (
     <Box

@@ -144,8 +144,9 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   // compute equivalent dc amount for burn txns
   useAsync(async () => {
     if (type === 'dc_burn') {
-      const balanceDc = await networkTokensToDataCredits(balanceAmount)
-      // TODO might need to round up in DC conversion in he-js
+      const balanceDc = networkTokensToDataCredits(balanceAmount)
+      if (!balanceDc) return
+
       setDcAmount(
         balanceDc.toString(0, {
           decimalSeparator,

@@ -26,7 +26,8 @@ const HotspotListItem = ({
 }: HotspotListItemProps) => {
   const { t } = useTranslation()
 
-  const { displayValue, toggleConvertHntToCurrency } = useCurrency()
+  // TODO: Figure out why this continually re-renders when not on this tab
+  const { hntBalanceToDisplayVal, toggleConvertHntToCurrency } = useCurrency()
 
   return (
     <TouchableOpacityBox
@@ -80,7 +81,7 @@ const HotspotListItem = ({
             marginBottom="n_s"
             alignSelf="flex-start"
           >
-            {`+${displayValue(totalReward)}`}
+            {`+${hntBalanceToDisplayVal(totalReward)}`}
           </Text>
         </Box>
         <Box flexDirection="row" alignItems="center" justifyContent="center">
