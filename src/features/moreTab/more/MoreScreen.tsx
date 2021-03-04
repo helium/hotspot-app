@@ -107,6 +107,12 @@ const MoreScreen = () => {
     navigation.push('LockScreen', { requestType: 'resetPin' })
   }, [navigation])
 
+  const handleConvertHntToCurrency = useCallback(() => {
+    dispatch(
+      appSlice.actions.updateConvertHntToCurrency(!app.convertHntToCurrency),
+    )
+  }, [dispatch, app.convertHntToCurrency])
+
   const handleHaptic = useCallback(() => {
     dispatch(appSlice.actions.updateHapticEnabled(!app.isHapticDisabled))
   }, [dispatch, app.isHapticDisabled])
@@ -245,6 +251,11 @@ const MoreScreen = () => {
             value: !app.isHapticDisabled,
           },
           {
+            title: t('more.sections.app.convertHntToCurrency'),
+            onToggle: handleConvertHntToCurrency,
+            value: app.convertHntToCurrency,
+          },
+          {
             title: t('more.sections.app.signOut'),
             onPress: handleSignOut,
             destructive: true,
@@ -258,12 +269,14 @@ const MoreScreen = () => {
     handlePinRequired,
     app.isPinRequired,
     app.isHapticDisabled,
+    app.convertHntToCurrency,
     app.authInterval,
     app.isPinRequiredForPayment,
     handleRevealWords,
     language,
     handleLanguageChange,
     handleHaptic,
+    handleConvertHntToCurrency,
     handleSignOut,
     version,
     authIntervals,

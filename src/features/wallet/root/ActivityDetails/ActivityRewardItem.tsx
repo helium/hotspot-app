@@ -6,7 +6,7 @@ import HeliumReward from '@assets/images/heliumReward.svg'
 import LittleHotspot from '@assets/images/littleHotspot.svg'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
-import { decimalSeparator, groupSeparator } from '../../../../utils/i18n'
+import useCurrency from '../../../../utils/useCurrency'
 
 type Reward = {
   type: string
@@ -29,6 +29,7 @@ const ActivityRewardItem = ({
   isSecurityToken,
 }: Props) => {
   const { t } = useTranslation()
+  const { hntBalanceToDisplayVal, toggleConvertHntToCurrency } = useCurrency()
 
   const title = (reward: Reward) => {
     if (isSecurityToken) {
@@ -87,11 +88,9 @@ const ActivityRewardItem = ({
               fontSize={14}
               color="greenMain"
               marginLeft="s"
+              onPress={toggleConvertHntToCurrency}
             >
-              {`+${reward.amount.toString(undefined, {
-                groupSeparator,
-                decimalSeparator,
-              })}`}
+              {`+${hntBalanceToDisplayVal(reward.amount)}`}
             </Text>
           </Box>
         </Box>

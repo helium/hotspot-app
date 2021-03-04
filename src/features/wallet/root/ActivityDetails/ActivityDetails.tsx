@@ -25,6 +25,7 @@ import { useAppDispatch } from '../../../../store/store'
 import activitySlice from '../../../../store/activity/activitySlice'
 import { locale } from '../../../../utils/i18n'
 import { EXPLORER_BASE_URL } from '../../../../utils/config'
+import useCurrency from '../../../../utils/useCurrency'
 
 const DF = 'MM/dd/yyyy hh:mm a'
 type Props = { detailTxn?: AnyTransaction | PendingTransaction }
@@ -32,6 +33,7 @@ const ActivityDetails = ({ detailTxn }: Props) => {
   const sheet = useRef<BottomSheetModal>(null)
   const { result: address } = useAsync(getSecureItem, ['address'])
   const { t } = useTranslation()
+  const { toggleConvertHntToCurrency } = useCurrency()
   const dispatch = useAppDispatch()
   const {
     backgroundColor,
@@ -94,6 +96,7 @@ const ActivityDetails = ({ detailTxn }: Props) => {
           <Box padding="l" flex={1}>
             <Text
               variant="medium"
+              onPress={toggleConvertHntToCurrency}
               fontSize={32}
               numberOfLines={1}
               adjustsFontSizeToFit

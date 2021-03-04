@@ -25,6 +25,7 @@ import Location from '../../../assets/images/location.svg'
 import Burn from '../../../assets/images/burn.svg'
 import shortLocale from '../../../utils/formatDistance'
 import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
+import useCurrency from '../../../utils/useCurrency'
 
 export const TxnTypeKeys = [
   'rewards_v1',
@@ -38,6 +39,7 @@ export const TxnTypeKeys = [
 type TxnType = typeof TxnTypeKeys[number]
 
 const useActivityItem = (address: string) => {
+  const { hntBalanceToDisplayVal } = useCurrency()
   const colors = useColors()
   const { t } = useTranslation()
 
@@ -196,15 +198,21 @@ const useActivityItem = (address: string) => {
         })}`
       }
 
-      if (amount?.floatBalance === 0)
+      if (amount?.floatBalance === 0) {
         return amount.toString(undefined, { groupSeparator, decimalSeparator })
+      }
+
+      if (amount instanceof Balance && amount.type.ticker === 'HNT') {
+        const display = hntBalanceToDisplayVal(amount, false, 8)
+        return `${prefix}${display}`
+      }
 
       return `${prefix}${amount?.toString(8, {
         groupSeparator,
         decimalSeparator,
       })}`
     },
-    [],
+    [hntBalanceToDisplayVal],
   )
 
   const fee = useCallback(

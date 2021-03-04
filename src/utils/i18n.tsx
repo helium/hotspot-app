@@ -13,6 +13,7 @@ const locales = RNLocalize.getLocales()
 const numberFormatSettings = RNLocalize.getNumberFormatSettings()
 export const groupSeparator = numberFormatSettings.groupingSeparator
 export const { decimalSeparator } = numberFormatSettings
+export const [currencyType] = RNLocalize.getCurrencies() || ['USD']
 
 let phoneLang = 'en'
 if (Array.isArray(locales)) {
@@ -47,21 +48,31 @@ export const useLanguage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const changeLanguage = useCallback((lang: string) => {
+    setLanguage(lang)
+    setSecureItem('language', lang)
+    i18n.changeLanguage(lang)
+  }, [])
+
   const initLanguage = useCallback(async () => {
     const lang = await getSecureItem('language')
     if (lang) {
       changeLanguage(lang)
     }
     setLanguage(lang || phoneLang)
-  }, [])
+  }, [changeLanguage])
 
-  const changeLanguage = (lang: string) => {
-    setLanguage(lang)
-    setSecureItem('language', lang)
-    i18n.changeLanguage(lang)
-  }
+  const formatCurrency = useCallback(
+    (value: number) => {
+      return new Intl.NumberFormat(language, {
+        style: 'currency',
+        currency: currencyType,
+      }).format(value)
+    },
+    [language],
+  )
 
-  return { language, changeLanguage }
+  return { language, changeLanguage, formatCurrency }
 }
 
 export default i18n

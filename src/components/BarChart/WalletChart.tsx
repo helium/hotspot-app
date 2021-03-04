@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { ActivityIndicator, TouchableWithoutFeedback } from 'react-native'
-import { isEqual, round } from 'lodash'
+import { isEqual } from 'lodash'
 import { useSelector } from 'react-redux'
 import ChartContainer from './ChartContainer'
 import CarotLeft from '../../assets/images/carot-left.svg'
@@ -15,7 +15,7 @@ import { RootState } from '../../store/rootReducer'
 import accountSlice, {
   fetchActivityChart,
 } from '../../store/account/accountSlice'
-import { locale } from '../../utils/i18n'
+import useCurrency from '../../utils/useCurrency'
 
 type Props = {
   height: number
@@ -30,6 +30,7 @@ const WalletChart = ({ height }: Props) => {
     heliumData: { blockHeight },
   } = useSelector((state: RootState) => state, selectorIsEqual)
 
+  const { hntToDisplayVal } = useCurrency()
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
 
   const data = useMemo(() => activityChart[activityChartRange].data, [
@@ -81,7 +82,7 @@ const WalletChart = ({ height }: Props) => {
                   strokeWidth={2}
                 />
                 <Text variant="body2" marginLeft="xs">
-                  {round(focusedData?.up, 2).toLocaleString(locale)}
+                  {hntToDisplayVal(focusedData?.up)}
                 </Text>
               </Box>
 
@@ -94,7 +95,7 @@ const WalletChart = ({ height }: Props) => {
               >
                 <CarotRight width={12} height={12} />
                 <Text variant="body2" marginLeft="s">
-                  {round(focusedData?.down, 2).toLocaleString(locale)}
+                  {hntToDisplayVal(focusedData?.down)}
                 </Text>
               </Box>
             </>
