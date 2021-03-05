@@ -1,9 +1,10 @@
 import React, { memo, useCallback, useMemo, useState } from 'react'
 import { BottomSheetSectionList } from '@gorhom/bottom-sheet'
-import { Keyboard, TextInput } from 'react-native'
+import { Keyboard } from 'react-native'
 import { useDebouncedCallback } from 'use-debounce'
-import Box from '../../../components/Box'
+import { useTranslation } from 'react-i18next'
 import Text from '../../../components/Text'
+import TextInput from '../../../components/TextInput'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { useSpacing } from '../../../theme/themeHooks'
 import {
@@ -19,6 +20,7 @@ type Props = {
 
 const AddressSearchModal = ({ onSelectPlace }: Props) => {
   const spacing = useSpacing()
+  const { t } = useTranslation()
   const [searchResults, setSearchResults] = useState<
     AutocompleteSearchResult[]
   >([])
@@ -55,21 +57,16 @@ const AddressSearchModal = ({ onSelectPlace }: Props) => {
 
   const renderHeader = useCallback(() => {
     return (
-      <Box
-        backgroundColor="offwhite"
+      <TextInput
+        onChangeText={handleSearchChange}
         padding="m"
-        borderRadius="m"
-        marginBottom="m"
-      >
-        <TextInput
-          onChangeText={handleSearchChange}
-          placeholder="Search for an address or place"
-          autoFocus
-          autoCorrect={false}
-        />
-      </Box>
+        placeholder={t('generic.search_location')}
+        autoFocus
+        autoCorrect={false}
+        variant="light"
+      />
     )
-  }, [handleSearchChange])
+  }, [handleSearchChange, t])
 
   const renderItem = useCallback(
     ({ item: searchResult }) => {

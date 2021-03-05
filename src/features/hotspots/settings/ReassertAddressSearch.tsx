@@ -1,10 +1,12 @@
 import React, { memo, useCallback, useMemo, useState } from 'react'
-import { Keyboard, SectionList, TextInput } from 'react-native'
+import { useTranslation } from 'react-i18next'
+import { Keyboard, SectionList } from 'react-native'
 import { useDebouncedCallback } from 'use-debounce'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
+import TextInput from '../../../components/TextInput'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import { useColors, useSpacing } from '../../../theme/themeHooks'
+import { useSpacing } from '../../../theme/themeHooks'
 import {
   autocompleteAddress,
   AutocompleteSearchResult,
@@ -19,7 +21,7 @@ type Props = {
 
 const ReassertAddressSearch = ({ onSelectPlace }: Props) => {
   const spacing = useSpacing()
-  const colors = useColors()
+  const { t } = useTranslation()
 
   const [searchResults, setSearchResults] = useState<
     AutocompleteSearchResult[]
@@ -57,22 +59,16 @@ const ReassertAddressSearch = ({ onSelectPlace }: Props) => {
 
   const renderHeader = useCallback(() => {
     return (
-      <Box
-        backgroundColor="offwhite"
+      <TextInput
+        onChangeText={handleSearchChange}
         padding="m"
-        borderRadius="m"
-        marginBottom="m"
-      >
-        <TextInput
-          onChangeText={handleSearchChange}
-          placeholder="Search for an address or place"
-          placeholderTextColor={colors.grayLightText}
-          autoFocus
-          autoCorrect={false}
-        />
-      </Box>
+        placeholder={t('generic.search_location')}
+        autoFocus
+        autoCorrect={false}
+        variant="light"
+      />
     )
-  }, [colors.grayLightText, handleSearchChange])
+  }, [handleSearchChange, t])
 
   const renderItem = useCallback(
     ({ item: searchResult }) => {
@@ -103,7 +99,7 @@ const ReassertAddressSearch = ({ onSelectPlace }: Props) => {
   )
 
   return (
-    <Box minHeight={hp(50)} padding="l" paddingTop="lx">
+    <Box height={hp(75)} padding="none" paddingTop="lx">
       <SectionList
         keyExtractor={(item) => item.placeId}
         sections={sections}
