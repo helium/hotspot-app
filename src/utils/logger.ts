@@ -20,9 +20,15 @@ export const error = (e: unknown) => {
   Sentry.captureException(e)
 }
 
-export const breadcrumb = (message: string) => {
+export const breadcrumb = (
+  message: string,
+  data?: {
+    [key: string]: unknown
+  },
+) => {
   Sentry.addBreadcrumb({
     message,
+    data,
   })
 }
 
