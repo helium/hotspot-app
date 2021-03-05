@@ -1,17 +1,17 @@
 import React, {
-  useEffect,
   memo,
+  useCallback,
+  useEffect,
+  useMemo,
   useRef,
   useState,
-  useCallback,
-  useMemo,
 } from 'react'
 import {
-  Modal,
+  Alert,
   Animated,
   Easing,
   KeyboardAvoidingView,
-  Alert,
+  Modal,
 } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
@@ -44,7 +44,11 @@ import animateTransition from '../../../utils/animateTransition'
 
 type State = 'init' | 'scan' | 'transfer'
 
-const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
+type Props = {
+  hotspot?: Hotspot
+}
+
+const HotspotSettings = ({ hotspot }: Props) => {
   const { t } = useTranslation()
   const [settingsState, setSettingsState] = useState<State>('init')
   const [title, setTitle] = useState<string>(t('hotspot_settings.title'))
@@ -54,9 +58,10 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
   const dispatch = useAppDispatch()
   const { showBack, goBack, disableBack } = useHotspotSettingsContext()
 
-  const {
-    hotspotDetails: { showSettings },
-  } = useSelector((state: RootState) => state)
+  const { account } = useSelector((state: RootState) => state.account)
+  const { showSettings } = useSelector(
+    (state: RootState) => state.hotspotDetails,
+  )
 
   useEffect(() => {
     Animated.timing(slideUpAnimRef.current, {
@@ -192,6 +197,9 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
   }, [settingsState, startScan, t, updateTitle])
 
   const secondCard = useMemo(() => {
+    const isOwned = hotspot && hotspot.owner === account?.address
+    if (!hotspot || !isOwned) return null
+
     if (settingsState === 'transfer') {
       return (
         <HotspotTransfer
@@ -213,6 +221,7 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
       />
     )
   }, [
+    account?.address,
     handleClose,
     hasActiveTransfer,
     hotspot,
@@ -222,8 +231,6 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
     t,
     transferButtonTitle,
   ])
-
-  if (!hotspot) return null
 
   return (
     <Modal

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
@@ -12,39 +12,31 @@ import HotspotDetailChart from './HotspotDetailChart'
 import { RootState } from '../../../store/rootReducer'
 import { getRewardChartData } from './RewardsHelper'
 import { useAppDispatch } from '../../../store/store'
-import hotspotDetailsSlice, {
-  fetchHotspotDetails,
-} from '../../../store/hotspotDetails/hotspotDetailsSlice'
-import HotspotSettingsProvider from '../settings/HotspotSettingsProvider'
-import HotspotSettings from '../settings/HotspotSettings'
+import { fetchHotspotDetails } from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import HexBadge from './HexBadge'
 import HotspotMoreMenuButton from './HotspotMoreMenuButton'
-import Button from '../../../components/Button'
 import HotspotChecklist from '../checklist/HotspotChecklist'
 import Address from '../../../components/Address'
 
 const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-
   const {
-    account: { account },
-    hotspotDetails: {
-      hotspot: hotspotDetailsHotspot,
-      numDays,
-      rewards,
-      rewardSum,
-      rewardsChange,
-      loading,
-      witnessSums,
-      witnessAverage,
-      witnessChange,
-      challengeSums,
-      challengeSum,
-      challengeChange,
-      witnesses,
-    },
-  } = useSelector((state: RootState) => state)
+    hotspot: hotspotDetailsHotspot,
+    numDays,
+    rewards,
+    rewardSum,
+    rewardsChange,
+    loading,
+    witnessSums,
+    witnessAverage,
+    witnessChange,
+    challengeSums,
+    challengeSum,
+    challengeChange,
+    witnesses,
+  } = useSelector((state: RootState) => state.hotspotDetails)
+  const { account } = useSelector((state: RootState) => state.account)
 
   const [timelineValue, setTimelineValue] = useState(14)
 
@@ -55,10 +47,6 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
       fetchHotspotDetails({ address: hotspot.address, numDays: timelineValue }),
     )
   }, [dispatch, hotspot, timelineValue])
-
-  const handleToggleSettings = useCallback(() => {
-    dispatch(hotspotDetailsSlice.actions.toggleShowSettings())
-  }, [dispatch])
 
   const witnessChartData = useMemo(() => {
     let options: Intl.DateTimeFormatOptions
@@ -133,10 +121,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
           >
             {animalName(hotspot.address)}
           </Text>
-
-          {hotspot.owner === account?.address && (
-            <HotspotMoreMenuButton hotspot={hotspot} />
-          )}
+          <HotspotMoreMenuButton hotspot={hotspot} />
         </Box>
         <Box
           flexDirection="row"
@@ -196,21 +181,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
           data={challengeChartData}
           loading={loading}
         />
-
-        {hotspot.owner === account?.address && (
-          <Box marginTop="m" paddingHorizontal="l">
-            <Button
-              mode="contained"
-              variant="primary"
-              title="Settings"
-              onPress={handleToggleSettings}
-            />
-          </Box>
-        )}
       </Box>
-      <HotspotSettingsProvider>
-        <HotspotSettings hotspot={hotspot} />
-      </HotspotSettingsProvider>
     </BottomSheetScrollView>
   )
 }
