@@ -36,9 +36,10 @@ import HotspotDetails from '../details/HotspotDetails'
 import { ReAnimatedBox } from '../../../components/AnimatedBox'
 import { useColors } from '../../../theme/themeHooks'
 import BackButton from '../../../components/BackButton'
+import HotspotsEmpty from './HotspotsEmpty'
 
 type Props = {
-  ownedHotspots: Hotspot[]
+  ownedHotspots?: Hotspot[]
 }
 
 const HotspotsView = ({ ownedHotspots }: Props) => {
@@ -72,6 +73,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
   } = useSelector((state: RootState) => state)
 
   const [selectedHotspot, setSelectedHotspot] = useState<Hotspot>()
+  const hasHotspots = ownedHotspots && ownedHotspots.length > 0
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -91,14 +93,18 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
   }, [])
 
   const handleDismissList = useCallback(() => {
-    setSelectedHotspot(ownedHotspots[0])
+    if (ownedHotspots) {
+      setSelectedHotspot(ownedHotspots[0])
+    }
     setDetailsSnapIndex(0)
     detailsRef.current?.present()
     setListIsDismissed(true)
   }, [ownedHotspots])
 
   const handlePressMyHotspots = useCallback(() => {
-    setSelectedHotspot(ownedHotspots[0])
+    if (ownedHotspots) {
+      setSelectedHotspot(ownedHotspots[0])
+    }
     setDetailsSnapIndex(1)
     detailsRef.current?.present()
   }, [ownedHotspots])
@@ -191,13 +197,15 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
     () => (selectedHotspot && hasLocation ? [selectedHotspot] : undefined),
     [selectedHotspot, hasLocation],
   )
-  const mapCenter = useMemo(
-    () =>
-      selectedHotspot
-        ? [selectedHotspot.lng || 0, selectedHotspot.lat || 0]
-        : [ownedHotspots[0].lng || 0, ownedHotspots[0].lat || 0],
-    [selectedHotspot, ownedHotspots],
-  )
+  const mapCenter = useMemo(() => {
+    if (selectedHotspot) {
+      return [selectedHotspot.lng || 0, selectedHotspot.lat || 0]
+    }
+    if (ownedHotspots && ownedHotspots[0]) {
+      return [ownedHotspots[0].lng || 0, ownedHotspots[0].lat || 0]
+    }
+    return [0, 0]
+  }, [selectedHotspot, ownedHotspots])
 
   return (
     <Box flex={1} flexDirection="column" justifyContent="space-between">
@@ -249,7 +257,9 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
               <HotspotIcon />
             </Box>
             <Text variant="body1Bold" color="white">
-              {t('hotspots.owned.title')}
+              {hasHotspots
+                ? t('hotspots.owned.title')
+                : t('hotspots.owned.title_no_hotspots')}
             </Text>
           </TouchableOpacityBox>
         </ReAnimatedBox>
@@ -267,7 +277,11 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
             onPress={handleBack}
           />
         ) : (
-          <Text variant="h3">{t('hotspots.owned.title')}</Text>
+          <Text variant="h3">
+            {hasHotspots
+              ? t('hotspots.owned.title')
+              : t('hotspots.owned.title_no_hotspots')}
+          </Text>
         )}
 
         <Box flexDirection="row" justifyContent="space-between">
@@ -295,7 +309,11 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         onDismiss={handleDismissList}
         animatedIndex={animatedListPosition}
       >
-        <HotspotsList onSelectHotspot={handlePresentDetails} />
+        {hasHotspots ? (
+          <HotspotsList onSelectHotspot={handlePresentDetails} />
+        ) : (
+          <HotspotsEmpty onOpenExplorer={handleDismissList} />
+        )}
       </BottomSheetModal>
 
       <BottomSheetModal

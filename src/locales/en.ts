@@ -569,6 +569,7 @@ export default {
     },
     owned: {
       title: 'My Hotspots',
+      title_no_hotspots: 'Hotspots',
       reward_summary: 'Your Hotspot mined {{hntAmount}} in the past 24 hours.',
       reward_summary_plural:
         'Your {{count}} Hotspots mined {{hntAmount}} in the past 24 hours.',
