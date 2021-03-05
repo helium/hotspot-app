@@ -312,9 +312,23 @@ const useHotspot = () => {
       connectedHotspot.current,
       Service.FIRMWARESERVICE_UUID,
     )
-    if (!charVal) return false
 
-    const deviceFirmwareVersion = parseChar(charVal, characteristic)
+    const characteristicAlt = HotspotCharacteristic.SOFTWARE_VERSION_UUID
+    const charValAlt = await findAndReadCharacteristic(
+      characteristicAlt,
+      connectedHotspot.current,
+      Service.MAIN_UUID,
+    )
+
+    if (!charVal && !charValAlt) return false
+
+    let deviceFirmwareVersion
+
+    if (charVal) {
+      deviceFirmwareVersion = parseChar(charVal, characteristic)
+    } else if (charValAlt) {
+      deviceFirmwareVersion = parseChar(charValAlt, characteristicAlt)
+    }
 
     const firmware: { version: string } = await getStaking('firmware')
     const { version: minVersion } = firmware

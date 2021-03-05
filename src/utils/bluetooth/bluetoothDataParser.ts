@@ -52,7 +52,8 @@ export function parseChar(
     | typeof HotspotCharacteristic.WIFI_REMOVE
     | typeof HotspotCharacteristic.WIFI_CONNECT_UUID
     | typeof HotspotCharacteristic.ADD_GATEWAY_UUID
-    | typeof FirmwareCharacteristic.FIRMWAREVERSION_UUID,
+    | typeof FirmwareCharacteristic.FIRMWAREVERSION_UUID
+    | typeof HotspotCharacteristic.SOFTWARE_VERSION_UUID,
 ): string
 export function parseChar(
   characteristicValue: string,
