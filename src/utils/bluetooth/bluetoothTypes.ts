@@ -18,4 +18,5 @@ export enum HotspotCharacteristic {
   ASSERT_LOC_UUID = 'd435f5de-01a4-4e7d-84ba-dfd347f60275',
   DIAGNOSTIC_UUID = 'b833d34f-d871-422c-bf9e-8e6ec117d57e',
   ETHERNET_ONLINE_UUID = 'e5866bd6-0288-4476-98ca-ef7da6b4d289',
+  SOFTWARE_VERSION_UUID = 'c0b64050-697d-463a-a33f-70c4825731f8',
 }
