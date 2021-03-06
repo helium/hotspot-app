@@ -565,7 +565,7 @@ export default {
       subtitle:
         'If you just added a Hotspot, hang tight. It takes a few moments for the Network to propagate the Hotspot.',
       setup: 'Set up Hotspot',
-      explorer: 'Global Hotspot Explorer',
+      explorer: 'View Hotspots Around Me',
     },
     owned: {
       title: 'My Hotspots',

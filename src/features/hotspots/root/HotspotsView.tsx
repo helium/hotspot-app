@@ -20,6 +20,7 @@ import {
 import { useNavigation } from '@react-navigation/native'
 import { GeoJsonProperties } from 'geojson'
 import HotspotIcon from '@assets/images/hotspot-icon-white.svg'
+import { isEqual } from 'lodash'
 import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
@@ -40,16 +41,19 @@ import HotspotsEmpty from './HotspotsEmpty'
 
 type Props = {
   ownedHotspots?: Hotspot[]
+  startOnMap?: boolean
+  location?: number[]
 }
 
-const HotspotsView = ({ ownedHotspots }: Props) => {
+const HotspotsView = ({ ownedHotspots, startOnMap, location }: Props) => {
   const navigation = useNavigation()
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const colors = useColors()
+  const hasHotspots = ownedHotspots && ownedHotspots.length > 0
 
-  const [listIsDismissed, setListIsDismissed] = useState(false)
-  const [detailsSnapIndex, setDetailsSnapIndex] = useState(1)
+  const [listIsDismissed, setListIsDismissed] = useState(!!startOnMap)
+  const [detailsSnapIndex, setDetailsSnapIndex] = useState(startOnMap ? 0 : 1)
 
   const listRef = useRef<BottomSheetModal>(null)
   const detailsRef = useRef<BottomSheetModal>(null)
@@ -61,19 +65,48 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
   const animatedListPosition = useSharedValue<number>(0)
   const animatedDetailsPosition = useSharedValue<number>(0)
 
-  useEffect(() => {
-    dispatch(fetchHotspotsData())
-    listRef.current?.present()
-  }, [dispatch])
-
   const [showWitnesses, toggleShowWitnesses] = useToggle(false)
+  const [selectedHotspot, setSelectedHotspot] = useState<Hotspot>()
 
   const {
     hotspotDetails: { witnesses, loading },
   } = useSelector((state: RootState) => state)
+  const networkHotspots = useSelector(
+    (state: RootState) => state.networkHotspots.networkHotspots,
+    isEqual,
+  )
 
-  const [selectedHotspot, setSelectedHotspot] = useState<Hotspot>()
-  const hasHotspots = ownedHotspots && ownedHotspots.length > 0
+  const focusClosestHotspot = useCallback(() => {
+    const localHotspots = Object.values(networkHotspots)
+    if (!hasHotspots && localHotspots && localHotspots[0]) {
+      const hotspot = {
+        ...localHotspots[0],
+      } as Hotspot
+      setSelectedHotspot(hotspot)
+    }
+  }, [hasHotspots, networkHotspots])
+
+  useEffect(() => {
+    if (listIsDismissed && !selectedHotspot) {
+      if (ownedHotspots && ownedHotspots.length > 0) {
+        setSelectedHotspot(ownedHotspots[0])
+      } else {
+        focusClosestHotspot()
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listIsDismissed])
+
+  useEffect(() => {
+    if (hasHotspots) {
+      dispatch(fetchHotspotsData())
+    }
+    if (startOnMap) {
+      detailsRef.current?.present()
+    } else {
+      listRef.current?.present()
+    }
+  }, [dispatch, hasHotspots, startOnMap])
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -89,39 +122,35 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
 
   const handlePresentDetails = useCallback((hotspot: Hotspot) => {
     setSelectedHotspot(hotspot)
-    detailsRef.current?.present()
+    listRef.current?.dismiss()
   }, [])
 
   const handleDismissList = useCallback(() => {
-    if (ownedHotspots) {
-      setSelectedHotspot(ownedHotspots[0])
-    }
     setDetailsSnapIndex(0)
     detailsRef.current?.present()
     setListIsDismissed(true)
-  }, [ownedHotspots])
+  }, [])
 
   const handlePressMyHotspots = useCallback(() => {
     if (ownedHotspots) {
       setSelectedHotspot(ownedHotspots[0])
+    } else {
+      focusClosestHotspot()
     }
-    setDetailsSnapIndex(1)
-    detailsRef.current?.present()
-  }, [ownedHotspots])
+    setDetailsSnapIndex(startOnMap ? 0 : 1)
+    listRef.current?.dismiss()
+  }, [focusClosestHotspot, ownedHotspots, startOnMap])
 
   const handleDismissDetails = useCallback(() => {
-    setSelectedHotspot(undefined)
     setDetailsSnapIndex(1)
-    dispatch(hotspotDetailsSlice.actions.clearHotspotDetails())
     if (listIsDismissed) {
       listRef.current?.present()
       setListIsDismissed(false)
     }
-  }, [dispatch, listIsDismissed])
+  }, [listIsDismissed])
 
   const handleBack = useCallback(() => {
     detailsRef.current?.dismiss()
-    setSelectedHotspot(undefined)
     dispatch(hotspotDetailsSlice.actions.clearHotspotDetails())
   }, [dispatch])
 
@@ -143,7 +172,6 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
       ...properties,
     } as Hotspot
     setSelectedHotspot(hotspot)
-    detailsRef.current?.present()
   }, [])
 
   const backdropStyles = useAnimatedStyle(
@@ -204,8 +232,8 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
     if (ownedHotspots && ownedHotspots[0]) {
       return [ownedHotspots[0].lng || 0, ownedHotspots[0].lat || 0]
     }
-    return [0, 0]
-  }, [selectedHotspot, ownedHotspots])
+    return location || [0, 0]
+  }, [selectedHotspot, ownedHotspots, location])
 
   return (
     <Box flex={1} flexDirection="column" justifyContent="space-between">
@@ -270,7 +298,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         alignItems="center"
         padding="m"
       >
-        {selectedHotspot ? (
+        {listIsDismissed ? (
           <BackButton
             paddingHorizontal="none"
             paddingVertical="s"
@@ -312,7 +340,7 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         {hasHotspots ? (
           <HotspotsList onSelectHotspot={handlePresentDetails} />
         ) : (
-          <HotspotsEmpty onOpenExplorer={handleDismissList} />
+          <HotspotsEmpty onOpenExplorer={handleDismissList} lightTheme />
         )}
       </BottomSheetModal>
 
