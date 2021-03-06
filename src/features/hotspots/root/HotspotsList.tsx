@@ -11,14 +11,12 @@ import { RootState } from '../../../store/rootReducer'
 import WelcomeOverview from './WelcomeOverview'
 import HotspotsPicker from './HotspotsPicker'
 import { HotspotSort } from '../../../store/hotspots/hotspotsSlice'
-import useCurrency from '../../../utils/useCurrency'
 
 const HotspotsList = ({
   onSelectHotspot,
 }: {
   onSelectHotspot: (hotspot: Hotspot) => void
 }) => {
-  const { hntBalanceToDisplayVal } = useCurrency()
   const hotspots = useSelector((state: RootState) => state.hotspots.hotspots)
   const rewards = useSelector((state: RootState) => state.hotspots.rewards)
   const order = useSelector((state: RootState) => state.hotspots.order)
@@ -85,17 +83,16 @@ const HotspotsList = ({
         ? rewards[item.address].balanceTotal
         : new Balance(0, CurrencyType.networkToken)
 
-      const reward = `+${hntBalanceToDisplayVal(totalReward)}`
       return (
         <HotspotListItem
           onPress={handlePress}
           hotspot={item}
           showCarot
-          totalReward={reward}
+          totalReward={totalReward}
         />
       )
     },
-    [handlePress, hntBalanceToDisplayVal, rewards],
+    [handlePress, rewards],
   )
 
   const contentContainerStyle = useMemo(

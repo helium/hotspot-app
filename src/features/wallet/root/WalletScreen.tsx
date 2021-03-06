@@ -170,7 +170,7 @@ const WalletScreen = () => {
         />
       </Box>
 
-      <ActivityDetails detailTxn={detailTxn} />
+      {detailTxn && <ActivityDetails detailTxn={detailTxn} />}
     </>
   )
 }

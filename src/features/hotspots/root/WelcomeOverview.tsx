@@ -1,5 +1,5 @@
 import { isEqual } from 'lodash'
-import React, { useEffect, useState, memo, useMemo } from 'react'
+import React, { useEffect, useState, memo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import Box from '../../../components/Box'
@@ -28,6 +28,7 @@ const TimeOfDayTitle = ({ date }: { date: Date }) => {
 const WelcomeOverview = () => {
   const { t } = useTranslation()
   const { hntBalanceToDisplayVal, toggleConvertHntToCurrency } = useCurrency()
+  const [bodyText, setBodyText] = useState('')
 
   const hotspots = useSelector(
     (state: RootState) => state.hotspots.hotspots,
@@ -39,14 +40,18 @@ const WelcomeOverview = () => {
     isEqual,
   )
 
-  const bodyText = useMemo(
-    () =>
-      t('hotspots.owned.reward_summary', {
-        count: hotspots?.length || 0,
-        hntAmount: hntBalanceToDisplayVal(totalRewards),
-      }),
-    [hntBalanceToDisplayVal, hotspots?.length, t, totalRewards],
-  )
+  const updateBodyText = useCallback(async () => {
+    const hntAmount = await hntBalanceToDisplayVal(totalRewards)
+    const nextBodyText = t('hotspots.owned.reward_summary', {
+      count: hotspots?.length || 0,
+      hntAmount,
+    })
+    setBodyText(nextBodyText)
+  }, [hntBalanceToDisplayVal, hotspots?.length, t, totalRewards])
+
+  useEffect(() => {
+    updateBodyText()
+  }, [updateBodyText])
 
   const [date, setDate] = useState(new Date())
   useEffect(() => {

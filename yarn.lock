@@ -9740,6 +9740,11 @@ react-native-config@^1.4.1:
   resolved "https://registry.yarnpkg.com/react-native-config/-/react-native-config-1.4.2.tgz#cc39f22ed72c5cb06af1adf0ba70ef01593900b4"
   integrity sha512-iTvCvThvFTH7SdiBcsxYtpLy86zglsh51ZBqFPPZ75tdrQMdlRnDNnb86kNjQf03KT0qs1nCMLRejfPMIim8iA==
 
+react-native-currency-format@^1.0.19:
+  version "1.0.19"
+  resolved "https://registry.yarnpkg.com/react-native-currency-format/-/react-native-currency-format-1.0.19.tgz#4fe2dd65eb3dc3c69ebce7c4f4c531ab673642c8"
+  integrity sha512-iFRrP9YoQxJnbHRgTv6faSyV7fDjRz4fC7mKf0lmB2zkU9lbxw+gvgMLcZiEkxMEuJXMkNtDHJbsXj2i5/cZ+w==
+
 react-native-device-info@^7.1.0:
   version "7.4.0"
   resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-7.4.0.tgz#694deddfc6de0ff7268ff463d84693ee980c683c"

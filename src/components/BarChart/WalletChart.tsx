@@ -32,6 +32,18 @@ const WalletChart = ({ height }: Props) => {
 
   const { hntToDisplayVal } = useCurrency()
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
+  const [up, setUp] = useState('')
+  const [down, setDown] = useState('')
+
+  useEffect(() => {
+    const setValues = async () => {
+      const u = await hntToDisplayVal(focusedData?.up || 0)
+      const d = await hntToDisplayVal(focusedData?.down || 0)
+      setUp(u)
+      setDown(d)
+    }
+    setValues()
+  }, [focusedData?.down, focusedData?.up, hntToDisplayVal])
 
   const data = useMemo(() => activityChart[activityChartRange].data, [
     activityChart,
@@ -63,7 +75,14 @@ const WalletChart = ({ height }: Props) => {
   const { greenBright } = useColors()
 
   const containerStyle = useMemo(() => ({ paddingVertical: padding / 2 }), [])
-
+  const arrowStyle = useMemo(
+    () => ({
+      flexDirection: 'row',
+      alignItems: 'center',
+      width: 200,
+    }),
+    [],
+  )
   return (
     <Box justifyContent="space-around" style={containerStyle}>
       <Box
@@ -82,20 +101,14 @@ const WalletChart = ({ height }: Props) => {
                   strokeWidth={2}
                 />
                 <Text variant="body2" marginLeft="xs">
-                  {hntToDisplayVal(focusedData?.up)}
+                  {up}
                 </Text>
               </Box>
 
-              <Box
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  width: 200,
-                }}
-              >
+              <Box style={arrowStyle}>
                 <CarotRight width={12} height={12} />
                 <Text variant="body2" marginLeft="s">
-                  {hntToDisplayVal(focusedData?.down)}
+                  {down}
                 </Text>
               </Box>
             </>
