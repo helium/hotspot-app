@@ -55,8 +55,8 @@ const LockScreen = () => {
 
   const handleSignOut = useCallback(() => {
     Alert.alert(
-      t('more.sections.account.signOutAlert.title'),
-      t('more.sections.account.signOutAlert.body'),
+      t('more.sections.app.signOutAlert.title'),
+      t('more.sections.app.signOutAlert.body'),
       [
         {
           text: t('generic.cancel'),
