@@ -19,14 +19,18 @@ const HotspotsScreen = () => {
     setStartOnMap(true)
     const { status } = await Location.requestPermissionsAsync()
     if (status !== 'granted') return
-    const currentLocation = await Location.getCurrentPositionAsync({})
+    const currentLocation = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.High,
+    })
     setLocation(currentLocation)
   }
 
   useAsync(async () => {
     const { status } = await Location.getPermissionsAsync()
     if (status !== 'granted') return
-    const currentLocation = await Location.getCurrentPositionAsync({})
+    const currentLocation = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.High,
+    })
     setLocation(currentLocation)
   }, [])
 
