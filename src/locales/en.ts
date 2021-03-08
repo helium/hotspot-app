@@ -806,7 +806,7 @@ export default {
       title: 'Sync to Blockchain',
     },
     status: {
-      online: 'Hotspot is connect to the internet.',
+      online: 'Hotspot is connected to the internet.',
       offline:
         'Hotspot is not online. Hotspots must be online to sync and mine.',
       title: 'Hotspot Status',
