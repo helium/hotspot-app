@@ -194,6 +194,7 @@ const useHotspot = () => {
       onboardingAddress,
     }
 
+    Logger.breadcrumb('connectAndConfigHotspot - received details', details)
     const response = await dispatch(fetchHotspotDetails(details))
     const payload = response.payload as AllHotspotDetails
 
