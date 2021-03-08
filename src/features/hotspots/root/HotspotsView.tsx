@@ -122,11 +122,11 @@ const HotspotsView = ({ ownedHotspots, startOnMap, location }: Props) => {
 
   const handlePresentDetails = useCallback((hotspot: Hotspot) => {
     setSelectedHotspot(hotspot)
+    setDetailsSnapIndex(1)
     listRef.current?.dismiss()
   }, [])
 
   const handleDismissList = useCallback(() => {
-    setDetailsSnapIndex(0)
     detailsRef.current?.present()
     setListIsDismissed(true)
   }, [])
@@ -142,7 +142,7 @@ const HotspotsView = ({ ownedHotspots, startOnMap, location }: Props) => {
   }, [focusClosestHotspot, ownedHotspots, startOnMap])
 
   const handleDismissDetails = useCallback(() => {
-    setDetailsSnapIndex(1)
+    setDetailsSnapIndex(0)
     if (listIsDismissed) {
       listRef.current?.present()
       setListIsDismissed(false)
