@@ -131,6 +131,7 @@ export default {
     invalid_password: 'You password is incorrect',
     something_went_wrong: 'Something went wrong',
     hnt_to_currency: '{{currencyType}}. Data from CoinGecko',
+    search_location: 'Search for an address or place',
   },
   hotspot_setup: {
     selection: {
@@ -806,7 +807,7 @@ export default {
       title: 'Sync to Blockchain',
     },
     status: {
-      online: 'Hotspot is connect to the internet.',
+      online: 'Hotspot is connected to the internet.',
       offline:
         'Hotspot is not online. Hotspots must be online to sync and mine.',
       title: 'Hotspot Status',
