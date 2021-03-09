@@ -55,7 +55,7 @@ const WelcomeOverview = () => {
   })
 
   return (
-    <Box padding="l" paddingTop="m">
+    <Box paddingHorizontal="l">
       <EmojiBlip date={date} />
       <TimeOfDayTitle date={date} />
       <Text

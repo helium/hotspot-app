@@ -52,8 +52,7 @@ const HotspotsList = ({
   const renderHeader = useCallback(() => {
     return (
       <Box
-        paddingTop="s"
-        paddingBottom="m"
+        paddingVertical="s"
         borderTopRightRadius="m"
         borderTopLeftRadius="m"
         backgroundColor="white"
