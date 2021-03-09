@@ -2,7 +2,7 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { ActivityIndicator, TouchableWithoutFeedback } from 'react-native'
 import { isEqual } from 'lodash'
 import { useSelector } from 'react-redux'
-import { add, format } from 'date-fns'
+import { add } from 'date-fns'
 import ChartContainer from './ChartContainer'
 import CarotLeft from '../../assets/images/carot-left.svg'
 import CarotRight from '../../assets/images/carot-right.svg'
@@ -17,6 +17,7 @@ import accountSlice, {
   fetchActivityChart,
 } from '../../store/account/accountSlice'
 import useCurrency from '../../utils/useCurrency'
+import { locale } from '../../utils/i18n'
 
 type Props = {
   height: number
@@ -84,9 +85,16 @@ const WalletChart = ({ height }: Props) => {
 
       const startDate = new Date(chartData.timestamp)
       const endDate = add(startDate, { days: 29 })
-      const dateFormat = 'MMM dd, yyyy'
-      const start = format(startDate, dateFormat)
-      const end = format(endDate, dateFormat)
+
+      const start = startDate.toLocaleDateString(locale, {
+        day: 'numeric',
+        month: 'short',
+      })
+      const end = endDate.toLocaleDateString(locale, {
+        day: 'numeric',
+        month: 'short',
+      })
+
       setDataRange(`${start} - ${end}`)
     },
     [activityChartRange],
@@ -121,7 +129,7 @@ const WalletChart = ({ height }: Props) => {
               fontSize={16}
               maxFontSizeMultiplier={1.1}
               marginLeft="xxs"
-              marginRight="m"
+              marginRight="xs"
             >
               {up}
             </Text>
