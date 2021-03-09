@@ -20,10 +20,12 @@ import {
 import { useNavigation } from '@react-navigation/native'
 import { GeoJsonProperties } from 'geojson'
 import HotspotIcon from '@assets/images/hotspot-icon-white.svg'
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Add from '../../../assets/images/add.svg'
+import Settings from '../../../assets/images/settings.svg'
 import Map from '../../../components/Map'
 import { RootState } from '../../../store/rootReducer'
 import hotspotDetailsSlice from '../../../store/hotspotDetails/hotspotDetailsSlice'
@@ -36,6 +38,9 @@ import HotspotDetails from '../details/HotspotDetails'
 import { ReAnimatedBox } from '../../../components/AnimatedBox'
 import { useColors } from '../../../theme/themeHooks'
 import BackButton from '../../../components/BackButton'
+import HotspotSettingsProvider from '../settings/HotspotSettingsProvider'
+import HotspotSettings from '../settings/HotspotSettings'
+import { RootStackParamList } from '../../../navigation/main/tabTypes'
 
 type Props = {
   ownedHotspots: Hotspot[]
@@ -67,18 +72,16 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
 
   const [showWitnesses, toggleShowWitnesses] = useToggle(false)
 
-  const {
-    hotspotDetails: { witnesses, loading },
-  } = useSelector((state: RootState) => state)
+  const { witnesses, loading } = useSelector(
+    (state: RootState) => state.hotspotDetails,
+  )
 
   const [selectedHotspot, setSelectedHotspot] = useState<Hotspot>()
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    return navigation.addListener('focus', () => {
       dispatch(fetchHotspotsData())
     })
-
-    return unsubscribe
   }, [navigation, dispatch])
 
   const handleLayoutList = useCallback((event: LayoutChangeEvent) => {
@@ -120,16 +123,14 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
   }, [dispatch])
 
   useEffect(() => {
-    const navParent = navigation.dangerouslyGetParent()
+    const navParent = navigation.dangerouslyGetParent() as BottomTabNavigationProp<RootStackParamList>
     if (!navParent) return
 
-    const unsubscribe = navParent.addListener('tabPress', () => {
+    return navParent.addListener('tabPress', () => {
       if (navigation.isFocused()) {
         handleBack()
       }
     })
-
-    return unsubscribe
   }, [handleBack, navigation])
 
   const onMapHotspotSelected = useCallback((properties: GeoJsonProperties) => {
@@ -198,6 +199,10 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         : [ownedHotspots[0].lng || 0, ownedHotspots[0].lat || 0],
     [selectedHotspot, ownedHotspots],
   )
+
+  const toggleSettings = useCallback(() => {
+    dispatch(hotspotDetailsSlice.actions.toggleShowSettings())
+  }, [dispatch])
 
   return (
     <Box flex={1} flexDirection="column" justifyContent="space-between">
@@ -271,13 +276,9 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
         )}
 
         <Box flexDirection="row" justifyContent="space-between">
-          {/* <TouchableOpacityBox
-            onPress={handleToggleSettings}
-            padding="s"
-            marginRight="s"
-          >
+          <TouchableOpacityBox onPress={toggleSettings} padding="s">
             <Settings width={22} height={22} color="white" />
-          </TouchableOpacityBox> */}
+          </TouchableOpacityBox>
           <TouchableOpacityBox
             onPress={() => navigation.navigate('HotspotSetup')}
             padding="s"
@@ -309,6 +310,10 @@ const HotspotsView = ({ ownedHotspots }: Props) => {
       >
         <HotspotDetails hotspot={selectedHotspot} />
       </BottomSheetModal>
+
+      <HotspotSettingsProvider>
+        <HotspotSettings hotspot={selectedHotspot} />
+      </HotspotSettingsProvider>
     </Box>
   )
 }
