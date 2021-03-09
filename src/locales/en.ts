@@ -566,10 +566,11 @@ export default {
       subtitle:
         'If you just added a Hotspot, hang tight. It takes a few moments for the Network to propagate the Hotspot.',
       setup: 'Set up Hotspot',
-      explorer: 'Global Hotspot Explorer',
+      explorer: 'View Hotspots Around Me',
     },
     owned: {
       title: 'My Hotspots',
+      title_no_hotspots: 'Hotspots',
       reward_summary: 'Your Hotspot mined {{hntAmount}} in the past 24 hours.',
       reward_summary_plural:
         'Your {{count}} Hotspots mined {{hntAmount}} in the past 24 hours.',

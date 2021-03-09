@@ -1,10 +1,10 @@
 import Client, {
   AnyTransaction,
+  Bucket,
   Hotspot,
+  NaturalDate,
   PendingTransaction,
   ResourceList,
-  Bucket,
-  NaturalDate,
 } from '@helium/http'
 import { Transaction } from '@helium/transactions'
 import {

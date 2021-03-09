@@ -131,11 +131,14 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
           paddingHorizontal="l"
         >
           <Box flexDirection="row" height={32}>
-            <StatusBadge
-              online={
-                hotspot?.status?.online || hotspotDetailsHotspot?.status?.online
-              }
-            />
+            {hotspot?.status || hotspotDetailsHotspot?.status ? (
+              <StatusBadge
+                online={
+                  hotspot?.status?.online ||
+                  hotspotDetailsHotspot?.status?.online
+                }
+              />
+            ) : null}
             <HexBadge
               rewardScale={
                 hotspot.rewardScale || hotspotDetailsHotspot?.rewardScale

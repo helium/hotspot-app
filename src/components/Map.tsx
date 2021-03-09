@@ -33,6 +33,47 @@ import { fetchNetworkHotspots } from '../store/networkHotspots/networkHotspotsSl
 
 const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
 
+type LatLng = {
+  lat: number
+  lng: number
+}
+
+type MapBounds = {
+  ne: number[]
+  sw: number[]
+  paddingLeft?: number
+  paddingRight?: number
+  paddingTop?: number
+  paddingBottom?: number
+}
+
+const findBounds = (coords: LatLng[]): MapBounds | undefined => {
+  if (coords.length === 0) {
+    return undefined
+  }
+
+  let minLon = coords[0].lng
+  let maxLon = coords[0].lng
+  let minLat = coords[0].lat
+  let maxLat = coords[0].lat
+
+  coords.forEach((m) => {
+    if (m.lng < minLon) minLon = m.lng
+    if (m.lng > maxLon) maxLon = m.lng
+    if (m.lat < minLat) minLat = m.lat
+    if (m.lat > maxLat) maxLat = m.lat
+  })
+
+  return {
+    ne: [maxLon, maxLat],
+    sw: [minLon, minLat],
+    paddingBottom: 250,
+    paddingLeft: 30,
+    paddingRight: 30,
+    paddingTop: 30,
+  }
+}
+
 type Props = BoxProps<Theme> & {
   onMapMoved?: (coords?: Position) => void
   onDidFinishLoadingMap?: (latitude: number, longitude: number) => void
@@ -43,11 +84,10 @@ type Props = BoxProps<Theme> & {
   zoomLevel?: number
   mapCenter?: number[]
   ownedHotspots?: Hotspot[]
-  selectedHotspots?: Hotspot[]
+  selectedHotspot?: Hotspot
   witnesses?: Hotspot[]
   animationMode?: 'flyTo' | 'easeTo' | 'moveTo'
   animationDuration?: number
-  offsetCenterRatio?: number
   maxZoomLevel?: number
   minZoomLevel?: number
   interactive?: boolean
@@ -61,13 +101,12 @@ const Map = ({
   onMapMoving,
   currentLocationEnabled,
   zoomLevel,
-  mapCenter = [0, 0],
+  mapCenter,
   animationMode = 'moveTo',
   animationDuration = 500,
   ownedHotspots = [],
-  selectedHotspots = [],
+  selectedHotspot,
   witnesses = [],
-  offsetCenterRatio,
   showUserLocation,
   maxZoomLevel = 16,
   minZoomLevel = 0,
@@ -84,7 +123,6 @@ const Map = ({
   const camera = useRef<MapboxGL.Camera>(null)
   const [loaded, setLoaded] = useState(false)
   const [userCoords, setUserCoords] = useState({ latitude: 0, longitude: 0 })
-  const [centerOffset, setCenterOffset] = useState(0)
   const styles = useMemo(() => makeStyles(colors), [colors])
 
   const networkHotspots = useSelector(
@@ -120,10 +158,10 @@ const Map = ({
         ? [userCoords.longitude, userCoords.latitude]
         : [-98.35, 15],
       zoomLevel: userCoords ? 16 : 2,
-      animationDuration: 500,
+      animationDuration,
       heading: 0,
     })
-  }, [userCoords])
+  }, [animationDuration, userCoords])
 
   const handleUserLocationUpdate = useCallback(
     (loc) => {
@@ -164,32 +202,8 @@ const Map = ({
     if (loaded && userCoords) {
       onDidFinishLoadingMap?.(userCoords.latitude, userCoords.longitude)
     }
-    const calculateOffset = async () => {
-      const bounds = await map?.current?.getVisibleBounds()
-      const center = await map?.current?.getCenter()
-      if (bounds && center) {
-        const topLat = bounds[0][1]
-        const centerLat = center[1]
-        const scale = offsetCenterRatio || 1
-        setCenterOffset((topLat - centerLat) / scale)
-      }
-    }
-    if (offsetCenterRatio) {
-      setTimeout(calculateOffset, animationDuration)
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userCoords, loaded, offsetCenterRatio])
-
-  useEffect(() => {
-    const setWitnessZoomLevel = async () => {
-      const hasWitnesses = witnesses ? witnesses.length > 0 : false
-      const zoom = await map?.current?.getZoom()
-      if (hasWitnesses && zoom && zoom > 12) {
-        camera?.current?.zoomTo(12, animationDuration)
-      }
-    }
-    setWitnessZoomLevel()
-  }, [witnesses, animationDuration])
+  }, [userCoords, loaded])
 
   const ownedHotspotFeatures = useMemo(
     () => hotspotsToFeatures(ownedHotspots),
@@ -197,8 +211,8 @@ const Map = ({
   )
 
   const selectedHotspotFeatures = useMemo(
-    () => hotspotsToFeatures(selectedHotspots),
-    [selectedHotspots],
+    () => (selectedHotspot ? hotspotsToFeatures([selectedHotspot]) : []),
+    [selectedHotspot],
   )
 
   const witnessFeatures = useMemo(() => hotspotsToFeatures(witnesses), [
@@ -248,8 +262,30 @@ const Map = ({
     ],
   )
 
+  const bounds = useMemo(() => {
+    const boundsLocations: LatLng[] = []
+
+    if (mapCenter && !selectedHotspot) {
+      boundsLocations.push({ lng: mapCenter[0], lat: mapCenter[1] })
+    }
+
+    if (selectedHotspot && selectedHotspot.lat && selectedHotspot.lng) {
+      boundsLocations.push({
+        lng: selectedHotspot.lng,
+        lat: selectedHotspot.lat,
+      })
+    }
+
+    witnesses.forEach((w) => {
+      if (w.lat && w.lng) boundsLocations.push({ lng: w.lng, lat: w.lat })
+    })
+
+    return findBounds(boundsLocations)
+  }, [mapCenter, selectedHotspot, witnesses])
+
   const defaultCameraSettings = {
     zoomLevel,
+    centerCoordinate: mapCenter,
   }
 
   return (
@@ -302,9 +338,9 @@ const Map = ({
           maxZoomLevel={maxZoomLevel}
           minZoomLevel={minZoomLevel}
           defaultSettings={defaultCameraSettings}
+          bounds={bounds}
           animationMode={animationMode}
           animationDuration={animationDuration}
-          centerCoordinate={[mapCenter[0], mapCenter[1] - centerOffset]}
         />
         <MapboxGL.Images images={mapImages} />
         <MapboxGL.ShapeSource
@@ -398,14 +434,14 @@ export default memo(Map, (prevProps, nextProps) => {
   const {
     mapCenter: prevMapCenter,
     ownedHotspots: prevOwnedHotspots,
-    selectedHotspots: prevSelectedHotspots,
+    selectedHotspot: prevSelectedHotspot,
     witnesses: prevWitnesses,
     ...prevRest
   } = prevProps
   const {
     mapCenter,
     ownedHotspots,
-    selectedHotspots,
+    selectedHotspot,
     witnesses,
     ...nextRest
   } = nextProps
@@ -423,10 +459,8 @@ export default memo(Map, (prevProps, nextProps) => {
     prevOwnedHotspots || [],
     ownedHotspots || [],
   )
-  const selectedHotspotsEqual = hotspotsEqual(
-    prevSelectedHotspots || [],
-    selectedHotspots || [],
-  )
+  const selectedHotspotEqual =
+    prevSelectedHotspot?.address === selectedHotspot?.address
   const witnessHotspotsEqual = hotspotsEqual(
     prevWitnesses || [],
     witnesses || [],
@@ -435,7 +469,7 @@ export default memo(Map, (prevProps, nextProps) => {
     primitivesEqual &&
     mapCenterEqual &&
     ownedHotspotsEqual &&
-    selectedHotspotsEqual &&
+    selectedHotspotEqual &&
     witnessHotspotsEqual
   )
 })

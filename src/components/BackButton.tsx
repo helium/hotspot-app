@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import Text from './Text'
 import { Colors, Spacing, Theme } from '../theme/theme'
 import BackArrow from '../assets/images/backArrow.svg'
-import TouchableOpacityBox from './TouchableOpacityBox'
+import { DebouncedTouchableOpacityBox } from './TouchableOpacityBox'
 import { useColors } from '../theme/themeHooks'
 
 type Props = BoxProps<Theme> & {
@@ -27,7 +27,7 @@ const BackButton = ({
   const colors = useColors()
 
   return (
-    <TouchableOpacityBox
+    <DebouncedTouchableOpacityBox
       onPress={onPress}
       alignSelf="flex-start"
       paddingVertical="s"
@@ -46,7 +46,7 @@ const BackButton = ({
       >
         {t('back')}
       </Text>
-    </TouchableOpacityBox>
+    </DebouncedTouchableOpacityBox>
   )
 }
 
