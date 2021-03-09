@@ -5,13 +5,10 @@ import { useActionSheet } from '@expo/react-native-action-sheet'
 import { useTranslation } from 'react-i18next'
 import MoreMenu from '@assets/images/moreMenu.svg'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import { useAppDispatch } from '../../../store/store'
-import hotspotDetailsSlice from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import { EXPLORER_BASE_URL } from '../../../utils/config'
 
 const HotspotMoreMenuButton = ({ hotspot }: { hotspot: Hotspot }) => {
   const { t } = useTranslation()
-  const dispatch = useAppDispatch()
   const { showActionSheetWithOptions } = useActionSheet()
 
   type SettingsOption = { label: string; action?: () => void }
@@ -21,11 +18,6 @@ const HotspotMoreMenuButton = ({ hotspot }: { hotspot: Hotspot }) => {
 
     const explorerUrl = `${EXPLORER_BASE_URL}/hotspots/${hotspot.address}`
     const opts: SettingsOption[] = [
-      {
-        label: t('hotspot_details.options.settings'),
-        action: () =>
-          dispatch(hotspotDetailsSlice.actions.toggleShowSettings()),
-      },
       {
         label: t('hotspot_details.options.viewExplorer'),
         action: () => Linking.openURL(explorerUrl),
@@ -48,7 +40,7 @@ const HotspotMoreMenuButton = ({ hotspot }: { hotspot: Hotspot }) => {
         opts[buttonIndex].action?.()
       },
     )
-  }, [dispatch, hotspot, showActionSheetWithOptions, t])
+  }, [hotspot, showActionSheetWithOptions, t])
 
   return (
     <TouchableOpacityBox
