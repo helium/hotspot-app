@@ -285,6 +285,7 @@ const Map = ({
 
   const defaultCameraSettings = {
     zoomLevel,
+    centerCoordinate: mapCenter,
   }
 
   return (

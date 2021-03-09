@@ -132,7 +132,7 @@ const HotspotsView = ({ ownedHotspots, startOnMap, location }: Props) => {
   }, [])
 
   const handlePressMyHotspots = useCallback(() => {
-    if (ownedHotspots) {
+    if (ownedHotspots && ownedHotspots.length > 0) {
       setSelectedHotspot(ownedHotspots[0])
     } else {
       focusClosestHotspot()
@@ -238,6 +238,7 @@ const HotspotsView = ({ ownedHotspots, startOnMap, location }: Props) => {
           ownedHotspots={ownedHotspots}
           selectedHotspot={selectedHotspot}
           maxZoomLevel={14}
+          zoomLevel={14}
           witnesses={showWitnesses ? witnesses : []}
           mapCenter={location}
           animationMode="easeTo"
