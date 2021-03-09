@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import React, { memo, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import animalName from 'angry-purple-tiger'
 import { LocationGeocodedAddress } from 'expo-location'
@@ -40,6 +40,11 @@ const ReassertLocationFee = ({
   const {
     connectedHotspot: { address: hotspotAddress },
   } = useSelector((state: RootState) => state)
+
+  const disableButton = useMemo(
+    () => (isFree ? false : !hasSufficientBalance),
+    [hasSufficientBalance, isFree],
+  )
 
   return (
     <Box height={Math.min(569, hp(75))} padding="l" paddingTop="lx">
@@ -118,7 +123,7 @@ const ReassertLocationFee = ({
         )}
       </Box>
       <Button
-        disabled={!hasSufficientBalance || isPending}
+        disabled={disableButton || isPending}
         onPress={onChangeLocation}
         marginTop="lx"
         marginBottom="s"
