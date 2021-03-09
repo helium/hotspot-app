@@ -10,3 +10,7 @@ declare module 'angry-purple-tiger' {
 }
 
 declare module '@burstware/react-native-portal'
+
+declare module 'react-native-currency-format' {
+  export function format(value: number, currencyType: string): string
+}

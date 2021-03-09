@@ -8,21 +8,16 @@ import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { useDebouncedCallback } from 'use-debounce'
+import CurrencyFormatter from 'react-native-currency-format'
 import { fetchCurrentOraclePrice } from '../store/helium/heliumDataSlice'
 import { RootState } from '../store/rootReducer'
 import { useAppDispatch } from '../store/store'
 import appSlice from '../store/user/appSlice'
-import {
-  currencyType,
-  decimalSeparator,
-  groupSeparator,
-  useLanguage,
-  locale,
-} from './i18n'
+
+import { currencyType, decimalSeparator, groupSeparator, locale } from './i18n'
 
 const useCurrency = () => {
   const { t } = useTranslation()
-  const { formatCurrency } = useLanguage()
   const dispatch = useAppDispatch()
   const currentPrices = useSelector(
     (state: RootState) => state.heliumData.currentPrices,
@@ -43,6 +38,14 @@ const useCurrency = () => {
     [dispatch],
   )
 
+  const formatCurrency = useCallback(async (value: number) => {
+    const formattedCurrency = await CurrencyFormatter.format(
+      value,
+      currencyType,
+    )
+    return formattedCurrency
+  }, [])
+
   const toggleConvertHntToCurrency = useDebouncedCallback(toggle, 700, {
     leading: true,
     trailing: false,
@@ -60,7 +63,7 @@ const useCurrency = () => {
   )
 
   const hntToDisplayVal = useCallback(
-    (amount: number, maxDecimalPlaces = 2) => {
+    async (amount: number, maxDecimalPlaces = 2) => {
       const multiplier = currentPrices?.[currencyType.toLowerCase()] || 0
       const showAsHnt = !convert || !multiplier
 
@@ -78,14 +81,14 @@ const useCurrency = () => {
     balance: Balance<NetworkTokens>,
     split?: false | undefined,
     maxDecimalPlaces?: number,
-  ) => string
+  ) => Promise<string>
   type PartsReturn = (
     balance: Balance<NetworkTokens>,
     split?: true,
     maxDecimalPlaces?: number,
-  ) => { integerPart: string; decimalPart: string }
+  ) => Promise<{ integerPart: string; decimalPart: string }>
   const hntBalanceToDisplayVal = useCallback(
-    (
+    async (
       balance: Balance<NetworkTokens>,
       split?: boolean,
       maxDecimalPlaces = 2,
@@ -120,7 +123,7 @@ const useCurrency = () => {
       }
 
       const convertedValue = multiplier * balance.floatBalance
-      const formattedValue = formatCurrency(convertedValue)
+      const formattedValue: string = await formatCurrency(convertedValue)
 
       if (split) {
         const decimalPart = t('generic.hnt_to_currency', { currencyType })

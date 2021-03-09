@@ -288,6 +288,8 @@ PODS:
     - react-native-config/App (= 1.4.2)
   - react-native-config/App (1.4.2):
     - React-Core
+  - react-native-currency-format (1.0.19):
+    - React
   - react-native-mapbox-gl (8.1.0):
     - "@react-native-mapbox-gl-mapbox-static (~> 5.9.0)"
     - Mapbox-iOS-SDK (~> 5.9.0)
@@ -506,6 +508,7 @@ DEPENDENCIES:
   - react-native-ble-plx (from `../node_modules/react-native-ble-plx`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - react-native-config (from `../node_modules/react-native-config`)
+  - react-native-currency-format (from `../node_modules/react-native-currency-format`)
   - "react-native-mapbox-gl (from `../node_modules/@react-native-mapbox-gl/maps`)"
   - react-native-onesignal (from `../node_modules/react-native-onesignal`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -630,6 +633,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/blur"
   react-native-config:
     :path: "../node_modules/react-native-config"
+  react-native-currency-format:
+    :path: "../node_modules/react-native-currency-format"
   react-native-mapbox-gl:
     :path: "../node_modules/@react-native-mapbox-gl/maps"
   react-native-onesignal:
@@ -758,6 +763,7 @@ SPEC CHECKSUMS:
   react-native-ble-plx: caac53ee98151ec81198239d591c203809a1ed6e
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-config: c98128a72bc2c3a1ca72caec0b021f0fa944aa29
+  react-native-currency-format: cd0a30868fddb004c3b5b5e9b7fe7717876927f5
   react-native-mapbox-gl: eec7e5be5b874cfceb79fcfe24d595411015153a
   react-native-onesignal: a69eeb12486e7739ed8f180e6ddd915be77721ba
   react-native-safe-area-context: b6e0e284002381d2ff29fa4fff42b4d8282e3c94

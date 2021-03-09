@@ -13,7 +13,6 @@ import LinkImg from '@assets/images/link.svg'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
 import ActivityDetailsHeader from './ActivityDetailsHeader'
-import useActivityItem from '../useActivityItem'
 import Rewards from './Rewards'
 import HotspotTransaction from './HotspotTransaction'
 import Payment from './Payment'
@@ -26,25 +25,17 @@ import activitySlice from '../../../../store/activity/activitySlice'
 import { locale } from '../../../../utils/i18n'
 import { EXPLORER_BASE_URL } from '../../../../utils/config'
 import useCurrency from '../../../../utils/useCurrency'
+import useActivityItem from '../useActivityItem'
 
 const DF = 'MM/dd/yyyy hh:mm a'
-type Props = { detailTxn?: AnyTransaction | PendingTransaction }
+type Props = { detailTxn: AnyTransaction | PendingTransaction }
 const ActivityDetails = ({ detailTxn }: Props) => {
   const sheet = useRef<BottomSheetModal>(null)
   const { result: address } = useAsync(getSecureItem, ['address'])
   const { t } = useTranslation()
   const { toggleConvertHntToCurrency } = useCurrency()
   const dispatch = useAppDispatch()
-  const {
-    backgroundColor,
-    backgroundColorKey,
-    title,
-    detailIcon,
-    amount,
-    time,
-    isFee,
-    fee,
-  } = useActivityItem(address || '')
+  const txnDisplayVals = useActivityItem(detailTxn, address || '', DF)
 
   let block: number | undefined
   if (detailTxn) {
@@ -66,13 +57,19 @@ const ActivityDetails = ({ detailTxn }: Props) => {
     if (!detailTxn) return null
     return (
       <ActivityDetailsHeader
-        backgroundColor={backgroundColor(detailTxn)}
-        icon={detailIcon(detailTxn)}
-        title={title(detailTxn)}
-        date={time(detailTxn, DF)}
+        backgroundColor={txnDisplayVals.backgroundColor}
+        icon={txnDisplayVals.detailIcon}
+        title={txnDisplayVals.title}
+        date={txnDisplayVals.time}
       />
     )
-  }, [detailTxn, detailIcon, title, time, backgroundColor])
+  }, [
+    detailTxn,
+    txnDisplayVals.backgroundColor,
+    txnDisplayVals.detailIcon,
+    txnDisplayVals.time,
+    txnDisplayVals.title,
+  ])
 
   const openExplorer = useCallback(
     () => Linking.openURL(`${EXPLORER_BASE_URL}/blocks/${block?.toString()}`),
@@ -80,8 +77,6 @@ const ActivityDetails = ({ detailTxn }: Props) => {
   )
 
   if (!detailTxn) return null
-
-  const feeStr = fee(detailTxn)
 
   return (
     <BottomSheetModalProvider>
@@ -100,14 +95,14 @@ const ActivityDetails = ({ detailTxn }: Props) => {
               fontSize={32}
               numberOfLines={1}
               adjustsFontSizeToFit
-              color={isFee(detailTxn) ? 'blueMain' : 'greenMain'}
+              color={txnDisplayVals.isFee ? 'blueMain' : 'greenMain'}
               alignSelf="flex-end"
-              marginBottom={!feeStr ? 'm' : 'none'}
+              marginBottom={!txnDisplayVals.fee ? 'm' : 'none'}
             >
-              {amount(detailTxn)}
+              {txnDisplayVals.amount}
             </Text>
 
-            {!!feeStr && (
+            {!!txnDisplayVals.fee && (
               <Text
                 variant="light"
                 fontSize={15}
@@ -115,7 +110,7 @@ const ActivityDetails = ({ detailTxn }: Props) => {
                 alignSelf="flex-end"
                 marginBottom="m"
               >
-                {`${feeStr} ${t('generic.fee')}`}
+                {`${txnDisplayVals.fee} ${t('generic.fee')}`}
               </Text>
             )}
             <Rewards item={detailTxn} />
@@ -125,7 +120,7 @@ const ActivityDetails = ({ detailTxn }: Props) => {
             <UnknownTransaction item={detailTxn} />
             {block && (
               <TouchableOpacityBox
-                backgroundColor={backgroundColorKey(detailTxn)}
+                backgroundColor={txnDisplayVals.backgroundColorKey}
                 height={63}
                 width="100%"
                 borderRadius="ms"

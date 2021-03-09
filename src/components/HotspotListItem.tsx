@@ -1,10 +1,11 @@
+import React, { memo, useCallback, useState, useEffect } from 'react'
 import { Hotspot } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import CheckCircle from '@assets/images/check-circle.svg'
 import Attention from '@assets/images/attention.svg'
 import CarotRight from '@assets/images/carot-right.svg'
-import React, { memo, useCallback } from 'react'
+import Balance, { NetworkTokens } from '@helium/currency'
 import TouchableOpacityBox from './BSTouchableOpacityBox'
 import Box from './Box'
 import Text from './Text'
@@ -13,7 +14,7 @@ import useCurrency from '../utils/useCurrency'
 type HotspotListItemProps = {
   onPress?: (hotspot: Hotspot) => void
   hotspot: Hotspot
-  totalReward: string
+  totalReward: Balance<NetworkTokens>
   showCarot?: boolean
 }
 
@@ -24,8 +25,18 @@ const HotspotListItem = ({
   showCarot = false,
 }: HotspotListItemProps) => {
   const { t } = useTranslation()
-  const { toggleConvertHntToCurrency } = useCurrency()
+  const { toggleConvertHntToCurrency, hntBalanceToDisplayVal } = useCurrency()
   const handlePress = useCallback(() => onPress?.(hotspot), [hotspot, onPress])
+  const [reward, setReward] = useState('')
+  const updateReward = useCallback(async () => {
+    const nextReward = await hntBalanceToDisplayVal(totalReward, false)
+    setReward(`+${nextReward}`)
+  }, [hntBalanceToDisplayVal, totalReward])
+
+  useEffect(() => {
+    updateReward()
+  }, [updateReward])
+
   return (
     <Box marginHorizontal="l" marginBottom="s">
       <TouchableOpacityBox
@@ -79,7 +90,7 @@ const HotspotListItem = ({
               marginBottom="n_s"
               alignSelf="flex-start"
             >
-              {totalReward}
+              {reward}
             </Text>
           </Box>
           <Box flexDirection="row" alignItems="center" justifyContent="center">

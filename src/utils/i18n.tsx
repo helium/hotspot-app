@@ -62,17 +62,7 @@ export const useLanguage = () => {
     setLanguage(lang || phoneLang)
   }, [changeLanguage])
 
-  const formatCurrency = useCallback(
-    (value: number) => {
-      return new Intl.NumberFormat(language, {
-        style: 'currency',
-        currency: currencyType,
-      }).format(value)
-    },
-    [language],
-  )
-
-  return { language, changeLanguage, formatCurrency }
+  return { language, changeLanguage }
 }
 
 export default i18n

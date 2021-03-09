@@ -91,6 +91,7 @@
     "react-native": "0.63.4",
     "react-native-ble-plx": "^2.0.2",
     "react-native-config": "^1.4.1",
+    "react-native-currency-format": "^1.0.19",
     "react-native-device-info": "^7.1.0",
     "react-native-emoji": "^1.8.0",
     "react-native-gesture-handler": "1.9.0",

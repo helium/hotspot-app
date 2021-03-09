@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { format, formatDistanceToNow, fromUnixTime } from 'date-fns'
 import {
   AddGatewayV1,
@@ -26,6 +26,7 @@ import Burn from '../../../assets/images/burn.svg'
 import shortLocale from '../../../utils/formatDistance'
 import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
 import useCurrency from '../../../utils/useCurrency'
+import { Colors } from '../../../theme/theme'
 
 export const TxnTypeKeys = [
   'rewards_v1',
@@ -38,157 +39,160 @@ export const TxnTypeKeys = [
 ] as const
 type TxnType = typeof TxnTypeKeys[number]
 
-const useActivityItem = (address: string) => {
+type TxnDisplayVals = {
+  backgroundColor: string
+  backgroundColorKey: Colors
+  title: string
+  listIcon?: JSX.Element
+  detailIcon?: JSX.Element
+  amount: string
+  time: string
+  isFee: boolean
+  fee: string
+}
+const useActivityItem = (
+  item: AnyTransaction | PendingTransaction,
+  address: string,
+  dateFormat?: string,
+) => {
+  const [displayValues, setDisplayValues] = useState<TxnDisplayVals>({
+    backgroundColor: 'white',
+    backgroundColorKey: 'white',
+    title: '',
+    amount: '',
+    time: '',
+    isFee: false,
+    fee: '',
+  })
   const { hntBalanceToDisplayVal } = useCurrency()
   const colors = useColors()
   const { t } = useTranslation()
 
-  const isSending = useCallback(
-    (item: AnyTransaction | PendingTransaction) => {
-      return isPayer(address, item)
-    },
-    [address],
+  const isSending = useMemo(() => {
+    return isPayer(address, item)
+  }, [address, item])
+
+  const isSelling = useMemo(
+    () => (item as TransferHotspotV1).seller === address,
+    [address, item],
   )
 
-  const isSelling = useCallback(
-    (item: AnyTransaction | PendingTransaction) =>
-      (item as TransferHotspotV1).seller === address,
-    [address],
-  )
+  const backgroundColorKey = useMemo(() => {
+    if (!TxnTypeKeys.find((k) => k === item.type)) {
+      return 'redMain'
+    }
 
-  const backgroundColorKey = useCallback(
-    (item: AnyTransaction | PendingTransaction) => {
-      if (!TxnTypeKeys.find((k) => k === item.type)) {
-        return 'redMain'
-      }
+    switch (item.type as TxnType) {
+      case 'transfer_hotspot_v1':
+      case 'add_gateway_v1':
+        return 'purple100'
+      case 'payment_v1':
+      case 'payment_v2':
+        return isSending ? 'blueBright' : 'greenMain'
+      case 'assert_location_v1':
+        return 'purpleMuted'
+      case 'rewards_v1':
+        return 'purpleBright'
+      case 'token_burn_v1':
+        return 'orange'
+    }
+  }, [isSending, item])
 
-      switch (item.type as TxnType) {
-        case 'transfer_hotspot_v1':
-        case 'add_gateway_v1':
-          return 'purple100'
-        case 'payment_v1':
-        case 'payment_v2':
-          return isSending(item) ? 'blueBright' : 'greenMain'
-        case 'assert_location_v1':
-          return 'purpleMuted'
-        case 'rewards_v1':
-          return 'purpleBright'
-        case 'token_burn_v1':
-          return 'orange'
-      }
-    },
-    [isSending],
-  )
-  const backgroundColor = useCallback(
-    (item: AnyTransaction | PendingTransaction) =>
-      colors[backgroundColorKey(item)],
-    [colors, backgroundColorKey],
-  )
+  const backgroundColor = useMemo(() => colors[backgroundColorKey], [
+    colors,
+    backgroundColorKey,
+  ])
 
-  const title = useCallback(
-    (item: AnyTransaction | PendingTransaction) => {
-      if (!TxnTypeKeys.find((k) => k === item.type)) {
-        return startCase(item.type)
-      }
+  const title = useMemo(() => {
+    if (!TxnTypeKeys.find((k) => k === item.type)) {
+      return startCase(item.type)
+    }
 
-      switch (item.type as TxnType) {
-        case 'add_gateway_v1':
-          return t('transactions.added')
-        case 'payment_v1':
-        case 'payment_v2':
-          return isSending(item)
-            ? t('transactions.sent')
-            : t('transactions.received')
-        case 'assert_location_v1':
-          return t('transactions.location')
-        case 'transfer_hotspot_v1':
-          return isSelling(item)
-            ? t('transactions.transferSell')
-            : t('transactions.transferBuy')
-        case 'rewards_v1':
-          return t('transactions.mining')
-        case 'token_burn_v1':
-          return t('transactions.burnHNT')
-      }
-    },
-    [isSending, isSelling, t],
-  )
+    switch (item.type as TxnType) {
+      case 'add_gateway_v1':
+        return t('transactions.added')
+      case 'payment_v1':
+      case 'payment_v2':
+        return isSending ? t('transactions.sent') : t('transactions.received')
+      case 'assert_location_v1':
+        return t('transactions.location')
+      case 'transfer_hotspot_v1':
+        return isSelling
+          ? t('transactions.transferSell')
+          : t('transactions.transferBuy')
+      case 'rewards_v1':
+        return t('transactions.mining')
+      case 'token_burn_v1':
+        return t('transactions.burnHNT')
+    }
+  }, [isSending, isSelling, t, item])
 
-  const detailIcon = useCallback(
-    (item: AnyTransaction | PendingTransaction) => {
-      switch (item.type as TxnType) {
-        case 'transfer_hotspot_v1':
-          return <HotspotTransfer height={20} width={50} />
-        case 'payment_v1':
-        case 'payment_v2':
-          return isSending(item) ? (
-            <SentHnt width={35} height={24} />
-          ) : (
-            <ReceivedHnt width={35} height={24} />
-          )
-        case 'assert_location_v1':
-          return <Location width={20} height={23} />
-        case 'rewards_v1':
-          return <Rewards width={26} height={26} />
-        case 'token_burn_v1':
-          return <Burn width={23} height={28} />
-        case 'add_gateway_v1':
-        default:
-          return <HotspotAdded width={20} height={20} />
-      }
-    },
-    [isSending],
-  )
+  const detailIcon = useMemo(() => {
+    switch (item.type as TxnType) {
+      case 'transfer_hotspot_v1':
+        return <HotspotTransfer height={20} width={50} />
+      case 'payment_v1':
+      case 'payment_v2':
+        return isSending ? (
+          <SentHnt width={35} height={24} />
+        ) : (
+          <ReceivedHnt width={35} height={24} />
+        )
+      case 'assert_location_v1':
+        return <Location width={20} height={23} />
+      case 'rewards_v1':
+        return <Rewards width={26} height={26} />
+      case 'token_burn_v1':
+        return <Burn width={23} height={28} />
+      case 'add_gateway_v1':
+      default:
+        return <HotspotAdded width={20} height={20} />
+    }
+  }, [isSending, item.type])
 
-  const listIcon = useCallback(
-    (item: AnyTransaction | PendingTransaction) => {
-      switch (item.type as TxnType) {
-        case 'payment_v1':
-        case 'payment_v2':
-          return isSending(item) ? (
-            <SentHnt width={32} height={18} />
-          ) : (
-            <ReceivedHnt width={32} height={18} />
-          )
-        case 'assert_location_v1':
-          return <Location width={20} height={23} />
-        case 'rewards_v1':
-          return <Rewards width={26} height={26} />
-        case 'token_burn_v1':
-          return <Burn width={23} height={28} />
-        case 'transfer_hotspot_v1':
-        case 'add_gateway_v1':
-        default:
-          return <HotspotAdded width={20} height={20} />
-      }
-    },
-    [isSending],
-  )
+  const listIcon = useMemo(() => {
+    switch (item.type as TxnType) {
+      case 'payment_v1':
+      case 'payment_v2':
+        return isSending ? (
+          <SentHnt width={32} height={18} />
+        ) : (
+          <ReceivedHnt width={32} height={18} />
+        )
+      case 'assert_location_v1':
+        return <Location width={20} height={23} />
+      case 'rewards_v1':
+        return <Rewards width={26} height={26} />
+      case 'token_burn_v1':
+        return <Burn width={23} height={28} />
+      case 'transfer_hotspot_v1':
+      case 'add_gateway_v1':
+      default:
+        return <HotspotAdded width={20} height={20} />
+    }
+  }, [isSending, item.type])
 
-  const isFee = useCallback(
-    (item: AnyTransaction | PendingTransaction) => {
-      if (item instanceof PaymentV1 || item instanceof PaymentV2) {
-        return isSending(item)
-      }
+  const isFee = useMemo(() => {
+    if (item instanceof PaymentV1 || item instanceof PaymentV2) {
+      return isSending
+    }
 
-      if (item instanceof RewardsV1) {
-        return false
-      }
+    if (item instanceof RewardsV1) {
+      return false
+    }
 
-      if (item instanceof TransferHotspotV1) {
-        return (item as TransferHotspotV1).seller === address
-      }
+    if (item instanceof TransferHotspotV1) {
+      return (item as TransferHotspotV1).seller === address
+    }
 
-      return true
-    },
-    [isSending, address],
-  )
+    return true
+  }, [item, isSending, address])
 
   const formatAmount = useCallback(
-    (
+    async (
       prefix: '-' | '+',
       amount?: Balance<DataCredits | NetworkTokens> | number,
-    ) => {
+    ): Promise<string> => {
       if (!amount) return ''
 
       if (typeof amount === 'number') {
@@ -203,7 +207,7 @@ const useActivityItem = (address: string) => {
       }
 
       if (amount instanceof Balance && amount.type.ticker === 'HNT') {
-        const display = hntBalanceToDisplayVal(amount, false, 8)
+        const display = await hntBalanceToDisplayVal(amount, false, 8)
         return `${prefix}${display}`
       }
 
@@ -215,124 +219,136 @@ const useActivityItem = (address: string) => {
     [hntBalanceToDisplayVal],
   )
 
-  const fee = useCallback(
-    (item: AnyTransaction | PendingTransaction) => {
-      if (item instanceof RewardsV1) {
-        return ''
+  const fee = useMemo(async () => {
+    if (item instanceof RewardsV1) {
+      return ''
+    }
+
+    if (item instanceof TransferHotspotV1) {
+      if (!isSelling) return ''
+
+      return formatAmount('-', item.fee)
+    }
+
+    if (
+      item instanceof AddGatewayV1 ||
+      item instanceof AssertLocationV1 ||
+      item instanceof TokenBurnV1
+    ) {
+      return formatAmount('-', item.fee)
+    }
+
+    if (item instanceof PaymentV1 || item instanceof PaymentV2) {
+      if (address !== item.payer) return ''
+      return formatAmount('-', item.fee)
+    }
+
+    const pendingTxn = item as PendingTransaction
+    if (pendingTxn.txn !== undefined) {
+      return formatAmount('-', pendingTxn.txn.fee)
+    }
+
+    return formatAmount('-', (item as AddGatewayV1).fee)
+  }, [address, formatAmount, isSelling, item])
+
+  const amount = useMemo(() => {
+    if (item instanceof TransferHotspotV1) {
+      return formatAmount(isSelling ? '+' : '-', item.amountToSeller)
+    }
+    if (item instanceof AssertLocationV1 || item instanceof AddGatewayV1) {
+      return formatAmount('-', item.stakingFee)
+    }
+    if (item instanceof TokenBurnV1) {
+      return formatAmount('-', item.amount)
+    }
+    if (item instanceof RewardsV1) {
+      return formatAmount('+', item.totalAmount)
+    }
+    if (item instanceof PaymentV1) {
+      return formatAmount(item.payer === address ? '-' : '+', item.amount)
+    }
+    if (item instanceof PaymentV2) {
+      if (item.payer === address) {
+        return formatAmount('-', item.totalAmount)
       }
 
-      if (item instanceof TransferHotspotV1) {
-        if (!isSelling(item)) return ''
+      const payment = item.payments.find((p) => p.payee === address)
+      return formatAmount('+', payment?.amount)
+    }
 
-        return formatAmount('-', item.fee)
+    const pendingTxn = item as PendingTransaction
+    if (pendingTxn.txn !== undefined) {
+      if (pendingTxn.type === 'add_gateway_v1') {
+        return formatAmount('-', (pendingTxn.txn as AddGatewayV1).stakingFee)
       }
-
-      if (
-        item instanceof AddGatewayV1 ||
-        item instanceof AssertLocationV1 ||
-        item instanceof TokenBurnV1
-      ) {
-        return formatAmount('-', item.fee)
+      if (pendingTxn.type === 'assert_location_v1') {
+        return formatAmount(
+          '-',
+          (pendingTxn.txn as AssertLocationV1).stakingFee,
+        )
       }
-
-      if (item instanceof PaymentV1 || item instanceof PaymentV2) {
-        if (address !== item.payer) return ''
-        return formatAmount('-', item.fee)
-      }
-
-      const pendingTxn = item as PendingTransaction
-      if (pendingTxn.txn !== undefined) {
-        return formatAmount('-', pendingTxn.txn.fee)
-      }
-
-      return formatAmount('-', (item as AddGatewayV1).fee)
-    },
-    [address, formatAmount, isSelling],
-  )
-
-  const amount = useCallback(
-    (item: AnyTransaction | PendingTransaction) => {
-      if (item instanceof TransferHotspotV1) {
-        return formatAmount(isSelling(item) ? '+' : '-', item.amountToSeller)
-      }
-      if (item instanceof AssertLocationV1 || item instanceof AddGatewayV1) {
-        return formatAmount('-', item.stakingFee)
-      }
-      if (item instanceof TokenBurnV1) {
-        return formatAmount('-', item.amount)
-      }
-      if (item instanceof RewardsV1) {
-        return formatAmount('+', item.totalAmount)
-      }
-      if (item instanceof PaymentV1) {
-        return formatAmount(item.payer === address ? '-' : '+', item.amount)
-      }
-      if (item instanceof PaymentV2) {
-        if (item.payer === address) {
-          return formatAmount('-', item.totalAmount)
+      if (pendingTxn.type === 'payment_v2') {
+        const paymentV2 = pendingTxn.txn as PaymentV2
+        if (paymentV2.payer === address) {
+          return formatAmount('-', paymentV2.totalAmount)
         }
 
-        const payment = item.payments.find((p) => p.payee === address)
+        const payment = paymentV2.payments.find((p) => p.payee === address)
         return formatAmount('+', payment?.amount)
       }
 
-      const pendingTxn = item as PendingTransaction
-      if (pendingTxn.txn !== undefined) {
-        if (pendingTxn.type === 'add_gateway_v1') {
-          return formatAmount('-', (pendingTxn.txn as AddGatewayV1).stakingFee)
-        }
-        if (pendingTxn.type === 'assert_location_v1') {
-          return formatAmount(
-            '-',
-            (pendingTxn.txn as AssertLocationV1).stakingFee,
-          )
-        }
-        if (pendingTxn.type === 'payment_v2') {
-          const paymentV2 = pendingTxn.txn as PaymentV2
-          if (paymentV2.payer === address) {
-            return formatAmount('-', paymentV2.totalAmount)
-          }
+      return formatAmount(isFee ? '-' : '+', pendingTxn.txn.fee)
+    }
+    return ''
+  }, [address, formatAmount, isFee, isSelling, item])
 
-          const payment = paymentV2.payments.find((p) => p.payee === address)
-          return formatAmount('+', payment?.amount)
-        }
+  const time = useMemo(() => {
+    const pending = item as PendingTransaction
+    if (pending.status === 'pending') {
+      return t('transactions.pending')
+    }
+    const val = fromUnixTime((item as AddGatewayV1).time)
 
-        return formatAmount(isFee(item) ? '-' : '+', pendingTxn.txn.fee)
-      }
-      return ''
-    },
-    [address, formatAmount, isFee, isSelling],
-  )
+    if (!dateFormat)
+      return formatDistanceToNow(val, {
+        locale: shortLocale,
+        addSuffix: true,
+      })
+    return format(val, dateFormat)
+  }, [dateFormat, item, t])
 
-  const time = useCallback(
-    (item: AnyTransaction | PendingTransaction, dateFormat?: string) => {
-      const pending = item as PendingTransaction
-      if (pending.status === 'pending') {
-        return t('transactions.pending')
-      }
-      const val = fromUnixTime((item as AddGatewayV1).time)
+  useEffect(() => {
+    const createTxnDisplayData = async () => {
+      const amt = await amount
+      const f = await fee
+      const nextVals = {
+        backgroundColor,
+        backgroundColorKey,
+        title,
+        listIcon,
+        detailIcon,
+        amount: amt,
+        time,
+        isFee,
+        fee: f,
+      } as TxnDisplayVals
+      setDisplayValues(nextVals)
+    }
 
-      if (!dateFormat)
-        return formatDistanceToNow(val, {
-          locale: shortLocale,
-          addSuffix: true,
-        })
-      return format(val, dateFormat)
-    },
-    [t],
-  )
-
-  return {
+    createTxnDisplayData()
+  }, [
+    amount,
     backgroundColor,
     backgroundColorKey,
-    title,
-    listIcon,
     detailIcon,
-    amount,
-    time,
-    isFee,
     fee,
-  }
+    isFee,
+    listIcon,
+    time,
+    title,
+  ])
+
+  return displayValues
 }
 
 export default useActivityItem

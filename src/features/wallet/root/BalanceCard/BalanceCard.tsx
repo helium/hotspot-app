@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useCallback, useEffect, useState } from 'react'
 import { useAsync } from 'react-async-hook'
 import QRCode from 'react-qr-code'
 import { useSelector } from 'react-redux'
@@ -35,15 +35,20 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
     isEqual,
   )
 
-  useEffect(() => {
+  const updateBalanceInfo = useCallback(async () => {
     const hasBalance = account?.balance?.integerBalance !== 0
     if (account?.balance && hasBalance) {
+      const balInfo = await hntBalanceToDisplayVal(account.balance, true)
       setBalanceInfo({
         hasBalance,
-        ...hntBalanceToDisplayVal(account.balance, true),
+        ...balInfo,
       })
     }
   }, [account?.balance, hntBalanceToDisplayVal])
+
+  useEffect(() => {
+    updateBalanceInfo()
+  }, [updateBalanceInfo])
 
   return (
     <Box
