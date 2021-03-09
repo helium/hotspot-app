@@ -638,8 +638,7 @@ export default {
     title: 'Hotspot Settings',
     pairing: {
       title: 'Hotspot Pairing Required',
-      subtitle:
-        'Press the button on your Helium Hotspot, or power-cycle your RAK Hotspot Miner.',
+      subtitle: 'Place your Hotspot in Bluetooth pairing mode.',
       scan: 'Scan for my Hotspot',
     },
     transfer: {
