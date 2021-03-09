@@ -221,19 +221,6 @@ const HotspotsView = ({ ownedHotspots, startOnMap, location }: Props) => {
       selectedHotspot?.lat !== undefined && selectedHotspot?.lng !== undefined
     )
   }, [selectedHotspot])
-  const selectedHotspots = useMemo(
-    () => (selectedHotspot && hasLocation ? [selectedHotspot] : undefined),
-    [selectedHotspot, hasLocation],
-  )
-  const mapCenter = useMemo(() => {
-    if (selectedHotspot) {
-      return [selectedHotspot.lng || 0, selectedHotspot.lat || 0]
-    }
-    if (ownedHotspots && ownedHotspots[0]) {
-      return [ownedHotspots[0].lng || 0, ownedHotspots[0].lat || 0]
-    }
-    return location || [0, 0]
-  }, [selectedHotspot, ownedHotspots, location])
 
   return (
     <Box flex={1} flexDirection="column" justifyContent="space-between">
@@ -249,13 +236,12 @@ const HotspotsView = ({ ownedHotspots, startOnMap, location }: Props) => {
       >
         <Map
           ownedHotspots={ownedHotspots}
-          selectedHotspots={selectedHotspots}
-          zoomLevel={14}
-          mapCenter={mapCenter}
+          selectedHotspot={selectedHotspot}
+          maxZoomLevel={14}
           witnesses={showWitnesses ? witnesses : []}
+          mapCenter={location}
           animationMode="easeTo"
-          animationDuration={500}
-          offsetCenterRatio={2.2}
+          animationDuration={800}
           onFeatureSelected={onMapHotspotSelected}
           interactive={hasLocation}
           showNoLocation={!hasLocation}
