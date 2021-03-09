@@ -2,6 +2,7 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { ActivityIndicator, TouchableWithoutFeedback } from 'react-native'
 import { isEqual } from 'lodash'
 import { useSelector } from 'react-redux'
+import { add } from 'date-fns'
 import ChartContainer from './ChartContainer'
 import CarotLeft from '../../assets/images/carot-left.svg'
 import CarotRight from '../../assets/images/carot-right.svg'
@@ -16,6 +17,7 @@ import accountSlice, {
   fetchActivityChart,
 } from '../../store/account/accountSlice'
 import useCurrency from '../../utils/useCurrency'
+import { locale } from '../../utils/i18n'
 
 type Props = {
   height: number
@@ -44,6 +46,7 @@ const WalletChart = ({ height }: Props) => {
     }
     setValues()
   }, [focusedData?.down, focusedData?.up, hntToDisplayVal])
+  const [dataRange, setDataRange] = useState('')
 
   const data = useMemo(() => activityChart[activityChartRange].data, [
     activityChart,
@@ -59,6 +62,12 @@ const WalletChart = ({ height }: Props) => {
   const headerHeight = 30
   const padding = 20
   const chartHeight = useMemo(() => height - headerHeight - padding, [height])
+  const containerStyle = useMemo(
+    () => ({
+      paddingVertical: padding / 2,
+    }),
+    [],
+  )
 
   const changeTimeframe = useCallback(
     (range: ChartRange) => () => {
@@ -68,78 +77,123 @@ const WalletChart = ({ height }: Props) => {
     [dispatch, triggerImpact],
   )
 
-  const handleFocusData = useCallback((chartData: ChartData | null): void => {
-    setFocusedData(chartData)
-  }, [])
+  const handleFocusData = useCallback(
+    (chartData: ChartData | null): void => {
+      setFocusedData(chartData)
+
+      if (!chartData?.timestamp || activityChartRange !== 'monthly') return
+
+      const startDate = new Date(chartData.timestamp)
+      const endDate = add(startDate, { days: 29 })
+
+      const start = startDate.toLocaleDateString(locale, {
+        day: 'numeric',
+        month: 'short',
+      })
+      const end = endDate.toLocaleDateString(locale, {
+        day: 'numeric',
+        month: 'short',
+      })
+
+      setDataRange(`${start} - ${end}`)
+    },
+    [activityChartRange],
+  )
+
+  const showDataRange = useMemo(
+    () => activityChartRange === 'monthly' && !!focusedData,
+    [activityChartRange, focusedData],
+  )
 
   const { greenBright } = useColors()
 
-  const containerStyle = useMemo(() => ({ paddingVertical: padding / 2 }), [])
-  const arrowStyle = useMemo(
-    () => ({
-      flexDirection: 'row',
-      alignItems: 'center',
-      width: 200,
-    }),
-    [],
-  )
   return (
     <Box justifyContent="space-around" style={containerStyle}>
       <Box
         flexDirection="row"
-        justifyContent="space-between"
         height={headerHeight}
+        paddingBottom="s"
+        justifyContent="flex-end"
+        alignItems="center"
       >
-        <Box flexDirection="row" flex={1.5}>
-          {focusedData && (
-            <>
-              <Box flexDirection="row" alignItems="center" marginRight="s">
-                <CarotLeft
-                  width={12}
-                  height={12}
-                  stroke={greenBright}
-                  strokeWidth={2}
-                />
-                <Text variant="body2" marginLeft="xs">
-                  {up}
-                </Text>
-              </Box>
+        {focusedData && (
+          <>
+            <CarotLeft
+              width={12}
+              height={12}
+              stroke={greenBright}
+              strokeWidth={2}
+            />
+            <Text
+              variant="body2"
+              fontSize={16}
+              maxFontSizeMultiplier={1.1}
+              marginLeft="xxs"
+              marginRight="xs"
+            >
+              {up}
+            </Text>
 
-              <Box style={arrowStyle}>
-                <CarotRight width={12} height={12} />
-                <Text variant="body2" marginLeft="s">
-                  {down}
-                </Text>
-              </Box>
-            </>
-          )}
-        </Box>
-        <Box flex={1} flexDirection="row" justifyContent="space-between">
-          <TouchableWithoutFeedback onPress={changeTimeframe('daily')}>
+            <CarotRight width={12} height={12} />
             <Text
               variant="body1"
-              opacity={activityChartRange === 'daily' ? 1 : 0.3}
+              maxFontSizeMultiplier={1.1}
+              fontSize={16}
+              marginLeft="xs"
+              flex={1}
             >
-              14D
+              {down}
             </Text>
-          </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback onPress={changeTimeframe('weekly')}>
-            <Text
-              variant="body1"
-              opacity={activityChartRange === 'weekly' ? 1 : 0.3}
-            >
-              12W
-            </Text>
-          </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback onPress={changeTimeframe('monthly')}>
-            <Text
-              variant="body1"
-              opacity={activityChartRange === 'monthly' ? 1 : 0.3}
-            >
-              12M
-            </Text>
-          </TouchableWithoutFeedback>
-        </Box>
+          </>
+        )}
+        {!showDataRange && (
+          <>
+            <TouchableWithoutFeedback onPress={changeTimeframe('daily')}>
+              <Text
+                variant="body1"
+                maxFontSizeMultiplier={1.1}
+                paddingRight="m"
+                fontSize={16}
+                opacity={activityChartRange === 'daily' ? 1 : 0.3}
+              >
+                14D
+              </Text>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback onPress={changeTimeframe('weekly')}>
+              <Text
+                paddingRight="m"
+                maxFontSizeMultiplier={1.1}
+                variant="body1"
+                fontSize={16}
+                opacity={activityChartRange === 'weekly' ? 1 : 0.3}
+              >
+                12W
+              </Text>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback onPress={changeTimeframe('monthly')}>
+              <Text
+                maxFontSizeMultiplier={1.1}
+                fontSize={16}
+                variant="body1"
+                opacity={activityChartRange === 'monthly' ? 1 : 0.3}
+              >
+                12M
+              </Text>
+            </TouchableWithoutFeedback>
+          </>
+        )}
+        {showDataRange && (
+          <Text
+            variant="body2"
+            adjustsFontSizeToFit
+            numberOfLines={1}
+            color="white"
+            fontSize={16}
+            maxFontSizeMultiplier={1}
+          >
+            {dataRange}
+          </Text>
+        )}
       </Box>
       {data.length === 0 && (
         <Box
@@ -155,6 +209,7 @@ const WalletChart = ({ height }: Props) => {
         height={chartHeight}
         data={data}
         onFocus={handleFocusData}
+        showXAxisLabel={activityChartRange !== 'monthly'}
       />
     </Box>
   )
