@@ -39,7 +39,7 @@
   "dependencies": {
     "@burstware/react-native-portal": "^1.0.2",
     "@expo/react-native-action-sheet": "^3.8.0",
-    "@gorhom/bottom-sheet": "^3.3.1",
+    "@gorhom/bottom-sheet": "^3.4.0",
     "@helium/crypto-react-native": "^3.9.0",
     "@helium/currency": "^3.23.0",
     "@helium/http": "^3.23.0",
@@ -94,7 +94,7 @@
     "react-native-currency-format": "^1.0.19",
     "react-native-device-info": "^7.1.0",
     "react-native-emoji": "^1.8.0",
-    "react-native-gesture-handler": "1.9.0",
+    "react-native-gesture-handler": "1.10.3",
     "react-native-keyboard-aware-scroll-view": "^0.9.3",
     "react-native-localize": "^1.4.3",
     "react-native-navigation-bar-color": "^2.0.1",

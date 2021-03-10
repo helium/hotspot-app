@@ -625,6 +625,7 @@ export default {
     transferSell: 'Transfer Hotspot (Sell)',
     transferBuy: 'Transfer Hotspot (Buy)',
     view: 'View',
+    view_transactions: 'View Transactions',
     filter: {
       all: 'All Activity',
       mining: 'Mining Rewards',
