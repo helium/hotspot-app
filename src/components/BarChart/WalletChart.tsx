@@ -105,7 +105,7 @@ const WalletChart = ({ height }: Props) => {
     [activityChartRange, focusedData],
   )
 
-  const { greenBright } = useColors()
+  const { greenBright, blueBright } = useColors()
 
   return (
     <Box justifyContent="space-around" style={containerStyle}>
@@ -134,7 +134,7 @@ const WalletChart = ({ height }: Props) => {
               {up}
             </Text>
 
-            <CarotRight width={12} height={12} />
+            <CarotRight color={blueBright} width={12} height={12} />
             <Text
               variant="body1"
               maxFontSizeMultiplier={1.1}
@@ -184,6 +184,7 @@ const WalletChart = ({ height }: Props) => {
         )}
         {showDataRange && (
           <Text
+            maxWidth={150}
             variant="body2"
             adjustsFontSizeToFit
             numberOfLines={1}
