@@ -16,7 +16,7 @@ export default async ({
   lastChallengeDate,
   reportGenerated,
   gateway,
-  hotspotType,
+  hotspotMaker,
   appVersion,
 }: {
   eth: string
@@ -30,7 +30,7 @@ export default async ({
   lastChallengeDate: string
   reportGenerated: string
   gateway: string
-  hotspotType: string
+  hotspotMaker: string
   appVersion: string
 }) => {
   const deviceNameAndOS = () => {
@@ -44,7 +44,7 @@ export default async ({
 
   const body = [
     `Hotspot: ${kebabCase(animalHash(gateway))}`,
-    `Hotspot Type: ${hotspotType}`,
+    `Hotspot Maker: ${hotspotMaker}`,
     `Address: ${gateway}`,
     `Connected to Blockchain: ${connected}`,
     `Dialable: ${dialable}`,

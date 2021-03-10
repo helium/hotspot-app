@@ -668,7 +668,7 @@ export default {
       last_challenged_help:
         'Neighboring Hotspots have not been able to verify your Hotspot location. In most cases, this is because the antenna is in an area where radio signals can’t reach (buildings blocking, antenna pointed down, antenna indoors).',
       firmware: 'Hotspot Firmware',
-      hotspot_type: 'Hotspot Type',
+      hotspot_type: 'Hotspot Maker',
       app_version: 'App Version',
       wifi_mac: 'Wi-Fi MAC',
       eth_mac: 'Ethernet MAC',

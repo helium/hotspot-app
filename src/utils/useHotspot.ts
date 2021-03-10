@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react'
 import { BleError, Device, Subscription } from 'react-native-ble-plx'
-import validator from 'validator'
 import compareVersions from 'compare-versions'
 import { Balance, CurrencyType } from '@helium/currency'
 import { useSelector } from 'react-redux'
@@ -32,9 +31,7 @@ import { calculateAddGatewayFee, calculateAssertLocFee } from './fees'
 import connectedHotspotSlice, {
   AllHotspotDetails,
   fetchHotspotDetails,
-  HotspotName,
   HotspotStatus,
-  HotspotType,
 } from '../store/connectedHotspot/connectedHotspotSlice'
 import { useAppDispatch } from '../store/store'
 import { RootState } from '../store/rootReducer'
@@ -73,34 +70,6 @@ const useHotspot = () => {
   } = useSelector((state: RootState) => state)
 
   // TODO: Move staking calls to redux
-
-  // helium hotspot uses b58 onboarding address and RAK is uuid v4
-  const getHotspotType = (onboardingAddress: string): HotspotType =>
-    validator.isUUID(addUuidDashes(onboardingAddress)) ? 'RAK' : 'Helium'
-
-  const addUuidDashes = (s = '') =>
-    `${s.substr(0, 8)}-${s.substr(8, 4)}-${s.substr(12, 4)}-${s.substr(
-      16,
-      4,
-    )}-${s.substr(20)}`
-
-  const getHotspotName = (type: HotspotType): HotspotName => {
-    switch (type) {
-      case 'RAK':
-        return 'RAK Hotspot Miner'
-      case 'NEBRAIN':
-        return 'Nebra Indoor Hotspot'
-      case 'NEBRAOUT':
-        return 'Nebra Indoor Hotspot'
-      case 'Bobcat':
-        return 'Bobcat Miner 300'
-      case 'SYNCROBIT':
-        return 'SyncroB.it Hotspot'
-      default:
-      case 'Helium':
-        return 'Helium Hotspot'
-    }
-  }
 
   const scanForHotspots = async (ms: number) => {
     setAvailableHotspots({})
@@ -174,8 +143,6 @@ const useHotspot = () => {
       HotspotCharacteristic.ONBOARDING_KEY_UUID,
     )
 
-    const type = getHotspotType(onboardingAddress || '')
-    const name = getHotspotName(type)
     const mac = hotspotDevice.localName?.slice(15)
 
     if (!onboardingAddress || onboardingAddress.length < 20) {
@@ -187,8 +154,6 @@ const useHotspot = () => {
     const details = {
       address,
       mac,
-      type,
-      name,
       wifi,
       ethernetOnline,
       onboardingAddress,

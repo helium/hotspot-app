@@ -34,8 +34,6 @@ export type HotspotDetails = {
   mac?: string
   address?: string
   wifi?: string
-  type?: HotspotType
-  name?: HotspotName
   onboardingRecord?: OnboardingRecord
   onboardingAddress?: string
   firmware?: {

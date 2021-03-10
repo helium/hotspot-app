@@ -73,16 +73,14 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
   const { version } = useDevice()
   const { t } = useTranslation()
   const {
-    connectedHotspot: {
-      activity: {
-        challenge_activity: { data: challenges },
-      },
-      type,
-      firmware,
-      address,
+    activity: {
+      challenge_activity: { data: challenges },
     },
-    heliumData: { blockHeight },
-  } = useSelector((state: RootState) => state)
+    firmware,
+    address,
+    onboardingRecord,
+  } = useSelector((state: RootState) => state.connectedHotspot)
+  const { blockHeight } = useSelector((state: RootState) => state.heliumData)
   const dispatch = useAppDispatch()
   const { enableBack } = useHotspotSettingsContext()
 
@@ -107,7 +105,7 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
     setLineItems([
       {
         attribute: t('hotspot_settings.diagnostics.hotspot_type'),
-        value: type,
+        value: onboardingRecord?.maker?.name || 'Unknown',
       },
       {
         attribute: t('hotspot_settings.diagnostics.firmware'),
@@ -138,7 +136,14 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
         value: format(fromUnixTime(info.currentTime), DF),
       },
     ])
-  }, [diagnostics, firmware, t, type, version, info.currentTime])
+  }, [
+    diagnostics,
+    firmware,
+    t,
+    version,
+    info.currentTime,
+    onboardingRecord?.maker?.name,
+  ])
 
   useEffect(() => {
     if (!firmware?.version) {
@@ -212,7 +217,7 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
       lastChallengeDate: format(fromUnixTime(info.lastChallengeTime), DF),
       reportGenerated: format(fromUnixTime(info.currentTime), DF),
       gateway: address || '',
-      hotspotType: type || '',
+      hotspotMaker: onboardingRecord?.maker?.name || 'Unknown',
       appVersion: version,
     })
   }
