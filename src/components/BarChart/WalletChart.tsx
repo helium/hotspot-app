@@ -134,7 +134,7 @@ const WalletChart = ({ height }: Props) => {
               {up}
             </Text>
 
-            <CarotRight stroke={blueBright} width={12} height={12} />
+            <CarotRight color={blueBright} width={12} height={12} />
             <Text
               variant="body1"
               maxFontSizeMultiplier={1.1}
@@ -184,7 +184,7 @@ const WalletChart = ({ height }: Props) => {
         )}
         {showDataRange && (
           <Text
-            maxWidth={190}
+            maxWidth={150}
             variant="body2"
             adjustsFontSizeToFit
             numberOfLines={1}
