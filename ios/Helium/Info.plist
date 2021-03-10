@@ -38,7 +38,7 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Allow Helium to use your location to add your Helium Hotspots to the network</string>
+	<string>Allow Helium to use your location to add your Helium Hotspots to the network and explore Hotspots around you</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Allow Helium to authenticate with Face ID</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
