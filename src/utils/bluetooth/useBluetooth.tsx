@@ -35,9 +35,7 @@ const useBluetooth = () => {
 
   const getState = async () => getBleManager().state()
 
-  const enable = async () => {
-    getBleManager().enable()
-  }
+  const enable = async () => getBleManager().enable()
 
   const connect = async (
     hotspotDevice: Device,
