@@ -4,7 +4,6 @@ import {
   BottomSheetBackdrop,
   BottomSheetFlatList,
   BottomSheetModal,
-  TouchableOpacity,
 } from '@gorhom/bottom-sheet'
 import Close from '@assets/images/close.svg'
 import CarotDown from '@assets/images/carot-down-picker.svg'
@@ -18,6 +17,7 @@ import HeliumActionSheetItem, {
 import { useColors, useSpacing } from '../theme/themeHooks'
 import Text from './Text'
 import Box from './Box'
+import TouchableOpacityBox from './TouchableOpacityBox'
 
 type Props = BoxProps<Theme> & {
   data: Array<HeliumActionSheetItemType>
@@ -99,40 +99,42 @@ const HeliumActionSheet = ({
         flexDirection="row"
         borderBottomWidth={1}
         borderBottomColor="purpleGray"
+        marginTop="s"
         marginBottom="m"
-        marginTop="l"
-        paddingBottom="m"
-        alignItems="center"
         justifyContent="space-between"
+        alignItems="center"
       >
         <Text color="purpleGray" variant="body2">
           {title}
         </Text>
-        <Box>
-          <TouchableOpacity onPress={handleClose}>
-            <Close color={purpleGray} height={12} width={12} />
-          </TouchableOpacity>
-        </Box>
+        <TouchableOpacityBox
+          onPress={handleClose}
+          height={50}
+          justifyContent="center"
+          paddingHorizontal="m"
+          marginEnd="n_m"
+        >
+          <Close color={purpleGray} height={14} width={14} />
+        </TouchableOpacityBox>
       </Box>
     )
   }, [handleClose, purpleGray, title])
 
   const footer = useMemo(() => {
     return (
-      <TouchableOpacity onPress={handleClose}>
-        <Box
-          style={styles.cancelContainer}
-          height={49}
-          marginTop="m"
-          alignItems="center"
-          justifyContent="center"
-          borderRadius="ms"
-        >
-          <Text variant="medium" fontSize={18} style={styles.cancelText}>
-            {t('generic.cancel')}
-          </Text>
-        </Box>
-      </TouchableOpacity>
+      <TouchableOpacityBox
+        onPress={handleClose}
+        style={styles.cancelContainer}
+        height={49}
+        marginTop="m"
+        alignItems="center"
+        justifyContent="center"
+        borderRadius="ms"
+      >
+        <Text variant="medium" fontSize={18} style={styles.cancelText}>
+          {t('generic.cancel')}
+        </Text>
+      </TouchableOpacityBox>
     )
   }, [handleClose, t])
 
@@ -141,17 +143,19 @@ const HeliumActionSheet = ({
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...boxProps}
     >
-      <TouchableOpacity onPress={handlePresentModalPress}>
-        <Box flexDirection="row" alignItems="center">
-          <Text variant="bold" fontSize={20} color="black">
-            {prefix}
-          </Text>
-          <Text variant="bold" fontSize={20} color="purpleMain" marginRight="s">
-            {buttonTitle}
-          </Text>
-          <CarotDown />
-        </Box>
-      </TouchableOpacity>
+      <TouchableOpacityBox
+        onPress={handlePresentModalPress}
+        flexDirection="row"
+        alignItems="center"
+      >
+        <Text variant="bold" fontSize={20} color="black">
+          {prefix}
+        </Text>
+        <Text variant="bold" fontSize={20} color="purpleMain" marginRight="s">
+          {buttonTitle}
+        </Text>
+        <CarotDown />
+      </TouchableOpacityBox>
       <BottomSheetModal
         ref={modalRef}
         snapPoints={snapPoints}
