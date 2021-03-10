@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, memo } from 'react'
+import React, { memo, useCallback, useEffect } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import { useSelector } from 'react-redux'
@@ -9,7 +9,8 @@ import defaultScreenOptions from './defaultScreenOptions'
 import RootNav from './main/HomeNavigator'
 import { useColors } from '../theme/themeHooks'
 
-const RootStack = createStackNavigator()
+const OnboardingStack = createStackNavigator()
+const MainStack = createStackNavigator()
 
 const NavigationRoot = () => {
   const { isBackedUp } = useSelector((state: RootState) => state.app)
@@ -22,26 +23,29 @@ const NavigationRoot = () => {
   const currentScreen = useCallback(() => {
     if (!isBackedUp)
       return (
-        <RootStack.Screen
-          name="Onboarding"
-          component={Onboarding}
-          options={{ gestureEnabled: false }}
-        />
+        <OnboardingStack.Navigator
+          headerMode="none"
+          screenOptions={defaultScreenOptions}
+        >
+          <OnboardingStack.Screen
+            name="Onboarding"
+            component={Onboarding}
+            options={{ gestureEnabled: false }}
+          />
+        </OnboardingStack.Navigator>
       )
 
-    return <RootStack.Screen name="MainTab" component={RootNav} />
-  }, [isBackedUp])
-
-  return (
-    <NavigationContainer>
-      <RootStack.Navigator
+    return (
+      <MainStack.Navigator
         headerMode="none"
         screenOptions={defaultScreenOptions}
       >
-        {currentScreen()}
-      </RootStack.Navigator>
-    </NavigationContainer>
-  )
+        <MainStack.Screen name="MainTab" component={RootNav} />
+      </MainStack.Navigator>
+    )
+  }, [isBackedUp])
+
+  return <NavigationContainer>{currentScreen()}</NavigationContainer>
 }
 
 export default memo(NavigationRoot)
