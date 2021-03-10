@@ -49,21 +49,7 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locationEnabled])
 
-  const rescan = useCallback(() => {
-    animateTransition()
-    setScanComplete(false)
-  }, [])
-
-  const handleConnectFailure = useCallback(
-    async (messageKey?: string) => {
-      await showOKAlert({ titleKey: 'something went wrong', messageKey })
-      setSelectedHotspot(null)
-      rescan()
-    },
-    [rescan, showOKAlert],
-  )
-
-  const checkBluetooth = async () => {
+  const checkBluetooth = useCallback(async () => {
     const state = await getState()
 
     if (state === 'PoweredOn') {
@@ -92,7 +78,22 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
       await enable()
     }
     setBleEnabled(true)
-  }
+  }, [enable, getState, showOKCancelAlert])
+
+  const rescan = useCallback(async () => {
+    animateTransition()
+    await checkBluetooth()
+    setScanComplete(false)
+  }, [checkBluetooth])
+
+  const handleConnectFailure = useCallback(
+    async (messageKey?: string) => {
+      await showOKAlert({ titleKey: 'something went wrong', messageKey })
+      setSelectedHotspot(null)
+      rescan()
+    },
+    [rescan, showOKAlert],
+  )
 
   useEffect(() => {
     checkLocation()

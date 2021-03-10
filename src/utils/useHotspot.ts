@@ -224,7 +224,8 @@ const useHotspot = () => {
         type: 'invalid' | 'error' | 'connected',
         error?: BleError,
       ) => {
-        if (error) {
+        if (error && subscription) {
+          // only log the error if we're still subscribed
           Logger.error(error)
         }
 
