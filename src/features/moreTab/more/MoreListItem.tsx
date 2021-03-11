@@ -1,11 +1,19 @@
 import React, { memo, useMemo } from 'react'
 import { Linking, Switch } from 'react-native'
-import RNPickerSelect, { Item } from 'react-native-picker-select'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import { useColors, useTextVariants } from '../../../theme/themeHooks'
+import { useColors } from '../../../theme/themeHooks'
 import CarotRight from '../../../assets/images/carot-right.svg'
 import LinkImg from '../../../assets/images/link.svg'
+import HeliumActionSheet from '../../../components/HeliumActionSheet'
+
+export interface Item {
+  label: string
+  value: string
+  key?: string | number
+  color?: string
+  title?: string
+}
 
 export type SelectProps = {
   onDonePress?: () => void
@@ -33,13 +41,6 @@ const MoreListItem = ({
   isBottom?: boolean
 }) => {
   const colors = useColors()
-  const { body2 } = useTextVariants()
-
-  const style = {
-    ...body2,
-    color: colors.purpleMuted,
-    height: '100%',
-  }
 
   const handlePress = () => {
     if (openUrl) {
@@ -88,23 +89,12 @@ const MoreListItem = ({
         />
       )}
       {select && (
-        <RNPickerSelect
-          placeholder={{}}
-          style={{
-            inputIOS: {
-              ...style,
-              lineHeight: 19,
-            },
-            inputAndroid: {
-              ...style,
-            },
-          }}
-          items={select.items}
-          value={value}
-          onValueChange={select.onValueSelect}
-          onDonePress={select.onDonePress}
-          useNativeAndroidPickerStyle={false}
-          fixAndroidTouchableBug
+        <HeliumActionSheet
+          data={select.items}
+          selectedValue={value as string}
+          onValueChanged={select.onValueSelect}
+          listFormat
+          title={title}
         />
       )}
     </TouchableOpacityBox>

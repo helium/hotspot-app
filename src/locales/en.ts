@@ -561,6 +561,7 @@ export default {
     enter_current: 'Enter your current PIN to continue',
   },
   hotspots: {
+    sort_by: 'Sort by',
     new: {
       title: 'Add a New Hotspot',
       subtitle:

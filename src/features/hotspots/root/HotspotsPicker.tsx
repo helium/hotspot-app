@@ -3,13 +3,13 @@ import React, { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import Box from '../../../components/Box'
-import ModalPicker from '../../../components/ModalPicker'
 import hotspotsSlice, {
   HotspotSort,
 } from '../../../store/hotspots/hotspotsSlice'
 import { useAppDispatch } from '../../../store/store'
 import usePermissionManager from '../../../utils/usePermissionManager'
 import { RootState } from '../../../store/rootReducer'
+import HeliumActionSheet from '../../../components/HeliumActionSheet'
 
 const HotspotsPicker = () => {
   const { t, i18n } = useTranslation()
@@ -78,11 +78,12 @@ const HotspotsPicker = () => {
       width="100%"
       paddingHorizontal="l"
     >
-      <ModalPicker
+      <HeliumActionSheet
         // can't assume other languages will have the same prefix
         // structure so we'll just leave it out for non-en
         prefix={i18n.language === 'en' ? 'Your' : undefined}
         data={data}
+        title={t('hotspots.sort_by')}
         selectedValue={order}
         onValueChanged={handleValueChanged}
       />

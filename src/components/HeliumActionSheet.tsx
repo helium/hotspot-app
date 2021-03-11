@@ -1,11 +1,4 @@
-import React, {
-  memo,
-  ReactText,
-  useMemo,
-  useCallback,
-  useState,
-  useEffect,
-} from 'react'
+import React, { memo, useMemo, useCallback, useState, useEffect } from 'react'
 import { BoxProps } from '@shopify/restyle'
 import Close from '@assets/images/close.svg'
 import CarotDown from '@assets/images/carot-down-picker.svg'
@@ -32,11 +25,12 @@ import sleep from '../utils/sleep'
 
 type Props = BoxProps<Theme> & {
   data: Array<HeliumActionSheetItemType>
-  selectedValue: string
-  onValueChanged: (itemValue: ReactText, itemIndex: number) => void
+  selectedValue: string | number
+  onValueChanged: (itemValue: string, itemIndex: number) => void
   title?: string
-  prefix: string
+  prefix?: string
   minWidth?: number
+  listFormat?: boolean
 }
 type ListItem = { item: HeliumActionSheetItemType; index: number }
 
@@ -46,6 +40,7 @@ const HeliumActionSheet = ({
   onValueChanged,
   title,
   prefix,
+  listFormat,
   ...boxProps
 }: Props) => {
   const insets = useSafeAreaInsets()
@@ -149,35 +144,44 @@ const HeliumActionSheet = ({
     )
   }, [handleClose, t])
 
-  return (
-    <Box
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      {...boxProps}
-    >
+  const displayText = useMemo(() => {
+    return (
       <TouchableOpacityBox
         onPress={handlePresentModalPress}
         flexDirection="row"
         alignItems="center"
       >
+        {!!prefix && (
+          <Text
+            variant="bold"
+            fontSize={20}
+            color="black"
+            maxFontSizeMultiplier={1}
+          >
+            {prefix}
+          </Text>
+        )}
         <Text
-          variant="bold"
-          fontSize={20}
-          color="black"
+          variant={listFormat ? 'regular' : 'bold'}
+          fontSize={listFormat ? 16 : 20}
           maxFontSizeMultiplier={1}
-        >
-          {prefix}
-        </Text>
-        <Text
-          variant="bold"
-          fontSize={20}
-          maxFontSizeMultiplier={1}
-          color="purpleMain"
+          color={listFormat ? 'purpleBrightMuted' : 'purpleMain'}
           marginRight="s"
         >
           {buttonTitle}
         </Text>
-        <CarotDown />
+        {!listFormat && <CarotDown />}
       </TouchableOpacityBox>
+    )
+  }, [buttonTitle, handlePresentModalPress, listFormat, prefix])
+
+  return (
+    <Box
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...boxProps}
+    >
+      {displayText}
+
       <Modal
         transparent
         visible={modalVisible}
