@@ -1,7 +1,6 @@
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { AnyTransaction, PendingTransaction, PaymentV1 } from '@helium/http'
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import WalletViewContainer from './WalletViewContainer'
 import Box from '../../../components/Box'
 import ActivityDetails from './ActivityDetails/ActivityDetails'
@@ -162,15 +161,13 @@ const WalletScreen = () => {
   return (
     <>
       <Box flex={1} backgroundColor="primaryBackground">
-        <BottomSheetModalProvider>
-          <WalletViewContainer
-            txns={transactionData}
-            pendingTxns={pendingTxns}
-            filter={filter}
-            activityViewState={activityViewState}
-            showSkeleton={showSkeleton}
-          />
-        </BottomSheetModalProvider>
+        <WalletViewContainer
+          txns={transactionData}
+          pendingTxns={pendingTxns}
+          filter={filter}
+          activityViewState={activityViewState}
+          showSkeleton={showSkeleton}
+        />
       </Box>
 
       {detailTxn && <ActivityDetails detailTxn={detailTxn} />}

@@ -1,23 +1,27 @@
-import React, { memo, ReactText, useRef, useMemo, useCallback } from 'react'
+import React, {
+  memo,
+  ReactText,
+  useMemo,
+  useCallback,
+  useState,
+  useEffect,
+} from 'react'
 import { BoxProps } from '@shopify/restyle'
-import {
-  BottomSheetBackdrop,
-  BottomSheetFlatList,
-  BottomSheetModal,
-} from '@gorhom/bottom-sheet'
 import Close from '@assets/images/close.svg'
 import CarotDown from '@assets/images/carot-down-picker.svg'
 import { useTranslation } from 'react-i18next'
-import { StyleSheet } from 'react-native'
+import { FlatList, Modal, StyleSheet } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Theme } from '../theme/theme'
 import HeliumActionSheetItem, {
   HeliumActionSheetItemType,
   HeliumActionSheetItemHeight,
 } from './HeliumActionSheetItem'
-import { useColors, useSpacing } from '../theme/themeHooks'
+import { useColors } from '../theme/themeHooks'
 import Text from './Text'
 import Box from './Box'
 import TouchableOpacityBox from './TouchableOpacityBox'
+import BlurBox from './BlurBox'
 
 type Props = BoxProps<Theme> & {
   data: Array<HeliumActionSheetItemType>
@@ -37,21 +41,24 @@ const HeliumActionSheet = ({
   prefix,
   ...boxProps
 }: Props) => {
-  const modalRef = useRef<BottomSheetModal>(null)
+  const insets = useSafeAreaInsets()
+  const [modalVisible, setModalVisible] = useState(false)
+  const [sheetHeight, setSheetHeight] = useState(0)
   const { t } = useTranslation()
   const { purpleGray } = useColors()
-  const { lx } = useSpacing()
-  const snapPoints = useMemo(
-    () => [data.length * HeliumActionSheetItemHeight + 100],
-    [data.length],
-  )
+
+  useEffect(() => {
+    setSheetHeight(
+      data.length * HeliumActionSheetItemHeight + 160 + (insets?.bottom || 0),
+    )
+  }, [data.length, insets?.bottom])
 
   const handlePresentModalPress = useCallback(() => {
-    modalRef.current?.present()
+    setModalVisible(true)
   }, [])
 
   const handleClose = useCallback(() => {
-    modalRef.current?.close()
+    setModalVisible(false)
   }, [])
 
   const keyExtractor = useCallback((item) => item.value, [])
@@ -67,9 +74,10 @@ const HeliumActionSheet = ({
 
   const handleItemSelected = useCallback(
     (value: string, index: number) => () => {
+      handleClose()
       onValueChanged(value, index)
     },
-    [onValueChanged],
+    [onValueChanged, handleClose],
   )
 
   const renderItem = useCallback(
@@ -86,39 +94,6 @@ const HeliumActionSheet = ({
     },
     [handleItemSelected, selected],
   )
-  const containerStyle = useMemo(
-    () => ({
-      paddingHorizontal: lx,
-    }),
-    [lx],
-  )
-
-  const handleComponent = useCallback(() => {
-    return (
-      <Box
-        flexDirection="row"
-        borderBottomWidth={1}
-        borderBottomColor="purpleGray"
-        marginTop="s"
-        marginBottom="m"
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <Text color="purpleGray" variant="body2">
-          {title}
-        </Text>
-        <TouchableOpacityBox
-          onPress={handleClose}
-          height={50}
-          justifyContent="center"
-          paddingHorizontal="m"
-          marginEnd="n_m"
-        >
-          <Close color={purpleGray} height={14} width={14} />
-        </TouchableOpacityBox>
-      </Box>
-    )
-  }, [handleClose, purpleGray, title])
 
   const footer = useMemo(() => {
     return (
@@ -126,7 +101,7 @@ const HeliumActionSheet = ({
         onPress={handleClose}
         style={styles.cancelContainer}
         height={49}
-        marginTop="m"
+        marginVertical="m"
         alignItems="center"
         justifyContent="center"
         borderRadius="ms"
@@ -167,20 +142,52 @@ const HeliumActionSheet = ({
         </Text>
         <CarotDown />
       </TouchableOpacityBox>
-      <BottomSheetModal
-        ref={modalRef}
-        snapPoints={snapPoints}
-        handleComponent={handleComponent}
-        backdropComponent={BottomSheetBackdrop}
-        style={containerStyle}
+      <Modal
+        presentationStyle="overFullScreen"
+        transparent
+        visible={modalVisible}
+        onRequestClose={handleClose}
+        animationType="fade"
       >
-        <BottomSheetFlatList
-          data={data}
-          keyExtractor={keyExtractor}
-          renderItem={renderItem}
-          ListFooterComponent={footer}
-        />
-      </BottomSheetModal>
+        <Box onTouchStart={handleClose} flex={1}>
+          <BlurBox flex={1} />
+        </Box>
+        <Box
+          borderRadius="l"
+          height={sheetHeight}
+          backgroundColor="white"
+          paddingHorizontal="lx"
+        >
+          <Box
+            flexDirection="row"
+            borderBottomWidth={1}
+            borderBottomColor="purpleGray"
+            marginTop="s"
+            marginBottom="m"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Text color="purpleGray" variant="body2">
+              {title}
+            </Text>
+            <TouchableOpacityBox
+              onPress={handleClose}
+              height={50}
+              justifyContent="center"
+              paddingHorizontal="m"
+              marginEnd="n_m"
+            >
+              <Close color={purpleGray} height={14} width={14} />
+            </TouchableOpacityBox>
+          </Box>
+          <FlatList
+            data={data}
+            keyExtractor={keyExtractor}
+            renderItem={renderItem}
+            ListFooterComponent={footer}
+          />
+        </Box>
+      </Modal>
     </Box>
   )
 }
