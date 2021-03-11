@@ -206,7 +206,7 @@ const HeliumActionSheet = ({
             <Box
               flexDirection="row"
               borderBottomWidth={1}
-              borderBottomColor="purpleGray"
+              style={styles.divider}
               marginTop="s"
               marginBottom="m"
               justifyContent="space-between"
@@ -241,6 +241,7 @@ const HeliumActionSheet = ({
 const styles = StyleSheet.create({
   cancelContainer: { backgroundColor: '#F0F0F5' },
   cancelText: { color: '#B3B4D6' },
+  divider: { borderBottomColor: '#F0F0F5' },
 })
 
 export default memo(HeliumActionSheet)

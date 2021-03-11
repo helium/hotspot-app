@@ -2,6 +2,10 @@ import { getCurrentPositionAsync } from 'expo-location'
 import React, { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
+import NewestHotspot from '@assets/images/newestHotspot.svg'
+import NearestHotspot from '@assets/images/nearestHotspot.svg'
+import OfflineHotspot from '@assets/images/offlineHotspot.svg'
+import TopHotspot from '@assets/images/topHotspot.svg'
 import Box from '../../../components/Box'
 import hotspotsSlice, {
   HotspotSort,
@@ -10,6 +14,7 @@ import { useAppDispatch } from '../../../store/store'
 import usePermissionManager from '../../../utils/usePermissionManager'
 import { RootState } from '../../../store/rootReducer'
 import HeliumActionSheet from '../../../components/HeliumActionSheet'
+import { HeliumActionSheetItemType } from '../../../components/HeliumActionSheetItem'
 
 const HotspotsPicker = () => {
   const { t, i18n } = useTranslation()
@@ -44,27 +49,27 @@ const HotspotsPicker = () => {
     [checkLocationPermissions, dispatch],
   )
 
-  type PickerData = {
-    label: string
-    value: HotspotSort
-  }
-  const data: PickerData[] = useMemo(
+  const data: HeliumActionSheetItemType[] = useMemo(
     () => [
       {
         label: t(`hotspots.owned.filter.${HotspotSort.New}`),
         value: HotspotSort.New,
+        Icon: NewestHotspot,
       },
       {
         label: t(`hotspots.owned.filter.${HotspotSort.Near}`),
         value: HotspotSort.Near,
+        Icon: NearestHotspot,
       },
       {
         label: t(`hotspots.owned.filter.${HotspotSort.Earn}`),
         value: HotspotSort.Earn,
+        Icon: TopHotspot,
       },
       {
         label: t(`hotspots.owned.filter.${HotspotSort.Offline}`),
         value: HotspotSort.Offline,
+        Icon: OfflineHotspot,
       },
     ],
     [t],
