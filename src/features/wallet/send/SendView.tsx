@@ -51,6 +51,11 @@ import { fromNow } from '../../../utils/timeUtils'
 import useSubmitTxn from '../../../hooks/useSubmitTxn'
 import { ensLookup } from '../../../utils/explorerClient'
 import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
+import { useAppDispatch } from '../../../store/store'
+import {
+  fetchCurrentOraclePrice,
+  fetchPredictedOraclePrice,
+} from '../../../store/helium/heliumDataSlice'
 
 type Props = {
   scanResult?: QrScanResult
@@ -64,6 +69,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   const { t } = useTranslation()
   const { networkTokensToDataCredits } = useCurrency()
   const submitTxn = useSubmitTxn()
+  const dispatch = useAppDispatch()
   const { triggerNavHaptic } = useHaptic()
   const [type, setType] = useState<SendType>(sendType || 'payment')
   const [address, setAddress] = useState<string>('')
@@ -86,6 +92,13 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   } = useSelector((state: RootState) => state)
 
   const { feeToHNT } = useFees()
+
+  // update oracles
+  useEffect(() => {
+    dispatch(fetchCurrentOraclePrice())
+    dispatch(fetchPredictedOraclePrice())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // load transfer data
   const [transferData, setTransferData] = useState<Transfer>()
@@ -132,7 +145,19 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     if (scanResult) {
       if (scanResult.type !== 'transfer') {
         setIsLocked(!!scanResult?.amount)
-        if (scanResult?.amount) handleAmountChange(scanResult?.amount)
+        if (scanResult?.amount) {
+          const floatAmount = parseFloat(scanResult.amount)
+          const hntBalanceAmount = Balance.fromFloat(
+            floatAmount,
+            CurrencyType.networkToken,
+          )
+          const hntAmountString = hntBalanceAmount.toString(8, {
+            decimalSeparator,
+            groupSeparator,
+            showTicker: false,
+          })
+          handleAmountChange(hntAmountString)
+        }
         if (scanResult?.memo) setMemo(scanResult?.memo)
       }
       setType(scanResult.type)
@@ -144,7 +169,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   // compute equivalent dc amount for burn txns
   useAsync(async () => {
     if (type === 'dc_burn') {
-      const balanceDc = networkTokensToDataCredits(balanceAmount)
+      const balanceDc = await networkTokensToDataCredits(balanceAmount)
       if (!balanceDc) return
 
       setDcAmount(

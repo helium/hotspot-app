@@ -100,7 +100,7 @@ const SendForm = ({
 
   const renderLockedBurnForm = () => (
     <Box>
-      <LockedHeader onClosePress={onUnlock} />
+      <LockedHeader onClosePress={onUnlock} allowClose={false} />
       <LockedField label={t('send.address.label')} value={address} />
       <LockedField
         label={t('send.amount.label')}

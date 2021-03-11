@@ -1,5 +1,5 @@
-import Balance, { USDollars } from '@helium/currency'
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { OraclePrice } from '@helium/http'
 import {
   getBlockHeight,
   getCurrentOraclePrice,
@@ -7,12 +7,6 @@ import {
 } from '../../utils/appDataClient'
 import { getCurrentPrices } from '../../utils/coinGeckoClient'
 import { signOut } from '../../utils/secureAccount'
-
-type OraclePrice = {
-  price: Balance<USDollars>
-  height?: number
-  time?: number
-}
 
 export type HeliumDataState = {
   blockHeight?: number

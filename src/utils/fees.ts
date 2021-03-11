@@ -1,37 +1,44 @@
 import { Address } from '@helium/crypto-react-native'
 import {
-  PaymentV2,
   AddGatewayV1,
-  TokenBurnV1,
   AssertLocationV1,
+  PaymentV2,
+  TokenBurnV1,
   TransferHotspotV1,
 } from '@helium/transactions'
 import Balance, {
-  DataCredits,
   CurrencyType,
+  DataCredits,
   NetworkTokens,
 } from '@helium/currency'
 import { minBy } from 'lodash'
 import { useSelector } from 'react-redux'
+import { useCallback } from 'react'
 import { getKeypair } from './secureAccount'
 import { RootState } from '../store/rootReducer'
 
 export const useFees = () => {
-  const {
-    heliumData: { currentOraclePrice, predictedOraclePrices },
-  } = useSelector((state: RootState) => state)
+  const { currentOraclePrice, predictedOraclePrices } = useSelector(
+    (state: RootState) => state.heliumData,
+  )
 
-  const feeToHNT = (balance?: Balance<DataCredits>) => {
-    if (!balance) return new Balance<DataCredits>(0, CurrencyType.dataCredit)
+  const feeToHNT = useCallback(
+    (balance?: Balance<DataCredits>) => {
+      if (!balance) return new Balance<DataCredits>(0, CurrencyType.dataCredit)
 
-    const prices = [currentOraclePrice, ...predictedOraclePrices]
-    const oraclePrice = minBy(prices, (p) => p?.price.integerBalance || 0)
-    // ensure precision is only 8 decimals
-    const feeHNTInteger = Math.trunc(
-      balance.toNetworkTokens(oraclePrice?.price).integerBalance,
-    )
-    return new Balance<NetworkTokens>(feeHNTInteger, CurrencyType.networkToken)
-  }
+      const prices = [currentOraclePrice, ...predictedOraclePrices]
+      const oraclePrice = minBy(prices, (p) => p?.price.integerBalance || 0)
+      // ensure precision is only 8 decimals
+      const feeHNTInteger = Math.trunc(
+        balance.toNetworkTokens(oraclePrice?.price).integerBalance,
+      )
+      return new Balance<NetworkTokens>(
+        feeHNTInteger,
+        CurrencyType.networkToken,
+      )
+    },
+    [currentOraclePrice, predictedOraclePrices],
+  )
 
   return { feeToHNT }
 }
