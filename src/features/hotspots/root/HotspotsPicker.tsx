@@ -74,7 +74,6 @@ const HotspotsPicker = () => {
     <Box
       flexDirection="row"
       alignItems="center"
-      // marginVertical="m"
       width="100%"
       paddingHorizontal="l"
     >

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Item } from 'react-native-picker-select'
+import { HeliumActionSheetItemType } from '../../../components/HeliumActionSheetItem'
 
 const MILLIS_IN_SECOND = 1000
 const SECONDS_IN_MINUTE = 60
@@ -34,5 +34,5 @@ export default () => {
       label: t('more.sections.security.authIntervals.after_4_hr'),
       value: 4 * ONE_HOUR,
     },
-  ] as Item[]
+  ] as HeliumActionSheetItemType[]
 }

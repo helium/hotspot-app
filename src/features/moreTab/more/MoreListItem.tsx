@@ -6,19 +6,12 @@ import { useColors } from '../../../theme/themeHooks'
 import CarotRight from '../../../assets/images/carot-right.svg'
 import LinkImg from '../../../assets/images/link.svg'
 import HeliumActionSheet from '../../../components/HeliumActionSheet'
-
-export interface Item {
-  label: string
-  value: string
-  key?: string | number
-  color?: string
-  title?: string
-}
+import { HeliumActionSheetItemType } from '../../../components/HeliumActionSheetItem'
 
 export type SelectProps = {
   onDonePress?: () => void
   onValueSelect: (value: string, index: number) => void
-  items: Item[]
+  items: HeliumActionSheetItemType[]
 }
 
 export type MoreListItemType = {
