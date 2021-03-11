@@ -23,9 +23,10 @@ export const withWalletLayout = (WrappedComponent: any) => (props: any) => {
           cardHandleHeight: 48,
           sendShareArea: 124,
         }
+        // TODO:  there seems to be a bug in the 3.3.3 release of the bottom sheet that is forcing the "0" point to actually be -navbarHeight
         const belowStatusBar =
           wh -
-          (walletLayout.navbarHeight +
+          (walletLayout.navbarHeight * 2 +
             walletLayout.cardHandleHeight +
             walletLayout.notchHeight -
             walletLayout.bottomHeight)
@@ -41,7 +42,7 @@ export const withWalletLayout = (WrappedComponent: any) => (props: any) => {
             walletLayout.headerHeight -
             walletLayout.balanceHeight -
             walletLayout.chartHeight,
-          dragMin: walletLayout.bottomHeight,
+          dragMin: walletLayout.bottomHeight - walletLayout.navbarHeight,
         }
 
         const collapsed =

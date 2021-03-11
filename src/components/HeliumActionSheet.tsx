@@ -148,10 +148,21 @@ const HeliumActionSheet = ({
         flexDirection="row"
         alignItems="center"
       >
-        <Text variant="bold" fontSize={20} color="black">
+        <Text
+          variant="bold"
+          fontSize={20}
+          color="black"
+          maxFontSizeMultiplier={1}
+        >
           {prefix}
         </Text>
-        <Text variant="bold" fontSize={20} color="purpleMain" marginRight="s">
+        <Text
+          variant="bold"
+          fontSize={20}
+          maxFontSizeMultiplier={1}
+          color="purpleMain"
+          marginRight="s"
+        >
           {buttonTitle}
         </Text>
         <CarotDown />
