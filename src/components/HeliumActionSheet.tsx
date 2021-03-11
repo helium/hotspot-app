@@ -12,6 +12,11 @@ import CarotDown from '@assets/images/carot-down-picker.svg'
 import { useTranslation } from 'react-i18next'
 import { FlatList, Modal, StyleSheet } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated'
 import { Theme } from '../theme/theme'
 import HeliumActionSheetItem, {
   HeliumActionSheetItemType,
@@ -22,6 +27,8 @@ import Text from './Text'
 import Box from './Box'
 import TouchableOpacityBox from './TouchableOpacityBox'
 import BlurBox from './BlurBox'
+import { ReAnimatedBox } from './AnimatedBox'
+import sleep from '../utils/sleep'
 
 type Props = BoxProps<Theme> & {
   data: Array<HeliumActionSheetItemType>
@@ -46,20 +53,48 @@ const HeliumActionSheet = ({
   const [sheetHeight, setSheetHeight] = useState(0)
   const { t } = useTranslation()
   const { purpleGray } = useColors()
+  const offset = useSharedValue(0)
+
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: offset.value + sheetHeight }],
+    }
+  })
+
+  const animate = useCallback(
+    (val: number) => {
+      offset.value = withSpring(val, {
+        damping: 80,
+        overshootClamping: true,
+        restDisplacementThreshold: 0.1,
+        restSpeedThreshold: 0.1,
+        stiffness: 500,
+      })
+    },
+    [offset],
+  )
 
   useEffect(() => {
-    setSheetHeight(
-      data.length * HeliumActionSheetItemHeight + 160 + (insets?.bottom || 0),
-    )
-  }, [data.length, insets?.bottom])
+    const nextSheetHeight =
+      data.length * HeliumActionSheetItemHeight + 156 + (insets?.bottom || 0)
+    setSheetHeight(nextSheetHeight)
+    animate(nextSheetHeight)
+  }, [animate, data.length, insets?.bottom])
 
-  const handlePresentModalPress = useCallback(() => {
+  const handlePresentModalPress = useCallback(async () => {
     setModalVisible(true)
   }, [])
 
-  const handleClose = useCallback(() => {
+  const handleClose = useCallback(async () => {
     setModalVisible(false)
   }, [])
+
+  useEffect(() => {
+    if (modalVisible) {
+      offset.value = 0
+      animate(-sheetHeight)
+    }
+  }, [animate, modalVisible, offset, sheetHeight])
 
   const keyExtractor = useCallback((item) => item.value, [])
 
@@ -73,11 +108,12 @@ const HeliumActionSheet = ({
   ])
 
   const handleItemSelected = useCallback(
-    (value: string, index: number) => () => {
+    (value: string, index: number) => async () => {
       handleClose()
+      await sleep(100)
       onValueChanged(value, index)
     },
-    [onValueChanged, handleClose],
+    [handleClose, onValueChanged],
   )
 
   const renderItem = useCallback(
@@ -143,49 +179,51 @@ const HeliumActionSheet = ({
         <CarotDown />
       </TouchableOpacityBox>
       <Modal
-        presentationStyle="overFullScreen"
         transparent
         visible={modalVisible}
         onRequestClose={handleClose}
         animationType="fade"
       >
-        <Box onTouchStart={handleClose} flex={1}>
-          <BlurBox flex={1} />
-        </Box>
-        <Box
-          borderRadius="l"
-          height={sheetHeight}
-          backgroundColor="white"
-          paddingHorizontal="lx"
-        >
-          <Box
-            flexDirection="row"
-            borderBottomWidth={1}
-            borderBottomColor="purpleGray"
-            marginTop="s"
-            marginBottom="m"
-            justifyContent="space-between"
-            alignItems="center"
+        <BlurBox position="absolute" top={0} bottom={0} left={0} right={0} />
+        <Box flex={1}>
+          <TouchableOpacityBox flex={1} onPress={handleClose} />
+          <ReAnimatedBox
+            style={animatedStyles}
+            borderTopLeftRadius="l"
+            borderTopRightRadius="l"
+            height={sheetHeight}
+            backgroundColor="white"
+            paddingHorizontal="lx"
           >
-            <Text color="purpleGray" variant="body2">
-              {title}
-            </Text>
-            <TouchableOpacityBox
-              onPress={handleClose}
-              height={50}
-              justifyContent="center"
-              paddingHorizontal="m"
-              marginEnd="n_m"
+            <Box
+              flexDirection="row"
+              borderBottomWidth={1}
+              borderBottomColor="purpleGray"
+              marginTop="s"
+              marginBottom="m"
+              justifyContent="space-between"
+              alignItems="center"
             >
-              <Close color={purpleGray} height={14} width={14} />
-            </TouchableOpacityBox>
-          </Box>
-          <FlatList
-            data={data}
-            keyExtractor={keyExtractor}
-            renderItem={renderItem}
-            ListFooterComponent={footer}
-          />
+              <Text color="purpleGray" variant="body2">
+                {title}
+              </Text>
+              <TouchableOpacityBox
+                onPress={handleClose}
+                height={50}
+                justifyContent="center"
+                paddingHorizontal="m"
+                marginEnd="n_m"
+              >
+                <Close color={purpleGray} height={14} width={14} />
+              </TouchableOpacityBox>
+            </Box>
+            <FlatList
+              data={data}
+              keyExtractor={keyExtractor}
+              renderItem={renderItem}
+              ListFooterComponent={footer}
+            />
+          </ReAnimatedBox>
         </Box>
       </Modal>
     </Box>

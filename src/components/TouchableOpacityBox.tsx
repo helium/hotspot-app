@@ -7,7 +7,7 @@ import WithDebounce from './WithDebounce'
 const TouchableOpacityBox = createBox<
   Theme,
   TouchableOpacityProps & {
-    children: React.ReactNode
+    children?: React.ReactNode
   }
 >(TouchableOpacity)
 
