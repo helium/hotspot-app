@@ -7,6 +7,7 @@ import {
   signOut,
 } from '../../utils/secureAccount'
 import { getCurrentPosition, LocationCoords } from '../../utils/location'
+import { Intervals } from '../../features/moreTab/more/useAuthIntervals'
 
 export type AppState = {
   isBackedUp: boolean
@@ -32,7 +33,7 @@ const initialState: AppState = {
   isRestored: false,
   isPinRequired: false,
   isPinRequiredForPayment: false,
-  authInterval: 0,
+  authInterval: Intervals.IMMEDIATELY,
   lastIdle: null,
   isLocked: false,
   isRequestingPermission: false,
@@ -65,7 +66,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       isBackedUp: vals[0],
       isPinRequired: vals[1],
       isPinRequiredForPayment: vals[2],
-      authInterval: vals[3] ? parseInt(vals[3], 10) : 0,
+      authInterval: vals[3] ? parseInt(vals[3], 10) : Intervals.IMMEDIATELY,
       isLocked: vals[1],
       isHapticDisabled: vals[4],
       convertHntToCurrency: vals[5],

@@ -26,7 +26,7 @@ import sleep from '../utils/sleep'
 type Props = BoxProps<Theme> & {
   data: Array<HeliumActionSheetItemType>
   selectedValue: string | number
-  onValueChanged: (itemValue: string, itemIndex: number) => void
+  onValueChanged: (itemValue: string | number, itemIndex: number) => void
   title?: string
   prefix?: string
   minWidth?: number
@@ -98,12 +98,13 @@ const HeliumActionSheet = ({
     return ` ${item?.label || ''}`
   }, [data, selectedValue])
 
-  const selected = useCallback((value: string) => value === selectedValue, [
-    selectedValue,
-  ])
+  const selected = useCallback(
+    (value: string | number) => value === selectedValue,
+    [selectedValue],
+  )
 
   const handleItemSelected = useCallback(
-    (value: string, index: number) => async () => {
+    (value: string | number, index: number) => async () => {
       handleClose()
       await sleep(100)
       onValueChanged(value, index)
@@ -147,9 +148,12 @@ const HeliumActionSheet = ({
   const displayText = useMemo(() => {
     return (
       <TouchableOpacityBox
+        paddingVertical="xs"
         onPress={handlePresentModalPress}
         flexDirection="row"
         alignItems="center"
+        justifyContent="flex-end"
+        minWidth={100}
       >
         {!!prefix && (
           <Text

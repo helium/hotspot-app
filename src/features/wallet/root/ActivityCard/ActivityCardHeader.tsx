@@ -46,7 +46,7 @@ const ActivityCardHeader = ({ filter }: Props) => {
       <Box alignItems="center" padding="s">
         <CardHandle />
       </Box>
-      <Box flexDirection="row" paddingRight="m" paddingVertical="s">
+      <Box flexDirection="row" paddingRight="m" paddingVertical="xs">
         <HeliumActionSheet
           marginLeft="ms"
           prefix={t('transactions.view')}
