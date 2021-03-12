@@ -7,9 +7,10 @@ import Text from './Text'
 
 type Props = {
   onClosePress: () => void
+  allowClose?: boolean
 }
 
-const SendLockedHeader = ({ onClosePress }: Props) => {
+const SendLockedHeader = ({ onClosePress, allowClose = true }: Props) => {
   const { t } = useTranslation()
 
   return (
@@ -30,13 +31,15 @@ const SendLockedHeader = ({ onClosePress }: Props) => {
       >
         {t('send.qrInfo')}
       </Text>
-      <TouchableOpacityBox
-        onPress={onClosePress}
-        paddingVertical="s"
-        paddingHorizontal="m"
-      >
-        <Close color="white" width={10} height={10} />
-      </TouchableOpacityBox>
+      {allowClose && (
+        <TouchableOpacityBox
+          onPress={onClosePress}
+          paddingVertical="s"
+          paddingHorizontal="m"
+        >
+          <Close color="white" width={10} height={10} />
+        </TouchableOpacityBox>
+      )}
     </Box>
   )
 }

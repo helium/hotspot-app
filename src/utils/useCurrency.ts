@@ -1,19 +1,15 @@
-import Balance, {
-  CurrencyType,
-  DataCredits,
-  NetworkTokens,
-} from '@helium/currency'
+import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
 import { isEqual, round } from 'lodash'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { useDebouncedCallback } from 'use-debounce'
 import CurrencyFormatter from 'react-native-currency-format'
+import { OraclePrice } from '@helium/http'
 import { fetchCurrentOraclePrice } from '../store/helium/heliumDataSlice'
 import { RootState } from '../store/rootReducer'
 import { useAppDispatch } from '../store/store'
 import appSlice from '../store/user/appSlice'
-
 import { currencyType, decimalSeparator, groupSeparator, locale } from './i18n'
 
 const useCurrency = () => {
@@ -21,10 +17,6 @@ const useCurrency = () => {
   const dispatch = useAppDispatch()
   const currentPrices = useSelector(
     (state: RootState) => state.heliumData.currentPrices,
-    isEqual,
-  )
-  const oraclePrice = useSelector(
-    (state: RootState) => state.heliumData.currentOraclePrice?.price,
     isEqual,
   )
 
@@ -52,14 +44,12 @@ const useCurrency = () => {
   }).callback
 
   const networkTokensToDataCredits = useCallback(
-    (amount: Balance<NetworkTokens>): Balance<DataCredits> | null => {
-      if (!oraclePrice) {
-        dispatch(fetchCurrentOraclePrice())
-        return null
-      }
-      return amount.toDataCredits(oraclePrice)
+    async (amount: Balance<NetworkTokens>) => {
+      const result = await dispatch(fetchCurrentOraclePrice())
+      const currentOracle = result?.payload as OraclePrice
+      return amount.toDataCredits(currentOracle.price)
     },
-    [dispatch, oraclePrice],
+    [dispatch],
   )
 
   const hntToDisplayVal = useCallback(

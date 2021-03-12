@@ -1236,19 +1236,19 @@
     create-hash "^1.2.0"
     libsodium-wrappers "^0.7.6"
 
-"@helium/currency@^3.23.0":
-  version "3.23.0"
-  resolved "https://registry.yarnpkg.com/@helium/currency/-/currency-3.23.0.tgz#1ede99ecd60583c54710c3789af0785fc10d8ce9"
-  integrity sha512-V84u49bvb41FirHPpbI5iMgc+UpnWlmk9X00b6TzCCIiSYYhZ3UZmPBAlxkoLf0RGP/BwlAFlGpRfGF2iR1Mrw==
+"@helium/currency@^3.25.1":
+  version "3.25.1"
+  resolved "https://registry.yarnpkg.com/@helium/currency/-/currency-3.25.1.tgz#83b6146b93423791c2b3f96188999d8c7447037b"
+  integrity sha512-qaF9KlCRW30XARgyVed1MZXQjrtNcsmCYow9yGHRBOGIE/RjY2lGaymH0OCSsE93SrDaD3rNqGGarHs1BF4thg==
   dependencies:
     bignumber.js "^9.0.0"
 
-"@helium/http@^3.23.0":
-  version "3.23.0"
-  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.23.0.tgz#39d02fa89e29da4762e24a9bb3170746a3b49ff1"
-  integrity sha512-zmaadFPG08hcZbgs3Oen5+q2aLItZV4r/4YJ2f53LbJXCPepbffgUZkNIZX6/arNxkX+/2jFCc2pjDYONiFDmA==
+"@helium/http@^3.25.1":
+  version "3.25.1"
+  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.25.1.tgz#d2817d05f84bf22d6780e4ca8019433971997418"
+  integrity sha512-5Fr6b0GMmoe3FJgH2YVUpuZ153H9Tarzqs6TC7nW5riGv0tQWMkcCRFMdabxuzKupIESQnmrudSAJl+I1b3WPg==
   dependencies:
-    "@helium/currency" "^3.23.0"
+    "@helium/currency" "^3.25.1"
     axios "^0.21.1"
     camelcase-keys "^6.2.2"
     qs "^6.9.3"
