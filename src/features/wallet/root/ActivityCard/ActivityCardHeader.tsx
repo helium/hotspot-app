@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next'
 import CardHandle from '../../../../components/CardHandle'
 import Box from '../../../../components/Box'
 import { FilterKeys, FilterType } from '../walletTypes'
-import ModalPicker from '../../../../components/ModalPicker'
 import { useAppDispatch } from '../../../../store/store'
 import activitySlice from '../../../../store/activity/activitySlice'
 import accountSlice from '../../../../store/account/accountSlice'
+import HeliumActionSheet from '../../../../components/HeliumActionSheet'
 
 type Props = { filter: FilterType }
 const ActivityCardHeader = ({ filter }: Props) => {
@@ -21,7 +21,12 @@ const ActivityCardHeader = ({ filter }: Props) => {
   )
   const dispatch = useAppDispatch()
   const data = useMemo(
-    () => FilterKeys.map((value) => ({ label: filters[value], value })),
+    () =>
+      FilterKeys.map((value) => ({
+        label: filters[value],
+        value,
+        Icon: undefined,
+      })),
     [filters],
   )
 
@@ -41,12 +46,11 @@ const ActivityCardHeader = ({ filter }: Props) => {
       <Box alignItems="center" padding="s">
         <CardHandle />
       </Box>
-      <Box flexDirection="row" paddingRight="m">
-        <ModalPicker
-          minWidth={120}
-          flex={1}
+      <Box flexDirection="row" paddingRight="m" paddingVertical="xs">
+        <HeliumActionSheet
           marginLeft="ms"
           prefix={t('transactions.view')}
+          title={t('transactions.view_transactions')}
           data={data}
           selectedValue={filter}
           onValueChanged={onFilterChanged}

@@ -2,14 +2,19 @@ import { getCurrentPositionAsync } from 'expo-location'
 import React, { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
+import NewestHotspot from '@assets/images/newestHotspot.svg'
+import NearestHotspot from '@assets/images/nearestHotspot.svg'
+import OfflineHotspot from '@assets/images/offlineHotspot.svg'
+import TopHotspot from '@assets/images/topHotspot.svg'
 import Box from '../../../components/Box'
-import ModalPicker from '../../../components/ModalPicker'
 import hotspotsSlice, {
   HotspotSort,
 } from '../../../store/hotspots/hotspotsSlice'
 import { useAppDispatch } from '../../../store/store'
 import usePermissionManager from '../../../utils/usePermissionManager'
 import { RootState } from '../../../store/rootReducer'
+import HeliumActionSheet from '../../../components/HeliumActionSheet'
+import { HeliumActionSheetItemType } from '../../../components/HeliumActionSheetItem'
 
 const HotspotsPicker = () => {
   const { t, i18n } = useTranslation()
@@ -44,27 +49,27 @@ const HotspotsPicker = () => {
     [checkLocationPermissions, dispatch],
   )
 
-  type PickerData = {
-    label: string
-    value: HotspotSort
-  }
-  const data: PickerData[] = useMemo(
+  const data: HeliumActionSheetItemType[] = useMemo(
     () => [
       {
         label: t(`hotspots.owned.filter.${HotspotSort.New}`),
         value: HotspotSort.New,
+        Icon: NewestHotspot,
       },
       {
         label: t(`hotspots.owned.filter.${HotspotSort.Near}`),
         value: HotspotSort.Near,
+        Icon: NearestHotspot,
       },
       {
         label: t(`hotspots.owned.filter.${HotspotSort.Earn}`),
         value: HotspotSort.Earn,
+        Icon: TopHotspot,
       },
       {
         label: t(`hotspots.owned.filter.${HotspotSort.Offline}`),
         value: HotspotSort.Offline,
+        Icon: OfflineHotspot,
       },
     ],
     [t],
@@ -74,15 +79,15 @@ const HotspotsPicker = () => {
     <Box
       flexDirection="row"
       alignItems="center"
-      // marginVertical="m"
       width="100%"
       paddingHorizontal="l"
     >
-      <ModalPicker
+      <HeliumActionSheet
         // can't assume other languages will have the same prefix
         // structure so we'll just leave it out for non-en
         prefix={i18n.language === 'en' ? 'Your' : undefined}
         data={data}
+        title={t('hotspots.sort_by')}
         selectedValue={order}
         onValueChanged={handleValueChanged}
       />

@@ -36,6 +36,7 @@ const palette = {
   purpleBright: '#A667F6',
   whitePurple: '#FAF6FE',
   purpleLight: '#A0A5DA',
+  purpleGray: '#BBBDD8',
   purpleMain: '#474DFF',
   purple500: '#232749',
   purple400: '#292E56',

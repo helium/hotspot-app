@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Box from '../../../components/Box'
 import Bars from '../../../assets/images/bars.svg'
-import ModalPicker from '../../../components/ModalPicker'
+import HeliumActionSheet from '../../../components/HeliumActionSheet'
 
 type Props = {
   index?: number
@@ -24,7 +24,7 @@ const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
   const [selectedOption, setSelectedOption] = useState(data[index])
 
   const handleValueChanged = useCallback(
-    (value, i) => {
+    (_value, i) => {
       setSelectedOption(data[i])
       onTimelineChanged?.(parseInt(data[i].value, 10))
     },
@@ -40,8 +40,8 @@ const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
       paddingHorizontal="l"
     >
       <Bars />
-      <ModalPicker
-        minWidth={110}
+      <HeliumActionSheet
+        title={t('hotspot_details.picker_prompt')}
         marginHorizontal="xs"
         prefix={t('hotspot_details.picker_title')}
         data={data}

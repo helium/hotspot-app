@@ -17,7 +17,7 @@ export const [currencyType] = RNLocalize.getCurrencies() || ['USD']
 
 let phoneLang = 'en'
 if (Array.isArray(locales)) {
-  phoneLang = locales[0].languageTag
+  phoneLang = locales[0].languageCode
 }
 
 i18n.use(initReactI18next).init({
