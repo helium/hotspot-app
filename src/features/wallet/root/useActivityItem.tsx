@@ -27,6 +27,7 @@ import shortLocale from '../../../utils/formatDistance'
 import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
 import useCurrency from '../../../utils/useCurrency'
 import { Colors } from '../../../theme/theme'
+import { getMakerName } from '../../../utils/stakingClient'
 
 export const TxnTypeKeys = [
   'rewards_v1',
@@ -49,6 +50,7 @@ type TxnDisplayVals = {
   time: string
   isFee: boolean
   fee: string
+  feePayer: string
 }
 const useActivityItem = (
   item: AnyTransaction | PendingTransaction,
@@ -63,6 +65,7 @@ const useActivityItem = (
     time: '',
     isFee: false,
     fee: '',
+    feePayer: '',
   })
   const { hntBalanceToDisplayVal } = useCurrency()
   const colors = useColors()
@@ -251,6 +254,13 @@ const useActivityItem = (
     return formatAmount('-', (item as AddGatewayV1).fee)
   }, [address, formatAmount, isSelling, item])
 
+  const feePayer = useMemo(async () => {
+    if (item instanceof AddGatewayV1 || item instanceof AssertLocationV1) {
+      return getMakerName(item.payer)
+    }
+    return ''
+  }, [item])
+
   const amount = useMemo(() => {
     if (item instanceof TransferHotspotV1) {
       return formatAmount(isSelling ? '+' : '-', item.amountToSeller)
@@ -321,6 +331,7 @@ const useActivityItem = (
     const createTxnDisplayData = async () => {
       const amt = await amount
       const f = await fee
+      const payer = await feePayer
       const nextVals = {
         backgroundColor,
         backgroundColorKey,
@@ -331,6 +342,7 @@ const useActivityItem = (
         time,
         isFee,
         fee: f,
+        feePayer: payer,
       } as TxnDisplayVals
       setDisplayValues(nextVals)
     }
@@ -346,6 +358,7 @@ const useActivityItem = (
     listIcon,
     time,
     title,
+    feePayer,
   ])
 
   return displayValues

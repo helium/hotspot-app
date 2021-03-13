@@ -797,6 +797,7 @@ export default {
       data_credits: 'Packet Transfer',
       securities: 'Security Tokens',
     },
+    staking_fee_payer: 'Paid By {{payer}}',
   },
   checklist: {
     title: 'Checklist',

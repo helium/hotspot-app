@@ -30,3 +30,11 @@ export const getStaking = async (url: string) => makeRequest(url)
 
 export const postStaking = async (url: string, data: unknown) =>
   makeRequest(url, { method: 'POST', body: data ? JSON.stringify(data) : null })
+
+export const getMakerName = async (accountAddress: string) => {
+  const makers = await makeRequest('makers')
+  const makerMatchIndex = makers.findIndex(
+    (m: { address: string }) => m.address === accountAddress,
+  )
+  return makerMatchIndex !== -1 ? makers[makerMatchIndex].name : ''
+}
