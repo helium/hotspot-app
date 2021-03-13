@@ -7,12 +7,14 @@ import {
 } from '../../utils/appDataClient'
 import { getCurrentPrices } from '../../utils/coinGeckoClient'
 import { signOut } from '../../utils/secureAccount'
+import { getMakers, Maker } from '../../utils/stakingClient'
 
 export type HeliumDataState = {
   blockHeight?: number
   currentOraclePrice?: OraclePrice
   predictedOraclePrices: OraclePrice[]
   currentPrices?: Record<string, number>
+  makers?: Maker[]
 }
 const initialState: HeliumDataState = { predictedOraclePrices: [] }
 
@@ -39,12 +41,14 @@ export const fetchInitialData = createAsyncThunk<HeliumDataState>(
       getCurrentOraclePrice(),
       getPredictedOraclePrice(),
       getCurrentPrices(),
+      getMakers(),
     ])
     return {
       blockHeight: vals[0],
       currentOraclePrice: vals[1],
       predictedOraclePrices: vals[2],
       currentPrices: vals[3],
+      makers: vals[4],
     }
   },
 )
@@ -65,6 +69,7 @@ const heliumDataSlice = createSlice({
       state.predictedOraclePrices = payload.predictedOraclePrices
       state.blockHeight = payload.blockHeight
       state.currentPrices = payload.currentPrices
+      state.makers = payload.makers
     })
     builder.addCase(fetchBlockHeight.fulfilled, (state, { payload }) => {
       // this is happening on an interval, only update if there's a change

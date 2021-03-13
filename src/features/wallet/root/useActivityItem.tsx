@@ -14,6 +14,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import Balance, { DataCredits, NetworkTokens } from '@helium/currency'
 import { startCase } from 'lodash'
+import { useSelector } from 'react-redux'
 import { useColors } from '../../../theme/themeHooks'
 import { isPayer } from '../../../utils/transactions'
 import Rewards from '../../../assets/images/rewards.svg'
@@ -28,6 +29,7 @@ import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
 import useCurrency from '../../../utils/useCurrency'
 import { Colors } from '../../../theme/theme'
 import { getMakerName } from '../../../utils/stakingClient'
+import { RootState } from '../../../store/rootReducer'
 
 export const TxnTypeKeys = [
   'rewards_v1',
@@ -70,6 +72,7 @@ const useActivityItem = (
   const { hntBalanceToDisplayVal } = useCurrency()
   const colors = useColors()
   const { t } = useTranslation()
+  const { makers } = useSelector((state: RootState) => state.heliumData)
 
   const isSending = useMemo(() => {
     return isPayer(address, item)
@@ -254,12 +257,12 @@ const useActivityItem = (
     return formatAmount('-', (item as AddGatewayV1).fee)
   }, [address, formatAmount, isSelling, item])
 
-  const feePayer = useMemo(async () => {
+  const feePayer = useMemo(() => {
     if (item instanceof AddGatewayV1 || item instanceof AssertLocationV1) {
-      return getMakerName(item.payer)
+      return getMakerName(item.payer, makers)
     }
     return ''
-  }, [item])
+  }, [item, makers])
 
   const amount = useMemo(() => {
     if (item instanceof TransferHotspotV1) {
@@ -331,7 +334,6 @@ const useActivityItem = (
     const createTxnDisplayData = async () => {
       const amt = await amount
       const f = await fee
-      const payer = await feePayer
       const nextVals = {
         backgroundColor,
         backgroundColorKey,
@@ -342,7 +344,7 @@ const useActivityItem = (
         time,
         isFee,
         fee: f,
-        feePayer: payer,
+        feePayer,
       } as TxnDisplayVals
       setDisplayValues(nextVals)
     }
