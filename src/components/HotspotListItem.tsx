@@ -1,15 +1,16 @@
-import React, { memo, useCallback, useState, useEffect } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { Hotspot } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
-import CheckCircle from '@assets/images/check-circle.svg'
-import Attention from '@assets/images/attention.svg'
 import CarotRight from '@assets/images/carot-right.svg'
 import Balance, { NetworkTokens } from '@helium/currency'
+import { useSelector } from 'react-redux'
+import { round } from 'lodash'
 import TouchableOpacityBox from './BSTouchableOpacityBox'
 import Box from './Box'
 import Text from './Text'
 import useCurrency from '../utils/useCurrency'
+import { RootState } from '../store/rootReducer'
 
 type HotspotListItemProps = {
   onPress?: (hotspot: Hotspot) => void
@@ -32,13 +33,32 @@ const HotspotListItem = ({
     const nextReward = await hntBalanceToDisplayVal(totalReward, false)
     setReward(`+${nextReward}`)
   }, [hntBalanceToDisplayVal, totalReward])
+  const { blockHeight } = useSelector((state: RootState) => state.heliumData)
 
   useEffect(() => {
     updateReward()
   }, [updateReward])
 
+  const percentSynced = useMemo(() => {
+    const hotspotHeight = hotspot.status?.height || 0
+    if (blockHeight) {
+      const syncedRatio = hotspotHeight / blockHeight
+      const percent = round(syncedRatio * 100, 2)
+      const within500Blocks = hotspotHeight
+        ? blockHeight - hotspotHeight <= 500
+        : false
+      if (percent === 100 || within500Blocks) {
+        return ''
+      }
+      if (percent === 0) {
+        return t('hotspot_details.starting_sync')
+      }
+      return t('hotspot_details.percent_synced', { percent })
+    }
+  }, [t, blockHeight, hotspot.status?.height])
+
   return (
-    <Box marginHorizontal="l" marginBottom="s">
+    <Box marginHorizontal="l" marginBottom="xs">
       <TouchableOpacityBox
         backgroundColor="grayBox"
         flexDirection="row"
@@ -55,12 +75,17 @@ const HotspotListItem = ({
           flex={1}
         >
           <Box flexDirection="column">
-            <Box flexDirection="row" alignItems="center" marginBottom="xxs">
-              {hotspot.status?.online === 'online' ? (
-                <CheckCircle width={17} height={17} />
-              ) : (
-                <Attention width={17} height={17} />
-              )}
+            <Box flexDirection="row" alignItems="center">
+              <Box
+                height={10}
+                width={10}
+                borderRadius="m"
+                backgroundColor={
+                  hotspot.status?.online === 'online'
+                    ? 'purpleMain'
+                    : 'redMedium'
+                }
+              />
               <Text
                 variant="body2Medium"
                 color="offblack"
@@ -72,26 +97,24 @@ const HotspotListItem = ({
                 {animalName(hotspot.address)}
               </Text>
             </Box>
-            <Box marginTop="xs">
-              <Text variant="body3Light" color="blueGray">
-                {hotspot.location
-                  ? `${hotspot.geocode?.longStreet}, ${hotspot.geocode?.longCity}, ${hotspot.geocode?.shortCountry}`
-                  : t('hotspot_details.no_location_title')}
+            <Text variant="body3Light" color="blueGray" marginTop="s">
+              {hotspot.location
+                ? `${hotspot.geocode?.longStreet}, ${hotspot.geocode?.longCity}, ${hotspot.geocode?.shortCountry}`
+                : t('hotspot_details.no_location_title')}
+            </Text>
+            <Box flexDirection="row" alignItems="center" marginTop="s">
+              <Text
+                onPress={toggleConvertHntToCurrency}
+                variant="body2"
+                color="purpleMain"
+                paddingEnd="s"
+              >
+                {reward}
+              </Text>
+              <Text variant="body2Light" color="blueGray">
+                {percentSynced}
               </Text>
             </Box>
-            <Text
-              onPress={toggleConvertHntToCurrency}
-              variant="body1Light"
-              fontSize={16}
-              color="purpleMain"
-              paddingTop="s"
-              paddingEnd="s"
-              paddingBottom="s"
-              marginBottom="n_s"
-              alignSelf="flex-start"
-            >
-              {reward}
-            </Text>
           </Box>
           <Box flexDirection="row" alignItems="center" justifyContent="center">
             {showCarot && (
