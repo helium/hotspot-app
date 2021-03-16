@@ -29,7 +29,7 @@ const HotspotSettingsOption = ({
   const colors = useColors()
   return (
     <TouchableOpacityBox
-      padding={compact ? 'lm' : 'l'}
+      padding="lm"
       disabled={!compact}
       onPress={compact ? onPress : undefined}
     >
