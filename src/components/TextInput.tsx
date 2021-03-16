@@ -33,6 +33,8 @@ const TI = ({ variant, placeholderTextColor, ...rest }: Props) => {
     if (variant === 'regular') {
       return colors.inputPlaceholderText
     }
+    if (variant === 'regularDark') return colors.grayLight
+
     return undefined
   }, [colors, placeholderTextColor, variant])
 

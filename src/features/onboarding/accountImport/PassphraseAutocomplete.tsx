@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { KeyboardAvoidingView, ScrollView } from 'react-native'
+import { KeyboardAvoidingView, ScrollView, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import Lock from '@assets/images/lock_ico.svg'
 import MatchingWord from './MatchingWord'
@@ -33,7 +33,11 @@ const PassphraseAutocomplete = ({ onSelectWord, wordIdx }: Props) => {
   }
 
   return (
-    <KeyboardAvoidingView keyboardVerticalOffset={38} behavior="position">
+    <KeyboardAvoidingView
+      keyboardVerticalOffset={38}
+      behavior="position"
+      style={styles.container}
+    >
       <Box marginTop={{ smallPhone: 'm', phone: 'xxl' }}>
         <Lock />
         <Text
@@ -88,5 +92,9 @@ const PassphraseAutocomplete = ({ onSelectWord, wordIdx }: Props) => {
     </KeyboardAvoidingView>
   )
 }
+
+const styles = StyleSheet.create({
+  container: { width: '100%', flex: 1 },
+})
 
 export default PassphraseAutocomplete

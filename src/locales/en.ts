@@ -427,9 +427,9 @@ export default {
       subtitle: 'Recovery Seed Phrases are not\ncase-sensitive',
     },
     confirm: {
-      title: 'Confirm Seed Phrase',
+      title: 'Please Confirm\nSeed Phrase',
       subtitle:
-        "Here are the 12 words you've entered. If needed, you can tap the words to update.",
+        'Here are the 12 words you’ve entered. Tap on any of them if you need to edit.',
       next: 'Submit Seed Phrase',
     },
     complete: {
