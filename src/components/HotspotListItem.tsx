@@ -5,12 +5,12 @@ import { useTranslation } from 'react-i18next'
 import CarotRight from '@assets/images/carot-right.svg'
 import Balance, { NetworkTokens } from '@helium/currency'
 import { useSelector } from 'react-redux'
-import { round } from 'lodash'
 import TouchableOpacityBox from './BSTouchableOpacityBox'
 import Box from './Box'
 import Text from './Text'
 import useCurrency from '../utils/useCurrency'
 import { RootState } from '../store/rootReducer'
+import { getSyncStatus, SyncStatus } from '../utils/hotspotUtils'
 
 type HotspotListItemProps = {
   onPress?: (hotspot: Hotspot) => void
@@ -33,7 +33,9 @@ const HotspotListItem = ({
     const nextReward = await hntBalanceToDisplayVal(totalReward, false)
     setReward(`+${nextReward}`)
   }, [hntBalanceToDisplayVal, totalReward])
-  const { blockHeight } = useSelector((state: RootState) => state.heliumData)
+  const blockHeight = useSelector(
+    (state: RootState) => state.heliumData.blockHeight,
+  )
 
   useEffect(() => {
     updateReward()
@@ -41,19 +43,14 @@ const HotspotListItem = ({
 
   const percentSynced = useMemo(() => {
     const hotspotHeight = hotspot.status?.height || 0
-    if (blockHeight) {
-      const syncedRatio = hotspotHeight / blockHeight
-      const percent = round(syncedRatio * 100, 2)
-      const within500Blocks = hotspotHeight
-        ? blockHeight - hotspotHeight <= 500
-        : false
-      if (percent === 100 || within500Blocks) {
+    const { status, percent } = getSyncStatus(hotspotHeight, blockHeight)
+    switch (status) {
+      case SyncStatus.full:
         return ''
-      }
-      if (percent === 0) {
+      case SyncStatus.partial:
+        return t('hotspot_details.percent_synced', { percent })
+      case SyncStatus.none:
         return t('hotspot_details.starting_sync')
-      }
-      return t('hotspot_details.percent_synced', { percent })
     }
   }, [t, blockHeight, hotspot.status?.height])
 

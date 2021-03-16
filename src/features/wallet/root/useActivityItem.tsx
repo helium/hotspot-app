@@ -72,7 +72,7 @@ const useActivityItem = (
   const { hntBalanceToDisplayVal } = useCurrency()
   const colors = useColors()
   const { t } = useTranslation()
-  const { makers } = useSelector((state: RootState) => state.heliumData)
+  const makers = useSelector((state: RootState) => state.heliumData.makers)
 
   const isSending = useMemo(() => {
     return isPayer(address, item)

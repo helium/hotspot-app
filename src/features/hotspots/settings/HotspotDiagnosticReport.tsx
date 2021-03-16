@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useAsync } from 'react-async-hook'
 import { useTranslation } from 'react-i18next'
-import { capitalize, round, times } from 'lodash'
+import { capitalize, times } from 'lodash'
 import { useSelector } from 'react-redux'
 import { format, formatDistance, fromUnixTime, getUnixTime } from 'date-fns'
 import animalHash from 'angry-purple-tiger'
@@ -26,6 +26,7 @@ import animateTransition from '../../../utils/animateTransition'
 import { locale } from '../../../utils/i18n'
 import useAlert from '../../../utils/useAlert'
 import usePrevious from '../../../utils/usePrevious'
+import { getSyncStatus, SyncStatus } from '../../../utils/hotspotUtils'
 
 type Info = {
   percentSynced: number
@@ -161,19 +162,17 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
     nextInfo.currentTime = getUnixTime(new Date())
     nextInfo.height = parseInt(diagnostics?.height || '0', 10)
 
-    if (blockHeight) {
-      const syncedRatio = nextInfo.height / blockHeight
-      const percentSynced = round(syncedRatio * 100, 2)
-      const within500Blocks = nextInfo.height
-        ? blockHeight - nextInfo.height <= 500
-        : false
-      if (percentSynced === 100 || within500Blocks) {
+    const { status } = getSyncStatus(nextInfo.height, blockHeight)
+    switch (status) {
+      case SyncStatus.full:
         nextInfo.fullySynced = true
-      } else if (percentSynced === 0) {
-        nextInfo.fullySynced = false
-      } else {
+        break
+      case SyncStatus.partial:
         nextInfo.fullySynced = 'partial'
-      }
+        break
+      case SyncStatus.none:
+        nextInfo.fullySynced = false
+        break
     }
 
     setInfo(nextInfo)
