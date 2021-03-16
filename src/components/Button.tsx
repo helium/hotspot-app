@@ -14,9 +14,10 @@ type Props = BoxProps<Theme> & {
   variant?: ButtonVariant
   onPress?: () => void
   disabled?: boolean
-  title: string
+  title?: string
   textStyle?: TextStyle
   color?: Colors
+  icon?: Element
 }
 
 type ButtonVariant = 'primary' | 'secondary' | 'destructive'
@@ -36,6 +37,7 @@ const Button = ({
   textStyle,
   disabled,
   height,
+  icon,
   ...rest
 }: Props) => {
   const getBackground = (): Colors | undefined => {
@@ -71,7 +73,11 @@ const Button = ({
         onPress={onPress}
         disabled={disabled}
         justifyContent="center"
+        flexDirection="row"
+        alignItems="center"
+        paddingHorizontal="m"
       >
+        {icon && <Box marginEnd="s">{icon}</Box>}
         <Text
           maxFontSizeMultiplier={1.2}
           alignSelf="center"

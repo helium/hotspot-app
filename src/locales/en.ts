@@ -639,14 +639,22 @@ export default {
   hotspot_settings: {
     title: 'Hotspot Settings',
     pairing: {
-      title: 'Hotspot Pairing Required',
-      subtitle: 'Place your Hotspot in Bluetooth pairing mode.',
-      scan: 'Scan for my Hotspot',
+      title: 'Update Wi-Fi or Run Diagnostics',
+      subtitle: 'Paring required before proceeding.',
+      scan: 'Pair',
     },
     transfer: {
       title: 'Transfer Hotspot',
-      subtitle: 'Transfer Hotspot to another Helium Wallet Account.',
+      subtitle: 'Send to another Helium Wallet.',
       begin: 'Begin Hotspot Transfer',
+    },
+    update: {
+      title: 'Update Hotspot',
+      subtitle: 'Hotspot location or antenna details.',
+    },
+    discovery: {
+      title: 'Discovery Mode',
+      subtitle: 'Identify ideal Hotspot placement.',
     },
     diagnostics: {
       title: 'Diagnostic Report',
@@ -766,7 +774,7 @@ export default {
       'Hotspot will transfer once the buyer accepts and completes the transaction.',
     notification_button: 'View Transaction',
     cancel: {
-      button_title: 'Cancel Transfer',
+      button_title: 'Transfer Pending. Tap to Cancel.',
       failed_alert_title: 'Unable to Cancel Transfer',
       failed_alert_body: 'No response from the API. Please try again.',
       alert_title: 'Cancel Hotspot Transfer',
