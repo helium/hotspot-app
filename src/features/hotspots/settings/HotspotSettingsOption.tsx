@@ -2,14 +2,19 @@ import React, { memo } from 'react'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
 import Text from '../../../components/Text'
+import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import CarotRight from '../../../assets/images/carot-right.svg'
+import { useColors } from '../../../theme/themeHooks'
 
 type Props = {
   title: string
   subtitle: string
-  buttonLabel: string
+  buttonLabel?: string
   onPress: () => void
-  variant: 'primary' | 'secondary'
+  variant?: 'primary' | 'secondary'
   buttonDisabled?: boolean
+  buttonIcon?: Element
+  compact?: boolean
 }
 const HotspotSettingsOption = ({
   title,
@@ -18,25 +23,49 @@ const HotspotSettingsOption = ({
   onPress,
   variant,
   buttonDisabled = false,
+  buttonIcon,
+  compact,
 }: Props) => {
+  const colors = useColors()
   return (
-    <Box padding="l">
-      <Text variant="h4" color="black" marginBottom="ms">
-        {title}
-      </Text>
-      <Text variant="body2" color="grayText">
-        {subtitle}
-      </Text>
-      <Button
-        marginTop="l"
-        onPress={onPress}
-        width="100%"
-        variant={variant}
-        mode="contained"
-        title={buttonLabel}
-        disabled={buttonDisabled}
-      />
-    </Box>
+    <TouchableOpacityBox
+      padding={compact ? 'lm' : 'l'}
+      disabled={!compact}
+      onPress={compact ? onPress : undefined}
+    >
+      <Box
+        flexDirection="row"
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <Box>
+          <Box flexDirection="row">
+            {compact && <Box marginEnd="s">{buttonIcon}</Box>}
+            <Text variant="medium" fontSize={17} color="black" marginBottom="s">
+              {title}
+            </Text>
+          </Box>
+          <Text variant="body2" color="grayText">
+            {subtitle}
+          </Text>
+          {!compact && (
+            <Box flexWrap="wrap">
+              <Button
+                marginTop="l"
+                onPress={onPress}
+                height={48}
+                variant={variant}
+                mode="contained"
+                title={buttonLabel}
+                disabled={buttonDisabled}
+                icon={buttonIcon}
+              />
+            </Box>
+          )}
+        </Box>
+        {compact && <CarotRight color={colors.grayLight} />}
+      </Box>
+    </TouchableOpacityBox>
   )
 }
 export default memo(HotspotSettingsOption)

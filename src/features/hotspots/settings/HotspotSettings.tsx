@@ -41,6 +41,10 @@ import { useHotspotSettingsContext } from './HotspotSettingsProvider'
 import Box from '../../../components/Box'
 import BackButton from '../../../components/BackButton'
 import animateTransition from '../../../utils/animateTransition'
+import BluetoothIcon from '../../../assets/images/bluetooth_icon.svg'
+import TransferIcon from '../../../assets/images/transfer_icon.svg'
+// import DiscoveryModeIcon from '../../../assets/images/discovery_mode_icon.svg'
+// import UpdateIcon from '../../../assets/images/update_hotspot_icon.svg'
 
 type State = 'init' | 'scan' | 'transfer'
 
@@ -105,13 +109,14 @@ const HotspotSettings = ({ hotspot }: Props) => {
   }, [hotspot])
 
   const transferButtonTitle = useMemo(() => {
+    console.log(hasActiveTransfer)
     if (hasActiveTransfer === undefined) {
       return ''
     }
     if (hasActiveTransfer) {
       return t('transfer.cancel.button_title')
     }
-    return t('hotspot_settings.transfer.begin')
+    return t('hotspot_settings.transfer.subtitle')
   }, [hasActiveTransfer, t])
 
   const cancelTransfer = useCallback(async () => {
@@ -181,7 +186,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
 
   const startScan = useCallback(() => setNextState('scan'), [setNextState])
 
-  const firstCard = useMemo(() => {
+  const pairingCard = useMemo(() => {
     if (settingsState === 'scan') {
       return <HotspotDiagnostics updateTitle={updateTitle} />
     }
@@ -192,11 +197,12 @@ const HotspotSettings = ({ hotspot }: Props) => {
         buttonLabel={t('hotspot_settings.pairing.scan')}
         variant="primary"
         onPress={startScan}
+        buttonIcon={<BluetoothIcon color="white" height={18} width={18} />}
       />
     )
   }, [settingsState, startScan, t, updateTitle])
 
-  const secondCard = useMemo(() => {
+  const ownerSettings = useMemo(() => {
     const isOwned = hotspot && hotspot.owner === account?.address
     if (!hotspot || !isOwned) return null
 
@@ -211,14 +217,40 @@ const HotspotSettings = ({ hotspot }: Props) => {
     }
 
     return (
-      <HotspotSettingsOption
-        title={t('hotspot_settings.transfer.title')}
-        subtitle={t('hotspot_settings.transfer.subtitle')}
-        buttonLabel={transferButtonTitle}
-        buttonDisabled={hasActiveTransfer === undefined}
-        variant="secondary"
-        onPress={onPressTransferSetting}
-      />
+      <Box>
+        <HotspotSettingsOption
+          title={t('hotspot_settings.transfer.title')}
+          subtitle={transferButtonTitle}
+          buttonDisabled={hasActiveTransfer === undefined}
+          onPress={onPressTransferSetting}
+          compact
+          buttonIcon={<TransferIcon />}
+        />
+        {/* // TODO: Discovery Mode
+        <Box backgroundColor="black" height={0.5} />
+        <HotspotSettingsOption
+          title={t('hotspot_settings.discovery.title')}
+          subtitle={t('hotspot_settings.discovery.subtitle')}
+          onPress={() => undefined}
+          compact
+          buttonIcon={
+            <Box marginTop="xxs">
+              <DiscoveryModeIcon />
+            </Box>
+          }
+        />
+        */}
+        {/* // TODO: Assert V2
+        <Box backgroundColor="black" height={0.5} />
+        <HotspotSettingsOption
+          title={t('hotspot_settings.update.title')}
+          subtitle={t('hotspot_settings.update.subtitle')}
+          onPress={() => undefined}
+          compact
+          buttonIcon={<UpdateIcon />}
+        />
+        */}
+      </Box>
     )
   }, [
     account?.address,
@@ -284,25 +316,21 @@ const HotspotSettings = ({ hotspot }: Props) => {
             </Text>
           )}
 
-          {settingsState !== 'transfer' && (
-            <Card variant="modal" backgroundColor="white">
-              {firstCard}
-            </Card>
-          )}
-
           {settingsState !== 'scan' && (
             <KeyboardAvoidingView
               behavior="position"
               keyboardVerticalOffset={220}
             >
-              <Card
-                variant="modal"
-                backgroundColor="white"
-                marginTop={settingsState === 'transfer' ? 'none' : 'l'}
-              >
-                {secondCard}
+              <Card variant="modal" backgroundColor="white">
+                {ownerSettings}
               </Card>
             </KeyboardAvoidingView>
+          )}
+
+          {settingsState !== 'transfer' && (
+            <Card variant="modal" backgroundColor="white" marginTop="m">
+              {pairingCard}
+            </Card>
           )}
         </AnimatedBox>
       </SafeAreaBox>
