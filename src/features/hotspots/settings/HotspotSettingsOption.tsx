@@ -39,9 +39,9 @@ const HotspotSettingsOption = ({
         alignItems="center"
       >
         <Box>
-          <Box flexDirection="row">
+          <Box flexDirection="row" alignItems="center" marginBottom="s">
             {compact && <Box marginEnd="s">{buttonIcon}</Box>}
-            <Text variant="medium" fontSize={17} color="black" marginBottom="s">
+            <Text variant="medium" fontSize={17} color="black">
               {title}
             </Text>
           </Box>

@@ -109,7 +109,6 @@ const HotspotSettings = ({ hotspot }: Props) => {
   }, [hotspot])
 
   const transferButtonTitle = useMemo(() => {
-    console.log(hasActiveTransfer)
     if (hasActiveTransfer === undefined) {
       return ''
     }
@@ -233,11 +232,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
           subtitle={t('hotspot_settings.discovery.subtitle')}
           onPress={() => undefined}
           compact
-          buttonIcon={
-            <Box marginTop="xxs">
-              <DiscoveryModeIcon />
-            </Box>
-          }
+          buttonIcon={<DiscoveryModeIcon />}
         />
         */}
         {/* // TODO: Assert V2
