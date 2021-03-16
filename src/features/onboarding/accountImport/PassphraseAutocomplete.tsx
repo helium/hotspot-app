@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { KeyboardAvoidingView, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import Lock from '@assets/images/lock_ico.svg'
 import MatchingWord from './MatchingWord'
 import wordlist from '../../../constants/wordlists/english.json'
 import TextInput from '../../../components/TextInput'
 import Text from '../../../components/Text'
-import TextTransform from '../../../components/TextTransform'
 import Box from '../../../components/Box'
 
 type Props = {
@@ -34,30 +34,25 @@ const PassphraseAutocomplete = ({ onSelectWord, wordIdx }: Props) => {
 
   return (
     <KeyboardAvoidingView keyboardVerticalOffset={38} behavior="position">
-      <Box marginTop="m">
+      <Box marginTop={{ smallPhone: 'm', phone: 'xxl' }}>
+        <Lock />
         <Text
-          variant="h1"
+          marginTop="l"
+          variant="bold"
+          fontSize={27}
           numberOfLines={2}
           maxFontSizeMultiplier={1}
           adjustsFontSizeToFit
-          marginBottom="m"
+          marginBottom="s"
         >
           {t('account_import.word_entry.title')}
         </Text>
-        <Text variant="body1Light" color="grayLight">
+        <Text variant="light" color="grayLight" fontSize={20}>
           {t('account_import.word_entry.subtitle')}
         </Text>
-        <TextTransform
-          marginTop="lx"
-          variant="body2Light"
-          color="greenMain"
-          values={{ ordinal }}
-          i18nKey="account_import.word_entry.directions"
-        />
 
         <TextInput
-          padding="m"
-          variant="regular"
+          variant="regularDark"
           placeholder={t('account_import.word_entry.placeholder', {
             ordinal,
           })}
@@ -68,7 +63,8 @@ const PassphraseAutocomplete = ({ onSelectWord, wordIdx }: Props) => {
           autoCompleteType="off"
           blurOnSubmit={false}
           returnKeyType="next"
-          marginVertical="ms"
+          marginTop="l"
+          marginBottom="s"
           autoFocus
         />
         <ScrollView

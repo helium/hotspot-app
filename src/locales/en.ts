@@ -424,7 +424,7 @@ export default {
       title: 'Enter Recovery\nSeed Phrase',
       directions: 'Enter the <b>{{ordinal}}</b> Word',
       placeholder: '{{ordinal}} word',
-      subtitle: 'Recovery Seed Phrases are not case-sensitive',
+      subtitle: 'Recovery Seed Phrases are not\ncase-sensitive',
     },
     confirm: {
       title: 'Confirm Seed Phrase',
