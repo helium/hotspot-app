@@ -1,6 +1,15 @@
 import Config from 'react-native-config'
 import * as Logger from './logger'
 
+export type Maker = {
+  id: number
+  name: string
+  address: string
+  locationNonceLimit: number
+  createdAt: string
+  updatedAt: string
+}
+
 const makeRequest = async (url: string, opts: RequestInit = {}) => {
   try {
     const route = [Config.STAKING_API_BASE_URL, url].join('/')
@@ -30,3 +39,15 @@ export const getStaking = async (url: string) => makeRequest(url)
 
 export const postStaking = async (url: string, data: unknown) =>
   makeRequest(url, { method: 'POST', body: data ? JSON.stringify(data) : null })
+
+export const getMakers = async (): Promise<Maker[]> => {
+  return makeRequest('makers')
+}
+
+export const getMakerName = (accountAddress: string, makers?: Maker[]) => {
+  if (!makers) return ''
+  const makerMatchIndex = makers.findIndex(
+    (m: { address: string }) => m.address === accountAddress,
+  )
+  return makerMatchIndex !== -1 ? makers[makerMatchIndex].name : ''
+}

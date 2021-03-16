@@ -108,11 +108,27 @@ const ActivityDetails = ({ detailTxn }: Props) => {
                 fontSize={15}
                 color="blueBright"
                 alignSelf="flex-end"
-                marginBottom="m"
+                marginBottom={!txnDisplayVals.feePayer ? 'm' : 'none'}
               >
                 {`${txnDisplayVals.fee} ${t('generic.fee')}`}
               </Text>
             )}
+
+            {!!txnDisplayVals.feePayer && (
+              <Text
+                variant="light"
+                fontSize={15}
+                color="graySteel"
+                marginTop="xs"
+                marginBottom="s"
+                alignSelf="flex-end"
+              >
+                {t('activity_details.staking_fee_payer', {
+                  payer: txnDisplayVals.feePayer,
+                })}
+              </Text>
+            )}
+
             <Rewards item={detailTxn} />
             <Payment item={detailTxn} address={address || ''} />
             <Burn item={detailTxn} address={address || ''} />
