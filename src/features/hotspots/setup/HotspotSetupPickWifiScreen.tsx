@@ -1,8 +1,9 @@
-import React, { useCallback } from 'react'
-import { FlatList } from 'react-native'
+import React, { useCallback, useMemo, useState } from 'react'
+import { ActivityIndicator, FlatList } from 'react-native'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
+import { uniq } from 'lodash'
 import BackScreen from '../../../components/BackScreen'
 import Text from '../../../components/Text'
 import {
@@ -17,6 +18,7 @@ import { DebouncedButton as Button } from '../../../components/Button'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Checkmark from '../../../assets/images/check.svg'
 import { RootState } from '../../../store/rootReducer'
+import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 
 const WifiItem = ({
   name,
@@ -62,6 +64,18 @@ const HotspotSetupPickWifiScreen = () => {
   const {
     params: { networks, connectedNetworks },
   } = useRoute<Route>()
+  const { scanForWifiNetworks } = useConnectedHotspotContext()
+
+  const [wifiNetworks, setWifiNetworks] = useState(networks)
+  const [connectedWifiNetworks, setConnectedWifiNetworks] = useState(
+    connectedNetworks,
+  )
+  const [scanning, setScanning] = useState(false)
+
+  const hasNetworks = useMemo(() => {
+    if (!wifiNetworks?.length) return false
+    return wifiNetworks.length > 0
+  }, [wifiNetworks])
 
   const navSkip = useCallback(() => {
     if (connectedHotspot.status === 'owned') {
@@ -77,9 +91,18 @@ const HotspotSetupPickWifiScreen = () => {
     navigation.navigate('HotspotSetupWifiScreen', { network })
   }
 
+  const scanForNetworks = async () => {
+    setScanning(true)
+    const newNetworks = uniq((await scanForWifiNetworks()) || [])
+    const newConnectedNetworks = uniq((await scanForWifiNetworks(true)) || [])
+    setScanning(false)
+    setWifiNetworks(newNetworks)
+    setConnectedWifiNetworks(newConnectedNetworks)
+  }
+
   return (
     <BackScreen padding="none" backgroundColor="primaryBackground">
-      <Box backgroundColor="primaryBackground" padding="m">
+      <Box backgroundColor="primaryBackground" padding="m" alignItems="center">
         <Box flexDirection="row" justifyContent="center" marginBottom="lm">
           <Wifi />
         </Box>
@@ -99,15 +122,26 @@ const HotspotSetupPickWifiScreen = () => {
         >
           {t('hotspot_setup.wifi_scan.subtitle')}
         </Text>
+        <Button
+          icon={scanning ? <ActivityIndicator color="white" /> : undefined}
+          onPress={scanForNetworks}
+          title={t('hotspot_setup.wifi_scan.scan_networks')}
+          variant="primary"
+          height={50}
+          width="90%"
+          marginVertical="s"
+          disabled={scanning}
+          mode="contained"
+        />
       </Box>
       <Box paddingHorizontal="l" flex={1} backgroundColor="purple200">
         <FlatList
-          data={networks}
+          data={wifiNetworks}
           keyExtractor={(item) => item}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={
             <Box marginTop="l">
-              {connectedNetworks.length > 0 && (
+              {connectedWifiNetworks.length > 0 && (
                 <Box marginBottom="m">
                   <Text
                     variant="body1Bold"
@@ -116,12 +150,12 @@ const HotspotSetupPickWifiScreen = () => {
                   >
                     {t('hotspot_setup.wifi_scan.saved_networks')}
                   </Text>
-                  {connectedNetworks.map((network, index) => (
+                  {connectedWifiNetworks.map((network, index) => (
                     <WifiItem
                       key={network}
                       name={network}
                       isFirst={index === 0}
-                      isLast={index === connectedNetworks.length - 1}
+                      isLast={index === connectedWifiNetworks.length - 1}
                       icon="check"
                       onPress={navSkip}
                     />
@@ -132,6 +166,7 @@ const HotspotSetupPickWifiScreen = () => {
                 variant="body1Bold"
                 marginBottom="s"
                 maxFontSizeMultiplier={1.2}
+                visible={hasNetworks}
               >
                 {t('hotspot_setup.wifi_scan.available_networks')}
               </Text>
@@ -141,14 +176,28 @@ const HotspotSetupPickWifiScreen = () => {
             <WifiItem
               name={item}
               isFirst={index === 0}
-              isLast={index === networks.length - 1}
+              isLast={index === wifiNetworks.length - 1}
               onPress={() => navNext(item)}
             />
           )}
+          ListEmptyComponent={
+            <Box margin="l">
+              <Text
+                variant="body1Medium"
+                marginBottom="l"
+                textAlign="center"
+                color="purpleLight"
+              >
+                {t('hotspot_setup.wifi_scan.not_found_title')}
+              </Text>
+              <Text variant="body1Light" textAlign="center" color="purpleLight">
+                {t('hotspot_setup.wifi_scan.not_found_desc')}
+              </Text>
+            </Box>
+          }
         />
         <Button
           variant="primary"
-          mode="contained"
           title={t('hotspot_setup.wifi_scan.ethernet')}
           marginVertical="m"
           onPress={navSkip}
