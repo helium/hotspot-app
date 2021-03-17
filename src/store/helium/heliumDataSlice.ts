@@ -37,18 +37,16 @@ export const fetchInitialData = createAsyncThunk<HeliumDataState>(
   'heliumData/fetchInitialData',
   async () => {
     const vals = await Promise.all([
-      getBlockHeight(),
       getCurrentOraclePrice(),
       getPredictedOraclePrice(),
       getCurrentPrices(),
       getMakers(),
     ])
     return {
-      blockHeight: vals[0],
-      currentOraclePrice: vals[1],
-      predictedOraclePrices: vals[2],
-      currentPrices: vals[3],
-      makers: vals[4],
+      currentOraclePrice: vals[0],
+      predictedOraclePrices: vals[1],
+      currentPrices: vals[2],
+      makers: vals[3],
     }
   },
 )
@@ -67,7 +65,6 @@ const heliumDataSlice = createSlice({
     builder.addCase(fetchInitialData.fulfilled, (state, { payload }) => {
       state.currentOraclePrice = payload.currentOraclePrice
       state.predictedOraclePrices = payload.predictedOraclePrices
-      state.blockHeight = payload.blockHeight
       state.currentPrices = payload.currentPrices
       state.makers = payload.makers
     })

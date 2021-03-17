@@ -10,7 +10,6 @@ import {
   UIManager,
 } from 'react-native'
 import { ThemeProvider } from '@shopify/restyle'
-
 import OneSignal from 'react-native-onesignal'
 import Config from 'react-native-config'
 import { useSelector } from 'react-redux'
@@ -34,7 +33,6 @@ import {
   fetchBlockHeight,
   fetchInitialData,
 } from './store/helium/heliumDataSlice'
-import sleep from './utils/sleep'
 import SecurityScreen from './features/security/SecurityScreen'
 
 SplashScreen.preventAutoHideAsync()
@@ -57,19 +55,21 @@ const App = () => {
   const dispatch = useAppDispatch()
 
   const {
-    app: {
-      lastIdle,
-      isPinRequired,
-      authInterval,
-      isRestored,
-      isBackedUp,
-      isRequestingPermission,
-      isLocked,
-      appStateStatus,
-    },
-    account: { fetchDataStatus },
-    heliumData: { blockHeight },
-  } = useSelector((state: RootState) => state)
+    lastIdle,
+    isPinRequired,
+    authInterval,
+    isRestored,
+    isBackedUp,
+    isRequestingPermission,
+    isLocked,
+    appStateStatus,
+  } = useSelector((state: RootState) => state.app)
+  const fetchDataStatus = useSelector(
+    (state: RootState) => state.account.fetchDataStatus,
+  )
+  const blockHeight = useSelector(
+    (state: RootState) => state.heliumData.blockHeight,
+  )
 
   useAsync(configChainVars, [])
 
@@ -101,37 +101,27 @@ const App = () => {
     [dispatch],
   )
 
-  const loadInitialData = useCallback(async () => {
+  useEffect(() => {
     if (!isRestored) {
       dispatch(restoreUser())
     } else {
+      dispatch(fetchBlockHeight())
       dispatch(fetchInitialData())
     }
   }, [dispatch, isRestored])
 
-  useEffect(() => {
-    loadInitialData()
-  }, [loadInitialData])
-
-  const hideSplash = useCallback(async () => {
-    if (isRestored && !isBackedUp) {
-      // user isn't logged in
-      SplashScreen.hideAsync()
-    }
-    if (
+  useAsync(async () => {
+    const loggedOut = isRestored && !isBackedUp
+    const loggedInAndLoaded =
       isRestored &&
       isBackedUp &&
       fetchDataStatus !== 'pending' &&
       fetchDataStatus !== 'idle'
-    ) {
-      await sleep(300) // add a little delay for views to setup
-      SplashScreen.hideAsync()
+
+    if (loggedOut || loggedInAndLoaded) {
+      await SplashScreen.hideAsync()
     }
   }, [fetchDataStatus, isBackedUp, isRestored])
-
-  useEffect(() => {
-    hideSplash()
-  }, [hideSplash, isBackedUp])
 
   useEffect(() => {
     OneSignal.setAppId(Config.ONE_SIGNAL_APP_ID)
@@ -147,6 +137,7 @@ const App = () => {
     }
   }, [handleChange])
 
+  // poll block height to update realtime data throughout the app
   useEffect(() => {
     const interval = setInterval(() => {
       dispatch(fetchBlockHeight())
