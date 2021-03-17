@@ -181,7 +181,7 @@ export default {
       nebra_p_1:
         '<b><white>Diagnostic support allows Nebra LTD to identify issues with your Hotspot in a secure way.</white></b>\n\nNebra will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@nebra.com</b></purple> from the email used to purchase the Hotspot.',
       bobcat_p_1:
-        '<b><white>Diagnostic support allows Bobcat to identify issues with your Hotspot in a secure way.</white></b>\n\nBobcat will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@bobcat.com</b></purple> from the email used to purchase the Hotspot.',
+        '<b><white>Diagnostic support allows Bobcat to identify issues with your Hotspot in a secure way.</white></b>\n\nBobcat will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@bobcatminer.com</b></purple> from the email used to purchase the Hotspot.',
       syncrobit_p_1:
         '<b><white>Diagnostic support allows SyncroB.it to identify issues with your Hotspot in a secure way.</white></b>\n\nSyncroB.it will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@syncrob.it</b></purple> from the email used to purchase the Hotspot.',
     },
@@ -208,7 +208,7 @@ export default {
       nebraout_subtitle_2:
         'The Nebra Outdoor Hotspot will have multiple lights come on once it’s powered on.',
       bobcat_subtitle_2:
-        'The Hotspot is ready when the light goes from red to green.',
+        'The Hotspot is ready when the light goes from red to yellow.',
       syncrobit_subtitle_2:
         'The SyncroB.it Hotspot LED bar will light up blue once it’s powered on.',
     },
@@ -234,7 +234,7 @@ export default {
       nebraout_subtitle_2:
         'Bluetooth is automatically enabled for 10 minutes after the Nebra Outdoor Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.',
       bobcat_subtitle_2:
-        'The hotspot is ready to pair when the light goes from green to blue.\n\nMake sure your phone’s Bluetooth is turned on!',
+        'The hotspot is ready to pair when the light goes from yellow to blue.\n\nMake sure your phone’s Bluetooth is turned on!',
       syncrobit_subtitle_2:
         'Bluetooth is automatically enabled for 5 minutes after the SyncroB.it Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.',
       alert_no_permissions: {
