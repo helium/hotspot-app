@@ -19,7 +19,7 @@ const PassphraseAutocomplete = ({ onSelectWord, wordIdx }: Props) => {
   const [word, setWord] = useState('')
   const [matchingWords, setMatchingWords] = useState<Array<string>>([])
   const { t } = useTranslation()
-  const ordinal = wordIdx <= TOTAL_WORDS ? t(`ordinals.${wordIdx}`) : ''
+  const ordinal = wordIdx < TOTAL_WORDS ? t(`ordinals.${wordIdx}`) : ''
 
   useEffect(() => {
     setMatchingWords(

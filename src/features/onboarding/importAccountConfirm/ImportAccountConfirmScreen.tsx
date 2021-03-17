@@ -1,24 +1,22 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Modal, StyleSheet } from 'react-native'
+import { StyleSheet } from 'react-native'
 import Lock from '@assets/images/lock_ico.svg'
 import { upperFirst } from 'lodash'
 import Carousel, { Pagination } from 'react-native-snap-carousel'
 import Box from '../../../components/Box'
-import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import {
   OnboardingNavigationProp,
   OnboardingStackParamList,
 } from '../onboardingTypes'
-import PassphraseAutocomplete from '../accountImport/PassphraseAutocomplete'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Button from '../../../components/Button'
-import Close from '../../../assets/images/close.svg'
 import BackScreen from '../../../components/BackScreen'
 import { wp } from '../../../utils/layout'
 import Card from '../../../components/Card'
+import ImportReplaceWordModal from './ImportReplaceWordModal'
 
 type Route = RouteProp<OnboardingStackParamList, 'ImportAccountConfirmScreen'>
 const ImportAccountConfirmScreen = () => {
@@ -144,37 +142,12 @@ const ImportAccountConfirmScreen = () => {
           title={t('account_import.confirm.next')}
         />
       </Box>
-
-      <Modal
-        presentationStyle="overFullScreen"
-        transparent
+      <ImportReplaceWordModal
         visible={selectedWordIdx !== null}
         onRequestClose={clearSelection}
-        animationType="fade"
-      >
-        <SafeAreaBox
-          backgroundColor="primaryBackground"
-          opacity={0.98}
-          flex={1}
-          alignItems="center"
-          justifyContent="center"
-          paddingHorizontal="l"
-          paddingTop="l"
-        >
-          <TouchableOpacityBox
-            alignSelf="flex-start"
-            onPress={clearSelection}
-            paddingBottom="xl"
-            paddingRight="xl"
-          >
-            <Close color="white" height={24} width={24} />
-          </TouchableOpacityBox>
-          <PassphraseAutocomplete
-            onSelectWord={replaceWord}
-            wordIdx={selectedWordIdx ?? 0}
-          />
-        </SafeAreaBox>
-      </Modal>
+        onSelectWord={replaceWord}
+        wordIdx={selectedWordIdx ?? 0}
+      />
     </BackScreen>
   )
 }
