@@ -25,14 +25,14 @@ const MatchingWord = ({ fullWord, matchingText, onPress }: Props) => (
     height={40}
   >
     <Text
-      variant="body1Light"
+      variant="body1Medium"
       justifyContent="center"
       alignContent="center"
       color="white"
     >
       {capitalize(matchingText)}
       <Text
-        variant="body1Light"
+        variant="body1Medium"
         alignContent="center"
         justifyContent="center"
         color="grayMain"
