@@ -6412,6 +6412,11 @@ hash-base@^3.0.0:
     readable-stream "^3.6.0"
     safe-buffer "^5.2.0"
 
+haversine-distance@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/haversine-distance/-/haversine-distance-1.2.1.tgz#3b3a053890504925505273e96eba359042dc514b"
+  integrity sha512-rQpG89d6NlAis0eqOSFXDqNU/GZcMPlHNVMqTSzD16niD9s1fDK8T6kwrK0WJ7OMU+iRNy3cgGYnNQihMqmaHg==
+
 hermes-engine@~0.5.0:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/hermes-engine/-/hermes-engine-0.5.1.tgz#601115e4b1e0a17d9aa91243b96277de4e926e09"

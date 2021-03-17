@@ -4,7 +4,7 @@ import { NetworkHotspot } from '../store/networkHotspots/networkHotspotsSlice'
 
 // eslint-disable-next-line import/prefer-default-export
 export const hotspotsToFeatures = (
-  hotspots: Hotspot[] | NetworkHotspot[],
+  hotspots: (NetworkHotspot | Hotspot)[],
 ): Feature[] =>
   hotspots
     .filter((h) => h.lat && h.lng)

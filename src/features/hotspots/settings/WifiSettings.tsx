@@ -138,7 +138,7 @@ const WifiSettings = ({ onNetworkSelected, onError }: Props) => {
             <Text flex={1} variant="body1Bold" color="black">
               {item}
             </Text>
-            <Chevron />
+            <Chevron color="#C1CFEE" />
           </Card>
         </TouchableOpacity>
       )

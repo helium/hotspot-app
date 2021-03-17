@@ -34,6 +34,7 @@ import {
   fetchInitialData,
 } from './store/helium/heliumDataSlice'
 import SecurityScreen from './features/security/SecurityScreen'
+import { fetchFeatures } from './store/features/featuresSlice'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -87,6 +88,12 @@ const App = () => {
     },
     [dispatch],
   )
+
+  // fetch feature flags for the app
+  useEffect(() => {
+    dispatch(fetchFeatures())
+  }, [dispatch])
+
   useEffect(() => {
     AppState.addEventListener('change', handleChange)
     return () => {
