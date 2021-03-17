@@ -286,6 +286,15 @@ export const theme = createTheme({
       color: 'white',
       borderRadius: 'm',
     },
+    regularDark: {
+      backgroundColor: 'purple500',
+      fontFamily: Font.main.regular,
+      fontSize: 20,
+      height: 52,
+      paddingHorizontal: 'm',
+      color: 'white',
+      borderRadius: 'm',
+    },
     light: {
       backgroundColor: 'offwhite',
       fontFamily: Font.main.regular,

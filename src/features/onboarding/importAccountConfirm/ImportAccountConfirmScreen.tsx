@@ -1,20 +1,22 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Modal } from 'react-native'
+import { StyleSheet } from 'react-native'
+import Lock from '@assets/images/lock_ico.svg'
+import { upperFirst } from 'lodash'
+import Carousel, { Pagination } from 'react-native-snap-carousel'
 import Box from '../../../components/Box'
-import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
-import WordList from '../../../components/WordList'
 import {
   OnboardingNavigationProp,
   OnboardingStackParamList,
 } from '../onboardingTypes'
-import PassphraseAutocomplete from '../accountImport/PassphraseAutocomplete'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Button from '../../../components/Button'
-import Close from '../../../assets/images/close.svg'
 import BackScreen from '../../../components/BackScreen'
+import { wp } from '../../../utils/layout'
+import Card from '../../../components/Card'
+import ImportReplaceWordModal from './ImportReplaceWordModal'
 
 type Route = RouteProp<OnboardingStackParamList, 'ImportAccountConfirmScreen'>
 const ImportAccountConfirmScreen = () => {
@@ -25,6 +27,16 @@ const ImportAccountConfirmScreen = () => {
   const {
     params: { words: routeWords },
   } = useRoute<Route>()
+  const [wordIndex, setWordIndex] = useState(0)
+
+  const onSnapToItem = (index: number) => {
+    setWordIndex(index)
+  }
+
+  const navNext = useCallback(
+    () => navigation.push('AccountImportCompleteScreen', { words }),
+    [navigation, words],
+  )
 
   useEffect(() => {
     setWords(routeWords)
@@ -44,27 +56,78 @@ const ImportAccountConfirmScreen = () => {
     })
   }
 
+  const renderItem = useCallback(
+    ({ item, index }) => (
+      <TouchableOpacityBox
+        height={{ smallPhone: 90, phone: 114 }}
+        onPress={handleWordEdit(index)}
+      >
+        <Card
+          marginHorizontal="s"
+          variant="elevated"
+          flex={1}
+          overflow="hidden"
+          backgroundColor="white"
+          padding="l"
+          alignItems="center"
+          flexDirection="row"
+        >
+          <Text variant="h1" color="purpleLight" maxFontSizeMultiplier={1}>{`${
+            index + 1
+          }. `}</Text>
+          <Text variant="h1" color="purpleDark" maxFontSizeMultiplier={1}>
+            {upperFirst(item)}
+          </Text>
+        </Card>
+      </TouchableOpacityBox>
+    ),
+    [],
+  )
+
   return (
     <BackScreen>
-      <Box paddingHorizontal="l">
+      <Box>
+        <Lock />
         <Text
-          variant="h1"
+          marginTop="l"
+          variant="bold"
+          fontSize={27}
           numberOfLines={2}
-          adjustsFontSizeToFit
           maxFontSizeMultiplier={1}
+          adjustsFontSizeToFit
+          marginBottom="s"
         >
           {t('account_import.confirm.title')}
         </Text>
         <Text
-          variant="body2Light"
-          marginTop="s"
-          marginBottom={{ smallPhone: 's', phone: 'xl' }}
-          maxFontSizeMultiplier={1.2}
+          variant="light"
+          color="grayLight"
+          fontSize={20}
+          maxFontSizeMultiplier={1.1}
         >
           {t('account_import.confirm.subtitle')}
         </Text>
       </Box>
-      <WordList words={words} onPressWord={handleWordEdit} />
+      <Box marginHorizontal="n_lx" marginVertical="l">
+        <Carousel
+          layout="default"
+          vertical={false}
+          data={words}
+          renderItem={renderItem}
+          sliderWidth={wp(100)}
+          itemWidth={wp(90)}
+          inactiveSlideScale={1}
+          onSnapToItem={(i) => onSnapToItem(i)}
+        />
+        <Pagination
+          containerStyle={styles.dotContainer}
+          dotsLength={words.length}
+          activeDotIndex={wordIndex}
+          dotStyle={styles.dots}
+          inactiveDotOpacity={0.4}
+          inactiveDotScale={1}
+        />
+      </Box>
       <Box
         paddingHorizontal="l"
         paddingBottom="l"
@@ -72,42 +135,31 @@ const ImportAccountConfirmScreen = () => {
         justifyContent="flex-end"
       >
         <Button
-          onPress={() =>
-            navigation.push('AccountImportCompleteScreen', { words })
-          }
+          height={60}
+          onPress={navNext}
           variant="primary"
           mode="contained"
           title={t('account_import.confirm.next')}
         />
       </Box>
-
-      <Modal
-        presentationStyle="overFullScreen"
-        transparent
+      <ImportReplaceWordModal
         visible={selectedWordIdx !== null}
         onRequestClose={clearSelection}
-        animationType="fade"
-      >
-        <SafeAreaBox
-          backgroundColor="primaryBackground"
-          opacity={0.98}
-          flex={1}
-          alignItems="center"
-          justifyContent="center"
-          paddingHorizontal="l"
-          paddingTop="l"
-        >
-          <TouchableOpacityBox alignSelf="flex-start" onPress={clearSelection}>
-            <Close color="white" height={24} width={24} />
-          </TouchableOpacityBox>
-          <PassphraseAutocomplete
-            onSelectWord={replaceWord}
-            wordIdx={selectedWordIdx ?? 0}
-          />
-        </SafeAreaBox>
-      </Modal>
+        onSelectWord={replaceWord}
+        wordIdx={selectedWordIdx ?? 0}
+      />
     </BackScreen>
   )
 }
+
+const styles = StyleSheet.create({
+  dots: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: 'white',
+  },
+  dotContainer: { marginTop: 24 },
+})
 
 export default ImportAccountConfirmScreen

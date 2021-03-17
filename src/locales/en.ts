@@ -424,12 +424,12 @@ export default {
       title: 'Enter Recovery\nSeed Phrase',
       directions: 'Enter the <b>{{ordinal}}</b> Word',
       placeholder: '{{ordinal}} word',
-      subtitle: 'Recovery Seed Phrases are not case-sensitive',
+      subtitle: 'Recovery Seed Phrases are not\ncase-sensitive',
     },
     confirm: {
-      title: 'Confirm Seed Phrase',
+      title: 'Please Confirm\nSeed Phrase',
       subtitle:
-        "Here are the 12 words you've entered. If needed, you can tap the words to update.",
+        'Here are the 12 words you’ve entered. Tap on any of them if you need to edit.',
       next: 'Submit Seed Phrase',
     },
     complete: {
