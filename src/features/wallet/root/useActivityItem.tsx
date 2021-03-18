@@ -73,6 +73,9 @@ const useActivityItem = (
   const colors = useColors()
   const { t } = useTranslation()
   const makers = useSelector((state: RootState) => state.heliumData.makers)
+  const blockHeight = useSelector(
+    (state: RootState) => state.heliumData.blockHeight,
+  )
 
   const isSending = useMemo(() => {
     return isPayer(address, item)
@@ -328,7 +331,9 @@ const useActivityItem = (
         addSuffix: true,
       })
     return format(val, dateFormat)
-  }, [dateFormat, item, t])
+    // add blockHeight to update time when block changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dateFormat, item, t, blockHeight])
 
   useEffect(() => {
     const createTxnDisplayData = async () => {
