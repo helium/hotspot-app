@@ -71,8 +71,29 @@ const App = () => {
     (state: RootState) => state.heliumData.blockHeight,
   )
 
+  // initialize external libraries
   useAsync(configChainVars, [])
+  useEffect(() => {
+    OneSignal.setAppId(Config.ONE_SIGNAL_APP_ID)
+    MapboxGL.setAccessToken(Config.MAPBOX_ACCESS_TOKEN)
+    Logger.init()
+  }, [])
 
+  // setup and listen for app state changes
+  const handleChange = useCallback(
+    (newState: AppStateStatus) => {
+      dispatch(appSlice.actions.updateAppStateStatus(newState))
+    },
+    [dispatch],
+  )
+  useEffect(() => {
+    AppState.addEventListener('change', handleChange)
+    return () => {
+      AppState.removeEventListener('change', handleChange)
+    }
+  }, [handleChange])
+
+  // handle app state changes
   useEffect(() => {
     if (appStateStatus === 'background' && !isLocked) {
       dispatch(appSlice.actions.updateLastIdle())
@@ -94,13 +115,7 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appStateStatus])
 
-  const handleChange = useCallback(
-    (newState: AppStateStatus) => {
-      dispatch(appSlice.actions.updateAppStateStatus(newState))
-    },
-    [dispatch],
-  )
-
+  // restore user and then fetch initial data
   useEffect(() => {
     if (!isRestored) {
       dispatch(restoreUser())
@@ -110,6 +125,7 @@ const App = () => {
     }
   }, [dispatch, isRestored])
 
+  // hide splash screen
   useAsync(async () => {
     const loggedOut = isRestored && !isBackedUp
     const loggedInAndLoaded =
@@ -123,20 +139,6 @@ const App = () => {
     }
   }, [fetchDataStatus, isBackedUp, isRestored])
 
-  useEffect(() => {
-    OneSignal.setAppId(Config.ONE_SIGNAL_APP_ID)
-    MapboxGL.setAccessToken(Config.MAPBOX_ACCESS_TOKEN)
-    Logger.init()
-  }, [])
-
-  useEffect(() => {
-    AppState.addEventListener('change', handleChange)
-
-    return () => {
-      AppState.removeEventListener('change', handleChange)
-    }
-  }, [handleChange])
-
   // poll block height to update realtime data throughout the app
   useEffect(() => {
     const interval = setInterval(() => {
@@ -145,8 +147,8 @@ const App = () => {
     return () => clearInterval(interval)
   }, [dispatch])
 
+  // fetch account data when logged in and block changes (called whenever block height updates)
   useEffect(() => {
-    // fetch account data when logged in and block changes
     if (isBackedUp && blockHeight) {
       dispatch(fetchData())
     }

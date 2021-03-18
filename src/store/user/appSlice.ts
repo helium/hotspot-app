@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppStateStatus } from 'react-native'
+import OneSignal from 'react-native-onesignal'
 import {
   deleteSecureItem,
   getSecureItem,
@@ -61,9 +62,15 @@ export const restoreUser = createAsyncThunk<Restore>(
       getSecureItem('authInterval'),
       getSecureItem('hapticDisabled'),
       getSecureItem('convertHntToCurrency'),
+      getSecureItem('address'),
     ])
+    const isBackedUp = vals[0]
+    const address = vals[6]
+    if (isBackedUp && address) {
+      OneSignal.sendTags({ address })
+    }
     return {
-      isBackedUp: vals[0],
+      isBackedUp,
       isPinRequired: vals[1],
       isPinRequiredForPayment: vals[2],
       authInterval: vals[3] ? parseInt(vals[3], 10) : Intervals.IMMEDIATELY,

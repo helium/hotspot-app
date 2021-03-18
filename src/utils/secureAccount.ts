@@ -1,5 +1,6 @@
 import { Address, Keypair, Mnemonic } from '@helium/crypto-react-native'
 import * as SecureStore from 'expo-secure-store'
+import OneSignal from 'react-native-onesignal'
 import * as Logger from './logger'
 
 type AccountStoreKey = BooleanKey | StringKey
@@ -56,6 +57,7 @@ export const createKeypair = async (
   }
   const { keypair: keypairRaw, address } = await Keypair.fromMnemonic(mnemonic)
 
+  OneSignal.sendTags({ address: address.b58 })
   Logger.setUser(address.b58)
 
   await Promise.all([
@@ -130,5 +132,9 @@ export const getWalletApiToken = async () => {
   return apiToken
 }
 
-export const signOut = async () =>
-  Promise.all([...stringKeys, ...boolKeys].map((key) => deleteSecureItem(key)))
+export const signOut = async () => {
+  OneSignal.deleteTag('address')
+  return Promise.all(
+    [...stringKeys, ...boolKeys].map((key) => deleteSecureItem(key)),
+  )
+}
