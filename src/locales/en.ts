@@ -283,6 +283,10 @@ export default {
       disconnect_help:
         'To update the password or connect to a new network, first forget the old network.',
       disconnect: 'Forget Network',
+      not_found_title: 'No Wi-Fi Networks Found',
+      not_found_desc:
+        'It can take up to 3 minutes for the Hotspot to boot and find available networks.',
+      scan_networks: 'Scan Networks',
     },
     disconnect_dialog: {
       title: 'Forget Network?',

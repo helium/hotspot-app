@@ -16,6 +16,7 @@ import Chevron from '../../../assets/images/chevron-right.svg'
 import useAlert from '../../../utils/useAlert'
 import animateTransition from '../../../utils/animateTransition'
 import CircleLoader from '../../../components/CircleLoader'
+import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 
 const ItemSeparatorComponent = () => <Box height={1} backgroundColor="white" />
 
@@ -40,6 +41,7 @@ const WifiSettings = ({ onNetworkSelected, onError }: Props) => {
 
   const scanWifi = useCallback(async () => {
     try {
+      setLoading(true)
       const wifiNetworks = await scanForWifiNetworks()
       const configured = await scanForWifiNetworks(true)
       animateTransition()
@@ -47,6 +49,7 @@ const WifiSettings = ({ onNetworkSelected, onError }: Props) => {
       setConfiguredNetworks(configured || [])
       setLoading(false)
     } catch (e) {
+      setLoading(false)
       if (errorShown.current) return
 
       errorShown.current = true
@@ -147,9 +150,15 @@ const WifiSettings = ({ onNetworkSelected, onError }: Props) => {
 
   return (
     <Box padding="l" minHeight={hp(66)}>
-      <Text variant="medium" fontSize={21} color="black" marginBottom="lx">
+      <Text variant="medium" fontSize={21} color="black">
         {animalHash(address || '')}
       </Text>
+
+      <TouchableOpacityBox marginLeft="n_m" onPress={scanWifi}>
+        <Text variant="body1Medium" padding="m" color="purpleMain">
+          {t('hotspot_settings.diagnostics.scan_again')}
+        </Text>
+      </TouchableOpacityBox>
 
       <Box
         flexDirection="row"
