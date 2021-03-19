@@ -503,6 +503,8 @@ export default {
     hotspot_label: 'Hotspot',
     last_activity: 'LAST REPORTED ACTIVITY: {{activity}}',
     label_error: 'You do not have enough HNT in your account.',
+    stale_error:
+      'Hotspot has not had Beacon or Witness activity in the last {{blocks}} blocks.',
     scan: {
       title: 'Ways to use a QR Code',
       send: 'Send HNT',

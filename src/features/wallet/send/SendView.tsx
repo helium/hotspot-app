@@ -35,7 +35,8 @@ import {
 } from '../../../utils/transactions'
 import {
   getAccount,
-  getHotspotActivityList,
+  getChainVars,
+  getHotspotsLastChallengeActivity,
 } from '../../../utils/appDataClient'
 import * as Logger from '../../../utils/logger'
 import TransferBanner from '../../hotspots/transfers/TransferBanner'
@@ -47,7 +48,6 @@ import {
 } from '../../hotspots/transfers/TransferRequests'
 import { getAddress } from '../../../utils/secureAccount'
 import Text from '../../../components/Text'
-import { fromNow } from '../../../utils/timeUtils'
 import useSubmitTxn from '../../../hooks/useSubmitTxn'
 import { ensLookup } from '../../../utils/explorerClient'
 import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
@@ -71,6 +71,9 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   const submitTxn = useSubmitTxn()
   const dispatch = useAppDispatch()
   const { triggerNavHaptic } = useHaptic()
+  const blockHeight = useSelector(
+    (state: RootState) => state.heliumData.blockHeight,
+  )
   const [type, setType] = useState<SendType>(sendType || 'payment')
   const [address, setAddress] = useState<string>('')
   const [addressAlias, setAddressAlias] = useState<string>()
@@ -100,9 +103,26 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // load last hotspot activity for transfer
+  const [lastReportedActivity, setLastReportedActivity] = useState<string>()
+  const [hasValidActivity, setHasValidActivity] = useState<boolean>()
+  const [stalePocBlockCount, setStalePocBlockCount] = useState<number>()
+  useAsync(async () => {
+    if (type === 'transfer' && hotspot?.address && blockHeight) {
+      const chainVars = await getChainVars()
+      const staleBlockCount = chainVars.transferHotspotStalePocBlocks as number
+      const reportedActivity = await getHotspotsLastChallengeActivity(
+        hotspot.address,
+      )
+      const lastActiveBlock = reportedActivity.block || 0
+      setLastReportedActivity(reportedActivity.text)
+      setHasValidActivity(blockHeight - lastActiveBlock < staleBlockCount)
+      setStalePocBlockCount(staleBlockCount)
+    }
+  }, [hotspot?.address, blockHeight, type])
+
   // load transfer data
   const [transferData, setTransferData] = useState<Transfer>()
-  const [lastReportedActivity, setLastReportedActivity] = useState<string>()
   useEffect(() => {
     const fetchTransfer = async () => {
       if (!hotspot) {
@@ -115,17 +135,6 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       try {
         const transfer = await getTransfer(hotspot.address)
         setTransferData(transfer)
-        const hotspotActivityList = await getHotspotActivityList(
-          hotspot.address,
-          'all',
-        )
-        const [lastHotspotActivity] = hotspotActivityList
-          ? await hotspotActivityList?.take(1)
-          : []
-        const reportedActivity = lastHotspotActivity
-          ? fromNow(new Date(lastHotspotActivity.time * 1000))?.toUpperCase()
-          : t('transfer.unknown')
-        setLastReportedActivity(reportedActivity)
       } catch (e) {
         Alert.alert(
           t('transfer.canceled_alert_title'),
@@ -188,7 +197,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
 
     if (type === 'transfer') {
       if (isSeller) {
-        setIsValid(isValidAddress)
+        setIsValid(isValidAddress && (hasValidActivity || false))
         setHasSufficientBalance(true)
       } else {
         const isValidSellerAddress = transferData
@@ -201,7 +210,11 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
           totalTxnAmount.integerBalance <=
             (account?.balance?.integerBalance || 0)
         setHasSufficientBalance(hasBalance || false)
-        setIsValid(isValidSellerAddress && (hasBalance || false))
+        setIsValid(
+          isValidSellerAddress &&
+            (hasBalance || false) &&
+            (hasValidActivity || false),
+        )
       }
     } else {
       const totalTxnAmount = balanceAmount.plus(fee)
@@ -224,6 +237,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     account,
     transferData?.seller,
     transferData?.amountToSeller,
+    hasValidActivity,
   ])
 
   const getNonce = (): number => {
@@ -523,6 +537,8 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
           onSendMaxPress={setMaxAmount}
           onSubmit={handleSubmit}
           onUnlock={unlockForm}
+          hasValidActivity={hasValidActivity}
+          stalePocBlockCount={stalePocBlockCount}
         />
       </Box>
       {isSeller && (

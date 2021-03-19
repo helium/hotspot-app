@@ -45,6 +45,7 @@ const App = () => {
   }
 
   LogBox.ignoreLogs([
+    "Accessing the 'state' property of the 'route' object is not supported.",
     'Setting a timer',
     'Calling getNode() on the ref of an Animated component',
     'Native splash screen is already hidden',

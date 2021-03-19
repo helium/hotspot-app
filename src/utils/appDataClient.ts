@@ -4,6 +4,7 @@ import Client, {
   Hotspot,
   NaturalDate,
   PendingTransaction,
+  PocReceiptsV1,
   ResourceList,
 } from '@helium/http'
 import { Transaction } from '@helium/transactions'
@@ -17,6 +18,7 @@ import {
   FilterType,
 } from '../features/wallet/root/walletTypes'
 import { getSecureItem } from './secureAccount'
+import { fromNow } from './timeUtils'
 
 const MAX = 100000
 const client = new Client()
@@ -24,6 +26,10 @@ const client = new Client()
 export const configChainVars = async () => {
   const vars = await client.vars.get()
   Transaction.config(vars)
+}
+
+export const getChainVars = async () => {
+  return client.vars.get()
 }
 
 export const getAddress = async () => {
@@ -134,6 +140,27 @@ export const getHotspotActivityList = async (
 ) => {
   const params = { filterTypes: HotspotActivityFilters[filterType] }
   return client.hotspot(gateway).activity.list(params)
+}
+
+export const getHotspotsLastChallengeActivity = async (
+  gatewayAddress: string,
+) => {
+  const hotspotActivityList = await client
+    .hotspot(gatewayAddress)
+    .activity.list({
+      filterTypes: ['poc_receipts_v1', 'poc_request_v1'],
+    })
+  const [lastHotspotActivity] = hotspotActivityList
+    ? await hotspotActivityList?.take(1)
+    : []
+  if (lastHotspotActivity && lastHotspotActivity.time) {
+    const dateLastActive = new Date(lastHotspotActivity.time * 1000)
+    return {
+      block: (lastHotspotActivity as PocReceiptsV1).height,
+      text: fromNow(dateLastActive)?.toUpperCase(),
+    }
+  }
+  return {}
 }
 
 export const txnFetchers = {} as Record<

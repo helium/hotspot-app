@@ -41,6 +41,8 @@ type Props = {
   transferData?: Transfer
   lastReportedActivity?: string
   hasSufficientBalance?: boolean
+  hasValidActivity?: boolean
+  stalePocBlockCount?: number
 }
 
 const SendForm = ({
@@ -66,6 +68,8 @@ const SendForm = ({
   transferData,
   lastReportedActivity,
   hasSufficientBalance,
+  hasValidActivity,
+  stalePocBlockCount,
 }: Props) => {
   const { t } = useTranslation()
   const { primaryMain } = useColors()
@@ -250,7 +254,9 @@ const SendForm = ({
         value={transferData ? animalName(transferData.gateway) : ''}
         footer={
           <Text variant="mono" color="grayText" fontSize={11} paddingTop="xs">
-            {t('send.last_activity', { activity: lastReportedActivity })}
+            {t('send.last_activity', {
+              activity: lastReportedActivity || t('transfer.unknown'),
+            })}
           </Text>
         }
       />
@@ -267,6 +273,16 @@ const SendForm = ({
         {isSeller && type === 'transfer' && renderSellerTransferForm()}
         {!isSeller && type === 'transfer' && renderBuyerTransferForm()}
       </ScrollView>
+      {hasValidActivity === false && (
+        <Text
+          variant="body3"
+          color="redMedium"
+          marginVertical="s"
+          textAlign="center"
+        >
+          {t('send.stale_error', { blocks: stalePocBlockCount })}
+        </Text>
+      )}
       {!hasSufficientBalance && (
         <Text
           variant="body3"
