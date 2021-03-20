@@ -7,5 +7,3 @@ echo STAKING_API_BASE_URL=$STAKING_API_BASE_URL >> .env
 echo WALLET_API_BASE_URL=$WALLET_API_BASE_URL >> .env
 echo SENTRY_DSN=$SENTRY_DSN >> .env
 echo GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY >> .env
-
-yarn patch-install
