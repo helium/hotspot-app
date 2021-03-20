@@ -18,7 +18,6 @@
     "pod-install": "cd ios && pod _1.9.3_ install && cd ..",
     "clean-install": "watchman watch-del-all && rm -rf $TMPDIR/react-native-packager-cache-* && rm -rf $TMPDIR/metro-bundler-cache-* && rm -rf node_modules/ && yarn cache clean && yarn install && yarn android-clean && yarn ios-clean && yarn pod-install",
     "clean-start": "yarn start -- --reset-cache",
-    "patch-install": "yarn install && npx patch-package",
     "bump-patch": "npx react-native bump-version --skip-code-for all --type patch",
     "bump-minor": "npx react-native bump-version --skip-code-for all --type minor",
     "bump-major": "npx react-native bump-version --skip-code-for all --type major"
@@ -39,7 +38,7 @@
   "dependencies": {
     "@burstware/react-native-portal": "^1.0.2",
     "@expo/react-native-action-sheet": "^3.8.0",
-    "@gorhom/bottom-sheet": "^3.4.0",
+    "@gorhom/bottom-sheet": "^3.4.1",
     "@helium/crypto-react-native": "^3.9.0",
     "@helium/currency": "^3.25.1",
     "@helium/http": "^3.25.1",
@@ -76,7 +75,6 @@
     "expo-secure-store": "^9.2.0",
     "expo-splash-screen": "^0.9.0",
     "i18next": "^19.8.3",
-    "is-uuid": "^1.0.2",
     "lodash": "^4.17.20",
     "lottie-ios": "3.1.8",
     "lottie-react-native": "^3.5.0",
@@ -98,7 +96,7 @@
     "react-native-localize": "^1.4.3",
     "react-native-navigation-bar-color": "^2.0.1",
     "react-native-onesignal": "^4.0.0-beta.4",
-    "react-native-reanimated": "2.0.0-rc.3",
+    "react-native-reanimated": "2.0.0",
     "react-native-safe-area-context": "^3.1.8",
     "react-native-screens": "^2.12.0",
     "react-native-skeleton-placeholder": "^3.0.2",
@@ -109,7 +107,6 @@
     "react-qr-code": "^1.0.3",
     "react-redux": "^7.2.2",
     "redux-thunk": "^2.3.0",
-    "rn-sliding-up-panel": "^2.4.4",
     "use-debounce": "^5.2.0",
     "use-state-with-callback": "^2.0.3"
   },
