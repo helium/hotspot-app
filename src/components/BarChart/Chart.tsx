@@ -146,6 +146,15 @@ const BarChart = ({
     [data, findDataIndex],
   )
 
+  const barStyle = useMemo(
+    () => ({
+      backgroundColor: 'rgba(255,0,0,0)',
+      width,
+      height,
+    }),
+    [width, height],
+  )
+
   return (
     <PanGestureHandler
       activeOffsetX={[-5, 5]} // only activate the gesture if x moves 5 pixels
@@ -153,11 +162,7 @@ const BarChart = ({
       onEnded={handleTouchEnd}
     >
       <Animated.View
-        style={{
-          backgroundColor: 'rgba(255,0,0,0)',
-          width,
-          height,
-        }}
+        style={barStyle}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
