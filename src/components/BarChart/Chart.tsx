@@ -1,7 +1,11 @@
-import React, { useState, useEffect, memo, useCallback, useMemo } from 'react'
-import Svg, { Text, Rect } from 'react-native-svg'
-import { PanResponder, Animated, GestureResponderEvent } from 'react-native'
-import { maxBy, clamp, max, some } from 'lodash'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import Svg, { Rect, Text } from 'react-native-svg'
+import { clamp, max, maxBy, some } from 'lodash'
+import {
+  PanGestureHandler,
+  PanGestureHandlerEventPayload,
+} from 'react-native-gesture-handler'
+import { Animated, GestureResponderEvent } from 'react-native'
 import useHaptic from '../../utils/useHaptic'
 import { ChartData } from './types'
 import { useColors } from '../../theme/themeHooks'
@@ -134,78 +138,78 @@ const BarChart = ({
   }, [])
 
   // pan responder is responsible for the slide interaction
-  const panResponder = useMemo(
-    () =>
-      PanResponder.create({
-        onMoveShouldSetPanResponder: (e, gestureState) => {
-          return Math.abs(gestureState.dy) < 10
-        },
-        onPanResponderMove: (evt) => {
-          const dataIndex = findDataIndex(evt.nativeEvent.locationX)
-          setFocusedBar(data[dataIndex])
-        },
-        onPanResponderRelease: () => {
-          setFocusedBar(null)
-        },
-      }),
+  const onPanEvent = useCallback(
+    (event: { nativeEvent: PanGestureHandlerEventPayload }) => {
+      const dataIndex = findDataIndex(event.nativeEvent.x)
+      setFocusedBar(data[dataIndex])
+    },
     [data, findDataIndex],
   )
 
-  return (
-    <Animated.View
-      style={{
-        backgroundColor: 'rgba(255,0,0,0)',
-        width,
-        height,
-      }}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      {...panResponder.panHandlers}
-    >
-      <Svg height="100%" width="100%">
-        {data.map((v, i) => (
-          <React.Fragment key={`frag-${v.id}`}>
-            <Rect
-              x={barWidth * (2 * i)}
-              y={maxUpBarHeight - barHeight(v?.up)}
-              rx={barWidth / 2}
-              width={barWidth}
-              height={barHeight(v?.up)}
-              fill={upColor || greenBright}
-              opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
-            />
+  const barStyle = useMemo(
+    () => ({
+      backgroundColor: 'rgba(255,0,0,0)',
+      width,
+      height,
+    }),
+    [width, height],
+  )
 
-            {hasDownBars && (
+  return (
+    <PanGestureHandler
+      activeOffsetX={[-5, 5]} // only activate the gesture if x moves 5 pixels
+      onGestureEvent={onPanEvent}
+      onEnded={handleTouchEnd}
+    >
+      <Animated.View
+        style={barStyle}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        <Svg height="100%" width="100%">
+          {data.map((v, i) => (
+            <React.Fragment key={`frag-${v.id}`}>
               <Rect
                 x={barWidth * (2 * i)}
-                y={maxUpBarHeight + barGap}
+                y={maxUpBarHeight - barHeight(v?.up)}
                 rx={barWidth / 2}
                 width={barWidth}
-                height={barHeight(v?.down)}
-                fill={downColor || blueBright}
+                height={barHeight(v?.up)}
+                fill={upColor || greenBright}
                 opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
               />
-            )}
 
-            {showXAxisLabel && (
-              <Text
-                fill={labelColor || white}
-                stroke="none"
-                fontSize="12"
-                fontWeight={300}
-                x={barWidth * (2 * i) + barWidth / 2}
-                y={height - 4}
-                textAnchor="middle"
-                opacity={focusedBar && focusedBar?.id === v.id ? 1 : 0.4}
-              >
-                {v.label}
-              </Text>
-            )}
-          </React.Fragment>
-        ))}
-      </Svg>
-    </Animated.View>
+              {hasDownBars && (
+                <Rect
+                  x={barWidth * (2 * i)}
+                  y={maxUpBarHeight + barGap}
+                  rx={barWidth / 2}
+                  width={barWidth}
+                  height={barHeight(v?.down)}
+                  fill={downColor || blueBright}
+                  opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
+                />
+              )}
+
+              {showXAxisLabel && (
+                <Text
+                  fill={labelColor || white}
+                  stroke="none"
+                  fontSize="12"
+                  fontWeight={300}
+                  x={barWidth * (2 * i) + barWidth / 2}
+                  y={height - 4}
+                  textAnchor="middle"
+                  opacity={focusedBar && focusedBar?.id === v.id ? 1 : 0.4}
+                >
+                  {v.label}
+                </Text>
+              )}
+            </React.Fragment>
+          ))}
+        </Svg>
+      </Animated.View>
+    </PanGestureHandler>
   )
 }
 
