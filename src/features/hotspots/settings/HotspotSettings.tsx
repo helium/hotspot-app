@@ -305,11 +305,9 @@ const HotspotSettings = ({ hotspot }: Props) => {
           margin="ms"
           style={{ transform: [{ translateY: slideUpAnimRef.current }] }}
         >
-          {settingsState !== 'transfer' && (
-            <Text variant="h2" lineHeight={27} color="white" marginBottom="ms">
-              {title}
-            </Text>
-          )}
+          <Text variant="h2" lineHeight={27} color="white" marginBottom="ms">
+            {title}
+          </Text>
 
           {settingsState !== 'scan' && (
             <KeyboardAvoidingView
