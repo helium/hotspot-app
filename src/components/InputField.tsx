@@ -17,6 +17,7 @@ type Props = {
   locked?: boolean
   defaultValue?: string
   value?: string
+  numberOfLines?: number
 }
 
 const InputField = ({
@@ -29,6 +30,7 @@ const InputField = ({
   locked = false,
   defaultValue,
   value,
+  numberOfLines,
 }: Props) => {
   const inputRef = useRef<TextInput | null>(null)
 
@@ -73,6 +75,7 @@ const InputField = ({
             keyboardAppearance="dark"
             keyboardType={type}
             value={value}
+            numberOfLines={numberOfLines}
             style={{
               fontFamily: 'InputMono-Regular',
               fontSize: 15,

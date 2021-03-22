@@ -229,6 +229,7 @@ const SendForm = ({
         defaultValue={amount}
         onChange={onAmountChange}
         value={amount}
+        numberOfLines={2}
         label={t('send.amount.label_transfer')}
         placeholder={t('send.amount.placeholder_transfer')}
       />
