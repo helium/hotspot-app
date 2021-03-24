@@ -38,6 +38,11 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
   } = useSelector((state: RootState) => state.hotspotDetails)
   const { account } = useSelector((state: RootState) => state.account)
 
+  const rewardChartData = useMemo(() => {
+    const data = getRewardChartData(rewards, numDays)
+    return data || []
+  }, [numDays, rewards])
+
   const [timelineValue, setTimelineValue] = useState(14)
 
   useEffect(() => {
@@ -49,52 +54,24 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
   }, [dispatch, hotspot, timelineValue])
 
   const witnessChartData = useMemo(() => {
-    let options: Intl.DateTimeFormatOptions
-    if (numDays === 1) {
-      options = {
-        day: 'numeric',
-        month: 'short',
-        hour: 'numeric',
-        minute: 'numeric',
-      }
-    } else {
-      options = {
-        weekday: 'short',
-        day: 'numeric',
-        month: 'short',
-      }
-    }
     return (
       witnessSums?.map((w) => ({
         up: Math.round(w.avg),
         down: 0,
-        label: new Date(w.timestamp).toLocaleDateString(undefined, options),
+        label: w.timestamp,
+        showTime: numDays === 1,
         id: `witness-${numDays}-${w.timestamp}`,
       })) || []
     )
   }, [numDays, witnessSums])
 
   const challengeChartData = useMemo(() => {
-    let options: Intl.DateTimeFormatOptions
-    if (numDays === 1) {
-      options = {
-        day: 'numeric',
-        month: 'short',
-        hour: 'numeric',
-        minute: 'numeric',
-      }
-    } else {
-      options = {
-        weekday: 'short',
-        day: 'numeric',
-        month: 'short',
-      }
-    }
     return (
       challengeSums?.map((w) => ({
         up: Math.round(w.sum),
         down: 0,
-        label: new Date(w.timestamp).toLocaleDateString(undefined, options),
+        label: w.timestamp,
+        showTime: numDays === 1,
         id: `challenge-${numDays}-${w.timestamp}`,
       })) || []
     )
@@ -166,7 +143,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
           title={t('hotspot_details.reward_title')}
           number={rewardSum?.total.toFixed(2)}
           change={rewardsChange}
-          data={getRewardChartData(rewards, numDays)}
+          data={rewardChartData}
           loading={loading}
         />
         <HotspotDetailChart
