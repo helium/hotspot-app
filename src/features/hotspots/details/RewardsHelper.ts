@@ -43,12 +43,8 @@ export const getRewardChartData = (
       chartData.push({
         up: parseFloat(amount.toFixed(2)),
         down: 0,
-        label: date.toLocaleDateString(undefined, {
-          day: 'numeric',
-          month: 'short',
-          hour: 'numeric',
-          minute: 'numeric',
-        }),
+        label: date.toISOString(),
+        showTime: numDays === 1,
         id: `reward-${numDays}-${date}`,
       })
     }
@@ -75,14 +71,12 @@ export const getRewardChartData = (
     if (dayData) {
       amount = sumBy(dayData, (o) => o.amount.floatBalance)
     }
+
     chartData.push({
       up: parseFloat(amount.toFixed(2)),
       down: 0,
-      label: date.toLocaleDateString(undefined, {
-        weekday: 'short',
-        day: 'numeric',
-        month: 'short',
-      }),
+      label: date.toISOString(),
+      showTime: numDays === 1,
       id: `reward-${numDays}-${date}`,
     })
   }
