@@ -12,6 +12,8 @@ import {
 } from '../../../store/connectedHotspot/connectedHotspotSlice'
 import HotspotSelectionListItem from './HotspotSelectionListItem'
 import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
+import hotspotOnboardingSlice from '../../../store/hotspots/hotspotOnboardingSlice'
+import { useAppDispatch } from '../../../store/store'
 
 const ItemSeparatorComponent = () => (
   <Box height={1} backgroundColor="primaryBackground" />
@@ -20,12 +22,15 @@ const ItemSeparatorComponent = () => (
 const HotspotSetupSelectionScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
+  const dispatch = useAppDispatch()
   const edges = useMemo((): Edge[] => ['top', 'left', 'right'], [])
 
   const handlePress = useCallback(
-    (hotspotType: HotspotType) => () =>
-      navigation.push('HotspotSetupEducationScreen', { hotspotType }),
-    [navigation],
+    (hotspotType: HotspotType) => () => {
+      dispatch(hotspotOnboardingSlice.actions.setHotspotType(hotspotType))
+      navigation.push('HotspotSetupEducationScreen', { hotspotType })
+    },
+    [dispatch, navigation],
   )
 
   const keyExtractor = useCallback((item) => item, [])

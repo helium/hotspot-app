@@ -20,14 +20,10 @@ export type HotspotSetupStackParamList = {
   HotspotSetupWifiConnectingScreen: { network: string; password: string }
   HotspotSetupLocationInfoScreen: undefined
   HotspotSetupPickLocationScreen: undefined
-  HotspotSetupConfirmLocationScreen: {
-    hotspotCoords: number[]
-    locationName: string
-  }
+  AntennaSetupScreen: undefined
+  HotspotSetupConfirmLocationScreen: undefined
   HotspotSetupSkipLocationScreen: undefined
-  HotspotTxnsProgressScreen?: {
-    hotspotCoords?: number[]
-  }
+  HotspotTxnsProgressScreen: undefined
   NotHotspotOwnerErrorScreen: undefined
   OwnedHotspotErrorScreen: undefined
 }

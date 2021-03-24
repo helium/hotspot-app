@@ -870,4 +870,35 @@ export default {
     complete: 'COMPLETE',
     online: 'ONLINE',
   },
+  antennas: {
+    helium_us: 'Helium Hotspot (US 915)',
+    helium_eu: 'Helium Hotspot (EU 868)',
+    rak_hotspot_us: 'RAK Hotspot Miner (US 915)',
+    rak_hotspot_eu: 'RAK Hotspot Miner (EU 868)',
+    nebra_outdoor: 'Nebra Outdoor Hotspot',
+    nebra_indoor: 'Nebra Indoor Hotspot',
+    bobcat: 'Bobcat Miner 300 (All)',
+    syncrobit_us: 'Syncrob.it (US 915)',
+    syncrobit_eu: 'Syncrob.it (EU 868)',
+    rak_custom: 'RAK Antenna',
+    custom: 'Custom Antenna',
+    onboarding: {
+      title: 'Antenna Setup',
+      subtitle: 'Submit antenna and elevation details for your Hotspot.',
+      gain: 'TX / RX Gain',
+      dbi: 'dbi',
+      elevation: 'Elevation (meters)',
+      select: 'Select Antenna',
+    },
+    elevation_info: {
+      title: 'Hotspot Elevation',
+      desc:
+        'Estimate how high the antenna is placed relative to the ground. An antenna located on the roof of a single-story house is typically 5 meters.',
+    },
+    gain_info: {
+      title: 'Antenna TX / RX Gain',
+      desc:
+        'A value between 1 and 15 to one decimal point. This is provided by your hotspot or antenna manufacturer.',
+    },
+  },
 }

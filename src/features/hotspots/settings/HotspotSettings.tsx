@@ -44,7 +44,7 @@ import animateTransition from '../../../utils/animateTransition'
 import BluetoothIcon from '../../../assets/images/bluetooth_icon.svg'
 import TransferIcon from '../../../assets/images/transfer_icon.svg'
 // import DiscoveryModeIcon from '../../../assets/images/discovery_mode_icon.svg'
-// import UpdateIcon from '../../../assets/images/update_hotspot_icon.svg'
+import UpdateIcon from '../../../assets/images/update_hotspot_icon.svg'
 
 type State = 'init' | 'scan' | 'transfer'
 
@@ -235,7 +235,6 @@ const HotspotSettings = ({ hotspot }: Props) => {
           buttonIcon={<DiscoveryModeIcon />}
         />
         */}
-        {/* // TODO: Assert V2
         <Box backgroundColor="black" height={0.5} />
         <HotspotSettingsOption
           title={t('hotspot_settings.update.title')}
@@ -244,7 +243,6 @@ const HotspotSettings = ({ hotspot }: Props) => {
           compact
           buttonIcon={<UpdateIcon />}
         />
-        */}
       </Box>
     )
   }, [

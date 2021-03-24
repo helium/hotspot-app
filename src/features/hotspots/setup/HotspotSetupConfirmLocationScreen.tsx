@@ -1,13 +1,10 @@
 import React, { useCallback, useEffect } from 'react'
 import { ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
 import { useAsync } from 'react-async-hook'
 import { useSelector } from 'react-redux'
-import {
-  HotspotSetupNavigationProp,
-  HotspotSetupStackParamList,
-} from './hotspotSetupTypes'
+import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
 import ImageBox from '../../../components/ImageBox'
@@ -19,23 +16,15 @@ import { RootState } from '../../../store/rootReducer'
 import * as Logger from '../../../utils/logger'
 import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
 
-type Route = RouteProp<
-  HotspotSetupStackParamList,
-  'HotspotSetupConfirmLocationScreen'
->
-
 const HotspotSetupConfirmLocationScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
   const { loadLocationFeeData } = useConnectedHotspotContext()
-  const {
-    account: { account },
-  } = useSelector((state: RootState) => state)
+  const account = useSelector((state: RootState) => state.account.account)
+  const { hotspotCoords, locationName } = useSelector(
+    (state: RootState) => state.hotspotOnboarding,
+  )
   const { loading, result, error } = useAsync(loadLocationFeeData, [])
-
-  const {
-    params: { hotspotCoords, locationName },
-  } = useRoute<Route>()
 
   useEffect(() => {
     if (error) {
@@ -45,8 +34,8 @@ const HotspotSetupConfirmLocationScreen = () => {
   }, [error, navigation])
 
   const navNext = useCallback(async () => {
-    navigation.replace('HotspotTxnsProgressScreen', { hotspotCoords })
-  }, [hotspotCoords, navigation])
+    navigation.replace('HotspotTxnsProgressScreen')
+  }, [navigation])
 
   if (loading || !result) {
     return (
