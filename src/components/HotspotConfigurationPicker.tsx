@@ -1,4 +1,4 @@
-import { Alert, TextInput } from 'react-native'
+import { Alert, TextInput, TouchableWithoutFeedback } from 'react-native'
 import React, { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import HeliumActionSheet from './HeliumActionSheet'
@@ -52,6 +52,7 @@ const HotspotConfigurationPicker = ({
   const colors = useColors()
 
   const gainInputRef = useRef<TextInput | null>(null)
+  const elevationInputRef = useRef<TextInput | null>(null)
 
   const [elevation, setElevation] = useState<string>()
   const [gain, setGain] = useState<string>(
@@ -81,8 +82,11 @@ const HotspotConfigurationPicker = ({
   const showGainInfo = () =>
     Alert.alert(t('antennas.gain_info.title'), t('antennas.gain_info.desc'))
 
-  const onSelectDbi = () => {
+  const focusGain = () => {
     gainInputRef.current?.focus()
+  }
+  const focusElevation = () => {
+    elevationInputRef.current?.focus()
   }
 
   const onChangeGain = (text: string) => setGain(text)
@@ -141,61 +145,65 @@ const HotspotConfigurationPicker = ({
         onValueChanged={onSelectAntenna}
         displayTextJustifyContent="space-between"
         padding="m"
+        paddingVertical="lm"
       />
       <Box backgroundColor="black" height={0.5} />
-      <Box
-        padding="m"
-        flexDirection="row"
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <Box flexDirection="row" alignItems="center">
-          <Text color="purpleMain" marginRight="s">
-            {t('antennas.onboarding.gain')}
-          </Text>
-          <TouchableOpacityBox onPress={showGainInfo}>
-            <InfoIcon color={colors.grayLight} />
-          </TouchableOpacityBox>
+      <TouchableWithoutFeedback onPress={focusGain}>
+        <Box
+          padding="m"
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Box flexDirection="row" alignItems="center">
+            <Text color="purpleMain" marginRight="xs">
+              {t('antennas.onboarding.gain')}
+            </Text>
+            <TouchableOpacityBox onPress={showGainInfo} padding="xs">
+              <InfoIcon color={colors.grayLight} />
+            </TouchableOpacityBox>
+          </Box>
+          <Box flexDirection="row">
+            <TextInput
+              ref={gainInputRef}
+              keyboardType="numeric"
+              value={gain}
+              returnKeyType="done"
+              onChangeText={onChangeGain}
+              onSubmitEditing={onDoneEditingGain}
+              editable={selectedAntenna.id === 'custom'}
+            />
+            <Text marginLeft="xs">{t('antennas.onboarding.dbi')}</Text>
+          </Box>
         </Box>
-        <Box flexDirection="row">
-          <TextInput
-            ref={gainInputRef}
-            keyboardType="numeric"
-            value={gain}
-            returnKeyType="done"
-            onChangeText={onChangeGain}
-            onSubmitEditing={onDoneEditingGain}
-            editable={selectedAntenna.id === 'custom'}
-          />
-          <Text marginLeft="xs" onPress={onSelectDbi}>
-            {t('antennas.onboarding.dbi')}
-          </Text>
-        </Box>
-      </Box>
+      </TouchableWithoutFeedback>
       <Box backgroundColor="black" height={0.5} />
-      <Box
-        padding="m"
-        flexDirection="row"
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <Box flexDirection="row" alignItems="center">
-          <Text color="purpleMain" marginRight="s">
-            {t('antennas.onboarding.elevation')}
-          </Text>
-          <TouchableOpacityBox onPress={showElevationInfo}>
-            <InfoIcon color={colors.grayLight} />
-          </TouchableOpacityBox>
+      <TouchableWithoutFeedback onPress={focusElevation}>
+        <Box
+          padding="m"
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Box flexDirection="row" alignItems="center">
+            <Text color="purpleMain" marginRight="xs">
+              {t('antennas.onboarding.elevation')}
+            </Text>
+            <TouchableOpacityBox onPress={showElevationInfo} padding="xs">
+              <InfoIcon color={colors.grayLight} />
+            </TouchableOpacityBox>
+          </Box>
+          <TextInput
+            ref={elevationInputRef}
+            placeholder="0"
+            keyboardType="numeric"
+            returnKeyType="done"
+            onChangeText={onChangeElevation}
+            onSubmitEditing={onDoneEditingElevation}
+            value={elevation}
+          />
         </Box>
-        <TextInput
-          placeholder="0"
-          keyboardType="numeric"
-          returnKeyType="done"
-          onChangeText={onChangeElevation}
-          onSubmitEditing={onDoneEditingElevation}
-          value={elevation}
-        />
-      </Box>
+      </TouchableWithoutFeedback>
       <Box backgroundColor="black" height={0.5} />
     </Box>
   )
