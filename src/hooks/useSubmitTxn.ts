@@ -42,7 +42,7 @@ const useSubmitTxn = (): Submitter => {
     const serializedTxn = txn.toString()
 
     // submit to blockchain
-    const { data: apiResponse } = await postWallet('transactions', {
+    const apiResponse = await postWallet('transactions', {
       txn: serializedTxn,
     })
     const pendingTxn = new PendingTransaction(apiResponse)
