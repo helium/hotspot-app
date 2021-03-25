@@ -2,10 +2,10 @@ import React, { memo } from 'react'
 import { formatDistance, fromUnixTime } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import Box from '../../components/Box'
-import HeliumBubble from '../../assets/images/heliumBubble.svg'
 import Text from '../../components/Text'
 import { Notification } from '../../store/account/accountSlice'
 import TouchableOpacityBox from '../../components/TouchableOpacityBox'
+import ImageBox from '../../components/ImageBox'
 
 type Props = {
   notification: Notification
@@ -31,7 +31,15 @@ const NotificationItem = ({
         alignItems="flex-end"
         marginBottom={isLast ? 's' : 'none'}
       >
-        <HeliumBubble />
+        <ImageBox
+          source={{
+            uri: notification.icon,
+            method: 'GET',
+          }}
+          resizeMode="contain"
+          width={46}
+          height={46}
+        />
         <TouchableOpacityBox
           activeOpacity={0.9}
           marginLeft="s"
