@@ -114,9 +114,6 @@ export const getAccount = async (address?: string) => {
 
 export const getBlockHeight = () => client.blocks.getHeight()
 
-export const submitTransaction = async (serializedTxn: string) =>
-  client.transactions.submit(serializedTxn)
-
 export const getCurrentOraclePrice = async () => client.oracle.getCurrentPrice()
 
 export const getPredictedOraclePrice = async () =>
