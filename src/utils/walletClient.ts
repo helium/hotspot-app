@@ -12,8 +12,7 @@ const makeRequest = async (url: string, opts: RequestInit) => {
       throw new Error('no token')
     }
 
-    // const route = [Config.WALLET_API_BASE_URL, url].join('/')
-    const route = ['http://localhost:4000/api', url].join('/')
+    const route = [Config.WALLET_API_BASE_URL, url].join('/')
 
     const response = await fetch(route, {
       ...opts,
