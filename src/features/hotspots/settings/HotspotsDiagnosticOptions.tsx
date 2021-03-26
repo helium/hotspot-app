@@ -97,7 +97,7 @@ const HotspotDiagnosticOptions = ({ hotspot, optionSelected }: Props) => {
                 {firmware?.version}
               </Text>
             )}
-            {k !== 'firmware' && <Chevron />}
+            {k !== 'firmware' && <Chevron color="#C1CFEE" />}
           </TouchableOpacityBox>
         )
       })}

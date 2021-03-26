@@ -875,6 +875,39 @@ export default {
     complete: 'COMPLETE',
     online: 'ONLINE',
   },
+  discovery: {
+    begin: {
+      title: 'Discovery Mode',
+      subtitle:
+        'Find out which Hotspots can hear you by sending radio packets for a short period of time.',
+      body: 'Discovery Mode is free to use for now, up to 5 sessions per day.',
+      previous_sessions: 'Previous Sessions',
+      last_30_days: '(Last 30 Days)',
+      start_session: 'Begin New Session',
+      no_sessions: 'You’ve run out of sessions for today.\nTry again tomorrow.',
+      responses: '{{count}} response',
+      responses_plural: '{{count}} responses',
+      error: {
+        title: 'Error',
+        subtitle:
+          'There was a problem loading discovery mode. Please try again later',
+      },
+    },
+    results: {
+      title: 'Discovery Mode Results',
+      share: 'Share Results',
+      responded: 'Hotspots Responded',
+      elapsed_time: 'Time Elapsed',
+      result_time: 'Time of Results',
+      searching: 'Searching',
+      distance: '{{distance}} {{unit}} away',
+    },
+    share: {
+      subject: 'Discovery Results',
+      hotspot_name: 'Hotspot Name',
+      packets_heard: 'Packets Heard',
+    },
+  },
   antennas: {
     helium_us: 'Helium Hotspot (US 915)',
     helium_eu: 'Helium Hotspot (EU 868)',

@@ -9,6 +9,7 @@ import ChartContainer from '../../../components/BarChart/ChartContainer'
 import { useColors } from '../../../theme/themeHooks'
 import animateTransition from '../../../utils/animateTransition'
 import { locale } from '../../../utils/i18n'
+import DateModule from '../../../utils/DateModule'
 
 type Props = {
   title: string
@@ -115,12 +116,22 @@ const HotspotDetailChart = ({
   const { black, grayLight, grayMain, purpleMain, greenOnline } = useColors()
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
 
-  const onFocus = useCallback((chartData: ChartData | null) => {
+  const onFocus = useCallback(async (chartData: ChartData | null) => {
     if (Platform.OS === 'ios') {
       // this animation causes layout issues on Android
       animateTransition()
     }
-    setFocusedData(chartData)
+
+    if (!chartData) {
+      setFocusedData(null)
+      return
+    }
+
+    const label = await DateModule.formatDate(
+      chartData.label,
+      chartData.showTime ? 'MMM d h:mma' : 'EEE MMM d',
+    )
+    setFocusedData({ ...chartData, label })
   }, [])
 
   return (

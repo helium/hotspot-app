@@ -74,7 +74,7 @@ const NotificationShow = ({ notification, onClose }: Props) => {
               Helium Update
             </Text>
             <TouchableOpacityBox alignSelf="flex-start" onPress={onClose}>
-              <CloseModal />
+              <CloseModal color="#CFD3ED" />
             </TouchableOpacityBox>
           </Box>
           <Text variant="h2" color="black" marginTop="lx" marginBottom="s">

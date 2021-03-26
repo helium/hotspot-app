@@ -26,6 +26,7 @@
 		41E226383CC0AC782E945B86 /* libPods-Helium.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C1975BA31E007F0C711ACB /* libPods-Helium.a */; };
 		4B47FD0E054C4FC8BD171E9B /* Inter-BlackItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 27665798A13443388965B386 /* Inter-BlackItalic.otf */; };
 		4CE0E2DE494B4C38AEF7B485 /* Inter-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = C0525728D70943D986DF2664 /* Inter-SemiBold.otf */; };
+		50220074260B81B500BE34C9 /* RCTDateModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 50220073260B81B500BE34C9 /* RCTDateModule.m */; };
 		50416777003A4F49B0555192 /* InputMono-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A479F1315370424BA4C2BF03 /* InputMono-Light.ttf */; };
 		7201F13464FD4A1DC7B49018 /* libPods-OneSignalNotificationServiceExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A4E97D088B70BB9403ED112 /* libPods-OneSignalNotificationServiceExtension.a */; };
 		73882C4BC2B149C8A0C6018F /* Soleil-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 7EE3C0182B6E484FB54DB40C /* Soleil-SemiBold.otf */; };
@@ -103,6 +104,8 @@
 		27665798A13443388965B386 /* Inter-BlackItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-BlackItalic.otf"; path = "../src/assets/fonts/Inter-BlackItalic.otf"; sourceTree = "<group>"; };
 		3CE29D13B8054DA5BCE755E1 /* Inter-ExtraBoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraBoldItalic.otf"; path = "../src/assets/fonts/Inter-ExtraBoldItalic.otf"; sourceTree = "<group>"; };
 		42F8FDE2399B4FA8B34EE3CA /* Inter-SemiBoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-SemiBoldItalic.otf"; path = "../src/assets/fonts/Inter-SemiBoldItalic.otf"; sourceTree = "<group>"; };
+		50220072260B817100BE34C9 /* RCTDateModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTDateModule.h; sourceTree = "<group>"; };
+		50220073260B81B500BE34C9 /* RCTDateModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTDateModule.m; sourceTree = "<group>"; };
 		574F3684C39A464FA2A7FF51 /* Inter-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Bold.otf"; path = "../src/assets/fonts/Inter-Bold.otf"; sourceTree = "<group>"; };
 		5BE0F3C218C340DEB451FC32 /* Inter-Thin.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Thin.otf"; path = "../src/assets/fonts/Inter-Thin.otf"; sourceTree = "<group>"; };
 		5D2A1FCF497741BD8DB14DBF /* Inter-LightItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-LightItalic.otf"; path = "../src/assets/fonts/Inter-LightItalic.otf"; sourceTree = "<group>"; };
@@ -200,6 +203,8 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				50220072260B817100BE34C9 /* RCTDateModule.h */,
+				50220073260B81B500BE34C9 /* RCTDateModule.m */,
 			);
 			name = Helium;
 			sourceTree = "<group>";
@@ -724,6 +729,7 @@
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				50220074260B81B500BE34C9 /* RCTDateModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -809,7 +815,7 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = Helium/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 3.0.3;
+				MARKETING_VERSION = 3.0.4;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -837,7 +843,7 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = Helium/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 3.0.3;
+				MARKETING_VERSION = 3.0.4;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -986,7 +992,7 @@
 				INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 3.0.3;
+				MARKETING_VERSION = 3.0.4;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.helium.mobile.wallet.OneSignalNotificationServiceExtension;
@@ -1018,7 +1024,7 @@
 				INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 3.0.3;
+				MARKETING_VERSION = 3.0.4;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.helium.mobile.wallet.OneSignalNotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";

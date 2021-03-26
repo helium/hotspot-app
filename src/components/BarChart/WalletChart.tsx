@@ -17,7 +17,7 @@ import accountSlice, {
   fetchActivityChart,
 } from '../../store/account/accountSlice'
 import useCurrency from '../../utils/useCurrency'
-import { locale } from '../../utils/i18n'
+import DateModule from '../../utils/DateModule'
 
 type Props = {
   height: number
@@ -78,7 +78,7 @@ const WalletChart = ({ height }: Props) => {
   )
 
   const handleFocusData = useCallback(
-    (chartData: ChartData | null): void => {
+    async (chartData: ChartData | null) => {
       setFocusedData(chartData)
 
       if (!chartData?.timestamp || activityChartRange !== 'monthly') return
@@ -86,15 +86,8 @@ const WalletChart = ({ height }: Props) => {
       const startDate = new Date(chartData.timestamp)
       const endDate = add(startDate, { days: 29 })
 
-      const start = startDate.toLocaleDateString(locale, {
-        day: 'numeric',
-        month: 'short',
-      })
-      const end = endDate.toLocaleDateString(locale, {
-        day: 'numeric',
-        month: 'short',
-      })
-
+      const start = await DateModule.formatDate(chartData.timestamp, 'MMM d')
+      const end = await DateModule.formatDate(endDate.toISOString(), 'MMM d')
       setDataRange(`${start} - ${end}`)
     },
     [activityChartRange],
