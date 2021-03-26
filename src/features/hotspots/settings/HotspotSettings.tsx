@@ -61,7 +61,12 @@ const HotspotSettings = ({ hotspot }: Props) => {
   const slideUpAnimRef = useRef(new Animated.Value(1000))
   const { getState } = useBluetoothContext()
   const dispatch = useAppDispatch()
-  const { showBack, goBack, disableBack } = useHotspotSettingsContext()
+  const {
+    showBack,
+    goBack,
+    disableBack,
+    enableBack,
+  } = useHotspotSettingsContext()
   const { purpleMain } = useColors()
 
   const { account } = useSelector((state: RootState) => state.account)
@@ -175,7 +180,8 @@ const HotspotSettings = ({ hotspot }: Props) => {
 
   const onCloseOwnerSettings = useCallback(() => {
     setNextState('init')
-  }, [setNextState])
+    disableBack()
+  }, [disableBack, setNextState])
 
   useEffect(() => {
     if (!showSettings) {
@@ -192,7 +198,12 @@ const HotspotSettings = ({ hotspot }: Props) => {
     [],
   )
 
-  const startScan = useCallback(() => setNextState('scan'), [setNextState])
+  const startScan = useCallback(() => {
+    enableBack(() => {
+      onCloseOwnerSettings()
+    })
+    setNextState('scan')
+  }, [enableBack, onCloseOwnerSettings, setNextState])
 
   const pairingCard = useMemo(() => {
     if (settingsState === 'scan') {
@@ -325,7 +336,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
           style={{ transform: [{ translateY: slideUpAnimRef.current }] }}
         >
           <Box>
-            {settingsState !== 'transfer' && settingsState !== 'discoveryMode' && (
+            {(settingsState === 'init' || settingsState === 'scan') && (
               <Text
                 variant="h2"
                 lineHeight={27}

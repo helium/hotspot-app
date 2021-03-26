@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { StyleSheet, TextInput } from 'react-native'
 import { Hotspot } from '@helium/http'
 import animalName from 'angry-purple-tiger'
@@ -10,6 +10,7 @@ import CloseModal from '../../../assets/images/closeModal.svg'
 import TransferHotspotIcon from '../../../assets/images/transferHotspotIcon.svg'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
+import { useHotspotSettingsContext } from '../settings/HotspotSettingsProvider'
 
 type Props = {
   onCloseTransfer: () => void
@@ -26,6 +27,11 @@ const HotspotTransfer = ({
   const { t } = useTranslation()
   const navigation = useNavigation()
   const [typedName, setTypedName] = useState('')
+  const { enableBack } = useHotspotSettingsContext()
+
+  useEffect(() => {
+    enableBack(onCloseTransfer)
+  }, [enableBack, onCloseTransfer])
 
   const handleTypeName = (text: string) => {
     setTypedName(text)
