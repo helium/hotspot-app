@@ -23,7 +23,7 @@ import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import CloseModal from '../../../assets/images/closeModal.svg'
 import SafeAreaBox from '../../../components/SafeAreaBox'
-import { useSpacing } from '../../../theme/themeHooks'
+import { useColors, useSpacing } from '../../../theme/themeHooks'
 import AnimatedBox from '../../../components/AnimatedBox'
 import HotspotSettingsOption from './HotspotSettingsOption'
 import HotspotDiagnostics from './HotspotDiagnostics'
@@ -43,10 +43,11 @@ import BackButton from '../../../components/BackButton'
 import animateTransition from '../../../utils/animateTransition'
 import BluetoothIcon from '../../../assets/images/bluetooth_icon.svg'
 import TransferIcon from '../../../assets/images/transfer_icon.svg'
-// import DiscoveryModeIcon from '../../../assets/images/discovery_mode_icon.svg'
+import DiscoveryModeIcon from '../../../assets/images/discovery_mode_icon.svg'
+import DiscoveryModeRoot from './discovery/DiscoveryModeRoot'
 // import UpdateIcon from '../../../assets/images/update_hotspot_icon.svg'
 
-type State = 'init' | 'scan' | 'transfer'
+type State = 'init' | 'scan' | 'transfer' | 'discoveryMode'
 
 type Props = {
   hotspot?: Hotspot
@@ -61,8 +62,12 @@ const HotspotSettings = ({ hotspot }: Props) => {
   const { getState } = useBluetoothContext()
   const dispatch = useAppDispatch()
   const { showBack, goBack, disableBack } = useHotspotSettingsContext()
+  const { purpleMain } = useColors()
 
   const { account } = useSelector((state: RootState) => state.account)
+  const discoveryEnabled = useSelector(
+    (state: RootState) => state.features.discoveryEnabled,
+  )
   const { showSettings } = useSelector(
     (state: RootState) => state.hotspotDetails,
   )
@@ -132,6 +137,10 @@ const HotspotSettings = ({ hotspot }: Props) => {
     }
   }, [hotspot, t])
 
+  const onPressDiscoveryMode = useCallback(() => {
+    setNextState('discoveryMode')
+  }, [setNextState])
+
   const onPressTransferSetting = useCallback(() => {
     if (hasActiveTransfer) {
       Alert.alert(
@@ -164,7 +173,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
     t,
   ])
 
-  const onCloseTransfer = useCallback(() => {
+  const onCloseOwnerSettings = useCallback(() => {
     setNextState('init')
   }, [setNextState])
 
@@ -209,9 +218,15 @@ const HotspotSettings = ({ hotspot }: Props) => {
       return (
         <HotspotTransfer
           hotspot={hotspot}
-          onCloseTransfer={onCloseTransfer}
+          onCloseTransfer={onCloseOwnerSettings}
           onCloseSettings={handleClose}
         />
+      )
+    }
+
+    if (settingsState === 'discoveryMode') {
+      return (
+        <DiscoveryModeRoot onClose={onCloseOwnerSettings} hotspot={hotspot} />
       )
     }
 
@@ -225,16 +240,18 @@ const HotspotSettings = ({ hotspot }: Props) => {
           compact
           buttonIcon={<TransferIcon />}
         />
-        {/* // TODO: Discovery Mode
-        <Box backgroundColor="black" height={0.5} />
-        <HotspotSettingsOption
-          title={t('hotspot_settings.discovery.title')}
-          subtitle={t('hotspot_settings.discovery.subtitle')}
-          onPress={() => undefined}
-          compact
-          buttonIcon={<DiscoveryModeIcon />}
-        />
-        */}
+        {discoveryEnabled && (
+          <>
+            <Box backgroundColor="black" height={0.5} />
+            <HotspotSettingsOption
+              title={t('hotspot_settings.discovery.title')}
+              subtitle={t('hotspot_settings.discovery.subtitle')}
+              onPress={onPressDiscoveryMode}
+              compact
+              buttonIcon={<DiscoveryModeIcon color={purpleMain} />}
+            />
+          </>
+        )}
         {/* // TODO: Assert V2
         <Box backgroundColor="black" height={0.5} />
         <HotspotSettingsOption
@@ -249,11 +266,14 @@ const HotspotSettings = ({ hotspot }: Props) => {
     )
   }, [
     account?.address,
+    discoveryEnabled,
     handleClose,
     hasActiveTransfer,
     hotspot,
-    onCloseTransfer,
+    onCloseOwnerSettings,
+    onPressDiscoveryMode,
     onPressTransferSetting,
+    purpleMain,
     settingsState,
     t,
     transferButtonTitle,
@@ -302,26 +322,41 @@ const HotspotSettings = ({ hotspot }: Props) => {
         <Box flex={1} onTouchStart={handleClose} />
         <AnimatedBox
           marginTop="none"
-          margin="ms"
+          marginBottom="ms"
+          marginHorizontal={settingsState === 'discoveryMode' ? 'none' : 'ms'}
           style={{ transform: [{ translateY: slideUpAnimRef.current }] }}
         >
-          <Text variant="h2" lineHeight={27} color="white" marginBottom="ms">
-            {title}
-          </Text>
+          <Box>
+            {settingsState !== 'transfer' && settingsState !== 'discoveryMode' && (
+              <Text
+                variant="h2"
+                lineHeight={27}
+                color="white"
+                marginBottom="ms"
+              >
+                {title}
+              </Text>
+            )}
+          </Box>
 
           {settingsState !== 'scan' && (
             <KeyboardAvoidingView
               behavior="position"
               keyboardVerticalOffset={220}
             >
-              <Card variant="modal" backgroundColor="white">
+              <Card variant="modal" backgroundColor="white" overflow="hidden">
                 {ownerSettings}
               </Card>
             </KeyboardAvoidingView>
           )}
 
-          {settingsState !== 'transfer' && (
-            <Card variant="modal" backgroundColor="white" marginTop="m">
+          {(settingsState === 'init' || settingsState === 'scan') && (
+            <Card
+              variant="modal"
+              backgroundColor="white"
+              marginTop="m"
+              overflow="hidden"
+            >
               {pairingCard}
             </Card>
           )}

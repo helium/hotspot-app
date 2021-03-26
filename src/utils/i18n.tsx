@@ -14,6 +14,7 @@ const numberFormatSettings = RNLocalize.getNumberFormatSettings()
 export const groupSeparator = numberFormatSettings.groupingSeparator
 export const { decimalSeparator } = numberFormatSettings
 export const [currencyType] = RNLocalize.getCurrencies() || ['USD']
+export const usesMetricSystem = RNLocalize.usesMetricSystem()
 
 let phoneLang = 'en'
 if (Array.isArray(locales)) {

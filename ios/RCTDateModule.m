@@ -35,6 +35,3 @@ RCT_EXPORT_METHOD(formatDate:(NSString *)dateStr
 }
 
 @end
-
-
-
