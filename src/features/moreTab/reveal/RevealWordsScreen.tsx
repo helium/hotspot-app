@@ -25,7 +25,8 @@ const RevealWordsScreen = () => {
       flex={1}
       overflow="hidden"
       backgroundColor="white"
-      padding="l"
+      paddingVertical="lm"
+      paddingHorizontal="l"
       alignItems="center"
       flexDirection="row"
     >
