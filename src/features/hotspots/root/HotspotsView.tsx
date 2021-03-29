@@ -152,6 +152,11 @@ const HotspotsView = ({ ownedHotspots, startOnMap, location }: Props) => {
     }
   }, [listIsDismissed])
 
+  const dismissList = () => {
+    setDetailsSnapIndex(0)
+    listRef.current?.dismiss()
+  }
+
   const handleBack = useCallback(() => {
     detailsRef.current?.dismiss()
     dispatch(hotspotDetailsSlice.actions.clearHotspotDetails())
@@ -328,7 +333,7 @@ const HotspotsView = ({ ownedHotspots, startOnMap, location }: Props) => {
         {hasHotspots ? (
           <HotspotsList onSelectHotspot={handlePresentDetails} />
         ) : (
-          <HotspotsEmpty onOpenExplorer={handleDismissList} lightTheme />
+          <HotspotsEmpty onOpenExplorer={dismissList} lightTheme />
         )}
       </BottomSheetModal>
 
