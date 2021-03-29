@@ -19,11 +19,7 @@ const featuresSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchFeatures.rejected, (state, data) => {
-      console.log('failed', data)
-    })
     builder.addCase(fetchFeatures.fulfilled, (state, { payload }) => {
-      console.log('success', payload)
       state.discoveryEnabled = payload.discoveryEnabled
     })
   },
