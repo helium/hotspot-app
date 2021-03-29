@@ -35,6 +35,7 @@ import {
 } from './store/helium/heliumDataSlice'
 import SecurityScreen from './features/security/SecurityScreen'
 import { fetchFeatures } from './store/features/featuresSlice'
+import usePrevious from './utils/usePrevious'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -66,6 +67,8 @@ const App = () => {
     isLocked,
     appStateStatus,
   } = useSelector((state: RootState) => state.app)
+  const prevAppStateStatus = usePrevious(appStateStatus)
+
   const fetchDataStatus = useSelector(
     (state: RootState) => state.account.fetchDataStatus,
   )
@@ -127,11 +130,15 @@ const App = () => {
   useEffect(() => {
     if (!isRestored) {
       dispatch(restoreUser())
-    } else {
+    } else if (
+      prevAppStateStatus === 'background' &&
+      appStateStatus === 'active'
+    ) {
+      // update when app comes into foreground
       dispatch(fetchBlockHeight())
       dispatch(fetchInitialData())
     }
-  }, [dispatch, isRestored])
+  }, [dispatch, isRestored, appStateStatus, prevAppStateStatus])
 
   // hide splash screen
   useAsync(async () => {
