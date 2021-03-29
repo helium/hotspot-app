@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import { KeyboardAvoidingView, StyleSheet } from 'react-native'
@@ -21,6 +21,11 @@ const HotspotSetupWifiScreen = () => {
     params: { network },
   } = useRoute<Route>()
   const [password, setPassword] = useState('')
+  const [secureTextEntry, setSecureTextEntry] = useState(true)
+
+  const toggleSecureEntry = useCallback(() => {
+    setSecureTextEntry(!secureTextEntry)
+  }, [secureTextEntry])
 
   const navNext = async () => {
     navigation.replace('HotspotSetupWifiConnectingScreen', {
@@ -61,7 +66,6 @@ const HotspotSetupWifiScreen = () => {
             </Text>
           </Box>
           <TextInput
-            marginBottom="lx"
             padding="m"
             variant="regular"
             placeholder={t('hotspot_setup.wifi_password.placeholder')}
@@ -74,8 +78,19 @@ const HotspotSetupWifiScreen = () => {
             blurOnSubmit={false}
             returnKeyType="done"
             onSubmitEditing={navNext}
-            secureTextEntry
+            secureTextEntry={secureTextEntry}
             autoFocus
+          />
+          <Button
+            marginTop="s"
+            onPress={toggleSecureEntry}
+            variant="primary"
+            mode="text"
+            title={
+              secureTextEntry
+                ? t('hotspot_settings.wifi.show_password')
+                : t('hotspot_settings.wifi.hide_password')
+            }
           />
         </Box>
       </KeyboardAvoidingView>
