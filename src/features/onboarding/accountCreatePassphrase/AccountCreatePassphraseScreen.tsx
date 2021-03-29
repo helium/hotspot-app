@@ -75,7 +75,7 @@ const AccountCreatePassphraseScreen = () => {
       />
       <Box
         marginHorizontal="n_lx"
-        height={{ smallPhone: 80, phone: 114 }}
+        height={{ smallPhone: 94, phone: 114 }}
         marginVertical="l"
       >
         <Carousel

@@ -59,7 +59,7 @@ const ImportAccountConfirmScreen = () => {
   const renderItem = useCallback(
     ({ item, index }) => (
       <TouchableOpacityBox
-        height={{ smallPhone: 90, phone: 114 }}
+        height={{ smallPhone: 84, phone: 114 }}
         onPress={handleWordEdit(index)}
       >
         <Card
@@ -68,7 +68,7 @@ const ImportAccountConfirmScreen = () => {
           flex={1}
           overflow="hidden"
           backgroundColor="white"
-          padding="l"
+          paddingHorizontal="l"
           alignItems="center"
           flexDirection="row"
         >
