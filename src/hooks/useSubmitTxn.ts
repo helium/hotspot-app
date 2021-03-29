@@ -1,11 +1,12 @@
 import Balance, { CurrencyType } from '@helium/currency'
 import {
-  PendingTransaction,
+  PendingTransaction as PendingTransactionType,
   PaymentV2 as HttpPaymentV2,
   AssertLocationV1 as HttpAssertLocationV1,
   AddGatewayV1 as HttpAddGatewayV1,
   TransferHotspotV1 as HttpTransferHotspotV1,
 } from '@helium/http'
+import PendingTransaction from '@helium/http/build/models/PendingTransaction'
 import {
   AddGatewayV1,
   AssertLocationV1,
@@ -18,7 +19,7 @@ import { useSelector } from 'react-redux'
 import activitySlice from '../store/activity/activitySlice'
 import { RootState } from '../store/rootReducer'
 import { useAppDispatch } from '../store/store'
-import { submitTransaction } from '../utils/appDataClient'
+import { postWallet } from '../utils/walletClient'
 
 type SignableTransaction =
   | PaymentV2
@@ -27,7 +28,7 @@ type SignableTransaction =
   | TokenBurnV1
   | TransferHotspotV1
 
-type Submitter = (txn: SignableTransaction) => Promise<PendingTransaction>
+type Submitter = (txn: SignableTransaction) => Promise<PendingTransactionType>
 
 const useSubmitTxn = (): Submitter => {
   const dispatch = useAppDispatch()
@@ -41,7 +42,10 @@ const useSubmitTxn = (): Submitter => {
     const serializedTxn = txn.toString()
 
     // submit to blockchain
-    const pendingTxn = await submitTransaction(serializedTxn)
+    const apiResponse = await postWallet('transactions', {
+      txn: serializedTxn,
+    })
+    const pendingTxn = new PendingTransaction(apiResponse)
 
     // construct mock pending txn
     pendingTxn.type = txn.type

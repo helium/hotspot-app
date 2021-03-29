@@ -213,7 +213,10 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
       natType: capitalize(diagnostics?.nat_type || ''),
       ip: capitalize(diagnostics?.ip || ''),
       height: info.height.toLocaleString(locale),
-      lastChallengeDate: format(fromUnixTime(info.lastChallengeTime), DF),
+      lastChallengeDate:
+        info.lastChallengeTime === 0
+          ? 'never'
+          : format(fromUnixTime(info.lastChallengeTime), DF),
       reportGenerated: format(fromUnixTime(info.currentTime), DF),
       gateway: address || '',
       hotspotMaker: onboardingRecord?.maker?.name || 'Unknown',
