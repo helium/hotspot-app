@@ -10,9 +10,11 @@ import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 const HotspotsEmpty = ({
   onOpenExplorer,
   lightTheme,
+  locationBlocked,
 }: {
   onOpenExplorer?: () => void
   lightTheme?: boolean
+  locationBlocked: boolean
 }) => {
   const { t } = useTranslation()
   const navigation = useNavigation<RootNavigationProp>()
@@ -37,7 +39,9 @@ const HotspotsEmpty = ({
         variant="primary"
         title={t('hotspots.new.setup')}
       />
-      <Button onPress={onOpenExplorer} title={t('hotspots.new.explorer')} />
+      {!locationBlocked && (
+        <Button onPress={onOpenExplorer} title={t('hotspots.new.explorer')} />
+      )}
     </Box>
   )
 }
