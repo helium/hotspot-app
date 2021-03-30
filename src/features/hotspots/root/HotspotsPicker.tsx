@@ -1,10 +1,11 @@
 import { getCurrentPositionAsync } from 'expo-location'
-import React, { memo, useCallback, useMemo } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import NewestHotspot from '@assets/images/newestHotspot.svg'
 import NearestHotspot from '@assets/images/nearestHotspot.svg'
 import OfflineHotspot from '@assets/images/offlineHotspot.svg'
+import FollowedHotspot from '@assets/images/follow.svg'
 import TopHotspot from '@assets/images/topHotspot.svg'
 import Box from '../../../components/Box'
 import hotspotsSlice, {
@@ -15,14 +16,14 @@ import usePermissionManager from '../../../utils/usePermissionManager'
 import { RootState } from '../../../store/rootReducer'
 import HeliumActionSheet from '../../../components/HeliumActionSheet'
 import { HeliumActionSheetItemType } from '../../../components/HeliumActionSheetItem'
+import { LocationCoords } from '../../../utils/location'
 
 const HotspotsPicker = () => {
   const { t, i18n } = useTranslation()
   const dispatch = useAppDispatch()
   const { requestLocationPermission } = usePermissionManager()
-  const {
-    hotspots: { order },
-  } = useSelector((state: RootState) => state)
+  const order = useSelector((state: RootState) => state.hotspots.order)
+  const [currentLocation, setCurrentLocation] = useState<LocationCoords>()
 
   const checkLocationPermissions = useCallback(async () => {
     const enabled = await requestLocationPermission()
@@ -34,20 +35,25 @@ const HotspotsPicker = () => {
 
   const handleValueChanged = useCallback(
     async (newOrder) => {
-      if (newOrder === HotspotSort.Near) {
-        const currentLocation = await checkLocationPermissions()
-        dispatch(
-          hotspotsSlice.actions.changeOrder({
-            order: newOrder,
-            currentLocation,
-          }),
-        )
-      } else {
-        dispatch(hotspotsSlice.actions.changeOrder({ order: newOrder }))
-      }
+      dispatch(hotspotsSlice.actions.changeFilter(newOrder))
     },
-    [checkLocationPermissions, dispatch],
+    [dispatch],
   )
+
+  useEffect(() => {
+    const updateLocation = async () => {
+      if (!currentLocation) {
+        const curLocation = await checkLocationPermissions()
+        setCurrentLocation(curLocation)
+      }
+    }
+
+    updateLocation()
+  }, [checkLocationPermissions, currentLocation, dispatch, order])
+
+  useEffect(() => {
+    dispatch(hotspotsSlice.actions.changeFilterData(currentLocation))
+  }, [currentLocation, dispatch, order])
 
   const data: HeliumActionSheetItemType[] = useMemo(
     () => [
@@ -65,6 +71,11 @@ const HotspotsPicker = () => {
         label: t(`hotspots.owned.filter.${HotspotSort.Earn}`),
         value: HotspotSort.Earn,
         Icon: TopHotspot,
+      },
+      {
+        label: t(`hotspots.owned.filter.${HotspotSort.Followed}`),
+        value: HotspotSort.Followed,
+        Icon: FollowedHotspot,
       },
       {
         label: t(`hotspots.owned.filter.${HotspotSort.Offline}`),
