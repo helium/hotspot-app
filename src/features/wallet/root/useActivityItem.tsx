@@ -8,6 +8,7 @@ import {
   PaymentV2,
   PendingTransaction,
   RewardsV1,
+  RewardsV2,
   TokenBurnV1,
   TransferHotspotV1,
 } from '@helium/http'
@@ -30,9 +31,6 @@ import useCurrency from '../../../utils/useCurrency'
 import { Colors } from '../../../theme/theme'
 import { getMakerName } from '../../../utils/stakingClient'
 import { RootState } from '../../../store/rootReducer'
-
-// TODO import from helium-js once released
-class RewardsV2 extends RewardsV1 {}
 
 export const TxnTypeKeys = [
   'rewards_v1',
