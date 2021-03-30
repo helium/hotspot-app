@@ -51,3 +51,19 @@ export const getMakerName = (accountAddress: string, makers?: Maker[]) => {
   )
   return makerMatchIndex !== -1 ? makers[makerMatchIndex].name : ''
 }
+
+export const getMakerSupportEmail = (makerId?: number): string => {
+  switch (makerId) {
+    default:
+    case 1:
+    case 2:
+    case 3:
+      return 'support@helium.com'
+    case 4:
+      return 'support@nebra.com'
+    case 5:
+      return 'support@syncrob.it'
+    case 6:
+      return 'support@bobcatminer.com'
+  }
+}

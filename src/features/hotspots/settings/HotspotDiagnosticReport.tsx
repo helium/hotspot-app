@@ -27,6 +27,7 @@ import { locale } from '../../../utils/i18n'
 import useAlert from '../../../utils/useAlert'
 import usePrevious from '../../../utils/usePrevious'
 import { getSyncStatus, SyncStatus } from '../../../utils/hotspotUtils'
+import { getMakerSupportEmail } from '../../../utils/stakingClient'
 
 type Info = {
   percentSynced: number
@@ -221,6 +222,7 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
       gateway: address || '',
       hotspotMaker: onboardingRecord?.maker?.name || 'Unknown',
       appVersion: version,
+      supportEmail: getMakerSupportEmail(onboardingRecord?.maker?.id),
     })
   }
 

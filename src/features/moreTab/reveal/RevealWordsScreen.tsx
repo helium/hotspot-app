@@ -25,7 +25,7 @@ const RevealWordsScreen = () => {
       flex={1}
       overflow="hidden"
       backgroundColor="white"
-      padding="l"
+      paddingHorizontal="l"
       alignItems="center"
       flexDirection="row"
     >
@@ -54,7 +54,11 @@ const RevealWordsScreen = () => {
         variant="subtitle"
         i18nKey="account_setup.passphrase.subtitle"
       />
-      <Box marginHorizontal="n_lx" height={114} marginVertical="l">
+      <Box
+        marginHorizontal="n_lx"
+        height={{ smallPhone: 94, phone: 114 }}
+        marginVertical="l"
+      >
         <Carousel
           layout="default"
           vertical={false}
@@ -71,6 +75,7 @@ const RevealWordsScreen = () => {
         variant="primary"
         onPress={() => navigation.goBack()}
         title={t('account_setup.passphrase.next')}
+        marginBottom="m"
       />
     </SafeAreaBox>
   )
