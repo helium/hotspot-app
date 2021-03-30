@@ -45,10 +45,8 @@ const HotspotMoreMenuButton = ({ hotspot }: { hotspot: Hotspot }) => {
   return (
     <TouchableOpacityBox
       onPress={onMoreSelected}
-      paddingVertical="s"
-      marginTop="xxs"
-      marginRight="n_l"
       paddingHorizontal="l"
+      paddingVertical="m"
     >
       <MoreMenu />
     </TouchableOpacityBox>

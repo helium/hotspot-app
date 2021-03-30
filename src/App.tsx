@@ -158,6 +158,14 @@ const App = () => {
     }
   }, [fetchDataStatus, isBackedUp, isRestored])
 
+  useEffect(() => {
+    // Hide splash after 5 seconds, deal with the consequences?
+    const timeout = setTimeout(() => {
+      SplashScreen.hideAsync()
+    }, 5000)
+    return () => clearInterval(timeout)
+  }, [dispatch])
+
   // poll block height to update realtime data throughout the app
   useEffect(() => {
     const interval = setInterval(() => {
