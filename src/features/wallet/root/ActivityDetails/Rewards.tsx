@@ -6,7 +6,7 @@ import Box from '../../../../components/Box'
 
 type Props = { item: AnyTransaction | PendingTransaction }
 const Rewards = ({ item }: Props) => {
-  if (!(item.type in ['rewards_v1', 'rewards_v2'])) return null
+  if (!['rewards_v1', 'rewards_v2'].includes(item.type)) return null
 
   const rewards = item as RewardsV1
 
