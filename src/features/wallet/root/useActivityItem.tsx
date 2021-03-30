@@ -31,8 +31,12 @@ import { Colors } from '../../../theme/theme'
 import { getMakerName } from '../../../utils/stakingClient'
 import { RootState } from '../../../store/rootReducer'
 
+// TODO import from helium-js once released
+class RewardsV2 extends RewardsV1 {}
+
 export const TxnTypeKeys = [
   'rewards_v1',
+  'rewards_v2',
   'payment_v1',
   'payment_v2',
   'add_gateway_v1',
@@ -101,6 +105,7 @@ const useActivityItem = (
       case 'assert_location_v1':
         return 'purpleMuted'
       case 'rewards_v1':
+      case 'rewards_v2':
         return 'purpleBright'
       case 'token_burn_v1':
         return 'orange'
@@ -130,6 +135,7 @@ const useActivityItem = (
           ? t('transactions.transferSell')
           : t('transactions.transferBuy')
       case 'rewards_v1':
+      case 'rewards_v2':
         return t('transactions.mining')
       case 'token_burn_v1':
         return t('transactions.burnHNT')
@@ -150,6 +156,7 @@ const useActivityItem = (
       case 'assert_location_v1':
         return <Location width={20} height={23} />
       case 'rewards_v1':
+      case 'rewards_v2':
         return <Rewards width={26} height={26} />
       case 'token_burn_v1':
         return <Burn width={23} height={28} />
@@ -171,6 +178,7 @@ const useActivityItem = (
       case 'assert_location_v1':
         return <Location width={20} height={23} />
       case 'rewards_v1':
+      case 'rewards_v2':
         return <Rewards width={26} height={26} />
       case 'token_burn_v1':
         return <Burn width={23} height={28} />
@@ -186,7 +194,7 @@ const useActivityItem = (
       return isSending
     }
 
-    if (item instanceof RewardsV1) {
+    if (item instanceof RewardsV1 || item instanceof RewardsV2) {
       return false
     }
 
@@ -229,7 +237,7 @@ const useActivityItem = (
   )
 
   const fee = useMemo(async () => {
-    if (item instanceof RewardsV1) {
+    if (item instanceof RewardsV1 || item instanceof RewardsV2) {
       return ''
     }
 
@@ -277,7 +285,7 @@ const useActivityItem = (
     if (item instanceof TokenBurnV1) {
       return formatAmount('-', item.amount)
     }
-    if (item instanceof RewardsV1) {
+    if (item instanceof RewardsV1 || item instanceof RewardsV2) {
       return formatAmount('+', item.totalAmount)
     }
     if (item instanceof PaymentV1) {
