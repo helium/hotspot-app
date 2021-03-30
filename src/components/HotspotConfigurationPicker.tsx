@@ -41,12 +41,14 @@ type Props = {
   onGainUpdated: (gain: number) => void
   onElevationUpdated: (elevation: number) => void
   selectedAntenna: Antenna
+  outline?: boolean
 }
 const HotspotConfigurationPicker = ({
   selectedAntenna,
   onAntennaUpdated,
   onGainUpdated,
   onElevationUpdated,
+  outline,
 }: Props) => {
   const { t } = useTranslation()
   const colors = useColors()
@@ -131,7 +133,13 @@ const HotspotConfigurationPicker = ({
   }
 
   return (
-    <Box backgroundColor="white" borderRadius="m" marginVertical="l">
+    <Box
+      backgroundColor="white"
+      borderRadius="m"
+      marginVertical="l"
+      borderWidth={outline ? 1 : 0}
+      borderColor="grayLight"
+    >
       <HeliumActionSheet
         title={t('antennas.onboarding.select')}
         prefixVariant="regular"
@@ -147,7 +155,7 @@ const HotspotConfigurationPicker = ({
         padding="m"
         paddingVertical="lm"
       />
-      <Box backgroundColor="black" height={0.5} />
+      <Box backgroundColor="grayLight" height={1} />
       <TouchableWithoutFeedback onPress={focusGain}>
         <Box
           padding="m"
@@ -177,7 +185,7 @@ const HotspotConfigurationPicker = ({
           </Box>
         </Box>
       </TouchableWithoutFeedback>
-      <Box backgroundColor="black" height={0.5} />
+      <Box backgroundColor="grayLight" height={1} />
       <TouchableWithoutFeedback onPress={focusElevation}>
         <Box
           padding="m"
@@ -204,7 +212,7 @@ const HotspotConfigurationPicker = ({
           />
         </Box>
       </TouchableWithoutFeedback>
-      <Box backgroundColor="black" height={0.5} />
+      {!outline && <Box backgroundColor="grayLight" height={1} />}
     </Box>
   )
 }

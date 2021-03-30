@@ -46,8 +46,9 @@ import TransferIcon from '../../../assets/images/transfer_icon.svg'
 import DiscoveryModeIcon from '../../../assets/images/discovery_mode_icon.svg'
 import DiscoveryModeRoot from './discovery/DiscoveryModeRoot'
 import UpdateIcon from '../../../assets/images/update_hotspot_icon.svg'
+import UpdateHotspotConfig from './updateHotspot/UpdateHotspotConfig'
 
-type State = 'init' | 'scan' | 'transfer' | 'discoveryMode'
+type State = 'init' | 'scan' | 'transfer' | 'discoveryMode' | 'updateHotspot'
 
 type Props = {
   hotspot?: Hotspot
@@ -146,6 +147,10 @@ const HotspotSettings = ({ hotspot }: Props) => {
     setNextState('discoveryMode')
   }, [setNextState])
 
+  const onPressUpdateHotspot = useCallback(() => {
+    setNextState('updateHotspot')
+  }, [setNextState])
+
   const onPressTransferSetting = useCallback(() => {
     if (hasActiveTransfer) {
       Alert.alert(
@@ -241,6 +246,12 @@ const HotspotSettings = ({ hotspot }: Props) => {
       )
     }
 
+    if (settingsState === 'updateHotspot') {
+      return (
+        <UpdateHotspotConfig onClose={onCloseOwnerSettings} hotspot={hotspot} />
+      )
+    }
+
     return (
       <Box>
         <HotspotSettingsOption
@@ -267,7 +278,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
         <HotspotSettingsOption
           title={t('hotspot_settings.update.title')}
           subtitle={t('hotspot_settings.update.subtitle')}
-          onPress={() => undefined}
+          onPress={onPressUpdateHotspot}
           compact
           buttonIcon={<UpdateIcon />}
         />
@@ -282,6 +293,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
     onCloseOwnerSettings,
     onPressDiscoveryMode,
     onPressTransferSetting,
+    onPressUpdateHotspot,
     purpleMain,
     settingsState,
     t,

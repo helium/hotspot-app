@@ -1,17 +1,12 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import Balance, { CurrencyType } from '@helium/currency'
-import { LocationGeocodedAddress } from 'expo-location'
 import React, { memo, useCallback, useEffect, useState } from 'react'
 import { useAsync } from 'react-async-hook'
-import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { isString } from 'lodash'
+import { Hotspot } from '@helium/http'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
-import { RootState } from '../../../store/rootReducer'
-import { useAppDispatch } from '../../../store/store'
-import { getLocation } from '../../../store/user/appSlice'
 import animateTransition from '../../../utils/animateTransition'
-import { reverseGeocode } from '../../../utils/location'
 import useAlert from '../../../utils/useAlert'
 import ReassertLocationFee from './ReassertLocationFee'
 import ReassertLocationUpdate from './ReassertLocationUpdate'
@@ -30,22 +25,15 @@ const DEFAULT_FEE_DATA = {
   hasSufficientBalance: false,
   isFree: false,
 }
-type Props = { onFinished: () => void }
-const ReassertLocation = ({ onFinished }: Props) => {
+type Props = { hotspot: Hotspot; onFinished: () => void }
+const ReassertLocation = ({ hotspot, onFinished }: Props) => {
   const [state, setState] = useState<
     'fee' | 'update' | 'confirm' | 'success' | 'search'
   >('fee')
-  const [locationAddress, setLocationAddress] = useState<
-    LocationGeocodedAddress | undefined
-  >()
   const [updatedLocation, setUpdatedLocation] = useState<Coords | undefined>()
-  const dispatch = useAppDispatch()
-  const {
-    app: { currentLocation },
-  } = useSelector((s: RootState) => s)
 
+  // TODO: Move & Fix
   const { loadLocationFeeData } = useConnectedHotspotContext()
-
   const { result: feeData = DEFAULT_FEE_DATA } = useAsync(
     loadLocationFeeData,
     [],
@@ -75,40 +63,6 @@ const ReassertLocation = ({ onFinished }: Props) => {
     enableBack(handleBack)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  useEffect(() => {
-    dispatch(getLocation())
-  }, [dispatch])
-
-  useEffect(() => {
-    if (!currentLocation) return
-
-    const getLoc = async () => {
-      const locInfo = await reverseGeocode(
-        currentLocation.latitude,
-        currentLocation.longitude,
-      )
-      if (!locInfo.length) return
-
-      setLocationAddress(locInfo[0])
-    }
-    getLoc()
-  }, [currentLocation])
-
-  useEffect(() => {
-    if (!updatedLocation) return
-
-    const getLoc = async () => {
-      const locInfo = await reverseGeocode(
-        updatedLocation.latitude,
-        updatedLocation.longitude,
-      )
-      if (!locInfo.length) return
-
-      setLocationAddress(locInfo[0])
-    }
-    getLoc()
-  }, [updatedLocation])
 
   const handleFinish = useCallback(
     async (assertResponse: Error | string | boolean) => {
@@ -165,7 +119,7 @@ const ReassertLocation = ({ onFinished }: Props) => {
       return (
         <ReassertLocationFee
           {...feeData}
-          locationAddress={locationAddress}
+          hotspot={hotspot}
           onChangeLocation={() => {
             animateTransition()
             setState('update')
@@ -201,13 +155,7 @@ const ReassertLocation = ({ onFinished }: Props) => {
         />
       )
     case 'success':
-      return (
-        <ReassertLocationFee
-          {...feeData}
-          locationAddress={locationAddress}
-          isPending
-        />
-      )
+      return <ReassertLocationFee {...feeData} hotspot={hotspot} isPending />
   }
 }
 

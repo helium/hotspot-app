@@ -725,7 +725,7 @@ export default {
         'You have <b><purple>{{count}} free remaining</purple></b> Hotspot Location Assert Updates.',
       change_location: 'Change Location',
       confirm: 'I Confirm',
-      cost: 'The cost to reasserting location is:',
+      cost: 'The cost of reasserting location is:',
       insufficient_funds:
         'You do not have the funds available to make\nthis assert. Acquire HNT.',
       confirm_location: "Please confirm your Hotspot's change in location",
