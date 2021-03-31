@@ -318,12 +318,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
         position="absolute"
       />
 
-      <SafeAreaBox
-        flex={1}
-        flexDirection="column"
-        justifyContent="space-between"
-        marginBottom="m"
-      >
+      <SafeAreaBox flex={1} flexDirection="column" marginBottom="m">
         <Box
           flexDirection="row-reverse"
           justifyContent="space-between"
@@ -340,10 +335,11 @@ const HotspotSettings = ({ hotspot }: Props) => {
           </TouchableOpacityBox>
           {showBack && <BackButton alignSelf="center" onPress={goBack} />}
         </Box>
-        <Box flex={1} onTouchStart={handleClose} />
         <AnimatedBox
           marginTop="none"
           marginBottom="ms"
+          justifyContent="flex-end"
+          flex={1}
           marginHorizontal={settingsState === 'discoveryMode' ? 'none' : 'ms'}
           style={{ transform: [{ translateY: slideUpAnimRef.current }] }}
         >
@@ -361,10 +357,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
           </Box>
 
           {settingsState !== 'scan' && (
-            <KeyboardAvoidingView
-              behavior="position"
-              keyboardVerticalOffset={220}
-            >
+            <KeyboardAvoidingView behavior="padding">
               <Card variant="modal" backgroundColor="white" overflow="hidden">
                 {ownerSettings}
               </Card>

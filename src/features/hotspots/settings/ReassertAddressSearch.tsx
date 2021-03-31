@@ -13,10 +13,9 @@ import {
   getPlaceGeography,
   PlaceGeography,
 } from '../../../utils/googlePlaces'
-import { hp } from '../../../utils/layout'
 
 type Props = {
-  onSelectPlace: (placeGeography: PlaceGeography) => void
+  onSelectPlace: (placeGeography: PlaceGeography, locationName: string) => void
 }
 
 const ReassertAddressSearch = ({ onSelectPlace }: Props) => {
@@ -52,7 +51,10 @@ const ReassertAddressSearch = ({ onSelectPlace }: Props) => {
     (searchResult: AutocompleteSearchResult) => async () => {
       const placeLocation = await getPlaceGeography(searchResult.placeId)
       Keyboard.dismiss()
-      onSelectPlace(placeLocation)
+      onSelectPlace(
+        placeLocation,
+        `${searchResult.mainText}, ${searchResult.secondaryText}`,
+      )
     },
     [onSelectPlace],
   )
@@ -99,7 +101,7 @@ const ReassertAddressSearch = ({ onSelectPlace }: Props) => {
   )
 
   return (
-    <Box height={hp(75)} padding="none" paddingTop="lx">
+    <Box height={600} padding="none" paddingTop="lx">
       <SectionList
         keyExtractor={(item) => item.placeId}
         sections={sections}

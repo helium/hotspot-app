@@ -6,11 +6,10 @@ import { Hotspot } from '@helium/http'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import TextTransform from '../../../components/TextTransform'
-import Map from '../../../components/Map'
 import Button from '../../../components/Button'
 import Check from '../../../assets/images/check.svg'
 import PartialSuccess from '../../../assets/images/partialSuccess.svg'
-import ImageBox from '../../../components/ImageBox'
+import HotspotLocationPreview from './updateHotspot/HotspotLocationPreview'
 
 type Props = {
   onChangeLocation?: () => void
@@ -107,33 +106,18 @@ const ReassertLocationFee = ({
       )}
       {mapCenter !== undefined && (
         <>
-          <Text variant="body1Medium" color="black" marginTop="m">
-            Current Location
+          <Text
+            variant="body1Medium"
+            color="black"
+            marginTop="m"
+            marginBottom="s"
+          >
+            {t('hotspot_settings.reassert.current_location')}
           </Text>
-          <Box marginTop="s" borderRadius="l" overflow="hidden" height={160}>
-            <Map zoomLevel={13} interactive={false} mapCenter={mapCenter} />
-            <ImageBox
-              position="absolute"
-              top="50%"
-              left="50%"
-              style={{ marginTop: -45, marginLeft: -25 / 2 }}
-              width={25}
-              height={29}
-              source={require('../../../assets/images/locationWhite.png')}
-            />
-            <Box
-              position="absolute"
-              bottom={0}
-              left={0}
-              right={0}
-              padding="m"
-              backgroundColor="purpleDull"
-            >
-              <Text variant="bold" fontSize={15} numberOfLines={1}>
-                {`${hotspot.geocode?.longStreet}, ${hotspot.geocode?.shortCity}, ${hotspot.geocode?.shortCountry}`}
-              </Text>
-            </Box>
-          </Box>
+          <HotspotLocationPreview
+            mapCenter={mapCenter}
+            geocode={hotspot.geocode}
+          />
         </>
       )}
       <Button

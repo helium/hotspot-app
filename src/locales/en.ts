@@ -734,6 +734,10 @@ export default {
       assert_pending: 'Assert Pending...',
       failTitle: 'Failed to reassert hotspot',
       failSubtitle: 'Please try again later',
+      current_location: 'Current Location',
+      new_location: 'New Location',
+      antenna_details: 'Antenna/Elevation Details',
+      update_antenna: 'Update Antenna',
     },
   },
   hotspot_details: {

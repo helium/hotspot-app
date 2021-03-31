@@ -2,21 +2,18 @@
 import Balance, { CurrencyType } from '@helium/currency'
 import React, { memo, useCallback, useEffect, useState } from 'react'
 import { useAsync } from 'react-async-hook'
-import { useTranslation } from 'react-i18next'
-import { isString } from 'lodash'
 import { Hotspot } from '@helium/http'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import animateTransition from '../../../utils/animateTransition'
-import useAlert from '../../../utils/useAlert'
 import ReassertLocationFee from './ReassertLocationFee'
 import ReassertLocationUpdate from './ReassertLocationUpdate'
 import { useHotspotSettingsContext } from './HotspotSettingsProvider'
 import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
 import ReassertAddressSearch from './ReassertAddressSearch'
 import { PlaceGeography } from '../../../utils/googlePlaces'
-import { HotspotErrorCode } from '../../../utils/useHotspot'
 
-type Coords = { latitude: number; longitude: number }
+export type Coords = { latitude: number; longitude: number }
+export type ReassertLocationState = 'fee' | 'update' | 'confirm' | 'search'
 const DEFAULT_FEE_DATA = {
   remainingFreeAsserts: 0,
   totalStakingAmountDC: new Balance(0, CurrencyType.dataCredit),
@@ -25,12 +22,18 @@ const DEFAULT_FEE_DATA = {
   hasSufficientBalance: false,
   isFree: false,
 }
-type Props = { hotspot: Hotspot; onFinished: () => void }
-const ReassertLocation = ({ hotspot, onFinished }: Props) => {
-  const [state, setState] = useState<
-    'fee' | 'update' | 'confirm' | 'success' | 'search'
-  >('fee')
+type Props = {
+  hotspot: Hotspot
+  onFinished: (
+    updatedLocation: Coords | undefined,
+    locationName: string,
+  ) => void
+  onStateChange: (state: ReassertLocationState) => void
+}
+const ReassertLocation = ({ hotspot, onFinished, onStateChange }: Props) => {
+  const [state, setState] = useState<ReassertLocationState>('fee')
   const [updatedLocation, setUpdatedLocation] = useState<Coords | undefined>()
+  const [locationName, setLocationName] = useState<string>()
 
   // TODO: Move & Fix
   const { loadLocationFeeData } = useConnectedHotspotContext()
@@ -38,74 +41,50 @@ const ReassertLocation = ({ hotspot, onFinished }: Props) => {
     loadLocationFeeData,
     [],
   )
-  const { t } = useTranslation()
-  const { enableBack } = useHotspotSettingsContext()
-
-  const { showOKAlert } = useAlert()
 
   const handleBack = useCallback(() => {
     animateTransition()
     switch (state) {
       case 'fee':
-      case 'success':
-        onFinished()
+        onFinished(undefined, '')
         break
       case 'update':
+        onStateChange('fee')
         setState('fee')
         break
+      case 'search':
       case 'confirm':
+        onStateChange('update')
         setState('update')
         break
     }
-  }, [onFinished, state])
+  }, [onFinished, onStateChange, state])
 
+  const { enableBack } = useHotspotSettingsContext()
   useEffect(() => {
     enableBack(handleBack)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [enableBack, handleBack])
 
-  const handleFinish = useCallback(
-    async (assertResponse: Error | string | boolean) => {
-      if (assertResponse === true) {
-        animateTransition()
-        setState('success')
-        return
-      }
-
-      let titleKey = 'generic.error'
-      let messageKey = 'hotspot_setup.add_hotspot.add_hotspot_error_body'
-      if (isString(assertResponse)) {
-        if (assertResponse === HotspotErrorCode.WAIT) {
-          titleKey = t('hotspot_setup.add_hotspot.wait_error_title')
-          messageKey = t('hotspot_setup.add_hotspot.wait_error_body')
-        } else {
-          messageKey = `Got error code ${assertResponse} from assert location`
-        }
-      } else if (assertResponse !== false) {
-        messageKey = assertResponse.toString()
-      }
-
-      await showOKAlert({
-        titleKey,
-        messageKey,
-      })
-
-      onFinished()
-    },
-    [onFinished, showOKAlert, t],
-  )
+  const handleComplete = () => {
+    onFinished(updatedLocation, locationName || '')
+  }
 
   const handleSearch = useCallback(() => {
     animateTransition()
+    onStateChange('search')
     setState('search')
-  }, [])
+  }, [onStateChange])
 
-  const handleSearchSelectPlace = useCallback((place: PlaceGeography) => {
-    const { lat, lng } = place
-    setUpdatedLocation({ latitude: lat, longitude: lng })
-    animateTransition()
-    setState('confirm')
-  }, [])
+  const handleSearchSelectPlace = useCallback(
+    (place: PlaceGeography, name: string) => {
+      const { lat, lng } = place
+      setUpdatedLocation({ latitude: lat, longitude: lng })
+      setLocationName(name)
+      onStateChange('confirm')
+      setState('confirm')
+    },
+    [onStateChange],
+  )
 
   const amount = feeData.isFree
     ? 'O DC'
@@ -122,6 +101,7 @@ const ReassertLocation = ({ hotspot, onFinished }: Props) => {
           hotspot={hotspot}
           onChangeLocation={() => {
             animateTransition()
+            onStateChange('update')
             setState('update')
           }}
         />
@@ -133,9 +113,12 @@ const ReassertLocation = ({ hotspot, onFinished }: Props) => {
           key={state}
           onCancel={handleBack}
           onSearch={handleSearch}
-          locationSelected={(latitude, longitude) => {
+          onConfirm={handleComplete}
+          locationSelected={(latitude, longitude, name) => {
             setUpdatedLocation({ latitude, longitude })
+            setLocationName(name)
             animateTransition()
+            onStateChange('confirm')
             setState('confirm')
           }}
         />
@@ -150,12 +133,10 @@ const ReassertLocation = ({ hotspot, onFinished }: Props) => {
           onCancel={handleBack}
           confirming
           coords={updatedLocation}
-          onFinish={handleFinish}
+          onConfirm={handleComplete}
           onSearch={handleSearch}
         />
       )
-    case 'success':
-      return <ReassertLocationFee {...feeData} hotspot={hotspot} isPending />
   }
 }
 

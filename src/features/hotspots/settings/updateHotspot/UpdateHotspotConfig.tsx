@@ -1,56 +1,97 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { Hotspot } from '@helium/http'
+import { useTranslation } from 'react-i18next'
 import Text from '../../../../components/Text'
 import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
-import CloseModal from '../../../../assets/images/closeModal.svg'
-import DiscoveryIcon from '../../../../assets/images/discovery_mode_icon.svg'
 import Box from '../../../../components/Box'
 import Button from '../../../../components/Button'
-import { useHotspotSettingsContext } from '../HotspotSettingsProvider'
-import { useColors } from '../../../../theme/themeHooks'
 import HotspotConfigurationPicker, {
   Antenna,
   Antennas,
 } from '../../../../components/HotspotConfigurationPicker'
 import animateTransition from '../../../../utils/animateTransition'
-import ReassertLocation from '../ReassertLocation'
+import ReassertLocation, {
+  Coords,
+  ReassertLocationState,
+} from '../ReassertLocation'
+import UpdateHotspotHeader from './UpdateHotspotHeader'
+import { useHotspotSettingsContext } from '../HotspotSettingsProvider'
+import HotspotLocationPreview from './HotspotLocationPreview'
 
 type Props = {
   onClose: () => void
   hotspot: Hotspot
 }
 
-type State = 'antenna' | 'location'
+type State = 'antenna' | 'location' | 'confirm'
 
 const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
   const { t } = useTranslation()
-  const { enableBack } = useHotspotSettingsContext()
-  const colors = useColors()
-
   const [state, setState] = useState<State>('antenna')
 
   // TODO: Load current antenna data from API
   const [antenna, setAntenna] = useState<Antenna>(Antennas.helium_us)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [gain, setGain] = useState<number>(antenna.gain)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [elevation, setElevation] = useState<number>(0)
+  const [location, setLocation] = useState<Coords>()
+  const [locationName, setLocationName] = useState<string>()
+  const [fullScreen, setFullScreen] = useState(false)
+  const [isLocationChange, setIsLocationChange] = useState(false)
+
+  const { enableBack } = useHotspotSettingsContext()
+  useEffect(() => {
+    enableBack(onClose)
+  }, [enableBack, onClose])
 
   const toggleUpdateAntenna = () => {
     animateTransition()
+    setIsLocationChange(false)
     setState('antenna')
   }
   const toggleUpdateLocation = () => {
     animateTransition()
+    setIsLocationChange(true)
     setState('location')
+  }
+  const onConfirm = () => {
+    animateTransition()
+    setState('confirm')
   }
   const updatingAntenna = useMemo(() => state === 'antenna', [state])
   const updatingLocation = useMemo(() => state === 'location', [state])
+  const confirmingUpdate = useMemo(() => state === 'confirm', [state])
 
-  useEffect(() => {
-    enableBack(onClose)
-  }, [enableBack, onClose])
+  const onReassertStateChange = (reassertState: ReassertLocationState) => {
+    switch (reassertState) {
+      case 'fee':
+        setFullScreen(false)
+        break
+      case 'confirm':
+        setFullScreen(true)
+        break
+      case 'search':
+        setFullScreen(true)
+        break
+      case 'update':
+        setFullScreen(true)
+        break
+    }
+  }
+
+  const onFinishReassert = (
+    updatedLocation: Coords | undefined,
+    name: string,
+  ) => {
+    if (updatedLocation) {
+      setFullScreen(false)
+      enableBack(onClose)
+      setLocation(updatedLocation)
+      setLocationName(name)
+      setState('confirm')
+    } else {
+      onClose()
+    }
+  }
 
   const StatePicker = () => (
     <Box flexDirection="row" borderRadius="m">
@@ -70,7 +111,7 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
           textAlign="center"
           color={updatingAntenna ? 'white' : 'purpleMain'}
         >
-          Update Antenna
+          {t('hotspot_settings.reassert.update_antenna')}
         </Text>
       </TouchableOpacityBox>
       <TouchableOpacityBox
@@ -89,39 +130,81 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
           textAlign="center"
           color={updatingLocation ? 'white' : 'purpleMain'}
         >
-          Update Location
+          {t('hotspot_settings.options.reassert')}
         </Text>
       </TouchableOpacityBox>
     </Box>
   )
 
+  const ConfirmDetails = () => (
+    <Box>
+      {isLocationChange && location ? (
+        <Box>
+          <Text variant="body1Medium" color="black" marginBottom="s">
+            {t('hotspot_settings.reassert.new_location')}
+          </Text>
+          <HotspotLocationPreview
+            mapCenter={[location.longitude, location.latitude]}
+            locationName={locationName}
+          />
+        </Box>
+      ) : (
+        <Box>
+          <Text variant="body1Medium" color="black" marginBottom="s">
+            {t('hotspot_settings.reassert.antenna_details')}
+          </Text>
+          <Text variant="body1Medium" color="grayLightText" marginBottom="s">
+            {t(`antennas.${antenna.id}`)}
+          </Text>
+          <Text
+            variant="body1Medium"
+            color="black"
+            marginTop="m"
+            marginBottom="s"
+          >
+            {t('antennas.onboarding.gain')}
+          </Text>
+          <Text variant="body1Medium" color="grayLightText" marginBottom="s">
+            {t('hotspot_setup.location_fee.gain', { gain })}
+          </Text>
+          <Text
+            variant="body1Medium"
+            color="black"
+            marginTop="m"
+            marginBottom="s"
+          >
+            {t('antennas.onboarding.elevation')}
+          </Text>
+          <Text variant="body1Medium" color="grayLightText" marginBottom="s">
+            {elevation}
+          </Text>
+        </Box>
+      )}
+      <Text variant="body1Medium" color="black" marginTop="m" marginBottom="s">
+        {t('generic.fee')}
+      </Text>
+      <Text variant="body1Medium" color="grayLightText" marginBottom="l">
+        55,000 DC
+      </Text>
+      <Button
+        title={t('generic.submit')}
+        mode="contained"
+        variant="primary"
+        onPress={onConfirm}
+      />
+    </Box>
+  )
+
   return (
     <>
-      <Box
-        backgroundColor="purpleMain"
-        borderTopRightRadius="l"
-        borderTopLeftRadius="l"
-        padding="l"
-      >
-        <Box
-          flexDirection="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <DiscoveryIcon color="white" width={35} height={25} />
-          <TouchableOpacityBox onPress={onClose}>
-            <CloseModal color={colors.blackTransparent} />
-          </TouchableOpacityBox>
-        </Box>
-        <Text variant="h2" paddingTop="m" maxFontSizeMultiplier={1}>
-          Update Hotspot
-        </Text>
-        <Text variant="body1" paddingTop="m" maxFontSizeMultiplier={1}>
-          Set your Antenna and Hotspot Location
-        </Text>
-      </Box>
-      <Box padding="l">
-        <StatePicker />
+      {!fullScreen && (
+        <UpdateHotspotHeader
+          onClose={onClose}
+          isLocationChange={isLocationChange}
+        />
+      )}
+      <Box padding={fullScreen ? undefined : 'l'}>
+        {!fullScreen && !confirmingUpdate && <StatePicker />}
         {updatingAntenna && (
           <>
             <HotspotConfigurationPicker
@@ -132,16 +215,21 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
               selectedAntenna={antenna}
             />
             <Button
-              title={t('generic.next')}
+              title={t('hotspot_settings.reassert.update_antenna')}
               mode="contained"
               variant="primary"
-              onPress={() => undefined}
+              onPress={onConfirm}
             />
           </>
         )}
         {updatingLocation && (
-          <ReassertLocation hotspot={hotspot} onFinished={onClose} />
+          <ReassertLocation
+            hotspot={hotspot}
+            onFinished={onFinishReassert}
+            onStateChange={onReassertStateChange}
+          />
         )}
+        {confirmingUpdate && <ConfirmDetails />}
       </Box>
     </>
   )
