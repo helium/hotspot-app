@@ -1,10 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Animated } from 'react-native'
 import { useSelector } from 'react-redux'
 import { startCase } from 'lodash'
 import Follow from '@assets/images/follow.svg'
+import UpArrow from '@assets/images/upArrow.svg'
+import { Easing } from 'react-native-reanimated'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
@@ -19,6 +21,8 @@ import {
   followHotspot,
   unfollowHotspot,
 } from '../../../store/hotspots/hotspotsSlice'
+import AnimatedBox from '../../../components/AnimatedBox'
+import sleep from '../../../utils/sleep'
 
 const NotHotspotOwnerErrorScreen = () => {
   const { t } = useTranslation()
@@ -30,9 +34,50 @@ const NotHotspotOwnerErrorScreen = () => {
   )
   const { followPurple } = useColors()
   const [following, setFollowing] = useState(false)
+  const [animFinished, setAnimFinished] = useState(false)
   const followedHotspots = useSelector(
     (state: RootState) => state.hotspots.followedHotspotsObj,
   )
+  const slideUpAnimRef = useRef(new Animated.Value(0))
+  const opacityAnim = useRef(new Animated.Value(1))
+
+  const anim = async () => {
+    if (following) return
+
+    await sleep(700)
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(slideUpAnimRef.current, {
+          toValue: -8,
+          duration: 700,
+          useNativeDriver: true,
+          easing: Easing.bounce,
+        }),
+        Animated.timing(slideUpAnimRef.current, {
+          toValue: 0,
+          duration: 700,
+          useNativeDriver: true,
+        }),
+      ]),
+      { iterations: 3 },
+    ).start(() => setAnimFinished(true))
+  }
+
+  useEffect(() => {
+    if (!animFinished) return
+
+    Animated.timing(opacityAnim.current, {
+      toValue: 0,
+      duration: 500,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    }).start()
+  }, [animFinished])
+
+  useEffect(() => {
+    anim()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
@@ -114,6 +159,20 @@ const NotHotspotOwnerErrorScreen = () => {
             <Follow color={color} />
           </DebouncedTouchableOpacityBox>
         </Box>
+        <AnimatedBox
+          alignItems="flex-end"
+          paddingVertical="m"
+          height={18}
+          style={[
+            {
+              transform: [{ translateY: slideUpAnimRef.current }],
+              opacity: opacityAnim.current,
+            },
+            styles.arrow,
+          ]}
+        >
+          {!following && <UpArrow />}
+        </AnimatedBox>
       </Box>
       <Box>
         <Text
@@ -139,4 +198,5 @@ export default NotHotspotOwnerErrorScreen
 
 const styles = StyleSheet.create({
   ownedHotspotBox: { backgroundColor: '#262a4b' },
+  arrow: { paddingHorizontal: 26 },
 })
