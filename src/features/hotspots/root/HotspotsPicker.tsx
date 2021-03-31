@@ -7,6 +7,7 @@ import NearestHotspot from '@assets/images/nearestHotspot.svg'
 import OfflineHotspot from '@assets/images/offlineHotspot.svg'
 import FollowedHotspot from '@assets/images/follow.svg'
 import TopHotspot from '@assets/images/topHotspot.svg'
+import { useNavigation } from '@react-navigation/native'
 import Box from '../../../components/Box'
 import hotspotsSlice, {
   HotspotSort,
@@ -24,6 +25,7 @@ const HotspotsPicker = () => {
   const { requestLocationPermission } = usePermissionManager()
   const order = useSelector((state: RootState) => state.hotspots.order)
   const [currentLocation, setCurrentLocation] = useState<LocationCoords>()
+  const navigation = useNavigation()
 
   const checkLocationPermissions = useCallback(async () => {
     const enabled = await requestLocationPermission()
@@ -54,6 +56,12 @@ const HotspotsPicker = () => {
   useEffect(() => {
     dispatch(hotspotsSlice.actions.changeFilterData(currentLocation))
   }, [currentLocation, dispatch, order])
+
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      dispatch(hotspotsSlice.actions.changeFilterData(currentLocation))
+    })
+  }, [currentLocation, dispatch, navigation])
 
   const data: HeliumActionSheetItemType[] = useMemo(
     () => [

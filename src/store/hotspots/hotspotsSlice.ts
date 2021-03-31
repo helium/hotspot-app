@@ -9,6 +9,7 @@ import {
 } from '../../utils/appDataClient'
 import { distance, LocationCoords } from '../../utils/location'
 import { getWallet, deleteWallet, postWallet } from '../../utils/walletClient'
+import * as Logger from '../../utils/logger'
 
 export enum HotspotSort {
   New = 'new',
@@ -73,13 +74,17 @@ const hotspotSorters: Record<HotspotSort, HotspotSorter> = {
 export const fetchHotspotsData = createAsyncThunk(
   'hotspots/fetchRewards',
   async () => {
-    const [hotspots, followedHotspots]: [
+    const allHotspots = await Promise.all(
+      [getHotspots(), getWallet('hotspots/follow', null, true)].map((p) =>
+        p.catch((e) => {
+          Logger.error(e)
+        }),
+      ),
+    )
+    const [hotspots = [], followedHotspots = []]: [
       Hotspot[],
       Hotspot[],
-    ] = await Promise.all([
-      getHotspots(),
-      getWallet('hotspots/follow', null, true),
-    ])
+    ] = allHotspots as [Hotspot[], Hotspot[]]
 
     let total = new Balance(0, CurrencyType.networkToken)
 
@@ -91,14 +96,32 @@ export const fetchHotspotsData = createAsyncThunk(
 
     const allAddresses = [...unOwnedAddresses, ...ownedAddresses]
 
-    const unOwnedHotspots = await Promise.all(
-      unOwnedAddresses.map((a) => getHotspotDetails(a)),
-    )
+    let unOwnedHotspots: Hotspot[] = []
+    unOwnedHotspots = (
+      await Promise.all(
+        unOwnedAddresses
+          .map((a) => getHotspotDetails(a))
+          .map((p) =>
+            p.catch((e) => {
+              Logger.error(e)
+            }),
+          ),
+      )
+    ).filter((h) => h !== undefined) as Hotspot[]
 
     const rewards: Record<string, Sum> = {}
-    const results = await Promise.all(
-      allAddresses.map((address) => getHotspotRewardsSum(address, 1)),
-    )
+    const results = (
+      await Promise.all(
+        allAddresses
+          .map((address) => getHotspotRewardsSum(address, 1))
+          .map((p) =>
+            p.catch((e) => {
+              Logger.error(e)
+            }),
+          ),
+      )
+    ).filter((a) => a !== undefined) as Sum[]
+
     results.forEach((reward, i) => {
       const address = allAddresses[i]
       rewards[address] = reward
