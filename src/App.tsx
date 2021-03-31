@@ -130,15 +130,19 @@ const App = () => {
   useEffect(() => {
     if (!isRestored) {
       dispatch(restoreUser())
-    } else if (
-      prevAppStateStatus === 'background' &&
-      appStateStatus === 'active'
-    ) {
-      // update when app comes into foreground
+    } else {
       dispatch(fetchBlockHeight())
       dispatch(fetchInitialData())
     }
-  }, [dispatch, isRestored, appStateStatus, prevAppStateStatus])
+  }, [dispatch, isRestored])
+
+  // update initial data when app comes into foreground from background
+  useEffect(() => {
+    if (prevAppStateStatus === 'background' && appStateStatus === 'active') {
+      dispatch(fetchBlockHeight())
+      dispatch(fetchInitialData())
+    }
+  }, [dispatch, appStateStatus, prevAppStateStatus])
 
   // hide splash screen
   useAsync(async () => {
