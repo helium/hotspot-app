@@ -15,19 +15,22 @@ import { RootState } from '../../../store/rootReducer'
 import * as Logger from '../../../utils/logger'
 import useAlert from '../../../utils/useAlert'
 import { HotspotErrorCode } from '../../../utils/useHotspot'
+import { assertLocationTxn } from '../../../utils/assertLocationUtils'
+import useSubmitTxn from '../../../hooks/useSubmitTxn'
 
 const HotspotTxnsProgressScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<RootNavigationProp>()
   const [finished, setFinished] = useState(false)
-  const hotspotCoords = useSelector(
-    (state: RootState) => state.hotspotOnboarding.hotspotCoords,
+  const { hotspotCoords, gain, elevation } = useSelector(
+    (state: RootState) => state.hotspotOnboarding,
   )
   const connectedHotspot = useSelector(
     (state: RootState) => state.connectedHotspot,
   )
   const { showOKAlert } = useAlert()
-  const { addGatewayTxn, assertLocationTxn } = useConnectedHotspotContext()
+  const { addGatewayTxn } = useConnectedHotspotContext()
+  const submitTxn = useSubmitTxn()
 
   const handleError = async (
     error: false | Error | string,
@@ -90,13 +93,22 @@ const HotspotTxnsProgressScreen = () => {
     if (hotspotCoords) {
       const [lng, lat] = hotspotCoords
       try {
-        const assertLocTxnResponse = await assertLocationTxn(lat, lng)
-        if (assertLocTxnResponse === true) {
+        const assertLocTxnResponse = await assertLocationTxn(
+          connectedHotspot.onboardingAddress,
+          lat,
+          lng,
+          gain,
+          elevation,
+          connectedHotspot.details?.nonce,
+          connectedHotspot.onboardingRecord,
+        )
+        if (assertLocTxnResponse) {
+          await submitTxn(assertLocTxnResponse)
           setFinished(true)
           return
         }
 
-        handleError(assertLocTxnResponse, 'assert_location')
+        handleError(false, 'assert_location')
       } catch (error) {
         handleError(error, 'assert_location')
         Logger.error(error)

@@ -3,7 +3,7 @@ import Balance, { CurrencyType } from '@helium/currency'
 import React, { memo, useCallback, useEffect, useState } from 'react'
 import { useAsync } from 'react-async-hook'
 import { Hotspot } from '@helium/http'
-import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
+import { useSelector } from 'react-redux'
 import animateTransition from '../../../utils/animateTransition'
 import ReassertLocationFee from './ReassertLocationFee'
 import ReassertLocationUpdate from './ReassertLocationUpdate'
@@ -11,6 +11,9 @@ import { useHotspotSettingsContext } from './HotspotSettingsProvider'
 import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
 import ReassertAddressSearch from './ReassertAddressSearch'
 import { PlaceGeography } from '../../../utils/googlePlaces'
+import { loadLocationFeeData } from '../../../utils/assertLocationUtils'
+import { RootState } from '../../../store/rootReducer'
+import { getOnboardingRecord } from '../../../utils/stakingClient'
 
 export type Coords = { latitude: number; longitude: number }
 export type ReassertLocationState = 'fee' | 'update' | 'confirm' | 'search'
@@ -31,15 +34,24 @@ type Props = {
   onStateChange: (state: ReassertLocationState) => void
 }
 const ReassertLocation = ({ hotspot, onFinished, onStateChange }: Props) => {
+  const account = useSelector((state: RootState) => state.account.account)
   const [state, setState] = useState<ReassertLocationState>('fee')
   const [updatedLocation, setUpdatedLocation] = useState<Coords | undefined>()
   const [locationName, setLocationName] = useState<string>()
 
-  // TODO: Move & Fix
-  const { loadLocationFeeData } = useConnectedHotspotContext()
+  const { result: onboardingRecord } = useAsync(
+    () => getOnboardingRecord(hotspot.address),
+    [hotspot.address],
+  )
+
   const { result: feeData = DEFAULT_FEE_DATA } = useAsync(
-    loadLocationFeeData,
-    [],
+    () =>
+      loadLocationFeeData(
+        hotspot.nonce,
+        account?.balance?.integerBalance,
+        onboardingRecord,
+      ),
+    [hotspot.nonce, account?.balance?.integerBalance, onboardingRecord],
   )
 
   const handleBack = useCallback(() => {

@@ -11,20 +11,33 @@ import ImageBox from '../../../components/ImageBox'
 import Button from '../../../components/Button'
 import Map from '../../../components/Map'
 import Text from '../../../components/Text'
-import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import { RootState } from '../../../store/rootReducer'
 import * as Logger from '../../../utils/logger'
 import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
+import { loadLocationFeeData } from '../../../utils/assertLocationUtils'
 
 const HotspotSetupConfirmLocationScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
-  const { loadLocationFeeData } = useConnectedHotspotContext()
   const account = useSelector((state: RootState) => state.account.account)
+  const onboardingRecord = useSelector(
+    (state: RootState) => state.connectedHotspot.onboardingRecord,
+  )
+  const connectedHotspotDetails = useSelector(
+    (state: RootState) => state.connectedHotspot.details,
+  )
   const { hotspotCoords, locationName, gain, elevation } = useSelector(
     (state: RootState) => state.hotspotOnboarding,
   )
-  const { loading, result, error } = useAsync(loadLocationFeeData, [])
+  const { loading, result, error } = useAsync(
+    () =>
+      loadLocationFeeData(
+        connectedHotspotDetails?.nonce || 0,
+        account?.balance?.integerBalance || 0,
+        onboardingRecord,
+      ),
+    [],
+  )
 
   useEffect(() => {
     if (error) {

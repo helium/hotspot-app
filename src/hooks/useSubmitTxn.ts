@@ -10,6 +10,7 @@ import PendingTransaction from '@helium/http/build/models/PendingTransaction'
 import {
   AddGatewayV1,
   AssertLocationV1,
+  AssertLocationV2,
   PaymentV2,
   TokenBurnV1,
   TransferHotspotV1,
@@ -24,7 +25,7 @@ import { postWallet } from '../utils/walletClient'
 type SignableTransaction =
   | PaymentV2
   | AddGatewayV1
-  | AssertLocationV1
+  | AssertLocationV2
   | TokenBurnV1
   | TransferHotspotV1
 
