@@ -76,6 +76,9 @@ const HotspotsView = ({ ownedHotspots, startOnMap, location }: Props) => {
   const { witnesses, loading } = useSelector(
     (state: RootState) => state.hotspotDetails,
   )
+  const locationBlocked = useSelector(
+    (state: RootState) => state.location.locationBlocked,
+  )
   const networkHotspots = useSelector(
     (state: RootState) => state.networkHotspots.networkHotspots,
     isEqual,
@@ -328,10 +331,15 @@ const HotspotsView = ({ ownedHotspots, startOnMap, location }: Props) => {
         onDismiss={handleDismissList}
         animatedIndex={animatedListPosition}
       >
+        {/* TODO: FIGURE OUT WHY EMPTY LIST FLASHES. Must be some kind of a loading delay now with more data coming in */}
         {hasHotspots ? (
           <HotspotsList onSelectHotspot={handlePresentDetails} />
         ) : (
-          <HotspotsEmpty onOpenExplorer={dismissList} lightTheme />
+          <HotspotsEmpty
+            onOpenExplorer={dismissList}
+            lightTheme
+            locationBlocked={locationBlocked}
+          />
         )}
       </BottomSheetModal>
 

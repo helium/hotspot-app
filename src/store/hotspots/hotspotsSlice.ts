@@ -9,6 +9,7 @@ import {
 } from '../../utils/appDataClient'
 import { distance, LocationCoords } from '../../utils/location'
 import { getWallet, deleteWallet, postWallet } from '../../utils/walletClient'
+import * as Logger from '../../utils/logger'
 
 export enum HotspotSort {
   New = 'new',
@@ -90,12 +91,29 @@ export const fetchRewards = createAsyncThunk(
       (fa) => !ownedAddresses.includes(fa),
     )
 
-    const unOwnedResults = await Promise.all(
-      unOwnedAddresses.map((address) => getHotspotRewardsSum(address, 1)),
-    )
-    const ownedResults = await Promise.all(
-      ownedAddresses.map((address) => getHotspotRewardsSum(address, 1)),
-    )
+    const unOwnedResults = (
+      await Promise.all(
+        unOwnedAddresses
+          .map((address) => getHotspotRewardsSum(address, 1))
+          .map((p) =>
+            p.catch((e) => {
+              Logger.error(e)
+            }),
+          ),
+      )
+    ).filter((a) => a !== undefined) as Sum[]
+
+    const ownedResults = (
+      await Promise.all(
+        ownedAddresses
+          .map((address) => getHotspotRewardsSum(address, 1))
+          .map((p) =>
+            p.catch((e) => {
+              Logger.error(e)
+            }),
+          ),
+      )
+    ).filter((a) => a !== undefined) as Sum[]
 
     const rewards: Record<string, Sum> = {}
     ownedResults.forEach((reward, i) => {
@@ -131,9 +149,18 @@ export const fetchFollowedHotspotsFromBlock = createAsyncThunk(
       (fa) => !ownedAddresses.includes(fa),
     )
 
-    const unOwnedHotspots = await Promise.all(
-      unOwnedAddresses.map((a) => getHotspotDetails(a)),
-    )
+    let unOwnedHotspots: Hotspot[] = []
+    unOwnedHotspots = (
+      await Promise.all(
+        unOwnedAddresses
+          .map((a) => getHotspotDetails(a))
+          .map((p) =>
+            p.catch((e) => {
+              Logger.error(e)
+            }),
+          ),
+      )
+    ).filter((h) => h !== undefined) as Hotspot[]
 
     // Followed hotspots come from the wallet api
     // Replace followed hotspots with their blockchain equivalent
@@ -156,13 +183,17 @@ export const fetchFollowedHotspotsFromBlock = createAsyncThunk(
 export const fetchHotspotsData = createAsyncThunk(
   'hotspots/fetchHotspotsData',
   async () => {
-    const [hotspots, followedHotspots]: [
+    const allHotspots = await Promise.all(
+      [getHotspots(), getWallet('hotspots/follow', null, true)].map((p) =>
+        p.catch((e) => {
+          Logger.error(e)
+        }),
+      ),
+    )
+    const [hotspots = [], followedHotspots = []]: [
       Hotspot[],
       Hotspot[],
-    ] = await Promise.all([
-      getHotspots(),
-      getWallet('hotspots/follow', null, true),
-    ])
+    ] = allHotspots as [Hotspot[], Hotspot[]]
 
     return { hotspots, followedHotspots }
   },

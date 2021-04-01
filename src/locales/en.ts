@@ -412,9 +412,12 @@ export default {
       subtitle_2: 'Update your location later from settings.',
     },
     not_owner: {
-      title: 'Unable to proceed with setup',
-      subtitle_1: 'Hotspot belongs to another account.',
-      subtitle_2: "If you're a Host updating Wi-Fi, you may exit setup now.",
+      title: 'This Hotspot already has an owner.',
+      subtitle_1: 'Perhaps you’re hosting it for\nsomeone else?',
+      subtitle_2:
+        'Following a Hotspot allows you to monitor a Hotspot within the app when you don’t own it.',
+      contact_manufacturer:
+        'If you think you are the Hotspot Owner (i.e. you bought it) contact the Hotspot manufacturer.',
     },
     owned_hotspot: {
       title: 'You already own this Hotspot',
