@@ -4,11 +4,12 @@ import { calculateAssertLocFee } from './fees'
 import { makeAssertLocTxn } from './transactions'
 import { getAddress, getCurrentOraclePrice } from './appDataClient'
 import { getStakingSignedTransaction, OnboardingRecord } from './stakingClient'
+import { getH3Location } from './h3Utils'
 
 export const assertLocationTxn = async (
   gateway: string | undefined,
-  lat: number,
-  lng: number,
+  lat: number | undefined,
+  lng: number | undefined,
   gain = 1.2,
   elevation = 0,
   nonce = 0,
@@ -16,14 +17,14 @@ export const assertLocationTxn = async (
 ) => {
   const isFree = await hasFreeLocationAssert(nonce, onboardingRecord)
   const owner = await getAddress()
-  const payer = isFree ? onboardingRecord?.maker.address : '' // TODO: should the payer be the owner?
+  const payer = isFree ? onboardingRecord?.maker.address : await getAddress()
 
-  if (!owner || payer === undefined || !gateway) {
+  if (!owner || !payer || !gateway || !lat || !lng) {
     return undefined
   }
 
   const stakingFee = Transaction.stakingFeeTxnAssertLocationV1
-  const location = '' // TODO: need h3 location?
+  const location = getH3Location(lat, lng)
 
   const txn = await makeAssertLocTxn(
     owner,

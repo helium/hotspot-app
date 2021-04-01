@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Hotspot } from '@helium/http'
 import { useTranslation } from 'react-i18next'
+import { Alert } from 'react-native'
 import Text from '../../../../components/Text'
 import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
 import Box from '../../../../components/Box'
 import Button from '../../../../components/Button'
+import * as Logger from '../../../../utils/logger'
 import HotspotConfigurationPicker, {
   Antenna,
   Antennas,
@@ -17,6 +19,9 @@ import ReassertLocation, {
 import UpdateHotspotHeader from './UpdateHotspotHeader'
 import { useHotspotSettingsContext } from '../HotspotSettingsProvider'
 import HotspotLocationPreview from './HotspotLocationPreview'
+import { assertLocationTxn } from '../../../../utils/assertLocationUtils'
+import { getOnboardingRecord } from '../../../../utils/stakingClient'
+import useSubmitTxn from '../../../../hooks/useSubmitTxn'
 
 type Props = {
   onClose: () => void
@@ -27,6 +32,7 @@ type State = 'antenna' | 'location' | 'confirm'
 
 const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
   const { t } = useTranslation()
+  const submitTxn = useSubmitTxn()
   const [state, setState] = useState<State>('antenna')
 
   // TODO: Load current antenna data from API
@@ -90,6 +96,36 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
       setState('confirm')
     } else {
       onClose()
+    }
+  }
+
+  const onSubmit = async () => {
+    try {
+      const onboardingRecord = await getOnboardingRecord(hotspot.address)
+      const txn = await assertLocationTxn(
+        hotspot.address,
+        location?.latitude || hotspot.lat,
+        location?.longitude || hotspot.lng,
+        gain,
+        elevation,
+        hotspot.nonce,
+        onboardingRecord,
+      )
+      if (txn) {
+        await submitTxn(txn)
+      } else {
+        Logger.error(new Error('Assert failed with null txn'))
+        Alert.alert(
+          t('generic.error'),
+          t('hotspot_setup.add_hotspot.assert_loc_error_body'),
+        )
+      }
+    } catch (error) {
+      Logger.error(error)
+      Alert.alert(
+        t('generic.error'),
+        t('hotspot_setup.add_hotspot.assert_loc_error_body'),
+      )
     }
   }
 
@@ -190,7 +226,7 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
         title={t('generic.submit')}
         mode="contained"
         variant="primary"
-        onPress={onConfirm}
+        onPress={onSubmit}
       />
     </Box>
   )
