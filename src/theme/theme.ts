@@ -29,6 +29,7 @@ const palette = {
   grayText: '#667394',
   grayDarkText: '#515686',
   grayLightText: '#A7AACD',
+  grayPurple: '#E3E5F8',
 
   redMain: '#F97570',
   redMedium: '#FF6666',
@@ -59,6 +60,8 @@ const palette = {
   yellow: '#FFCB46',
   gold: '#FFC769',
   gray: '#687A8C',
+
+  followPurple: '#BD7AFF',
 }
 
 export const Font = {

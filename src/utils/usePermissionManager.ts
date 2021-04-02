@@ -1,4 +1,4 @@
-import { LOCATION, getAsync, askAsync, PermissionType } from 'expo-permissions'
+import { LOCATION, askAsync, PermissionType } from 'expo-permissions'
 import { useAppDispatch } from '../store/store'
 import appSlice from '../store/user/appSlice'
 import useAlert from './useAlert'
@@ -9,20 +9,12 @@ const usePermissionManager = () => {
 
   const requestPermission = async (type: PermissionType) => {
     dispatch(appSlice.actions.requestingPermission(true))
-    const { status } = await askAsync(type)
+    const response = await askAsync(type)
     dispatch(appSlice.actions.requestingPermission(false))
-    return status === 'granted'
-  }
-
-  const hasLocationPermission = async () => {
-    const perms = await getAsync(LOCATION)
-    return perms.status === 'granted'
+    return response
   }
 
   const requestLocationPermission = async () => {
-    const hasPermission = await hasLocationPermission()
-    if (hasPermission) return true
-
     const decision = await showOKCancelAlert({
       titleKey: 'permissions.location.title',
       messageKey: 'permissions.location.message',
@@ -32,6 +24,6 @@ const usePermissionManager = () => {
     return requestPermission(LOCATION)
   }
 
-  return { requestLocationPermission, hasLocationPermission }
+  return { requestLocationPermission, requestPermission }
 }
 export default usePermissionManager

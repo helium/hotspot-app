@@ -7,7 +7,6 @@ import {
   setSecureItem,
   signOut,
 } from '../../utils/secureAccount'
-import { getCurrentPosition, LocationCoords } from '../../utils/location'
 import { Intervals } from '../../features/moreTab/more/useAuthIntervals'
 
 export type AppState = {
@@ -22,8 +21,6 @@ export type AppState = {
   lastIdle: number | null
   isLocked: boolean
   isRequestingPermission: boolean
-  currentLocation?: LocationCoords
-  isLoadingLocation: boolean
   appStateStatus: AppStateStatus
 }
 const initialState: AppState = {
@@ -38,7 +35,6 @@ const initialState: AppState = {
   lastIdle: null,
   isLocked: false,
   isRequestingPermission: false,
-  isLoadingLocation: false,
   appStateStatus: 'unknown',
 }
 
@@ -79,10 +75,6 @@ export const restoreUser = createAsyncThunk<Restore>(
       convertHntToCurrency: vals[5],
     }
   },
-)
-
-export const getLocation = createAsyncThunk('app/location', async () =>
-  getCurrentPosition(),
 )
 
 // This slice contains data related to the state of the app
@@ -152,16 +144,6 @@ const appSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(restoreUser.fulfilled, (state, { payload }) => {
       return { ...state, ...payload, isRestored: true }
-    })
-    builder.addCase(getLocation.pending, (state) => {
-      state.isLoadingLocation = true
-    })
-    builder.addCase(getLocation.rejected, (state) => {
-      state.isLoadingLocation = false
-    })
-    builder.addCase(getLocation.fulfilled, (state, { payload }) => {
-      state.currentLocation = payload
-      state.isLoadingLocation = false
     })
   },
 })

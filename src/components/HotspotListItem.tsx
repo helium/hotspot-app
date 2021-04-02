@@ -95,7 +95,7 @@ const HotspotListItem = ({
               </Text>
             </Box>
             <Text variant="body3Light" color="blueGray" marginTop="s">
-              {hotspot.location
+              {hotspot.geocode
                 ? `${hotspot.geocode?.longStreet}, ${hotspot.geocode?.longCity}, ${hotspot.geocode?.shortCountry}`
                 : t('hotspot_details.no_location_title')}
             </Text>

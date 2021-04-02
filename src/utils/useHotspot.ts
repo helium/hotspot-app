@@ -24,7 +24,7 @@ import { makeAddGatewayTxn } from './transactions'
 import { calculateAddGatewayFee } from './fees'
 import connectedHotspotSlice, {
   AllHotspotDetails,
-  fetchHotspotDetails,
+  fetchConnectedHotspotDetails,
   HotspotStatus,
 } from '../store/connectedHotspot/connectedHotspotSlice'
 import { useAppDispatch } from '../store/store'
@@ -153,7 +153,7 @@ const useHotspot = () => {
     }
 
     Logger.breadcrumb('connectAndConfigHotspot - received details', details)
-    const response = await dispatch(fetchHotspotDetails(details))
+    const response = await dispatch(fetchConnectedHotspotDetails(details))
     const payload = response.payload as AllHotspotDetails
 
     await updateHotspotStatus(payload?.hotspot)

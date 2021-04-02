@@ -592,6 +592,7 @@ export default {
         near: 'Nearest Hotspots',
         earn: 'Top Earning Hotspots',
         offline: 'Offline Hotspots',
+        followed: 'Followed Hotspots',
       },
     },
     empty: {
@@ -600,6 +601,7 @@ export default {
     list: {
       no_offline: 'NO OFFLINE HOTSPOTS',
       online: 'ONLINE HOTSPOTS',
+      no_results: 'No Results',
     },
   },
   permissions: {
