@@ -901,6 +901,7 @@ export default {
       result_time: 'Time of Results',
       searching: 'Searching',
       distance: '{{distance}} {{unit}} away',
+      added_to_favorites: 'Added to Favorites',
     },
     share: {
       subject: 'Discovery Results',

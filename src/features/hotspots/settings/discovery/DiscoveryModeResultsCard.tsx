@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useState } from 'react'
+import React, { memo, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Platform } from 'react-native'
 import { addMinutes } from 'date-fns/esm'
@@ -20,6 +20,7 @@ import DistancePinIco from '../../../../assets/images/distancePin.svg'
 import RewardScaleIco from '../../../../assets/images/rewardsScale.svg'
 import useShareDiscovery from './useShareDiscovery'
 import DateModule from '../../../../utils/DateModule'
+import FollowButton from '../../../../components/FollowButton'
 
 type LineItemType = { label: string; value: string }
 const LineItem = ({ label, value }: LineItemType) => (
@@ -57,6 +58,7 @@ const DiscoveryModeResultsCard = ({
   const { t } = useTranslation()
   const { shareResults } = useShareDiscovery(request)
   const [resultDateStr, setResultDateStr] = useState('')
+  const [newlyAdded, setNewlyAdded] = useState(false)
 
   useMemo(async () => {
     if (isPolling || !request) return
@@ -132,6 +134,18 @@ const DiscoveryModeResultsCard = ({
     }
   }, [isPolling])
 
+  const handleFollowChange = useCallback((following) => {
+    if (!following) return
+
+    animateTransition()
+    setNewlyAdded(true)
+
+    setTimeout(() => {
+      animateTransition()
+      setNewlyAdded(false)
+    }, 3000)
+  }, [])
+
   return (
     <Box
       position="absolute"
@@ -142,51 +156,90 @@ const DiscoveryModeResultsCard = ({
       marginHorizontal="ms"
     >
       {overlayDetails && (
-        <Box
-          marginBottom="s"
-          borderRadius="l"
-          overflow="hidden"
-          alignItems="center"
-          flexDirection="row"
-        >
-          <BlurBox
-            top={0}
-            left={0}
-            bottom={0}
-            right={0}
-            blurType={Platform.OS === 'android' ? 'dark' : 'light'}
-            opacity={0.6}
-            position="absolute"
-          />
-          <Box flex={1} marginHorizontal="l" marginVertical="m">
-            <Text variant="medium" fontSize={16} color="white" height={26.5}>
-              {overlayDetails.name}
-            </Text>
-            <Box flex={1} flexDirection="row" alignItems="center">
-              <RewardScaleIco />
+        <Box alignItems="center">
+          {newlyAdded && (
+            <Box
+              justifyContent="center"
+              backgroundColor="black"
+              minWidth={162}
+              borderRadius="round"
+              height={32}
+              marginBottom="ms"
+            >
               <Text
-                variant="regular"
-                fontSize={11}
-                width={48}
+                variant="medium"
+                fontSize={14}
                 color="white"
-                marginLeft="xs"
+                textAlign="center"
               >
-                {overlayDetails.rewardScale}
-              </Text>
-              <DistancePinIco />
-              <Text
-                variant="regular"
-                fontSize={11}
-                color="white"
-                marginLeft="xs"
-              >
-                {overlayDetails.distance}
+                {t('discovery.results.added_to_favorites')}
               </Text>
             </Box>
+          )}
+          <Box
+            marginBottom="s"
+            borderRadius="l"
+            overflow="hidden"
+            alignItems="center"
+            flexDirection="row"
+          >
+            <BlurBox
+              top={0}
+              left={0}
+              bottom={0}
+              right={0}
+              blurType={Platform.OS === 'android' ? 'dark' : 'light'}
+              opacity={0.6}
+              position="absolute"
+            />
+            <Box flex={1} marginBottom="m">
+              <Box
+                flex={1}
+                flexDirection="row"
+                alignItems="center"
+                marginBottom="n_m"
+              >
+                <FollowButton
+                  address={overlayDetails.address}
+                  padding="m"
+                  handleChange={handleFollowChange}
+                />
+                <Text variant="medium" fontSize={16} color="white">
+                  {overlayDetails.name}
+                </Text>
+              </Box>
+              <Box
+                flex={1}
+                flexDirection="row"
+                alignItems="center"
+                paddingTop="s"
+                paddingLeft="m"
+              >
+                <RewardScaleIco />
+                <Text
+                  variant="regular"
+                  fontSize={11}
+                  width={48}
+                  color="white"
+                  marginLeft="xs"
+                >
+                  {overlayDetails.rewardScale}
+                </Text>
+                <DistancePinIco />
+                <Text
+                  variant="regular"
+                  fontSize={11}
+                  color="white"
+                  marginLeft="xs"
+                >
+                  {overlayDetails.distance}
+                </Text>
+              </Box>
+            </Box>
+            <TouchableOpacityBox padding="m" onPress={hideOverlay}>
+              <Close height={22} width={22} color="white" opacity={0.6} />
+            </TouchableOpacityBox>
           </Box>
-          <TouchableOpacityBox padding="m" onPress={hideOverlay}>
-            <Close height={22} width={22} color="white" opacity={0.6} />
-          </TouchableOpacityBox>
         </Box>
       )}
       {isPolling && <DiscoveryModeSearching />}
