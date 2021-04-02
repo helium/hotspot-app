@@ -35,8 +35,8 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
 
   const checkLocation = async () => {
     if (Platform.OS === 'android') {
-      const hasPermission = await requestLocationPermission()
-      setLocationEnabled(hasPermission)
+      const response = await requestLocationPermission()
+      setLocationEnabled(response && response.granted)
     } else {
       setLocationEnabled(true)
     }

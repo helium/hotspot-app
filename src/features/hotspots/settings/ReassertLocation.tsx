@@ -9,7 +9,7 @@ import { isString } from 'lodash'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
-import { getLocation } from '../../../store/user/appSlice'
+import { getLocation } from '../../../store/location/locationSlice'
 import animateTransition from '../../../utils/animateTransition'
 import { reverseGeocode } from '../../../utils/location'
 import useAlert from '../../../utils/useAlert'
@@ -40,9 +40,9 @@ const ReassertLocation = ({ onFinished }: Props) => {
   >()
   const [updatedLocation, setUpdatedLocation] = useState<Coords | undefined>()
   const dispatch = useAppDispatch()
-  const {
-    app: { currentLocation },
-  } = useSelector((s: RootState) => s)
+  const currentLocation = useSelector(
+    (s: RootState) => s.location.currentLocation,
+  )
 
   const { loadLocationFeeData } = useConnectedHotspotContext()
 

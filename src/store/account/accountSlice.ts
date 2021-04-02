@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import { Account, Hotspot } from '@helium/http'
-import { getHotspots, getAccount } from '../../utils/appDataClient'
+import { Account } from '@helium/http'
+import { getAccount } from '../../utils/appDataClient'
 import { getWallet, postWallet } from '../../utils/walletClient'
 import { ChartData, ChartRange } from '../../components/BarChart/types'
 import { FilterType } from '../../features/wallet/root/walletTypes'
@@ -31,7 +31,6 @@ type ActivityChart = {
 }
 
 export type AccountState = {
-  hotspots: Hotspot[]
   notifications: Notification[]
   account?: Account
   fetchDataStatus: Loading
@@ -41,7 +40,6 @@ export type AccountState = {
 }
 
 const initialState: AccountState = {
-  hotspots: [],
   notifications: [],
   fetchDataStatus: 'idle',
   markNotificationStatus: 'idle',
@@ -54,7 +52,6 @@ const initialState: AccountState = {
 }
 
 type AccountData = {
-  hotspots: Hotspot[]
   account?: Account
   notifications: Notification[]
 }
@@ -63,16 +60,15 @@ export const fetchData = createAsyncThunk<AccountData>(
   'account/fetchData',
   async () => {
     const data = await Promise.all(
-      [getHotspots(), getAccount(), getWallet('notifications')].map((p) =>
+      [getAccount(), getWallet('notifications')].map((p) =>
         p.catch((e) => {
           console.log('fetchDataError:', e)
         }),
       ),
     )
     return {
-      hotspots: data[0] || [],
-      account: data[1],
-      notifications: data[2] || [],
+      account: data[0],
+      notifications: data[1] || [],
     }
   },
 )
@@ -121,7 +117,6 @@ const accountSlice = createSlice({
     builder.addCase(fetchData.fulfilled, (state, { payload }) => {
       state.fetchDataStatus = 'fulfilled'
       state.markNotificationStatus = 'fulfilled'
-      state.hotspots = payload.hotspots
       state.account = payload.account
       state.notifications = payload.notifications
     })

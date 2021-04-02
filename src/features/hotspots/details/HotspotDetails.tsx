@@ -14,7 +14,6 @@ import { getRewardChartData } from './RewardsHelper'
 import { useAppDispatch } from '../../../store/store'
 import { fetchHotspotDetails } from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import HexBadge from './HexBadge'
-import HotspotMoreMenuButton from './HotspotMoreMenuButton'
 import HotspotChecklist from '../checklist/HotspotChecklist'
 import Address from '../../../components/Address'
 
@@ -98,7 +97,6 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
           >
             {animalName(hotspot.address)}
           </Text>
-          <HotspotMoreMenuButton hotspot={hotspot} />
         </Box>
         <Box
           flexDirection="row"
