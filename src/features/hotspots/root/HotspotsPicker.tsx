@@ -68,6 +68,7 @@ const HotspotsPicker = () => {
     maybeGetLocation(false)
     return navigation.addListener('focus', () => {
       maybeGetLocation(false)
+      dispatch(hotspotsSlice.actions.changeFilterData(currentLocation))
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
