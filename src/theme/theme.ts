@@ -84,34 +84,47 @@ const textVariants = {
     lineHeight: 45.5,
     color: 'primaryText',
   },
+  h1s: {
+    // h1s stands for h1 small. TODO: Could rename all headings to fit this one in
+    fontFamily: Font.main.semiBold,
+    fontSize: 34,
+    lineHeight: 33,
+    color: 'primaryText',
+  },
   h2: {
     fontFamily: Font.main.semiBold,
     fontSize: 27,
+    lineHeight: 27,
     color: 'primaryText',
   },
   h3: {
     fontFamily: Font.main.semiBold,
     fontSize: 22,
+    lineHeight: 22,
     color: 'primaryText',
   },
   h4: {
     fontFamily: Font.main.semiBold,
     fontSize: 20,
+    lineHeight: 20,
     color: 'primaryText',
   },
   h5: {
     fontFamily: Font.main.semiBold,
     fontSize: 17,
+    lineHeight: 17,
     color: 'primaryText',
   },
   h6: {
     fontFamily: Font.main.semiBold,
     fontSize: 13,
+    lineHeight: 13,
     color: 'primaryText',
   },
   h7: {
     fontFamily: Font.main.semiBold,
     fontSize: 11,
+    lineHeight: 11,
     color: 'primaryText',
   },
   regular: {
@@ -136,8 +149,8 @@ const textVariants = {
   },
   subtitle: {
     fontFamily: Font.main.regular,
-    fontSize: 19,
-    lineHeight: 26,
+    fontSize: 20,
+    lineHeight: 22,
     color: 'purpleLight',
   },
   body1: {
