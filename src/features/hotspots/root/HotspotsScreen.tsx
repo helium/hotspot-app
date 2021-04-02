@@ -23,6 +23,9 @@ import { useAppDispatch } from '../../../store/store'
 
 const HotspotsScreen = () => {
   const hotspots = useSelector((state: RootState) => state.hotspots.hotspots)
+  const followedHotspots = useSelector(
+    (state: RootState) => state.hotspots.followedHotspots,
+  )
   const hotspotsLoaded = useSelector(
     (state: RootState) => state.hotspots.hotspotsLoaded,
   )
@@ -88,9 +91,10 @@ const HotspotsScreen = () => {
 
   const viewState = useMemo(() => {
     if (!hotspotsLoaded) return 'loading'
-    if (hotspots.length === 0 && !location) return 'empty'
+    if (hotspots.length === 0 && followedHotspots.length === 0 && !location)
+      return 'empty'
     return 'view'
-  }, [hotspots.length, hotspotsLoaded, location])
+  }, [followedHotspots.length, hotspots.length, hotspotsLoaded, location])
 
   return (
     <SafeAreaBox backgroundColor="primaryBackground" flex={1} edges={['top']}>
@@ -106,6 +110,7 @@ const HotspotsScreen = () => {
         {viewState === 'view' && (
           <HotspotsView
             ownedHotspots={hotspots}
+            followedHotspots={followedHotspots}
             startOnMap={startOnMap}
             location={coords}
           />

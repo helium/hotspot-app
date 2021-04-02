@@ -46,16 +46,21 @@ import HotspotDetailsHandle from '../details/HotspotDetailsHandle'
 
 type Props = {
   ownedHotspots?: Hotspot[]
+  followedHotspots?: Hotspot[]
   startOnMap?: boolean
   location?: number[]
 }
 
-const HotspotsView = ({ ownedHotspots, startOnMap, location }: Props) => {
+const HotspotsView = ({
+  ownedHotspots,
+  followedHotspots,
+  startOnMap,
+  location,
+}: Props) => {
   const navigation = useNavigation()
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const colors = useColors()
-  const hasHotspots = ownedHotspots && ownedHotspots.length > 0
 
   const [listIsDismissed, setListIsDismissed] = useState(!!startOnMap)
   const [detailsSnapIndex, setDetailsSnapIndex] = useState(startOnMap ? 0 : 1)
@@ -79,6 +84,14 @@ const HotspotsView = ({ ownedHotspots, startOnMap, location }: Props) => {
   const networkHotspots = useSelector(
     (state: RootState) => state.networkHotspots.networkHotspots,
     isEqual,
+  )
+  const locationBlocked = useSelector(
+    (state: RootState) => state.location.locationBlocked,
+  )
+
+  const hasHotspots = useMemo(
+    () => ownedHotspots?.length || followedHotspots?.length,
+    [followedHotspots?.length, ownedHotspots?.length],
   )
 
   const focusClosestHotspot = useCallback(() => {
@@ -331,7 +344,11 @@ const HotspotsView = ({ ownedHotspots, startOnMap, location }: Props) => {
         {hasHotspots ? (
           <HotspotsList onSelectHotspot={handlePresentDetails} />
         ) : (
-          <HotspotsEmpty onOpenExplorer={dismissList} lightTheme />
+          <HotspotsEmpty
+            onOpenExplorer={dismissList}
+            locationBlocked={locationBlocked}
+            lightTheme
+          />
         )}
       </BottomSheetModal>
 

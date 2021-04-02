@@ -18,7 +18,6 @@ const HotspotsList = ({
 }: {
   onSelectHotspot: (hotspot: Hotspot) => void
 }) => {
-  const hotspots = useSelector((state: RootState) => state.hotspots.hotspots)
   const loading = useSelector(
     (state: RootState) => state.hotspots.loadingOrderedHotspots,
   )
@@ -42,8 +41,8 @@ const HotspotsList = ({
   )
 
   const hasOfflineHotspot = useMemo(
-    () => hotspots.some((h: Hotspot) => h.status?.online !== 'online'),
-    [hotspots],
+    () => orderedHotspots.some((h: Hotspot) => h.status?.online !== 'online'),
+    [orderedHotspots],
   )
 
   const sections = useMemo(() => {
@@ -59,6 +58,7 @@ const HotspotsList = ({
   }, [hasOfflineHotspot, order, orderedHotspots])
 
   const renderHeader = useCallback(() => {
+    const hasHotspots = orderedHotspots && orderedHotspots.length > 0
     return (
       <Box
         paddingVertical="s"
@@ -67,7 +67,7 @@ const HotspotsList = ({
         backgroundColor="white"
       >
         <HotspotsPicker />
-        {order === HotspotSort.Offline && !hasOfflineHotspot ? (
+        {order === HotspotSort.Offline && !hasOfflineHotspot && hasHotspots && (
           <Box paddingHorizontal="l">
             <Text
               variant="body3Medium"
@@ -82,10 +82,17 @@ const HotspotsList = ({
               {t('hotspots.list.online')}
             </Text>
           </Box>
-        ) : null}
+        )}
+        {!hasHotspots && (
+          <Box paddingHorizontal="l">
+            <Text variant="body1" color="grayDark" padding="m">
+              {t('hotspots.list.no_results')}
+            </Text>
+          </Box>
+        )}
       </Box>
     )
-  }, [hasOfflineHotspot, t, order])
+  }, [order, hasOfflineHotspot, orderedHotspots, t])
 
   const renderItem = useCallback(
     ({ item }) => {

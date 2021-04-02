@@ -153,31 +153,76 @@ export const fetchFollowedHotspotsFromBlock = createAsyncThunk(
   },
 )
 
+// TODO: fix lat/lng coming as strings from the wallet api.
+const sanitizeWalletHotspots = (hotspots: WalletHotspot[]) => {
+  return hotspots.map((h) => ({
+    ...h,
+    lat: parseFloat(h.lat),
+    lng: parseFloat(h.lng),
+  }))
+}
+
+type WalletHotspot = Hotspot & { lat: string; lng: string }
 export const fetchHotspotsData = createAsyncThunk(
   'hotspots/fetchHotspotsData',
   async () => {
     const [hotspots, followedHotspots]: [
       Hotspot[],
-      Hotspot[],
+      WalletHotspot[],
     ] = await Promise.all([
       getHotspots(),
       getWallet('hotspots/follow', null, true),
     ])
 
-    return { hotspots, followedHotspots }
+    return {
+      hotspots,
+      followedHotspots: sanitizeWalletHotspots(followedHotspots),
+    }
   },
 )
 
-export const followHotspot = createAsyncThunk<Hotspot[], string>(
-  'hotspots/followHotspot',
-  async (hotspot_address) =>
-    postWallet(`hotspots/follow/${hotspot_address}`, null, true),
-)
+export const followHotspot = createAsyncThunk<
+  {
+    followed: Hotspot[]
+    blockHotspot: Hotspot | null
+    hotspotRewards: Sum | null
+    hotspotAddress: string
+  },
+  string
+>('hotspots/followHotspot', async (hotspotAddress) => {
+  const followed = await postWallet(
+    `hotspots/follow/${hotspotAddress}`,
+    null,
+    true,
+  )
+  let blockHotspot: Hotspot | null = null
+  try {
+    blockHotspot = await getHotspotDetails(hotspotAddress)
+  } catch (e) {}
+
+  let hotspotRewards: Sum | null = null
+  try {
+    hotspotRewards = await getHotspotRewardsSum(hotspotAddress, 1)
+  } catch (e) {}
+
+  return {
+    followed: sanitizeWalletHotspots(followed),
+    blockHotspot,
+    hotspotRewards,
+    hotspotAddress,
+  }
+})
 
 export const unfollowHotspot = createAsyncThunk<Hotspot[], string>(
   'hotspots/unfollowHotspot',
-  async (hotspot_address) =>
-    deleteWallet(`hotspots/follow/${hotspot_address}`, null, true),
+  async (hotspot_address) => {
+    const followed = await deleteWallet(
+      `hotspots/follow/${hotspot_address}`,
+      null,
+      true,
+    )
+    return sanitizeWalletHotspots(followed)
+  },
 )
 
 const hotspotsToObj = (hotspots: Hotspot[]) =>
@@ -244,14 +289,41 @@ const hotspotsSlice = createSlice({
     builder.addCase(fetchHotspotsData.rejected, (state, _action) => {
       state.loadingRewards = false
     })
-    builder.addCase(unfollowHotspot.fulfilled, (state, action) => {
-      state.followedHotspots = action.payload
-      state.followedHotspotsObj = hotspotsToObj(action.payload)
-    })
-    builder.addCase(followHotspot.fulfilled, (state, action) => {
-      state.followedHotspots = action.payload
-      state.followedHotspotsObj = hotspotsToObj(action.payload)
-    })
+    builder.addCase(
+      unfollowHotspot.fulfilled,
+      (state, { payload: followed }) => {
+        const nextFollowed = followed.map((walletFollowed) => {
+          const hotspot = state.followedHotspotsObj[walletFollowed.address]
+          return (hotspot as Hotspot) || walletFollowed
+        })
+
+        state.followedHotspots = nextFollowed
+        state.followedHotspotsObj = hotspotsToObj(nextFollowed)
+      },
+    )
+    builder.addCase(
+      followHotspot.fulfilled,
+      (
+        state,
+        { payload: { blockHotspot, followed, hotspotRewards, hotspotAddress } },
+      ) => {
+        const nextFollowed = followed.map((walletFollowed) => {
+          if (walletFollowed.address === blockHotspot?.address)
+            return blockHotspot
+          const hotspot = state.followedHotspotsObj[walletFollowed.address]
+          return (hotspot as Hotspot) || walletFollowed
+        })
+
+        state.followedHotspots = nextFollowed
+        state.followedHotspotsObj = hotspotsToObj(nextFollowed)
+
+        if (hotspotRewards) {
+          const rewards = state.rewards || {}
+          rewards[hotspotAddress] = hotspotRewards
+          state.rewards = rewards
+        }
+      },
+    )
   },
 })
 
