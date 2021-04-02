@@ -20,15 +20,10 @@ import { Animated, Easing, StyleProp } from 'react-native'
 import { omit } from 'lodash'
 import { Theme } from '../../../../theme/theme'
 import Box from '../../../../components/Box'
-import {
-  DiscoveryRequest,
-  DiscoveryResponse,
-  DISCOVERY_DURATION_MINUTES,
-} from '../../../../store/discovery/discoveryTypes'
+import { DiscoveryResponse } from '../../../../store/discovery/discoveryTypes'
 import { hotspotsToFeatures } from '../../../../utils/mapUtils'
 import { useColors } from '../../../../theme/themeHooks'
 import { NetworkHotspot } from '../../../../store/networkHotspots/networkHotspotsSlice'
-import sleep from '../../../../utils/sleep'
 import usePrevious from '../../../../utils/usePrevious'
 
 const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
