@@ -23,6 +23,7 @@ export const assertLocationTxn = async (
     return undefined
   }
 
+  const antennaGain = gain * 10
   const stakingFee = Transaction.stakingFeeTxnAssertLocationV1
   const location = getH3Location(lat, lng)
 
@@ -32,7 +33,7 @@ export const assertLocationTxn = async (
     payer,
     location,
     nonce,
-    gain,
+    antennaGain,
     elevation,
     stakingFee,
   )

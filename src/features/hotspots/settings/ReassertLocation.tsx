@@ -13,7 +13,7 @@ import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
 import ReassertAddressSearch from './ReassertAddressSearch'
 import { PlaceGeography } from '../../../utils/googlePlaces'
 import { loadLocationFeeData } from '../../../utils/assertLocationUtils'
-import { getOnboardingRecord } from '../../../utils/stakingClient'
+import { OnboardingRecord } from '../../../utils/stakingClient'
 
 export type Coords = { latitude: number; longitude: number }
 export type ReassertLocationState = 'fee' | 'update' | 'confirm' | 'search'
@@ -32,17 +32,18 @@ type Props = {
     locationName: string,
   ) => void
   onStateChange: (state: ReassertLocationState) => void
+  onboardingRecord?: OnboardingRecord
 }
-const ReassertLocation = ({ hotspot, onFinished, onStateChange }: Props) => {
+const ReassertLocation = ({
+  hotspot,
+  onFinished,
+  onStateChange,
+  onboardingRecord,
+}: Props) => {
   const account = useSelector((state: RootState) => state.account.account)
   const [state, setState] = useState<ReassertLocationState>('fee')
   const [updatedLocation, setUpdatedLocation] = useState<Coords | undefined>()
   const [locationName, setLocationName] = useState<string>()
-
-  const { result: onboardingRecord } = useAsync(
-    () => getOnboardingRecord(hotspot.address),
-    [hotspot.address],
-  )
 
   const { result: feeData = DEFAULT_FEE_DATA } = useAsync(
     () =>
