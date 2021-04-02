@@ -161,18 +161,18 @@ const DiscoveryModeResultsCard = ({
             <Box
               justifyContent="center"
               backgroundColor="black"
-              minWidth={162}
               borderRadius="round"
               height={32}
               marginBottom="ms"
             >
               <Text
                 variant="medium"
+                paddingHorizontal="ms"
                 fontSize={14}
                 color="white"
                 textAlign="center"
               >
-                {t('discovery.results.added_to_favorites')}
+                {t('discovery.results.added_to_followed')}
               </Text>
             </Box>
           )}
