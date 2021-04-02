@@ -72,21 +72,21 @@ export default {
         topBody: 'Hotspot은 근처 Hotspot의 Beacon을 수신합니다',
         bottomTitle: 'Beacon은 어떻게 작동하나요?',
         bottomBody:
-          'Beacon은 Hotspot이 전송하는 특수 패킷으로 다른 인접 Hotspot에서 수신할 수 있습니다.\n\n이러한 신호를 통해 네트워크는 서로 수신 범위 내에 있는 Hotspot을 확인할 수 있습니다. 이러한 인접한 Hotspot을 "감시"라고 하며 귀하의 Beacon을 수신하는 Hotspot이 감시 목록에 추가됩니다.',
+          'Beacon은 Hotspot이 전송하는 특수 패킷으로 다른 인접 Hotspot에서 수신할 수 있습니다.\n\n이러한 신호를 통해 네트워크는 서로 수신 범위 내에 있는 Hotspot을 확인할 수 있습니다. 이러한 인접한 Hotspot을 ‘감시‘라고 하며 귀하의 Beacon을 수신하는 Hotspot이 감시 목록에 추가됩니다.',
       },
       {
         topTitle: 'Beacon 수신',
         topBody: 'Hotspot은 근처 Hotspot의 Beacon을 수신합니다',
         bottomTitle: 'Beacon은 어떻게 작동하나요?',
         bottomBody:
-          'Beacon은 Hotspot이 전송하는 특수 패킷으로 다른 인접 Hotspot에서 수신할 수 있습니다.\n\n이러한 신호를 통해 네트워크는 서로 수신 범위 내에 있는 Hotspot을 확인할 수 있습니다. 이러한 인접한 Hotspot을 "감시"라고 하며 귀하의 Beacon을 수신하는 Hotspot이 감시 목록에 추가됩니다.',
+          'Beacon은 Hotspot이 전송하는 특수 패킷으로 다른 인접 Hotspot에서 수신할 수 있습니다.\n\n이러한 신호를 통해 네트워크는 서로 수신 범위 내에 있는 Hotspot을 확인할 수 있습니다. 이러한 인접한 Hotspot을 ‘감시‘라고 하며 귀하의 Beacon을 수신하는 Hotspot이 감시 목록에 추가됩니다.',
       },
       {
         topTitle: 'Beacon 수신',
         topBody: 'Hotspot은 근처 Hotspot의 Beacon을 수신합니다',
         bottomTitle: 'Beacon은 어떻게 작동하나요?',
         bottomBody:
-          'Beacon은 Hotspot이 전송하는 특수 패킷으로 다른 인접 Hotspot에서 수신할 수 있습니다.\n\n이러한 신호를 통해 네트워크는 서로 수신 범위 내에 있는 Hotspot을 확인할 수 있습니다. 이러한 인접한 Hotspot을 "감시"라고 하며 귀하의 Beacon을 수신하는 Hotspot이 감시 목록에 추가됩니다.',
+          'Beacon은 Hotspot이 전송하는 특수 패킷으로 다른 인접 Hotspot에서 수신할 수 있습니다.\n\n이러한 신호를 통해 네트워크는 서로 수신 범위 내에 있는 Hotspot을 확인할 수 있습니다. 이러한 인접한 Hotspot을 ‘감시‘라고 하며 귀하의 Beacon을 수신하는 Hotspot이 감시 목록에 추가됩니다.',
       },
     ],
     next: '가이드를 읽었음',
@@ -125,13 +125,23 @@ export default {
     forget: '잊어버림',
     error: '오류 발생',
     loading: '로드 중...',
+    copy: '복사',
+    address: '주소',
+    invalid_password: '암호가 올바르지 않음',
+    something_went_wrong: '문제가 발생했습니다',
+    hnt_to_currency: '{{currencyType}}. CoinGecko의 데이터',
+    search_location: '주소 또는 장소 검색',
   },
   hotspot_setup: {
     selection: {
       title: 'Hotspot\n선택.',
       subtitle: '어떤 종류의 Hotspot을\n추가하시겠어요?',
-      option_one: 'Helium\nHotspot',
-      option_two: 'RAK\nHotspot Miner',
+      helium: 'Helium Hotspot',
+      rak: 'RAK Hotspot Miner',
+      nebrain: 'Nebra Indoor Hotspot',
+      nebraout: 'Nebra Outdoor Hotspot',
+      bobcat: 'Bobcat Miner 300',
+      syncrobit: 'SyncroB.it Hotspot',
       third_party_header: '기타 Hotspot',
       helium_edition: 'Helium Network의 경우',
       fine_print:
@@ -166,25 +176,61 @@ export default {
     diagnostics: {
       title: '진단 도구',
       p_1:
-        '<b><white>Helium은 진단 지원을 통해 안전한 방법으로 Hotspot에서 발생하는 문제를 식별할 수 있습니다.</white></b>\n\nHelium은 개인 키에 대한 액세스 권한이 없으며 네트워크 내의 다른 장치를 제외하고 Hotspot에만 액세스할 수 있습니다.\n\n진단 지원을 선택 취소하려면 Hotspot을 구매할 때 사용한 이메일을 통해 <purple><b>support@helium.com</b></purple>으로 이메일을 보내주시기 바랍니다.',
+        '<b><white>Helium은 진단 지원을 통해 안전한 방법으로 Hotspot에서 발생하는 문제를 식별할 수 있습니다.</white></b>\n\nHelium은 개인 키에 대한 액세스 권한이 없으며 네트워크 내의 다른 기기를 제외하고 Hotspot에만 액세스할 수 있습니다.\n\n진단 지원을 선택 취소하려면 Hotspot을 구매할 때 사용한 이메일을 통해 <purple><b>support@helium.com</b></purple>으로 이메일을 보내주시기 바랍니다.',
+      nebra_p_1:
+        '<b><white>Nebra LTD는 진단 지원을 통해 안전한 방법으로 Hotspot에서 발생하는 문제를 식별할 수 있습니다.</white></b>\n\nNebra는 개인 키에 대한 액세스 권한이 없으며 네트워크 내의 다른 기기를 제외하고 Hotspot에만 액세스할 수 있습니다.\n\n진단 지원을 선택 취소하려면 Hotspot을 구매할 때 사용한 이메일을 통해 <purple><b>support@nebra.com</b></purple>으로 이메일을 보내주시기 바랍니다.',
+      bobcat_p_1:
+        '<b><white>Bobcat은 진단 지원을 통해 안전한 방법으로 Hotspot에서 발생하는 문제를 식별할 수 있습니다.</white></b>\n\nBobcat은 개인 키에 대한 액세스 권한이 없으며 네트워크 내의 다른 기기를 제외하고 Hotspot에만 액세스할 수 있습니다.\n\n진단 지원을 선택 취소하려면 Hotspot을 구매할 때 사용한 이메일을 통해 <purple><b>support@bobcatminer.com</b></purple>으로 이메일을 보내주시기 바랍니다.',
+      syncrobit_p_1:
+        '<b><white>SyncroB.it는 진단 지원을 통해 안전한 방법으로 Hotspot에서 발생하는 문제를 식별할 수 있습니다.</white></b>\n\nSyncroB.it는 개인 키에 대한 액세스 권한이 없으며 네트워크 내의 다른 기기를 제외하고 Hotspot에만 액세스할 수 있습니다.\n\n진단 지원을 선택 취소하려면 Hotspot을 구매할 때 사용한 이메일을 통해 <purple><b>support@syncrob.it</b></purple>로 이메일을 보내주시기 바랍니다.',
     },
     power: {
       title: '전원 켜기',
       next: '전원을 켰습니다',
-      subtitle_1: '안테나를 부착하고 제공된 전원 어댑터를 끼웁니다.',
-      rak_subtitle_1: '제공된 전원 어댑터를 창가 부근의 콘센트에 끼웁니다.',
-      subtitle_2: 'Hotspot이 부팅되고 준비되면 표시등이 녹색으로 바뀝니다.',
+      helium_subtitle_1: '안테나를 부착하고 제공된 전원 어댑터에 연결합니다.',
+      rak_subtitle_1: '제공된 전원 어댑터를 창가 부근의 콘센트에 연결합니다.',
+      nebrain_subtitle_1:
+        '안테나를 부착하고 창가 부근의 제공된 어댑터에 연결합니다.',
+      nebraout_subtitle_1: '안테나를 부착하고 적합한 전원에 연결합니다.',
+      bobcat_subtitle_1:
+        '제공된 전원 어댑터를 창가 부근의 콘센트에 연결하고 제공된 안테나를 Hotspot 뒷면에 나사로 고정합니다.',
+      syncrobit_subtitle_1: '안테나를 부착하고 기기를 연결합니다.',
+      helium_subtitle_2:
+        'Hotspot이 부팅되고 준비되면 표시등이 녹색으로 바뀝니다.',
       rak_subtitle_2:
         '전원이 켜지면 RAK Hotspot Miner에 빨간색 LED 표시등이 표시됩니다.',
+      nebrain_subtitle_2:
+        '전원이 켜지면 Nebra Indoor Hotspot에 초록색 LED 표시등이 표시됩니다.',
+      nebraout_subtitle_2:
+        '전원이 켜지면 Nebra Outdoor Hotspot에 여러 개의 표시등이 표시됩니다.',
+      bobcat_subtitle_2:
+        '표시등이 빨간색에서 노란색으로 바뀌면 Hotspot이 준비된 것입니다.',
+      syncrobit_subtitle_2:
+        '전원이 켜지면 SyncroB.it Hotspot에 LED 바가 파란색으로 표시됩니다.',
     },
     pair: {
       title: 'Bluetooth',
-      subtitle_1:
+      helium_subtitle_1:
         'Hotspot에서 검은색 버튼을 누르세요. 표시등이 파란색으로 바뀝니다.',
       rak_subtitle_1: 'RAK Hotspot Miner에는 페어링 버튼이 없습니다.',
-      subtitle_2: '계속하기 전에 휴대전화의 Bluetooth가 켜져 있는지 확인하세요',
+      nebrain_subtitle_1:
+        '표시등이 깜빡거릴 때까지 Nebra Indoor Hotspot의 뒷면에 있는 버튼을 누르세요.',
+      nebraout_subtitle_1: 'Nebra Outdoor Hotspot에는 페어링 버튼이 없습니다.',
+      bobcat_subtitle_1:
+        '제공된 핀을 사용하여 Hotspot 뒷면의 BT 버튼을 5초 동안 누르세요.',
+      syncrobit_subtitle_1: 'SyncroB.it Hotspot에는 페어링 버튼이 없습니다.',
+      helium_subtitle_2:
+        '계속하기 전에 휴대전화의 Bluetooth가 켜져 있는지 확인하세요',
       rak_subtitle_2:
-        'RAK Hotspot Miner의 전원이 켜진 후 5분 동안 Bluetooth가 자동으로 활성화됩니다.\n\nHotspot이 완전히 부팅되는 데 최대 1분이 소요될 수 있습니다.\n\n다음을 눌러 스캔합니다.',
+        'RAK Hotspot Miner의 전원이 켜진 후 5분 동안 Bluetooth가 자동으로 활성화됩니다.\n\nHotspot이 완전히 부팅되는 데 최대 1분이 소요될 수 있습니다.',
+      nebrain_subtitle_2:
+        'LED가 천천히 깜박이면서 페어링할 준비가 된 것입니다.\n\n다음을 눌러 스캔합니다.',
+      nebraout_subtitle_2:
+        'Nebra Outdoor Hotspot의 전원이 켜진 후 10분 동안 Bluetooth가 자동으로 활성화됩니다.\n\nHotspot이 완전히 부팅되는 데 최대 1분이 소요될 수 있습니다.',
+      bobcat_subtitle_2:
+        '표시등이 노란색에서 파란색으로 바뀌면 Hotspot이 페어링할 준비가 된 것입니다.\n\n휴대전화의 Bluetooth가 켜져 있는지 확인하세요!',
+      syncrobit_subtitle_2:
+        'SyncroB.it Hotspot의 전원이 켜진 후 5분 동안 Bluetooth가 자동으로 활성화됩니다.\n\nHotspot이 완전히 부팅되는 데 최대 1분이 소요될 수 있습니다.',
       alert_no_permissions: {
         title: 'Bluetooth 승인',
         body:
@@ -230,6 +276,10 @@ export default {
       disconnect_help:
         '암호를 업데이트하거나 새 네트워크에 연결하려면 먼저 이전 네트워크를 삭제하세요.',
       disconnect: '네트워크 삭제',
+      not_found_title: 'Wi-Fi 네트워크를 찾을 수 없음',
+      not_found_desc:
+        'Hotspot이 부팅되고 사용 가능한 네트워크를 찾는 데 최대 3분이 소요될 수 있습니다.',
+      scan_networks: '네트워크 스캔',
     },
     disconnect_dialog: {
       title: '네트워크를 삭제하시겠어요?',
@@ -267,6 +317,14 @@ export default {
         'Hotspot은 자동으로 업데이트를 확인합니다. 이 작업은 약 10분 정도 걸릴 수 있습니다. 연결한 상태로 두고 나중에 다시 확인하세요.',
       next: '확인',
     },
+    onboarding_error: {
+      title: '온보딩 오류',
+      subtitle:
+        '온보딩 서버에서 Hotspot을 찾을 수 없습니다. 다음 단계는 Hotspot 제조업체에 문의하시기 바랍니다.',
+      next: '설정 종료',
+      disconnected:
+        'Hotspot 연결 중에 오류가 발생했습니다. 다시 시도해 주세요.',
+    },
     add_hotspot: {
       title: 'Hotspot 추가',
       subtitle:
@@ -287,6 +345,10 @@ export default {
       wait_error_title: '다시 시도해 주세요',
       wait_error_body:
         'Hotspot Miner가 시작을 기다리고 있습니다. 몇 분 후에 다시 시도해 주세요.',
+      add_hotspot_error_body:
+        'Hotspot 추가 트랜잭션을 구성하는 중에 오류가 발생했습니다. 다시 시도해 주세요.',
+      assert_loc_error_body:
+        '위치 확인 트랜잭션을 구성하는 중에 오류가 발생했습니다. 다시 시도해 주세요.',
     },
     enable_location: {
       title: 'Hotspot\n위치 설정',
@@ -296,7 +358,7 @@ export default {
       settings_p_1:
         'Hotspot 위치를 업데이트하려면 추가 위치 권한이 필요합니다.',
       settings_p_2:
-        '아래 버튼을 탭하면 설정으로 이동합니다. "Location(위치)"에서 "While using the App(앱을 사용하는 동안)"을 탭합니다.',
+        "아래 버튼을 탭하면 설정으로 이동합니다. '위치'에서 '앱을 사용하는 동안'을 탭합니다.",
       next: '권한 요청',
       cancel: '아니요, 나중에 설정하겠습니다',
     },
@@ -334,18 +396,35 @@ export default {
       alertMessage:
         '서버 요청 시간이 초과되어 현재 귀하의 Hotspot을 추가할 수 없습니다.\n\nsupport@helium.com에 문의하고 MAC 주소(%{mac})를 적어주시기 바랍니다.',
     },
+    skip_location: {
+      title: 'Hotspot 추가',
+      subtitle_1: '위치를 나중에 확인하기로 결정했습니다.',
+      subtitle_2: '향후 설정에서 위치를 업데이트하세요.',
+    },
+    not_owner: {
+      title: '설정을 계속 진행할 수 없음',
+      subtitle_1: 'Hotspot이 다른 계정에 속해 있습니다.',
+      subtitle_2:
+        'Wi-Fi를 업데이트하는 호스트인 경우, 지금 설정을 종료할 수 있습니다.',
+    },
+    owned_hotspot: {
+      title: '이 Hotspot을 이미 소유하고 있습니다',
+      subtitle_1: '이 Hotspot은 이미 온보딩된 것으로 보입니다.',
+      subtitle_2:
+        'Hotspot의 Wi-Fi 또는 위치를 업데이트하려면 Hotspot의 설정으로 이동하세요.',
+    },
   },
   account_import: {
     word_entry: {
       title: '복구 시드\n문구 입력',
       directions: '<b>{{ordinal}}</b> 단어 입력',
       placeholder: '{{ordinal}} 단어',
-      subtitle: '복구 시드 문구는 대소문자를 구분하지 않음',
+      subtitle: '복구 시드 문구는\n대소문자를 구분하지 않음',
     },
     confirm: {
-      title: '시드 문구 확인',
+      title: '시드 문구\n확인',
       subtitle:
-        '입력하신 12개의 단어는 다음과 같습니다. 필요한 경우 단어를 탭하여 업데이트할 수 있습니다.',
+        '입력하신 12개의 단어입니다. 수정이 필요한 경우 이 중 하나를 탭하세요.',
       next: '시드 문구 제출',
     },
     complete: {
@@ -420,13 +499,15 @@ export default {
     hotspot_label: 'Hotspot',
     last_activity: '마지막으로 보고된 활동: {{activity}}',
     label_error: '귀하의 계정에 충분한 HNT가 없습니다.',
+    stale_error:
+      'Hotspot이 마지막 {{blocks}} 블록에서 Beacon 또는 감시 활동이 없었습니다.',
     scan: {
       title: 'QR 코드 사용 방법',
       send: 'HNT 전송',
       send_description: 'Helium 주소를 빠르게 스캔하여 HNT를 전송합니다.',
       burn: 'HNT를 DC로 소진',
       burn_description:
-        '장치 네트워크 연결 비용을 지불하기 위해 HNT를 Data Credit으로 소진할 수 있습니다. Data Credit은 양도할 수 없습니다.',
+        '기기 네트워크 연결 비용을 지불하기 위해 HNT를 Data Credit으로 소진할 수 있습니다. Data Credit은 양도할 수 없습니다.',
       view: 'QR 코드 보기',
       view_description:
         'QR 코드를 공유하여 HNT를 예치하거나 다른 사람으로부터 전송받을 수 있습니다.',
@@ -463,7 +544,9 @@ export default {
         joinDiscord: 'Helium Discord 참여',
       },
       app: {
-        title: '계정',
+        title: '앱',
+        enableHapticFeedback: '햅틱 피드백 활성화',
+        convertHntToCurrency: 'HNT를 통화로 변환',
         language: '언어',
         signOut: '로그아웃',
         signOutAlert: {
@@ -480,30 +563,42 @@ export default {
     enter_current: '계속하려면 현재 PIN을 입력하세요',
   },
   hotspots: {
+    sort_by: 'Hotspot 정렬 기준',
     new: {
       title: '새 Hotspot 추가',
       subtitle:
         'Hotspot을 방금 추가했다면 잠시 기다려 주세요. 네트워크가 Hotspot을 전파하는 데 몇 분 정도 걸립니다.',
       setup: 'Hotspot 설정',
-      explorer: '글로벌 Hotspot 탐색기',
+      explorer: '내 주변의 Hotspot 보기',
     },
     owned: {
       title: '내 Hotspot',
+      title_no_hotspots: 'Hotspot',
       reward_summary:
         '지난 24시간 동안 귀하의 Hotspot이 {{hntAmount}}을(를) 채굴했습니다.',
       reward_summary_plural:
         '지난 24시간 동안 Hotspot {{count}}개가 {{hntAmount}}을(를) 채굴했습니다.',
       your_hotspots: '귀하의 Hotspot',
+      filter: {
+        new: '최신 Hotspot',
+        near: '가장 가까운 Hotspot',
+        earn: '가장 많이 채굴한 Hotspot',
+        offline: '오프라인 Hotspot',
+      },
     },
     empty: {
       body: '아직 Hotspot을 추가하거나 팔로우하지 않았습니다.',
+    },
+    list: {
+      no_offline: '오프라인 Hotspot 없음',
+      online: '온라인 Hotspot',
     },
   },
   permissions: {
     location: {
       title: '위치 권한',
       message:
-        'Helium 귀하의 위치에 대한 액세스가 필요합니다 Bluetooth 검색하고 위치 주장을 활성화합니다. 이 정보는 판매되거나 공유되지 않습니다.',
+        'Helium이 Bluetooth 검색을 위해 사용자의 위치에 액세스하고 위치 확인을 활성화해야 합니다. 이 정보는 절대 판매되거나 공유되지 않습니다.',
     },
   },
   time: {
@@ -534,6 +629,7 @@ export default {
     transferSell: 'Hotspot 전송(판매)',
     transferBuy: 'Hotspot 전송(구매)',
     view: '보기',
+    view_transactions: '트랜잭션 보기',
     filter: {
       all: '모든 활동',
       mining: '채굴 보상',
@@ -546,15 +642,22 @@ export default {
   hotspot_settings: {
     title: 'Hotspot 설정',
     pairing: {
-      title: 'Hotspot 페어링 필요',
-      subtitle:
-        'Helium Hotspot의 버튼을 누르거나 RAK Hotspot Miner의 전원을 껐다 켜세요.',
-      scan: '내 Hotspot 스캔',
+      title: 'Wi-Fi 업데이트 또는 진단 도구 실행',
+      subtitle: '계속하기 전에 페어링이 필요합니다.',
+      scan: '페어링',
     },
     transfer: {
       title: 'Hotspot 전송',
-      subtitle: 'Hotspot을 다른 Helium 지갑 계정에 전송합니다.',
+      subtitle: '다른 Helium 지갑으로 전송합니다.',
       begin: 'Hotspot 전송 시작',
+    },
+    update: {
+      title: 'Hotspot 업데이트',
+      subtitle: 'Hotspot 위치 또는 안테나 세부사항입니다.',
+    },
+    discovery: {
+      title: 'Discovery 모드',
+      subtitle: '이상적인 Hotspot 배치를 식별합니다.',
     },
     diagnostics: {
       title: '진단 보고서',
@@ -578,7 +681,7 @@ export default {
       last_challenged_help:
         '인접 Hotspot이 귀하의 Hotspot 위치를 확인할 수 없습니다. 대부분의 경우, 이는 무선 신호가 도달할 수 없는 영역에 안테나가 있기 때문입니다(건물로 차단됨, 안테나가 아래로 향함, 안테나가 실내에 위치함).',
       firmware: 'Hotspot 펌웨어',
-      hotspot_type: 'Hotspot 유형',
+      hotspot_type: 'Hotspot 제조사',
       app_version: '앱 버전',
       wifi_mac: 'Wi-Fi MAC',
       eth_mac: '이더넷 MAC',
@@ -626,7 +729,7 @@ export default {
     },
   },
   hotspot_details: {
-    title: 'Hotspot 세부 정보',
+    title: 'Hotspot 세부사항',
     owner: '{{address}}이(가) 소유함',
     owner_you: '사용자가 소유함',
     pass_rate: '통과 비율',
@@ -636,6 +739,7 @@ export default {
     challenge_sub_title: '(감시, challenger, 또는 challengee)',
     picker_title: '이전',
     picker_options: ['24시간', '7일', '14일', '30일'],
+    picker_prompt: '범위 선택',
     status_online: '온라인',
     status_offline: '주의 필요',
     options: {
@@ -643,6 +747,10 @@ export default {
       viewExplorer: '탐색기에서 보기',
       share: '공유',
     },
+    no_location_title: '확인된 위치 없음',
+    no_location_body: '시작하려면 Hotspot과 페어링하세요.',
+    percent_synced: '{{percent}}% 동기화됨',
+    starting_sync: '동기화 시작...',
   },
   transfer: {
     title: 'Hotspot 전송',
@@ -668,7 +776,7 @@ export default {
     fine_print: '구매자가 트랜잭션을 수락하고 완료하면 Hotspot이 전송됩니다.',
     notification_button: '트랜잭션 보기',
     cancel: {
-      button_title: '전송 취소',
+      button_title: '전송 보류. 취소하려면 탭하세요.',
       failed_alert_title: '전송을 취소할 수 없음',
       failed_alert_body: 'API에서 응답이 없습니다. 다시 시도해 주세요.',
       alert_title: 'Hotspot 전송 취소',
@@ -699,6 +807,7 @@ export default {
       data_credits: '패킷 전송',
       securities: 'Security Token',
     },
+    staking_fee_payer: '{{payer}}에 의해 결제됨',
   },
   checklist: {
     title: '체크리스트',
@@ -713,7 +822,7 @@ export default {
       title: '블록체인 동기화',
     },
     status: {
-      online: 'Hotspot이 인터넷에 연결되어 있습니다.',
+      online: 'Hotspot이 인터넷에 연결되었습니다.',
       offline:
         'Hotspot이 온라인 상태가 아닙니다. 동기화 및 채굴을 위해서는 Hotspot이 온라인 상태여야 합니다.',
       title: 'Hotspot 상태',
@@ -751,12 +860,46 @@ export default {
     data_transfer: {
       success: 'Hotspot이 최근 데이터 패킷을 전송했습니다.',
       fail:
-        'Hotspot이 자동으로 장치 데이터를 전송하고 HNT를 획득합니다. 이 Hotspot은 아직 데이터를 전송하지 않았습니다.',
+        'Hotspot이 자동으로 기기 데이터를 전송하고 HNT를 획득합니다. 이 Hotspot은 아직 데이터를 전송하지 않았습니다.',
       title: '데이터 전송',
     },
     auto: '자동',
     auto_hours: '몇 시간마다',
     complete: '완료',
     online: '온라인',
+  },
+  discovery: {
+    begin: {
+      title: 'Discovery 모드',
+      subtitle:
+        '짧은 시간 동안 라디오 패킷을 전송하여 어떤 Hotspot에서 사용자가 수신되는지 확인합니다.',
+      body:
+        'Discovery 모드는 현재 하루에 최대 5개 세션까지 무료로 사용할 수 있습니다.',
+      previous_sessions: '이전 세션',
+      last_30_days: '(지난 30일)',
+      start_session: '새 세션 시작',
+      no_sessions: '오늘은 세션이 종료되었습니다.\n내일 다시 시도하세요.',
+      responses: '응답 {{count}}개',
+      responses_plural: '응답 {{count}}개',
+      error: {
+        title: '오류 발생',
+        subtitle:
+          'Discovery 모드를 로드하는 중에 문제가 발생했습니다. 나중에 다시 시도해 주세요',
+      },
+    },
+    results: {
+      title: 'Discovery 모드 결과',
+      share: '결과 공유',
+      responded: '응답한 Hotspot',
+      elapsed_time: '경과 시간',
+      result_time: '결과 시간',
+      searching: '검색',
+      distance: '{{distance}}{{unit}} 떨어져 있음',
+    },
+    share: {
+      subject: 'Discovery 결과',
+      hotspot_name: 'Hotspot 이름',
+      packets_heard: '수신된 패킷',
+    },
   },
 }
