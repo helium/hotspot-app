@@ -4,7 +4,6 @@ import { useNavigation } from '@react-navigation/native'
 import { StyleSheet, Animated } from 'react-native'
 import { useSelector } from 'react-redux'
 import { startCase } from 'lodash'
-import Follow from '@assets/images/follow.svg'
 import UpArrow from '@assets/images/upArrow.svg'
 import { Easing } from 'react-native-reanimated'
 import BackScreen from '../../../components/BackScreen'
@@ -13,16 +12,12 @@ import Button from '../../../components/Button'
 import Text from '../../../components/Text'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 import { RootState } from '../../../store/rootReducer'
-import { DebouncedTouchableOpacityBox } from '../../../components/TouchableOpacityBox'
 import { useAppDispatch } from '../../../store/store'
 import { useColors } from '../../../theme/themeHooks'
-import {
-  fetchHotspotsData,
-  followHotspot,
-  unfollowHotspot,
-} from '../../../store/hotspots/hotspotsSlice'
+import { fetchHotspotsData } from '../../../store/hotspots/hotspotsSlice'
 import AnimatedBox from '../../../components/AnimatedBox'
 import sleep from '../../../utils/sleep'
+import FollowButton from '../../../components/FollowButton'
 
 const NotHotspotOwnerErrorScreen = () => {
   const { t } = useTranslation()
@@ -32,16 +27,16 @@ const NotHotspotOwnerErrorScreen = () => {
     (state: RootState) =>
       state.connectedHotspot.details || { name: '', address: '' },
   )
-  const { followPurple, white } = useColors()
-  const [following, setFollowing] = useState(false)
-  const [animFinished, setAnimFinished] = useState(false)
   const followedHotspots = useSelector(
     (state: RootState) => state.hotspots.followedHotspotsObj,
   )
+  const { followPurple, white } = useColors()
+  const [following, setFollowing] = useState(!!followedHotspots[address])
+  const [animFinished, setAnimFinished] = useState(false)
   const slideUpAnimRef = useRef(new Animated.Value(0))
   const opacityAnim = useRef(new Animated.Value(1))
 
-  const anim = async () => {
+  const anim = useCallback(async () => {
     if (following) return
 
     await sleep(700)
@@ -61,7 +56,7 @@ const NotHotspotOwnerErrorScreen = () => {
       ]),
       { iterations: 3 },
     ).start(() => setAnimFinished(true))
-  }
+  }, [following])
 
   useEffect(() => {
     if (!animFinished) return
@@ -76,8 +71,7 @@ const NotHotspotOwnerErrorScreen = () => {
 
   useEffect(() => {
     anim()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [anim, following])
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
@@ -85,23 +79,14 @@ const NotHotspotOwnerErrorScreen = () => {
     })
   }, [navigation, dispatch])
 
-  useEffect(() => {
-    setFollowing(!!followedHotspots[address])
-  }, [followedHotspots, address])
+  const handleFollowChange = useCallback((nextFollowing) => {
+    setFollowing(nextFollowing)
+  }, [])
 
-  const color = useMemo(() => (following ? followPurple : '#40466F'), [
-    following,
-    followPurple,
-  ])
-  const toggleFollowing = useCallback(() => {
-    if (following) {
-      setFollowing(false)
-      dispatch(unfollowHotspot(address))
-    } else {
-      setFollowing(true)
-      dispatch(followHotspot(address))
-    }
-  }, [dispatch, address, following])
+  const colors = useMemo(
+    () => ({ following: followPurple, notFollowing: '#40466F' }),
+    [followPurple],
+  )
 
   const navExit = useCallback(async () => {
     navigation.navigate('MainTabs')
@@ -160,9 +145,12 @@ const NotHotspotOwnerErrorScreen = () => {
           >
             {startCase(name)}
           </Text>
-          <DebouncedTouchableOpacityBox padding="l" onPress={toggleFollowing}>
-            <Follow color={color} />
-          </DebouncedTouchableOpacityBox>
+          <FollowButton
+            padding="l"
+            address={address}
+            colors={colors}
+            handleChange={handleFollowChange}
+          />
         </Box>
         <AnimatedBox
           alignItems="flex-end"

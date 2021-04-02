@@ -12,9 +12,15 @@ import { Theme } from '../theme/theme'
 
 type Props = BoxProps<Theme> & {
   address: string
+  colors?: { following: string; notFollowing: string }
   handleChange?: (following: boolean) => void
 }
-const HotspotDetailsHandle = ({ address, handleChange, ...props }: Props) => {
+const HotspotDetailsHandle = ({
+  address,
+  colors,
+  handleChange,
+  ...props
+}: Props) => {
   const { grayPurple, followPurple } = useColors()
   const dispatch = useAppDispatch()
   const [following, setFollowing] = useState(false)
@@ -26,11 +32,11 @@ const HotspotDetailsHandle = ({ address, handleChange, ...props }: Props) => {
     setFollowing(!!followedHotspots[address])
   }, [followedHotspots, address])
 
-  const color = useMemo(() => (following ? followPurple : grayPurple), [
-    following,
-    followPurple,
-    grayPurple,
-  ])
+  const color = useMemo(() => {
+    if (!colors) return following ? followPurple : grayPurple
+
+    return following ? colors.following : colors.notFollowing
+  }, [colors, following, followPurple, grayPurple])
 
   const toggleFollowing = useCallback(() => {
     setFollowing(!following)
