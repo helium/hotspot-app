@@ -43,15 +43,14 @@ export default {
       forgot: '단어를 잊어버림',
       failed: {
         title: '죄송합니다.',
-        subtitle_1: "시드 문구를 잘못 입력했습니다.",
+        subtitle_1: '시드 문구를 잘못 입력했습니다.',
         subtitle_2: '다시 시도해 주세요.',
         try_again: '다시 시도하세요',
       },
     },
     create_pin: {
       title: 'PIN 코드 설정',
-      subtitle:
-        '마지막 보안 단계로 PIN 코드를 사용하여 계정을 보호해 주세요.',
+      subtitle: '마지막 보안 단계로 PIN 코드를 사용하여 계정을 보호해 주세요.',
     },
     confirm_pin: {
       title: 'PIN 반복',
@@ -62,7 +61,7 @@ export default {
       subtitle:
         '계정 또는 Hotspot에 중요한 업데이트가 발생하면 알림을 받습니다.',
       mining: 'Hotspot은 채굴입니다',
-      later: "아니요, 나중에 설정하겠습니다",
+      later: '아니요, 나중에 설정하겠습니다',
     },
   },
   learn: {
@@ -90,7 +89,7 @@ export default {
           'Beacon은 Hotspot이 전송하는 특수 패킷으로 다른 인접 Hotspot에서 수신할 수 있습니다.\n\n이러한 신호를 통해 네트워크는 서로 수신 범위 내에 있는 Hotspot을 확인할 수 있습니다. 이러한 인접한 Hotspot을 ‘감시‘라고 하며 귀하의 Beacon을 수신하는 Hotspot이 감시 목록에 추가됩니다.',
       },
     ],
-    next: "가이드를 읽었음",
+    next: '가이드를 읽었음',
   },
   generic: {
     done: '완료',
@@ -157,14 +156,14 @@ export default {
             'Hotspot은 하늘이 보이고 다른 Hotspot에서 최소한 300m 이상 떨어진 장소를 좋아합니다. ',
         },
         {
-          title: "숨기지 마세요",
+          title: '숨기지 마세요',
           subtitle:
-            "Hotspot을 침실용 탁자나 책장에 숨겨서는 안 됩니다. 그 대신 창가에 두세요.",
+            'Hotspot을 침실용 탁자나 책장에 숨겨서는 안 됩니다. 그 대신 창가에 두세요.',
         },
         {
           title: '건물이 신호를 차단할 수 있습니다',
           subtitle:
-            "주변 건물로 인해 주변 기기에 대한 Hotspot의 커버리지가 감소될 수 있습니다.",
+            '주변 건물로 인해 주변 기기에 대한 Hotspot의 커버리지가 감소될 수 있습니다.',
         },
         {
           title: '마지막으로 오류가 발생하지 않도록 주의하세요.',
@@ -172,7 +171,7 @@ export default {
             'Hotspot을 금속망에서 멀리 떨어진 곳에 두세요. 금속망은 무선 신호를 상당 부분 차단할 수 있습니다.',
         },
       ],
-      next: "가이드를 읽었음",
+      next: '가이드를 읽었음',
     },
     diagnostics: {
       title: '진단 도구',
@@ -187,15 +186,12 @@ export default {
     },
     power: {
       title: '전원 켜기',
-      next: "전원을 켰습니다",
-      helium_subtitle_1:
-        '안테나를 부착하고 제공된 전원 어댑터에 연결합니다.',
-      rak_subtitle_1:
-        '제공된 전원 어댑터를 창가 부근의 콘센트에 연결합니다.',
+      next: '전원을 켰습니다',
+      helium_subtitle_1: '안테나를 부착하고 제공된 전원 어댑터에 연결합니다.',
+      rak_subtitle_1: '제공된 전원 어댑터를 창가 부근의 콘센트에 연결합니다.',
       nebrain_subtitle_1:
         '안테나를 부착하고 창가 부근의 제공된 어댑터에 연결합니다.',
-      nebraout_subtitle_1:
-        '안테나를 부착하고 적합한 전원에 연결합니다.',
+      nebraout_subtitle_1: '안테나를 부착하고 적합한 전원에 연결합니다.',
       bobcat_subtitle_1:
         '제공된 전원 어댑터를 창가 부근의 콘센트에 연결하고 제공된 안테나를 Hotspot 뒷면에 나사로 고정합니다.',
       syncrobit_subtitle_1: '안테나를 부착하고 기기를 연결합니다.',
@@ -219,14 +215,12 @@ export default {
       rak_subtitle_1: 'RAK Hotspot Miner에는 페어링 버튼이 없습니다.',
       nebrain_subtitle_1:
         '표시등이 깜빡거릴 때까지 Nebra Indoor Hotspot의 뒷면에 있는 버튼을 누르세요.',
-      nebraout_subtitle_1:
-        'Nebra Outdoor Hotspot에는 페어링 버튼이 없습니다.',
+      nebraout_subtitle_1: 'Nebra Outdoor Hotspot에는 페어링 버튼이 없습니다.',
       bobcat_subtitle_1:
         '제공된 핀을 사용하여 Hotspot 뒷면의 BT 버튼을 5초 동안 누르세요.',
-      syncrobit_subtitle_1:
-        'SyncroB.it Hotspot에는 페어링 버튼이 없습니다.',
+      syncrobit_subtitle_1: 'SyncroB.it Hotspot에는 페어링 버튼이 없습니다.',
       helium_subtitle_2:
-        "계속하기 전에 휴대전화의 Bluetooth가 켜져 있는지 확인하세요",
+        '계속하기 전에 휴대전화의 Bluetooth가 켜져 있는지 확인하세요',
       rak_subtitle_2:
         'RAK Hotspot Miner의 전원이 켜진 후 5분 동안 Bluetooth가 자동으로 활성화됩니다.\n\nHotspot이 완전히 부팅되는 데 최대 1분이 소요될 수 있습니다.',
       nebrain_subtitle_2:
@@ -268,8 +262,7 @@ export default {
     wifi_scan: {
       title: 'Wi-Fi',
       settings_title: 'Wi-Fi 설정',
-      subtitle:
-        'Hotspot을 연결하려는 Wi-Fi 네트워크를 선택합니다.',
+      subtitle: 'Hotspot을 연결하려는 Wi-Fi 네트워크를 선택합니다.',
       ethernet: '그 대신에 이더넷을 사용합니다',
       connection_failed: '연결에 실패했습니다. 다시 시도해 주세요',
       disconnect_failed: '분리에 실패했습니다. 다시 시도해 주세요',
@@ -307,13 +300,11 @@ export default {
       forget: '잊어버림',
       forget_network: '네트워크 삭제',
       forget_alert_title: '네트워크를 삭제하시겠어요?',
-      forget_alert_message:
-        '이 Hotspot은 더 이상 자동으로 연결되지 않습니다 ',
+      forget_alert_message: '이 Hotspot은 더 이상 자동으로 연결되지 않습니다 ',
     },
     ethernet: {
-      title: "이더넷을 사용하세요",
-      subtitle:
-        'Hotspot을 인터넷 라우터의 사용 가능한 활성 포트에 연결합니다.',
+      title: '이더넷을 사용하세요',
+      subtitle: 'Hotspot을 인터넷 라우터의 사용 가능한 활성 포트에 연결합니다.',
       secure: '이더넷 케이블을 단단히 연결하세요',
       next: 'Hotspot이 연결되었습니다',
     },
@@ -365,29 +356,29 @@ export default {
         'Hotspot의 위치를 설정해야 합니다. 휴대전화를 사용하여 이 작업을 수행할 수 있습니다.',
       p_1: '먼저 휴대전화의 위치에 액세스할 수 있는 권한을 요청받게 됩니다.',
       settings_p_1:
-        "Hotspot 위치를 업데이트하려면 추가 위치 권한이 필요합니다.",
+        'Hotspot 위치를 업데이트하려면 추가 위치 권한이 필요합니다.',
       settings_p_2:
         "아래 버튼을 탭하면 설정으로 이동합니다. '위치'에서 '앱을 사용하는 동안'을 탭합니다.",
       next: '권한 요청',
-      cancel: "아니요, 나중에 설정하겠습니다",
+      cancel: '아니요, 나중에 설정하겠습니다',
     },
     location_fee: {
       title: '위치 수수료',
       subtitle_free: '위치 수수료($10)가 선불 결제되었습니다.',
       subtitle_fee:
         '이 위치를 확인하려면 $10의 위치 수수료(DC)를 지불해야 합니다.',
-      confirm_location:
-        '선택한 위치가 올바른지 확인하고 Hotspot을 등록하세요.',
+      confirm_location: '선택한 위치가 올바른지 확인하고 Hotspot을 등록하세요.',
       pending_p_1:
         '이 Hotspot에는 블록체인에서 보류 중인 위치 확인 트랜잭션이 있습니다.',
       pending_p_2:
-        "Hotspot의 위치를 변경하려면 이전 트랜잭션이 완료될 때까지 기다린 후 위치를 업데이트하세요.",
+        'Hotspot의 위치를 변경하려면 이전 트랜잭션이 완료될 때까지 기다린 후 위치를 업데이트하세요.',
       balance: '잔액:',
       fee: '수수료:',
       no_funds: '계정 잔액에 HNT가 부족합니다',
       calculating_text: 'HNT 금액 계산',
       error_title: '오류 발생',
-      error_body: '수수료 데이터를 로드하는 중에 오류가 발생했습니다. 다시 시도해 주세요.',
+      error_body:
+        '수수료 데이터를 로드하는 중에 오류가 발생했습니다. 다시 시도해 주세요.',
       next: 'Hotspot 등록',
       fee_next: '수수료 지불 및 Hotspot 등록',
     },
@@ -397,8 +388,7 @@ export default {
     },
     progress: {
       title: 'Hotspot 등록',
-      subtitle:
-        '몇 분 정도 걸릴 수 있으므로 이 화면을 닫아도 됩니다.',
+      subtitle: '몇 분 정도 걸릴 수 있으므로 이 화면을 닫아도 됩니다.',
       next: '지갑으로 이동',
     },
     error: {
@@ -414,7 +404,8 @@ export default {
     not_owner: {
       title: '설정을 계속 진행할 수 없음',
       subtitle_1: 'Hotspot이 다른 계정에 속해 있습니다.',
-      subtitle_2: "Wi-Fi를 업데이트하는 호스트인 경우, 지금 설정을 종료할 수 있습니다.",
+      subtitle_2:
+        'Wi-Fi를 업데이트하는 호스트인 경우, 지금 설정을 종료할 수 있습니다.',
     },
     owned_hotspot: {
       title: '이 Hotspot을 이미 소유하고 있습니다',
@@ -442,7 +433,7 @@ export default {
     },
     alert: {
       title: '오류 발생',
-      body: "이 시드 문구는 Helium 계정과 일치하지 않습니다",
+      body: '이 시드 문구는 Helium 계정과 일치하지 않습니다',
     },
   },
   wallet: {
@@ -453,14 +444,18 @@ export default {
       '이 계정 탭은 귀하가 보유한 HNT 또는 Data Credit에 대한 가상 지갑 역할을 수행합니다.',
     intro_slides: [
       { title: 'HNT 수신', body: '주소 또는 QR 코드에 액세스하세요.' },
-      { title: 'HNT 전송', body: 'QR 코드를 스캔하거나 세부사항을 직접 입력하세요.' },
+      {
+        title: 'HNT 전송',
+        body: 'QR 코드를 스캔하거나 세부사항을 직접 입력하세요.',
+      },
       {
         title: '사용자 계정 차트',
         body: '녹색은 귀하의 계정에 <green>추가</green>되는 HNT를 나타냅니다.',
       },
       {
         title: '사용자 계정 차트',
-        body: '파란색은 귀하의 계정에서 <blue>차감</blue>되는 HNT를 나타냅니다.',
+        body:
+          '파란색은 귀하의 계정에서 <blue>차감</blue>되는 HNT를 나타냅니다.',
       },
     ],
   },
@@ -499,7 +494,8 @@ export default {
       transfer_complete: '이체 완료',
     },
     qrInfo: 'QR 정보',
-    error: '이 트랜잭션을 제출하는 중에 오류가 발생했습니다. 다시 시도해 주세요.',
+    error:
+      '이 트랜잭션을 제출하는 중에 오류가 발생했습니다. 다시 시도해 주세요.',
     hotspot_label: 'Hotspot',
     last_activity: '마지막으로 보고된 활동: {{activity}}',
     label_error: '귀하의 계정에 충분한 HNT가 없습니다.',
@@ -578,7 +574,8 @@ export default {
     owned: {
       title: '내 Hotspot',
       title_no_hotspots: 'Hotspot',
-      reward_summary: '지난 24시간 동안 귀하의 Hotspot이 {{hntAmount}}을(를) 채굴했습니다.',
+      reward_summary:
+        '지난 24시간 동안 귀하의 Hotspot이 {{hntAmount}}을(를) 채굴했습니다.',
       reward_summary_plural:
         '지난 24시간 동안 Hotspot {{count}}개가 {{hntAmount}}을(를) 채굴했습니다.',
       your_hotspots: '귀하의 Hotspot',
@@ -590,7 +587,7 @@ export default {
       },
     },
     empty: {
-      body: "아직 Hotspot을 추가하거나 팔로우하지 않았습니다.",
+      body: '아직 Hotspot을 추가하거나 팔로우하지 않았습니다.',
     },
     list: {
       no_offline: '오프라인 Hotspot 없음',
@@ -723,7 +720,7 @@ export default {
       cost: '위치를 재확인하는 데 드는 비용:',
       insufficient_funds:
         '이 확인을 위해 사용할 수 있는\n자금이 없습니다. HNT를 획득하세요.',
-      confirm_location: "Hotspot 위치 변경을 확인하세요",
+      confirm_location: 'Hotspot 위치 변경을 확인하세요',
       charge: '{{amount}}의 금액이 청구됩니다.',
       pending_message: '위치 업데이트가 보류 중입니다.',
       assert_pending: '확인 보류 중...',
@@ -776,8 +773,7 @@ export default {
     canceled_alert_title: '전송이 취소됨',
     canceled_alert_body:
       '이 전송은 더 이상 활성화되지 않습니다. 판매자에게 자세한 내용을 문의하세요.',
-    fine_print:
-      '구매자가 트랜잭션을 수락하고 완료하면 Hotspot이 전송됩니다.',
+    fine_print: '구매자가 트랜잭션을 수락하고 완료하면 Hotspot이 전송됩니다.',
     notification_button: '트랜잭션 보기',
     cancel: {
       button_title: '전송 보류. 취소하려면 탭하세요.',
@@ -833,9 +829,10 @@ export default {
     },
     challenger: {
       success: 'Hotspot이 블록 {{count}}개 전에 Challenge를 발행했습니다.',
-      success_plural: 'Hotspot이 블록 {{count}}개 전에 Challenge를 발행했습니다.',
+      success_plural:
+        'Hotspot이 블록 {{count}}개 전에 Challenge를 발행했습니다.',
       fail:
-        "Hotspot이 Challenge를 아직 발행하지 않았습니다. Hotspot은 Challenge를 자동으로 생성합니다.",
+        'Hotspot이 Challenge를 아직 발행하지 않았습니다. Hotspot은 Challenge를 자동으로 생성합니다.',
       title: 'Challenge 생성',
     },
     challenge_witness: {
@@ -852,7 +849,8 @@ export default {
       title: '감시 목록',
     },
     challengee: {
-      success: 'Hotspot이 블록 {{count}}개 전에 마지막으로 Challenge에 참여했습니다.',
+      success:
+        'Hotspot이 블록 {{count}}개 전에 마지막으로 Challenge에 참여했습니다.',
       success_plural:
         'Hotspot이 블록 {{count}}개 전에 마지막으로 Challenge에 참여했습니다.',
       fail:
@@ -862,7 +860,7 @@ export default {
     data_transfer: {
       success: 'Hotspot이 최근 데이터 패킷을 전송했습니다.',
       fail:
-        "Hotspot이 자동으로 기기 데이터를 전송하고 HNT를 획득합니다. 이 Hotspot은 아직 데이터를 전송하지 않았습니다.",
+        'Hotspot이 자동으로 기기 데이터를 전송하고 HNT를 획득합니다. 이 Hotspot은 아직 데이터를 전송하지 않았습니다.',
       title: '데이터 전송',
     },
     auto: '자동',
@@ -875,7 +873,8 @@ export default {
       title: 'Discovery 모드',
       subtitle:
         '짧은 시간 동안 라디오 패킷을 전송하여 어떤 Hotspot에서 사용자가 수신되는지 확인합니다.',
-      body: 'Discovery 모드는 현재 하루에 최대 5개 세션까지 무료로 사용할 수 있습니다.',
+      body:
+        'Discovery 모드는 현재 하루에 최대 5개 세션까지 무료로 사용할 수 있습니다.',
       previous_sessions: '이전 세션',
       last_30_days: '(지난 30일)',
       start_session: '새 세션 시작',
