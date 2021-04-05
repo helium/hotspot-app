@@ -92,6 +92,7 @@
     "react-native-currency-format": "^1.0.19",
     "react-native-device-info": "^7.1.0",
     "react-native-emoji": "^1.8.0",
+    "react-native-flash-message": "^0.1.23",
     "react-native-gesture-handler": "1.10.3",
     "react-native-keyboard-aware-scroll-view": "^0.9.3",
     "react-native-localize": "^1.4.3",

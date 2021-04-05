@@ -595,6 +595,8 @@ export default {
     },
     empty: {
       body: "You haven't added or followed any Hotspots yet.",
+      failed:
+        'We’re having problems fetching your Hotspots due to an API or network outage. Please try again later.',
     },
     list: {
       no_offline: 'NO OFFLINE HOTSPOTS',
