@@ -44,8 +44,7 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
     if (checklistEnabled) {
       dispatch(fetchChecklistActivity(hotspot.address))
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [checklistEnabled, dispatch, hotspot.address])
 
   const syncStatus = useMemo(() => {
     if (!hotspot?.status?.height || !blockHeight) {
