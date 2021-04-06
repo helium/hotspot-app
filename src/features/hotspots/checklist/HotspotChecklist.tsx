@@ -27,18 +27,23 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
   const spacing = useSpacing()
   const { t } = useTranslation()
   const {
-    heliumData: { blockHeight },
-    hotspotChecklist: {
-      challengerTxn,
-      challengeeTxn,
-      witnessTxn,
-      dataTransferTxn,
-      loadingActivity,
-    },
-  } = useSelector((state: RootState) => state)
+    challengerTxn,
+    challengeeTxn,
+    witnessTxn,
+    dataTransferTxn,
+    loadingActivity,
+  } = useSelector((state: RootState) => state.hotspotChecklist)
+  const blockHeight = useSelector(
+    (state: RootState) => state.heliumData.blockHeight,
+  )
+  const checklistEnabled = useSelector(
+    (state: RootState) => state.features.checklistEnabled,
+  )
 
   useEffect(() => {
-    dispatch(fetchChecklistActivity(hotspot.address))
+    if (checklistEnabled) {
+      dispatch(fetchChecklistActivity(hotspot.address))
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -184,6 +189,10 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
   const toggleHidden = () => {
     animateTransition()
     setHidden(!hidden)
+  }
+
+  if (!checklistEnabled) {
+    return null
   }
 
   if (loadingActivity) {
