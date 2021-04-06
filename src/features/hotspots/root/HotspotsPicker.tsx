@@ -32,6 +32,9 @@ const HotspotsPicker = () => {
   const { currentLocation, permissionResponse, locationBlocked } = useSelector(
     (state: RootState) => state.location,
   )
+  const followHotspotEnabled = useSelector(
+    (state: RootState) => state.features.followHotspotEnabled,
+  )
   const prevOrder = usePrevious(order)
 
   const maybeGetLocation = useCallback(
@@ -97,39 +100,38 @@ const HotspotsPicker = () => {
   )
 
   const data: HeliumActionSheetItemType[] = useMemo(() => {
-    const opts = [
-      {
-        label: t(`hotspots.owned.filter.${HotspotSort.New}`),
-        value: HotspotSort.New,
-        Icon: NewestHotspot,
-      },
-      {
+    const opts = []
+    opts.push({
+      label: t(`hotspots.owned.filter.${HotspotSort.New}`),
+      value: HotspotSort.New,
+      Icon: NewestHotspot,
+    })
+    if (!locationBlocked) {
+      opts.push({
         label: t(`hotspots.owned.filter.${HotspotSort.Near}`),
         value: HotspotSort.Near,
         Icon: NearestHotspot,
-      },
-      {
-        label: t(`hotspots.owned.filter.${HotspotSort.Earn}`),
-        value: HotspotSort.Earn,
-        Icon: TopHotspot,
-      },
-      {
+      })
+    }
+    opts.push({
+      label: t(`hotspots.owned.filter.${HotspotSort.Earn}`),
+      value: HotspotSort.Earn,
+      Icon: TopHotspot,
+    })
+    if (followHotspotEnabled) {
+      opts.push({
         label: t(`hotspots.owned.filter.${HotspotSort.Followed}`),
         value: HotspotSort.Followed,
         Icon: FollowedHotspot,
-      },
-      {
-        label: t(`hotspots.owned.filter.${HotspotSort.Offline}`),
-        value: HotspotSort.Offline,
-        Icon: OfflineHotspot,
-      },
-    ]
-    if (locationBlocked) {
-      // if they've explicity denied location access, remove nearest option
-      opts.splice(1, 1)
+      })
     }
+    opts.push({
+      label: t(`hotspots.owned.filter.${HotspotSort.Offline}`),
+      value: HotspotSort.Offline,
+      Icon: OfflineHotspot,
+    })
     return opts
-  }, [locationBlocked, t])
+  }, [followHotspotEnabled, locationBlocked, t])
 
   return (
     <Box
