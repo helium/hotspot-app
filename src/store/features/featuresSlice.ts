@@ -4,11 +4,13 @@ import { getWallet } from '../../utils/walletClient'
 export type FeaturesState = {
   discoveryEnabled: boolean
   checklistEnabled: boolean
+  followHotspotEnabled: boolean
 }
 
 const initialState: FeaturesState = {
   discoveryEnabled: false,
   checklistEnabled: false,
+  followHotspotEnabled: false,
 }
 
 export const fetchFeatures = createAsyncThunk<FeaturesState>(
@@ -25,6 +27,7 @@ const featuresSlice = createSlice({
     builder.addCase(fetchFeatures.fulfilled, (state, { payload }) => {
       state.discoveryEnabled = payload.discoveryEnabled
       state.checklistEnabled = payload.checklistEnabled
+      state.followHotspotEnabled = payload.followHotspotEnabled
     })
   },
 })

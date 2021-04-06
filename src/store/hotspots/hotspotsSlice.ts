@@ -10,6 +10,7 @@ import {
 import { distance, LocationCoords } from '../../utils/location'
 import { getWallet, deleteWallet, postWallet } from '../../utils/walletClient'
 import * as Logger from '../../utils/logger'
+import { FeaturesState } from '../features/featuresSlice'
 
 export enum HotspotSort {
   New = 'new',
@@ -199,10 +200,13 @@ const sanitizeWalletHotspots = (hotspots: WalletHotspot[]) => {
 type WalletHotspot = Hotspot & { lat: string; lng: string }
 export const fetchHotspotsData = createAsyncThunk(
   'hotspots/fetchHotspotsData',
-  async () => {
+  async (_arg, { getState }) => {
+    const appState = getState() as { features: FeaturesState }
+    const followEnabled = appState.features.followHotspotEnabled
+
     const allHotspots = await Promise.all([
       getHotspots(),
-      getWallet('hotspots/follow', null, true),
+      followEnabled ? getWallet('hotspots/follow', null, true) : [],
     ])
 
     const [hotspots = [], followedHotspots = []]: [
