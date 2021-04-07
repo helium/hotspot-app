@@ -419,6 +419,8 @@ export default {
     not_owner: {
       title: 'This Hotspot already has an owner.',
       subtitle_1: 'Perhaps you’re hosting it for\nsomeone else?',
+      subtitle_1_no_follow:
+        "If you're a Host updating Wi-Fi, you may exit setup now.",
       subtitle_2:
         'Following a Hotspot allows you to monitor a Hotspot within the app when you don’t own it.',
       contact_manufacturer:
@@ -600,6 +602,8 @@ export default {
     },
     empty: {
       body: "You haven't added or followed any Hotspots yet.",
+      failed:
+        'We’re having problems fetching your Hotspots due to an API or network outage. Please try again later.',
     },
     list: {
       no_offline: 'NO OFFLINE HOTSPOTS',
