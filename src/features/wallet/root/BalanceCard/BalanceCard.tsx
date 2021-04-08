@@ -3,6 +3,7 @@ import { useAsync } from 'react-async-hook'
 import QRCode from 'react-qr-code'
 import { useSelector } from 'react-redux'
 import { isEqual } from 'lodash'
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import { RootState } from '../../../../store/rootReducer'
 import Box from '../../../../components/Box'
 import AnimatedBox from '../../../../components/AnimatedBox'
@@ -32,6 +33,10 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
   const { hntBalanceToDisplayVal, toggleConvertHntToCurrency } = useCurrency()
   const account = useSelector(
     (state: RootState) => state.account.account,
+    isEqual,
+  )
+  const fetchAccountState = useSelector(
+    (state: RootState) => state.account.fetchDataStatus,
     isEqual,
   )
 
@@ -65,26 +70,46 @@ const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Box onTouchStart={toggleConvertHntToCurrency}>
-            <Text
-              adjustsFontSizeToFit
-              maxFontSizeMultiplier={1.2}
-              color="white"
-              fontSize={hp(4.5)}
-              fontWeight="300"
+          {fetchAccountState === 'idle' || fetchAccountState === 'rejected' ? (
+            <SkeletonPlaceholder
+              backgroundColor="#343964"
+              highlightColor="#292E56"
             >
-              {balanceInfo.integerPart}
-            </Text>
-            <Text
-              color="white"
-              fontSize={hp(1.8)}
-              fontWeight="300"
-              opacity={0.4}
-              lineHeight={25}
-            >
-              {balanceInfo.decimalPart}
-            </Text>
-          </Box>
+              <SkeletonPlaceholder.Item
+                width={80}
+                height={40}
+                marginTop={8}
+                borderRadius={8}
+              />
+              <SkeletonPlaceholder.Item
+                width={150}
+                height={16}
+                marginTop={8}
+                borderRadius={8}
+              />
+            </SkeletonPlaceholder>
+          ) : (
+            <Box onTouchStart={toggleConvertHntToCurrency}>
+              <Text
+                adjustsFontSizeToFit
+                maxFontSizeMultiplier={1.2}
+                color="white"
+                fontSize={hp(4.5)}
+                fontWeight="300"
+              >
+                {balanceInfo.integerPart}
+              </Text>
+              <Text
+                color="white"
+                fontSize={hp(1.8)}
+                fontWeight="300"
+                opacity={0.4}
+                lineHeight={25}
+              >
+                {balanceInfo.decimalPart}
+              </Text>
+            </Box>
+          )}
 
           <Box
             flexDirection="row"

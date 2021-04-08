@@ -9,6 +9,7 @@ import { useAppDispatch } from '../store/store'
 import { RootState } from '../store/rootReducer'
 import { followHotspot, unfollowHotspot } from '../store/hotspots/hotspotsSlice'
 import { Theme } from '../theme/theme'
+import Box from './Box'
 
 type Props = BoxProps<Theme> & {
   address: string
@@ -26,6 +27,9 @@ const HotspotDetailsHandle = ({
   const [following, setFollowing] = useState(false)
   const followedHotspots = useSelector(
     (state: RootState) => state.hotspots.followedHotspotsObj,
+  )
+  const followHotspotEnabled = useSelector(
+    (state: RootState) => state.features.followHotspotEnabled,
   )
 
   useEffect(() => {
@@ -47,6 +51,10 @@ const HotspotDetailsHandle = ({
       dispatch(followHotspot(address))
     }
   }, [following, handleChange, dispatch, address])
+
+  if (!followHotspotEnabled) {
+    return <Box width={40} height={40} marginLeft="l" />
+  }
 
   return (
     <DebouncedTouchableOpacityBox

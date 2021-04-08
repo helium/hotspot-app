@@ -3,6 +3,7 @@ import accountSlice from './account/accountSlice'
 import appSlice from './user/appSlice'
 import connectedHotspotSlice from './connectedHotspot/connectedHotspotSlice'
 import heliumDataSlice from './helium/heliumDataSlice'
+import heliumStatusSlice from './helium/heliumStatusSlice'
 import hotspotDetailsSlice from './hotspotDetails/hotspotDetailsSlice'
 import hotspotsSlice from './hotspots/hotspotsSlice'
 import activitySlice from './activity/activitySlice'
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
   discovery: discoverySlice.reducer,
   features: featuresSlice.reducer,
   location: locationSlice.reducer,
+  status: heliumStatusSlice.reducer,
 })
 
 export type RootState = ReturnType<typeof rootReducer>

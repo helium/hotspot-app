@@ -36,6 +36,8 @@ import {
 import SecurityScreen from './features/security/SecurityScreen'
 import { fetchFeatures } from './store/features/featuresSlice'
 import usePrevious from './utils/usePrevious'
+import StatusBanner from './components/StatusBanner'
+import { fetchStatus } from './store/helium/heliumStatusSlice'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -75,6 +77,12 @@ const App = () => {
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
   )
+
+  const loadInitialData = useCallback(() => {
+    dispatch(fetchBlockHeight())
+    dispatch(fetchInitialData())
+    dispatch(fetchStatus())
+  }, [dispatch])
 
   // initialize external libraries
   useAsync(configChainVars, [])
@@ -131,18 +139,16 @@ const App = () => {
     if (!isRestored) {
       dispatch(restoreUser())
     } else {
-      dispatch(fetchBlockHeight())
-      dispatch(fetchInitialData())
+      loadInitialData()
     }
-  }, [dispatch, isRestored])
+  }, [dispatch, loadInitialData, isRestored])
 
   // update initial data when app comes into foreground from background
   useEffect(() => {
     if (prevAppStateStatus === 'background' && appStateStatus === 'active') {
-      dispatch(fetchBlockHeight())
-      dispatch(fetchInitialData())
+      loadInitialData()
     }
-  }, [dispatch, appStateStatus, prevAppStateStatus])
+  }, [dispatch, appStateStatus, prevAppStateStatus, loadInitialData])
 
   // hide splash screen
   useAsync(async () => {
@@ -199,6 +205,7 @@ const App = () => {
                   <NavigationRoot />
                 </Portal.Host>
               </SafeAreaProvider>
+              <StatusBanner />
               <SecurityScreen
                 visible={
                   appStateStatus !== 'active' && appStateStatus !== 'unknown'

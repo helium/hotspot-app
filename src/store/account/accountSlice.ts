@@ -59,13 +59,7 @@ type AccountData = {
 export const fetchData = createAsyncThunk<AccountData>(
   'account/fetchData',
   async () => {
-    const data = await Promise.all(
-      [getAccount(), getWallet('notifications')].map((p) =>
-        p.catch((e) => {
-          console.log('fetchDataError:', e)
-        }),
-      ),
-    )
+    const data = await Promise.all([getAccount(), getWallet('notifications')])
     return {
       account: data[0],
       notifications: data[1] || [],
