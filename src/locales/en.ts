@@ -143,6 +143,7 @@ export default {
       nebraout: 'Nebra Outdoor Hotspot',
       bobcat: 'Bobcat Miner 300',
       syncrobit: 'SyncroB.it Hotspot',
+      finestra: 'Finestra Miner',
       third_party_header: 'Other Hotspots',
       helium_edition: 'For the Helium Network',
       fine_print:
@@ -184,6 +185,8 @@ export default {
         '<b><white>Diagnostic support allows Bobcat to identify issues with your Hotspot in a secure way.</white></b>\n\nBobcat will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@bobcatminer.com</b></purple> from the email used to purchase the Hotspot.',
       syncrobit_p_1:
         '<b><white>Diagnostic support allows SyncroB.it to identify issues with your Hotspot in a secure way.</white></b>\n\nSyncroB.it will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@syncrob.it</b></purple> from the email used to purchase the Hotspot.',
+      finestra_p_1:
+        '<b><white>Diagnostic support allows Finestra to identify issues with your Hotspot in a secure way.</white></b>\n\nFinestra will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@thefinestra.com</b></purple> from the email used to purchase the Hotspot.',
     },
     power: {
       title: 'Power Up',
@@ -211,6 +214,10 @@ export default {
         'The Hotspot is ready when the light goes from red to yellow.',
       syncrobit_subtitle_2:
         'The SyncroB.it Hotspot LED bar will light up blue once it’s powered on.',
+      finestra_subtitle_1:
+        'Attach the antenna and plug in the provided power adapter near a window.',
+      finestra_subtitle_2:
+        'The Finestra Miner will show a blue LED light once it’s powered on.',
     },
     pair: {
       title: 'Bluetooth',
@@ -237,6 +244,10 @@ export default {
         'The hotspot is ready to pair when the light goes from yellow to blue.\n\nMake sure your phone’s Bluetooth is turned on!',
       syncrobit_subtitle_2:
         'Bluetooth is automatically enabled for 5 minutes after the SyncroB.it Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.',
+      finestra_subtitle_1:
+        'Bluetooth is automatically enabled for 5 minutes after the Finestra Miner is powered on.\n\nHotspot can take up to 1 minute to fully boot up.',
+      finestra_subtitle_2:
+        'You can enable Bluetooth after 5 minutes by pressing the button on the side of the Finestra Miner',
       alert_no_permissions: {
         title: 'Authorize Bluetooth',
         body:

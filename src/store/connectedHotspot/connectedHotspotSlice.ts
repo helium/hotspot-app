@@ -18,6 +18,7 @@ export const HotspotTypeKeys = [
   'NEBRAOUT',
   'SYNCROBIT',
   'Bobcat',
+  'Finestra',
 ] as const
 export type HotspotType = typeof HotspotTypeKeys[number]
 export type HotspotName =
@@ -27,6 +28,7 @@ export type HotspotName =
   | 'Nebra Outdoor Hotspot'
   | 'Bobcat Miner 300'
   | 'SyncroB.it Hotspot'
+  | 'Finestra Miner'
 
 type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
 
