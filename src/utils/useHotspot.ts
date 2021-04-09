@@ -123,14 +123,20 @@ const useHotspot = () => {
     const connected = await hotspotDevice.isConnected()
     if (!connected) {
       const device = await connect(hotspotDevice)
-      if (!device) return
+      if (!device) {
+        Logger.error(new Error('Hotspot connect failed: no device'))
+        return
+      }
       connectedDevice = device
     }
 
     const deviceWithServices = await discoverAllServicesAndCharacteristics(
       connectedDevice,
     )
-    if (!deviceWithServices) return
+    if (!deviceWithServices) {
+      Logger.error(new Error('Hotspot connect failed: no services'))
+      return
+    }
 
     connectedHotspot.current = deviceWithServices
 
@@ -166,6 +172,7 @@ const useHotspot = () => {
     await updateHotspotStatus(payload?.hotspot)
 
     if (!payload?.onboardingRecord?.onboardingKey) {
+      Logger.error(new Error('Hotspot connect failed: no onboardingKey'))
       return false
     }
     return !!payload
