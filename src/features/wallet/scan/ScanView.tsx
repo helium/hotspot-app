@@ -74,23 +74,55 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
   }
 
   const parseBarCodeData = (data: string): QrScanResult => {
+    // The data scanned from the QR code is expected to be one of these possibilities:
+    // (1) address string
+    // (2) stringified JSON object { type, address, amount?, memo? }
+    // (3) stringified JSON object { type, payees: [{ address, amount?, memo? }] }
+
+    // Case (1) address string
     if (Address.isValid(data)) {
       return {
         type: scanType,
-        address: data,
+        payees: [{ address: data }],
       }
     }
 
     try {
-      const scanResult: QrScanResult = JSON.parse(data)
+      let scanResult: QrScanResult
+      const rawScanResult = JSON.parse(data)
 
-      if (
-        !['payment', 'dc_burn'].includes(scanResult.type) ||
-        !scanResult.address ||
-        !Address.isValid(scanResult.address)
-      ) {
+      if (rawScanResult.address) {
+        // Case (2) stringified JSON { type, address, amount?, memo? }
+        scanResult = {
+          type: rawScanResult.type || scanType,
+          payees: [
+            {
+              address: rawScanResult.address,
+              amount: rawScanResult.amount,
+              memo: rawScanResult.memo,
+            },
+          ],
+        }
+      } else if (rawScanResult.payees) {
+        // Case (3) stringified JSON { type, payees: [{ address, amount?, memo? }] }
+        scanResult = {
+          type: rawScanResult.type || scanType,
+          payees: rawScanResult.payees,
+        }
+      } else {
+        // Unknown encoding
         throw new Error('Invalid transaction encoding')
       }
+
+      // Validate attributes before returning
+      if (!['payment', 'dc_burn'].includes(scanResult.type)) {
+        throw new Error('Invalid transaction encoding')
+      }
+      scanResult.payees.forEach(({ address }) => {
+        if (!address || !Address.isValid(address)) {
+          throw new Error('Invalid transaction encoding')
+        }
+      })
 
       return scanResult
     } catch (error) {

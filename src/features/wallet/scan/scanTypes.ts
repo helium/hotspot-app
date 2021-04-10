@@ -1,10 +1,14 @@
 export type ScanType = 'payment' | 'dc_burn' | 'transfer'
 
-export interface QrScanResult {
-  type: ScanType
+type Payee = {
   address: string
   amount?: string
   memo?: string
+}
+
+export interface QrScanResult {
+  type: ScanType
+  payees: Array<Payee>
 }
 
 export type ScanStackParamList = {
