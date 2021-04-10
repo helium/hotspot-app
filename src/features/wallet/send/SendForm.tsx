@@ -14,7 +14,7 @@ import Check from '../../../assets/images/check.svg'
 import { useColors } from '../../../theme/themeHooks'
 import LockedHeader from '../../../components/LockedHeader'
 import LockedField from '../../../components/LockedField'
-import { SendType } from './sendTypes'
+import { SendTransfer, SendType } from './sendTypes'
 import { Transfer } from '../../hotspots/transfers/TransferRequests'
 import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
 
@@ -22,17 +22,11 @@ type Props = {
   isValid: boolean
   isLocked: boolean
   type: SendType
-  address: string
-  addressAlias?: string
-  addressLoading?: boolean
-  amount: string
-  dcAmount: string
-  memo: string
-  fee: Balance<NetworkTokens>
-  onAddressChange: (text: string) => void
-  onAmountChange: (text: string) => void
-  onDcAmountChange: (text: string) => void
-  onMemoChange: (text: string) => void
+  sendTransfers: Array<SendTransfer>
+  onAddressChange: (id: number, text: string) => void
+  onAmountChange: (id: number, text: string) => void
+  onDcAmountChange: (id: number, text: string) => void
+  onMemoChange: (id: number, text: string) => void
   onScanPress: () => void
   onSendMaxPress: () => void
   onSubmit: () => void
@@ -50,13 +44,7 @@ const SendForm = ({
   isLocked,
   isSeller,
   type,
-  address,
-  addressAlias,
-  addressLoading = false,
-  amount,
-  dcAmount,
-  memo,
-  fee,
+  sendTransfers,
   onAddressChange,
   onAmountChange,
   onDcAmountChange,
@@ -74,8 +62,6 @@ const SendForm = ({
   const { t } = useTranslation()
   const { primaryMain } = useColors()
 
-  const isValidAddress = Address.isValid(address)
-
   const getButtonTitle = () => {
     switch (type) {
       case 'payment':
@@ -92,175 +78,190 @@ const SendForm = ({
   const renderLockedPaymentForm = () => (
     <Box>
       <LockedHeader onClosePress={onUnlock} />
-      <LockedField label={t('send.address.label')} value={address} />
-      <LockedField
-        label={t('send.amount.label')}
-        value={amount}
-        footer={amount ? <FeeFooter fee={fee} /> : undefined}
-        bottom
-      />
+      {sendTransfers.map(({ address, amount, fee }) => [
+        <LockedField label={t('send.address.label')} value={address} />,
+        <LockedField
+          label={t('send.amount.label')}
+          value={amount}
+          footer={amount ? <FeeFooter fee={fee} /> : undefined}
+          bottom
+        />,
+      ])}
     </Box>
   )
 
   const renderLockedBurnForm = () => (
     <Box>
       <LockedHeader onClosePress={onUnlock} allowClose={false} />
-      <LockedField label={t('send.address.label')} value={address} />
-      <LockedField
-        label={t('send.amount.label')}
-        value={amount}
-        footer={amount ? <FeeFooter fee={fee} /> : undefined}
-      />
-      <LockedField label={t('send.dcAmount.label')} value={dcAmount} />
-      <LockedField label={t('send.memo.label')} value={memo} bottom />
+      {sendTransfers.map(({ address, amount, dcAmount, fee, memo }) => [
+        <LockedField label={t('send.address.label')} value={address} />,
+        <LockedField
+          label={t('send.amount.label')}
+          value={amount}
+          footer={amount ? <FeeFooter fee={fee} /> : undefined}
+        />,
+        <LockedField label={t('send.dcAmount.label')} value={dcAmount} />,
+        <LockedField label={t('send.memo.label')} value={memo} bottom />,
+      ])}
     </Box>
   )
 
   const renderPaymentForm = () => (
     <Box>
-      <InputField
-        defaultValue={address}
-        onChange={onAddressChange}
-        label={t('send.address.label')}
-        placeholder={t('send.address.placeholder')}
-        extra={
-          <AddressExtra
-            addressLoading={addressLoading}
-            isValidAddress={isValidAddress}
-            onScanPress={onScanPress}
-          />
-        }
-        footer={<AddressAliasFooter addressAlias={addressAlias} />}
-      />
-      <InputField
-        type="numeric"
-        defaultValue={amount}
-        onChange={onAmountChange}
-        value={amount}
-        label={t('send.amount.label')}
-        placeholder={t('send.amount.placeholder')}
-        extra={
-          <TouchableOpacityBox onPress={onSendMaxPress}>
-            <Text fontSize={12} color="primaryMain">
-              {t('send.sendMax')}
-            </Text>
-          </TouchableOpacityBox>
-        }
-        footer={amount ? <FeeFooter fee={fee} /> : undefined}
-      />
+      {sendTransfers.map(
+        ({ id, address, addressAlias, addressLoading, amount, fee }) => [
+          <InputField
+            defaultValue={address}
+            onChange={(newAddress) => onAddressChange(id, newAddress)}
+            label={t('send.address.label')}
+            placeholder={t('send.address.placeholder')}
+            extra={
+              <AddressExtra
+                addressLoading={addressLoading}
+                isValidAddress={Address.isValid(address)}
+                onScanPress={onScanPress}
+              />
+            }
+            footer={<AddressAliasFooter addressAlias={addressAlias} />}
+          />,
+          <InputField
+            type="numeric"
+            defaultValue={amount}
+            onChange={(newAmount) => onAmountChange(id, newAmount)}
+            value={amount}
+            label={t('send.amount.label')}
+            placeholder={t('send.amount.placeholder')}
+            extra={
+              <TouchableOpacityBox onPress={onSendMaxPress}>
+                <Text fontSize={12} color="primaryMain">
+                  {t('send.sendMax')}
+                </Text>
+              </TouchableOpacityBox>
+            }
+            footer={amount ? <FeeFooter fee={fee} /> : undefined}
+          />,
+        ],
+      )}
     </Box>
   )
 
   const renderBurnForm = () => (
     <Box>
-      <InputField
-        defaultValue={address}
-        onChange={onAddressChange}
-        label={t('send.address.label')}
-        placeholder={t('send.address.placeholder')}
-        extra={
-          isValidAddress ? (
-            <Box padding="s" position="absolute" right={0}>
-              <Check />
-            </Box>
-          ) : (
-            <TouchableOpacityBox
-              onPress={onScanPress}
-              padding="s"
-              position="absolute"
-              right={0}
-            >
-              <QrCode width={16} color={primaryMain} />
-            </TouchableOpacityBox>
-          )
-        }
-      />
-      <InputField
-        type="numeric"
-        defaultValue={amount}
-        onChange={onAmountChange}
-        value={amount}
-        label={t('send.amount.label')}
-        placeholder={t('send.amount.placeholder')}
-        footer={amount ? <FeeFooter fee={fee} /> : undefined}
-      />
-      <InputField
-        type="numeric"
-        defaultValue={dcAmount}
-        onChange={onDcAmountChange}
-        label={t('send.dcAmount.label')}
-        placeholder={t('send.dcAmount.placeholder')}
-      />
-      <InputField
-        defaultValue={memo}
-        onChange={onMemoChange}
-        label={t('send.memo.label')}
-        placeholder={t('send.memo.placeholder')}
-      />
+      {sendTransfers.map(({ id, address, amount, dcAmount, fee, memo }) => [
+        <InputField
+          defaultValue={address}
+          onChange={(newAddress) => onAddressChange(id, newAddress)}
+          label={t('send.address.label')}
+          placeholder={t('send.address.placeholder')}
+          extra={
+            Address.isValid(address) ? (
+              <Box padding="s" position="absolute" right={0}>
+                <Check />
+              </Box>
+            ) : (
+              <TouchableOpacityBox
+                onPress={onScanPress}
+                padding="s"
+                position="absolute"
+                right={0}
+              >
+                <QrCode width={16} color={primaryMain} />
+              </TouchableOpacityBox>
+            )
+          }
+        />,
+        <InputField
+          type="numeric"
+          defaultValue={amount}
+          onChange={(newAmount) => onAmountChange(id, newAmount)}
+          value={amount}
+          label={t('send.amount.label')}
+          placeholder={t('send.amount.placeholder')}
+          footer={amount ? <FeeFooter fee={fee} /> : undefined}
+        />,
+        <InputField
+          type="numeric"
+          defaultValue={dcAmount}
+          onChange={(newDcAmount) => onDcAmountChange(id, newDcAmount)}
+          label={t('send.dcAmount.label')}
+          placeholder={t('send.dcAmount.placeholder')}
+        />,
+        <InputField
+          defaultValue={memo}
+          onChange={(newMemo) => onMemoChange(id, newMemo)}
+          label={t('send.memo.label')}
+          placeholder={t('send.memo.placeholder')}
+        />,
+      ])}
     </Box>
   )
 
   const renderSellerTransferForm = () => (
     <Box>
-      <InputField
-        defaultValue={address}
-        onChange={onAddressChange}
-        label={t('send.address.label_transfer')}
-        placeholder={t('send.address.placeholder')}
-        extra={
-          isValidAddress ? (
-            <Box padding="s" position="absolute" right={0}>
-              <Check />
-            </Box>
-          ) : (
-            <TouchableOpacityBox
-              onPress={onScanPress}
-              padding="s"
-              position="absolute"
-              right={0}
-            >
-              <QrCode width={16} color={primaryMain} />
-            </TouchableOpacityBox>
-          )
-        }
-      />
-      <InputField
-        type="numeric"
-        defaultValue={amount}
-        onChange={onAmountChange}
-        value={amount}
-        numberOfLines={2}
-        label={t('send.amount.label_transfer')}
-        placeholder={t('send.amount.placeholder_transfer')}
-      />
+      {sendTransfers.map(({ id, address, amount }) => [
+        <InputField
+          defaultValue={address}
+          onChange={(newAddress) => onAddressChange(id, newAddress)}
+          label={t('send.address.label_transfer')}
+          placeholder={t('send.address.placeholder')}
+          extra={
+            Address.isValid(address) ? (
+              <Box padding="s" position="absolute" right={0}>
+                <Check />
+              </Box>
+            ) : (
+              <TouchableOpacityBox
+                onPress={onScanPress}
+                padding="s"
+                position="absolute"
+                right={0}
+              >
+                <QrCode width={16} color={primaryMain} />
+              </TouchableOpacityBox>
+            )
+          }
+        />,
+        <InputField
+          type="numeric"
+          defaultValue={amount}
+          onChange={(newAmount) => onAmountChange(id, newAmount)}
+          value={amount}
+          numberOfLines={2}
+          label={t('send.amount.label_transfer')}
+          placeholder={t('send.amount.placeholder_transfer')}
+        />,
+      ])}
     </Box>
   )
 
   const renderBuyerTransferForm = () => (
     <Box>
-      <LockedField
-        label={t('send.address.seller')}
-        value={transferData?.seller || ''}
-      />
-      <LockedField
-        label={t('send.amount.label_transfer')}
-        value={
-          transferData?.amountToSeller?.floatBalance?.toLocaleString(locale) ||
-          '0'
-        }
-        footer={<FeeFooter fee={fee} />}
-      />
-      <LockedField
-        label={t('send.hotspot_label')}
-        value={transferData ? animalName(transferData.gateway) : ''}
-        footer={
-          <Text variant="mono" color="grayText" fontSize={11} paddingTop="xs">
-            {t('send.last_activity', {
-              activity: lastReportedActivity || t('transfer.unknown'),
-            })}
-          </Text>
-        }
-      />
+      {sendTransfers.map(({ fee }) => [
+        <LockedField
+          label={t('send.address.seller')}
+          value={transferData?.seller || ''}
+        />,
+        <LockedField
+          label={t('send.amount.label_transfer')}
+          value={
+            transferData?.amountToSeller?.floatBalance?.toLocaleString(
+              locale,
+            ) || '0'
+          }
+          footer={<FeeFooter fee={fee} />}
+        />,
+        <LockedField
+          label={t('send.hotspot_label')}
+          value={transferData ? animalName(transferData.gateway) : ''}
+          footer={
+            <Text variant="mono" color="grayText" fontSize={11} paddingTop="xs">
+              {t('send.last_activity', {
+                activity: lastReportedActivity || t('transfer.unknown'),
+              })}
+            </Text>
+          }
+        />,
+      ])}
     </Box>
   )
 
