@@ -2,21 +2,43 @@ import React, { useEffect, useState } from 'react'
 import { Alert } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
-import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
-import { Address } from '@helium/crypto-react-native'
 import { useAsync } from 'react-async-hook'
 import { useSelector } from 'react-redux'
+import { some } from 'lodash'
+import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
+import { Address } from '@helium/crypto-react-native'
 import { Hotspot } from '@helium/http'
 import { TransferHotspotV1 } from '@helium/transactions'
-import { some } from 'lodash'
+
+// Redux
 import { RootState } from '../../../store/rootReducer'
+import { useAppDispatch } from '../../../store/store'
+import {
+  createTransfer,
+  deleteTransfer,
+  getTransfer,
+  Transfer,
+} from '../../hotspots/transfers/TransferRequests'
+import {
+  fetchCurrentOraclePrice,
+  fetchPredictedOraclePrice,
+} from '../../../store/helium/heliumDataSlice'
+import useSubmitTxn from '../../../hooks/useSubmitTxn'
+
+// Components
 import Box from '../../../components/Box'
-import useHaptic from '../../../utils/useHaptic'
-import { QrScanResult } from '../scan/scanTypes'
-import SendHeader from './SendHeader'
-import { SendTransfer, SendType } from './sendTypes'
 import SendAmountAvailableBanner from './SendAmountAvailableBanner'
+import SendHeader from './SendHeader'
 import SendForm from './SendForm'
+import Text from '../../../components/Text'
+import TransferBanner from '../../hotspots/transfers/TransferBanner'
+
+// Types
+import { QrScanResult } from '../scan/scanTypes'
+import { SendTransfer, SendType } from './sendTypes'
+
+// Utils
+import useHaptic from '../../../utils/useHaptic'
 import {
   calculateBurnTxnFee,
   calculatePaymentTxnFee,
@@ -36,23 +58,9 @@ import {
   getHotspotsLastChallengeActivity,
 } from '../../../utils/appDataClient'
 import * as Logger from '../../../utils/logger'
-import TransferBanner from '../../hotspots/transfers/TransferBanner'
-import {
-  createTransfer,
-  deleteTransfer,
-  getTransfer,
-  Transfer,
-} from '../../hotspots/transfers/TransferRequests'
 import { getAddress } from '../../../utils/secureAccount'
-import Text from '../../../components/Text'
-import useSubmitTxn from '../../../hooks/useSubmitTxn'
 import { ensLookup } from '../../../utils/explorerClient'
 import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
-import { useAppDispatch } from '../../../store/store'
-import {
-  fetchCurrentOraclePrice,
-  fetchPredictedOraclePrice,
-} from '../../../store/helium/heliumDataSlice'
 
 type Props = {
   scanResult?: QrScanResult
@@ -62,6 +70,10 @@ type Props = {
 }
 
 const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
+  /* ********* */
+  /* HOOK INIT */
+  /* ********* */
+
   const navigation = useNavigation()
   const { t } = useTranslation()
   const { networkTokensToDataCredits } = useCurrency()
@@ -79,6 +91,10 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     if (!account?.speculativeNonce) return 1
     return account.speculativeNonce + 1
   }
+
+  /* ********** */
+  /* STATE INIT */
+  /* ********** */
 
   const [type, setType] = useState<SendType>(sendType || 'payment')
   const [isLocked, setIsLocked] = useState(false)
@@ -98,12 +114,11 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     },
   ])
   const setSendTransfer = (sendTransferId: number, changes = {}) => {
-    const updatedSendTransfers = sendTransfers.map((sendTransfer) => {
-      return sendTransfer.id === sendTransferId
-        ? { ...sendTransfer, ...changes }
-        : sendTransfer
-    })
-    setSendTransfers(updatedSendTransfers)
+    setSendTransfers(
+      sendTransfers.map((transfer) =>
+        transfer.id === sendTransferId ? { ...transfer, ...changes } : transfer,
+      ),
+    )
   }
   const setAddress = (id: number, address: string) =>
     setSendTransfer(id, { address })
@@ -126,30 +141,16 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     setSendTransfer(id, { fee })
   const setMemo = (id: number, memo: string) => setSendTransfer(id, { memo })
 
+  /* ******** */
+  /* ON MOUNT */
+  /* ******** */
+
   // update oracles
   useEffect(() => {
     dispatch(fetchCurrentOraclePrice())
     dispatch(fetchPredictedOraclePrice())
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  // load last hotspot activity for transfer
-  const [lastReportedActivity, setLastReportedActivity] = useState<string>()
-  const [hasValidActivity, setHasValidActivity] = useState<boolean>()
-  const [stalePocBlockCount, setStalePocBlockCount] = useState<number>()
-  useAsync(async () => {
-    if (type === 'transfer' && hotspot?.address && blockHeight) {
-      const chainVars = await getChainVars()
-      const staleBlockCount = chainVars.transferHotspotStalePocBlocks as number
-      const reportedActivity = await getHotspotsLastChallengeActivity(
-        hotspot.address,
-      )
-      const lastActiveBlock = reportedActivity.block || 0
-      setLastReportedActivity(reportedActivity.text)
-      setHasValidActivity(blockHeight - lastActiveBlock < staleBlockCount)
-      setStalePocBlockCount(staleBlockCount)
-    }
-  }, [hotspot?.address, blockHeight, type])
 
   // load transfer data
   const [transferData, setTransferData] = useState<Transfer>()
@@ -178,6 +179,28 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  /* ************** */
+  /* ON PROP UPDATE */
+  /* ************** */
+
+  // load last hotspot activity for transfer
+  const [lastReportedActivity, setLastReportedActivity] = useState<string>()
+  const [hasValidActivity, setHasValidActivity] = useState<boolean>()
+  const [stalePocBlockCount, setStalePocBlockCount] = useState<number>()
+  useAsync(async () => {
+    if (type === 'transfer' && hotspot?.address && blockHeight) {
+      const chainVars = await getChainVars()
+      const staleBlockCount = chainVars.transferHotspotStalePocBlocks as number
+      const reportedActivity = await getHotspotsLastChallengeActivity(
+        hotspot.address,
+      )
+      const lastActiveBlock = reportedActivity.block || 0
+      setLastReportedActivity(reportedActivity.text)
+      setHasValidActivity(blockHeight - lastActiveBlock < staleBlockCount)
+      setStalePocBlockCount(staleBlockCount)
+    }
+  }, [hotspot?.address, blockHeight, type])
 
   // process scan results
   useEffect(() => {
@@ -221,53 +244,9 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scanResult])
 
-  // compute equivalent dc amount for burn txns
-  const updateDcAmount = async (
-    sendTransferId: number,
-    balanceAmount: Balance<NetworkTokens>,
-  ) => {
-    if (type !== 'dc_burn') return
-    const sendTransfer = sendTransfers.find(({ id }) => id === sendTransferId)
-    if (!sendTransfer) return
-    const balanceDc = await networkTokensToDataCredits(balanceAmount)
-    if (!balanceDc) return
-    const balanceDcString = balanceDc.toString(0, {
-      decimalSeparator,
-      groupSeparator,
-      showTicker: false,
-    })
-    setDcAmount(sendTransferId, balanceDcString)
-  }
-
-  const updateFee = async (
-    sendTransferId: number,
-    balanceAmount: Balance<NetworkTokens>,
-  ) => {
-    const sendTransfer = sendTransfers.find(({ id }) => id === sendTransferId)
-    if (!sendTransfer) return
-    const { address, memo } = sendTransfer
-    let dcFee
-    if (type === 'payment') {
-      dcFee = await calculatePaymentTxnFee(
-        balanceAmount.integerBalance,
-        getNonce(),
-        address,
-      )
-    } else if (type === 'dc_burn') {
-      dcFee = await calculateBurnTxnFee(
-        balanceAmount.integerBalance,
-        address,
-        getNonce(),
-        memo,
-      )
-    } else if (type === 'transfer') {
-      dcFee = await calculateTransferTxnFee(transferData?.partialTransaction)
-    } else {
-      throw new Error('Unsupported transaction type')
-    }
-    const hntFee = feeToHNT(dcFee)
-    setFee(sendTransferId, hntFee)
-  }
+  /* *************** */
+  /* ON STATE UPDATE */
+  /* *************** */
 
   // validate transaction
   useEffect(() => {
@@ -328,6 +307,10 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     return updateFee(sendTransferId, balanceAmount)
   }, [transferData?.amountToSeller])
 
+  /* ******************** */
+  /* STATE UPDATE HELPERS */
+  /* ******************** */
+
   const setMaxAmount = () => {
     triggerNavHaptic()
     if (sendTransfers.length > 1) return
@@ -351,6 +334,59 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       })
       handleAmountChange(id, maxAmountStr)
     }
+  }
+
+  const unlockForm = () => {
+    setIsLocked(false)
+    triggerNavHaptic()
+  }
+
+  // compute equivalent dc amount for burn txns
+  const updateDcAmount = async (
+    sendTransferId: number,
+    balanceAmount: Balance<NetworkTokens>,
+  ) => {
+    if (type !== 'dc_burn') return
+    const sendTransfer = sendTransfers.find(({ id }) => id === sendTransferId)
+    if (!sendTransfer) return
+    const balanceDc = await networkTokensToDataCredits(balanceAmount)
+    if (!balanceDc) return
+    const balanceDcString = balanceDc.toString(0, {
+      decimalSeparator,
+      groupSeparator,
+      showTicker: false,
+    })
+    setDcAmount(sendTransferId, balanceDcString)
+  }
+
+  const updateFee = async (
+    sendTransferId: number,
+    balanceAmount: Balance<NetworkTokens>,
+  ) => {
+    const sendTransfer = sendTransfers.find(({ id }) => id === sendTransferId)
+    if (!sendTransfer) return
+    const { address, memo } = sendTransfer
+    let dcFee
+    if (type === 'payment') {
+      dcFee = await calculatePaymentTxnFee(
+        balanceAmount.integerBalance,
+        getNonce(),
+        address,
+      )
+    } else if (type === 'dc_burn') {
+      dcFee = await calculateBurnTxnFee(
+        balanceAmount.integerBalance,
+        address,
+        getNonce(),
+        memo,
+      )
+    } else if (type === 'transfer') {
+      dcFee = await calculateTransferTxnFee(transferData?.partialTransaction)
+    } else {
+      throw new Error('Unsupported transaction type')
+    }
+    const hntFee = feeToHNT(dcFee)
+    setFee(sendTransferId, hntFee)
   }
 
   const checkTransferAmountChanged = (transfer: Transfer) => {
@@ -564,6 +600,10 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     }
   }
 
+  /* *********** */
+  /* NAV HELPERS */
+  /* *********** */
+
   const navBack = () => {
     navigation.navigate('Wallet')
     triggerNavHaptic()
@@ -571,11 +611,6 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
 
   const navScan = () => {
     navigation.navigate('SendScan')
-    triggerNavHaptic()
-  }
-
-  const unlockForm = () => {
-    setIsLocked(false)
     triggerNavHaptic()
   }
 
