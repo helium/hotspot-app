@@ -490,7 +490,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       Alert.alert(t('generic.error'), t('send.error'))
       throw new Error('failed to create seller TransferHotspotV1 transaction')
     }
-    const transfer = createTransfer(
+    const transfer = await createTransfer(
       hotspot.address,
       seller?.b58,
       address,
