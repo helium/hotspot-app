@@ -143,6 +143,7 @@ export default {
       nebraout: 'Nebra Outdoor Hotspot',
       bobcat: 'Bobcat Miner 300',
       syncrobit: 'SyncroB.it Hotspot',
+      longapone: 'LongAP One Hotspot',
       third_party_header: 'Other Hotspots',
       helium_edition: 'For the Helium Network',
       fine_print:
@@ -184,6 +185,8 @@ export default {
         '<b><white>Diagnostic support allows Bobcat to identify issues with your Hotspot in a secure way.</white></b>\n\nBobcat will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@bobcatminer.com</b></purple> from the email used to purchase the Hotspot.',
       syncrobit_p_1:
         '<b><white>Diagnostic support allows SyncroB.it to identify issues with your Hotspot in a secure way.</white></b>\n\nSyncroB.it will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@syncrob.it</b></purple> from the email used to purchase the Hotspot.',
+      longap_p_1:
+        '<b><white>Diagnostic support allows LongAP to identify issues with your Hotspot in a secure way.</white></b>\n\nLongAP will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@longap.com</b></purple> from the email used to purchase the Hotspot.',
     },
     power: {
       title: 'Power Up',
@@ -199,6 +202,8 @@ export default {
       bobcat_subtitle_1:
         'Plug in the provided power adapter into an outlet near a window and screw in the provided antenna on the back of the Hotspot.',
       syncrobit_subtitle_1: 'Attach the antenna and plug in the device',
+      longapone_subtitle_1:
+        'Attach the antenna\'s and plug in the provided power adapter.',
       helium_subtitle_2:
         'Your Hotspot will boot up, and its light will become Green when ready.',
       rak_subtitle_2:
@@ -211,6 +216,8 @@ export default {
         'The Hotspot is ready when the light goes from red to yellow.',
       syncrobit_subtitle_2:
         'The SyncroB.it Hotspot LED bar will light up blue once it’s powered on.',
+      longapone_subtitle_2:
+        'The LongAP One PWR LED will light up once it’s powered on.',
     },
     pair: {
       title: 'Bluetooth',
@@ -225,6 +232,8 @@ export default {
         'Use the provided pin to press the BT Button on the back of the Hotspot and hold for 5 seconds.',
       syncrobit_subtitle_1:
         'There is no pairing button on the SyncroB.it Hotspot.',
+      longapone_subtitle_1:
+        'Use a paperclip to shortly press the button in the little hole right of the LEDs.',
       helium_subtitle_2:
         "Ensure your phone's bluetooth is on before proceeding",
       rak_subtitle_2:
@@ -237,6 +246,8 @@ export default {
         'The hotspot is ready to pair when the light goes from yellow to blue.\n\nMake sure your phone’s Bluetooth is turned on!',
       syncrobit_subtitle_2:
         'Bluetooth is automatically enabled for 5 minutes after the SyncroB.it Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.',
+      longapone_subtitle_2:
+        'Once the PWR LED is slowly blinking\n\nPress Next to scan.',
       alert_no_permissions: {
         title: 'Authorize Bluetooth',
         body:

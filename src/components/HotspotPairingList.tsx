@@ -25,6 +25,9 @@ const imagesByHotspotName: Record<string, any> = {
   'SyncroB.it Hotspot': (
     <Image source={require('../assets/images/syncrobit-hotspot.png')} />
   ),
+  'LongAP One': (
+   <Image source={require('../assets/images/longap-one-hotspot.png')} />
+  ),
 }
 
 const HotspotPairingList = ({
