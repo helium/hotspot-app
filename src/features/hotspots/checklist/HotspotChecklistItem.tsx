@@ -141,14 +141,14 @@ const HotspotChecklistItem = ({
     <Box
       marginHorizontal={isAndroid ? undefined : 'xs'}
       width={isAndroid ? wp(100) : undefined}
-      padding={isAndroid ? 's' : undefined}
+      paddingHorizontal={isAndroid ? 'm' : undefined}
     >
       <Box
         padding="m"
         backgroundColor={backgroundColor}
         borderRadius="l"
         justifyContent="space-between"
-        height={isAndroid ? 196 : 180}
+        height={180}
         overflow="hidden"
       >
         <Background />
@@ -160,7 +160,7 @@ const HotspotChecklistItem = ({
             autoText={autoText}
             auto={t('checklist.auto')}
           />
-          <Text variant="h3" marginTop="l" color={textColor}>
+          <Text variant="h3" marginTop="l" color={textColor} paddingTop="xs">
             {title}
           </Text>
           <Text
