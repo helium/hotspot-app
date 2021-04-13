@@ -12,7 +12,7 @@ import NEBRAIN from '../../../assets/images/nebra-in.svg'
 import NEBRAOUT from '../../../assets/images/nebra-out.svg'
 import BOBCAT from '../../../assets/images/bobcat.svg'
 import SYNCROBIT from '../../../assets/images/syncrobit.svg'
-import LONGAPONE from  '../../../assets/images/longapone.svg'
+import LONGAPONE from '../../../assets/images/longap-one.svg'
 import Text from '../../../components/Text'
 
 type Props = {
