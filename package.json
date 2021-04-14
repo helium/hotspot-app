@@ -50,6 +50,7 @@
     "@react-native-community/clipboard": "^1.5.1",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-native-mapbox-gl/maps": "^8.0.0",
+    "@react-native-segmented-control/segmented-control": "^2.3.0",
     "@react-navigation/bottom-tabs": "5.11.3",
     "@react-navigation/native": "^5.8.4",
     "@react-navigation/stack": "^5.12.1",

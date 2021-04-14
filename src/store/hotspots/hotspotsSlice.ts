@@ -22,7 +22,7 @@ export enum HotspotSort {
 
 type Rewards = Record<string, Sum>
 
-type HotspotsSliceState = {
+export type HotspotsSliceState = {
   hotspots: Hotspot[]
   orderedHotspots: Hotspot[]
   loadingOrderedHotspots: boolean
@@ -314,6 +314,9 @@ const hotspotsSlice = createSlice({
       state.hotspots = action.payload.hotspots
       state.hotspotsLoaded = true
       state.failure = false
+      if (state.hotspots.length === 0) {
+        state.order = HotspotSort.Followed
+      }
     })
     builder.addCase(fetchRewards.fulfilled, (state, action) => {
       state.rewards = action.payload.rewards
