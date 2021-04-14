@@ -62,9 +62,9 @@ export const loadLocationFeeData = async (
 ) => {
   const isFree = await hasFreeLocationAssert(nonce, onboardingRecord)
   const owner = await getAddress()
-  const payer = isFree ? onboardingRecord?.maker.address : ''
+  const payer = isFree ? onboardingRecord?.maker.address : owner
 
-  if (!owner || payer === undefined) {
+  if (!owner || !payer) {
     throw new Error('Missing payer or owner')
   }
 

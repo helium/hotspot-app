@@ -101,7 +101,7 @@ export const calculateAssertLocFee = (
     gateway: emptyB58Address(),
     payer,
     location: 'fffffffffffffff',
-    gain: 1,
+    gain: 12,
     elevation: 1,
     nonce,
   })

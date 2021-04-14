@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Hotspot } from '@helium/http'
 import { useTranslation } from 'react-i18next'
-import { Alert } from 'react-native'
+import { ActivityIndicator, Alert } from 'react-native'
 import { useAsync } from 'react-async-hook'
 import { getCountry } from 'react-native-localize'
 import Text from '../../../../components/Text'
@@ -46,6 +46,7 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
   const [locationName, setLocationName] = useState<string>()
   const [fullScreen, setFullScreen] = useState(false)
   const [isLocationChange, setIsLocationChange] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const { result: onboardingRecord } = useAsync(async () => {
     const record = await getOnboardingRecord(hotspot.address)
@@ -133,6 +134,7 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
   }
 
   const onSubmit = async () => {
+    setLoading(true)
     try {
       const txn = await assertLocationTxn(
         hotspot.address,
@@ -146,6 +148,7 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
       )
       if (txn) {
         await submitTxn(txn)
+        onClose()
       } else {
         Logger.error(new Error('Assert failed with null txn'))
         Alert.alert(
@@ -160,6 +163,7 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
         t('hotspot_setup.add_hotspot.assert_loc_error_body'),
       )
     }
+    setLoading(false)
   }
 
   const StatePicker = () => (
@@ -259,7 +263,9 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
         title={t('generic.submit')}
         mode="contained"
         variant="primary"
+        icon={loading ? <ActivityIndicator color="white" /> : undefined}
         onPress={onSubmit}
+        disabled={loading}
       />
     </Box>
   )
