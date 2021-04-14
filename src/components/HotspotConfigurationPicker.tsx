@@ -1,5 +1,5 @@
 import { Alert, TextInput, TouchableWithoutFeedback } from 'react-native'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import HeliumActionSheet from './HeliumActionSheet'
 import Box from './Box'
@@ -131,6 +131,15 @@ const HotspotConfigurationPicker = ({
     setElevation(stringElevation)
     onElevationUpdated(parseInt(stringElevation, 10))
   }
+
+  useEffect(() => {
+    setGain(
+      selectedAntenna.gain.toLocaleString(locale, {
+        maximumFractionDigits: 1,
+        minimumFractionDigits: 1,
+      }),
+    )
+  }, [selectedAntenna])
 
   return (
     <Box

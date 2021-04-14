@@ -142,6 +142,7 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
         elevation,
         hotspot.nonce,
         onboardingRecord,
+        isLocationChange,
       )
       if (txn) {
         await submitTxn(txn)

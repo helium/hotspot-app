@@ -14,17 +14,21 @@ export const assertLocationTxn = async (
   elevation = 0,
   nonce = 0,
   onboardingRecord: OnboardingRecord | undefined,
+  updatingLocation: boolean,
 ) => {
+  const newNonce = nonce + 1
   const isFree = await hasFreeLocationAssert(nonce, onboardingRecord)
   const owner = await getAddress()
-  const payer = isFree ? onboardingRecord?.maker.address : await getAddress()
+  const payer = isFree ? onboardingRecord?.maker.address : owner
 
   if (!owner || !payer || !gateway || !lat || !lng) {
     return undefined
   }
 
   const antennaGain = gain * 10
-  const stakingFee = Transaction.stakingFeeTxnAssertLocationV1
+  const stakingFee = updatingLocation
+    ? Transaction.stakingFeeTxnAssertLocationV1
+    : 0
   const location = getH3Location(lat, lng)
 
   const txn = await makeAssertLocTxn(
@@ -32,7 +36,7 @@ export const assertLocationTxn = async (
     gateway,
     payer,
     location,
-    nonce,
+    newNonce,
     antennaGain,
     elevation,
     stakingFee,

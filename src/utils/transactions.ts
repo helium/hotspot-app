@@ -60,6 +60,8 @@ export const makeAssertLocTxn = async (
   const owner = Address.fromB58(ownerB58)
   const gateway = Address.fromB58(gatewayB58)
   const payer = Address.fromB58(payerB58)
+  const ownerIsPayer = payerB58 === ownerB58
+
   const assertLocTxn = new AssertLocationV2({
     owner,
     gateway,
@@ -73,6 +75,7 @@ export const makeAssertLocTxn = async (
 
   return assertLocTxn.sign({
     owner: keypair,
+    payer: ownerIsPayer ? keypair : undefined,
   })
 }
 

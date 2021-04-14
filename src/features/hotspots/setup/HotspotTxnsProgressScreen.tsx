@@ -101,6 +101,7 @@ const HotspotTxnsProgressScreen = () => {
           elevation,
           connectedHotspot.details?.nonce,
           connectedHotspot.onboardingRecord,
+          true,
         )
         if (assertLocTxnResponse) {
           await submitTxn(assertLocTxnResponse)
