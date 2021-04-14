@@ -642,6 +642,7 @@ export default {
     received: 'Received HNT',
     added: 'Hotspot Added to Blockchain',
     location: 'Confirm Location',
+    location_v2: 'Update Hotspot',
     transfer: 'Hotspot Transfer',
     transferSell: 'Transfer Hotspot (Sell)',
     transferBuy: 'Transfer Hotspot (Buy)',
@@ -821,6 +822,8 @@ export default {
     owner: 'Owner',
     my_account: 'My Account',
     view_block: 'View Block',
+    elevation: 'Elevation',
+    antenna: 'Antenna',
     rewardTypes: {
       poc_challengees: 'PoC',
       poc_challengers: 'Challenger',

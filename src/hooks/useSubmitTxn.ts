@@ -1,9 +1,10 @@
 import Balance, { CurrencyType } from '@helium/currency'
 import {
-  PendingTransaction as PendingTransactionType,
-  PaymentV2 as HttpPaymentV2,
-  AssertLocationV1 as HttpAssertLocationV1,
   AddGatewayV1 as HttpAddGatewayV1,
+  AssertLocationV1 as HttpAssertLocationV1,
+  AssertLocationV2 as HttpAssertLocationV2,
+  PaymentV2 as HttpPaymentV2,
+  PendingTransaction as PendingTransactionType,
   TransferHotspotV1 as HttpTransferHotspotV1,
 } from '@helium/http'
 import PendingTransaction from '@helium/http/build/models/PendingTransaction'
@@ -112,6 +113,26 @@ const populatePendingTxn = (
     } as HttpAssertLocationV1
 
     return data
+  }
+
+  if (txn instanceof AssertLocationV2) {
+    const pending = txn as AssertLocationV2
+    return {
+      type: pending.type,
+      stakingFee: new Balance(pending.stakingFee, CurrencyType.dataCredit),
+      payerSignature: '',
+      payer: pending.payer?.b58 || '',
+      ownerSignature: '',
+      owner: pending.owner?.b58 || '',
+      nonce: pending.nonce,
+      location: pending.location,
+      height: blockHeight,
+      hash,
+      gateway: pending.gateway?.b58 || '',
+      fee: new Balance(pending.fee, CurrencyType.dataCredit),
+      gain: pending.gain || 0,
+      elevation: pending.elevation || 0,
+    } as HttpAssertLocationV2
   }
 
   if (txn instanceof AddGatewayV1) {
