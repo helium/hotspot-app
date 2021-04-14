@@ -333,6 +333,7 @@ export default {
       next: 'Exit Setup',
       disconnected:
         'There was an error connecting to the Hotspot. Please try again.',
+      title_connect_failed: 'Unable to Proceed',
     },
     add_hotspot: {
       title: 'Add Hotspot',
