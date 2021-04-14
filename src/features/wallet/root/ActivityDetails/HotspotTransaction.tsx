@@ -15,6 +15,7 @@ import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
 import PaymentItem from './PaymentItem'
 import { reverseGeocode } from '../../../../utils/location'
+import { getGeoFromH3 } from '../../../../utils/h3Utils'
 
 const isAssertV1 = (
   arg: AnyTransaction | PendingTransaction,
@@ -74,8 +75,11 @@ const HotspotTransaction = ({ item, address }: Props) => {
 
     if (assertLoc?.lat && assertLoc?.lng) {
       geoCode(assertLoc.lat, assertLoc.lng)
+    } else if (assertLoc?.location) {
+      const geo = getGeoFromH3(assertLoc.location)
+      geoCode(geo[0], geo[1])
     }
-  }, [assertLoc?.lat, assertLoc?.lng])
+  }, [assertLoc?.lat, assertLoc?.lng, assertLoc?.location])
 
   if (
     type !== 'add_gateway_v1' &&
