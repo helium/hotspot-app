@@ -43,10 +43,7 @@ const useBluetooth = () => {
     Logger.breadcrumb('Connect hotspot requested')
 
     try {
-      const device = await hotspotDevice.connect({
-        refreshGatt: 'OnConnected',
-        timeout: 10000,
-      })
+      const device = await hotspotDevice.connect({ refreshGatt: 'OnConnected' })
       Logger.breadcrumb('Hotspot Connected')
       return device
     } catch (e) {
