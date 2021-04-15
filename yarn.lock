@@ -1244,10 +1244,10 @@
   dependencies:
     bignumber.js "^9.0.0"
 
-"@helium/http@^3.31.0":
-  version "3.31.0"
-  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.31.0.tgz#68c95326248ed0229d334dd7a45aa9df6e5821ca"
-  integrity sha512-MnHf2n4Ju0qsWois0+o/nlNpXAP5UBxtPx/ezzjkKSapzHwOAFynJ9PHL3xbye1phs8LdCsoRzfMxYIOFPrEyw==
+"@helium/http@^3.32.0":
+  version "3.32.0"
+  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.32.0.tgz#70d99bf090e1e1112a84fc0fc22563a85b12e472"
+  integrity sha512-8xjTT86A6BUGnHXgXVWYVB6ajhi6sO51etXRQDe6fgXxHMue1kZu93N+CGlHKYfL+4mBx75jBsA0qs02irJssw==
   dependencies:
     "@helium/currency" "^3.25.1"
     axios "^0.21.1"
@@ -9800,6 +9800,11 @@ react-native-keyboard-aware-scroll-view@^0.9.3:
     prop-types "^15.6.2"
     react-native-iphone-x-helper "^1.0.3"
 
+react-native-linear-gradient@^2.5.6:
+  version "2.5.6"
+  resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.5.6.tgz#96215cbc5ec7a01247a20890888aa75b834d44a0"
+  integrity sha512-HDwEaXcQIuXXCV70O+bK1rizFong3wj+5Q/jSyifKFLg0VWF95xh8XQgfzXwtq0NggL9vNjPKXa016KuFu+VFg==
+
 react-native-localize@^1.4.3:
   version "1.4.3"
   resolved "https://registry.yarnpkg.com/react-native-localize/-/react-native-localize-1.4.3.tgz#6fde2fb1e73a7205910419a680cb4734187d556f"
@@ -9888,6 +9893,11 @@ react-native-svg@^12.1.0:
   dependencies:
     css-select "^2.1.0"
     css-tree "^1.0.0-alpha.39"
+
+react-native-text-ticker@^1.12.0:
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/react-native-text-ticker/-/react-native-text-ticker-1.12.0.tgz#dcffe8d62b40e7850d783a8d5fee27cd3a0b8cf9"
+  integrity sha512-L0rvbNsOuGQfxxwbicHgqnk6IhME5igoipTy7zwy4WDYzeErQNssDCqr4RwW3xUcS7ejyYb5Y9A/UGwHf23Edg==
 
 react-native-unimodules@^0.11.0:
   version "0.11.0"

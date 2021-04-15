@@ -49,6 +49,8 @@ const palette = {
   purpleMuted: '#666995',
   purpleBrightMuted: '#7788D4',
   purpleDull: '#474973',
+  purpleText: '#5C5EA0',
+
   greenBright: '#29D391',
   greenMain: '#32C48D',
   greenDark: '#13162E',
