@@ -312,8 +312,6 @@ PODS:
     - React (< 1.0.0, >= 0.13.0)
   - react-native-safe-area-context (3.1.9):
     - React-Core
-  - react-native-segmented-control (2.3.0):
-    - React-Core
   - react-native-sodium (0.3.9):
     - React
   - React-RCTActionSheet (0.63.4):
@@ -512,7 +510,6 @@ DEPENDENCIES:
   - "react-native-mapbox-gl (from `../node_modules/@react-native-mapbox-gl/maps`)"
   - react-native-onesignal (from `../node_modules/react-native-onesignal`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
-  - "react-native-segmented-control (from `../node_modules/@react-native-segmented-control/segmented-control`)"
   - react-native-sodium (from `../node_modules/react-native-sodium`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
@@ -641,8 +638,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-onesignal"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
-  react-native-segmented-control:
-    :path: "../node_modules/@react-native-segmented-control/segmented-control"
   react-native-sodium:
     :path: "../node_modules/react-native-sodium"
   React-RCTActionSheet:
@@ -767,7 +762,6 @@ SPEC CHECKSUMS:
   react-native-mapbox-gl: eec7e5be5b874cfceb79fcfe24d595411015153a
   react-native-onesignal: a69eeb12486e7739ed8f180e6ddd915be77721ba
   react-native-safe-area-context: b6e0e284002381d2ff29fa4fff42b4d8282e3c94
-  react-native-segmented-control: 83a05d42acd1234ad5e061d603c145973a61b5ee
   react-native-sodium: be31e3fd97b1e9abd0853d7623fbec4b390b6615
   React-RCTActionSheet: 89a0ca9f4a06c1f93c26067af074ccdce0f40336
   React-RCTAnimation: 1bde3ecc0c104c55df246eda516e0deb03c4e49b

@@ -1,12 +1,10 @@
 import React, { memo, useMemo, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import { useSelector } from 'react-redux'
 import { Hotspot } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
 import Box from '../../../components/Box'
-import { useColors, useTextVariants } from '../../../theme/themeHooks'
 import SearchInput from '../../../components/SearchInput'
 import hotspotSearchSlice, {
   fetchData,
@@ -19,6 +17,7 @@ import { PlacePrediction } from '../../../utils/googlePlaces'
 import HotspotSearchListItem from './HotspotSearchListItem'
 import animateTransition from '../../../utils/animateTransition'
 import HotspotSearchEmpty from './HotspotSearchEmpty'
+import SegmentedControl from '../../../components/SegmentedControl'
 
 const ItemSeparatorComponent = () => <Box height={1} backgroundColor="white" />
 
@@ -29,8 +28,6 @@ type Props = {
 const HotspotSearch = ({ onSelectHotspot, onSelectPlace }: Props) => {
   const dispatch = useAppDispatch()
   const { t } = useTranslation()
-  const { purpleMain, white } = useColors()
-  const { body2 } = useTextVariants()
   const { hotspots, locations, filter, searchTerm } = useSelector(
     (state: RootState) => state.hotspotSearch,
   )
@@ -44,11 +41,9 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace }: Props) => {
   )
 
   const handleFilterChange = useCallback(
-    (event) =>
+    (value) =>
       dispatch(
-        hotspotSearchSlice.actions.setFilter(
-          HotspotSearchFilterKeys[event.nativeEvent.selectedSegmentIndex],
-        ),
+        hotspotSearchSlice.actions.setFilter(HotspotSearchFilterKeys[value]),
       ),
     [dispatch],
   )
@@ -57,13 +52,6 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace }: Props) => {
     (term) => dispatch(hotspotSearchSlice.actions.setSearchTerm(term)),
     [dispatch],
   )
-
-  const fontStyle = useMemo(() => ({ ...body2, color: white }), [body2, white])
-
-  const activeFontStyle = useMemo(() => ({ ...body2, color: purpleMain }), [
-    body2,
-    purpleMain,
-  ])
 
   useEffect(() => {
     dispatch(fetchData({ filter, searchTerm }))
@@ -138,10 +126,6 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace }: Props) => {
         values={filterNames}
         selectedIndex={selectedFilterIndex}
         onChange={handleFilterChange}
-        tintColor={white}
-        backgroundColor={purpleMain}
-        fontStyle={fontStyle}
-        activeFontStyle={activeFontStyle}
       />
       <SearchInput
         onSearch={updateSearchTerm}
