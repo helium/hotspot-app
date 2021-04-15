@@ -73,7 +73,7 @@ const HotspotsView = ({
     startOnMap ? 'map' : 'list',
   )
   const [location, setLocation] = useState(propsLocation)
-  const [prevViewState, setPrevViewState] = useState<ViewState>(viewState)
+  const [backViewState, setBackViewState] = useState<ViewState>(viewState)
   const [detailsSnapIndex, setDetailsSnapIndex] = useState(startOnMap ? 0 : 1)
 
   const listRef = useRef<BottomSheetModal>(null)
@@ -106,10 +106,10 @@ const HotspotsView = ({
   )
 
   const updateViewState = useCallback(
-    (nextState: ViewState) => {
+    (nextState: ViewState, backState: ViewState = 'list') => {
       if (nextState === viewState) return
 
-      setPrevViewState(viewState)
+      setBackViewState(backState)
       if (viewState !== 'map' && Platform.OS !== 'android') {
         // this animation causes a crash on android
         animateTransition()
@@ -169,8 +169,8 @@ const HotspotsView = ({
   }, [])
 
   const handlePresentDetails = useCallback(
-    (hotspot: Hotspot) => {
-      updateViewState('details')
+    (backView: ViewState) => (hotspot: Hotspot) => {
+      updateViewState('details', backView)
       setSelectedHotspot(hotspot)
     },
     [updateViewState],
@@ -183,7 +183,7 @@ const HotspotsView = ({
 
   const handleSelectPlace = useCallback(
     async (place: PlacePrediction) => {
-      updateViewState('map')
+      updateViewState('map', 'search')
       setSelectedHotspot(undefined)
       const placeLocation = await getPlaceGeography(place.placeId)
       setLocation([placeLocation.lng, placeLocation.lat])
@@ -205,13 +205,9 @@ const HotspotsView = ({
   }, [updateViewState])
 
   const handleBack = useCallback(() => {
-    if (prevViewState === 'search') {
-      updateViewState(prevViewState)
-    } else {
-      updateViewState('list')
-    }
+    updateViewState(backViewState)
     dispatch(hotspotDetailsSlice.actions.clearHotspotDetails())
-  }, [dispatch, prevViewState, updateViewState])
+  }, [dispatch, backViewState, updateViewState])
 
   useEffect(() => {
     const navParent = navigation.dangerouslyGetParent() as BottomTabNavigationProp<RootStackParamList>
@@ -230,9 +226,12 @@ const HotspotsView = ({
         ...properties,
       } as Hotspot
       setSelectedHotspot(hotspot)
-      updateViewState('details_and_map')
+      updateViewState(
+        'details_and_map',
+        backViewState === 'search' ? 'search' : 'list',
+      )
     },
-    [updateViewState],
+    [backViewState, updateViewState],
   )
 
   const backdropStyles = useAnimatedStyle(
@@ -302,14 +301,14 @@ const HotspotsView = ({
     if (viewState === 'search') {
       return (
         <HotspotSearch
-          onSelectHotspot={handlePresentDetails}
+          onSelectHotspot={handlePresentDetails('search')}
           onSelectPlace={handleSelectPlace}
         />
       )
     }
 
     if (hasHotspots)
-      return <HotspotsList onSelectHotspot={handlePresentDetails} />
+      return <HotspotsList onSelectHotspot={handlePresentDetails('list')} />
 
     return (
       <HotspotsEmpty
