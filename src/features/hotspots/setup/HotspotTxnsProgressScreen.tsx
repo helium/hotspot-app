@@ -94,7 +94,7 @@ const HotspotTxnsProgressScreen = () => {
       const [lng, lat] = hotspotCoords
       try {
         const assertLocTxnResponse = await assertLocationTxn(
-          connectedHotspot.onboardingAddress,
+          connectedHotspot.address,
           lat,
           lng,
           gain,

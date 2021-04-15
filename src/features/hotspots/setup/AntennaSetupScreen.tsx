@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
 import { getCountry } from 'react-native-localize'
 import { useSelector } from 'react-redux'
+import { KeyboardAvoidingView, StyleSheet } from 'react-native'
 import Box from '../../../components/Box'
 import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
 import BackScreen from '../../../components/BackScreen'
@@ -60,40 +61,51 @@ const AntennaSetupScreen = () => {
 
   return (
     <BackScreen>
-      <Box flex={1} marginTop="m">
-        <Box
-          height={52}
-          width={52}
-          backgroundColor="purple500"
-          borderRadius="m"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <DiscoveryModeIcon color={colors.purpleMain} width={30} height={22} />
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoidingView}
+        behavior="padding"
+      >
+        <Box flex={1} justifyContent="center" paddingBottom="xxl">
+          <Box
+            height={52}
+            width={52}
+            backgroundColor="purple500"
+            borderRadius="m"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <DiscoveryModeIcon
+              color={colors.purpleMain}
+              width={30}
+              height={22}
+            />
+          </Box>
+          <Box>
+            <Text
+              variant="h1"
+              marginBottom="s"
+              marginTop="l"
+              maxFontSizeMultiplier={1}
+            >
+              {t('antennas.onboarding.title')}
+            </Text>
+            <Text
+              variant="subtitleLight"
+              numberOfLines={2}
+              adjustsFontSizeToFit
+              maxFontSizeMultiplier={1.3}
+            >
+              {t('antennas.onboarding.subtitle')}
+            </Text>
+          </Box>
+          <HotspotConfigurationPicker
+            selectedAntenna={antenna}
+            onAntennaUpdated={setAntenna}
+            onGainUpdated={setGain}
+            onElevationUpdated={setElevation}
+          />
         </Box>
-        <Text
-          variant="h1"
-          marginBottom="s"
-          marginTop="l"
-          maxFontSizeMultiplier={1}
-        >
-          {t('antennas.onboarding.title')}
-        </Text>
-        <Text
-          variant="subtitleLight"
-          numberOfLines={2}
-          adjustsFontSizeToFit
-          maxFontSizeMultiplier={1.3}
-        >
-          {t('antennas.onboarding.subtitle')}
-        </Text>
-        <HotspotConfigurationPicker
-          selectedAntenna={antenna}
-          onAntennaUpdated={setAntenna}
-          onGainUpdated={setGain}
-          onElevationUpdated={setElevation}
-        />
-      </Box>
+      </KeyboardAvoidingView>
       <Button
         title={t('generic.next')}
         mode="contained"
@@ -103,5 +115,7 @@ const AntennaSetupScreen = () => {
     </BackScreen>
   )
 }
+
+const styles = StyleSheet.create({ keyboardAvoidingView: { flex: 1 } })
 
 export default AntennaSetupScreen

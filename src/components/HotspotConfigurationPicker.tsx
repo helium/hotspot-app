@@ -221,7 +221,6 @@ const HotspotConfigurationPicker = ({
           />
         </Box>
       </TouchableWithoutFeedback>
-      {!outline && <Box backgroundColor="grayLight" height={1} />}
     </Box>
   )
 }
