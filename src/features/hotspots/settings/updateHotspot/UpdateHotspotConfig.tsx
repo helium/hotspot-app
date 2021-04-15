@@ -21,9 +21,13 @@ import ReassertLocation, {
 import UpdateHotspotHeader from './UpdateHotspotHeader'
 import { useHotspotSettingsContext } from '../HotspotSettingsProvider'
 import HotspotLocationPreview from './HotspotLocationPreview'
-import { assertLocationTxn } from '../../../../utils/assertLocationUtils'
+import {
+  assertLocationTxn,
+  loadLocationFeeData,
+} from '../../../../utils/assertLocationUtils'
 import { getOnboardingRecord } from '../../../../utils/stakingClient'
 import useSubmitTxn from '../../../../hooks/useSubmitTxn'
+import { decimalSeparator, groupSeparator } from '../../../../utils/i18n'
 
 type Props = {
   onClose: () => void
@@ -47,6 +51,7 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
   const [fullScreen, setFullScreen] = useState(false)
   const [isLocationChange, setIsLocationChange] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [locationFee, setLocationFee] = useState('')
 
   const { result: onboardingRecord } = useAsync(async () => {
     const record = await getOnboardingRecord(hotspot.address)
@@ -118,11 +123,18 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
     }
   }
 
-  const onFinishReassert = (
+  const onFinishReassert = async (
     updatedLocation: Coords | undefined,
     name: string,
   ) => {
     if (updatedLocation) {
+      const feeData = await loadLocationFeeData()
+      setLocationFee(
+        feeData.totalStakingAmountDC.toString(0, {
+          groupSeparator,
+          decimalSeparator,
+        }),
+      )
       setFullScreen(false)
       enableBack(onClose)
       setLocation(updatedLocation)
@@ -257,7 +269,7 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
         {t('generic.fee')}
       </Text>
       <Text variant="body1Medium" color="grayLightText" marginBottom="l">
-        55,000 DC
+        {locationFee}
       </Text>
       <Button
         title={t('generic.submit')}

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import Box from '../../../../components/Box'
 import Map from '../../../../components/Map'
 import ImageBox from '../../../../components/ImageBox'
@@ -53,4 +53,4 @@ const HotspotLocationPreview = ({
   )
 }
 
-export default HotspotLocationPreview
+export default memo(HotspotLocationPreview)

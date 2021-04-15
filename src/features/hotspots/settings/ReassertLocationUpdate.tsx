@@ -97,7 +97,7 @@ const ReassertLocationUpdate = ({
       </Box>
 
       <Map
-        showUserLocation={!confirming}
+        showUserLocation={!confirming && !coords}
         mapCenter={coords ? [coords.longitude, coords.latitude] : undefined}
         zoomLevel={16}
         onMapMoved={onMapMoved}
