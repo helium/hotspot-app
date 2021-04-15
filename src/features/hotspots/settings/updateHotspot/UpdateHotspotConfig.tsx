@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Hotspot } from '@helium/http'
 import { useTranslation } from 'react-i18next'
-import { ActivityIndicator, Alert } from 'react-native'
+import { ActivityIndicator, Alert, Platform } from 'react-native'
 import { useAsync } from 'react-async-hook'
 import { getCountry } from 'react-native-localize'
 import Text from '../../../../components/Text'
@@ -83,23 +83,29 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
     return record
   }, [hotspot.address, country])
 
-  const { enableBack } = useHotspotSettingsContext()
+  const { enableBack, disableBack } = useHotspotSettingsContext()
   useEffect(() => {
     enableBack(onClose)
   }, [enableBack, onClose])
 
   const toggleUpdateAntenna = () => {
-    animateTransition()
+    if (Platform.OS === 'ios') {
+      animateTransition()
+    }
     setIsLocationChange(false)
     setState('antenna')
   }
   const toggleUpdateLocation = () => {
-    animateTransition()
+    if (Platform.OS === 'ios') {
+      animateTransition()
+    }
     setIsLocationChange(true)
     setState('location')
   }
   const onConfirm = () => {
-    animateTransition()
+    if (Platform.OS === 'ios') {
+      animateTransition()
+    }
     setState('confirm')
   }
   const updatingAntenna = useMemo(() => state === 'antenna', [state])
@@ -139,6 +145,7 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
       enableBack(onClose)
       setLocation(updatedLocation)
       setLocationName(name)
+      disableBack()
       setState('confirm')
     } else {
       onClose()

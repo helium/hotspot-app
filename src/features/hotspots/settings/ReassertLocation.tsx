@@ -4,6 +4,7 @@ import React, { memo, useCallback, useEffect, useState } from 'react'
 import { useAsync } from 'react-async-hook'
 import { Hotspot } from '@helium/http'
 import { useSelector } from 'react-redux'
+import { Platform } from 'react-native'
 import { RootState } from '../../../store/rootReducer'
 import animateTransition from '../../../utils/animateTransition'
 import ReassertLocationFee from './ReassertLocationFee'
@@ -56,7 +57,9 @@ const ReassertLocation = ({
   )
 
   const handleBack = useCallback(() => {
-    animateTransition()
+    if (Platform.OS === 'ios') {
+      animateTransition()
+    }
     switch (state) {
       case 'fee':
         onFinished(undefined, '')
@@ -83,7 +86,9 @@ const ReassertLocation = ({
   }
 
   const handleSearch = useCallback(() => {
-    animateTransition()
+    if (Platform.OS === 'ios') {
+      animateTransition()
+    }
     onStateChange('search')
     setState('search')
   }, [onStateChange])
@@ -113,7 +118,9 @@ const ReassertLocation = ({
           {...feeData}
           hotspot={hotspot}
           onChangeLocation={() => {
-            animateTransition()
+            if (Platform.OS === 'ios') {
+              animateTransition()
+            }
             onStateChange('update')
             setState('update')
           }}
@@ -135,7 +142,9 @@ const ReassertLocation = ({
           locationSelected={(latitude, longitude, name) => {
             setUpdatedLocation({ latitude, longitude })
             setLocationName(name)
-            animateTransition()
+            if (Platform.OS === 'ios') {
+              animateTransition()
+            }
             onStateChange('confirm')
             setState('confirm')
           }}

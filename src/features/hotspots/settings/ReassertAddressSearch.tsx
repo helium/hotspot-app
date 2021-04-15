@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Keyboard, SectionList } from 'react-native'
+import { Keyboard, Platform, SectionList } from 'react-native'
 import { useDebouncedCallback } from 'use-debounce'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -101,7 +101,11 @@ const ReassertAddressSearch = ({ onSelectPlace }: Props) => {
   )
 
   return (
-    <Box height={600} padding="none" paddingTop="lx">
+    <Box
+      height={Platform.OS === 'ios' ? 600 : 450}
+      padding="none"
+      paddingTop="lx"
+    >
       <SectionList
         keyExtractor={(item) => item.placeId}
         sections={sections}

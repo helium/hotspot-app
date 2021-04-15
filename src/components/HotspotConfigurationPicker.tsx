@@ -1,4 +1,9 @@
-import { Alert, TextInput, TouchableWithoutFeedback } from 'react-native'
+import {
+  Alert,
+  StyleSheet,
+  TextInput,
+  TouchableWithoutFeedback,
+} from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import HeliumActionSheet from './HeliumActionSheet'
@@ -180,8 +185,9 @@ const HotspotConfigurationPicker = ({
               <InfoIcon color={colors.grayLight} />
             </TouchableOpacityBox>
           </Box>
-          <Box flexDirection="row">
+          <Box flexDirection="row" alignItems="center">
             <TextInput
+              style={styles.textInput}
               ref={gainInputRef}
               keyboardType="numeric"
               value={gain}
@@ -190,7 +196,7 @@ const HotspotConfigurationPicker = ({
               onSubmitEditing={onDoneEditingGain}
               editable={selectedAntenna.id === 'custom'}
             />
-            <Text marginLeft="xs">{t('antennas.onboarding.dbi')}</Text>
+            <Text marginLeft="xxs">{t('antennas.onboarding.dbi')}</Text>
           </Box>
         </Box>
       </TouchableWithoutFeedback>
@@ -224,5 +230,7 @@ const HotspotConfigurationPicker = ({
     </Box>
   )
 }
+
+const styles = StyleSheet.create({ textInput: { color: 'black' } })
 
 export default HotspotConfigurationPicker

@@ -2,6 +2,7 @@ import React, { memo, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Position } from 'geojson'
 import Search from '@assets/images/search.svg'
+import { Platform } from 'react-native'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import Map from '../../../components/Map'
@@ -72,7 +73,11 @@ const ReassertLocationUpdate = ({
   }, [])
 
   return (
-    <Box height={750} borderRadius="l" overflow="hidden">
+    <Box
+      height={Platform.OS === 'ios' ? 750 : 650}
+      borderRadius="l"
+      overflow="hidden"
+    >
       <Box
         position="absolute"
         flexDirection="row"
