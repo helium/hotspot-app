@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { ActivityIndicator, Alert, Platform } from 'react-native'
 import { useAsync } from 'react-async-hook'
 import { getCountry } from 'react-native-localize'
+import { Balance, CurrencyType } from '@helium/currency'
 import Text from '../../../../components/Text'
 import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
 import Box from '../../../../components/Box'
@@ -28,6 +29,7 @@ import {
 import { getOnboardingRecord } from '../../../../utils/stakingClient'
 import useSubmitTxn from '../../../../hooks/useSubmitTxn'
 import { decimalSeparator, groupSeparator } from '../../../../utils/i18n'
+import { calculateAssertLocFee } from '../../../../utils/fees'
 
 type Props = {
   onClose: () => void
@@ -106,6 +108,14 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
     if (Platform.OS === 'ios') {
       animateTransition()
     }
+    const feeData = calculateAssertLocFee(undefined, undefined, undefined)
+    const feeDc = new Balance(feeData.fee, CurrencyType.dataCredit)
+    setLocationFee(
+      feeDc.toString(0, {
+        groupSeparator,
+        decimalSeparator,
+      }),
+    )
     setState('confirm')
   }
   const updatingAntenna = useMemo(() => state === 'antenna', [state])
