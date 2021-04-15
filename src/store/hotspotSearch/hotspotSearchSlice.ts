@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { Hotspot } from '@helium/http'
 import AsyncStorage from '@react-native-community/async-storage'
+import { uniqBy } from 'lodash'
 import { HotspotsSliceState } from '../hotspots/hotspotsSlice'
 import { searchHotspots } from '../../utils/appDataClient'
 import { getCities, PlacePrediction } from '../../utils/googlePlaces'
@@ -41,15 +42,14 @@ export const fetchData = createAsyncThunk<
 >('hotspotSearch/fetchData', async ({ filter, searchTerm }, { getState }) => {
   if (filter === 'my_hotspots') {
     const {
-      hotspots: { hotspots },
+      hotspots: { hotspots, followedHotspots },
     } = getState() as { hotspots: HotspotsSliceState }
+    const unique = uniqBy([...hotspots, ...followedHotspots], (h) => h.address)
     if (!searchTerm) {
-      return { hotspots, locations: [] }
+      return { hotspots: unique, locations: [] }
     }
 
-    const filteredHotspots = hotspots.filter((h) =>
-      h.name?.includes(searchTerm),
-    )
+    const filteredHotspots = unique.filter((h) => h.name?.includes(searchTerm))
     return { hotspots: filteredHotspots, locations: [] }
   }
 
