@@ -40,7 +40,7 @@ const HotspotSearch = ({ onSearch, initialValue = '', ...boxProps }: Props) => {
   return (
     <Box
       flexDirection="row"
-      backgroundColor="offwhite"
+      backgroundColor="grayBox"
       alignItems="center"
       borderRadius="m"
       height={56}
@@ -50,6 +50,7 @@ const HotspotSearch = ({ onSearch, initialValue = '', ...boxProps }: Props) => {
         <Search color="#838BC0" height={16} width={16} />
       </Box>
       <TextInput
+        height={56}
         flex={1}
         variant="light"
         placeholder={t('hotspots.search.placeholder')}
