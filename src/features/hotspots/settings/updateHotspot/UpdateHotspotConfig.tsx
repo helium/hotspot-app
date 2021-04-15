@@ -145,8 +145,8 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
       enableBack(onClose)
       setLocation(updatedLocation)
       setLocationName(name)
-      disableBack()
       setState('confirm')
+      disableBack()
     } else {
       onClose()
     }
