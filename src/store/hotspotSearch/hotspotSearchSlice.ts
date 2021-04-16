@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { Hotspot } from '@helium/http'
 import AsyncStorage from '@react-native-community/async-storage'
 import { uniqBy } from 'lodash'
+import Fuse from 'fuse.js'
 import { HotspotsSliceState } from '../hotspots/hotspotsSlice'
 import { searchHotspots } from '../../utils/appDataClient'
 import { getCities, PlacePrediction } from '../../utils/googlePlaces'
@@ -49,8 +50,14 @@ export const fetchData = createAsyncThunk<
       return { hotspots: unique, locations: [] }
     }
 
-    const filteredHotspots = unique.filter((h) => h.name?.includes(searchTerm))
-    return { hotspots: filteredHotspots, locations: [] }
+    const results = new Fuse(unique, {
+      keys: ['name', 'geocode.longCity', 'geocode.longState'],
+      threshold: 0.3, // TODO: Might need to adjust this value
+    })
+      .search(searchTerm)
+      .map(({ item }) => item)
+
+    return { hotspots: results, locations: [] }
   }
 
   // Fetch cities from google
