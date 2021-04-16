@@ -113,6 +113,7 @@ const HotspotsScreen = () => {
             followedHotspots={followedHotspots}
             startOnMap={startOnMap}
             location={coords}
+            onViewMap={maybeGetLocation}
           />
         )}
         {viewState === 'loading' && (

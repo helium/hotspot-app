@@ -55,6 +55,7 @@ type Props = {
   followedHotspots?: Hotspot[]
   startOnMap?: boolean
   location?: number[]
+  onViewMap: (prompt: boolean) => void
 }
 
 type ViewState = 'list' | 'search' | 'details' | 'details_and_map' | 'map'
@@ -63,6 +64,7 @@ const HotspotsView = ({
   ownedHotspots,
   followedHotspots,
   startOnMap,
+  onViewMap,
   location: propsLocation,
 }: Props) => {
   const navigation = useNavigation()
@@ -120,6 +122,10 @@ const HotspotsView = ({
   )
 
   useEffect(() => {
+    setLocation(propsLocation)
+  }, [propsLocation])
+
+  useEffect(() => {
     switch (viewState) {
       case 'details':
         setDetailsSnapIndex(1)
@@ -154,11 +160,16 @@ const HotspotsView = ({
   }, [hasHotspots, networkHotspots])
 
   useEffect(() => {
-    if (viewState === 'list' && !selectedHotspot) {
+    if (
+      viewState === 'map' &&
+      !selectedHotspot &&
+      (!location ||
+        (location.length === 2 && location[0] === 0 && location[1] === 0))
+    ) {
       if (ownedHotspots && ownedHotspots.length > 0) {
-        setSelectedHotspot(ownedHotspots[0])
+        setLocation([ownedHotspots[0].lng || 0, ownedHotspots[0].lat || 0]) // Set map loc to one of their hotspots
       } else {
-        focusClosestHotspot()
+        setLocation([122.4194, 37.7749]) // SF - This shouldn't actually be possible
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -179,7 +190,8 @@ const HotspotsView = ({
   const handleListDismiss = useCallback(() => {
     if (viewState === 'details') return
     updateViewState('map')
-  }, [updateViewState, viewState])
+    onViewMap(true)
+  }, [updateViewState, viewState, onViewMap])
 
   const handleSelectPlace = useCallback(
     async (place: PlacePrediction) => {
@@ -207,6 +219,7 @@ const HotspotsView = ({
   const handleBack = useCallback(() => {
     updateViewState(backViewState)
     dispatch(hotspotDetailsSlice.actions.clearHotspotDetails())
+    setSelectedHotspot(undefined)
   }, [dispatch, backViewState, updateViewState])
 
   useEffect(() => {
