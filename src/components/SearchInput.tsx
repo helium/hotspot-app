@@ -5,6 +5,7 @@ import Search from '@assets/images/search.svg'
 import Close from '@assets/images/closeModal.svg'
 import { useDebouncedCallback } from 'use-debounce/lib'
 import { BoxProps } from '@shopify/restyle'
+import { Keyboard } from 'react-native'
 import Box from './Box'
 import TextInput from './TextInput'
 import TouchableOpacityBox from './TouchableOpacityBox'
@@ -61,7 +62,8 @@ const HotspotSearch = ({ onSearch, initialValue = '', ...boxProps }: Props) => {
         autoCompleteType="off"
         autoCapitalize="none"
         blurOnSubmit={false}
-        returnKeyType="search"
+        returnKeyType="done"
+        onSubmitEditing={Keyboard.dismiss}
       />
       {!!searchTerm && (
         <TouchableOpacityBox onPress={handleClearSearch} padding="m">
