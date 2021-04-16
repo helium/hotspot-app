@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Hotspot } from '@helium/http'
 import { useTranslation } from 'react-i18next'
-import { ActivityIndicator, Alert, Platform } from 'react-native'
+import { ActivityIndicator, Alert } from 'react-native'
 import { useAsync } from 'react-async-hook'
 import { Balance, CurrencyType } from '@helium/currency'
 import Text from '../../../../components/Text'
@@ -61,23 +61,17 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
   }, [enableBack, onClose])
 
   const toggleUpdateAntenna = () => {
-    if (Platform.OS === 'ios') {
-      animateTransition()
-    }
+    animateTransition(false)
     setIsLocationChange(false)
     setState('antenna')
   }
   const toggleUpdateLocation = () => {
-    if (Platform.OS === 'ios') {
-      animateTransition()
-    }
+    animateTransition(false)
     setIsLocationChange(true)
     setState('location')
   }
   const onConfirm = () => {
-    if (Platform.OS === 'ios') {
-      animateTransition()
-    }
+    animateTransition(false)
     const feeData = calculateAssertLocFee(undefined, undefined, undefined)
     const feeDc = new Balance(feeData.fee, CurrencyType.dataCredit)
     setLocationFee(

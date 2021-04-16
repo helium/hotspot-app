@@ -30,7 +30,7 @@ const HotspotsList = ({
   const { t } = useTranslation()
 
   useEffect(() => {
-    animateTransition()
+    animateTransition(false)
   }, [loading])
 
   const handlePress = useCallback(

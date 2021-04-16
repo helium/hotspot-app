@@ -203,6 +203,7 @@ export const fetchHotspotsData = createAsyncThunk(
   async (_arg, { getState }) => {
     const appState = getState() as { features: FeaturesState }
     const followEnabled = appState.features.followHotspotEnabled
+    console.log({ followEnabled })
 
     const allHotspots = await Promise.all([
       getHotspots(),
@@ -309,6 +310,7 @@ const hotspotsSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchHotspotsData.fulfilled, (state, action) => {
       const followed: Hotspot[] = action.payload.followedHotspots
+      console.log({ followed })
       state.followedHotspots = followed
       state.followedHotspotsObj = hotspotsToObj(followed)
       state.hotspots = action.payload.hotspots

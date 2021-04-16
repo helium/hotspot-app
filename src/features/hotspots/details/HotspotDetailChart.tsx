@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TFunction } from 'i18next'
-import { ActivityIndicator, Platform } from 'react-native'
+import { ActivityIndicator } from 'react-native'
 import { ChartData } from '../../../components/BarChart/types'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -117,10 +117,7 @@ const HotspotDetailChart = ({
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
 
   const onFocus = useCallback(async (chartData: ChartData | null) => {
-    if (Platform.OS === 'ios') {
-      // this animation causes layout issues on Android
-      animateTransition()
-    }
+    animateTransition(false)
 
     if (!chartData) {
       setFocusedData(null)
