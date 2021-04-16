@@ -108,11 +108,11 @@ const HotspotTransaction = ({ item, address }: Props) => {
           isFirst
           isLast={type === 'assert_location_v1'}
           text={
-            geoInfo
-              ? `${geoInfo?.city}, ${geoInfo?.region}`
+            geoInfo && geoInfo.city && geoInfo.region
+              ? `${geoInfo.city}, ${geoInfo.region}`
               : assertLoc?.location || ''
           }
-          subText={geoInfo?.country}
+          subText={geoInfo && geoInfo.country ? geoInfo.country : ''}
           mode="location"
         />
       )}

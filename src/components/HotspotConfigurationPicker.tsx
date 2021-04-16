@@ -4,7 +4,7 @@ import {
   TextInput,
   TouchableWithoutFeedback,
 } from 'react-native'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import HeliumActionSheet from './HeliumActionSheet'
 import Box from './Box'
@@ -154,6 +154,15 @@ const HotspotConfigurationPicker = ({
     }
   }, [selectedAntenna])
 
+  const antennaData = useMemo(
+    () =>
+      Object.values(Antennas).map((a) => ({
+        label: t(`antennas.${a.id}`),
+        value: a.id,
+      })),
+    [t],
+  )
+
   return (
     <Box
       backgroundColor="white"
@@ -167,10 +176,7 @@ const HotspotConfigurationPicker = ({
         prefixVariant="regular"
         prefixFontSize={14}
         initialValue={t('antennas.onboarding.select')}
-        data={Object.values(Antennas).map((a) => ({
-          label: t(`antennas.${a.id}`),
-          value: a.id,
-        }))}
+        data={antennaData}
         carotColor="black"
         selectedValue={selectedAntenna?.id}
         onValueChanged={onSelectAntenna}
