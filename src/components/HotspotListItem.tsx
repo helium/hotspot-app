@@ -55,7 +55,7 @@ const HotspotListItem = ({
   }, [t, blockHeight, hotspot.status?.height])
 
   return (
-    <Box marginHorizontal="l" marginBottom="xs">
+    <Box marginBottom="xs">
       <TouchableOpacityBox
         backgroundColor="grayBox"
         flexDirection="row"

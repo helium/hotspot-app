@@ -591,9 +591,10 @@ export default {
     owned: {
       title: 'My Hotspots',
       title_no_hotspots: 'Hotspots',
-      reward_summary: 'Your Hotspot mined {{hntAmount}} in the past 24 hours.',
+      reward_summary:
+        'Your Hotspot has earned\n{{hntAmount}} in the past 24 hours.',
       reward_summary_plural:
-        'Your {{count}} Hotspots mined {{hntAmount}} in the past 24 hours.',
+        'Your {{count}} Hotspots have earned\n{{hntAmount}} in the past 24 hours.',
       your_hotspots: 'Your Hotspots',
       filter: {
         new: 'Newest Hotspots',
@@ -623,6 +624,8 @@ export default {
       online: 'ONLINE HOTSPOTS',
       no_results: 'No Results',
     },
+    ticker:
+      '{{formattedHotspotCount}} Hotspots • Oracle Price: {{oraclePrice}} • Block Time: {{formattedBlockTime}} secs • ',
   },
   permissions: {
     location: {
@@ -635,7 +638,7 @@ export default {
     morning: 'Morning',
     evening: 'Evening',
     afternoon: 'Afternoon',
-    day_header: 'Good\n{{timeOfDay}}.',
+    day_header: '{{timeOfDay}},',
   },
   notifications: {
     tapToReadMore: 'Tap to read more',

@@ -122,6 +122,10 @@ export const getAccount = async (address?: string) => {
 
 export const getBlockHeight = () => client.blocks.getHeight()
 
+export const getBlockStats = () => client.blocks.stats()
+
+export const getStatCounts = () => client.stats.counts()
+
 export const getCurrentOraclePrice = async () => client.oracle.getCurrentPrice()
 
 export const getPredictedOraclePrice = async () =>

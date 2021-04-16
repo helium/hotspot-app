@@ -10,7 +10,7 @@ export type FeaturesState = {
 const initialState: FeaturesState = {
   discoveryEnabled: false,
   checklistEnabled: false,
-  followHotspotEnabled: false,
+  followHotspotEnabled: true,
 }
 
 export const fetchFeatures = createAsyncThunk<FeaturesState>(

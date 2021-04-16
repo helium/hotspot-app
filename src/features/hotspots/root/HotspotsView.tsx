@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import { LayoutChangeEvent, Platform } from 'react-native'
+import { LayoutChangeEvent } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { Hotspot } from '@helium/http'
@@ -112,9 +112,8 @@ const HotspotsView = ({
       if (nextState === viewState) return
 
       setBackViewState(backState)
-      if (viewState !== 'map' && Platform.OS !== 'android') {
-        // this animation causes a crash on android
-        animateTransition()
+      if (viewState !== 'map') {
+        animateTransition(false)
       }
       setViewState(nextState)
     },
