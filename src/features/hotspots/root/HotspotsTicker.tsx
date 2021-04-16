@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, memo, useMemo } from 'react'
+import React, { useEffect, memo, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import TextTicker from 'react-native-text-ticker'
 import { BoxProps } from '@shopify/restyle'
@@ -15,12 +15,16 @@ import { useAppDispatch } from '../../../store/store'
 import { useTextVariants } from '../../../theme/themeHooks'
 import { Theme } from '../../../theme/theme'
 import { locale } from '../../../utils/i18n'
+import useVisible from '../../../utils/useVisible'
 
 type Props = BoxProps<Theme>
 const HotspotsTicker = ({ ...boxProps }: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const { body2 } = useTextVariants()
+  const [lastDataFetch, setLastDataFetch] = useState(0)
+  const visible = useVisible()
+
   const currentOraclePrice = useSelector(
     (state: RootState) => state.heliumData.currentOraclePrice,
   )
@@ -32,10 +36,18 @@ const HotspotsTicker = ({ ...boxProps }: Props) => {
   )
 
   useEffect(() => {
+    if (!visible && lastDataFetch !== 0) return
+
+    const nowInSec = Date.now() / 1000
+    const refreshTime = 300 // 5 mins
+
+    if (nowInSec - refreshTime < lastDataFetch) return
+
+    setLastDataFetch(nowInSec)
     dispatch(fetchCurrentOraclePrice())
     dispatch(fetchPredictedOraclePrice())
     dispatch(fetchStats())
-  }, [dispatch])
+  }, [dispatch, lastDataFetch, visible])
 
   const textStyle = useMemo(
     () => ({ ...body2, fontSize: 16, color: '#AEB0D8' }),
