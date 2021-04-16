@@ -52,11 +52,16 @@ export const autocompleteAddress = async (
 ): Promise<AutocompleteSearchResult[]> => {
   const response = await makeRequest('autocomplete', { input: searchTerm })
 
-  return response.predictions.map((p) => ({
-    mainText: p.structured_formatting.main_text,
-    secondaryText: p.structured_formatting.secondary_text,
-    placeId: p.place_id,
-  }))
+  return response.predictions.map(
+    (p: {
+      place_id: string
+      structured_formatting: { main_text: string; secondary_text: string }
+    }) => ({
+      mainText: p.structured_formatting.main_text,
+      secondaryText: p.structured_formatting.secondary_text,
+      placeId: p.place_id,
+    }),
+  )
 }
 
 export type PlaceGeography = {
@@ -69,4 +74,26 @@ export const getPlaceGeography = async (
 ): Promise<PlaceGeography> => {
   const response = await makeRequest('details', { placeid: placeId })
   return response.result.geometry.location
+}
+
+export type PlacePrediction = {
+  description: string
+  placeId: string
+}
+export const getCities = async (
+  searchTerm: string,
+): Promise<PlacePrediction[]> => {
+  const response = await makeRequest('autocomplete', {
+    input: searchTerm,
+    type: '(cities)',
+  })
+  if ('predictions' in response) {
+    return response.predictions.map(
+      (p: { description: string; place_id: string }) => ({
+        description: p.description,
+        placeId: p.place_id,
+      }),
+    )
+  }
+  return []
 }

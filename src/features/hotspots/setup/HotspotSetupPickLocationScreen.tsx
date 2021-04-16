@@ -111,7 +111,7 @@ const HotspotSetupPickLocationScreen = () => {
         right={spacing.m}
         zIndex={1}
       >
-        <Search width={30} height={30} />
+        <Search width={30} height={30} color="white" />
       </TouchableOpacityBox>
       <Box flex={1.2}>
         <Map

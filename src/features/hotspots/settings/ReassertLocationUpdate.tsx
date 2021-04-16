@@ -101,7 +101,7 @@ const ReassertLocationUpdate = ({
           {locationName}
         </Text>
         <TouchableOpacityBox onPress={handleSearchPress} padding="lm">
-          <Search width={30} height={30} />
+          <Search width={30} height={30} color="white" />
         </TouchableOpacityBox>
       </Box>
 
