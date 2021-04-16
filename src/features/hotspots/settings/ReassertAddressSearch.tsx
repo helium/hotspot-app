@@ -102,7 +102,11 @@ const ReassertAddressSearch = ({ onSelectPlace }: Props) => {
 
   return (
     <Box
-      height={Platform.OS === 'ios' ? 600 : 450}
+      height={
+        Platform.OS === 'ios'
+          ? { smallPhone: 450, phone: 600 }
+          : { smallPhone: 300, phone: 450 }
+      }
       padding="none"
       paddingTop="lx"
     >

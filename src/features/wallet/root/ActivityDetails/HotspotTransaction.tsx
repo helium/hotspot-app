@@ -110,9 +110,9 @@ const HotspotTransaction = ({ item, address }: Props) => {
           text={
             geoInfo && geoInfo.city && geoInfo.region
               ? `${geoInfo.city}, ${geoInfo.region}`
-              : assertLoc?.location || ''
+              : assertLoc?.location || ' '
           }
-          subText={geoInfo && geoInfo.country ? geoInfo.country : ''}
+          subText={geoInfo && geoInfo.country ? geoInfo.country : ' '}
           mode="location"
         />
       )}

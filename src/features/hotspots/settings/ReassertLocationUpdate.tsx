@@ -74,7 +74,11 @@ const ReassertLocationUpdate = ({
 
   return (
     <Box
-      height={Platform.OS === 'ios' ? 750 : 650}
+      height={
+        Platform.OS === 'ios'
+          ? { smallPhone: 550, phone: 750 }
+          : { smallPhone: 450, phone: 650 }
+      }
       borderRadius="l"
       overflow="hidden"
     >
