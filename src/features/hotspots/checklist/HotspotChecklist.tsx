@@ -9,13 +9,13 @@ import { fetchChecklistActivity } from '../../../store/hotspotDetails/hotspotChe
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import CarotDown from '../../../assets/images/carot-down.svg'
-import CircleProgress from '../../../components/CircleProgress'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import animateTransition from '../../../utils/animateTransition'
 import { useSpacing } from '../../../theme/themeHooks'
 import HotspotChecklistCarousel, {
   ChecklistItem,
 } from './HotspotChecklistCarousel'
+import { wp } from '../../../utils/layout'
 
 type Props = {
   hotspot: Hotspot
@@ -39,12 +39,15 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
   const checklistEnabled = useSelector(
     (state: RootState) => state.features.checklistEnabled,
   )
+  const [hidden, setHidden] = useState(true)
+  const [hasLoaded, setHasLoaded] = useState(false)
 
   useEffect(() => {
-    if (checklistEnabled) {
+    if (checklistEnabled && !hidden && !hasLoaded) {
+      setHasLoaded(true)
       dispatch(fetchChecklistActivity(hotspot.address))
     }
-  }, [checklistEnabled, dispatch, hotspot.address])
+  }, [hidden, checklistEnabled, dispatch, hotspot.address, hasLoaded])
 
   const syncStatus = useMemo(() => {
     if (!hotspot?.status?.height || !blockHeight) {
@@ -176,14 +179,7 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
     },
   ]
 
-  let numComplete = 0
-  checklistData.forEach((i) => {
-    if (i.complete) {
-      numComplete += 1
-    }
-  })
   checklistData.sort((a, b) => Number(b.complete) - Number(a.complete))
-  const [hidden, setHidden] = useState(true)
 
   const toggleHidden = () => {
     animateTransition()
@@ -194,28 +190,6 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
     return null
   }
 
-  if (loadingActivity) {
-    return (
-      <SkeletonPlaceholder>
-        <SkeletonPlaceholder.Item
-          flexDirection="row"
-          alignItems="center"
-          marginStart={spacing.l}
-          marginBottom={spacing.m}
-        >
-          <SkeletonPlaceholder.Item width={32} height={32} borderRadius={32} />
-          <SkeletonPlaceholder.Item marginLeft={spacing.s}>
-            <SkeletonPlaceholder.Item
-              width={100}
-              height={20}
-              borderRadius={4}
-            />
-          </SkeletonPlaceholder.Item>
-        </SkeletonPlaceholder.Item>
-      </SkeletonPlaceholder>
-    )
-  }
-
   return (
     <Box>
       <Box
@@ -224,17 +198,13 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
         marginBottom="m"
         alignItems="center"
       >
-        <CircleProgress
-          percentage={(numComplete / checklistData.length) * 100}
-          centerColor="white"
-        />
         <TouchableOpacityBox
           flexDirection="row"
           alignItems="center"
           onPress={toggleHidden}
         >
           <>
-            <Text variant="h5" color="black" marginStart="s">
+            <Text variant="h5" color="black" paddingTop="xs">
               {t('checklist.title')}
             </Text>
             <Box marginStart="s">
@@ -248,7 +218,27 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
           </>
         </TouchableOpacityBox>
       </Box>
-      {!hidden && <HotspotChecklistCarousel checklistData={checklistData} />}
+      {!hidden && loadingActivity && (
+        <SkeletonPlaceholder>
+          <SkeletonPlaceholder.Item flexDirection="row">
+            <SkeletonPlaceholder.Item
+              width={wp(80)}
+              height={150}
+              marginStart={spacing.l}
+              borderRadius={8}
+            />
+            <SkeletonPlaceholder.Item
+              width={wp(80)}
+              height={150}
+              marginStart={spacing.s}
+              borderRadius={8}
+            />
+          </SkeletonPlaceholder.Item>
+        </SkeletonPlaceholder>
+      )}
+      {!hidden && !loadingActivity && hasLoaded && (
+        <HotspotChecklistCarousel checklistData={checklistData} />
+      )}
     </Box>
   )
 }
