@@ -1,7 +1,7 @@
-import React, { memo, useMemo, useCallback, useState, useEffect } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { BoxProps } from '@shopify/restyle'
 import Close from '@assets/images/close.svg'
-import CarotDown from '@assets/images/carot-down-picker.svg'
+import CarotDown from '@assets/images/carot-down.svg'
 import { useTranslation } from 'react-i18next'
 import { FlatList, Modal, StyleSheet } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -10,10 +10,10 @@ import {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated'
-import { Theme } from '../theme/theme'
+import { Colors, Theme } from '../theme/theme'
 import HeliumActionSheetItem, {
-  HeliumActionSheetItemType,
   HeliumActionSheetItemHeight,
+  HeliumActionSheetItemType,
 } from './HeliumActionSheetItem'
 import { useColors } from '../theme/themeHooks'
 import Text from './Text'
@@ -25,12 +25,21 @@ import sleep from '../utils/sleep'
 
 type Props = BoxProps<Theme> & {
   data: Array<HeliumActionSheetItemType>
-  selectedValue: string | number
+  selectedValue?: string | number
   onValueChanged: (itemValue: string | number, itemIndex: number) => void
   title?: string
   prefix?: string
   minWidth?: number
   listFormat?: boolean
+  prefixVariant?: 'bold' | 'medium' | 'regular' | 'light'
+  prefixFontSize?: number
+  carotColor?: Colors
+  displayTextJustifyContent?:
+    | 'flex-start'
+    | 'flex-end'
+    | 'center'
+    | 'space-between'
+  initialValue?: string
 }
 type ListItem = { item: HeliumActionSheetItemType; index: number }
 
@@ -40,14 +49,19 @@ const HeliumActionSheet = ({
   onValueChanged,
   title,
   prefix,
+  prefixVariant = 'bold',
+  prefixFontSize = 20,
   listFormat,
+  carotColor = 'purpleMain',
+  displayTextJustifyContent = 'flex-end',
+  initialValue,
   ...boxProps
 }: Props) => {
   const insets = useSafeAreaInsets()
   const [modalVisible, setModalVisible] = useState(false)
   const [sheetHeight, setSheetHeight] = useState(0)
   const { t } = useTranslation()
-  const { purpleGray } = useColors()
+  const colors = useColors()
   const offset = useSharedValue(0)
 
   const animatedStyles = useAnimatedStyle(() => {
@@ -94,9 +108,12 @@ const HeliumActionSheet = ({
   const keyExtractor = useCallback((item) => item.value, [])
 
   const buttonTitle = useMemo(() => {
+    if (initialValue && !selectedValue) {
+      return initialValue
+    }
     const item = data.find((d) => d.value === selectedValue)
-    return ` ${item?.label || ''}`
-  }, [data, selectedValue])
+    return item?.label || ''
+  }, [data, initialValue, selectedValue])
 
   const selected = useCallback(
     (value: string | number) => value === selectedValue,
@@ -148,36 +165,48 @@ const HeliumActionSheet = ({
   const displayText = useMemo(() => {
     return (
       <TouchableOpacityBox
-        paddingVertical="xs"
         onPress={handlePresentModalPress}
         flexDirection="row"
         alignItems="center"
-        justifyContent="flex-end"
+        justifyContent={displayTextJustifyContent}
         minWidth={100}
       >
-        {!!prefix && (
+        <Box flexDirection="row">
+          {!!prefix && (
+            <Text
+              variant={prefixVariant}
+              fontSize={prefixFontSize}
+              color="black"
+              maxFontSizeMultiplier={1}
+              marginRight="xs"
+            >
+              {prefix}
+            </Text>
+          )}
           <Text
-            variant="bold"
-            fontSize={20}
-            color="black"
+            variant={listFormat ? 'regular' : prefixVariant}
+            fontSize={listFormat ? 16 : prefixFontSize}
             maxFontSizeMultiplier={1}
+            color={listFormat ? 'purpleBrightMuted' : 'purpleMain'}
+            marginRight="s"
           >
-            {prefix}
+            {buttonTitle}
           </Text>
-        )}
-        <Text
-          variant={listFormat ? 'regular' : 'bold'}
-          fontSize={listFormat ? 16 : 20}
-          maxFontSizeMultiplier={1}
-          color={listFormat ? 'purpleBrightMuted' : 'purpleMain'}
-          marginRight="s"
-        >
-          {buttonTitle}
-        </Text>
-        {!listFormat && <CarotDown />}
+        </Box>
+        {!listFormat && <CarotDown color={colors[carotColor]} />}
       </TouchableOpacityBox>
     )
-  }, [buttonTitle, handlePresentModalPress, listFormat, prefix])
+  }, [
+    buttonTitle,
+    carotColor,
+    colors,
+    handlePresentModalPress,
+    listFormat,
+    prefix,
+    prefixFontSize,
+    prefixVariant,
+    displayTextJustifyContent,
+  ])
 
   return (
     <Box
@@ -222,7 +251,7 @@ const HeliumActionSheet = ({
                 paddingHorizontal="m"
                 marginEnd="n_m"
               >
-                <Close color={purpleGray} height={14} width={14} />
+                <Close color={colors.purpleGray} height={14} width={14} />
               </TouchableOpacityBox>
             </Box>
             <FlatList

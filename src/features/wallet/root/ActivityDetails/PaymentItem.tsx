@@ -10,7 +10,16 @@ type Props = {
   title?: string | null
   isFirst?: boolean
   isLast?: boolean
-  mode: 'to' | 'from' | 'memo' | 'location' | 'seller' | 'owner' | 'buyer'
+  mode:
+    | 'to'
+    | 'from'
+    | 'memo'
+    | 'location'
+    | 'seller'
+    | 'owner'
+    | 'buyer'
+    | 'antenna'
+    | 'elevation'
   isMyAccount?: boolean
 }
 const PaymentItem = ({
@@ -43,7 +52,7 @@ const PaymentItem = ({
         fontSize={15}
         color="black"
         flex={1}
-        alignSelf="flex-start"
+        alignSelf="center"
       >
         {title || t(`activity_details.${mode}`)}
       </Text>

@@ -1,20 +1,16 @@
-import React, { memo, useEffect, useState, useCallback } from 'react'
+import React, { memo, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Position } from 'geojson'
-import { useSelector } from 'react-redux'
 import Search from '@assets/images/search.svg'
+import { Platform } from 'react-native'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import Map from '../../../components/Map'
 import Button from '../../../components/Button'
-import { hp } from '../../../utils/layout'
 import ImageBox from '../../../components/ImageBox'
 import { reverseGeocode } from '../../../utils/location'
 import { useSpacing } from '../../../theme/themeHooks'
 import animateTransition from '../../../utils/animateTransition'
-import CircleLoader from '../../../components/CircleLoader'
-import { RootState } from '../../../store/rootReducer'
-import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import sleep from '../../../utils/sleep'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 
@@ -22,9 +18,9 @@ type Props = {
   confirming?: boolean
   amount: string
   coords?: { latitude: number; longitude: number }
-  locationSelected?: (latitude: number, longitude: number) => void
+  locationSelected?: (latitude: number, longitude: number, name: string) => void
   onCancel: () => void
-  onFinish?: (assertResponse: Error | string | boolean) => void
+  onConfirm: () => void
   onSearch?: () => void
 }
 const ReassertLocationUpdate = ({
@@ -32,7 +28,7 @@ const ReassertLocationUpdate = ({
   coords,
   amount,
   locationSelected,
-  onFinish,
+  onConfirm,
   onCancel,
   onSearch,
 }: Props) => {
@@ -40,12 +36,7 @@ const ReassertLocationUpdate = ({
   const [markerCenter, setMarkerCenter] = useState([0, 0])
   const [locationName, setLocationName] = useState('')
   const { l } = useSpacing()
-  const [loading, setLoading] = useState(false)
   const [disabled, setDisabled] = useState(true)
-  const {
-    connectedHotspot: { address: hotspotAddress, details },
-  } = useSelector((s: RootState) => s)
-  const { assertLocationTxn } = useConnectedHotspotContext()
 
   const onMapMoved = useCallback(async (newCoords?: Position) => {
     if (newCoords) {
@@ -60,30 +51,13 @@ const ReassertLocationUpdate = ({
     }
   }, [])
 
-  const submitOnboardingTxns = useCallback(async () => {
-    const isOnChain = !!details // verify the hotspot exists
-    if (!hotspotAddress || !isOnChain || !coords) {
-      onFinish?.(false)
-      return
+  const handleNextButton = () => {
+    if (!confirming) {
+      locationSelected?.(markerCenter[1], markerCenter[0], locationName)
+    } else {
+      onConfirm()
     }
-
-    // construct and publish assert location
-    try {
-      const assertLocTxnSuccess = await assertLocationTxn(
-        coords.latitude,
-        coords.longitude,
-      )
-      onFinish?.(assertLocTxnSuccess)
-    } catch (error) {
-      onFinish?.(error)
-    }
-  }, [assertLocationTxn, coords, details, hotspotAddress, onFinish])
-
-  const handleAssert = useCallback(() => {
-    animateTransition()
-    setLoading(true)
-    submitOnboardingTxns()
-  }, [submitOnboardingTxns])
+  }
 
   const handleSearchPress = useCallback(() => {
     onSearch?.()
@@ -99,23 +73,15 @@ const ReassertLocationUpdate = ({
   }, [])
 
   return (
-    <Box height={hp(75)} borderRadius="l" overflow="hidden">
-      {loading && (
-        <Box
-          position="absolute"
-          zIndex={20000}
-          backgroundColor="black"
-          opacity={0.8}
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          justifyContent="center"
-        >
-          <CircleLoader height={80} marginBottom="lx" />
-        </Box>
-      )}
-
+    <Box
+      height={
+        Platform.OS === 'ios'
+          ? { smallPhone: 550, phone: 750 }
+          : { smallPhone: 450, phone: 650 }
+      }
+      borderRadius="l"
+      overflow="hidden"
+    >
       <Box
         position="absolute"
         flexDirection="row"
@@ -140,7 +106,7 @@ const ReassertLocationUpdate = ({
       </Box>
 
       <Map
-        showUserLocation={!confirming}
+        showUserLocation={!confirming && !coords}
         mapCenter={coords ? [coords.longitude, coords.latitude] : undefined}
         zoomLevel={16}
         onMapMoved={onMapMoved}
@@ -197,13 +163,7 @@ const ReassertLocationUpdate = ({
             flex={198}
             variant={confirming ? 'secondary' : 'primary'}
             mode="contained"
-            onPress={() => {
-              if (!confirming) {
-                locationSelected?.(markerCenter[1], markerCenter[0])
-              } else {
-                handleAssert()
-              }
-            }}
+            onPress={handleNextButton}
             title={t(
               `hotspot_settings.reassert.${
                 confirming ? 'confirm' : 'change_location'

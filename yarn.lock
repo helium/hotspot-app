@@ -1228,10 +1228,10 @@
     react-native-sodium "^0.3.8"
     safe-buffer "^5.2.1"
 
-"@helium/crypto@^3.7.0":
-  version "3.7.0"
-  resolved "https://registry.yarnpkg.com/@helium/crypto/-/crypto-3.7.0.tgz#9645cad30443582a3cf646457419d8480add785a"
-  integrity sha512-pcy/HyIdWlXNaETAN7QJgpIET9HTZ2AL1aVmm/fHVG5dx28FZFDmjIzxSAfhva2MqpLcYfvr6zNlR66V1pti4g==
+"@helium/crypto@^3.24.0":
+  version "3.24.0"
+  resolved "https://registry.yarnpkg.com/@helium/crypto/-/crypto-3.24.0.tgz#5aa88945a0c646ae5f38e5bd8560a5fd18ee2157"
+  integrity sha512-XUk2oJOEPYx5LN+NyNw1Y/jhIum+NaZEeZLjvqNAtgEqgVlEkPKcZNc1vJwb7r1qftY92O6P0owRTC2vhexmUg==
   dependencies:
     bs58 "^4.0.1"
     create-hash "^1.2.0"
@@ -1244,10 +1244,10 @@
   dependencies:
     bignumber.js "^9.0.0"
 
-"@helium/http@^3.26.0":
-  version "3.26.0"
-  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.26.0.tgz#ccb662034690429a5ef4b5bfed0ddacf5712b007"
-  integrity sha512-H4lNiK/IlHHYn+ZuWTlr8psKzoEZRnLN3o95/cndV7qEdHjZ9MUW1BuimOwrUYAd7qyhjZEquCM2eTBC3OZPuw==
+"@helium/http@^3.31.0":
+  version "3.31.0"
+  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.31.0.tgz#68c95326248ed0229d334dd7a45aa9df6e5821ca"
+  integrity sha512-MnHf2n4Ju0qsWois0+o/nlNpXAP5UBxtPx/ezzjkKSapzHwOAFynJ9PHL3xbye1phs8LdCsoRzfMxYIOFPrEyw==
   dependencies:
     "@helium/currency" "^3.25.1"
     axios "^0.21.1"
@@ -1262,20 +1262,20 @@
   dependencies:
     protobufjs "^6.8.9"
 
-"@helium/proto@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@helium/proto/-/proto-1.2.0.tgz#58ec69569bdb53e3377ea7e59acbd426a0d28f14"
-  integrity sha512-Dcqvf/4l1yIIu/43vxUw6fujrRlP+9kqkRzbQ/CUWyPlhYw96v/QU19b6KX7kwEAF4h9lO08yHqqIohNejeatg==
+"@helium/proto@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@helium/proto/-/proto-1.3.0.tgz#68657f6c11bdafc9a6cf2920ccd535c5ae244064"
+  integrity sha512-zzkNXDpSeLTrP3U2uBuqkYe2OhlCd8EJi7mowM44XBvba/hx8kHUY53ss3gTJamNpCh8NdbXQtjdCqfg3pQZSg==
   dependencies:
     protobufjs "^6.8.9"
 
-"@helium/transactions@^3.20.0":
-  version "3.20.0"
-  resolved "https://registry.yarnpkg.com/@helium/transactions/-/transactions-3.20.0.tgz#17cd4843dbd53773dff6f305ba2f649417f397eb"
-  integrity sha512-msiZCSgVLD6q7wU/7kD0g0YPmoojiT/vLVN95Gi3t4XU2jIVxYiyRjTlY4TE26JRzBG3bnqshfUgPsE4OYfxlw==
+"@helium/transactions@^3.30.0":
+  version "3.30.0"
+  resolved "https://registry.yarnpkg.com/@helium/transactions/-/transactions-3.30.0.tgz#b0bdc20f08f6573271a05f37542c070ea0cefc54"
+  integrity sha512-LuZI7ybo4czDDXYEIqDreAdCH954Nj9MxIPDJxRAsChmWX7v76JTyAJUk5PYNgXePXL7Grl9+xRc4l+9jvKGqQ==
   dependencies:
-    "@helium/crypto" "^3.7.0"
-    "@helium/proto" "^1.2.0"
+    "@helium/crypto" "^3.24.0"
+    "@helium/proto" "^1.3.0"
     "@types/libsodium-wrappers" "^0.7.8"
     long "^4.0.0"
     path "^0.12.7"
@@ -6329,6 +6329,11 @@ growly@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/growly/-/growly-1.3.0.tgz#f10748cbe76af964b7c96c93c6bcc28af120c081"
   integrity sha1-8QdIy+dq+WS3yWyTxrzCivEgwIE=
+
+h3-js@3.7.1:
+  version "3.7.1"
+  resolved "https://registry.yarnpkg.com/h3-js/-/h3-js-3.7.1.tgz#cb80092fd917c182c5025c2590ac093f52906edb"
+  integrity sha512-EManlaXSd8BKiuw7hnkg4grpzEjvf+aGkw33upVrO+iGenPHz+tVurgx5ZMTVBSV8lkbSUm44tHrs5biX7UTlQ==
 
 har-schema@^2.0.0:
   version "2.0.0"

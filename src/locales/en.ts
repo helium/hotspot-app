@@ -333,6 +333,7 @@ export default {
       next: 'Exit Setup',
       disconnected:
         'There was an error connecting to the Hotspot. Please try again.',
+      title_connect_failed: 'Unable to Proceed',
     },
     add_hotspot: {
       title: 'Add Hotspot',
@@ -358,6 +359,8 @@ export default {
         'There was an error constructing the Add Hotspot transaction. Please try again.',
       assert_loc_error_body:
         'There was an error constructing the Assert Location transaction. Please try again.',
+      assert_loc_error_no_loc:
+        'The selected location is invalid. Please try again.',
     },
     enable_location: {
       title: 'Set Hotspot\nLocation',
@@ -390,6 +393,11 @@ export default {
       error_body: 'There was an error loading fee data. Please try again.',
       next: 'Register Hotspot',
       fee_next: 'Pay Fee & Register Hotspot',
+      gain_label: 'TX / RX Gain:',
+      elevation_label: 'Elevation:',
+      gain: '{{gain}} dBi',
+      elevation: '{{count}} meter',
+      elevation_plural: '{{count}} meters',
     },
     location: {
       title: 'Hotspot Location',
@@ -637,6 +645,7 @@ export default {
     received: 'Received HNT',
     added: 'Hotspot Added to Blockchain',
     location: 'Confirm Location',
+    location_v2: 'Update Hotspot',
     transfer: 'Hotspot Transfer',
     transferSell: 'Transfer Hotspot (Sell)',
     transferBuy: 'Transfer Hotspot (Buy)',
@@ -729,7 +738,7 @@ export default {
         'You have <b><purple>{{count}} free remaining</purple></b> Hotspot Location Assert Updates.',
       change_location: 'Change Location',
       confirm: 'I Confirm',
-      cost: 'The cost to reasserting location is:',
+      cost: 'The cost of reasserting location is:',
       insufficient_funds:
         'You do not have the funds available to make\nthis assert. Acquire HNT.',
       confirm_location: "Please confirm your Hotspot's change in location",
@@ -738,6 +747,10 @@ export default {
       assert_pending: 'Assert Pending...',
       failTitle: 'Failed to reassert hotspot',
       failSubtitle: 'Please try again later',
+      current_location: 'Current Location',
+      new_location: 'New Location',
+      antenna_details: 'Antenna/Elevation Details',
+      update_antenna: 'Update Antenna',
     },
   },
   hotspot_details: {
@@ -812,6 +825,8 @@ export default {
     owner: 'Owner',
     my_account: 'My Account',
     view_block: 'View Block',
+    elevation: 'Elevation',
+    antenna: 'Antenna',
     rewardTypes: {
       poc_challengees: 'PoC',
       poc_challengers: 'Challenger',
@@ -911,6 +926,37 @@ export default {
       subject: 'Discovery Results',
       hotspot_name: 'Hotspot Name',
       packets_heard: 'Packets Heard',
+    },
+  },
+  antennas: {
+    helium_us: 'Helium Hotspot (US 915)',
+    helium_eu: 'Helium Hotspot (EU 868)',
+    rak_hotspot_us: 'RAK Hotspot Miner (US 915)',
+    rak_hotspot_eu: 'RAK Hotspot Miner (EU 868)',
+    nebra_outdoor: 'Nebra Outdoor Hotspot',
+    nebra_indoor: 'Nebra Indoor Hotspot',
+    bobcat: 'Bobcat Miner 300 (All)',
+    syncrobit_us: 'Syncrob.it (US 915)',
+    syncrobit_eu: 'Syncrob.it (EU 868)',
+    rak_custom: 'RAK Antenna',
+    custom: 'Custom Antenna',
+    onboarding: {
+      title: 'Antenna Setup',
+      subtitle: 'Submit antenna and elevation details for your Hotspot.',
+      gain: 'TX / RX Gain',
+      dbi: 'dBi',
+      elevation: 'Elevation (meters)',
+      select: 'Select Antenna',
+    },
+    elevation_info: {
+      title: 'Hotspot Elevation',
+      desc:
+        'Estimate how high the antenna is placed relative to the ground. An antenna located on the roof of a single-story house is typically 5 meters.',
+    },
+    gain_info: {
+      title: 'Antenna TX / RX Gain',
+      desc:
+        'A value between 1 and 15 to one decimal point. This is provided by your hotspot or antenna manufacturer.',
     },
   },
 }

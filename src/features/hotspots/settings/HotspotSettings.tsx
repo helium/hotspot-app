@@ -45,9 +45,10 @@ import BluetoothIcon from '../../../assets/images/bluetooth_icon.svg'
 import TransferIcon from '../../../assets/images/transfer_icon.svg'
 import DiscoveryModeIcon from '../../../assets/images/discovery_mode_icon.svg'
 import DiscoveryModeRoot from './discovery/DiscoveryModeRoot'
-// import UpdateIcon from '../../../assets/images/update_hotspot_icon.svg'
+import UpdateIcon from '../../../assets/images/update_hotspot_icon.svg'
+import UpdateHotspotConfig from './updateHotspot/UpdateHotspotConfig'
 
-type State = 'init' | 'scan' | 'transfer' | 'discoveryMode'
+type State = 'init' | 'scan' | 'transfer' | 'discoveryMode' | 'updateHotspot'
 
 type Props = {
   hotspot?: Hotspot
@@ -61,7 +62,12 @@ const HotspotSettings = ({ hotspot }: Props) => {
   const slideUpAnimRef = useRef(new Animated.Value(1000))
   const { getState } = useBluetoothContext()
   const dispatch = useAppDispatch()
-  const { showBack, goBack, disableBack } = useHotspotSettingsContext()
+  const {
+    showBack,
+    goBack,
+    disableBack,
+    enableBack,
+  } = useHotspotSettingsContext()
   const { purpleMain } = useColors()
 
   const { account } = useSelector((state: RootState) => state.account)
@@ -141,6 +147,10 @@ const HotspotSettings = ({ hotspot }: Props) => {
     setNextState('discoveryMode')
   }, [setNextState])
 
+  const onPressUpdateHotspot = useCallback(() => {
+    setNextState('updateHotspot')
+  }, [setNextState])
+
   const onPressTransferSetting = useCallback(() => {
     if (hasActiveTransfer) {
       Alert.alert(
@@ -175,7 +185,8 @@ const HotspotSettings = ({ hotspot }: Props) => {
 
   const onCloseOwnerSettings = useCallback(() => {
     setNextState('init')
-  }, [setNextState])
+    disableBack()
+  }, [disableBack, setNextState])
 
   useEffect(() => {
     if (!showSettings) {
@@ -192,7 +203,12 @@ const HotspotSettings = ({ hotspot }: Props) => {
     [],
   )
 
-  const startScan = useCallback(() => setNextState('scan'), [setNextState])
+  const startScan = useCallback(() => {
+    enableBack(() => {
+      onCloseOwnerSettings()
+    })
+    setNextState('scan')
+  }, [enableBack, onCloseOwnerSettings, setNextState])
 
   const pairingCard = useMemo(() => {
     if (settingsState === 'scan') {
@@ -230,6 +246,12 @@ const HotspotSettings = ({ hotspot }: Props) => {
       )
     }
 
+    if (settingsState === 'updateHotspot') {
+      return (
+        <UpdateHotspotConfig onClose={onCloseOwnerSettings} hotspot={hotspot} />
+      )
+    }
+
     return (
       <Box>
         <HotspotSettingsOption
@@ -252,16 +274,14 @@ const HotspotSettings = ({ hotspot }: Props) => {
             />
           </>
         )}
-        {/* // TODO: Assert V2
         <Box backgroundColor="black" height={0.5} />
         <HotspotSettingsOption
           title={t('hotspot_settings.update.title')}
           subtitle={t('hotspot_settings.update.subtitle')}
-          onPress={() => undefined}
+          onPress={onPressUpdateHotspot}
           compact
           buttonIcon={<UpdateIcon />}
         />
-        */}
       </Box>
     )
   }, [
@@ -273,6 +293,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
     onCloseOwnerSettings,
     onPressDiscoveryMode,
     onPressTransferSetting,
+    onPressUpdateHotspot,
     purpleMain,
     settingsState,
     t,
@@ -297,12 +318,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
         position="absolute"
       />
 
-      <SafeAreaBox
-        flex={1}
-        flexDirection="column"
-        justifyContent="space-between"
-        marginBottom="m"
-      >
+      <SafeAreaBox flex={1} flexDirection="column" marginBottom="m">
         <Box
           flexDirection="row-reverse"
           justifyContent="space-between"
@@ -319,15 +335,16 @@ const HotspotSettings = ({ hotspot }: Props) => {
           </TouchableOpacityBox>
           {showBack && <BackButton alignSelf="center" onPress={goBack} />}
         </Box>
-        <Box flex={1} onTouchStart={handleClose} />
         <AnimatedBox
           marginTop="none"
           marginBottom="ms"
+          justifyContent="flex-end"
+          flex={1}
           marginHorizontal={settingsState === 'discoveryMode' ? 'none' : 'ms'}
           style={{ transform: [{ translateY: slideUpAnimRef.current }] }}
         >
           <Box>
-            {settingsState !== 'transfer' && settingsState !== 'discoveryMode' && (
+            {(settingsState === 'init' || settingsState === 'scan') && (
               <Text
                 variant="h2"
                 lineHeight={27}
@@ -340,10 +357,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
           </Box>
 
           {settingsState !== 'scan' && (
-            <KeyboardAvoidingView
-              behavior="position"
-              keyboardVerticalOffset={220}
-            >
+            <KeyboardAvoidingView behavior="padding">
               <Card variant="modal" backgroundColor="white" overflow="hidden">
                 {ownerSettings}
               </Card>

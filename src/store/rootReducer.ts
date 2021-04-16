@@ -12,6 +12,7 @@ import networkHotspotsSlice from './networkHotspots/networkHotspotsSlice'
 import discoverySlice from './discovery/discoverySlice'
 import featuresSlice from './features/featuresSlice'
 import locationSlice from './location/locationSlice'
+import hotspotOnboardingSlice from './hotspots/hotspotOnboardingSlice'
 
 const rootReducer = combineReducers({
   app: appSlice.reducer,
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
   features: featuresSlice.reducer,
   location: locationSlice.reducer,
   status: heliumStatusSlice.reducer,
+  hotspotOnboarding: hotspotOnboardingSlice.reducer,
 })
 
 export type RootState = ReturnType<typeof rootReducer>

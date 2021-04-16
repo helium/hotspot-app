@@ -1,7 +1,7 @@
 import { Address } from '@helium/crypto-react-native'
 import {
   AddGatewayV1,
-  AssertLocationV1,
+  AssertLocationV2,
   PaymentV2,
   TokenBurnV1,
   TransferHotspotV1,
@@ -89,19 +89,21 @@ export const calculateAddGatewayFee = (ownerB58: string, payerB58: string) => {
 }
 
 export const calculateAssertLocFee = (
-  ownerB58: string,
-  payerB58: string,
-  nonce: number,
+  ownerB58: string | undefined,
+  payerB58: string | undefined,
+  nonce: number | undefined,
 ) => {
-  const owner = Address.fromB58(ownerB58)
-  const payer = payerB58 !== '' ? Address.fromB58(payerB58) : undefined
+  const owner = ownerB58 ? Address.fromB58(ownerB58) : emptyB58Address()
+  const payer = payerB58 ? Address.fromB58(payerB58) : emptyB58Address()
 
-  const txn = new AssertLocationV1({
+  const txn = new AssertLocationV2({
     owner,
     gateway: emptyB58Address(),
     payer,
     location: 'fffffffffffffff',
-    nonce,
+    gain: 12,
+    elevation: 1,
+    nonce: nonce || 1,
   })
 
   return { fee: txn.fee || 0, stakingFee: txn.stakingFee || 0 }

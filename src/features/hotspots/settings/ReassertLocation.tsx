@@ -1,27 +1,23 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import Balance, { CurrencyType } from '@helium/currency'
-import { LocationGeocodedAddress } from 'expo-location'
 import React, { memo, useCallback, useEffect, useState } from 'react'
 import { useAsync } from 'react-async-hook'
+import { Hotspot } from '@helium/http'
 import { useSelector } from 'react-redux'
-import { useTranslation } from 'react-i18next'
-import { isString } from 'lodash'
-import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
+import { Platform } from 'react-native'
 import { RootState } from '../../../store/rootReducer'
-import { useAppDispatch } from '../../../store/store'
-import { getLocation } from '../../../store/location/locationSlice'
 import animateTransition from '../../../utils/animateTransition'
-import { reverseGeocode } from '../../../utils/location'
-import useAlert from '../../../utils/useAlert'
 import ReassertLocationFee from './ReassertLocationFee'
 import ReassertLocationUpdate from './ReassertLocationUpdate'
 import { useHotspotSettingsContext } from './HotspotSettingsProvider'
 import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
 import ReassertAddressSearch from './ReassertAddressSearch'
 import { PlaceGeography } from '../../../utils/googlePlaces'
-import { HotspotErrorCode } from '../../../utils/useHotspot'
+import { loadLocationFeeData } from '../../../utils/assertLocationUtils'
+import { OnboardingRecord } from '../../../utils/stakingClient'
 
-type Coords = { latitude: number; longitude: number }
+export type Coords = { latitude: number; longitude: number }
+export type ReassertLocationState = 'fee' | 'update' | 'confirm' | 'search'
 const DEFAULT_FEE_DATA = {
   remainingFreeAsserts: 0,
   totalStakingAmountDC: new Balance(0, CurrencyType.dataCredit),
@@ -30,128 +26,83 @@ const DEFAULT_FEE_DATA = {
   hasSufficientBalance: false,
   isFree: false,
 }
-type Props = { onFinished: () => void }
-const ReassertLocation = ({ onFinished }: Props) => {
-  const [state, setState] = useState<
-    'fee' | 'update' | 'confirm' | 'success' | 'search'
-  >('fee')
-  const [locationAddress, setLocationAddress] = useState<
-    LocationGeocodedAddress | undefined
-  >()
+type Props = {
+  hotspot: Hotspot
+  onFinished: (
+    updatedLocation: Coords | undefined,
+    locationName: string,
+  ) => void
+  onStateChange: (state: ReassertLocationState) => void
+  onboardingRecord?: OnboardingRecord
+}
+const ReassertLocation = ({
+  hotspot,
+  onFinished,
+  onStateChange,
+  onboardingRecord,
+}: Props) => {
+  const account = useSelector((state: RootState) => state.account.account)
+  const [state, setState] = useState<ReassertLocationState>('fee')
   const [updatedLocation, setUpdatedLocation] = useState<Coords | undefined>()
-  const dispatch = useAppDispatch()
-  const currentLocation = useSelector(
-    (s: RootState) => s.location.currentLocation,
-  )
-
-  const { loadLocationFeeData } = useConnectedHotspotContext()
+  const [locationName, setLocationName] = useState<string>()
 
   const { result: feeData = DEFAULT_FEE_DATA } = useAsync(
-    loadLocationFeeData,
-    [],
+    () =>
+      loadLocationFeeData(
+        hotspot.nonce,
+        account?.balance?.integerBalance,
+        onboardingRecord,
+      ),
+    [hotspot.nonce, account?.balance?.integerBalance, onboardingRecord],
   )
-  const { t } = useTranslation()
-  const { enableBack } = useHotspotSettingsContext()
-
-  const { showOKAlert } = useAlert()
 
   const handleBack = useCallback(() => {
-    animateTransition()
+    if (Platform.OS === 'ios') {
+      animateTransition()
+    }
     switch (state) {
       case 'fee':
-      case 'success':
-        onFinished()
+        onFinished(undefined, '')
         break
       case 'update':
+        onStateChange('fee')
         setState('fee')
         break
+      case 'search':
       case 'confirm':
+        onStateChange('update')
         setState('update')
         break
     }
-  }, [onFinished, state])
+  }, [onFinished, onStateChange, state])
 
+  const { enableBack } = useHotspotSettingsContext()
   useEffect(() => {
     enableBack(handleBack)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [enableBack, handleBack])
 
-  useEffect(() => {
-    dispatch(getLocation())
-  }, [dispatch])
-
-  useEffect(() => {
-    if (!currentLocation) return
-
-    const getLoc = async () => {
-      const locInfo = await reverseGeocode(
-        currentLocation.latitude,
-        currentLocation.longitude,
-      )
-      if (!locInfo.length) return
-
-      setLocationAddress(locInfo[0])
-    }
-    getLoc()
-  }, [currentLocation])
-
-  useEffect(() => {
-    if (!updatedLocation) return
-
-    const getLoc = async () => {
-      const locInfo = await reverseGeocode(
-        updatedLocation.latitude,
-        updatedLocation.longitude,
-      )
-      if (!locInfo.length) return
-
-      setLocationAddress(locInfo[0])
-    }
-    getLoc()
-  }, [updatedLocation])
-
-  const handleFinish = useCallback(
-    async (assertResponse: Error | string | boolean) => {
-      if (assertResponse === true) {
-        animateTransition()
-        setState('success')
-        return
-      }
-
-      let titleKey = 'generic.error'
-      let messageKey = 'hotspot_setup.add_hotspot.add_hotspot_error_body'
-      if (isString(assertResponse)) {
-        if (assertResponse === HotspotErrorCode.WAIT) {
-          titleKey = t('hotspot_setup.add_hotspot.wait_error_title')
-          messageKey = t('hotspot_setup.add_hotspot.wait_error_body')
-        } else {
-          messageKey = `Got error code ${assertResponse} from assert location`
-        }
-      } else if (assertResponse !== false) {
-        messageKey = assertResponse.toString()
-      }
-
-      await showOKAlert({
-        titleKey,
-        messageKey,
-      })
-
-      onFinished()
-    },
-    [onFinished, showOKAlert, t],
-  )
+  const handleComplete = () => {
+    onFinished(updatedLocation, locationName || '')
+  }
 
   const handleSearch = useCallback(() => {
-    animateTransition()
+    if (Platform.OS === 'ios') {
+      animateTransition()
+    }
+    onStateChange('search')
     setState('search')
-  }, [])
+  }, [onStateChange])
 
-  const handleSearchSelectPlace = useCallback((place: PlaceGeography) => {
-    const { lat, lng } = place
-    setUpdatedLocation({ latitude: lat, longitude: lng })
-    animateTransition()
-    setState('confirm')
-  }, [])
+  const handleSearchSelectPlace = useCallback(
+    (place: PlaceGeography, name: string) => {
+      const { lat, lng } = place
+      setUpdatedLocation({ latitude: lat, longitude: lng })
+      setLocationName(name)
+      onStateChange('confirm')
+      setState('confirm')
+    },
+    [onStateChange],
+  )
 
   const amount = feeData.isFree
     ? 'O DC'
@@ -165,9 +116,12 @@ const ReassertLocation = ({ onFinished }: Props) => {
       return (
         <ReassertLocationFee
           {...feeData}
-          locationAddress={locationAddress}
+          hotspot={hotspot}
           onChangeLocation={() => {
-            animateTransition()
+            if (Platform.OS === 'ios') {
+              animateTransition()
+            }
+            onStateChange('update')
             setState('update')
           }}
         />
@@ -177,11 +131,21 @@ const ReassertLocation = ({ onFinished }: Props) => {
         <ReassertLocationUpdate
           amount={amount}
           key={state}
+          coords={
+            hotspot.lat && hotspot.lng
+              ? { latitude: hotspot.lat, longitude: hotspot.lng }
+              : undefined
+          }
           onCancel={handleBack}
           onSearch={handleSearch}
-          locationSelected={(latitude, longitude) => {
+          onConfirm={handleComplete}
+          locationSelected={(latitude, longitude, name) => {
             setUpdatedLocation({ latitude, longitude })
-            animateTransition()
+            setLocationName(name)
+            if (Platform.OS === 'ios') {
+              animateTransition()
+            }
+            onStateChange('confirm')
             setState('confirm')
           }}
         />
@@ -196,16 +160,8 @@ const ReassertLocation = ({ onFinished }: Props) => {
           onCancel={handleBack}
           confirming
           coords={updatedLocation}
-          onFinish={handleFinish}
+          onConfirm={handleComplete}
           onSearch={handleSearch}
-        />
-      )
-    case 'success':
-      return (
-        <ReassertLocationFee
-          {...feeData}
-          locationAddress={locationAddress}
-          isPending
         />
       )
   }

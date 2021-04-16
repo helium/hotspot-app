@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { StyleSheet, TextInput } from 'react-native'
 import { Hotspot } from '@helium/http'
 import animalName from 'angry-purple-tiger'
@@ -10,6 +10,8 @@ import CloseModal from '../../../assets/images/closeModal.svg'
 import TransferHotspotIcon from '../../../assets/images/transferHotspotIcon.svg'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
+import { useHotspotSettingsContext } from '../settings/HotspotSettingsProvider'
+import { useColors } from '../../../theme/themeHooks'
 
 type Props = {
   onCloseTransfer: () => void
@@ -26,6 +28,12 @@ const HotspotTransfer = ({
   const { t } = useTranslation()
   const navigation = useNavigation()
   const [typedName, setTypedName] = useState('')
+  const { enableBack } = useHotspotSettingsContext()
+  const colors = useColors()
+
+  useEffect(() => {
+    enableBack(onCloseTransfer)
+  }, [enableBack, onCloseTransfer])
 
   const handleTypeName = (text: string) => {
     setTypedName(text)
@@ -50,10 +58,14 @@ const HotspotTransfer = ({
         padding="l"
         minHeight={194}
       >
-        <Box flexDirection="row" justifyContent="space-between">
+        <Box
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
           <TransferHotspotIcon />
           <TouchableOpacityBox onPress={onCloseTransfer}>
-            <CloseModal color="gray" />
+            <CloseModal color={colors.blackTransparent} />
           </TouchableOpacityBox>
         </Box>
         <Text variant="h2" paddingTop="m" maxFontSizeMultiplier={1}>

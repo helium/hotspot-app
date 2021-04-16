@@ -2,7 +2,7 @@ import { Address } from '@helium/crypto-react-native'
 import { AnyTransaction, PendingTransaction } from '@helium/http'
 import {
   AddGatewayV1,
-  AssertLocationV1,
+  AssertLocationV2,
   PaymentV2,
   TokenBurnV1,
   TransferHotspotV1,
@@ -47,13 +47,35 @@ export const makeAddGatewayTxn = async (
 }
 
 export const makeAssertLocTxn = async (
-  partialTxnBin: string,
-): Promise<AssertLocationV1> => {
-  const assertLocTxn = AssertLocationV1.fromString(partialTxnBin)
+  ownerB58: string,
+  gatewayB58: string,
+  payerB58: string,
+  location: string,
+  nonce: number,
+  gain: number,
+  elevation: number,
+  stakingFee: number,
+): Promise<AssertLocationV2> => {
   const keypair = await getKeypair()
+  const owner = Address.fromB58(ownerB58)
+  const gateway = Address.fromB58(gatewayB58)
+  const payer = Address.fromB58(payerB58)
+  const ownerIsPayer = payerB58 === ownerB58
+
+  const assertLocTxn = new AssertLocationV2({
+    owner,
+    gateway,
+    payer,
+    nonce,
+    gain,
+    elevation,
+    location,
+    stakingFee,
+  })
 
   return assertLocTxn.sign({
     owner: keypair,
+    payer: ownerIsPayer ? keypair : undefined,
   })
 }
 

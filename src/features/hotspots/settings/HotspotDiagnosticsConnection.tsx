@@ -87,8 +87,8 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
   }, [checkBluetooth])
 
   const handleConnectFailure = useCallback(
-    async (messageKey?: string) => {
-      await showOKAlert({ titleKey: 'something went wrong', messageKey })
+    async (messageKey?: string, titleKey = 'something went wrong') => {
+      await showOKAlert({ titleKey, messageKey })
       setSelectedHotspot(null)
       rescan()
     },
@@ -121,7 +121,10 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
         await sleep(500)
         onConnected(hotspot)
       } else {
-        handleConnectFailure()
+        handleConnectFailure(
+          'hotspot_setup.onboarding_error.subtitle',
+          'hotspot_setup.onboarding_error.title_connect_failed',
+        )
       }
     } catch (e) {
       handleConnectFailure(e.toString())

@@ -148,6 +148,7 @@ const HotspotsPicker = () => {
         title={t('hotspots.sort_by')}
         selectedValue={order}
         onValueChanged={handleValueChanged}
+        marginVertical="s"
       />
     </Box>
   )
