@@ -136,11 +136,12 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
         )
         return
       }
+      const hotspotGain = hotspot.gain ? hotspot.gain / 10 : 1.2
       return assertLocationTxn(
         hotspot.address,
         location.latitude,
         location.longitude,
-        hotspot.gain,
+        hotspotGain,
         hotspot.elevation,
         hotspot.nonce,
         onboardingRecord,

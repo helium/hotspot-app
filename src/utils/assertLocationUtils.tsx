@@ -10,7 +10,7 @@ export const assertLocationTxn = async (
   gateway: string | undefined,
   lat: number | undefined,
   lng: number | undefined,
-  gain = 1.2,
+  decimalGain = 1.2,
   elevation = 0,
   nonce = 0,
   onboardingRecord: OnboardingRecord | undefined,
@@ -25,7 +25,7 @@ export const assertLocationTxn = async (
     return undefined
   }
 
-  const antennaGain = gain * 10
+  const antennaGain = decimalGain * 10
   const stakingFee = updatingLocation
     ? Transaction.stakingFeeTxnAssertLocationV1
     : 0
