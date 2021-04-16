@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
+import { ScrollView } from 'react-native-gesture-handler'
 import { BoxProps } from '@shopify/restyle'
 import React, { memo, useCallback } from 'react'
 import { StyleProp, ViewStyle } from 'react-native'
@@ -29,7 +29,7 @@ const BubbleSelect = ({
 
   return (
     <Box>
-      <BottomSheetScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <Box {...boxProps} flexDirection="row" flex={1} height={33}>
           {data.map((item, index) => (
             <BubbleSelectItem
@@ -40,7 +40,7 @@ const BubbleSelect = ({
             />
           ))}
         </Box>
-      </BottomSheetScrollView>
+      </ScrollView>
       <LinearGradient {...leftGradientProps} />
       <LinearGradient {...rightGradientProps} />
     </Box>
