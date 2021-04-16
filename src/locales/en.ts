@@ -359,6 +359,8 @@ export default {
         'There was an error constructing the Add Hotspot transaction. Please try again.',
       assert_loc_error_body:
         'There was an error constructing the Assert Location transaction. Please try again.',
+      assert_loc_error_no_loc:
+        'The selected location is invalid. Please try again.',
     },
     enable_location: {
       title: 'Set Hotspot\nLocation',

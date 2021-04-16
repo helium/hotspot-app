@@ -25,7 +25,7 @@ import sleep from '../utils/sleep'
 
 type Props = BoxProps<Theme> & {
   data: Array<HeliumActionSheetItemType>
-  selectedValue: string | number
+  selectedValue?: string | number
   onValueChanged: (itemValue: string | number, itemIndex: number) => void
   title?: string
   prefix?: string
@@ -39,6 +39,7 @@ type Props = BoxProps<Theme> & {
     | 'flex-end'
     | 'center'
     | 'space-between'
+  initialValue?: string
 }
 type ListItem = { item: HeliumActionSheetItemType; index: number }
 
@@ -53,6 +54,7 @@ const HeliumActionSheet = ({
   listFormat,
   carotColor = 'purpleMain',
   displayTextJustifyContent = 'flex-end',
+  initialValue,
   ...boxProps
 }: Props) => {
   const insets = useSafeAreaInsets()
@@ -106,9 +108,12 @@ const HeliumActionSheet = ({
   const keyExtractor = useCallback((item) => item.value, [])
 
   const buttonTitle = useMemo(() => {
+    if (initialValue && !selectedValue) {
+      return initialValue
+    }
     const item = data.find((d) => d.value === selectedValue)
     return item?.label || ''
-  }, [data, selectedValue])
+  }, [data, initialValue, selectedValue])
 
   const selected = useCallback(
     (value: string | number) => value === selectedValue,

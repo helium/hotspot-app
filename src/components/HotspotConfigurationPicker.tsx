@@ -45,7 +45,7 @@ type Props = {
   onAntennaUpdated: (antenna: Antenna) => void
   onGainUpdated: (gain: number) => void
   onElevationUpdated: (elevation: number) => void
-  selectedAntenna: Antenna
+  selectedAntenna?: Antenna
   outline?: boolean
 }
 const HotspotConfigurationPicker = ({
@@ -62,11 +62,13 @@ const HotspotConfigurationPicker = ({
   const elevationInputRef = useRef<TextInput | null>(null)
 
   const [elevation, setElevation] = useState<string>()
-  const [gain, setGain] = useState<string>(
-    selectedAntenna.gain.toLocaleString(locale, {
-      maximumFractionDigits: 1,
-      minimumFractionDigits: 1,
-    }),
+  const [gain, setGain] = useState<string | undefined>(
+    selectedAntenna
+      ? selectedAntenna.gain.toLocaleString(locale, {
+          maximumFractionDigits: 1,
+          minimumFractionDigits: 1,
+        })
+      : undefined,
   )
 
   const onSelectAntenna = (value: string | number, index: number) => {
@@ -98,9 +100,11 @@ const HotspotConfigurationPicker = ({
 
   const onChangeGain = (text: string) => setGain(text)
   const onDoneEditingGain = () => {
-    const gainFloat = parseFloat(
-      gain.replace(groupSeparator, '').replace(decimalSeparator, '.'),
-    )
+    const gainFloat = gain
+      ? parseFloat(
+          gain.replace(groupSeparator, '').replace(decimalSeparator, '.'),
+        )
+      : 0
     let gainString
     if (!gainFloat || gainFloat <= 1) {
       gainString = '1'
@@ -113,9 +117,11 @@ const HotspotConfigurationPicker = ({
     }
     setGain(gainString)
     onGainUpdated(
-      parseFloat(
-        gain.replace(groupSeparator, '').replace(decimalSeparator, '.'),
-      ),
+      gain
+        ? parseFloat(
+            gain.replace(groupSeparator, '').replace(decimalSeparator, '.'),
+          )
+        : 0,
     )
   }
 
@@ -138,12 +144,14 @@ const HotspotConfigurationPicker = ({
   }
 
   useEffect(() => {
-    setGain(
-      selectedAntenna.gain.toLocaleString(locale, {
-        maximumFractionDigits: 1,
-        minimumFractionDigits: 1,
-      }),
-    )
+    if (selectedAntenna) {
+      setGain(
+        selectedAntenna.gain.toLocaleString(locale, {
+          maximumFractionDigits: 1,
+          minimumFractionDigits: 1,
+        }),
+      )
+    }
   }, [selectedAntenna])
 
   return (
@@ -158,12 +166,13 @@ const HotspotConfigurationPicker = ({
         title={t('antennas.onboarding.select')}
         prefixVariant="regular"
         prefixFontSize={14}
+        initialValue={t('antennas.onboarding.select')}
         data={Object.values(Antennas).map((a) => ({
           label: t(`antennas.${a.id}`),
           value: a.id,
         }))}
         carotColor="black"
-        selectedValue={selectedAntenna.id}
+        selectedValue={selectedAntenna?.id}
         onValueChanged={onSelectAntenna}
         displayTextJustifyContent="space-between"
         padding="m"
@@ -185,7 +194,11 @@ const HotspotConfigurationPicker = ({
               <InfoIcon color={colors.grayLight} />
             </TouchableOpacityBox>
           </Box>
-          <Box flexDirection="row" alignItems="center">
+          <Box
+            flexDirection="row"
+            alignItems="center"
+            visible={gain !== undefined}
+          >
             <TextInput
               style={styles.textInput}
               ref={gainInputRef}
@@ -194,7 +207,7 @@ const HotspotConfigurationPicker = ({
               returnKeyType="done"
               onChangeText={onChangeGain}
               onSubmitEditing={onDoneEditingGain}
-              editable={selectedAntenna.id === 'custom'}
+              editable={selectedAntenna?.id === 'custom'}
             />
             <Text marginLeft="xxs">{t('antennas.onboarding.dbi')}</Text>
           </Box>

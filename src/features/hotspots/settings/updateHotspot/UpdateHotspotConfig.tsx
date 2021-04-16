@@ -3,7 +3,6 @@ import { Hotspot } from '@helium/http'
 import { useTranslation } from 'react-i18next'
 import { ActivityIndicator, Alert, Platform } from 'react-native'
 import { useAsync } from 'react-async-hook'
-import { getCountry } from 'react-native-localize'
 import { Balance, CurrencyType } from '@helium/currency'
 import Text from '../../../../components/Text'
 import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
@@ -12,7 +11,6 @@ import Button from '../../../../components/Button'
 import * as Logger from '../../../../utils/logger'
 import HotspotConfigurationPicker, {
   Antenna,
-  Antennas,
 } from '../../../../components/HotspotConfigurationPicker'
 import animateTransition from '../../../../utils/animateTransition'
 import ReassertLocation, {
@@ -41,12 +39,9 @@ type State = 'antenna' | 'location' | 'confirm'
 const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
   const { t } = useTranslation()
   const submitTxn = useSubmitTxn()
-  const country = getCountry()
   const [state, setState] = useState<State>('antenna')
-
-  // TODO: Load current antenna data from API
-  const [antenna, setAntenna] = useState<Antenna>(Antennas.helium_us)
-  const [gain, setGain] = useState<number>(antenna.gain)
+  const [antenna, setAntenna] = useState<Antenna>()
+  const [gain, setGain] = useState<number>()
   const [elevation, setElevation] = useState<number>(0)
   const [location, setLocation] = useState<Coords>()
   const [locationName, setLocationName] = useState<string>()
@@ -55,35 +50,10 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
   const [loading, setLoading] = useState(false)
   const [locationFee, setLocationFee] = useState('')
 
-  const { result: onboardingRecord } = useAsync(async () => {
-    const record = await getOnboardingRecord(hotspot.address)
-    const isUS = country === 'US'
-    let defaultAntenna
-    switch (record.makerId) {
-      default:
-      case 1:
-      case 3:
-        defaultAntenna = isUS ? Antennas.helium_us : Antennas.helium_eu
-        break
-      case 2:
-        defaultAntenna = isUS
-          ? Antennas.rak_hotspot_us
-          : Antennas.rak_hotspot_eu
-        break
-      case 4:
-        defaultAntenna = Antennas.nebra_indoor
-        break
-      case 5:
-        defaultAntenna = isUS ? Antennas.syncrobit_us : Antennas.syncrobit_eu
-        break
-      case 6:
-        defaultAntenna = Antennas.bobcat
-        break
-    }
-    setAntenna(defaultAntenna)
-    setGain(defaultAntenna.gain)
-    return record
-  }, [hotspot.address, country])
+  const { result: onboardingRecord } = useAsync(
+    async () => getOnboardingRecord(hotspot.address),
+    [hotspot.address],
+  )
 
   const { enableBack, disableBack } = useHotspotSettingsContext()
   useEffect(() => {
@@ -162,19 +132,44 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
     }
   }
 
-  const onSubmit = async () => {
-    setLoading(true)
-    try {
-      const txn = await assertLocationTxn(
+  const constructTransaction = async () => {
+    if (isLocationChange) {
+      if (!location) {
+        Logger.error(new Error('Assert failed with null location'))
+        Alert.alert(
+          t('generic.error'),
+          t('hotspot_setup.add_hotspot.assert_loc_error_no_loc'),
+        )
+        return
+      }
+      return assertLocationTxn(
         hotspot.address,
-        location?.latitude || hotspot.lat,
-        location?.longitude || hotspot.lng,
-        gain,
-        elevation,
+        location.latitude,
+        location.longitude,
+        hotspot.gain,
+        hotspot.elevation,
         hotspot.nonce,
         onboardingRecord,
         isLocationChange,
       )
+    }
+
+    return assertLocationTxn(
+      hotspot.address,
+      hotspot.lat,
+      hotspot.lng,
+      gain,
+      elevation,
+      hotspot.nonce,
+      onboardingRecord,
+      false,
+    )
+  }
+
+  const onSubmit = async () => {
+    setLoading(true)
+    try {
+      const txn = await constructTransaction()
       if (txn) {
         await submitTxn(txn)
         onClose()
@@ -256,7 +251,7 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
             {t('hotspot_settings.reassert.antenna_details')}
           </Text>
           <Text variant="body1Medium" color="grayLightText" marginBottom="s">
-            {t(`antennas.${antenna.id}`)}
+            {t(`antennas.${antenna?.id}`)}
           </Text>
           <Text
             variant="body1Medium"
@@ -322,6 +317,7 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
               title={t('hotspot_settings.reassert.update_antenna')}
               mode="contained"
               variant="primary"
+              disabled={!antenna}
               onPress={onConfirm}
             />
           </>
