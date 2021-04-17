@@ -203,7 +203,7 @@ export default {
         'Plug in the provided power adapter into an outlet near a window and screw in the provided antenna on the back of the Hotspot.',
       syncrobit_subtitle_1: 'Attach the antenna and plug in the device',
       longapone_subtitle_1:
-        'Attach the antenna\'s and plug in the provided power adapter.',
+        "Attach the antenna's and plug in the provided power adapter.",
       helium_subtitle_2:
         'Your Hotspot will boot up, and its light will become Green when ready.',
       rak_subtitle_2:

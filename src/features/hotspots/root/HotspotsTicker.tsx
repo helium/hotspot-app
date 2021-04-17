@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux'
 import TextTicker from 'react-native-text-ticker'
 import { BoxProps } from '@shopify/restyle'
 import { useTranslation } from 'react-i18next'
+import { Easing } from 'react-native'
 import Box from '../../../components/Box'
 import {
   fetchStats,
@@ -69,7 +70,13 @@ const HotspotsTicker = ({ ...boxProps }: Props) => {
 
   return (
     <Box {...boxProps}>
-      <TextTicker style={textStyle} scrollSpeed={300} loop repeatSpacer={0}>
+      <TextTicker
+        style={textStyle}
+        scrollSpeed={200}
+        loop
+        repeatSpacer={0}
+        easing={Easing.linear}
+      >
         {text}
       </TextTicker>
     </Box>
