@@ -26,7 +26,7 @@ const imagesByHotspotName: Record<string, any> = {
     <Image source={require('../assets/images/syncrobit-hotspot.png')} />
   ),
   'LongAP One': (
-   <Image source={require('../assets/images/longap-one-hotspot.png')} />
+    <Image source={require('../assets/images/longap-one-hotspot.png')} />
   ),
 }
 

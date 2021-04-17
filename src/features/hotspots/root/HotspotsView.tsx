@@ -192,6 +192,14 @@ const HotspotsView = ({
     onViewMap(true)
   }, [updateViewState, viewState, onViewMap])
 
+  const handleDetailsChange = useCallback((index: number) => {
+    if (index === 1) {
+      setViewState('details')
+    } else if (index === 0) {
+      setViewState('details_and_map')
+    }
+  }, [])
+
   const handleSelectPlace = useCallback(
     async (place: PlacePrediction) => {
       updateViewState('map', 'search')
@@ -362,7 +370,7 @@ const HotspotsView = ({
         </TouchableOpacityBox>
       )
     }
-    if (viewState === 'details') {
+    if (viewState === 'details' || viewState === 'details_and_map') {
       return (
         <>
           <TouchableOpacityBox onPress={toggleSettings} padding="s">
@@ -488,6 +496,7 @@ const HotspotsView = ({
         handleComponent={detailsHandle}
         animatedIndex={animatedDetailsPosition}
         dismissOnPanDown={false}
+        onChange={handleDetailsChange}
       >
         {detailBody}
       </BottomSheetModal>
