@@ -344,7 +344,7 @@ const SendTransferForm = ({
   ]
 
   return (
-    <Box>
+    <Box paddingBottom="l">
       {isLocked && type === 'payment' && renderLockedPaymentForm()}
       {isLocked && type === 'dc_burn' && renderLockedBurnForm()}
       {!isLocked && type === 'payment' && renderPaymentForm()}
