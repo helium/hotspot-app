@@ -15,7 +15,7 @@ export type SendStackParamList = {
 }
 
 export type SendTransfer = {
-  id: number
+  id: string
   address: string
   addressAlias: string
   addressLoading: boolean

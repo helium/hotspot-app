@@ -71,6 +71,7 @@ const SendForm = ({
         )}
         {sendTransfers.map((sendTransfer) => (
           <SendTransferForm
+            key={sendTransfer.id}
             account={account}
             isLocked={isLocked}
             isSeller={isSeller}

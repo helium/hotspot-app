@@ -39,7 +39,7 @@ import {
 import { getAddress } from '../../../utils/secureAccount'
 import Text from '../../../components/Text'
 import useSubmitTxn from '../../../hooks/useSubmitTxn'
-import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
+import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
 import { useAppDispatch } from '../../../store/store'
 import {
   fetchCurrentOraclePrice,
@@ -72,7 +72,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
 
   const [sendTransfers, setSendTransfers] = useState<Array<SendTransfer>>([
     {
-      id: 0,
+      id: '0',
       address: '',
       addressAlias: '',
       addressLoading: false,
@@ -83,7 +83,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       memo: '',
     },
   ])
-  const setTransfer = (transferId: number, updates: any) => {
+  const setTransfer = (transferId: string, updates: any) => {
     setSendTransfers(
       sendTransfers.map((transfer) => {
         return transfer.id === transferId
@@ -159,14 +159,10 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
             parseFloat(scanAmount),
             CurrencyType.networkToken,
           )
-          amount = balanceAmount.toString(8, {
-            decimalSeparator,
-            groupSeparator,
-            showTicker: true,
-          })
+          amount = formatAmount(String(scanAmount))
         }
         return {
-          id: i,
+          id: `transfer${i}`,
           address,
           addressAlias: '',
           addressLoading: false,
@@ -179,7 +175,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       },
     )
     setSendTransfers(scannedSendTransfers)
-    const hasPresetAmount = some(sendTransfers, ({ amount }) => !!amount)
+    const hasPresetAmount = some(scannedSendTransfers, ({ amount }) => !!amount)
     if (hasPresetAmount) setIsLocked(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scanResult])
@@ -235,6 +231,24 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     transferData?.amountToSeller,
     hasValidActivity,
   ])
+
+  const formatAmount = (formAmount: string) => {
+    if (formAmount === decimalSeparator || formAmount.includes('NaN')) {
+      return `0${decimalSeparator}`
+    }
+    const rawInteger = (formAmount.split(decimalSeparator)[0] || formAmount)
+      .split(groupSeparator)
+      .join('')
+    const integer = parseInt(rawInteger, 10).toLocaleString(locale)
+    let decimal = formAmount.split(decimalSeparator)[1]
+    if (integer === 'NaN') {
+      return ''
+    }
+    if (decimal && decimal.length >= 9) decimal = decimal.slice(0, 8)
+    return formAmount.includes(decimalSeparator)
+      ? `${integer}${decimalSeparator}${decimal}`
+      : integer
+  }
 
   const getNonce = (): number => {
     if (!account?.speculativeNonce) return 1
