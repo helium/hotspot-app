@@ -70,10 +70,6 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     account: { account },
   } = useSelector((state: RootState) => state)
 
-  /* ********** */
-  /* STATE INIT */
-  /* ********** */
-
   const [sendTransfers, setSendTransfers] = useState<Array<SendTransfer>>([
     {
       id: 0,
@@ -362,40 +358,43 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     }
   }
 
+  const constructTxns = async () => {
+    if (type === 'payment') {
+      return Promise.all(
+        sendTransfers.map(async ({ address, balanceAmount }) => {
+          return makePaymentTxn(
+            balanceAmount.integerBalance,
+            address,
+            getNonce(),
+          )
+        }),
+      )
+    }
+
+    if (type === 'dc_burn') {
+      return Promise.all(
+        sendTransfers.map(async ({ address, balanceAmount, memo }) => {
+          return makeBurnTxn(
+            balanceAmount.integerBalance,
+            address,
+            getNonce(),
+            memo,
+          )
+        }),
+      )
+    }
+
+    if (type === 'transfer') {
+      return [isSeller ? handleSellerTransfer() : handleBuyerTransfer()]
+    }
+
+    throw new Error('Unsupported transaction type')
+  }
+
   const handleSubmit = async () => {
     try {
-      let txns = []
-      if (type === 'payment') {
-        txns = await Promise.all(
-          sendTransfers.map(async ({ address, balanceAmount }) => {
-            return makePaymentTxn(
-              balanceAmount.integerBalance,
-              address,
-              getNonce(),
-            )
-          }),
-        )
-      } else if (type === 'dc_burn') {
-        txns = await Promise.all(
-          sendTransfers.map(async ({ address, balanceAmount, memo }) => {
-            return makeBurnTxn(
-              balanceAmount.integerBalance,
-              address,
-              getNonce(),
-              memo,
-            )
-          }),
-        )
-      } else if (type === 'transfer') {
-        txns = [
-          (await isSeller) ? handleSellerTransfer() : handleBuyerTransfer(),
-        ]
-      } else {
-        throw new Error('Unsupported transaction type')
-      }
-      if (txns) {
-        await Promise.all(txns.map(async (txn: any) => submitTxn(txn)))
-      }
+      const txns = await constructTxns()
+      await Promise.all(txns.map(async (txn: any) => submitTxn(txn)))
       triggerNavHaptic()
       navigation.navigate('SendComplete')
     } catch (error) {
