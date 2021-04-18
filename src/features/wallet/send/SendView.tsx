@@ -2,43 +2,21 @@ import React, { useEffect, useState } from 'react'
 import { Alert } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
-import { useAsync } from 'react-async-hook'
-import { useSelector } from 'react-redux'
-import { some } from 'lodash'
 import Balance, { CurrencyType } from '@helium/currency'
 import { Address } from '@helium/crypto-react-native'
+import { useAsync } from 'react-async-hook'
+import { useSelector } from 'react-redux'
 import { Hotspot } from '@helium/http'
 import { TransferHotspotV1 } from '@helium/transactions'
-
-// Redux
+import { some } from 'lodash'
 import { RootState } from '../../../store/rootReducer'
-import { useAppDispatch } from '../../../store/store'
-import {
-  createTransfer,
-  deleteTransfer,
-  getTransfer,
-  Transfer,
-} from '../../hotspots/transfers/TransferRequests'
-import {
-  fetchCurrentOraclePrice,
-  fetchPredictedOraclePrice,
-} from '../../../store/helium/heliumDataSlice'
-import useSubmitTxn from '../../../hooks/useSubmitTxn'
-
-// Components
 import Box from '../../../components/Box'
-import SendAmountAvailableBanner from './SendAmountAvailableBanner'
-import SendHeader from './SendHeader'
-import SendForm from './SendForm'
-import Text from '../../../components/Text'
-import TransferBanner from '../../hotspots/transfers/TransferBanner'
-
-// Types
-import { QrScanResult } from '../scan/scanTypes'
-import { SendTransfer, SendType } from './sendTypes'
-
-// Utils
 import useHaptic from '../../../utils/useHaptic'
+import { QrScanResult } from '../scan/scanTypes'
+import SendHeader from './SendHeader'
+import { SendTransfer, SendType } from './sendTypes'
+import SendAmountAvailableBanner from './SendAmountAvailableBanner'
+import SendForm from './SendForm'
 import {
   makeBurnTxn,
   makeBuyerTransferHotspotTxn,
@@ -51,8 +29,22 @@ import {
   getHotspotsLastChallengeActivity,
 } from '../../../utils/appDataClient'
 import * as Logger from '../../../utils/logger'
+import TransferBanner from '../../hotspots/transfers/TransferBanner'
+import {
+  createTransfer,
+  deleteTransfer,
+  getTransfer,
+  Transfer,
+} from '../../hotspots/transfers/TransferRequests'
 import { getAddress } from '../../../utils/secureAccount'
+import Text from '../../../components/Text'
+import useSubmitTxn from '../../../hooks/useSubmitTxn'
 import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
+import { useAppDispatch } from '../../../store/store'
+import {
+  fetchCurrentOraclePrice,
+  fetchPredictedOraclePrice,
+} from '../../../store/helium/heliumDataSlice'
 
 type Props = {
   scanResult?: QrScanResult
