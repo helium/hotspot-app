@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native'
 import { useAsync } from 'react-async-hook'
 import { useSelector } from 'react-redux'
 import { some } from 'lodash'
-import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
+import Balance, { CurrencyType } from '@helium/currency'
 import { Address } from '@helium/crypto-react-native'
 import { Hotspot } from '@helium/http'
 import { TransferHotspotV1 } from '@helium/transactions'
@@ -40,13 +40,6 @@ import { SendTransfer, SendType } from './sendTypes'
 // Utils
 import useHaptic from '../../../utils/useHaptic'
 import {
-  calculateBurnTxnFee,
-  calculatePaymentTxnFee,
-  calculateTransferTxnFee,
-  useFees,
-} from '../../../utils/fees'
-import useCurrency from '../../../utils/useCurrency'
-import {
   makeBurnTxn,
   makeBuyerTransferHotspotTxn,
   makePaymentTxn,
@@ -59,8 +52,7 @@ import {
 } from '../../../utils/appDataClient'
 import * as Logger from '../../../utils/logger'
 import { getAddress } from '../../../utils/secureAccount'
-import { ensLookup } from '../../../utils/explorerClient'
-import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
+import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
 
 type Props = {
   scanResult?: QrScanResult
@@ -76,8 +68,6 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
 
   const navigation = useNavigation()
   const { t } = useTranslation()
-  const { networkTokensToDataCredits } = useCurrency()
-  const { feeToHNT } = useFees()
   const submitTxn = useSubmitTxn()
   const dispatch = useAppDispatch()
   const { triggerNavHaptic } = useHaptic()
@@ -113,33 +103,15 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       memo: '',
     },
   ])
-  const setSendTransfer = (sendTransferId: number, changes = {}) => {
+  const setTransfer = (transferId: number, updates: any) => {
     setSendTransfers(
-      sendTransfers.map((transfer) =>
-        transfer.id === sendTransferId ? { ...transfer, ...changes } : transfer,
-      ),
+      sendTransfers.map((transfer) => {
+        return transfer.id === transferId
+          ? { ...transfer, ...updates }
+          : transfer
+      }),
     )
   }
-  const setAddress = (id: number, address: string) =>
-    setSendTransfer(id, { address })
-  const setAddressLoading = (id: number, addressLoading: boolean) =>
-    setSendTransfer(id, { addressLoading })
-  const setAddressAlias = (id: number, addressAlias: string) =>
-    setSendTransfer(id, { addressAlias })
-  const setAmount = (id: number, amount: string) =>
-    setSendTransfer(id, { amount })
-  const setBalanceAmount = (
-    id: number,
-    balanceAmount: Balance<NetworkTokens>,
-  ) => {
-    setSendTransfer(id, { balanceAmount })
-    handleBalanceAmountChange(id, balanceAmount)
-  }
-  const setDcAmount = (id: number, dcAmount: string) =>
-    setSendTransfer(id, { dcAmount })
-  const setFee = (id: number, fee: Balance<NetworkTokens>) =>
-    setSendTransfer(id, { fee })
-  const setMemo = (id: number, memo: string) => setSendTransfer(id, { memo })
 
   /* ******** */
   /* ON MOUNT */
@@ -235,10 +207,6 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       },
     )
     setSendTransfers(scannedSendTransfers)
-    scannedSendTransfers.forEach((sendTransfer) => {
-      handleAddressChange(sendTransfer.id, sendTransfer.address)
-      handleBalanceAmountChange(sendTransfer.id, sendTransfer.balanceAmount)
-    })
     const hasPresetAmount = some(sendTransfers, ({ amount }) => !!amount)
     if (hasPresetAmount) setIsLocked(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -300,93 +268,13 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     hasValidActivity,
   ])
 
-  // compute fee
-  useAsync(async () => {
-    if (sendTransfers.length > 1) return
-    const { id: sendTransferId, balanceAmount } = sendTransfers[0]
-    return updateFee(sendTransferId, balanceAmount)
-  }, [transferData?.amountToSeller])
-
   /* ******************** */
   /* STATE UPDATE HELPERS */
   /* ******************** */
 
-  const setMaxAmount = () => {
-    triggerNavHaptic()
-    if (sendTransfers.length > 1) return
-    const balance = account?.balance
-    if (!balance) return
-    const { id, fee } = sendTransfers[0]
-
-    if (fee > balance) {
-      const balanceStr = balance.toString(8, {
-        decimalSeparator,
-        groupSeparator,
-        showTicker: false,
-      })
-      handleAmountChange(id, balanceStr)
-    } else {
-      const maxAmount = balance.minus(fee)
-      const maxAmountStr = maxAmount.toString(8, {
-        decimalSeparator,
-        groupSeparator,
-        showTicker: false,
-      })
-      handleAmountChange(id, maxAmountStr)
-    }
-  }
-
   const unlockForm = () => {
     setIsLocked(false)
     triggerNavHaptic()
-  }
-
-  // compute equivalent dc amount for burn txns
-  const updateDcAmount = async (
-    sendTransferId: number,
-    balanceAmount: Balance<NetworkTokens>,
-  ) => {
-    if (type !== 'dc_burn') return
-    const sendTransfer = sendTransfers.find(({ id }) => id === sendTransferId)
-    if (!sendTransfer) return
-    const balanceDc = await networkTokensToDataCredits(balanceAmount)
-    if (!balanceDc) return
-    const balanceDcString = balanceDc.toString(0, {
-      decimalSeparator,
-      groupSeparator,
-      showTicker: false,
-    })
-    setDcAmount(sendTransferId, balanceDcString)
-  }
-
-  const updateFee = async (
-    sendTransferId: number,
-    balanceAmount: Balance<NetworkTokens>,
-  ) => {
-    const sendTransfer = sendTransfers.find(({ id }) => id === sendTransferId)
-    if (!sendTransfer) return
-    const { address, memo } = sendTransfer
-    let dcFee
-    if (type === 'payment') {
-      dcFee = await calculatePaymentTxnFee(
-        balanceAmount.integerBalance,
-        getNonce(),
-        address,
-      )
-    } else if (type === 'dc_burn') {
-      dcFee = await calculateBurnTxnFee(
-        balanceAmount.integerBalance,
-        address,
-        getNonce(),
-        memo,
-      )
-    } else if (type === 'transfer') {
-      dcFee = await calculateTransferTxnFee(transferData?.partialTransaction)
-    } else {
-      throw new Error('Unsupported transaction type')
-    }
-    const hntFee = feeToHNT(dcFee)
-    setFee(sendTransferId, hntFee)
   }
 
   const checkTransferAmountChanged = (transfer: Transfer) => {
@@ -407,71 +295,6 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       )
       throw new Error('transfer amount changed')
     }
-  }
-
-  const handleBalanceAmountChange = (
-    id: number,
-    balanceAmount: Balance<NetworkTokens>,
-  ) => {
-    updateDcAmount(id, balanceAmount)
-    updateFee(id, balanceAmount)
-  }
-
-  const handleAddressChange = async (
-    sendTransferId: number,
-    newAddress: string,
-  ) => {
-    if (newAddress.match(/.*\.eth$/)) {
-      setAddressLoading(sendTransferId, true)
-      const { address: ensAddress } = await ensLookup(newAddress)
-      if (ensAddress) {
-        setAddressAlias(sendTransferId, newAddress)
-        setAddress(sendTransferId, ensAddress)
-        setAddressLoading(sendTransferId, false)
-        return
-      }
-    }
-    setAddressLoading(sendTransferId, false)
-    setAddressAlias(sendTransferId, '')
-    setAddress(sendTransferId, newAddress)
-  }
-
-  const handleAmountChange = (sendTransferId: number, stringAmount: string) => {
-    if (stringAmount === decimalSeparator || stringAmount.includes('NaN')) {
-      setAmount(sendTransferId, `0${decimalSeparator}`)
-      setBalanceAmount(
-        sendTransferId,
-        new Balance(0, CurrencyType.networkToken),
-      )
-      return
-    }
-    const rawInteger = (stringAmount.split(decimalSeparator)[0] || stringAmount)
-      .split(groupSeparator)
-      .join('')
-    const integer = parseInt(rawInteger, 10).toLocaleString(locale)
-    let decimal = stringAmount.split(decimalSeparator)[1]
-    if (integer === 'NaN') {
-      setAmount(sendTransferId, '')
-      setBalanceAmount(
-        sendTransferId,
-        new Balance(0, CurrencyType.networkToken),
-      )
-      return
-    }
-    if (decimal && decimal.length >= 9) decimal = decimal.slice(0, 8)
-    setAmount(
-      sendTransferId,
-      stringAmount.includes(decimalSeparator)
-        ? `${integer}${decimalSeparator}${decimal}`
-        : integer,
-    )
-    setBalanceAmount(
-      sendTransferId,
-      Balance.fromFloat(
-        parseFloat(`${rawInteger}.${decimal}`),
-        CurrencyType.networkToken,
-      ),
-    )
   }
 
   const handleSellerTransfer = async () => {
@@ -624,28 +447,23 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
         <SendAmountAvailableBanner amount={account?.balance} />
       )}
       {type === 'transfer' && <TransferBanner hotspot={hotspot} />}
-      <Box flex={3} backgroundColor="white" paddingHorizontal="l">
-        <SendForm
-          isSeller={isSeller}
-          type={type}
-          isValid={isValid}
-          hasSufficientBalance={hasSufficientBalance}
-          isLocked={isLocked}
-          sendTransfers={sendTransfers}
-          transferData={transferData}
-          lastReportedActivity={lastReportedActivity}
-          onAddressChange={handleAddressChange}
-          onAmountChange={handleAmountChange}
-          onDcAmountChange={setDcAmount}
-          onMemoChange={setMemo}
-          onScanPress={navScan}
-          onSendMaxPress={setMaxAmount}
-          onSubmit={handleSubmit}
-          onUnlock={unlockForm}
-          hasValidActivity={hasValidActivity}
-          stalePocBlockCount={stalePocBlockCount}
-        />
-      </Box>
+      <SendForm
+        account={account}
+        hasSufficientBalance={hasSufficientBalance}
+        hasValidActivity={hasValidActivity}
+        isLocked={isLocked}
+        isSeller={isSeller}
+        isValid={isValid}
+        lastReportedActivity={lastReportedActivity}
+        onScanPress={navScan}
+        onSubmit={handleSubmit}
+        sendTransfers={sendTransfers}
+        stalePocBlockCount={stalePocBlockCount}
+        transferData={transferData}
+        type={type}
+        unlockForm={unlockForm}
+        updateTransfer={setTransfer}
+      />
       {isSeller && (
         <Text
           variant="body3"
