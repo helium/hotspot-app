@@ -54,10 +54,6 @@ type Props = {
 }
 
 const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
-  /* ********* */
-  /* HOOK INIT */
-  /* ********* */
-
   const navigation = useNavigation()
   const { t } = useTranslation()
   const submitTxn = useSubmitTxn()
@@ -66,22 +62,18 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
   )
+  const [type, setType] = useState<SendType>(sendType || 'payment')
+  const [isLocked, setIsLocked] = useState(false)
+  const [isValid, setIsValid] = useState(false)
+  const [hasSufficientBalance, setHasSufficientBalance] = useState(false)
   const {
     account: { account },
   } = useSelector((state: RootState) => state)
-  const getNonce = (): number => {
-    if (!account?.speculativeNonce) return 1
-    return account.speculativeNonce + 1
-  }
 
   /* ********** */
   /* STATE INIT */
   /* ********** */
 
-  const [type, setType] = useState<SendType>(sendType || 'payment')
-  const [isLocked, setIsLocked] = useState(false)
-  const [isValid, setIsValid] = useState(false)
-  const [hasSufficientBalance, setHasSufficientBalance] = useState(false)
   const [sendTransfers, setSendTransfers] = useState<Array<SendTransfer>>([
     {
       id: 0,
@@ -105,16 +97,30 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     )
   }
 
-  /* ******** */
-  /* ON MOUNT */
-  /* ******** */
-
   // update oracles
   useEffect(() => {
     dispatch(fetchCurrentOraclePrice())
     dispatch(fetchPredictedOraclePrice())
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // load last hotspot activity for transfer
+  const [lastReportedActivity, setLastReportedActivity] = useState<string>()
+  const [hasValidActivity, setHasValidActivity] = useState<boolean>()
+  const [stalePocBlockCount, setStalePocBlockCount] = useState<number>()
+  useAsync(async () => {
+    if (type === 'transfer' && hotspot?.address && blockHeight) {
+      const chainVars = await getChainVars()
+      const staleBlockCount = chainVars.transferHotspotStalePocBlocks as number
+      const reportedActivity = await getHotspotsLastChallengeActivity(
+        hotspot.address,
+      )
+      const lastActiveBlock = reportedActivity.block || 0
+      setLastReportedActivity(reportedActivity.text)
+      setHasValidActivity(blockHeight - lastActiveBlock < staleBlockCount)
+      setStalePocBlockCount(staleBlockCount)
+    }
+  }, [hotspot?.address, blockHeight, type])
 
   // load transfer data
   const [transferData, setTransferData] = useState<Transfer>()
@@ -143,28 +149,6 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  /* ************** */
-  /* ON PROP UPDATE */
-  /* ************** */
-
-  // load last hotspot activity for transfer
-  const [lastReportedActivity, setLastReportedActivity] = useState<string>()
-  const [hasValidActivity, setHasValidActivity] = useState<boolean>()
-  const [stalePocBlockCount, setStalePocBlockCount] = useState<number>()
-  useAsync(async () => {
-    if (type === 'transfer' && hotspot?.address && blockHeight) {
-      const chainVars = await getChainVars()
-      const staleBlockCount = chainVars.transferHotspotStalePocBlocks as number
-      const reportedActivity = await getHotspotsLastChallengeActivity(
-        hotspot.address,
-      )
-      const lastActiveBlock = reportedActivity.block || 0
-      setLastReportedActivity(reportedActivity.text)
-      setHasValidActivity(blockHeight - lastActiveBlock < staleBlockCount)
-      setStalePocBlockCount(staleBlockCount)
-    }
-  }, [hotspot?.address, blockHeight, type])
 
   // process scan results
   useEffect(() => {
@@ -203,10 +187,6 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     if (hasPresetAmount) setIsLocked(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scanResult])
-
-  /* *************** */
-  /* ON STATE UPDATE */
-  /* *************** */
 
   // validate transaction
   useEffect(() => {
@@ -260,33 +240,24 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     hasValidActivity,
   ])
 
-  /* ******************** */
-  /* STATE UPDATE HELPERS */
-  /* ******************** */
+  const getNonce = (): number => {
+    if (!account?.speculativeNonce) return 1
+    return account.speculativeNonce + 1
+  }
+
+  const navBack = () => {
+    navigation.navigate('Wallet')
+    triggerNavHaptic()
+  }
+
+  const navScan = () => {
+    navigation.navigate('SendScan')
+    triggerNavHaptic()
+  }
 
   const unlockForm = () => {
     setIsLocked(false)
     triggerNavHaptic()
-  }
-
-  const checkTransferAmountChanged = (transfer: Transfer) => {
-    if (
-      transfer.amountToSeller?.integerBalance !==
-      transferData?.amountToSeller?.integerBalance
-    ) {
-      setTransferData(transfer)
-      Alert.alert(
-        t('transfer.amount_changed_alert_title'),
-        t('transfer.amount_changed_alert_body', {
-          amount: transfer?.amountToSeller?.toString(undefined, {
-            groupSeparator,
-            decimalSeparator,
-            showTicker: false,
-          }),
-        }),
-      )
-      throw new Error('transfer amount changed')
-    }
   }
 
   const handleSellerTransfer = async () => {
@@ -320,6 +291,26 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       throw new Error('transfer already exists')
     }
     return undefined
+  }
+
+  const checkTransferAmountChanged = (transfer: Transfer) => {
+    if (
+      transfer.amountToSeller?.integerBalance !==
+      transferData?.amountToSeller?.integerBalance
+    ) {
+      setTransferData(transfer)
+      Alert.alert(
+        t('transfer.amount_changed_alert_title'),
+        t('transfer.amount_changed_alert_body', {
+          amount: transfer?.amountToSeller?.toString(undefined, {
+            groupSeparator,
+            decimalSeparator,
+            showTicker: false,
+          }),
+        }),
+      )
+      throw new Error('transfer amount changed')
+    }
   }
 
   const handleBuyerTransfer = async (): Promise<TransferHotspotV1> => {
@@ -413,20 +404,6 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
         Alert.alert(t('generic.error'), t('send.error'))
       }
     }
-  }
-
-  /* *********** */
-  /* NAV HELPERS */
-  /* *********** */
-
-  const navBack = () => {
-    navigation.navigate('Wallet')
-    triggerNavHaptic()
-  }
-
-  const navScan = () => {
-    navigation.navigate('SendScan')
-    triggerNavHaptic()
   }
 
   return (
