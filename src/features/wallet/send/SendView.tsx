@@ -415,23 +415,25 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
         <SendAmountAvailableBanner amount={account?.balance} />
       )}
       {type === 'transfer' && <TransferBanner hotspot={hotspot} />}
-      <SendForm
-        account={account}
-        hasSufficientBalance={hasSufficientBalance}
-        hasValidActivity={hasValidActivity}
-        isLocked={isLocked}
-        isSeller={isSeller}
-        isValid={isValid}
-        lastReportedActivity={lastReportedActivity}
-        onScanPress={navScan}
-        onSubmit={handleSubmit}
-        sendTransfers={sendTransfers}
-        stalePocBlockCount={stalePocBlockCount}
-        transferData={transferData}
-        type={type}
-        unlockForm={unlockForm}
-        updateTransfer={setTransfer}
-      />
+      <Box flex={3} backgroundColor="white" paddingHorizontal="l">
+        <SendForm
+          account={account}
+          hasSufficientBalance={hasSufficientBalance}
+          hasValidActivity={hasValidActivity}
+          isLocked={isLocked}
+          isSeller={isSeller}
+          isValid={isValid}
+          lastReportedActivity={lastReportedActivity}
+          onScanPress={navScan}
+          onSubmit={handleSubmit}
+          sendTransfers={sendTransfers}
+          stalePocBlockCount={stalePocBlockCount}
+          transferData={transferData}
+          type={type}
+          unlockForm={unlockForm}
+          updateTransfer={setTransfer}
+        />
+      </Box>
       {isSeller && (
         <Text
           variant="body3"

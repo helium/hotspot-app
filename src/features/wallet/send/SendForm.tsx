@@ -61,57 +61,55 @@ const SendForm = ({
   }
 
   return (
-    <Box flex={3} backgroundColor="white" paddingHorizontal="l">
-      <Box height="100%" justifyContent="space-between" paddingBottom="xl">
-        <ScrollView contentContainerStyle={{ marginTop: 16 }}>
-          {isLocked && (
-            <LockedHeader
-              onClosePress={unlockForm}
-              allowClose={type !== 'dc_burn'}
-            />
-          )}
-          {sendTransfers.map((sendTransfer) => (
-            <SendTransferForm
-              account={account}
-              isLocked={isLocked}
-              isSeller={isSeller}
-              lastReportedActivity={lastReportedActivity}
-              onScanPress={onScanPress}
-              sendTransfer={sendTransfer}
-              transferData={transferData}
-              type={type}
-              updateTransfer={updateTransfer}
-            />
-          ))}
-        </ScrollView>
-        {hasValidActivity === false && (
-          <Text
-            variant="body3"
-            color="redMedium"
-            marginVertical="s"
-            textAlign="center"
-          >
-            {t('send.stale_error', { blocks: stalePocBlockCount })}
-          </Text>
+    <Box height="100%" justifyContent="space-between" paddingBottom="xl">
+      <ScrollView contentContainerStyle={{ marginTop: 16 }}>
+        {isLocked && (
+          <LockedHeader
+            onClosePress={unlockForm}
+            allowClose={type !== 'dc_burn'}
+          />
         )}
-        {!hasSufficientBalance && (
-          <Text
-            variant="body3"
-            color="redMedium"
-            marginVertical="s"
-            textAlign="center"
-          >
-            {t('send.label_error')}
-          </Text>
-        )}
-        <Button
-          onPress={onSubmit}
-          title={getButtonTitle()}
-          variant="primary"
-          mode="contained"
-          disabled={!isValid}
-        />
-      </Box>
+        {sendTransfers.map((sendTransfer) => (
+          <SendTransferForm
+            account={account}
+            isLocked={isLocked}
+            isSeller={isSeller}
+            lastReportedActivity={lastReportedActivity}
+            onScanPress={onScanPress}
+            sendTransfer={sendTransfer}
+            transferData={transferData}
+            type={type}
+            updateTransfer={updateTransfer}
+          />
+        ))}
+      </ScrollView>
+      {hasValidActivity === false && (
+        <Text
+          variant="body3"
+          color="redMedium"
+          marginVertical="s"
+          textAlign="center"
+        >
+          {t('send.stale_error', { blocks: stalePocBlockCount })}
+        </Text>
+      )}
+      {!hasSufficientBalance && (
+        <Text
+          variant="body3"
+          color="redMedium"
+          marginVertical="s"
+          textAlign="center"
+        >
+          {t('send.label_error')}
+        </Text>
+      )}
+      <Button
+        onPress={onSubmit}
+        title={getButtonTitle()}
+        variant="primary"
+        mode="contained"
+        disabled={!isValid}
+      />
     </Box>
   )
 }
