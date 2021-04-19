@@ -541,6 +541,11 @@ export default {
         'Share your QR Code to deposit or receive HNT from others.',
       learn_more: 'Learn More',
     },
+    send_max_fee: {
+      error_title: 'Send Max Error',
+      error_description:
+        'Unable to calculate fees to send max balance.\n\nTap Send Max and try again.',
+    },
   },
   more: {
     title: 'Settings',
