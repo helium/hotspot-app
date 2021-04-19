@@ -649,7 +649,6 @@ export default {
     morning: 'Morning',
     evening: 'Evening',
     afternoon: 'Afternoon',
-    day_header: '{{timeOfDay}},',
   },
   notifications: {
     tapToReadMore: 'Tap to read more',

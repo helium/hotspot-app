@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import CarotRight from '@assets/images/carot-right.svg'
 import Balance, { NetworkTokens } from '@helium/currency'
 import { useSelector } from 'react-redux'
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import TouchableOpacityBox from './BSTouchableOpacityBox'
 import Box from './Box'
 import Text from './Text'
@@ -15,21 +16,26 @@ import { getSyncStatus, SyncStatus } from '../utils/hotspotUtils'
 type HotspotListItemProps = {
   onPress?: (hotspot: Hotspot) => void
   hotspot: Hotspot
-  totalReward: Balance<NetworkTokens>
+  totalReward?: Balance<NetworkTokens>
   showCarot?: boolean
+  loading: boolean
 }
 
 const HotspotListItem = ({
   onPress,
   hotspot,
   totalReward,
+  loading,
   showCarot = false,
 }: HotspotListItemProps) => {
   const { t } = useTranslation()
   const { toggleConvertHntToCurrency, hntBalanceToDisplayVal } = useCurrency()
   const handlePress = useCallback(() => onPress?.(hotspot), [hotspot, onPress])
   const [reward, setReward] = useState('')
+
   const updateReward = useCallback(async () => {
+    if (!totalReward) return
+
     const nextReward = await hntBalanceToDisplayVal(totalReward, false)
     setReward(`+${nextReward}`)
   }, [hntBalanceToDisplayVal, totalReward])
@@ -54,6 +60,14 @@ const HotspotListItem = ({
     }
   }, [t, blockHeight, hotspot.status?.height])
 
+  const locationText = useMemo(() => {
+    const { geocode: geo } = hotspot
+    if (!geo || (!geo.longStreet && !geo.longCity && !geo.shortCountry)) {
+      return t('hotspot_details.no_location_title')
+    }
+    return `${geo.longStreet}, ${geo.longCity}, ${geo.shortCountry}`
+  }, [hotspot, t])
+
   return (
     <Box marginBottom="xs">
       <TouchableOpacityBox
@@ -62,7 +76,6 @@ const HotspotListItem = ({
         justifyContent="space-between"
         alignItems="center"
         padding="m"
-        borderRadius="m"
         onPress={handlePress}
       >
         <Box
@@ -95,22 +108,32 @@ const HotspotListItem = ({
               </Text>
             </Box>
             <Text variant="body3Light" color="blueGray" marginTop="s">
-              {hotspot.geocode
-                ? `${hotspot.geocode?.longStreet}, ${hotspot.geocode?.longCity}, ${hotspot.geocode?.shortCountry}`
-                : t('hotspot_details.no_location_title')}
+              {locationText}
             </Text>
             <Box flexDirection="row" alignItems="center" marginTop="s">
-              <Text
-                onPress={toggleConvertHntToCurrency}
-                variant="body2"
-                color="purpleMain"
-                paddingEnd="s"
-              >
-                {reward}
-              </Text>
-              <Text variant="body2Light" color="blueGray">
-                {percentSynced}
-              </Text>
+              {loading && !totalReward ? (
+                <SkeletonPlaceholder speed={3000}>
+                  <SkeletonPlaceholder.Item
+                    height={15}
+                    width={168.5}
+                    borderRadius={4}
+                  />
+                </SkeletonPlaceholder>
+              ) : (
+                <>
+                  <Text
+                    onPress={toggleConvertHntToCurrency}
+                    variant="body2"
+                    color="purpleMain"
+                    paddingEnd="s"
+                  >
+                    {reward}
+                  </Text>
+                  <Text variant="body2Light" color="blueGray">
+                    {percentSynced}
+                  </Text>
+                </>
+              )}
             </Box>
           </Box>
           <Box flexDirection="row" alignItems="center" justifyContent="center">
