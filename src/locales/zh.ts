@@ -565,7 +565,6 @@ export default {
     morning: '上午',
     evening: '晚上',
     afternoon: '下午',
-    day_header: '{{timeOfDay}}好。\n',
   },
   notifications: {
     tapToReadMore: '轻触以阅读更多',

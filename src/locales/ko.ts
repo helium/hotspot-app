@@ -605,7 +605,6 @@ export default {
     morning: '아침',
     evening: '저녁',
     afternoon: '오후',
-    day_header: '안녕하세요, 현재\n{{timeOfDay}}입니다.',
   },
   notifications: {
     tapToReadMore: '탭하여 자세히 알아보기',
