@@ -300,26 +300,34 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     const balance = account?.balance
     if (!balance) return
 
-    const currentFee = await updateFee()
-    if (currentFee > balance) {
+    try {
+      const currentFee = await updateFee()
+      if (currentFee > balance) {
+        handleAmountChange(
+          balance.toString(8, {
+            decimalSeparator,
+            groupSeparator,
+            showTicker: false,
+          }),
+        )
+        return
+      }
+
+      const maxAmount = balance.minus(currentFee)
       handleAmountChange(
-        balance.toString(8, {
+        maxAmount.toString(8, {
           decimalSeparator,
           groupSeparator,
           showTicker: false,
         }),
       )
-      return
+    } catch (error) {
+      Logger.error(error)
+      Alert.alert(
+        t('send.send_max_fee.error_title'),
+        t('send.send_max_fee.error_description'),
+      )
     }
-
-    const maxAmount = balance.minus(currentFee)
-    handleAmountChange(
-      maxAmount.toString(8, {
-        decimalSeparator,
-        groupSeparator,
-        showTicker: false,
-      }),
-    )
   }
 
   const unlockForm = () => {
