@@ -245,11 +245,18 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     return account.speculativeNonce + 1
   }
 
-  // compute fee
-  useAsync(async () => {
+  const updateFee = async () => {
+    await dispatch(fetchCurrentOraclePrice())
+    await dispatch(fetchPredictedOraclePrice())
     const dcFee = await calculateFee()
     const hntFee = feeToHNT(dcFee)
     setFee(hntFee)
+    return hntFee
+  }
+
+  // compute fee
+  useAsync(async () => {
+    await updateFee()
   }, [amount, transferData?.amountToSeller])
 
   const calculateFee = async (): Promise<Balance<DataCredits>> => {
@@ -287,13 +294,14 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     triggerNavHaptic()
   }
 
-  const setMaxAmount = () => {
+  const setMaxAmount = async () => {
     triggerNavHaptic()
 
     const balance = account?.balance
     if (!balance) return
 
-    if (fee > balance) {
+    const currentFee = await updateFee()
+    if (currentFee > balance) {
       handleAmountChange(
         balance.toString(8, {
           decimalSeparator,
@@ -304,7 +312,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       return
     }
 
-    const maxAmount = balance.minus(fee)
+    const maxAmount = balance.minus(currentFee)
     handleAmountChange(
       maxAmount.toString(8, {
         decimalSeparator,
