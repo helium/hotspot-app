@@ -69,7 +69,7 @@ const HotspotListItem = ({
   }, [hotspot, t])
 
   return (
-    <Box marginBottom="xs">
+    <Box marginBottom="xxs">
       <TouchableOpacityBox
         backgroundColor="grayBox"
         flexDirection="row"

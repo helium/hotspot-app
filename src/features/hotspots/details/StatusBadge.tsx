@@ -12,11 +12,12 @@ const StatusBadge = ({ online = 'offline' }: Props) => {
     <Box
       backgroundColor={online === 'online' ? 'greenOnline' : 'yellow'}
       paddingHorizontal="s"
-      borderRadius="s"
+      borderRadius="ms"
+      alignItems="center"
       justifyContent="center"
-      height="100%"
+      height={30}
     >
-      <Text color="white" variant="body2Medium">
+      <Text color="white" variant="regular" fontSize={13}>
         {t(
           online === 'online'
             ? 'hotspot_details.status_online'

@@ -1,12 +1,22 @@
-import { Hotspot } from '@helium/http'
-import React, { memo } from 'react'
+import React, { memo, useCallback } from 'react'
+import Chevron from '@assets/images/chevron-right.svg'
+import { StyleSheet } from 'react-native'
 import Box from '../../../components/Box'
-import CardHandle from '../../../components/CardHandle'
-import HotspotMoreMenuButton from './HotspotMoreMenuButton'
-import FollowButton from '../../../components/FollowButton'
+import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import { useAppDispatch } from '../../../store/store'
+import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
 
-type Props = { hotspot: Hotspot }
-const HotspotDetailsHandle = ({ hotspot }: Props) => {
+const HotspotDetailsHandle = () => {
+  const dispatch = useAppDispatch()
+
+  const prev = useCallback(() => {
+    dispatch(hotspotsSlice.actions.selectPrevHotspot())
+  }, [dispatch])
+
+  const next = useCallback(() => {
+    dispatch(hotspotsSlice.actions.selectNextHotspot())
+  }, [dispatch])
+
   return (
     <Box
       flexDirection="row"
@@ -14,15 +24,18 @@ const HotspotDetailsHandle = ({ hotspot }: Props) => {
       justifyContent="space-between"
       alignItems="center"
     >
-      <FollowButton
-        paddingHorizontal="l"
-        paddingVertical="m"
-        address={hotspot.address}
-      />
-      <CardHandle />
-      <HotspotMoreMenuButton hotspot={hotspot} />
+      <TouchableOpacityBox onPress={prev} padding="m" style={styles.prevButton}>
+        <Chevron color="#C2C5E4" height={20} width={20} />
+      </TouchableOpacityBox>
+      <TouchableOpacityBox onPress={next} padding="m">
+        <Chevron color="#C2C5E4" height={20} width={20} />
+      </TouchableOpacityBox>
     </Box>
   )
 }
+
+const styles = StyleSheet.create({
+  prevButton: { transform: [{ rotate: '180deg' }] },
+})
 
 export default memo(HotspotDetailsHandle)

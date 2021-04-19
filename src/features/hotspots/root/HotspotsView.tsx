@@ -49,6 +49,8 @@ import HotspotSearch from './HotspotSearch'
 import { getPlaceGeography, PlacePrediction } from '../../../utils/googlePlaces'
 import hotspotSearchSlice from '../../../store/hotspotSearch/hotspotSearchSlice'
 import animateTransition from '../../../utils/animateTransition'
+import FollowButton from '../../../components/FollowButton'
+import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
 
 type Props = {
   ownedHotspots?: Hotspot[]
@@ -89,13 +91,16 @@ const HotspotsView = ({
   const animatedDetailsPosition = useSharedValue<number>(0)
 
   const [showWitnesses, toggleShowWitnesses] = useToggle(false)
-  const [selectedHotspot, setSelectedHotspot] = useState<Hotspot>()
 
   const { witnesses, loading } = useSelector(
     (state: RootState) => state.hotspotDetails,
   )
   const networkHotspots = useSelector(
     (state: RootState) => state.networkHotspots.networkHotspots,
+    isEqual,
+  )
+  const selectedHotspot = useSelector(
+    (state: RootState) => state.hotspots.selectedHotspot,
     isEqual,
   )
   const locationBlocked = useSelector(
@@ -118,6 +123,13 @@ const HotspotsView = ({
       setViewState(nextState)
     },
     [viewState],
+  )
+
+  const setSelectedHotspot = useCallback(
+    (hotspot?: Hotspot) => {
+      dispatch(hotspotsSlice.actions.selectHotspot(hotspot))
+    },
+    [dispatch],
   )
 
   useEffect(() => {
@@ -156,7 +168,7 @@ const HotspotsView = ({
       } as Hotspot
       setSelectedHotspot(hotspot)
     }
-  }, [hasHotspots, networkHotspots])
+  }, [hasHotspots, networkHotspots, setSelectedHotspot])
 
   useEffect(() => {
     if (
@@ -183,7 +195,7 @@ const HotspotsView = ({
       updateViewState('details', backView)
       setSelectedHotspot(hotspot)
     },
-    [updateViewState],
+    [setSelectedHotspot, updateViewState],
   )
 
   const handleListDismiss = useCallback(() => {
@@ -207,7 +219,7 @@ const HotspotsView = ({
       const placeLocation = await getPlaceGeography(place.placeId)
       setLocation([placeLocation.lng, placeLocation.lat])
     },
-    [updateViewState],
+    [setSelectedHotspot, updateViewState],
   )
 
   const handlePressMyHotspots = useCallback(() => {
@@ -217,7 +229,7 @@ const HotspotsView = ({
       focusClosestHotspot()
     }
     updateViewState('details_and_map')
-  }, [focusClosestHotspot, ownedHotspots, updateViewState])
+  }, [focusClosestHotspot, ownedHotspots, setSelectedHotspot, updateViewState])
 
   const dismissList = useCallback(() => {
     updateViewState('map')
@@ -227,7 +239,7 @@ const HotspotsView = ({
     updateViewState(backViewState)
     dispatch(hotspotDetailsSlice.actions.clearHotspotDetails())
     setSelectedHotspot(undefined)
-  }, [dispatch, backViewState, updateViewState])
+  }, [updateViewState, backViewState, dispatch, setSelectedHotspot])
 
   useEffect(() => {
     const navParent = navigation.dangerouslyGetParent() as BottomTabNavigationProp<RootStackParamList>
@@ -251,7 +263,7 @@ const HotspotsView = ({
         backViewState === 'search' ? 'search' : 'list',
       )
     },
-    [backViewState, updateViewState],
+    [backViewState, setSelectedHotspot, updateViewState],
   )
 
   const backdropStyles = useAnimatedStyle(
@@ -314,7 +326,7 @@ const HotspotsView = ({
   const detailsHandle = useCallback(() => {
     if (!selectedHotspot) return null
 
-    return <HotspotDetailsHandle hotspot={selectedHotspot} />
+    return <HotspotDetailsHandle />
   }, [selectedHotspot])
 
   const listBody = useMemo(() => {
@@ -370,12 +382,17 @@ const HotspotsView = ({
         </TouchableOpacityBox>
       )
     }
-    if (viewState === 'details' || viewState === 'details_and_map') {
+    if (
+      (viewState === 'details' || viewState === 'details_and_map') &&
+      selectedHotspot
+    ) {
       return (
         <>
           <TouchableOpacityBox onPress={toggleSettings} padding="s">
             <Settings width={22} height={22} color="white" />
           </TouchableOpacityBox>
+
+          <FollowButton padding="s" address={selectedHotspot?.address} />
         </>
       )
     }
@@ -392,7 +409,13 @@ const HotspotsView = ({
       )
     }
     return null
-  }, [handleHotspotSetup, setSearching, toggleSettings, viewState])
+  }, [
+    handleHotspotSetup,
+    selectedHotspot,
+    setSearching,
+    toggleSettings,
+    viewState,
+  ])
 
   const title = useMemo(() => {
     if (viewState === 'search') return t('hotspots.search.title')

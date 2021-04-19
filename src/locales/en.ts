@@ -791,7 +791,12 @@ export default {
     challenge_title: 'Challenges',
     challenge_sub_title: '(witness, challenger, or challengee)',
     picker_title: 'Past',
-    picker_options: ['24 Hours', '7 Days', '14 Days', '30 Days'],
+    picker_options: [
+      'Past 24 Hours',
+      'Past 7 Days',
+      'Past 14 Days',
+      'Past 30 Days',
+    ],
     picker_prompt: 'Select Range',
     status_online: 'Online',
     status_offline: 'Needs Attention',

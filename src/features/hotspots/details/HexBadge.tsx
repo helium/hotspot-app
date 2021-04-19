@@ -4,11 +4,13 @@ import Hex from '@assets/images/hex.svg'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { decimalSeparator, locale } from '../../../utils/i18n'
+import { useColors } from '../../../theme/themeHooks'
 
 type Props = {
   rewardScale?: number
 }
 const HexBadge = ({ rewardScale }: Props) => {
+  const { greenOnline } = useColors()
   const handlePress = useCallback(() => {
     Linking.openURL(
       'https://docs.helium.com/blockchain/proof-of-coverage/#poc-reward-scaling',
@@ -28,17 +30,17 @@ const HexBadge = ({ rewardScale }: Props) => {
   return (
     <TouchableOpacityBox
       onPress={handlePress}
-      backgroundColor="purpleMain"
-      borderRadius="s"
+      backgroundColor="grayBox"
+      borderRadius="ms"
       flexDirection="row"
-      justifyContent="space-between"
+      justifyContent="center"
       alignItems="center"
-      paddingStart="s"
-      height="100%"
-      marginLeft="s"
+      width={59}
+      height={30}
+      marginLeft="xs"
     >
-      <Hex color="white" width={14} />
-      <Text color="white" variant="body2Medium" paddingHorizontal="s">
+      <Hex color={greenOnline} width={14} />
+      <Text color="grayText" variant="regular" fontSize={13} marginLeft="xs">
         {scaleString}
       </Text>
     </TouchableOpacityBox>

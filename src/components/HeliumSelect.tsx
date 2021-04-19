@@ -6,18 +6,23 @@ import { StyleProp, ViewStyle } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import { Theme } from '../theme/theme'
 import Box from './Box'
-import BubbleSelectItem, { BubbleSelectItemType } from './BubbleSelectItem'
+import HeliumSelectItem, {
+  HeliumSelectItemType,
+  HeliumSelectVariant,
+} from './HeliumSelectItem'
 
 type Props = BoxProps<Theme> & {
-  data: Array<BubbleSelectItemType>
+  data: Array<HeliumSelectItemType>
   selectedValue: string | number
   onValueChanged: (itemValue: string | number, itemIndex: number) => void
+  variant?: HeliumSelectVariant
 }
 
-const BubbleSelect = ({
+const HeliumSelect = ({
   data,
   selectedValue,
   onValueChanged,
+  variant = 'bubble',
   ...boxProps
 }: Props) => {
   const handleItemSelected = useCallback(
@@ -32,8 +37,9 @@ const BubbleSelect = ({
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <Box {...boxProps} flexDirection="row" flex={1} height={33}>
           {data.map((item, index) => (
-            <BubbleSelectItem
+            <HeliumSelectItem
               key={item.value}
+              variant={variant}
               item={item}
               selected={item.value === selectedValue}
               onPress={handleItemSelected(item.value, index)}
@@ -47,7 +53,7 @@ const BubbleSelect = ({
   )
 }
 
-export default memo(BubbleSelect)
+export default memo(HeliumSelect)
 
 const leftGradientProps = {
   style: {
