@@ -132,6 +132,7 @@ export default {
     something_went_wrong: 'Something went wrong',
     hnt_to_currency: '{{currencyType}}. Data from CoinGecko',
     search_location: 'Search for an address or place',
+    unavailable: 'Unavailable',
   },
   hotspot_setup: {
     selection: {
@@ -742,6 +743,8 @@ export default {
       email_client_missing:
         'Could not find a compatible email client installed',
       other_info: 'Other Information',
+      unavailable_warning:
+        '* Diagnostics may be unavailable before a Hotspot is fully booted. If data is missing, please go back and generate the diagnostic report again.',
     },
     wifi: {
       title: 'Wi-Fi Network',
