@@ -56,7 +56,7 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
     )
 
     const arr = Object.keys(grouped)
-      .map((k) => grouped[k])
+      .map((k) => grouped[k].sort((a, b) => a.time - b.time))
       .sort((a, b) => b[0].time - a[0].time)
 
     animateTransition()
