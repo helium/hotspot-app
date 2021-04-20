@@ -112,6 +112,6 @@ export const getMakerSupportEmail = (makerId?: number): string => {
     case 7:
       return 'support@longap.com'
     case 8:
-      return 'support@finestra.com'
+      return 'support@thefinestra.com'
   }
 }
