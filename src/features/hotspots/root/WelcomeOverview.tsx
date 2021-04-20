@@ -1,12 +1,15 @@
 import { isEqual } from 'lodash'
-import React, { useEffect, useState, memo, useCallback } from 'react'
+import React, { useEffect, useState, memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import Box from '../../../components/Box'
 import EmojiBlip from '../../../components/EmojiBlip'
 import Text from '../../../components/Text'
 import { RootState } from '../../../store/rootReducer'
 import useCurrency from '../../../utils/useCurrency'
+import HotspotsTicker from './HotspotsTicker'
+import animateTransition from '../../../utils/animateTransition'
 
 const TimeOfDayTitle = ({ date }: { date: Date }) => {
   const { t } = useTranslation()
@@ -19,8 +22,13 @@ const TimeOfDayTitle = ({ date }: { date: Date }) => {
     timeOfDay = t('time.evening')
   }
   return (
-    <Text variant="h1" color="purpleMain" maxFontSizeMultiplier={1}>
-      {t('time.day_header', { timeOfDay })}
+    <Text
+      variant="h1"
+      color="purpleMain"
+      maxFontSizeMultiplier={1}
+      marginTop="s"
+    >
+      {timeOfDay}
     </Text>
   )
 }
@@ -39,15 +47,36 @@ const WelcomeOverview = () => {
     (state: RootState) => state.hotspots.totalRewards,
     isEqual,
   )
+  const rewards = useSelector(
+    (state: RootState) => state.hotspots.rewards,
+    isEqual,
+  )
+  const loadingRewards = useSelector(
+    (state: RootState) => state.hotspots.loadingRewards,
+  )
+
+  const loading = useMemo(() => {
+    if (hotspots.length > 0 && rewards && Object.keys(rewards).length === 0)
+      // has hotspots but rewards haven't been loaded yet
+      return loadingRewards
+
+    return false
+  }, [hotspots.length, loadingRewards, rewards])
+
+  useEffect(() => {
+    if (!loading) animateTransition()
+  }, [loading])
 
   const updateBodyText = useCallback(async () => {
+    if (loading || !totalRewards) return
+
     const hntAmount = await hntBalanceToDisplayVal(totalRewards)
     const nextBodyText = t('hotspots.owned.reward_summary', {
-      count: hotspots?.length || 0,
+      count: hotspots.length,
       hntAmount,
     })
     setBodyText(nextBodyText)
-  }, [hntBalanceToDisplayVal, hotspots?.length, t, totalRewards])
+  }, [hntBalanceToDisplayVal, hotspots?.length, loading, t, totalRewards])
 
   useEffect(() => {
     updateBodyText()
@@ -60,18 +89,40 @@ const WelcomeOverview = () => {
   })
 
   return (
-    <Box paddingHorizontal="l">
+    <Box alignItems="center">
+      <HotspotsTicker marginBottom="xxl" />
       <EmojiBlip date={date} />
       <TimeOfDayTitle date={date} />
-      <Text
-        variant="body1Light"
-        paddingTop="m"
-        paddingRight="xl"
-        color="black"
-        onPress={toggleConvertHntToCurrency}
-      >
-        {bodyText}
-      </Text>
+      <Box marginTop="m" marginBottom="xxl">
+        {!loading ? (
+          <Text
+            variant="light"
+            fontSize={20}
+            lineHeight={24}
+            textAlign="center"
+            color="black"
+            onPress={toggleConvertHntToCurrency}
+          >
+            {bodyText}
+          </Text>
+        ) : (
+          <SkeletonPlaceholder speed={3000}>
+            <SkeletonPlaceholder.Item
+              height={20}
+              width={320}
+              marginBottom={4}
+              borderRadius={4}
+            />
+            <SkeletonPlaceholder.Item
+              alignSelf="center"
+              height={20}
+              marginBottom={4}
+              width={280}
+              borderRadius={4}
+            />
+          </SkeletonPlaceholder>
+        )}
+      </Box>
     </Box>
   )
 }

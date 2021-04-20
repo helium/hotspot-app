@@ -1,8 +1,7 @@
 import React, { memo, useCallback, useMemo } from 'react'
-import Blip from '@assets/images/blip.svg'
 import Emoji from 'react-native-emoji'
 import { sample } from 'lodash'
-import Box from './Box'
+import { StyleSheet } from 'react-native'
 
 const emojis = {
   morning: ['coffee', 'fried_egg'],
@@ -46,20 +45,9 @@ const EmojiBlip = ({ date, name }: { date?: Date; name?: string }) => {
     pickEmoji,
   ])
 
-  return (
-    <Box width={70} marginBottom="m">
-      <Blip width={70} />
-      <Box
-        position="absolute"
-        width="100%"
-        height="100%"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <Emoji name={emojiName} style={{ fontSize: 28 }} />
-      </Box>
-    </Box>
-  )
+  return <Emoji name={emojiName} style={styles.emoji} />
 }
+
+const styles = StyleSheet.create({ emoji: { fontSize: 42 } })
 
 export default memo(EmojiBlip)

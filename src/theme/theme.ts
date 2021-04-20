@@ -7,6 +7,7 @@ const palette = {
   black: '#000000',
   white: '#FFFFFF',
   whiteTransparent: '#FFFFFF66',
+  blackTransparent: '#00000033',
   offwhite: '#F9FAFC',
   offblack: '#1E2051',
 
@@ -48,6 +49,8 @@ const palette = {
   purpleMuted: '#666995',
   purpleBrightMuted: '#7788D4',
   purpleDull: '#474973',
+  purpleText: '#5C5EA0',
+
   greenBright: '#29D391',
   greenMain: '#32C48D',
   greenDark: '#13162E',
@@ -312,7 +315,7 @@ export const theme = createTheme({
       borderRadius: 'm',
     },
     light: {
-      backgroundColor: 'offwhite',
+      backgroundColor: 'grayBox',
       fontFamily: Font.main.regular,
       fontSize: 18,
       color: 'black',

@@ -245,11 +245,18 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     return account.speculativeNonce + 1
   }
 
-  // compute fee
-  useAsync(async () => {
+  const updateFee = async () => {
+    await dispatch(fetchCurrentOraclePrice())
+    await dispatch(fetchPredictedOraclePrice())
     const dcFee = await calculateFee()
     const hntFee = feeToHNT(dcFee)
     setFee(hntFee)
+    return hntFee
+  }
+
+  // compute fee
+  useAsync(async () => {
+    await updateFee()
   }, [amount, transferData?.amountToSeller])
 
   const calculateFee = async (): Promise<Balance<DataCredits>> => {
@@ -287,31 +294,40 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     triggerNavHaptic()
   }
 
-  const setMaxAmount = () => {
+  const setMaxAmount = async () => {
     triggerNavHaptic()
 
     const balance = account?.balance
     if (!balance) return
 
-    if (fee > balance) {
+    try {
+      const currentFee = await updateFee()
+      if (currentFee > balance) {
+        handleAmountChange(
+          balance.toString(8, {
+            decimalSeparator,
+            groupSeparator,
+            showTicker: false,
+          }),
+        )
+        return
+      }
+
+      const maxAmount = balance.minus(currentFee)
       handleAmountChange(
-        balance.toString(8, {
+        maxAmount.toString(8, {
           decimalSeparator,
           groupSeparator,
           showTicker: false,
         }),
       )
-      return
+    } catch (error) {
+      Logger.error(error)
+      Alert.alert(
+        t('send.send_max_fee.error_title'),
+        t('send.send_max_fee.error_description'),
+      )
     }
-
-    const maxAmount = balance.minus(fee)
-    handleAmountChange(
-      maxAmount.toString(8, {
-        decimalSeparator,
-        groupSeparator,
-        showTicker: false,
-      }),
-    )
   }
 
   const unlockForm = () => {

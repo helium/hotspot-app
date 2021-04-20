@@ -22,7 +22,7 @@ export enum HotspotSort {
 
 type Rewards = Record<string, Sum>
 
-type HotspotsSliceState = {
+export type HotspotsSliceState = {
   hotspots: Hotspot[]
   orderedHotspots: Hotspot[]
   loadingOrderedHotspots: boolean
@@ -31,7 +31,7 @@ type HotspotsSliceState = {
   order: HotspotSort
   rewards?: Rewards
   location?: LocationCoords
-  totalRewards: Balance<NetworkTokens>
+  totalRewards?: Balance<NetworkTokens>
   loadingRewards: boolean
   hotspotsLoaded: boolean
   failure: boolean
@@ -45,7 +45,6 @@ const initialState: HotspotsSliceState = {
   order: HotspotSort.New,
   loadingRewards: false,
   loadingOrderedHotspots: false,
-  totalRewards: new Balance(0, CurrencyType.networkToken),
   hotspotsLoaded: false,
   failure: false,
 }
@@ -314,6 +313,12 @@ const hotspotsSlice = createSlice({
       state.hotspots = action.payload.hotspots
       state.hotspotsLoaded = true
       state.failure = false
+      if (state.hotspots.length === 0) {
+        state.order = HotspotSort.Followed
+      }
+    })
+    builder.addCase(fetchRewards.pending, (state, _action) => {
+      state.loadingRewards = true
     })
     builder.addCase(fetchRewards.fulfilled, (state, action) => {
       state.rewards = action.payload.rewards
@@ -328,9 +333,6 @@ const hotspotsSlice = createSlice({
         state.followedHotspotsObj = hotspotsToObj(followed)
       },
     )
-    builder.addCase(fetchHotspotsData.pending, (state, _action) => {
-      state.loadingRewards = true
-    })
     builder.addCase(fetchHotspotsData.rejected, (state, _action) => {
       state.loadingRewards = false
       state.hotspotsLoaded = true

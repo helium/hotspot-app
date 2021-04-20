@@ -144,6 +144,7 @@ export default {
       bobcat: 'Bobcat Miner 300',
       syncrobit: 'SyncroB.it Hotspot',
       finestra: 'Finestra Miner',
+      longapone: 'LongAP One Hotspot',
       third_party_header: 'Other Hotspots',
       helium_edition: 'For the Helium Network',
       fine_print:
@@ -187,6 +188,8 @@ export default {
         '<b><white>Diagnostic support allows SyncroB.it to identify issues with your Hotspot in a secure way.</white></b>\n\nSyncroB.it will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@syncrob.it</b></purple> from the email used to purchase the Hotspot.',
       finestra_p_1:
         '<b><white>Diagnostic support allows Finestra to identify issues with your Hotspot in a secure way.</white></b>\n\nFinestra will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@thefinestra.com</b></purple> from the email used to purchase the Hotspot.',
+      longap_p_1:
+        '<b><white>Diagnostic support allows LongAP to identify issues with your Hotspot in a secure way.</white></b>\n\nLongAP will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@longap.com</b></purple> from the email used to purchase the Hotspot.',
     },
     power: {
       title: 'Power Up',
@@ -202,6 +205,8 @@ export default {
       bobcat_subtitle_1:
         'Plug in the provided power adapter into an outlet near a window and screw in the provided antenna on the back of the Hotspot.',
       syncrobit_subtitle_1: 'Attach the antenna and plug in the device',
+      longapone_subtitle_1:
+        "Attach the antenna's and plug in the provided power adapter.",
       helium_subtitle_2:
         'Your Hotspot will boot up, and its light will become Green when ready.',
       rak_subtitle_2:
@@ -218,6 +223,8 @@ export default {
         'Attach the antenna and plug in the provided power adapter near a window.',
       finestra_subtitle_2:
         'The Finestra Miner will show a blue LED light once it’s powered on.',
+      longapone_subtitle_2:
+        'The LongAP One PWR LED will light up once it’s powered on.',
     },
     pair: {
       title: 'Bluetooth',
@@ -232,6 +239,8 @@ export default {
         'Use the provided pin to press the BT Button on the back of the Hotspot and hold for 5 seconds.',
       syncrobit_subtitle_1:
         'There is no pairing button on the SyncroB.it Hotspot.',
+      longapone_subtitle_1:
+        'Use a paperclip to shortly press the button in the little hole right of the LEDs.',
       helium_subtitle_2:
         "Ensure your phone's bluetooth is on before proceeding",
       rak_subtitle_2:
@@ -248,6 +257,8 @@ export default {
         'Bluetooth is automatically enabled for 5 minutes after the Finestra Miner is powered on.\n\nHotspot can take up to 1 minute to fully boot up.',
       finestra_subtitle_2:
         'You can enable Bluetooth after 5 minutes by pressing the button on the side of the Finestra Miner',
+      longapone_subtitle_2:
+        'Once the PWR LED is slowly blinking\n\nPress Next to scan.',
       alert_no_permissions: {
         title: 'Authorize Bluetooth',
         body:
@@ -344,6 +355,7 @@ export default {
       next: 'Exit Setup',
       disconnected:
         'There was an error connecting to the Hotspot. Please try again.',
+      title_connect_failed: 'Unable to Proceed',
     },
     add_hotspot: {
       title: 'Add Hotspot',
@@ -369,6 +381,8 @@ export default {
         'There was an error constructing the Add Hotspot transaction. Please try again.',
       assert_loc_error_body:
         'There was an error constructing the Assert Location transaction. Please try again.',
+      assert_loc_error_no_loc:
+        'The selected location is invalid. Please try again.',
     },
     enable_location: {
       title: 'Set Hotspot\nLocation',
@@ -401,6 +415,11 @@ export default {
       error_body: 'There was an error loading fee data. Please try again.',
       next: 'Register Hotspot',
       fee_next: 'Pay Fee & Register Hotspot',
+      gain_label: 'TX / RX Gain:',
+      elevation_label: 'Height:',
+      gain: '{{gain}} dBi',
+      elevation: '{{count}} meter',
+      elevation_plural: '{{count}} meters',
     },
     location: {
       title: 'Hotspot Location',
@@ -533,6 +552,11 @@ export default {
         'Share your QR Code to deposit or receive HNT from others.',
       learn_more: 'Learn More',
     },
+    send_max_fee: {
+      error_title: 'Send Max Error',
+      error_description:
+        'Unable to calculate fees to send max balance.\n\nTap Send Max and try again.',
+    },
   },
   more: {
     title: 'Settings',
@@ -594,9 +618,10 @@ export default {
     owned: {
       title: 'My Hotspots',
       title_no_hotspots: 'Hotspots',
-      reward_summary: 'Your Hotspot mined {{hntAmount}} in the past 24 hours.',
+      reward_summary:
+        'Your Hotspot has earned\n{{hntAmount}} in the past 24 hours.',
       reward_summary_plural:
-        'Your {{count}} Hotspots mined {{hntAmount}} in the past 24 hours.',
+        'Your {{count}} Hotspots have earned\n{{hntAmount}} in the past 24 hours.',
       your_hotspots: 'Your Hotspots',
       filter: {
         new: 'Newest Hotspots',
@@ -605,6 +630,16 @@ export default {
         offline: 'Offline Hotspots',
         followed: 'Followed Hotspots',
       },
+    },
+    search: {
+      title: 'Hotspot Search',
+      my_hotspots: 'My Hotspots',
+      all_hotspots: 'All Hotspots',
+      placeholder: 'Search...',
+      recent_searches: 'Recent Searches',
+      tips: 'Search Tips',
+      tips_body:
+        'Try typing a Hotspot Name (e.g. silly-animal-name) or a place name (e.g. New York City).\n\nNote: Hotspots added within the last 10 minutes may not appear.',
     },
     empty: {
       body: "You haven't added or followed any Hotspots yet.",
@@ -616,6 +651,8 @@ export default {
       online: 'ONLINE HOTSPOTS',
       no_results: 'No Results',
     },
+    ticker:
+      '{{formattedHotspotCount}} Hotspots • Oracle Price: {{oraclePrice}} • Block Time: {{formattedBlockTime}} secs • ',
   },
   permissions: {
     location: {
@@ -628,7 +665,6 @@ export default {
     morning: 'Morning',
     evening: 'Evening',
     afternoon: 'Afternoon',
-    day_header: 'Good\n{{timeOfDay}}.',
   },
   notifications: {
     tapToReadMore: 'Tap to read more',
@@ -648,6 +684,7 @@ export default {
     received: 'Received HNT',
     added: 'Hotspot Added to Blockchain',
     location: 'Confirm Location',
+    location_v2: 'Update Hotspot',
     transfer: 'Hotspot Transfer',
     transferSell: 'Transfer Hotspot (Sell)',
     transferBuy: 'Transfer Hotspot (Buy)',
@@ -740,7 +777,7 @@ export default {
         'You have <b><purple>{{count}} free remaining</purple></b> Hotspot Location Assert Updates.',
       change_location: 'Change Location',
       confirm: 'I Confirm',
-      cost: 'The cost to reasserting location is:',
+      cost: 'The cost of reasserting location is:',
       insufficient_funds:
         'You do not have the funds available to make\nthis assert. Acquire HNT.',
       confirm_location: "Please confirm your Hotspot's change in location",
@@ -749,6 +786,10 @@ export default {
       assert_pending: 'Assert Pending...',
       failTitle: 'Failed to reassert hotspot',
       failSubtitle: 'Please try again later',
+      current_location: 'Current Location',
+      new_location: 'New Location',
+      antenna_details: 'Antenna/Height Details',
+      update_antenna: 'Update Antenna',
     },
   },
   hotspot_details: {
@@ -823,6 +864,8 @@ export default {
     owner: 'Owner',
     my_account: 'My Account',
     view_block: 'View Block',
+    elevation: 'Height',
+    antenna: 'Antenna',
     rewardTypes: {
       poc_challengees: 'PoC',
       poc_challengers: 'Challenger',
@@ -922,6 +965,37 @@ export default {
       subject: 'Discovery Results',
       hotspot_name: 'Hotspot Name',
       packets_heard: 'Packets Heard',
+    },
+  },
+  antennas: {
+    helium_us: 'Helium Hotspot (US 915)',
+    helium_eu: 'Helium Hotspot (EU 868)',
+    rak_hotspot_us: 'RAK Hotspot Miner (US 915)',
+    rak_hotspot_eu: 'RAK Hotspot Miner (EU 868)',
+    nebra_outdoor: 'Nebra Outdoor Hotspot',
+    nebra_indoor: 'Nebra Indoor Hotspot',
+    bobcat: 'Bobcat Miner 300 (All)',
+    syncrobit_us: 'Syncrob.it (US 915)',
+    syncrobit_eu: 'Syncrob.it (EU 868)',
+    rak_custom: 'RAK Antenna',
+    custom: 'Custom Antenna',
+    onboarding: {
+      title: 'Antenna Setup',
+      subtitle: 'Submit antenna and height details for your Hotspot.',
+      gain: 'TX / RX Gain',
+      dbi: 'dBi',
+      elevation: 'Height (meters)',
+      select: 'Select Antenna',
+    },
+    elevation_info: {
+      title: 'Hotspot Height',
+      desc:
+        'Estimate how high the antenna is placed relative to the ground. An antenna located on the roof of a single-story house is typically 5 meters.',
+    },
+    gain_info: {
+      title: 'Antenna TX / RX Gain',
+      desc:
+        'A value between 1 and 15 to one decimal point. This is provided by your hotspot or antenna manufacturer.',
     },
   },
 }

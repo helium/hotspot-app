@@ -620,7 +620,6 @@ export default {
     morning: '午前',
     evening: '夜間',
     afternoon: '午後',
-    day_header: '適切な\n{{timeOfDay}}。',
   },
   notifications: {
     tapToReadMore: 'タップして詳細を読む',

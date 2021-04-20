@@ -27,6 +27,8 @@ const imagesByHotspotName: Record<string, any> = {
   ),
   'Finestra Miner': (
     <Image source={require('../assets/images/finestra-miner.png')} />
+  'LongAP One': (
+    <Image source={require('../assets/images/longap-one-hotspot.png')} />
   ),
 }
 

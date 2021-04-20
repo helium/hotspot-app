@@ -15,16 +15,16 @@ import hotspotsSlice, {
 import { useAppDispatch } from '../../../store/store'
 import usePermissionManager from '../../../utils/usePermissionManager'
 import { RootState } from '../../../store/rootReducer'
-import HeliumActionSheet from '../../../components/HeliumActionSheet'
-import { HeliumActionSheetItemType } from '../../../components/HeliumActionSheetItem'
 import usePrevious from '../../../utils/usePrevious'
 import locationSlice, {
   getLocationPermission,
   getLocation,
 } from '../../../store/location/locationSlice'
+import BubbleSelect from '../../../components/BubbleSelect'
+import { BubbleSelectItemType } from '../../../components/BubbleSelectItem'
 
 const HotspotsPicker = () => {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const { requestLocationPermission } = usePermissionManager()
   const order = useSelector((state: RootState) => state.hotspots.order)
@@ -99,55 +99,54 @@ const HotspotsPicker = () => {
     [dispatch],
   )
 
-  const data: HeliumActionSheetItemType[] = useMemo(() => {
-    const opts = []
+  const data = useMemo(() => {
+    const opts: BubbleSelectItemType[] = []
     opts.push({
       label: t(`hotspots.owned.filter.${HotspotSort.New}`),
       value: HotspotSort.New,
       Icon: NewestHotspot,
-    })
-    if (!locationBlocked) {
-      opts.push({
-        label: t(`hotspots.owned.filter.${HotspotSort.Near}`),
-        value: HotspotSort.Near,
-        Icon: NearestHotspot,
-      })
-    }
-    opts.push({
-      label: t(`hotspots.owned.filter.${HotspotSort.Earn}`),
-      value: HotspotSort.Earn,
-      Icon: TopHotspot,
+      color: 'purpleMain',
     })
     if (followHotspotEnabled) {
       opts.push({
         label: t(`hotspots.owned.filter.${HotspotSort.Followed}`),
         value: HotspotSort.Followed,
         Icon: FollowedHotspot,
+        color: 'purpleBright',
       })
     }
+    if (!locationBlocked) {
+      opts.push({
+        label: t(`hotspots.owned.filter.${HotspotSort.Near}`),
+        value: HotspotSort.Near,
+        Icon: NearestHotspot,
+        color: 'purpleMain',
+      })
+    }
+    opts.push({
+      label: t(`hotspots.owned.filter.${HotspotSort.Earn}`),
+      value: HotspotSort.Earn,
+      Icon: TopHotspot,
+      color: 'purpleMain',
+    })
     opts.push({
       label: t(`hotspots.owned.filter.${HotspotSort.Offline}`),
       value: HotspotSort.Offline,
       Icon: OfflineHotspot,
+      color: 'purpleMain',
     })
     return opts
   }, [followHotspotEnabled, locationBlocked, t])
 
   return (
-    <Box
-      flexDirection="row"
-      alignItems="center"
-      width="100%"
-      paddingHorizontal="l"
-    >
-      <HeliumActionSheet
-        // can't assume other languages will have the same prefix
-        // structure so we'll just leave it out for non-en
-        prefix={i18n.language === 'en' ? 'Your' : undefined}
+    <Box flexDirection="row" alignItems="center" width="100%">
+      <BubbleSelect
+        paddingHorizontal="l"
+        marginBottom="lm"
         data={data}
-        title={t('hotspots.sort_by')}
         selectedValue={order}
         onValueChanged={handleValueChanged}
+        marginVertical="s"
       />
     </Box>
   )

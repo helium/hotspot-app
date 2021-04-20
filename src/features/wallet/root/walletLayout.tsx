@@ -23,32 +23,30 @@ export const withWalletLayout = (WrappedComponent: any) => (props: any) => {
           cardHandleHeight: 48,
           sendShareArea: 124,
         }
-        // TODO:  there seems to be a bug in the 3.3.3 release of the bottom sheet that is forcing the "0" point to actually be -navbarHeight
+
         const belowStatusBar =
           wh -
-          (walletLayout.navbarHeight * 2 +
-            walletLayout.cardHandleHeight +
-            walletLayout.notchHeight -
-            walletLayout.bottomHeight)
+          walletLayout.navbarHeight -
+          walletLayout.notchHeight -
+          walletLayout.bottomHeight -
+          (insets?.bottom ? 0 : 48) // hack for differences between react-navigation and react-native-safe-area-context (I think)
 
         const walletAnimationPoints = {
           dragMax:
             belowStatusBar -
             walletLayout.headerHeight -
-            walletLayout.balanceHeight +
-            walletLayout.altCurrencyHeight,
+            walletLayout.balanceHeight,
           dragMid:
             belowStatusBar -
             walletLayout.headerHeight -
             walletLayout.balanceHeight -
-            walletLayout.chartHeight,
+            walletLayout.chartHeight -
+            walletLayout.altCurrencyHeight,
           dragMin: walletLayout.bottomHeight - walletLayout.navbarHeight,
         }
 
         const collapsed =
-          walletLayout.navbarHeight -
-          walletLayout.altCurrencyHeight +
-          walletLayout.balanceHeight
+          walletLayout.balanceHeight - walletLayout.altCurrencyHeight
         const expanded =
           walletLayout.navbarHeight +
           walletLayout.balanceHeight +

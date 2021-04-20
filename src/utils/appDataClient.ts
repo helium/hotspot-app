@@ -44,6 +44,14 @@ export const getHotspots = async () => {
   return newHotspotList.takeJSON(1000)
 }
 
+export const searchHotspots = async (searchTerm: string) => {
+  const address = await getAddress()
+  if (!address) return []
+
+  const newHotspotList = await client.hotspots.search(searchTerm)
+  return newHotspotList.takeJSON(1000)
+}
+
 export const getHotspotDetails = async (address: string): Promise<Hotspot> => {
   return client.hotspots.get(address)
 }
@@ -113,6 +121,10 @@ export const getAccount = async (address?: string) => {
 }
 
 export const getBlockHeight = () => client.blocks.getHeight()
+
+export const getBlockStats = () => client.blocks.stats()
+
+export const getStatCounts = () => client.stats.counts()
 
 export const getCurrentOraclePrice = async () => client.oracle.getCurrentPrice()
 

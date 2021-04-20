@@ -8,7 +8,10 @@ import {
   getHotspotActivityList,
   getHotspotDetails,
 } from '../../utils/appDataClient'
-import { getStaking } from '../../utils/stakingClient'
+import {
+  getOnboardingRecord,
+  OnboardingRecord,
+} from '../../utils/stakingClient'
 
 export type HotspotStatus = 'owned' | 'global' | 'new' | 'error' | 'initial'
 export const HotspotTypeKeys = [
@@ -19,6 +22,7 @@ export const HotspotTypeKeys = [
   'SYNCROBIT',
   'Bobcat',
   'Finestra',
+  'LONGAPONE',
 ] as const
 export type HotspotType = typeof HotspotTypeKeys[number]
 export type HotspotName =
@@ -29,6 +33,7 @@ export type HotspotName =
   | 'Bobcat Miner 300'
   | 'SyncroB.it Hotspot'
   | 'Finestra Miner'
+  | 'LongAP One Hotspot'
 
 type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
 
@@ -45,28 +50,6 @@ export type HotspotDetails = {
   ethernetOnline?: boolean
   status?: HotspotStatus
   details?: Hotspot
-}
-
-type OnboardingRecord = {
-  id: number
-  onboardingKey: string
-  macWlan0: string
-  rpiSerial: string
-  batch: string
-  publicAddress: string
-  heliumSerial: string
-  macEth0: string
-  createdAt: string
-  updatedAt: string
-  makerId: number
-  maker: {
-    id: number
-    name: string
-    address: string
-    locationNonceLimit: number
-    createdAt: string
-    updatedAt: string
-  }
 }
 
 export type HotspotActivity = {
@@ -143,7 +126,7 @@ export const fetchConnectedHotspotDetails = createAsyncThunk<
         // Hotspot may not yet exist on the chain, let it fail silently
         console.log('failed to get hotspot details', e)
       }),
-      getStaking(`hotspots/${details.onboardingAddress}`),
+      getOnboardingRecord(details.onboardingAddress),
     ])
 
     return {

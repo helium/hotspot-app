@@ -8,12 +8,13 @@ import DiscoveryIcon from '../../../../assets/images/discovery_mode_icon.svg'
 import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
 import Close from '../../../../assets/images/closeModal.svg'
 import {
-  RecentDiscoveryInfo,
   DiscoveryRequest,
+  RecentDiscoveryInfo,
 } from '../../../../store/discovery/discoveryTypes'
 import DiscoveryModeSessionInfo from './DiscoveryModeSessionInfo'
 import animateTransition from '../../../../utils/animateTransition'
 import useAlert from '../../../../utils/useAlert'
+import { useColors } from '../../../../theme/themeHooks'
 
 type Props = {
   onClose: () => void
@@ -33,6 +34,7 @@ const DiscoveryModeBegin = ({
   const [hasInfo, setHasInfo] = useState(false)
   const { showOKAlert } = useAlert()
   const [alertShown, setAlertShown] = useState(false)
+  const colors = useColors()
 
   useEffect(() => {
     if (hasInfo !== !!recentDiscoveryInfo) {
@@ -60,7 +62,7 @@ const DiscoveryModeBegin = ({
     <Box height={Math.min(640, hp(85))}>
       <Box flex={273} backgroundColor="purpleMain" alignItems="flex-end">
         <TouchableOpacityBox padding="ms" onPress={onClose}>
-          <Close height={22} width={22} color="#2c2e86" />
+          <Close color={colors.blackTransparent} />
         </TouchableOpacityBox>
         <Box
           width="100%"

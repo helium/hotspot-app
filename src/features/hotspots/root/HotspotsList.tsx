@@ -1,7 +1,6 @@
-import React, { memo, useCallback, useEffect, useMemo } from 'react'
+import React, { memo, useCallback, useMemo } from 'react'
 import { BottomSheetSectionList } from '@gorhom/bottom-sheet'
 import { Hotspot } from '@helium/http'
-import Balance, { CurrencyType } from '@helium/currency'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import Box from '../../../components/Box'
@@ -11,27 +10,24 @@ import { RootState } from '../../../store/rootReducer'
 import WelcomeOverview from './WelcomeOverview'
 import HotspotsPicker from './HotspotsPicker'
 import { HotspotSort } from '../../../store/hotspots/hotspotsSlice'
-import animateTransition from '../../../utils/animateTransition'
 
 const HotspotsList = ({
   onSelectHotspot,
 }: {
   onSelectHotspot: (hotspot: Hotspot) => void
 }) => {
-  const loading = useSelector(
-    (state: RootState) => state.hotspots.loadingOrderedHotspots,
+  const loadingRewards = useSelector(
+    (state: RootState) => state.hotspots.loadingRewards,
   )
   const orderedHotspots = useSelector(
     (state: RootState) => state.hotspots.orderedHotspots,
   )
-  const rewards = useSelector((state: RootState) => state.hotspots.rewards)
+  const rewards = useSelector(
+    (state: RootState) => state.hotspots.rewards || {},
+  )
   const order = useSelector((state: RootState) => state.hotspots.order)
 
   const { t } = useTranslation()
-
-  useEffect(() => {
-    animateTransition()
-  }, [loading])
 
   const handlePress = useCallback(
     (hotspot: Hotspot) => {
@@ -96,21 +92,17 @@ const HotspotsList = ({
 
   const renderItem = useCallback(
     ({ item }) => {
-      const totalReward =
-        rewards && rewards[item.address]
-          ? rewards[item.address].balanceTotal
-          : new Balance(0, CurrencyType.networkToken)
-
       return (
         <HotspotListItem
           onPress={handlePress}
           hotspot={item}
           showCarot
-          totalReward={totalReward}
+          loading={loadingRewards}
+          totalReward={rewards[item.address]?.balanceTotal}
         />
       )
     },
-    [handlePress, rewards],
+    [handlePress, loadingRewards, rewards],
   )
 
   const contentContainerStyle = useMemo(
