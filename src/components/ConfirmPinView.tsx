@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect, useCallback, memo } from 'react'
 import { Animated } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import { useTranslation } from 'react-i18next'
 import Text from './Text'
 import PinDisplay from './PinDisplay'
 import Keypad from './Keypad'
 import useHaptic from '../utils/useHaptic'
 import Box from './Box'
+import TouchableOpacityBox from './TouchableOpacityBox'
 
 type Props = {
   originalPin: string
@@ -13,6 +15,7 @@ type Props = {
   subtitle: string
   pinSuccess: (pin: string) => void
   onCancel?: () => void
+  clearable: boolean
 }
 const ConfirmPinView = ({
   title,
@@ -20,12 +23,15 @@ const ConfirmPinView = ({
   pinSuccess,
   originalPin,
   onCancel,
+  clearable,
 }: Props) => {
   const { triggerImpact } = useHaptic()
   const success = useRef(false)
   const [pin, setPin] = useState('')
   const shakeAnim = useRef(new Animated.Value(0))
   const navigation = useNavigation()
+  const { t } = useTranslation()
+
   const pinFailure = useCallback(() => {
     const { current } = shakeAnim
     const move = (direction: 'left' | 'right' | 'center') => {
@@ -78,6 +84,10 @@ const ConfirmPinView = ({
     setPin((val) => (val.length < 6 ? val + num : val))
   }, [])
 
+  const handleClear = useCallback(() => {
+    setPin('')
+  }, [])
+
   return (
     <Box
       backgroundColor="primaryBackground"
@@ -96,11 +106,18 @@ const ConfirmPinView = ({
         <PinDisplay length={pin.length} marginVertical="xl" />
       </Animated.View>
       <Keypad
-        onCancel={onCancel}
+        customButtonTitle={clearable ? t('generic.clear') : t('generic.cancel')}
+        onCustomButtonPress={clearable ? handleClear : onCancel}
         onBackspacePress={handleBackspace}
         onNumberPress={handleNumber}
       />
-      <Box flex={1} />
+      <Box flex={1} justifyContent="center">
+        {clearable && onCancel && (
+          <TouchableOpacityBox padding="l" onPress={onCancel}>
+            <Text variant="body1">{t('more.sections.app.signOut')}</Text>
+          </TouchableOpacityBox>
+        )}
+      </Box>
     </Box>
   )
 }

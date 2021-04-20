@@ -59,15 +59,15 @@ const LockScreen = () => {
       t('more.sections.app.signOutAlert.body'),
       [
         {
-          text: t('generic.cancel'),
-          style: 'cancel',
-        },
-        {
-          text: t('generic.ok'),
+          text: t('more.sections.app.signOut'),
           style: 'destructive',
           onPress: () => {
             dispatch(appSlice.actions.signOut())
           },
+        },
+        {
+          text: t('generic.cancel'),
+          style: 'cancel',
         },
       ],
     )
@@ -103,6 +103,7 @@ const LockScreen = () => {
         subtitle={t('auth.enter_current')}
         pinSuccess={handleSuccess}
         onCancel={shouldLock ? handleSignOut : moreNav.goBack}
+        clearable={requestType === 'unlock'}
       />
     </SafeAreaBox>
   )

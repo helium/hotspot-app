@@ -50,8 +50,7 @@ export default {
     },
     create_pin: {
       title: 'Set PIN Code',
-      subtitle:
-        'As a final secure step, let’s secure your account with a PIN Code.',
+      subtitle: 'Let’s secure your account with a PIN Code.',
     },
     confirm_pin: {
       title: 'Repeat PIN',
@@ -93,6 +92,7 @@ export default {
     next: "I've read the guide",
   },
   generic: {
+    clear: 'Clear',
     done: 'Done',
     understand: 'I understand',
     blocks: 'Blocks',
@@ -585,7 +585,7 @@ export default {
         signOutAlert: {
           title: 'Warning!',
           body:
-            'This will remove all account info from this device. The only way to restore access to your account and Hotspots will be by using your 12 word recovery seed phrase.',
+            'You are signing out of your account. Do you have your 12 recovery words? If you don’t, you will lose access to:\n\n- your Hotspots\n- your HNT\n- your Wallet',
         },
       },
     },
