@@ -79,6 +79,7 @@ const HotspotsView = ({
   const [location, setLocation] = useState(propsLocation)
   const [backViewState, setBackViewState] = useState<ViewState>(viewState)
   const [detailsSnapIndex, setDetailsSnapIndex] = useState(startOnMap ? 0 : 1)
+  const [showDetailsNav, setShowDetailsNav] = useState(false)
 
   const listRef = useRef<BottomSheetModal>(null)
   const detailsRef = useRef<BottomSheetModal>(null)
@@ -125,8 +126,9 @@ const HotspotsView = ({
     [viewState],
   )
 
-  const setSelectedHotspot = useCallback(
-    (hotspot?: Hotspot) => {
+  const showHotspotDetails = useCallback(
+    (hotspot?: Hotspot, showNav = false) => {
+      setShowDetailsNav(showNav)
       dispatch(hotspotsSlice.actions.selectHotspot(hotspot))
     },
     [dispatch],
@@ -166,9 +168,9 @@ const HotspotsView = ({
       const hotspot = {
         ...localHotspots[0],
       } as Hotspot
-      setSelectedHotspot(hotspot)
+      showHotspotDetails(hotspot)
     }
-  }, [hasHotspots, networkHotspots, setSelectedHotspot])
+  }, [hasHotspots, networkHotspots, showHotspotDetails])
 
   useEffect(() => {
     if (
@@ -191,11 +193,11 @@ const HotspotsView = ({
   }, [])
 
   const handlePresentDetails = useCallback(
-    (backView: ViewState) => (hotspot: Hotspot) => {
+    (backView: ViewState) => (hotspot: Hotspot, showNav = false) => {
       updateViewState('details', backView)
-      setSelectedHotspot(hotspot)
+      showHotspotDetails(hotspot, showNav)
     },
-    [setSelectedHotspot, updateViewState],
+    [showHotspotDetails, updateViewState],
   )
 
   const handleListDismiss = useCallback(() => {
@@ -215,21 +217,21 @@ const HotspotsView = ({
   const handleSelectPlace = useCallback(
     async (place: PlacePrediction) => {
       updateViewState('map', 'search')
-      setSelectedHotspot(undefined)
+      showHotspotDetails(undefined)
       const placeLocation = await getPlaceGeography(place.placeId)
       setLocation([placeLocation.lng, placeLocation.lat])
     },
-    [setSelectedHotspot, updateViewState],
+    [showHotspotDetails, updateViewState],
   )
 
   const handlePressMyHotspots = useCallback(() => {
     if (ownedHotspots && ownedHotspots.length > 0) {
-      setSelectedHotspot(ownedHotspots[0])
+      showHotspotDetails(ownedHotspots[0])
     } else {
       focusClosestHotspot()
     }
     updateViewState('details_and_map')
-  }, [focusClosestHotspot, ownedHotspots, setSelectedHotspot, updateViewState])
+  }, [focusClosestHotspot, ownedHotspots, showHotspotDetails, updateViewState])
 
   const dismissList = useCallback(() => {
     updateViewState('map')
@@ -238,8 +240,8 @@ const HotspotsView = ({
   const handleBack = useCallback(() => {
     updateViewState(backViewState)
     dispatch(hotspotDetailsSlice.actions.clearHotspotDetails())
-    setSelectedHotspot(undefined)
-  }, [updateViewState, backViewState, dispatch, setSelectedHotspot])
+    showHotspotDetails(undefined)
+  }, [updateViewState, backViewState, dispatch, showHotspotDetails])
 
   useEffect(() => {
     const navParent = navigation.dangerouslyGetParent() as BottomTabNavigationProp<RootStackParamList>
@@ -257,13 +259,13 @@ const HotspotsView = ({
       const hotspot = {
         ...properties,
       } as Hotspot
-      setSelectedHotspot(hotspot)
+      showHotspotDetails(hotspot)
       updateViewState(
         'details_and_map',
         backViewState === 'search' ? 'search' : 'list',
       )
     },
-    [backViewState, setSelectedHotspot, updateViewState],
+    [backViewState, showHotspotDetails, updateViewState],
   )
 
   const backdropStyles = useAnimatedStyle(
@@ -326,8 +328,8 @@ const HotspotsView = ({
   const detailsHandle = useCallback(() => {
     if (!selectedHotspot) return null
 
-    return <HotspotDetailsHandle />
-  }, [selectedHotspot])
+    return <HotspotDetailsHandle showNav={showDetailsNav} />
+  }, [selectedHotspot, showDetailsNav])
 
   const listBody = useMemo(() => {
     if (viewState === 'search') {

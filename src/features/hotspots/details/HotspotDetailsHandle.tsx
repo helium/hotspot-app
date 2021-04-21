@@ -6,7 +6,8 @@ import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { useAppDispatch } from '../../../store/store'
 import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
 
-const HotspotDetailsHandle = () => {
+type Props = { showNav?: boolean }
+const HotspotDetailsHandle = ({ showNav = true }: Props) => {
   const dispatch = useAppDispatch()
 
   const prev = useCallback(() => {
@@ -23,13 +24,22 @@ const HotspotDetailsHandle = () => {
       flex={1}
       justifyContent="space-between"
       alignItems="center"
+      height={52}
     >
-      <TouchableOpacityBox onPress={prev} padding="m" style={styles.prevButton}>
-        <Chevron color="#C2C5E4" height={20} width={20} />
-      </TouchableOpacityBox>
-      <TouchableOpacityBox onPress={next} padding="m">
-        <Chevron color="#C2C5E4" height={20} width={20} />
-      </TouchableOpacityBox>
+      {showNav && (
+        <>
+          <TouchableOpacityBox
+            onPress={prev}
+            paddingHorizontal="m"
+            style={styles.prevButton}
+          >
+            <Chevron color="#C2C5E4" height={20} width={20} />
+          </TouchableOpacityBox>
+          <TouchableOpacityBox onPress={next} paddingHorizontal="m">
+            <Chevron color="#C2C5E4" height={20} width={20} />
+          </TouchableOpacityBox>
+        </>
+      )}
     </Box>
   )
 }

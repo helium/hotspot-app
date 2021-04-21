@@ -14,7 +14,7 @@ import { HotspotSort } from '../../../store/hotspots/hotspotsSlice'
 const HotspotsList = ({
   onSelectHotspot,
 }: {
-  onSelectHotspot: (hotspot: Hotspot) => void
+  onSelectHotspot: (hotspot: Hotspot, showNav: boolean) => void
 }) => {
   const loadingRewards = useSelector(
     (state: RootState) => state.hotspots.loadingRewards,
@@ -31,9 +31,9 @@ const HotspotsList = ({
 
   const handlePress = useCallback(
     (hotspot: Hotspot) => {
-      onSelectHotspot(hotspot)
+      onSelectHotspot(hotspot, orderedHotspots.length > 1)
     },
-    [onSelectHotspot],
+    [onSelectHotspot, orderedHotspots.length],
   )
 
   const hasOfflineHotspot = useMemo(
