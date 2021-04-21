@@ -54,7 +54,11 @@ const HotspotStatusBanner = ({
   const subtitle = useMemo(() => {
     if (hotspot.status?.online !== 'online') return
 
-    return t('hotspot_details.status_prompt_online.subtitle', {
+    if (!hotspot.status.height || hotspot.status.height === 0) {
+      return t('hotspot_details.status_prompt_online.subtitle_starting')
+    }
+
+    return t('hotspot_details.status_prompt_online.subtitle_active', {
       hotspotBlock: hotspot.status.height,
       currentBlock: blockHeight,
     })

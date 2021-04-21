@@ -804,7 +804,8 @@ export default {
     status_syncing: 'Syncing',
     status_prompt_online: {
       title: 'Hotspot is online and syncing.',
-      subtitle: 'Status: Block {{hotspotBlock}} of {{currentBlock}}',
+      subtitle_active: 'Status: Block {{hotspotBlock}} of {{currentBlock}}',
+      subtitle_starting: 'Beginning to sync...',
     },
     status_prompt_offline: {
       title: 'Hotspot is offline and not syncing.',
