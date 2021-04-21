@@ -1,4 +1,5 @@
 import { round } from 'lodash'
+import { Colors } from '../theme/theme'
 
 export enum SyncStatus {
   full,
@@ -21,4 +22,17 @@ export const getSyncStatus = (hotspotHeight: number, blockHeight?: number) => {
     return { status: SyncStatus.none, percent: 0 }
   }
   return { status: SyncStatus.partial, percent: percentSynced }
+}
+
+export const generateRewardScaleColor = (rewardScale: number): Colors => {
+  if (rewardScale >= 0.75) {
+    return 'greenMain'
+  }
+  if (rewardScale >= 0.5) {
+    return 'yellow'
+  }
+  if (rewardScale >= 0.25) {
+    return 'orangeDark'
+  }
+  return 'redMain'
 }
