@@ -692,7 +692,7 @@ export default {
     title: 'Hotspot Settings',
     pairing: {
       title: 'Update Wi-Fi or Run Diagnostics',
-      subtitle: 'Paring required before proceeding.',
+      subtitle: 'Pairing required before proceeding.',
       scan: 'Pair',
     },
     transfer: {
