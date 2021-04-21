@@ -36,7 +36,6 @@ const HexBadge = ({ rewardScale }: Props) => {
       justifyContent="center"
       alignItems="center"
       width={59}
-      height={30}
       marginLeft="xs"
     >
       <Hex color={greenOnline} width={14} />

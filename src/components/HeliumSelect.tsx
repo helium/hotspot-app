@@ -16,6 +16,7 @@ type Props = BoxProps<Theme> & {
   selectedValue: string | number
   onValueChanged: (itemValue: string | number, itemIndex: number) => void
   variant?: HeliumSelectVariant
+  showGradient?: boolean
 }
 
 const HeliumSelect = ({
@@ -23,6 +24,7 @@ const HeliumSelect = ({
   selectedValue,
   onValueChanged,
   variant = 'bubble',
+  showGradient = true,
   ...boxProps
 }: Props) => {
   const handleItemSelected = useCallback(
@@ -47,8 +49,12 @@ const HeliumSelect = ({
           ))}
         </Box>
       </ScrollView>
-      <LinearGradient {...leftGradientProps} />
-      <LinearGradient {...rightGradientProps} />
+      {showGradient && (
+        <>
+          <LinearGradient {...leftGradientProps} />
+          <LinearGradient {...rightGradientProps} />
+        </>
+      )}
     </Box>
   )
 }

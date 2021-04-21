@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
@@ -21,6 +21,10 @@ import ShareDots from '../../../assets/images/share-dots.svg'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { EXPLORER_BASE_URL } from '../../../utils/config'
 import useHaptic from '../../../utils/useHaptic'
+import HotspotChecklist from '../checklist/HotspotChecklist'
+import animateTransition from '../../../utils/animateTransition'
+import HeliumSelect from '../../../components/HeliumSelect'
+import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
 
 const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
   const { t } = useTranslation()
@@ -39,6 +43,7 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
     challengeSums,
     challengeSum,
     challengeChange,
+    witnesses,
   } = useSelector((state: RootState) => state.hotspotDetails)
 
   const { triggerNotification } = useHaptic()
@@ -130,6 +135,31 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
     )
   }
 
+  const selectData = useMemo(() => {
+    return [
+      {
+        label: 'Overview',
+        value: 'overview',
+        color: 'purpleMain',
+      } as HeliumSelectItemType,
+      {
+        label: 'Checklist',
+        value: 'checklist',
+        color: 'purpleMain',
+      } as HeliumSelectItemType,
+    ]
+  }, [])
+
+  const [selectedOption, setSelectedOption] = useState(selectData[0].value)
+
+  const handleSelectValueChanged = useCallback(
+    (value: string | number, _index: number) => {
+      animateTransition()
+      setSelectedOption(value)
+    },
+    [],
+  )
+
   if (!hotspot) return null
 
   return (
@@ -177,45 +207,67 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
             </TouchableOpacityBox>
           </Box>
         </Box>
-        <Box flexDirection="row" justifyContent="center" marginBottom="lx">
-          <Box flexDirection="row">
-            {hotspot?.status || hotspotDetailsHotspot?.status ? (
-              <StatusBadge
-                online={
-                  hotspot?.status?.online ||
-                  hotspotDetailsHotspot?.status?.online
-                }
-              />
-            ) : null}
-            <HexBadge
-              rewardScale={
-                hotspot.rewardScale || hotspotDetailsHotspot?.rewardScale
+        <Box
+          flexDirection="row"
+          justifyContent="center"
+          marginBottom="lx"
+          height={30}
+        >
+          {(hotspot?.status || hotspotDetailsHotspot?.status) && (
+            <StatusBadge
+              online={
+                hotspot?.status?.online || hotspotDetailsHotspot?.status?.online
               }
             />
-          </Box>
+          )}
+          <HexBadge
+            rewardScale={
+              hotspot.rewardScale || hotspotDetailsHotspot?.rewardScale
+            }
+          />
         </Box>
-        <TimelinePicker index={2} onTimelineChanged={setTimelineValue} />
-        <HotspotDetailChart
-          title={t('hotspot_details.reward_title')}
-          number={rewardSum?.total.toFixed(2)}
-          change={rewardsChange}
-          data={rewardChartData}
-          loading={loading}
+        <Box width="100%" justifyContent="center" flexDirection="row">
+          <HeliumSelect
+            showGradient={false}
+            marginTop="m"
+            data={selectData}
+            selectedValue={selectedOption}
+            onValueChanged={handleSelectValueChanged}
+          />
+        </Box>
+        <HotspotChecklist
+          marginTop="lx"
+          visible={selectedOption === 'checklist'}
+          hotspot={hotspot}
+          witnesses={witnesses}
         />
-        <HotspotDetailChart
-          title={t('hotspot_details.witness_title')}
-          number={witnessAverage?.toFixed(0)}
-          change={witnessChange}
-          data={witnessChartData}
-          loading={loading}
-        />
-        <HotspotDetailChart
-          title={t('hotspot_details.challenge_title')}
-          number={challengeSum?.toFixed(0)}
-          change={challengeChange}
-          data={challengeChartData}
-          loading={loading}
-        />
+
+        {selectedOption === 'overview' && (
+          <>
+            <TimelinePicker index={2} onTimelineChanged={setTimelineValue} />
+            <HotspotDetailChart
+              title={t('hotspot_details.reward_title')}
+              number={rewardSum?.total.toFixed(2)}
+              change={rewardsChange}
+              data={rewardChartData}
+              loading={loading}
+            />
+            <HotspotDetailChart
+              title={t('hotspot_details.witness_title')}
+              number={witnessAverage?.toFixed(0)}
+              change={witnessChange}
+              data={witnessChartData}
+              loading={loading}
+            />
+            <HotspotDetailChart
+              title={t('hotspot_details.challenge_title')}
+              number={challengeSum?.toFixed(0)}
+              change={challengeChange}
+              data={challengeChartData}
+              loading={loading}
+            />
+          </>
+        )}
       </Box>
     </BottomSheetScrollView>
   )

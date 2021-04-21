@@ -782,6 +782,7 @@ export default {
     },
   },
   hotspot_details: {
+    checklist: 'Checklist',
     title: 'Hotspot Details',
     owner: 'Owned by {{address}}',
     owner_you: 'Owned by you',
