@@ -33,7 +33,7 @@ export const Antennas: Record<AntennaId, Antenna> = {
   rak_hotspot_us: { id: 'rak_hotspot_us', gain: 2.3 },
   rak_hotspot_eu: { id: 'rak_hotspot_eu', gain: 2.8 },
   nebra_outdoor: { id: 'nebra_outdoor', gain: 3 },
-  nebra_indoor: { id: 'nebra_indoor', gain: 2 },
+  nebra_indoor: { id: 'nebra_indoor', gain: 3 },
   bobcat: { id: 'bobcat', gain: 4 },
   syncrobit_us: { id: 'syncrobit_us', gain: 1.2 },
   syncrobit_eu: { id: 'syncrobit_eu', gain: 2.3 },
