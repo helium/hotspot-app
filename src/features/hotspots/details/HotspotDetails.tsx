@@ -25,10 +25,14 @@ import HotspotChecklist from '../checklist/HotspotChecklist'
 import animateTransition from '../../../utils/animateTransition'
 import HeliumSelect from '../../../components/HeliumSelect'
 import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
+import HotspotStatusBanner from './HotspotStatusBanner'
+import useToggle from '../../../utils/useToggle'
+import { getSyncStatus } from '../../../utils/hotspotUtils'
 
 const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
   const { t } = useTranslation()
   const { showActionSheetWithOptions } = useActionSheet()
+  const { triggerNotification } = useHaptic()
   const dispatch = useAppDispatch()
   const {
     hotspot: hotspotDetailsHotspot,
@@ -45,8 +49,11 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
     challengeChange,
     witnesses,
   } = useSelector((state: RootState) => state.hotspotDetails)
+  const blockHeight = useSelector(
+    (state: RootState) => state.heliumData.blockHeight,
+  )
 
-  const { triggerNotification } = useHaptic()
+  const [showStatusBanner, toggleShowStatusBanner] = useToggle(false)
 
   const rewardChartData = useMemo(() => {
     const data = getRewardChartData(rewards, numDays)
@@ -54,6 +61,12 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
   }, [numDays, rewards])
 
   const [timelineValue, setTimelineValue] = useState(14)
+
+  const syncStatus = useMemo(() => {
+    if (!hotspot?.block) return
+
+    return getSyncStatus(hotspot.block, blockHeight)
+  }, [blockHeight, hotspot])
 
   useEffect(() => {
     if (!hotspot) return
@@ -218,6 +231,8 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
               online={
                 hotspot?.status?.online || hotspotDetailsHotspot?.status?.online
               }
+              syncStatus={syncStatus?.status}
+              onPress={toggleShowStatusBanner}
             />
           )}
           <HexBadge
@@ -226,6 +241,14 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
             }
           />
         </Box>
+
+        <HotspotStatusBanner
+          hotspot={hotspot}
+          marginBottom="l"
+          visible={showStatusBanner}
+          onDismiss={toggleShowStatusBanner}
+        />
+
         <Box width="100%" justifyContent="center" flexDirection="row">
           <HeliumSelect
             showGradient={false}
