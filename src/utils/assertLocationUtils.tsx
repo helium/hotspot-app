@@ -19,7 +19,7 @@ export const assertLocationTxn = async (
   const newNonce = nonce + 1
   const isFree = await hasFreeLocationAssert(nonce, onboardingRecord)
   const owner = await getAddress()
-  const payer = isFree ? onboardingRecord?.maker.address : owner
+  const payer = isFree ? onboardingRecord?.maker?.address : owner
 
   if (!owner || !payer || !gateway || !lat || !lng) {
     return undefined
@@ -62,7 +62,7 @@ export const loadLocationFeeData = async (
 ) => {
   const isFree = await hasFreeLocationAssert(nonce, onboardingRecord)
   const owner = await getAddress()
-  const payer = isFree ? onboardingRecord?.maker.address : owner
+  const payer = isFree ? onboardingRecord?.maker?.address : owner
 
   if (!owner || !payer) {
     throw new Error('Missing payer or owner')
@@ -81,7 +81,7 @@ export const loadLocationFeeData = async (
   const balance = accountIntegerBalance || 0
   const hasSufficientBalance = balance >= totalStakingAmount.integerBalance
   const remainingFreeAsserts =
-    (onboardingRecord?.maker.locationNonceLimit || 0) - nonce
+    (onboardingRecord?.maker?.locationNonceLimit || 0) - nonce
 
   return {
     isFree,
@@ -97,7 +97,7 @@ export const hasFreeLocationAssert = (
   nonce: number,
   onboardingRecord?: OnboardingRecord,
 ): boolean => {
-  if (!onboardingRecord) {
+  if (!onboardingRecord || !onboardingRecord.maker) {
     return false
   }
   const locationNonceLimit = onboardingRecord?.maker.locationNonceLimit || 0
