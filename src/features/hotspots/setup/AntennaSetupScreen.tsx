@@ -45,6 +45,8 @@ const AntennaSetupScreen = () => {
         return Antennas.bobcat
       case 'SYNCROBIT':
         return isUS ? Antennas.syncrobit_us : Antennas.syncrobit_eu
+      case 'LONGAPONE':
+        return Antennas.longapone_eu
     }
   }, [hotspotType])
 

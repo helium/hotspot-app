@@ -39,7 +39,7 @@ export const Antennas: Record<AntennaId, Antenna> = {
   syncrobit_us: { id: 'syncrobit_us', gain: 1.2 },
   syncrobit_eu: { id: 'syncrobit_eu', gain: 2.3 },
   rak_custom: { id: 'rak_custom', gain: 5.8 },
-  longapone_eu: {id: 'longapone_eu', gain: 3 },
+  longapone_eu: { id: 'longapone_eu', gain: 3 },
   custom: { id: 'custom', gain: 1 },
 }
 
