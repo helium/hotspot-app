@@ -20,8 +20,8 @@ import locationSlice, {
   getLocationPermission,
   getLocation,
 } from '../../../store/location/locationSlice'
-import BubbleSelect from '../../../components/BubbleSelect'
-import { BubbleSelectItemType } from '../../../components/BubbleSelectItem'
+import HeliumSelect from '../../../components/HeliumSelect'
+import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
 
 const HotspotsPicker = () => {
   const { t } = useTranslation()
@@ -100,7 +100,7 @@ const HotspotsPicker = () => {
   )
 
   const data = useMemo(() => {
-    const opts: BubbleSelectItemType[] = []
+    const opts: HeliumSelectItemType[] = []
     opts.push({
       label: t(`hotspots.owned.filter.${HotspotSort.New}`),
       value: HotspotSort.New,
@@ -140,7 +140,7 @@ const HotspotsPicker = () => {
 
   return (
     <Box flexDirection="row" alignItems="center" width="100%">
-      <BubbleSelect
+      <HeliumSelect
         paddingHorizontal="l"
         marginBottom="lm"
         data={data}

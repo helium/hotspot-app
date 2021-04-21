@@ -58,6 +58,8 @@ const palette = {
   greenDarkText: '#1B875E',
   greenChecklist: '#26D694',
 
+  orangeExtraDark: '#C97C09',
+  orangeDark: '#FCB345',
   orange: '#FF852F',
   yellow: '#FFCB46',
   gold: '#FFC769',

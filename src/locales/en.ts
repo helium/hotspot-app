@@ -782,6 +782,7 @@ export default {
     },
   },
   hotspot_details: {
+    checklist: 'Checklist',
     title: 'Hotspot Details',
     owner: 'Owned by {{address}}',
     owner_you: 'Owned by you',
@@ -791,10 +792,24 @@ export default {
     challenge_title: 'Challenges',
     challenge_sub_title: '(witness, challenger, or challengee)',
     picker_title: 'Past',
-    picker_options: ['24 Hours', '7 Days', '14 Days', '30 Days'],
+    picker_options: [
+      'Past 24 Hours',
+      'Past 7 Days',
+      'Past 14 Days',
+      'Past 30 Days',
+    ],
     picker_prompt: 'Select Range',
     status_online: 'Online',
     status_offline: 'Needs Attention',
+    status_syncing: 'Syncing',
+    status_prompt_online: {
+      title: 'Hotspot is online and syncing.',
+      subtitle_active: 'Status: Block {{hotspotBlock}} of {{currentBlock}}',
+      subtitle_starting: 'Beginning to sync...',
+    },
+    status_prompt_offline: {
+      title: 'Hotspot is offline and not syncing.',
+    },
     options: {
       settings: 'Settings',
       viewExplorer: 'View on Explorer',

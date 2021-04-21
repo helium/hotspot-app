@@ -35,6 +35,7 @@ export type HotspotsSliceState = {
   loadingRewards: boolean
   hotspotsLoaded: boolean
   failure: boolean
+  selectedHotspot?: Hotspot
 }
 
 const initialState: HotspotsSliceState = {
@@ -303,6 +304,34 @@ const hotspotsSlice = createSlice({
           location: payload,
         }),
       }
+    },
+    selectHotspot: (state, { payload }: { payload: Hotspot | undefined }) => {
+      state.selectedHotspot = payload
+    },
+    selectNextHotspot: (state) => {
+      if (!state.selectedHotspot || state.orderedHotspots.length === 0) {
+        state.selectedHotspot = undefined
+        return
+      }
+
+      const index = state.orderedHotspots.findIndex(
+        ({ address }) => address === state.selectedHotspot?.address,
+      )
+      const nextIndex = (index + 1) % state.orderedHotspots.length
+      state.selectedHotspot = state.orderedHotspots[nextIndex]
+    },
+    selectPrevHotspot: (state) => {
+      if (!state.selectedHotspot || state.orderedHotspots.length === 0) {
+        state.selectedHotspot = undefined
+        return
+      }
+
+      const index = state.orderedHotspots.findIndex(
+        ({ address }) => address === state.selectedHotspot?.address,
+      )
+      const nextIndex =
+        index === 0 ? state.orderedHotspots.length - 1 : index - 1
+      state.selectedHotspot = state.orderedHotspots[nextIndex]
     },
   },
   extraReducers: (builder) => {

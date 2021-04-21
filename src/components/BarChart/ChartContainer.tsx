@@ -1,10 +1,14 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { memo, useCallback, useState } from 'react'
-import { ActivityIndicator, View } from 'react-native'
+import { ActivityIndicator } from 'react-native'
+import { BoxProps } from '@shopify/restyle'
 import Chart from './Chart'
 import { ChartData } from './types'
 import { useColors } from '../../theme/themeHooks'
+import Box from '../Box'
+import { Theme } from '../../theme/theme'
 
-type Props = {
+type Props = BoxProps<Theme> & {
   height: number
   data: ChartData[]
   onFocus: (data: ChartData | null) => void
@@ -12,20 +16,18 @@ type Props = {
   upColor?: string
   downColor?: string
   labelColor?: string
-  paddingTop?: number
   loading?: boolean
 }
 
 const ChartContainer = ({
-  height,
   data,
   onFocus,
   showXAxisLabel,
   upColor,
   downColor,
   labelColor,
-  paddingTop,
   loading,
+  ...boxProps
 }: Props) => {
   const [width, setWidth] = useState(0)
   const colors = useColors()
@@ -38,21 +40,15 @@ const ChartContainer = ({
   )
 
   if (loading) {
-    return (
-      <ActivityIndicator
-        style={{ height, paddingTop }}
-        size="small"
-        color={colors.grayMain}
-      />
-    )
+    return <ActivityIndicator size="small" color={colors.grayMain} />
   }
 
   return (
-    <View onLayout={handleLayout} style={{ height, paddingTop }}>
+    <Box onLayout={handleLayout} {...boxProps}>
       {width > 0 && (
         <Chart
           width={width}
-          height={height}
+          height={boxProps.height}
           data={data}
           onFocus={onFocus}
           showXAxisLabel={showXAxisLabel}
@@ -61,7 +57,7 @@ const ChartContainer = ({
           labelColor={labelColor}
         />
       )}
-    </View>
+    </Box>
   )
 }
 

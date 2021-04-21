@@ -1,29 +1,41 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import Box from '../../../components/Box'
 import Text from '../../../components/Text'
+import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import { SyncStatus } from '../../../utils/hotspotUtils'
 
 type Props = {
   online?: string
+  onPress: () => void
+  syncStatus?: SyncStatus
 }
-const StatusBadge = ({ online = 'offline' }: Props) => {
+const StatusBadge = ({ online = 'offline', onPress, syncStatus }: Props) => {
   const { t } = useTranslation()
+
+  const title = useMemo(() => {
+    if (online === 'online') {
+      if (syncStatus === SyncStatus.full) {
+        return t('hotspot_details.status_online')
+      }
+      return t('hotspot_details.status_syncing')
+    }
+    return t('hotspot_details.status_offline')
+  }, [online, syncStatus, t])
+
   return (
-    <Box
-      backgroundColor={online === 'online' ? 'greenOnline' : 'yellow'}
+    <TouchableOpacityBox
+      backgroundColor={online === 'online' ? 'greenOnline' : 'orangeDark'}
       paddingHorizontal="s"
-      borderRadius="s"
+      borderRadius="ms"
+      alignItems="center"
       justifyContent="center"
-      height="100%"
+      onPress={onPress}
+      disabled={syncStatus === SyncStatus.full && online === 'online'}
     >
-      <Text color="white" variant="body2Medium">
-        {t(
-          online === 'online'
-            ? 'hotspot_details.status_online'
-            : 'hotspot_details.status_offline',
-        )}
+      <Text color="white" variant="regular" fontSize={13}>
+        {title}
       </Text>
-    </Box>
+    </TouchableOpacityBox>
   )
 }
 

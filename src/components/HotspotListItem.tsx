@@ -69,7 +69,7 @@ const HotspotListItem = ({
   }, [hotspot, t])
 
   return (
-    <Box marginBottom="xs">
+    <Box marginBottom="xxs">
       <TouchableOpacityBox
         backgroundColor="grayBox"
         flexDirection="row"
@@ -91,9 +91,7 @@ const HotspotListItem = ({
                 width={10}
                 borderRadius="m"
                 backgroundColor={
-                  hotspot.status?.online === 'online'
-                    ? 'purpleMain'
-                    : 'redMedium'
+                  hotspot.status?.online === 'online' ? 'greenOnline' : 'yellow'
                 }
               />
               <Text
@@ -124,7 +122,7 @@ const HotspotListItem = ({
                   <Text
                     onPress={toggleConvertHntToCurrency}
                     variant="body2"
-                    color="purpleMain"
+                    color="grayDarkText"
                     paddingEnd="s"
                   >
                     {reward}

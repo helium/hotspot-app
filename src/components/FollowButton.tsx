@@ -16,12 +16,7 @@ type Props = BoxProps<Theme> & {
   colors?: { following: string; notFollowing: string }
   handleChange?: (following: boolean) => void
 }
-const HotspotDetailsHandle = ({
-  address,
-  colors,
-  handleChange,
-  ...props
-}: Props) => {
+const FollowButton = ({ address, colors, handleChange, ...props }: Props) => {
   const { grayPurple, followPurple } = useColors()
   const dispatch = useAppDispatch()
   const [following, setFollowing] = useState(false)
@@ -67,4 +62,4 @@ const HotspotDetailsHandle = ({
   )
 }
 
-export default memo(HotspotDetailsHandle)
+export default memo(FollowButton)
