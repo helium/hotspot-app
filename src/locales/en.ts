@@ -801,6 +801,7 @@ export default {
     picker_prompt: 'Select Range',
     status_online: 'Online',
     status_offline: 'Needs Attention',
+    status_syncing: 'Syncing',
     status_prompt_online: {
       title: 'Hotspot is online and syncing.',
       subtitle: 'Status: Block {{hotspotBlock}} of {{currentBlock}}',

@@ -11,14 +11,20 @@ type Props = {
 }
 const StatusBadge = ({ online = 'offline', onPress, syncStatus }: Props) => {
   const { t } = useTranslation()
-  const needsAttention = useMemo(
-    () => online === 'online' && syncStatus === SyncStatus.full,
-    [online, syncStatus],
-  )
+
+  const title = useMemo(() => {
+    if (online === 'online') {
+      if (syncStatus === SyncStatus.full) {
+        return t('hotspot_details.status_online')
+      }
+      return t('hotspot_details.status_syncing')
+    }
+    return t('hotspot_details.status_offline')
+  }, [online, syncStatus, t])
 
   return (
     <TouchableOpacityBox
-      backgroundColor={needsAttention ? 'greenOnline' : 'orangeDark'}
+      backgroundColor={online === 'online' ? 'greenOnline' : 'orangeDark'}
       paddingHorizontal="s"
       borderRadius="ms"
       alignItems="center"
@@ -27,11 +33,7 @@ const StatusBadge = ({ online = 'offline', onPress, syncStatus }: Props) => {
       disabled={syncStatus === SyncStatus.full && online === 'online'}
     >
       <Text color="white" variant="regular" fontSize={13}>
-        {t(
-          needsAttention
-            ? 'hotspot_details.status_online'
-            : 'hotspot_details.status_offline',
-        )}
+        {title}
       </Text>
     </TouchableOpacityBox>
   )

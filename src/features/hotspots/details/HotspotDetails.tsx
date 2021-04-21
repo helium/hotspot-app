@@ -63,9 +63,9 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
   const [timelineValue, setTimelineValue] = useState(14)
 
   const syncStatus = useMemo(() => {
-    if (!hotspot?.block) return
+    if (!hotspot?.status) return
 
-    return getSyncStatus(hotspot.block, blockHeight)
+    return getSyncStatus(hotspot.status?.height, blockHeight)
   }, [blockHeight, hotspot])
 
   useEffect(() => {

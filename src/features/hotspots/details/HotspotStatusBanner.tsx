@@ -55,10 +55,10 @@ const HotspotStatusBanner = ({
     if (hotspot.status?.online !== 'online') return
 
     return t('hotspot_details.status_prompt_online.subtitle', {
-      hotspotBlock: hotspot.block,
+      hotspotBlock: hotspot.status.height,
       currentBlock: blockHeight,
     })
-  }, [blockHeight, hotspot.block, hotspot.status, t])
+  }, [blockHeight, hotspot, t])
 
   const handleClose = useCallback(() => {
     onDismiss()
