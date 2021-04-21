@@ -966,6 +966,7 @@ export default {
     bobcat: 'Bobcat Miner 300 (All)',
     syncrobit_us: 'Syncrob.it (US 915)',
     syncrobit_eu: 'Syncrob.it (EU 868)',
+    longapone_eu: 'LongAP One (EU 868)',
     rak_custom: 'RAK Antenna',
     custom: 'Custom Antenna',
     onboarding: {
