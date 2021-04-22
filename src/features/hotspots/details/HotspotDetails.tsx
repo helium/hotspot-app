@@ -33,13 +33,20 @@ const HotspotDetails = ({
 }) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
+  const address = hotspot?.address || ''
+  const hotspotDetailsState = useSelector(
+    (state: RootState) => state.hotspotDetails.details[address],
+  )
+  const blockHeight = useSelector(
+    (state: RootState) => state.heliumData.blockHeight,
+  )
   const {
     hotspot: hotspotDetailsHotspot,
-    numDays,
+    numDays = 14,
     rewards,
     rewardSum,
     rewardsChange,
-    loading,
+    loading = true,
     witnessSums,
     witnessAverage,
     witnessChange,
@@ -47,10 +54,7 @@ const HotspotDetails = ({
     challengeSum,
     challengeChange,
     witnesses,
-  } = useSelector((state: RootState) => state.hotspotDetails)
-  const blockHeight = useSelector(
-    (state: RootState) => state.heliumData.blockHeight,
-  )
+  } = hotspotDetailsState || {}
 
   const [showStatusBanner, toggleShowStatusBanner] = useToggle(false)
 
