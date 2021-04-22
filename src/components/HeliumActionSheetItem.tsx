@@ -8,6 +8,7 @@ export type HeliumActionSheetItemType = {
   label: string
   value: string | number
   Icon?: React.FC<SvgProps>
+  action?: () => void
 }
 type Props = HeliumActionSheetItemType & {
   onPress: () => void

@@ -1,7 +1,9 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { BoxProps } from '@shopify/restyle'
 import Close from '@assets/images/close.svg'
 import CarotDown from '@assets/images/carot-down.svg'
+import Kabob from '@assets/images/kabob.svg'
 import { useTranslation } from 'react-i18next'
 import { FlatList, Modal, StyleSheet } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -16,45 +18,40 @@ import HeliumActionSheetItem, {
   HeliumActionSheetItemType,
 } from './HeliumActionSheetItem'
 import { useColors } from '../theme/themeHooks'
-import Text from './Text'
+import Text, { TextProps } from './Text'
 import Box from './Box'
 import TouchableOpacityBox from './TouchableOpacityBox'
 import BlurBox from './BlurBox'
 import { ReAnimatedBox } from './AnimatedBox'
-import sleep from '../utils/sleep'
 
 type Props = BoxProps<Theme> & {
   data: Array<HeliumActionSheetItemType>
   selectedValue?: string | number
-  onValueChanged: (itemValue: string | number, itemIndex: number) => void
+  onValueSelected?: (itemValue: string | number, itemIndex: number) => void
   title?: string
   prefix?: string
   minWidth?: number
-  listFormat?: boolean
-  prefixVariant?: 'bold' | 'medium' | 'regular' | 'light'
-  prefixFontSize?: number
-  carotColor?: Colors
-  displayTextJustifyContent?:
-    | 'flex-start'
-    | 'flex-end'
-    | 'center'
-    | 'space-between'
+  textProps?: TextProps
+  prefixTextProps?: TextProps
+  buttonProps?: BoxProps<Theme>
+  iconColor?: Colors
   initialValue?: string
+  iconVariant?: 'carot' | 'kabob' | 'none'
 }
 type ListItem = { item: HeliumActionSheetItemType; index: number }
 
 const HeliumActionSheet = ({
   data,
   selectedValue,
-  onValueChanged,
+  onValueSelected,
   title,
   prefix,
-  prefixVariant = 'bold',
-  prefixFontSize = 20,
-  listFormat,
-  carotColor = 'purpleMain',
-  displayTextJustifyContent = 'flex-end',
+  iconVariant = 'carot',
+  iconColor: carotColor = 'purpleMain',
+  buttonProps,
   initialValue,
+  textProps,
+  prefixTextProps,
   ...boxProps
 }: Props) => {
   const insets = useSafeAreaInsets()
@@ -121,21 +118,30 @@ const HeliumActionSheet = ({
   )
 
   const handleItemSelected = useCallback(
-    (value: string | number, index: number) => async () => {
+    (
+      value: string | number,
+      index: number,
+      action?: () => void,
+    ) => async () => {
       handleClose()
-      await sleep(100)
-      onValueChanged(value, index)
+
+      if (action) {
+        action()
+      }
+      if (onValueSelected) {
+        onValueSelected?.(value, index)
+      }
     },
-    [handleClose, onValueChanged],
+    [handleClose, onValueSelected],
   )
 
   const renderItem = useCallback(
-    ({ index, item: { label, value, Icon } }: ListItem) => {
+    ({ index, item: { label, value, Icon, action } }: ListItem) => {
       return (
         <HeliumActionSheetItem
           label={label}
           value={value}
-          onPress={handleItemSelected(value, index)}
+          onPress={handleItemSelected(value, index, action)}
           selected={selected(value)}
           Icon={Icon}
         />
@@ -162,57 +168,64 @@ const HeliumActionSheet = ({
     )
   }, [handleClose, t])
 
+  const icon = useMemo(() => {
+    if (iconVariant === 'none') return
+
+    if (iconVariant === 'kabob') return <Kabob color={colors[carotColor]} />
+
+    return <CarotDown color={colors[carotColor]} />
+  }, [carotColor, colors, iconVariant])
+
   const displayText = useMemo(() => {
     return (
       <TouchableOpacityBox
         onPress={handlePresentModalPress}
         flexDirection="row"
         alignItems="center"
-        justifyContent={displayTextJustifyContent}
-        minWidth={100}
+        justifyContent="flex-end"
+        {...buttonProps}
       >
         <Box flexDirection="row">
           {!!prefix && (
             <Text
-              variant={prefixVariant}
-              fontSize={prefixFontSize}
               color="black"
               maxFontSizeMultiplier={1}
               marginRight="xs"
+              variant="bold"
+              fontSize={20}
+              {...prefixTextProps}
             >
               {prefix}
             </Text>
           )}
-          <Text
-            variant={listFormat ? 'regular' : prefixVariant}
-            fontSize={listFormat ? 16 : prefixFontSize}
-            maxFontSizeMultiplier={1}
-            color={listFormat ? 'purpleBrightMuted' : 'purpleMain'}
-            marginRight="s"
-          >
-            {buttonTitle}
-          </Text>
+          {!!buttonTitle && (
+            <Text
+              maxFontSizeMultiplier={1}
+              marginRight="s"
+              variant="bold"
+              fontSize={20}
+              color="purpleMain"
+              {...textProps}
+            >
+              {buttonTitle}
+            </Text>
+          )}
         </Box>
-        {!listFormat && <CarotDown color={colors[carotColor]} />}
+        {icon}
       </TouchableOpacityBox>
     )
   }, [
-    buttonTitle,
-    carotColor,
-    colors,
     handlePresentModalPress,
-    listFormat,
+    buttonProps,
     prefix,
-    prefixFontSize,
-    prefixVariant,
-    displayTextJustifyContent,
+    prefixTextProps,
+    buttonTitle,
+    textProps,
+    icon,
   ])
 
   return (
-    <Box
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      {...boxProps}
-    >
+    <Box {...boxProps}>
       {displayText}
 
       <Modal

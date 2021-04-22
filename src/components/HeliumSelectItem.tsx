@@ -63,7 +63,7 @@ const HeliumSelectItem = ({
         variant={variant === 'flat' ? 'bold' : 'regular'}
         fontSize={variant === 'flat' ? 13 : 16}
         color={textColor}
-        marginLeft="xs"
+        marginLeft={Icon ? 'xs' : 'none'}
       >
         {text}
       </Text>

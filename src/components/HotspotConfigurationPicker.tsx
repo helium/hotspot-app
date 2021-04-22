@@ -175,14 +175,13 @@ const HotspotConfigurationPicker = ({
     >
       <HeliumActionSheet
         title={t('antennas.onboarding.select')}
-        prefixVariant="regular"
-        prefixFontSize={14}
+        textProps={{ variant: 'medium', fontSize: 16, color: 'black' }}
         initialValue={t('antennas.onboarding.select')}
         data={antennaData}
-        carotColor="black"
+        iconColor="black"
         selectedValue={selectedAntenna?.id}
-        onValueChanged={onSelectAntenna}
-        displayTextJustifyContent="space-between"
+        onValueSelected={onSelectAntenna}
+        buttonProps={{ justifyContent: 'space-between' }}
         padding="m"
         paddingVertical="lm"
       />
