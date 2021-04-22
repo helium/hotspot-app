@@ -63,7 +63,6 @@ const HotspotConfigurationPicker = ({
   const gainInputRef = useRef<TextInput | null>(null)
   const elevationInputRef = useRef<TextInput | null>(null)
 
-  const [elevation, setElevation] = useState<string>()
   const [gain, setGain] = useState<string | undefined>(
     selectedAntenna
       ? selectedAntenna.gain.toLocaleString(locale, {
@@ -118,20 +117,13 @@ const HotspotConfigurationPicker = ({
       })
     }
     setGain(gainString)
-    onGainUpdated(
-      gain
-        ? parseFloat(
-            gain.replace(groupSeparator, '').replace(decimalSeparator, '.'),
-          )
-        : 0,
-    )
+    onGainUpdated(parseFloat(gainString))
   }
 
-  const onChangeElevation = (text: string) => setElevation(text)
-  const onDoneEditingElevation = () => {
-    const elevationInteger = elevation
+  const onChangeElevation = (text: string) => {
+    const elevationInteger = text
       ? parseInt(
-          elevation.replace(groupSeparator, '').replace(decimalSeparator, '.'),
+          text.replace(groupSeparator, '').replace(decimalSeparator, '.'),
           10,
         )
       : 0
@@ -141,7 +133,6 @@ const HotspotConfigurationPicker = ({
     } else {
       stringElevation = elevationInteger.toString()
     }
-    setElevation(stringElevation)
     onElevationUpdated(parseInt(stringElevation, 10))
   }
 
@@ -213,7 +204,7 @@ const HotspotConfigurationPicker = ({
               value={gain}
               returnKeyType="done"
               onChangeText={onChangeGain}
-              onSubmitEditing={onDoneEditingGain}
+              onEndEditing={onDoneEditingGain}
               editable={selectedAntenna?.id === 'custom'}
             />
             <Text marginLeft="xxs">{t('antennas.onboarding.dbi')}</Text>
@@ -242,8 +233,6 @@ const HotspotConfigurationPicker = ({
             keyboardType="numeric"
             returnKeyType="done"
             onChangeText={onChangeElevation}
-            onSubmitEditing={onDoneEditingElevation}
-            value={elevation}
           />
         </Box>
       </TouchableWithoutFeedback>
