@@ -51,6 +51,10 @@ import hotspotSearchSlice from '../../../store/hotspotSearch/hotspotSearchSlice'
 import animateTransition from '../../../utils/animateTransition'
 import FollowButton from '../../../components/FollowButton'
 import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
+import {
+  locationIsValid,
+  hotspotHasValidLocation,
+} from '../../../utils/location'
 
 type Props = {
   ownedHotspots?: Hotspot[]
@@ -80,13 +84,16 @@ const HotspotsView = ({
   const [backViewState, setBackViewState] = useState<ViewState>(viewState)
   const [detailsSnapIndex, setDetailsSnapIndex] = useState(startOnMap ? 0 : 1)
   const [showDetailsNav, setShowDetailsNav] = useState(false)
-
   const listRef = useRef<BottomSheetModal>(null)
   const detailsRef = useRef<BottomSheetModal>(null)
-
   const [listHeight, setListHeight] = useState(0)
+  const [detailHeaderHeight, setDetailHeaderHeight] = useState(0)
+
   const listSnapPoints = useMemo(() => [listHeight], [listHeight])
-  const detailSnapPoints = useMemo(() => [100, '75%'], [])
+
+  const detailSnapPoints = useMemo(() => {
+    return [detailHeaderHeight, '75%']
+  }, [detailHeaderHeight])
 
   const animatedListPosition = useSharedValue<number>(0)
   const animatedDetailsPosition = useSharedValue<number>(0)
@@ -172,13 +179,17 @@ const HotspotsView = ({
     }
   }, [hasHotspots, networkHotspots, showHotspotDetails])
 
+  const hasUserLocation = useMemo(
+    () =>
+      location &&
+      location.length === 2 &&
+      location[0] !== 0 &&
+      location[1] !== 0,
+    [location],
+  )
+
   useEffect(() => {
-    if (
-      viewState === 'map' &&
-      !selectedHotspot &&
-      (!location ||
-        (location.length === 2 && location[0] === 0 && location[1] === 0))
-    ) {
+    if (viewState === 'map' && !selectedHotspot && !hasUserLocation) {
       if (ownedHotspots && ownedHotspots.length > 0) {
         setLocation([ownedHotspots[0].lng || 0, ownedHotspots[0].lat || 0]) // Set map loc to one of their hotspots
       } else {
@@ -190,6 +201,10 @@ const HotspotsView = ({
 
   const handleLayoutList = useCallback((event: LayoutChangeEvent) => {
     setListHeight(event.nativeEvent.layout.height - 166)
+  }, [])
+
+  const handleDetailHeaderLayout = useCallback((event: LayoutChangeEvent) => {
+    setDetailHeaderHeight(event.nativeEvent.layout.height)
   }, [])
 
   const handlePresentDetails = useCallback(
@@ -309,11 +324,9 @@ const HotspotsView = ({
     [],
   )
 
-  const hasLocation = useMemo(() => {
+  const hotspotHasLocation = useMemo(() => {
     if (!selectedHotspot) return true
-    return (
-      selectedHotspot?.lat !== undefined && selectedHotspot?.lng !== undefined
-    )
+    return hotspotHasValidLocation(selectedHotspot)
   }, [selectedHotspot])
 
   const toggleSettings = useCallback(() => {
@@ -361,8 +374,13 @@ const HotspotsView = ({
   ])
 
   const detailBody = useMemo(() => {
-    return <HotspotDetails hotspot={selectedHotspot} />
-  }, [selectedHotspot])
+    return (
+      <HotspotDetails
+        hotspot={selectedHotspot}
+        onLayoutHeader={handleDetailHeaderLayout}
+      />
+    )
+  }, [handleDetailHeaderLayout, selectedHotspot])
 
   const setSearching = useCallback(
     (searching: boolean) => () => {
@@ -447,8 +465,8 @@ const HotspotsView = ({
           animationMode="easeTo"
           animationDuration={800}
           onFeatureSelected={onMapHotspotSelected}
-          interactive={hasLocation}
-          showNoLocation={!hasLocation}
+          interactive={hotspotHasLocation}
+          showNoLocation={!hotspotHasLocation}
           showNearbyHotspots
         />
         <HotspotMapButtons
@@ -456,7 +474,9 @@ const HotspotsView = ({
           showWitnesses={showWitnesses}
           toggleShowWitnesses={toggleShowWitnesses}
           loading={loading}
-          isVisible={!!selectedHotspot && hasLocation}
+          detailHeaderHeight={detailHeaderHeight}
+          isVisible={!!selectedHotspot && hotspotHasLocation}
+          showNoLocation={!locationIsValid(propsLocation)}
         />
         <ReAnimatedBox pointerEvents="none" style={backdropStyles} />
         <ReAnimatedBox

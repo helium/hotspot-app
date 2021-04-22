@@ -792,6 +792,8 @@ export default {
     challenge_title: 'Challenges',
     challenge_sub_title: '(witness, challenger, or challengee)',
     picker_title: 'Past',
+    overview: 'Overview',
+    no_location: 'No Location',
     picker_options: [
       'Past 24 Hours',
       'Past 7 Days',

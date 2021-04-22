@@ -53,7 +53,7 @@ const ActivityCardHeader = ({ filter }: Props) => {
           title={t('transactions.view_transactions')}
           data={data}
           selectedValue={filter}
-          onValueChanged={onFilterChanged}
+          onValueSelected={onFilterChanged}
         />
       </Box>
     </Box>

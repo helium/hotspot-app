@@ -4,9 +4,7 @@ import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { Hotspot } from '@helium/http'
-import { Linking, Share, StyleSheet } from 'react-native'
-import { useActionSheet } from '@expo/react-native-action-sheet'
-import Clipboard from '@react-native-community/clipboard'
+import { LayoutChangeEvent } from 'react-native'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import StatusBadge from './StatusBadge'
@@ -17,10 +15,6 @@ import { getRewardChartData } from './RewardsHelper'
 import { useAppDispatch } from '../../../store/store'
 import { fetchHotspotDetails } from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import HexBadge from './HexBadge'
-import ShareDots from '../../../assets/images/share-dots.svg'
-import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import { EXPLORER_BASE_URL } from '../../../utils/config'
-import useHaptic from '../../../utils/useHaptic'
 import HotspotChecklist from '../checklist/HotspotChecklist'
 import animateTransition from '../../../utils/animateTransition'
 import HeliumSelect from '../../../components/HeliumSelect'
@@ -28,11 +22,16 @@ import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
 import HotspotStatusBanner from './HotspotStatusBanner'
 import useToggle from '../../../utils/useToggle'
 import { getSyncStatus } from '../../../utils/hotspotUtils'
+import ShareHotspot from '../../../components/ShareHotspot'
 
-const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
+const HotspotDetails = ({
+  hotspot,
+  onLayoutHeader,
+}: {
+  hotspot?: Hotspot
+  onLayoutHeader?: ((event: LayoutChangeEvent) => void) | undefined
+}) => {
   const { t } = useTranslation()
-  const { showActionSheetWithOptions } = useActionSheet()
-  const { triggerNotification } = useHaptic()
   const dispatch = useAppDispatch()
   const {
     hotspot: hotspotDetailsHotspot,
@@ -110,58 +109,20 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
     return [`${pieces[0]} ${pieces[1]}`, pieces[2]]
   }, [hotspot])
 
-  type SettingsOption = { label: string; action?: () => void }
-
-  const onMoreSelected = () => {
-    if (!hotspot) return
-
-    const explorerUrl = `${EXPLORER_BASE_URL}/hotspots/${hotspot.address}`
-    const opts: SettingsOption[] = [
-      {
-        label: t('hotspot_details.options.viewExplorer'),
-        action: () => Linking.openURL(explorerUrl),
-      },
-      {
-        label: t('hotspot_details.options.share'),
-        action: () => Share.share({ message: explorerUrl }),
-      },
-      {
-        label: `${t('generic.copy')} ${t('generic.address')}`,
-        action: () => {
-          Clipboard.setString(hotspot.address)
-          triggerNotification('success')
-        },
-      },
-      {
-        label: t('generic.cancel'),
-      },
-    ]
-
-    showActionSheetWithOptions(
-      {
-        options: opts.map(({ label }) => label),
-        destructiveButtonIndex: opts.length - 1,
-      },
-      (buttonIndex) => {
-        opts[buttonIndex].action?.()
-      },
-    )
-  }
-
   const selectData = useMemo(() => {
     return [
       {
-        label: 'Overview',
+        label: t('hotspot_details.overview'),
         value: 'overview',
         color: 'purpleMain',
       } as HeliumSelectItemType,
       {
-        label: 'Checklist',
+        label: t('hotspot_details.checklist'),
         value: 'checklist',
         color: 'purpleMain',
       } as HeliumSelectItemType,
     ]
-  }, [])
+  }, [t])
 
   const [selectedOption, setSelectedOption] = useState(selectData[0].value)
 
@@ -178,25 +139,12 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
   return (
     <BottomSheetScrollView keyboardShouldPersistTaps="always">
       <Box paddingBottom="l">
-        <Box
-          marginTop="lm"
-          marginBottom="lm"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <Text
-            variant="regular"
-            fontSize={29}
-            lineHeight={31}
-            color="black"
-            textAlign="center"
-            numberOfLines={1}
-            adjustsFontSizeToFit
+        <Box onLayout={onLayoutHeader}>
+          <Box
+            marginBottom="lm"
+            justifyContent="space-between"
+            alignItems="center"
           >
-            {formattedHotspotName[0]}
-          </Text>
-          <Box flexDirection="row" alignItems="center">
-            <Box width={40} />
             <Text
               variant="regular"
               fontSize={29}
@@ -206,40 +154,47 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
               numberOfLines={1}
               adjustsFontSizeToFit
             >
-              {formattedHotspotName[1]}
+              {formattedHotspotName[0]}
             </Text>
-            <TouchableOpacityBox
-              width={40}
-              height={31}
-              alignItems="center"
-              onPress={onMoreSelected}
-              justifyContent="center"
-              style={styles.shareButton}
-            >
-              <ShareDots color="#C2C5E4" />
-            </TouchableOpacityBox>
+            <Box flexDirection="row" alignItems="center">
+              <Box width={40} />
+              <Text
+                variant="regular"
+                fontSize={29}
+                lineHeight={31}
+                color="black"
+                textAlign="center"
+                numberOfLines={1}
+                adjustsFontSizeToFit
+              >
+                {formattedHotspotName[1]}
+              </Text>
+
+              <ShareHotspot hotspot={hotspot} />
+            </Box>
           </Box>
-        </Box>
-        <Box
-          flexDirection="row"
-          justifyContent="center"
-          marginBottom="lx"
-          height={30}
-        >
-          {(hotspot?.status || hotspotDetailsHotspot?.status) && (
-            <StatusBadge
-              online={
-                hotspot?.status?.online || hotspotDetailsHotspot?.status?.online
+          <Box
+            flexDirection="row"
+            justifyContent="center"
+            marginBottom="lx"
+            height={30}
+          >
+            {(hotspot?.status || hotspotDetailsHotspot?.status) && (
+              <StatusBadge
+                online={
+                  hotspot?.status?.online ||
+                  hotspotDetailsHotspot?.status?.online
+                }
+                syncStatus={syncStatus?.status}
+                onPress={toggleShowStatusBanner}
+              />
+            )}
+            <HexBadge
+              rewardScale={
+                hotspot.rewardScale || hotspotDetailsHotspot?.rewardScale
               }
-              syncStatus={syncStatus?.status}
-              onPress={toggleShowStatusBanner}
             />
-          )}
-          <HexBadge
-            rewardScale={
-              hotspot.rewardScale || hotspotDetailsHotspot?.rewardScale
-            }
-          />
+          </Box>
         </Box>
 
         <HotspotStatusBanner
@@ -295,9 +250,5 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
     </BottomSheetScrollView>
   )
 }
-
-const styles = StyleSheet.create({
-  shareButton: { transform: [{ rotate: '90deg' }] },
-})
 
 export default HotspotDetails
