@@ -107,22 +107,14 @@ export const fetchHotspotDetails = createAsyncThunk(
   async (params: FetchDetailsParams, { getState }) => {
     const currentState = (getState() as {
       hotspotDetails: {
-        details: Record<string, HotspotDetails>
+        details: Record<string, Record<number, HotspotDetails>>
       }
     }).hotspotDetails
-    const { lastFetchedTimestamp, numDays } = currentState.details[
-      params.address
-    ]
-
+    const currentDetails = currentState.details[params.address] || {}
+    const { lastFetchedTimestamp = 0 } = currentDetails[params.numDays] || {}
     const now = Date.now()
     const fiveMinutes = 300000
-    console.log('called')
-    if (
-      lastFetchedTimestamp &&
-      now - lastFetchedTimestamp < fiveMinutes &&
-      numDays === params.numDays
-    ) {
-      console.log('skipped')
+    if (lastFetchedTimestamp && now - lastFetchedTimestamp < fiveMinutes) {
       return
     }
     const bucket = params.numDays === 1 ? 'hour' : 'day'
@@ -181,7 +173,7 @@ type HotspotDetails = {
 }
 
 type HotspotDetailsState = {
-  details: Record<string, HotspotDetails>
+  details: Record<string, Record<number, HotspotDetails>>
   showSettings: boolean
 }
 const initialState: HotspotDetailsState = {
@@ -202,21 +194,27 @@ const hotspotDetailsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchHotspotDetails.pending, (state, action) => {
-      const prevState = state.details[action.meta.arg.address] || {}
-      const hasFetched = prevState.lastFetchedTimestamp !== undefined
-      const changedNumDays = prevState.numDays !== action.meta.arg.numDays
-
-      state.details[action.meta.arg.address] = {
-        ...prevState,
-        loading: !hasFetched || changedNumDays,
+      const { address, numDays } = action.meta.arg
+      const prevDetails = state.details[address] || {}
+      const prevState = prevDetails[numDays] || {}
+      state.details[address] = {
+        ...state.details[address],
+        [numDays]: {
+          ...prevState,
+          loading: true,
+        },
       }
     })
     builder.addCase(fetchHotspotDetails.fulfilled, (state, action) => {
       if (!action.payload) {
+        state.details[action.meta.arg.address][action.meta.arg.numDays] = {
+          ...state.details[action.meta.arg.address][action.meta.arg.numDays],
+          loading: false,
+        }
         return
       }
-      state.details[action.meta.arg.address] = {
-        ...state.details[action.meta.arg.address],
+      state.details[action.meta.arg.address][action.payload.numDays] = {
+        ...state.details[action.meta.arg.address][action.payload.numDays],
         loading: false,
         hotspot: action.payload.hotspot,
         numDays: action.payload.numDays,
@@ -234,9 +232,15 @@ const hotspotDetailsSlice = createSlice({
       }
     })
     builder.addCase(fetchHotspotDetails.rejected, (state, action) => {
-      state.details[action.meta.arg.address] = {
-        ...state.details[action.meta.arg.address],
-        loading: false,
+      const { address, numDays } = action.meta.arg
+      const prevDetails = state.details[address] || {}
+      const prevState = prevDetails[numDays] || {}
+      state.details[address] = {
+        ...state.details[address],
+        [numDays]: {
+          ...prevState,
+          loading: false,
+        },
       }
     })
   },

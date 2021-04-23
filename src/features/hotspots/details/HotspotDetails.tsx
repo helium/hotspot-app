@@ -34,15 +34,16 @@ const HotspotDetails = ({
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const address = hotspot?.address || ''
-  const hotspotDetailsState = useSelector(
-    (state: RootState) => state.hotspotDetails.details[address],
-  )
+  const hotspotDetailsState =
+    useSelector((state: RootState) => state.hotspotDetails.details[address]) ||
+    {}
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
   )
+  const [timelineValue, setTimelineValue] = useState(14)
   const {
     hotspot: hotspotDetailsHotspot,
-    numDays = 14,
+    numDays = timelineValue,
     rewards,
     rewardSum,
     rewardsChange,
@@ -54,7 +55,7 @@ const HotspotDetails = ({
     challengeSum,
     challengeChange,
     witnesses,
-  } = hotspotDetailsState || {}
+  } = hotspotDetailsState[timelineValue] || {}
 
   const [showStatusBanner, toggleShowStatusBanner] = useToggle(false)
 
@@ -62,8 +63,6 @@ const HotspotDetails = ({
     const data = getRewardChartData(rewards, numDays)
     return data || []
   }, [numDays, rewards])
-
-  const [timelineValue, setTimelineValue] = useState(14)
 
   const syncStatus = useMemo(() => {
     if (!hotspot?.status) return
