@@ -93,9 +93,14 @@ const App = () => {
   useEffect(() => {
     OneSignal.setAppId(Config.ONE_SIGNAL_APP_ID)
     OneSignal.setNotificationOpenedHandler((event: OpenedEvent) => {
+      // handles opening a notification
       dispatch(
         notificationSlice.actions.pushNotificationOpened(event.notification),
       )
+    })
+    OneSignal.setNotificationWillShowInForegroundHandler(() => {
+      // handles fetching new notifications while the app is in focus
+      dispatch(fetchNotifications())
     })
     MapboxGL.setAccessToken(Config.MAPBOX_ACCESS_TOKEN)
     Logger.init()

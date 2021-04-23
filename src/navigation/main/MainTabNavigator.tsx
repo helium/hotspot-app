@@ -37,14 +37,14 @@ const MainTabs = () => {
 
   useEffect(() => {
     if (!isLocked) return
-    navigation.push('LockScreen', { requestType: 'unlock', lock: true })
+    navigation.navigate('LockScreen', { requestType: 'unlock', lock: true })
   }, [isLocked, navigation])
 
   useEffect(() => {
     if (!isSettingUpHotspot) return
 
     dispatch(appSlice.actions.startHotspotSetup())
-    navigation.push('HotspotSetup')
+    navigation.navigate('HotspotSetup')
   }, [isSettingUpHotspot, dispatch, navigation])
 
   useEffect(() => {
