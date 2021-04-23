@@ -9,6 +9,13 @@ import {
   getHotspotWitnessSums,
 } from '../../utils/appDataClient'
 import { calculatePercentChange } from '../../features/hotspots/details/RewardsHelper'
+import {
+  CacheRecord,
+  handleRejected,
+  handlePending,
+  handleFulfilled,
+  isStale,
+} from '../../utils/cacheUtils'
 
 type FetchDetailsParams = {
   address: string
@@ -114,10 +121,8 @@ export const fetchHotspotDetails = createAsyncThunk<
       }
     }).hotspotDetails
     const currentDetails = currentState.details[params.address] || {}
-    const { lastFetchedTimestamp = 0 } = currentDetails[params.numDays] || {}
-    const now = Date.now()
-    const fiveMinutes = 300000
-    if (lastFetchedTimestamp && now - lastFetchedTimestamp < fiveMinutes) {
+    const details = currentDetails[params.numDays]
+    if (isStale(details)) {
       throw new Error('Data already fetched')
     }
     const bucket = params.numDays === 1 ? 'hour' : 'day'
@@ -173,10 +178,7 @@ type HotspotDetailsObj = {
   challengeChange?: number
 }
 
-type HotspotDetails = HotspotDetailsObj & {
-  lastFetchedTimestamp?: number
-  loading: boolean
-}
+type HotspotDetails = CacheRecord<HotspotDetailsObj>
 
 type HotspotDetailsState = {
   details: Record<string, Record<number, HotspotDetails>>
@@ -203,25 +205,19 @@ const hotspotDetailsSlice = createSlice({
       const { address, numDays } = action.meta.arg
       const prevDetails = state.details[address] || {}
       const prevState = prevDetails[numDays] || {}
+      const nextState = handlePending(prevState)
       state.details[address] = {
         ...state.details[address],
-        [numDays]: {
-          ...prevState,
-          loading: true,
-        },
+        [numDays]: nextState,
       }
     })
     builder.addCase(fetchHotspotDetails.fulfilled, (state, action) => {
       const { address, numDays } = action.meta.arg
-      state.details[address][numDays] = {
-        ...action.payload,
-        loading: false,
-        lastFetchedTimestamp: Date.now(),
-      }
+      state.details[address][numDays] = handleFulfilled(action.payload)
     })
     builder.addCase(fetchHotspotDetails.rejected, (state, action) => {
       const { address, numDays } = action.meta.arg
-      state.details[address][numDays].loading = false
+      state.details[address][numDays] = handleRejected(action.payload)
     })
   },
 })
