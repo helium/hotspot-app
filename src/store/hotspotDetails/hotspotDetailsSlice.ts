@@ -14,7 +14,7 @@ import {
   handleRejected,
   handlePending,
   handleFulfilled,
-  isStale,
+  shouldRefresh,
 } from '../../utils/cacheUtils'
 
 type FetchDetailsParams = {
@@ -109,20 +109,43 @@ export const fetchHotspotChallengeSums = async (
   }
 }
 
-export const fetchHotspotDetails = createAsyncThunk<
-  HotspotDetailsObj,
+export const fetchHotspotData = createAsyncThunk<HotspotData, string>(
+  'hotspotDetails/fetchHotspotData',
+  async (address: string, { getState }) => {
+    const currentState = (getState() as {
+      hotspotDetails: {
+        hotspotData: Record<string, HotspotDetailCache>
+      }
+    }).hotspotDetails
+    const hotspotData = currentState.hotspotData[address] || {}
+    if (!shouldRefresh(hotspotData)) {
+      throw new Error('Data already fetched')
+    }
+    const data = await Promise.all([
+      getHotspotDetails(address),
+      getHotspotWitnesses(address),
+    ])
+    return {
+      hotspot: data[0],
+      witnesses: data[1],
+    }
+  },
+)
+
+export const fetchHotspotChartData = createAsyncThunk<
+  HotspotChartData,
   FetchDetailsParams
 >(
-  'hotspotDetails/fetchHotspotDetails',
+  'hotspotDetails/fetchHotspotChartData',
   async (params: FetchDetailsParams, { getState }) => {
     const currentState = (getState() as {
       hotspotDetails: {
-        details: Record<string, Record<number, HotspotDetails>>
+        chartData: Record<string, Record<number, HotspotChartCache>>
       }
     }).hotspotDetails
-    const currentDetails = currentState.details[params.address] || {}
-    const details = currentDetails[params.numDays]
-    if (!isStale(details)) {
+    const chartData = currentState.chartData[params.address] || {}
+    const details = chartData[params.numDays]
+    if (!shouldRefresh(details)) {
       throw new Error('Data already fetched')
     }
     const bucket = params.numDays === 1 ? 'hour' : 'day'
@@ -130,46 +153,34 @@ export const fetchHotspotDetails = createAsyncThunk<
     const endDate = new Date(startDate)
     endDate.setDate(endDate.getDate() - params.numDays)
     const data = await Promise.all([
-      getHotspotDetails(params.address),
       getHotspotRewardsSum(params.address, params.numDays),
       getHotspotRewardsSum(params.address, params.numDays, endDate),
       getHotspotRewards(params.address, params.numDays),
-      getHotspotWitnesses(params.address),
       fetchHotspotWitnessSums(params, startDate, endDate, bucket),
       fetchHotspotChallengeSums(params, startDate, endDate, bucket),
     ])
-    // TODO: handle failures
-    const hotspot = data[0]
-    const rewardSum = data[1]
-    const pastRewardSum = data[2]
-    const rewards = data[3]
-    const witnesses = data[4]
-    const witnessSumData = data[5]
-    const challengeSumData = data[6]
+    const rewardSum = data[0]
+    const pastRewardSum = data[1]
+    const rewards = data[2]
+    const witnessSumData = data[3]
+    const challengeSumData = data[4]
     return {
-      hotspot,
-      address: params.address,
-      numDays: params.numDays,
       rewardSum,
+      rewards,
       rewardsChange: calculatePercentChange(
         rewardSum.total,
         pastRewardSum.total,
       ),
-      rewards,
-      witnesses,
       ...witnessSumData,
       ...challengeSumData,
     }
   },
 )
 
-type HotspotDetailsObj = {
-  hotspot?: Hotspot
-  numDays?: number
+type HotspotChartData = {
   rewardSum?: Sum
   rewards?: Reward[]
   rewardsChange?: number
-  witnesses?: Hotspot[]
   witnessSums?: Sum[]
   witnessAverage?: number
   witnessChange?: number
@@ -178,14 +189,22 @@ type HotspotDetailsObj = {
   challengeChange?: number
 }
 
-type HotspotDetails = CacheRecord<HotspotDetailsObj>
+type HotspotData = {
+  witnesses?: Hotspot[]
+  hotspot?: Hotspot
+}
+
+type HotspotChartCache = CacheRecord<HotspotChartData>
+type HotspotDetailCache = CacheRecord<HotspotData>
 
 type HotspotDetailsState = {
-  details: Record<string, Record<number, HotspotDetails>>
+  chartData: Record<string, Record<number, HotspotChartCache>>
+  hotspotData: Record<string, HotspotDetailCache>
   showSettings: boolean
 }
 const initialState: HotspotDetailsState = {
-  details: {},
+  chartData: {},
+  hotspotData: {},
   showSettings: false,
 }
 
@@ -198,31 +217,52 @@ const hotspotDetailsSlice = createSlice({
       ...state,
       showSettings: !state.showSettings,
     }),
-    clearHotspotDetails: () => {},
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchHotspotDetails.pending, (state, action) => {
+    builder.addCase(fetchHotspotChartData.pending, (state, action) => {
       const { address, numDays } = action.meta.arg
-      const prevDetails = state.details[address] || {}
+      const prevDetails = state.chartData[address] || {}
       const prevState = prevDetails[numDays] || {}
       const nextState = handlePending(prevState)
-      state.details[address] = {
-        ...state.details[address],
+      state.chartData[address] = {
+        ...state.chartData[address],
         [numDays]: nextState,
       }
     })
-    builder.addCase(fetchHotspotDetails.fulfilled, (state, action) => {
+    builder.addCase(fetchHotspotChartData.fulfilled, (state, action) => {
       const { address, numDays } = action.meta.arg
-      state.details[address][numDays] = handleFulfilled(action.payload)
+      state.chartData[address][numDays] = handleFulfilled(action.payload)
     })
-    builder.addCase(fetchHotspotDetails.rejected, (state, action) => {
+    builder.addCase(fetchHotspotChartData.rejected, (state, action) => {
       const { address, numDays } = action.meta.arg
-      const prevDetails = state.details[address] || {}
+      const prevDetails = state.chartData[address] || {}
       const prevState = prevDetails[numDays] || {}
       const nextState = handleRejected(prevState)
-      state.details[address] = {
-        ...state.details[address],
+      state.chartData[address] = {
+        ...state.chartData[address],
         [numDays]: nextState,
+      }
+    })
+    builder.addCase(fetchHotspotData.pending, (state, action) => {
+      const address = action.meta.arg
+      const prevState = state.hotspotData[address] || {}
+      const nextState = handlePending(prevState)
+      state.hotspotData[address] = {
+        ...state.hotspotData[address],
+        ...nextState,
+      }
+    })
+    builder.addCase(fetchHotspotData.fulfilled, (state, action) => {
+      const address = action.meta.arg
+      state.hotspotData[address] = handleFulfilled(action.payload)
+    })
+    builder.addCase(fetchHotspotData.rejected, (state, action) => {
+      const address = action.meta.arg
+      const prevState = state.hotspotData[address] || {}
+      const nextState = handleRejected(prevState)
+      state.hotspotData[address] = {
+        ...state.hotspotData[address],
+        ...nextState,
       }
     })
   },

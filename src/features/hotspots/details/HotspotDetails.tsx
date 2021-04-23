@@ -13,7 +13,10 @@ import HotspotDetailChart from './HotspotDetailChart'
 import { RootState } from '../../../store/rootReducer'
 import { getRewardChartData } from './RewardsHelper'
 import { useAppDispatch } from '../../../store/store'
-import { fetchHotspotDetails } from '../../../store/hotspotDetails/hotspotDetailsSlice'
+import {
+  fetchHotspotChartData,
+  fetchHotspotData,
+} from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import HexBadge from './HexBadge'
 import HotspotChecklist from '../checklist/HotspotChecklist'
 import animateTransition from '../../../utils/animateTransition'
@@ -34,16 +37,19 @@ const HotspotDetails = ({
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const address = hotspot?.address || ''
-  const hotspotDetailsState =
-    useSelector((state: RootState) => state.hotspotDetails.details[address]) ||
-    {}
+  const hotspotChatData =
+    useSelector(
+      (state: RootState) => state.hotspotDetails.chartData[address],
+    ) || {}
+  const hotspotDetailsData =
+    useSelector(
+      (state: RootState) => state.hotspotDetails.hotspotData[address],
+    ) || {}
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
   )
   const [timelineValue, setTimelineValue] = useState(14)
   const {
-    hotspot: hotspotDetailsHotspot,
-    numDays = timelineValue,
     rewards,
     rewardSum,
     rewardsChange,
@@ -54,15 +60,15 @@ const HotspotDetails = ({
     challengeSums,
     challengeSum,
     challengeChange,
-    witnesses,
-  } = hotspotDetailsState[timelineValue] || {}
+  } = hotspotChatData[timelineValue] || {}
+  const { hotspot: hotspotDetailsHotspot, witnesses } = hotspotDetailsData || {}
 
   const [showStatusBanner, toggleShowStatusBanner] = useToggle(false)
 
   const rewardChartData = useMemo(() => {
-    const data = getRewardChartData(rewards, numDays)
+    const data = getRewardChartData(rewards, timelineValue)
     return data || []
-  }, [numDays, rewards])
+  }, [timelineValue, rewards])
 
   const syncStatus = useMemo(() => {
     if (!hotspot?.status) return
@@ -70,13 +76,24 @@ const HotspotDetails = ({
     return getSyncStatus(hotspot.status?.height, blockHeight)
   }, [blockHeight, hotspot])
 
+  // load hotspot & witness details
   useEffect(() => {
-    if (!hotspot) return
+    if (!hotspot?.address) return
+
+    dispatch(fetchHotspotData(hotspot.address))
+  }, [dispatch, hotspot?.address])
+
+  // load chart data
+  useEffect(() => {
+    if (!hotspot?.address) return
 
     dispatch(
-      fetchHotspotDetails({ address: hotspot.address, numDays: timelineValue }),
+      fetchHotspotChartData({
+        address: hotspot?.address,
+        numDays: timelineValue,
+      }),
     )
-  }, [dispatch, hotspot, timelineValue])
+  }, [dispatch, hotspot?.address, timelineValue])
 
   const witnessChartData = useMemo(() => {
     return (
@@ -84,11 +101,11 @@ const HotspotDetails = ({
         up: Math.round(w.avg),
         down: 0,
         label: w.timestamp,
-        showTime: numDays === 1,
-        id: `witness-${numDays}-${w.timestamp}`,
+        showTime: timelineValue === 1,
+        id: `witness-${timelineValue}-${w.timestamp}`,
       })) || []
     )
-  }, [numDays, witnessSums])
+  }, [timelineValue, witnessSums])
 
   const challengeChartData = useMemo(() => {
     return (
@@ -96,11 +113,11 @@ const HotspotDetails = ({
         up: Math.round(w.sum),
         down: 0,
         label: w.timestamp,
-        showTime: numDays === 1,
-        id: `challenge-${numDays}-${w.timestamp}`,
+        showTime: timelineValue === 1,
+        id: `challenge-${timelineValue}-${w.timestamp}`,
       })) || []
     )
-  }, [numDays, challengeSums])
+  }, [timelineValue, challengeSums])
 
   const formattedHotspotName = useMemo(() => {
     if (!hotspot) return ''
