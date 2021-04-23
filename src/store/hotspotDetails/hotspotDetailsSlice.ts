@@ -122,7 +122,7 @@ export const fetchHotspotDetails = createAsyncThunk<
     }).hotspotDetails
     const currentDetails = currentState.details[params.address] || {}
     const details = currentDetails[params.numDays]
-    if (isStale(details)) {
+    if (!isStale(details)) {
       throw new Error('Data already fetched')
     }
     const bucket = params.numDays === 1 ? 'hour' : 'day'
