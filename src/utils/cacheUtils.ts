@@ -11,11 +11,11 @@ const getCacheRecord = <T>(item: T) => {
 
 export const isStale = <T>(item: T, mins = 5) => {
   const cacheRecord = getCacheRecord(item)
-  if (cacheRecord) {
-    const timeInSeconds = 60000 * mins
-    return Date.now() - cacheRecord.lastFetchedTimestamp < timeInSeconds
-  }
-  return false
+  if (!cacheRecord) return true
+
+  const timeInSeconds = 60000 * mins
+  const isFresh = Date.now() - cacheRecord.lastFetchedTimestamp < timeInSeconds
+  return !isFresh
 }
 
 export const handleRejected = <T>(item: T) =>
