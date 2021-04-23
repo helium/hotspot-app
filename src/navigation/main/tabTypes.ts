@@ -1,4 +1,5 @@
 import { StackNavigationProp } from '@react-navigation/stack'
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import { QrScanResult } from '../../features/wallet/scan/scanTypes'
 
 export type MainTabType = 'Hotspots' | 'Wallet' | 'Notifications' | 'More'
@@ -33,3 +34,12 @@ export type RootStackParamList = {
 }
 
 export type RootNavigationProp = StackNavigationProp<RootStackParamList>
+
+export type MainTabParamList = {
+  Hotspots: undefined
+  Wallet: undefined
+  Notifications: undefined
+  More: undefined
+}
+
+export type MainTabNavigationProp = BottomTabNavigationProp<MainTabParamList>

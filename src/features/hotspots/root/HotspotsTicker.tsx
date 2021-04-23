@@ -58,14 +58,19 @@ const HotspotsTicker = ({ ...boxProps }: Props) => {
   const text = useMemo(() => {
     const formattedHotspotCount = hotspotCount?.toLocaleString(locale) || 0
     const oraclePrice = currentOraclePrice?.price || 0
-    const formattedBlockTime = blockTime.toLocaleString(locale, {
+    const formattedBlockTime = blockTime?.toLocaleString(locale, {
       maximumFractionDigits: 0,
     })
-    return t('hotspots.ticker', {
-      formattedHotspotCount,
-      oraclePrice,
-      formattedBlockTime,
-    })
+    return blockTime
+      ? t('hotspots.ticker', {
+          formattedHotspotCount,
+          oraclePrice,
+          formattedBlockTime,
+        })
+      : t('hotspots.ticker_no_block', {
+          formattedHotspotCount,
+          oraclePrice,
+        })
   }, [blockTime, currentOraclePrice?.price, hotspotCount, t])
 
   return (

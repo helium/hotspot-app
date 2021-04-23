@@ -1,20 +1,20 @@
 import React, { useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import SafeAreaBox from '../../components/SafeAreaBox'
-import {
-  fetchNotifications,
-  markNotificationsViewed,
-} from '../../store/account/accountSlice'
 import { RootState } from '../../store/rootReducer'
 import { useAppDispatch } from '../../store/store'
 import useVisible from '../../utils/useVisible'
 import EmptyNotifications from './EmptyNotifications'
 import NotificationList from './NotificationList'
+import {
+  fetchNotifications,
+  markNotificationsViewed,
+} from '../../store/notifications/notificationSlice'
 
 const NotificationsScreen = () => {
-  const {
-    account: { notifications, markNotificationStatus },
-  } = useSelector((state: RootState) => state)
+  const { notifications, markNotificationStatus } = useSelector(
+    (state: RootState) => state.notifications,
+  )
   const dispatch = useAppDispatch()
 
   const markAsRead = useCallback(() => {
