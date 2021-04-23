@@ -11,6 +11,7 @@ import {
 } from './hotspotSetupTypes'
 import usePermissionManager from '../../../utils/usePermissionManager'
 import Lightning from '../../../assets/images/lightning.svg'
+import Box from '../../../components/Box'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotSetupPowerScreen'>
 
@@ -37,41 +38,42 @@ const HotspotSetupPowerScreen = () => {
   return (
     <BackScreen
       backgroundColor="primaryBackground"
-      padding="lx"
+      paddingHorizontal="lx"
       alignItems="center"
-      justifyContent="flex-end"
+      justifyContent="center"
     >
-      <Lightning />
-      <Text
-        marginTop="xl"
-        variant="h1"
-        numberOfLines={2}
-        adjustsFontSizeToFit
-        maxFontSizeMultiplier={1}
-        marginBottom="l"
-        textAlign="center"
-      >
-        {t('hotspot_setup.power.title')}
-      </Text>
-      <Text
-        marginBottom="lx"
-        maxFontSizeMultiplier={1.2}
-        variant="subtitleBold"
-        textAlign="center"
-        color="white"
-      >
-        {t(`hotspot_setup.power.${hotspotType.toLowerCase()}_subtitle_1`)}
-      </Text>
-      <Text
-        marginBottom="xl"
-        maxFontSizeMultiplier={1.2}
-        variant="subtitle"
-        textAlign="center"
-      >
-        {t(`hotspot_setup.power.${hotspotType.toLowerCase()}_subtitle_2`)}
-      </Text>
+      <Box flex={1} alignItems="center" justifyContent="center">
+        <Lightning />
+        <Text
+          marginTop="xl"
+          variant="h1"
+          numberOfLines={2}
+          adjustsFontSizeToFit
+          maxFontSizeMultiplier={1}
+          marginBottom="l"
+          textAlign="center"
+        >
+          {t('hotspot_setup.power.title')}
+        </Text>
+        <Text
+          marginBottom="lx"
+          maxFontSizeMultiplier={1.2}
+          variant="subtitleBold"
+          textAlign="center"
+          color="white"
+        >
+          {t(`hotspot_setup.power.${hotspotType.toLowerCase()}_subtitle_1`)}
+        </Text>
+        <Text
+          marginBottom="xl"
+          maxFontSizeMultiplier={1.2}
+          variant="subtitle"
+          textAlign="center"
+        >
+          {t(`hotspot_setup.power.${hotspotType.toLowerCase()}_subtitle_2`)}
+        </Text>
+      </Box>
       <DebouncedButton
-        marginTop="xxl"
         width="100%"
         variant="secondary"
         mode="contained"

@@ -37,14 +37,6 @@ type Info = {
   hasLastChallenge: boolean
   fullySynced: boolean | 'partial'
 }
-const initialInfo = {
-  percentSynced: 0,
-  fullySynced: false,
-  hasLastChallenge: false,
-  lastChallengeTime: 0,
-  currentTime: 0,
-  height: 0,
-} as Info
 
 const formatMac = (mac: string) =>
   times(6)
@@ -65,7 +57,7 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
     checkFirmwareCurrent,
   } = useConnectedHotspotContext()
   const [loading, setLoading] = useState(true)
-  const [info, setInfo] = useState(initialInfo)
+  const [info, setInfo] = useState<Info>()
   const { showOKAlert } = useAlert()
   const [lineItems, setLineItems] = useState<
     { attribute: string; value?: string }[]
@@ -107,11 +99,11 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
     setLineItems([
       {
         attribute: t('hotspot_settings.diagnostics.hotspot_type'),
-        value: onboardingRecord?.maker?.name || 'Unknown',
+        value: onboardingRecord?.maker?.name || t('generic.unavailable'),
       },
       {
         attribute: t('hotspot_settings.diagnostics.firmware'),
-        value: firmware?.version || '',
+        value: firmware?.version || t('generic.unavailable'),
       },
       {
         attribute: t('hotspot_settings.diagnostics.app_version'),
@@ -119,23 +111,33 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
       },
       {
         attribute: t('hotspot_settings.diagnostics.wifi_mac'),
-        value: diagnostics?.wifi ? formatMac(diagnostics.wifi) : '',
+        value: diagnostics?.wifi
+          ? formatMac(diagnostics.wifi)
+          : t('generic.unavailable'),
       },
       {
         attribute: t('hotspot_settings.diagnostics.eth_mac'),
-        value: diagnostics?.eth ? formatMac(diagnostics.eth) : '',
+        value: diagnostics?.eth
+          ? formatMac(diagnostics.eth)
+          : t('generic.unavailable'),
       },
       {
         attribute: t('hotspot_settings.diagnostics.nat_type'),
-        value: capitalize(diagnostics?.nat_type),
+        value: diagnostics?.nat_type
+          ? capitalize(diagnostics.nat_type)
+          : t('generic.unavailable'),
       },
       {
         attribute: t('hotspot_settings.diagnostics.ip'),
-        value: capitalize(diagnostics?.ip),
+        value: diagnostics?.ip
+          ? capitalize(diagnostics.ip)
+          : t('generic.unavailable'),
       },
       {
         attribute: t('hotspot_settings.diagnostics.report_generated'),
-        value: format(fromUnixTime(info.currentTime), DF),
+        value: info?.currentTime
+          ? format(fromUnixTime(info.currentTime), DF)
+          : t('generic.unavailable'),
       },
     ])
   }, [
@@ -143,7 +145,7 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
     firmware,
     t,
     version,
-    info.currentTime,
+    info?.currentTime,
     onboardingRecord?.maker?.name,
   ])
 
@@ -154,7 +156,7 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
   }, [firmware, checkFirmwareCurrent])
 
   useEffect(() => {
-    const nextInfo = initialInfo
+    const nextInfo = {} as Info
 
     const lastChallenge = challenges.length > 0 ? challenges[0] : undefined
     nextInfo.hasLastChallenge =
@@ -204,6 +206,13 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
     )
   }
 
+  const getLastChallengeDate = () => {
+    if (info?.lastChallengeTime === undefined) return 'Unknown'
+    return info?.lastChallengeTime === 0
+      ? 'never'
+      : format(fromUnixTime(info?.lastChallengeTime), DF)
+  }
+
   const handleSendReport = () => {
     sendReport({
       eth: diagnostics?.eth ? formatMac(diagnostics.eth) : '',
@@ -213,12 +222,11 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
       dialable: diagnostics?.dialable || '',
       natType: capitalize(diagnostics?.nat_type || ''),
       ip: capitalize(diagnostics?.ip || ''),
-      height: info.height.toLocaleString(locale),
-      lastChallengeDate:
-        info.lastChallengeTime === 0
-          ? 'never'
-          : format(fromUnixTime(info.lastChallengeTime), DF),
-      reportGenerated: format(fromUnixTime(info.currentTime), DF),
+      height: info?.height ? info.height.toLocaleString(locale) : 'Unknown',
+      lastChallengeDate: getLastChallengeDate(),
+      reportGenerated: info?.currentTime
+        ? format(fromUnixTime(info.currentTime), DF)
+        : 'Unknown',
       gateway: address || '',
       hotspotMaker: onboardingRecord?.maker?.name || 'Unknown',
       appVersion: version,
@@ -233,13 +241,16 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
           variant="medium"
           fontSize={21}
           color="black"
-          marginBottom="lx"
+          marginBottom="s"
           numberOfLines={1}
           adjustsFontSizeToFit
         >
           {animalHash(address || '')}
         </Text>
 
+        <Text variant="light" fontSize={12} color="grayText" marginBottom="l">
+          {t('hotspot_settings.diagnostics.unavailable_warning')}
+        </Text>
         <Text variant="medium" fontSize={15} color="black" marginBottom="ms">
           {t('hotspot_settings.diagnostics.p2p')}
         </Text>
@@ -275,11 +286,17 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
             <Text variant="body2Medium" color="black" flex={1}>
               {t('hotspot_settings.diagnostics.blockchain_sync')}
             </Text>
-            <DiagnosticAttribute
-              text={info.fullySynced ? '100%' : `${info.percentSynced}%`}
-              success={info.fullySynced}
-              fontWeight="regular"
-            />
+            {info?.fullySynced !== undefined ? (
+              <DiagnosticAttribute
+                text={info.fullySynced ? '100%' : `${info?.percentSynced}%`}
+                success={info.fullySynced}
+                fontWeight="regular"
+              />
+            ) : (
+              <Text variant="body2" color="black" marginLeft="s">
+                {t('generic.unavailable')}
+              </Text>
+            )}
           </Box>
 
           <Box flexDirection="row">
@@ -287,7 +304,7 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
               {t('hotspot_settings.diagnostics.last_challenged')}
             </Text>
             <Text variant="body2" color="black" marginLeft="s">
-              {info.hasLastChallenge
+              {info?.hasLastChallenge
                 ? formatDistance(
                     fromUnixTime(info.lastChallengeTime),
                     new Date(),
@@ -295,7 +312,7 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
                       addSuffix: true,
                     },
                   )
-                : t('generic.unknown')}
+                : t('generic.unavailable')}
             </Text>
           </Box>
         </Card>

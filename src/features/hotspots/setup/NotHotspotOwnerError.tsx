@@ -105,7 +105,7 @@ const NotHotspotOwnerErrorScreen = () => {
 
   return (
     <BackScreen>
-      <Box flex={1} justifyContent="center" paddingBottom="xxl">
+      <Box justifyContent="center" flex={1}>
         <Text
           variant="h1s"
           marginBottom="lm"
@@ -179,23 +179,21 @@ const NotHotspotOwnerErrorScreen = () => {
           </>
         )}
       </Box>
-      <Box>
-        <Text
-          variant="subtitleLight"
-          marginBottom={{ phone: 'lx', smallPhone: 'ms' }}
-          fontSize={14}
-          lineHeight={19}
-          maxFontSizeMultiplier={1.3}
-        >
-          {t('hotspot_setup.not_owner.contact_manufacturer')}
-        </Text>
-        <Button
-          title={t('hotspot_setup.onboarding_error.next')}
-          mode="contained"
-          variant="primary"
-          onPress={navExit}
-        />
-      </Box>
+      <Text
+        variant="subtitleLight"
+        marginBottom={{ phone: 'lx', smallPhone: 'ms' }}
+        fontSize={14}
+        lineHeight={19}
+        maxFontSizeMultiplier={1.3}
+      >
+        {t('hotspot_setup.not_owner.contact_manufacturer')}
+      </Text>
+      <Button
+        title={t('hotspot_setup.onboarding_error.next')}
+        mode="contained"
+        variant="primary"
+        onPress={navExit}
+      />
     </BackScreen>
   )
 }

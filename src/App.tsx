@@ -10,7 +10,7 @@ import {
   UIManager,
 } from 'react-native'
 import { ThemeProvider } from '@shopify/restyle'
-import OneSignal from 'react-native-onesignal'
+import OneSignal, { OpenedEvent } from 'react-native-onesignal'
 import Config from 'react-native-config'
 import { useSelector } from 'react-redux'
 import MapboxGL from '@react-native-mapbox-gl/maps'
@@ -38,6 +38,9 @@ import { fetchFeatures } from './store/features/featuresSlice'
 import usePrevious from './utils/usePrevious'
 import StatusBanner from './components/StatusBanner'
 import { fetchStatus } from './store/helium/heliumStatusSlice'
+import notificationSlice, {
+  fetchNotifications,
+} from './store/notifications/notificationSlice'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -82,15 +85,26 @@ const App = () => {
     dispatch(fetchBlockHeight())
     dispatch(fetchInitialData())
     dispatch(fetchStatus())
+    dispatch(fetchNotifications())
   }, [dispatch])
 
   // initialize external libraries
   useAsync(configChainVars, [])
   useEffect(() => {
     OneSignal.setAppId(Config.ONE_SIGNAL_APP_ID)
+    OneSignal.setNotificationOpenedHandler((event: OpenedEvent) => {
+      // handles opening a notification
+      dispatch(
+        notificationSlice.actions.pushNotificationOpened(event.notification),
+      )
+    })
+    OneSignal.setNotificationWillShowInForegroundHandler(() => {
+      // handles fetching new notifications while the app is in focus
+      dispatch(fetchNotifications())
+    })
     MapboxGL.setAccessToken(Config.MAPBOX_ACCESS_TOKEN)
     Logger.init()
-  }, [])
+  }, [dispatch])
 
   // setup and listen for app state changes
   const handleChange = useCallback(
