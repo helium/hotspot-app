@@ -4,7 +4,12 @@ import { useNavigation } from '@react-navigation/native'
 import { useSelector } from 'react-redux'
 import { StyleSheet } from 'react-native'
 import Hotspots from '../../features/hotspots/root/HotspotsNavigator'
-import { TabBarIconType, MainTabType } from './tabTypes'
+import {
+  TabBarIconType,
+  MainTabType,
+  RootNavigationProp,
+  MainTabNavigationProp,
+} from './tabTypes'
 import TabBarIcon from './TabBarIcon'
 import More from '../../features/moreTab/MoreNavigator'
 import { RootState } from '../../store/rootReducer'
@@ -20,34 +25,35 @@ const MainTab = createBottomTabNavigator()
 
 const MainTabs = () => {
   const { white, grayLight } = useColors()
-  const navigation = useNavigation()
+  const navigation = useNavigation<RootNavigationProp>()
+  const tabNavigation = useNavigation<MainTabNavigationProp>()
   const {
     app: { isLocked, isSettingUpHotspot },
   } = useSelector((state: RootState) => state)
-  const notification = useSelector(
-    (state: RootState) => state.notifications.notification,
+  const pushNotification = useSelector(
+    (state: RootState) => state.notifications.pushNotification,
   )
   const dispatch = useAppDispatch()
 
   useEffect(() => {
     if (!isLocked) return
-    navigation.navigate('LockScreen', { requestType: 'unlock', lock: true })
+    navigation.push('LockScreen', { requestType: 'unlock', lock: true })
   }, [isLocked, navigation])
 
   useEffect(() => {
     if (!isSettingUpHotspot) return
 
     dispatch(appSlice.actions.startHotspotSetup())
-    navigation.navigate('HotspotSetup')
+    navigation.push('HotspotSetup')
   }, [isSettingUpHotspot, dispatch, navigation])
 
   useEffect(() => {
-    if (!isLocked && notification) {
-      // TODO: use event.notification.additionalData.type to navigate to specific screens
-      navigation.navigate('Notifications')
-      dispatch(notificationSlice.actions.notificationHandled())
+    if (!isLocked && pushNotification) {
+      // TODO: use pushNotification.additionalData.type to navigate to specific screens
+      tabNavigation.navigate('Notifications')
+      dispatch(notificationSlice.actions.pushNotificationHandled())
     }
-  }, [navigation, isLocked, notification, dispatch])
+  }, [tabNavigation, isLocked, pushNotification, dispatch])
 
   return (
     <MainTab.Navigator

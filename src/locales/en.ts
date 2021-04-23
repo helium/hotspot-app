@@ -642,6 +642,8 @@ export default {
     },
     ticker:
       '{{formattedHotspotCount}} Hotspots • Oracle Price: {{oraclePrice}} • Block Time: {{formattedBlockTime}} secs • ',
+    ticker_no_block:
+      '{{formattedHotspotCount}} Hotspots • Oracle Price: {{oraclePrice}} • ',
   },
   permissions: {
     location: {
