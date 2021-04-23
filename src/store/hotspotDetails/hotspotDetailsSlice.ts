@@ -9,6 +9,13 @@ import {
   getHotspotWitnessSums,
 } from '../../utils/appDataClient'
 import { calculatePercentChange } from '../../features/hotspots/details/RewardsHelper'
+import {
+  CacheRecord,
+  handleRejected,
+  handlePending,
+  handleFulfilled,
+  isStale,
+} from '../../utils/cacheUtils'
 
 type FetchDetailsParams = {
   address: string
@@ -102,7 +109,10 @@ export const fetchHotspotChallengeSums = async (
   }
 }
 
-export const fetchHotspotDetails = createAsyncThunk(
+export const fetchHotspotDetails = createAsyncThunk<
+  HotspotDetailsObj,
+  FetchDetailsParams
+>(
   'hotspotDetails/fetchHotspotDetails',
   async (params: FetchDetailsParams, { getState }) => {
     const currentState = (getState() as {
@@ -111,11 +121,9 @@ export const fetchHotspotDetails = createAsyncThunk(
       }
     }).hotspotDetails
     const currentDetails = currentState.details[params.address] || {}
-    const { lastFetchedTimestamp = 0 } = currentDetails[params.numDays] || {}
-    const now = Date.now()
-    const fiveMinutes = 300000
-    if (lastFetchedTimestamp && now - lastFetchedTimestamp < fiveMinutes) {
-      return
+    const details = currentDetails[params.numDays]
+    if (isStale(details)) {
+      throw new Error('Data already fetched')
     }
     const bucket = params.numDays === 1 ? 'hour' : 'day'
     const startDate = new Date()
@@ -155,10 +163,9 @@ export const fetchHotspotDetails = createAsyncThunk(
   },
 )
 
-type HotspotDetails = {
+type HotspotDetailsObj = {
   hotspot?: Hotspot
   numDays?: number
-  loading: boolean
   rewardSum?: Sum
   rewards?: Reward[]
   rewardsChange?: number
@@ -169,8 +176,9 @@ type HotspotDetails = {
   challengeSums?: Sum[]
   challengeSum?: number
   challengeChange?: number
-  lastFetchedTimestamp?: number
 }
+
+type HotspotDetails = CacheRecord<HotspotDetailsObj>
 
 type HotspotDetailsState = {
   details: Record<string, Record<number, HotspotDetails>>
@@ -197,51 +205,19 @@ const hotspotDetailsSlice = createSlice({
       const { address, numDays } = action.meta.arg
       const prevDetails = state.details[address] || {}
       const prevState = prevDetails[numDays] || {}
+      const nextState = handlePending(prevState)
       state.details[address] = {
         ...state.details[address],
-        [numDays]: {
-          ...prevState,
-          loading: true,
-        },
+        [numDays]: nextState,
       }
     })
     builder.addCase(fetchHotspotDetails.fulfilled, (state, action) => {
-      if (!action.payload) {
-        state.details[action.meta.arg.address][action.meta.arg.numDays] = {
-          ...state.details[action.meta.arg.address][action.meta.arg.numDays],
-          loading: false,
-        }
-        return
-      }
-      state.details[action.meta.arg.address][action.payload.numDays] = {
-        ...state.details[action.meta.arg.address][action.payload.numDays],
-        loading: false,
-        hotspot: action.payload.hotspot,
-        numDays: action.payload.numDays,
-        rewardSum: action.payload.rewardSum,
-        rewards: action.payload.rewards,
-        rewardsChange: action.payload.rewardsChange,
-        witnesses: action.payload.witnesses,
-        witnessSums: action.payload.witnessSums,
-        witnessAverage: action.payload.witnessAverage,
-        witnessChange: action.payload.witnessChange,
-        challengeSums: action.payload.challengeSums,
-        challengeSum: action.payload.challengeSum,
-        challengeChange: action.payload.challengeChange,
-        lastFetchedTimestamp: Date.now(),
-      }
+      const { address, numDays } = action.meta.arg
+      state.details[address][numDays] = handleFulfilled(action.payload)
     })
     builder.addCase(fetchHotspotDetails.rejected, (state, action) => {
       const { address, numDays } = action.meta.arg
-      const prevDetails = state.details[address] || {}
-      const prevState = prevDetails[numDays] || {}
-      state.details[address] = {
-        ...state.details[address],
-        [numDays]: {
-          ...prevState,
-          loading: false,
-        },
-      }
+      state.details[address][numDays] = handleRejected(action.payload)
     })
   },
 })
