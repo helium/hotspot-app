@@ -30,7 +30,7 @@ export const handleFulfilled = <T>(item: T) =>
 
 export const handlePending = <T>(item: CacheRecord<T>) => {
   if (!item) {
-    return { loading: true, lastFetchedTimestamp: 0 } as CacheRecord<T>
+    return { loading: true } as CacheRecord<T>
   }
-  return { ...item, loading: true, lastFetchedTimestamp: 0 }
+  return { ...item, loading: true }
 }

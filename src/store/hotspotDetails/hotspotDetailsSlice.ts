@@ -217,7 +217,13 @@ const hotspotDetailsSlice = createSlice({
     })
     builder.addCase(fetchHotspotDetails.rejected, (state, action) => {
       const { address, numDays } = action.meta.arg
-      state.details[address][numDays] = handleRejected(action.payload)
+      const prevDetails = state.details[address] || {}
+      const prevState = prevDetails[numDays] || {}
+      const nextState = handleRejected(prevState)
+      state.details[address] = {
+        ...state.details[address],
+        [numDays]: nextState,
+      }
     })
   },
 })
