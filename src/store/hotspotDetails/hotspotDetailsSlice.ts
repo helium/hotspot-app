@@ -102,7 +102,10 @@ export const fetchHotspotChallengeSums = async (
   }
 }
 
-export const fetchHotspotDetails = createAsyncThunk(
+export const fetchHotspotDetails = createAsyncThunk<
+  HotspotDetailsObj,
+  FetchDetailsParams
+>(
   'hotspotDetails/fetchHotspotDetails',
   async (params: FetchDetailsParams, { getState }) => {
     const currentState = (getState() as {
@@ -115,7 +118,7 @@ export const fetchHotspotDetails = createAsyncThunk(
     const now = Date.now()
     const fiveMinutes = 300000
     if (lastFetchedTimestamp && now - lastFetchedTimestamp < fiveMinutes) {
-      return
+      throw new Error('Data already fetched')
     }
     const bucket = params.numDays === 1 ? 'hour' : 'day'
     const startDate = new Date()
@@ -155,10 +158,9 @@ export const fetchHotspotDetails = createAsyncThunk(
   },
 )
 
-type HotspotDetails = {
+type HotspotDetailsObj = {
   hotspot?: Hotspot
   numDays?: number
-  loading: boolean
   rewardSum?: Sum
   rewards?: Reward[]
   rewardsChange?: number
@@ -169,7 +171,11 @@ type HotspotDetails = {
   challengeSums?: Sum[]
   challengeSum?: number
   challengeChange?: number
+}
+
+type HotspotDetails = HotspotDetailsObj & {
   lastFetchedTimestamp?: number
+  loading: boolean
 }
 
 type HotspotDetailsState = {
@@ -206,42 +212,16 @@ const hotspotDetailsSlice = createSlice({
       }
     })
     builder.addCase(fetchHotspotDetails.fulfilled, (state, action) => {
-      if (!action.payload) {
-        state.details[action.meta.arg.address][action.meta.arg.numDays] = {
-          ...state.details[action.meta.arg.address][action.meta.arg.numDays],
-          loading: false,
-        }
-        return
-      }
-      state.details[action.meta.arg.address][action.payload.numDays] = {
-        ...state.details[action.meta.arg.address][action.payload.numDays],
+      const { address, numDays } = action.meta.arg
+      state.details[address][numDays] = {
+        ...action.payload,
         loading: false,
-        hotspot: action.payload.hotspot,
-        numDays: action.payload.numDays,
-        rewardSum: action.payload.rewardSum,
-        rewards: action.payload.rewards,
-        rewardsChange: action.payload.rewardsChange,
-        witnesses: action.payload.witnesses,
-        witnessSums: action.payload.witnessSums,
-        witnessAverage: action.payload.witnessAverage,
-        witnessChange: action.payload.witnessChange,
-        challengeSums: action.payload.challengeSums,
-        challengeSum: action.payload.challengeSum,
-        challengeChange: action.payload.challengeChange,
         lastFetchedTimestamp: Date.now(),
       }
     })
     builder.addCase(fetchHotspotDetails.rejected, (state, action) => {
       const { address, numDays } = action.meta.arg
-      const prevDetails = state.details[address] || {}
-      const prevState = prevDetails[numDays] || {}
-      state.details[address] = {
-        ...state.details[address],
-        [numDays]: {
-          ...prevState,
-          loading: false,
-        },
-      }
+      state.details[address][numDays].loading = false
     })
   },
 })
