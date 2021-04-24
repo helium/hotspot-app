@@ -100,9 +100,6 @@ const HotspotsView = ({
 
   const [showWitnesses, toggleShowWitnesses] = useToggle(false)
 
-  const { witnesses, loading } = useSelector(
-    (state: RootState) => state.hotspotDetails,
-  )
   const networkHotspots = useSelector(
     (state: RootState) => state.networkHotspots.networkHotspots,
     isEqual,
@@ -119,6 +116,13 @@ const HotspotsView = ({
     () => ownedHotspots?.length || followedHotspots?.length,
     [followedHotspots?.length, ownedHotspots?.length],
   )
+
+  const hotspotDetailsData =
+    useSelector(
+      (state: RootState) =>
+        state.hotspotDetails.hotspotData[selectedHotspot?.address || ''],
+    ) || {}
+  const { witnesses, loading } = hotspotDetailsData || {}
 
   const updateViewState = useCallback(
     (nextState: ViewState, backState: ViewState = 'list') => {
@@ -254,9 +258,8 @@ const HotspotsView = ({
 
   const handleBack = useCallback(() => {
     updateViewState(backViewState)
-    dispatch(hotspotDetailsSlice.actions.clearHotspotDetails())
     showHotspotDetails(undefined)
-  }, [updateViewState, backViewState, dispatch, showHotspotDetails])
+  }, [updateViewState, backViewState, showHotspotDetails])
 
   useEffect(() => {
     const navParent = navigation.dangerouslyGetParent() as BottomTabNavigationProp<RootStackParamList>
