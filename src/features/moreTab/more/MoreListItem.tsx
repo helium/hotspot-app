@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react'
 import { Linking, Switch } from 'react-native'
-import Text from '../../../components/Text'
+import Text, { TextProps } from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { useColors } from '../../../theme/themeHooks'
 import CarotRight from '../../../assets/images/carot-right.svg'
@@ -50,6 +50,16 @@ const MoreListItem = ({
     [colors],
   )
 
+  const actionSheetTextProps = useMemo(
+    () =>
+      ({
+        variant: 'regular',
+        fontSize: 16,
+        color: 'purpleBrightMuted',
+      } as TextProps),
+    [],
+  )
+
   return (
     <TouchableOpacityBox
       flexDirection="row"
@@ -85,9 +95,11 @@ const MoreListItem = ({
         <HeliumActionSheet
           data={select.items}
           selectedValue={value as string}
-          onValueChanged={select.onValueSelect}
+          onValueSelected={select.onValueSelect}
           listFormat
           title={title}
+          textProps={actionSheetTextProps}
+          iconVariant="none"
         />
       )}
     </TouchableOpacityBox>

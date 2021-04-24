@@ -2,8 +2,10 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { OraclePrice } from '@helium/http'
 import {
   getBlockHeight,
+  getBlockStats,
   getCurrentOraclePrice,
   getPredictedOraclePrice,
+  getStatCounts,
 } from '../../utils/appDataClient'
 import { getCurrentPrices } from '../../utils/coinGeckoClient'
 import { signOut } from '../../utils/secureAccount'
@@ -15,8 +17,13 @@ export type HeliumDataState = {
   predictedOraclePrices: OraclePrice[]
   currentPrices?: Record<string, number>
   makers?: Maker[]
+  hotspotCount?: number
+  blockTime?: number
 }
-const initialState: HeliumDataState = { predictedOraclePrices: [] }
+const initialState: HeliumDataState = {
+  predictedOraclePrices: [],
+  blockTime: 0,
+}
 
 export const fetchBlockHeight = createAsyncThunk<number>(
   'heliumData/blockHeight',
@@ -31,6 +38,10 @@ export const fetchCurrentOraclePrice = createAsyncThunk<OraclePrice>(
 export const fetchPredictedOraclePrice = createAsyncThunk<OraclePrice[]>(
   'heliumData/predictedOraclePrice',
   async () => getPredictedOraclePrice(),
+)
+
+export const fetchStats = createAsyncThunk('heliumData/stats', async () =>
+  Promise.all([getStatCounts(), getBlockStats()]),
 )
 
 export const fetchInitialData = createAsyncThunk<HeliumDataState>(
@@ -83,6 +94,11 @@ const heliumDataSlice = createSlice({
         state.predictedOraclePrices = payload
       },
     )
+    builder.addCase(fetchStats.fulfilled, (state, { payload }) => {
+      const [statCounts, blockStats] = payload
+      state.hotspotCount = statCounts.hotspots
+      state.blockTime = blockStats.lastDay.avg
+    })
   },
 })
 

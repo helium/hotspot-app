@@ -7,6 +7,7 @@ const palette = {
   black: '#000000',
   white: '#FFFFFF',
   whiteTransparent: '#FFFFFF66',
+  blackTransparent: '#00000033',
   offwhite: '#F9FAFC',
   offblack: '#1E2051',
 
@@ -28,6 +29,7 @@ const palette = {
   grayText: '#667394',
   grayDarkText: '#515686',
   grayLightText: '#A7AACD',
+  grayPurple: '#E3E5F8',
 
   redMain: '#F97570',
   redMedium: '#FF6666',
@@ -47,6 +49,8 @@ const palette = {
   purpleMuted: '#666995',
   purpleBrightMuted: '#7788D4',
   purpleDull: '#474973',
+  purpleText: '#5C5EA0',
+
   greenBright: '#29D391',
   greenMain: '#32C48D',
   greenDark: '#13162E',
@@ -54,10 +58,14 @@ const palette = {
   greenDarkText: '#1B875E',
   greenChecklist: '#26D694',
 
+  orangeExtraDark: '#C97C09',
+  orangeDark: '#FCB345',
   orange: '#FF852F',
   yellow: '#FFCB46',
   gold: '#FFC769',
   gray: '#687A8C',
+
+  followPurple: '#BD7AFF',
 }
 
 export const Font = {
@@ -80,34 +88,47 @@ const textVariants = {
     lineHeight: 45.5,
     color: 'primaryText',
   },
+  h1s: {
+    // h1s stands for h1 small. TODO: Could rename all headings to fit this one in
+    fontFamily: Font.main.semiBold,
+    fontSize: 34,
+    lineHeight: 33,
+    color: 'primaryText',
+  },
   h2: {
     fontFamily: Font.main.semiBold,
     fontSize: 27,
+    lineHeight: 27,
     color: 'primaryText',
   },
   h3: {
     fontFamily: Font.main.semiBold,
     fontSize: 22,
+    lineHeight: 22,
     color: 'primaryText',
   },
   h4: {
     fontFamily: Font.main.semiBold,
     fontSize: 20,
+    lineHeight: 20,
     color: 'primaryText',
   },
   h5: {
     fontFamily: Font.main.semiBold,
     fontSize: 17,
+    lineHeight: 17,
     color: 'primaryText',
   },
   h6: {
     fontFamily: Font.main.semiBold,
     fontSize: 13,
+    lineHeight: 13,
     color: 'primaryText',
   },
   h7: {
     fontFamily: Font.main.semiBold,
     fontSize: 11,
+    lineHeight: 11,
     color: 'primaryText',
   },
   regular: {
@@ -132,8 +153,8 @@ const textVariants = {
   },
   subtitle: {
     fontFamily: Font.main.regular,
-    fontSize: 19,
-    lineHeight: 26,
+    fontSize: 20,
+    lineHeight: 22,
     color: 'purpleLight',
   },
   body1: {
@@ -296,7 +317,7 @@ export const theme = createTheme({
       borderRadius: 'm',
     },
     light: {
-      backgroundColor: 'offwhite',
+      backgroundColor: 'grayBox',
       fontFamily: Font.main.regular,
       fontSize: 18,
       color: 'black',

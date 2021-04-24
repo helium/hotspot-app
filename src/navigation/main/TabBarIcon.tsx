@@ -23,9 +23,9 @@ const Icon = ({
   size: number
   name: MainTabType
 }) => {
-  const {
-    account: { notifications },
-  } = useSelector((state: RootState) => state)
+  const notifications = useSelector(
+    (state: RootState) => state.notifications.notifications,
+  )
 
   if (name === 'Hotspots') {
     return <HotspotsSvg color={color} size={size} />

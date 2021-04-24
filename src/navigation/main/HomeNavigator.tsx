@@ -17,6 +17,8 @@ const HomeStack = createStackNavigator()
 
 const HomeStackScreen = () => {
   useEffect(() => {
+    if (Platform.OS === 'android') return
+
     OneSignal.promptForPushNotificationsWithUserResponse(() => {})
   }, [])
 

@@ -5,6 +5,7 @@ import {
   PendingTransaction,
   AddGatewayV1,
   AssertLocationV1,
+  AssertLocationV2,
 } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import Box from '../../../../components/Box'
@@ -40,7 +41,11 @@ const ActivityItem = ({
   )
 
   const subtitle = useMemo(() => {
-    if (item instanceof AssertLocationV1 || item instanceof AddGatewayV1) {
+    if (
+      item instanceof AssertLocationV1 ||
+      item instanceof AddGatewayV1 ||
+      item instanceof AssertLocationV2
+    ) {
       return animalName(item.gateway)
     }
     if ('txn' in item && item?.txn?.gateway) {

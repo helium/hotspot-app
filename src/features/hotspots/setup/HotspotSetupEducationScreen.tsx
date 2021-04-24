@@ -69,7 +69,7 @@ const HotspotEducationScreen = () => {
     <BackScreen
       backgroundColor="primaryBackground"
       padding="none"
-      justifyContent="space-evenly"
+      justifyContent="center"
     >
       <Text
         variant="h1"

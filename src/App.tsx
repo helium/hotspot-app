@@ -10,7 +10,7 @@ import {
   UIManager,
 } from 'react-native'
 import { ThemeProvider } from '@shopify/restyle'
-import OneSignal from 'react-native-onesignal'
+import OneSignal, { OpenedEvent } from 'react-native-onesignal'
 import Config from 'react-native-config'
 import { useSelector } from 'react-redux'
 import MapboxGL from '@react-native-mapbox-gl/maps'
@@ -35,6 +35,12 @@ import {
 } from './store/helium/heliumDataSlice'
 import SecurityScreen from './features/security/SecurityScreen'
 import { fetchFeatures } from './store/features/featuresSlice'
+import usePrevious from './utils/usePrevious'
+import StatusBanner from './components/StatusBanner'
+import { fetchStatus } from './store/helium/heliumStatusSlice'
+import notificationSlice, {
+  fetchNotifications,
+} from './store/notifications/notificationSlice'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -66,6 +72,8 @@ const App = () => {
     isLocked,
     appStateStatus,
   } = useSelector((state: RootState) => state.app)
+  const prevAppStateStatus = usePrevious(appStateStatus)
+
   const fetchDataStatus = useSelector(
     (state: RootState) => state.account.fetchDataStatus,
   )
@@ -73,13 +81,30 @@ const App = () => {
     (state: RootState) => state.heliumData.blockHeight,
   )
 
+  const loadInitialData = useCallback(() => {
+    dispatch(fetchBlockHeight())
+    dispatch(fetchInitialData())
+    dispatch(fetchStatus())
+    dispatch(fetchNotifications())
+  }, [dispatch])
+
   // initialize external libraries
   useAsync(configChainVars, [])
   useEffect(() => {
     OneSignal.setAppId(Config.ONE_SIGNAL_APP_ID)
+    OneSignal.setNotificationOpenedHandler((event: OpenedEvent) => {
+      // handles opening a notification
+      dispatch(
+        notificationSlice.actions.pushNotificationOpened(event.notification),
+      )
+    })
+    OneSignal.setNotificationWillShowInForegroundHandler(() => {
+      // handles fetching new notifications while the app is in focus
+      dispatch(fetchNotifications())
+    })
     MapboxGL.setAccessToken(Config.MAPBOX_ACCESS_TOKEN)
     Logger.init()
-  }, [])
+  }, [dispatch])
 
   // setup and listen for app state changes
   const handleChange = useCallback(
@@ -128,10 +153,16 @@ const App = () => {
     if (!isRestored) {
       dispatch(restoreUser())
     } else {
-      dispatch(fetchBlockHeight())
-      dispatch(fetchInitialData())
+      loadInitialData()
     }
-  }, [dispatch, isRestored])
+  }, [dispatch, loadInitialData, isRestored])
+
+  // update initial data when app comes into foreground from background
+  useEffect(() => {
+    if (prevAppStateStatus === 'background' && appStateStatus === 'active') {
+      loadInitialData()
+    }
+  }, [dispatch, appStateStatus, prevAppStateStatus, loadInitialData])
 
   // hide splash screen
   useAsync(async () => {
@@ -146,6 +177,14 @@ const App = () => {
       await SplashScreen.hideAsync()
     }
   }, [fetchDataStatus, isBackedUp, isRestored])
+
+  useEffect(() => {
+    // Hide splash after 5 seconds, deal with the consequences?
+    const timeout = setTimeout(() => {
+      SplashScreen.hideAsync()
+    }, 5000)
+    return () => clearInterval(timeout)
+  }, [dispatch])
 
   // poll block height to update realtime data throughout the app
   useEffect(() => {
@@ -180,6 +219,7 @@ const App = () => {
                   <NavigationRoot />
                 </Portal.Host>
               </SafeAreaProvider>
+              <StatusBanner />
               <SecurityScreen
                 visible={
                   appStateStatus !== 'active' && appStateStatus !== 'unknown'

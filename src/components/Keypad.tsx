@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
 import useHaptic from '../utils/useHaptic'
 import Box from './Box'
 import Text from './Text'
@@ -10,7 +9,8 @@ import { useColors } from '../theme/themeHooks'
 type Props = {
   onNumberPress: (value: number) => void
   onBackspacePress: () => void
-  onCancel?: () => void
+  onCustomButtonPress?: () => void
+  customButtonTitle?: string
 }
 const Key = ({
   children,
@@ -38,28 +38,33 @@ const Key = ({
   )
 }
 
-const Keypad = ({ onNumberPress, onCancel, onBackspacePress }: Props) => {
+const Keypad = ({
+  onNumberPress,
+  onCustomButtonPress,
+  onBackspacePress,
+  customButtonTitle,
+}: Props) => {
   const { triggerImpact } = useHaptic()
-  const { t } = useTranslation()
   const colors = useColors()
 
   const renderDynamicButton = useMemo(() => {
-    if (onCancel) {
+    if (onCustomButtonPress && customButtonTitle) {
       return (
-        <Key onPressIn={onCancel}>
+        <Key onPressIn={onCustomButtonPress}>
           <Text
             variant="keypad"
+            fontSize={20}
             numberOfLines={1}
             adjustsFontSizeToFit
             padding="s"
           >
-            {t('generic.cancel')}
+            {customButtonTitle}
           </Text>
         </Key>
       )
     }
     return <Box flexBasis="33%" />
-  }, [onCancel, t])
+  }, [customButtonTitle, onCustomButtonPress])
 
   const onPressIn = useCallback(
     (value: number) => () => {

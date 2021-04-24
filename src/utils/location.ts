@@ -1,3 +1,4 @@
+import { Hotspot } from '@helium/http'
 import * as Location from 'expo-location'
 
 export type LocationCoords = { latitude: number; longitude: number }
@@ -37,3 +38,9 @@ export const distance = (coords1: LocationCoords, coords2: LocationCoords) => {
 
   return d
 }
+
+export const hotspotHasValidLocation = (hotspot?: Hotspot) =>
+  !!hotspot && hotspot.lat !== 0 && hotspot.lng !== 0
+
+export const locationIsValid = (location?: number[]) =>
+  !!location && location.length === 2 && location[0] !== 0 && location[1] !== 0

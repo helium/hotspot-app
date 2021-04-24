@@ -50,8 +50,7 @@ export default {
     },
     create_pin: {
       title: 'Set PIN Code',
-      subtitle:
-        'As a final secure step, let’s secure your account with a PIN Code.',
+      subtitle: 'Let’s secure your account with a PIN Code.',
     },
     confirm_pin: {
       title: 'Repeat PIN',
@@ -93,6 +92,7 @@ export default {
     next: "I've read the guide",
   },
   generic: {
+    clear: 'Clear',
     done: 'Done',
     understand: 'I understand',
     blocks: 'Blocks',
@@ -132,6 +132,7 @@ export default {
     something_went_wrong: 'Something went wrong',
     hnt_to_currency: '{{currencyType}}. Data from CoinGecko',
     search_location: 'Search for an address or place',
+    unavailable: 'Unavailable',
   },
   hotspot_setup: {
     selection: {
@@ -143,6 +144,7 @@ export default {
       nebraout: 'Nebra Outdoor Hotspot',
       bobcat: 'Bobcat Miner 300',
       syncrobit: 'SyncroB.it Hotspot',
+      longapone: 'LongAP One Hotspot',
       third_party_header: 'Other Hotspots',
       helium_edition: 'For the Helium Network',
       fine_print:
@@ -184,6 +186,8 @@ export default {
         '<b><white>Diagnostic support allows Bobcat to identify issues with your Hotspot in a secure way.</white></b>\n\nBobcat will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@bobcatminer.com</b></purple> from the email used to purchase the Hotspot.',
       syncrobit_p_1:
         '<b><white>Diagnostic support allows SyncroB.it to identify issues with your Hotspot in a secure way.</white></b>\n\nSyncroB.it will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@syncrob.it</b></purple> from the email used to purchase the Hotspot.',
+      longap_p_1:
+        '<b><white>Diagnostic support allows LongAP to identify issues with your Hotspot in a secure way.</white></b>\n\nLongAP will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@longap.com</b></purple> from the email used to purchase the Hotspot.',
     },
     power: {
       title: 'Power Up',
@@ -199,6 +203,8 @@ export default {
       bobcat_subtitle_1:
         'Plug in the provided power adapter into an outlet near a window and screw in the provided antenna on the back of the Hotspot.',
       syncrobit_subtitle_1: 'Attach the antenna and plug in the device',
+      longapone_subtitle_1:
+        "Attach the antenna's and plug in the provided power adapter.",
       helium_subtitle_2:
         'Your Hotspot will boot up, and its light will become Green when ready.',
       rak_subtitle_2:
@@ -211,6 +217,8 @@ export default {
         'The Hotspot is ready when the light goes from red to yellow.',
       syncrobit_subtitle_2:
         'The SyncroB.it Hotspot LED bar will light up blue once it’s powered on.',
+      longapone_subtitle_2:
+        'The LongAP One PWR LED will light up once it’s powered on.',
     },
     pair: {
       title: 'Bluetooth',
@@ -225,6 +233,8 @@ export default {
         'Use the provided pin to press the BT Button on the back of the Hotspot and hold for 5 seconds.',
       syncrobit_subtitle_1:
         'There is no pairing button on the SyncroB.it Hotspot.',
+      longapone_subtitle_1:
+        'Use a paperclip to shortly press the button in the little hole right of the LEDs.',
       helium_subtitle_2:
         "Ensure your phone's bluetooth is on before proceeding",
       rak_subtitle_2:
@@ -237,6 +247,8 @@ export default {
         'The hotspot is ready to pair when the light goes from yellow to blue.\n\nMake sure your phone’s Bluetooth is turned on!',
       syncrobit_subtitle_2:
         'Bluetooth is automatically enabled for 5 minutes after the SyncroB.it Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.',
+      longapone_subtitle_2:
+        'Once the PWR LED is slowly blinking\n\nPress Next to scan.',
       alert_no_permissions: {
         title: 'Authorize Bluetooth',
         body:
@@ -333,6 +345,7 @@ export default {
       next: 'Exit Setup',
       disconnected:
         'There was an error connecting to the Hotspot. Please try again.',
+      title_connect_failed: 'Unable to Proceed',
     },
     add_hotspot: {
       title: 'Add Hotspot',
@@ -358,6 +371,8 @@ export default {
         'There was an error constructing the Add Hotspot transaction. Please try again.',
       assert_loc_error_body:
         'There was an error constructing the Assert Location transaction. Please try again.',
+      assert_loc_error_no_loc:
+        'The selected location is invalid. Please try again.',
     },
     enable_location: {
       title: 'Set Hotspot\nLocation',
@@ -390,6 +405,11 @@ export default {
       error_body: 'There was an error loading fee data. Please try again.',
       next: 'Register Hotspot',
       fee_next: 'Pay Fee & Register Hotspot',
+      gain_label: 'TX / RX Gain:',
+      elevation_label: 'Height:',
+      gain: '{{gain}} dBi',
+      elevation: '{{count}} meter',
+      elevation_plural: '{{count}} meters',
     },
     location: {
       title: 'Hotspot Location',
@@ -412,9 +432,14 @@ export default {
       subtitle_2: 'Update your location later from settings.',
     },
     not_owner: {
-      title: 'Unable to proceed with setup',
-      subtitle_1: 'Hotspot belongs to another account.',
-      subtitle_2: "If you're a Host updating Wi-Fi, you may exit setup now.",
+      title: 'This Hotspot already has an owner.',
+      subtitle_1: 'Perhaps you’re hosting it for\nsomeone else?',
+      subtitle_1_no_follow:
+        "If you're a Host updating Wi-Fi, you may exit setup now.",
+      subtitle_2:
+        'Following a Hotspot allows you to monitor a Hotspot within the app when you don’t own it.',
+      contact_manufacturer:
+        'If you think you are the Hotspot Owner (i.e. you bought it) contact the Hotspot manufacturer.',
     },
     owned_hotspot: {
       title: 'You already own this Hotspot',
@@ -517,6 +542,11 @@ export default {
         'Share your QR Code to deposit or receive HNT from others.',
       learn_more: 'Learn More',
     },
+    send_max_fee: {
+      error_title: 'Send Max Error',
+      error_description:
+        'Unable to calculate fees to send max balance.\n\nTap Send Max and try again.',
+    },
   },
   more: {
     title: 'Settings',
@@ -556,7 +586,7 @@ export default {
         signOutAlert: {
           title: 'Warning!',
           body:
-            'This will remove all account info from this device. The only way to restore access to your account and Hotspots will be by using your 12 word recovery seed phrase.',
+            'You are signing out of your account. Do you have your 12 recovery words? If you don’t, you will lose access to:\n\n- your Hotspots\n- your HNT\n- your Wallet',
         },
       },
     },
@@ -578,24 +608,43 @@ export default {
     owned: {
       title: 'My Hotspots',
       title_no_hotspots: 'Hotspots',
-      reward_summary: 'Your Hotspot mined {{hntAmount}} in the past 24 hours.',
+      reward_summary:
+        'Your Hotspot has earned\n{{hntAmount}} in the past 24 hours.',
       reward_summary_plural:
-        'Your {{count}} Hotspots mined {{hntAmount}} in the past 24 hours.',
+        'Your {{count}} Hotspots have earned\n{{hntAmount}} in the past 24 hours.',
       your_hotspots: 'Your Hotspots',
       filter: {
         new: 'Newest Hotspots',
         near: 'Nearest Hotspots',
         earn: 'Top Earning Hotspots',
         offline: 'Offline Hotspots',
+        followed: 'Followed Hotspots',
       },
+    },
+    search: {
+      title: 'Hotspot Search',
+      my_hotspots: 'My Hotspots',
+      all_hotspots: 'All Hotspots',
+      placeholder: 'Search...',
+      recent_searches: 'Recent Searches',
+      tips: 'Search Tips',
+      tips_body:
+        'Try typing a Hotspot Name (e.g. silly-animal-name) or a place name (e.g. New York City).\n\nNote: Hotspots added within the last 10 minutes may not appear.',
     },
     empty: {
       body: "You haven't added or followed any Hotspots yet.",
+      failed:
+        'We’re having problems fetching your Hotspots due to an API or network outage. Please try again later.',
     },
     list: {
       no_offline: 'NO OFFLINE HOTSPOTS',
       online: 'ONLINE HOTSPOTS',
+      no_results: 'No Results',
     },
+    ticker:
+      '{{formattedHotspotCount}} Hotspots • Oracle Price: {{oraclePrice}} • Block Time: {{formattedBlockTime}} secs • ',
+    ticker_no_block:
+      '{{formattedHotspotCount}} Hotspots • Oracle Price: {{oraclePrice}} • ',
   },
   permissions: {
     location: {
@@ -608,7 +657,6 @@ export default {
     morning: 'Morning',
     evening: 'Evening',
     afternoon: 'Afternoon',
-    day_header: 'Good\n{{timeOfDay}}.',
   },
   notifications: {
     tapToReadMore: 'Tap to read more',
@@ -628,6 +676,7 @@ export default {
     received: 'Received HNT',
     added: 'Hotspot Added to Blockchain',
     location: 'Confirm Location',
+    location_v2: 'Update Hotspot',
     transfer: 'Hotspot Transfer',
     transferSell: 'Transfer Hotspot (Sell)',
     transferBuy: 'Transfer Hotspot (Buy)',
@@ -646,7 +695,7 @@ export default {
     title: 'Hotspot Settings',
     pairing: {
       title: 'Update Wi-Fi or Run Diagnostics',
-      subtitle: 'Paring required before proceeding.',
+      subtitle: 'Pairing required before proceeding.',
       scan: 'Pair',
     },
     transfer: {
@@ -696,6 +745,8 @@ export default {
       email_client_missing:
         'Could not find a compatible email client installed',
       other_info: 'Other Information',
+      unavailable_warning:
+        '* Diagnostics may be unavailable before a Hotspot is fully booted. If data is missing, please go back and generate the diagnostic report again.',
     },
     wifi: {
       title: 'Wi-Fi Network',
@@ -720,7 +771,7 @@ export default {
         'You have <b><purple>{{count}} free remaining</purple></b> Hotspot Location Assert Updates.',
       change_location: 'Change Location',
       confirm: 'I Confirm',
-      cost: 'The cost to reasserting location is:',
+      cost: 'The cost of reasserting location is:',
       insufficient_funds:
         'You do not have the funds available to make\nthis assert. Acquire HNT.',
       confirm_location: "Please confirm your Hotspot's change in location",
@@ -729,9 +780,14 @@ export default {
       assert_pending: 'Assert Pending...',
       failTitle: 'Failed to reassert hotspot',
       failSubtitle: 'Please try again later',
+      current_location: 'Current Location',
+      new_location: 'New Location',
+      antenna_details: 'Antenna/Height Details',
+      update_antenna: 'Update Antenna',
     },
   },
   hotspot_details: {
+    checklist: 'Checklist',
     title: 'Hotspot Details',
     owner: 'Owned by {{address}}',
     owner_you: 'Owned by you',
@@ -741,10 +797,26 @@ export default {
     challenge_title: 'Challenges',
     challenge_sub_title: '(witness, challenger, or challengee)',
     picker_title: 'Past',
-    picker_options: ['24 Hours', '7 Days', '14 Days', '30 Days'],
+    overview: 'Overview',
+    no_location: 'No Location',
+    picker_options: [
+      'Past 24 Hours',
+      'Past 7 Days',
+      'Past 14 Days',
+      'Past 30 Days',
+    ],
     picker_prompt: 'Select Range',
     status_online: 'Online',
     status_offline: 'Needs Attention',
+    status_syncing: 'Syncing',
+    status_prompt_online: {
+      title: 'Hotspot is online and syncing.',
+      subtitle_active: 'Status: Block {{hotspotBlock}} of {{currentBlock}}',
+      subtitle_starting: 'Beginning to sync...',
+    },
+    status_prompt_offline: {
+      title: 'Hotspot is offline and not syncing.',
+    },
     options: {
       settings: 'Settings',
       viewExplorer: 'View on Explorer',
@@ -803,6 +875,8 @@ export default {
     owner: 'Owner',
     my_account: 'My Account',
     view_block: 'View Block',
+    elevation: 'Height',
+    antenna: 'Antenna',
     rewardTypes: {
       poc_challengees: 'PoC',
       poc_challengers: 'Challenger',
@@ -896,11 +970,44 @@ export default {
       result_time: 'Time of Results',
       searching: 'Searching',
       distance: '{{distance}} {{unit}} away',
+      added_to_followed: 'Added to followed hotspots',
     },
     share: {
       subject: 'Discovery Results',
       hotspot_name: 'Hotspot Name',
       packets_heard: 'Packets Heard',
+    },
+  },
+  antennas: {
+    helium_us: 'Helium Hotspot (US 915)',
+    helium_eu: 'Helium Hotspot (EU 868)',
+    rak_hotspot_us: 'RAK Hotspot Miner (US 915)',
+    rak_hotspot_eu: 'RAK Hotspot Miner (EU 868)',
+    nebra_outdoor: 'Nebra Outdoor Hotspot',
+    nebra_indoor: 'Nebra Indoor Hotspot',
+    bobcat: 'Bobcat Miner 300 (All)',
+    syncrobit_us: 'Syncrob.it (US 915)',
+    syncrobit_eu: 'Syncrob.it (EU 868)',
+    longapone_eu: 'LongAP One (EU 868)',
+    rak_custom: 'RAK Antenna',
+    custom: 'Custom Antenna',
+    onboarding: {
+      title: 'Antenna Setup',
+      subtitle: 'Submit antenna and height details for your Hotspot.',
+      gain: 'TX / RX Gain',
+      dbi: 'dBi',
+      elevation: 'Height (meters)',
+      select: 'Select Antenna',
+    },
+    elevation_info: {
+      title: 'Hotspot Height',
+      desc:
+        'Estimate how high the antenna is placed relative to the ground. An antenna located on the roof of a single-story house is typically 5 meters.',
+    },
+    gain_info: {
+      title: 'Antenna TX / RX Gain',
+      desc:
+        'A value between 1 and 15 to one decimal point. This is provided by your hotspot or antenna manufacturer.',
     },
   },
 }

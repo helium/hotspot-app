@@ -1,7 +1,7 @@
 import { Address } from '@helium/crypto-react-native'
 import {
   AddGatewayV1,
-  AssertLocationV1,
+  AssertLocationV2,
   PaymentV2,
   TokenBurnV1,
   TransferHotspotV1,
@@ -27,7 +27,7 @@ export const useFees = () => {
       if (!balance) return new Balance<DataCredits>(0, CurrencyType.dataCredit)
 
       const prices = [currentOraclePrice, ...predictedOraclePrices]
-      const oraclePrice = minBy(prices, (p) => p?.price.integerBalance || 0)
+      const oraclePrice = minBy(prices, (p) => p?.price.integerBalance)
       // ensure precision is only 8 decimals
       const feeHNTInteger = Math.trunc(
         balance.toNetworkTokens(oraclePrice?.price).integerBalance,
@@ -89,19 +89,21 @@ export const calculateAddGatewayFee = (ownerB58: string, payerB58: string) => {
 }
 
 export const calculateAssertLocFee = (
-  ownerB58: string,
-  payerB58: string,
-  nonce: number,
+  ownerB58: string | undefined,
+  payerB58: string | undefined,
+  nonce: number | undefined,
 ) => {
-  const owner = Address.fromB58(ownerB58)
-  const payer = payerB58 !== '' ? Address.fromB58(payerB58) : undefined
+  const owner = ownerB58 ? Address.fromB58(ownerB58) : emptyB58Address()
+  const payer = payerB58 ? Address.fromB58(payerB58) : emptyB58Address()
 
-  const txn = new AssertLocationV1({
+  const txn = new AssertLocationV2({
     owner,
     gateway: emptyB58Address(),
     payer,
     location: 'fffffffffffffff',
-    nonce,
+    gain: 12,
+    elevation: 1,
+    nonce: nonce || 1,
   })
 
   return { fee: txn.fee || 0, stakingFee: txn.stakingFee || 0 }

@@ -72,7 +72,8 @@ const AccountCreatePinScreen = () => {
       <Keypad
         onBackspacePress={handleBackspace}
         onNumberPress={handleNumber}
-        onCancel={pinReset ? navigation.goBack : undefined}
+        onCustomButtonPress={pinReset ? navigation.goBack : undefined}
+        customButtonTitle={t('generic.cancel')}
       />
       <Box flex={1} />
     </Box>

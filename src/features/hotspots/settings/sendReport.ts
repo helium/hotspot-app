@@ -18,6 +18,7 @@ export default async ({
   gateway,
   hotspotMaker,
   appVersion,
+  supportEmail,
 }: {
   eth: string
   wifi: string
@@ -32,6 +33,7 @@ export default async ({
   gateway: string
   hotspotMaker: string
   appVersion: string
+  supportEmail: string
 }) => {
   const deviceNameAndOS = () => {
     const deviceName = getDeviceId()
@@ -40,7 +42,7 @@ export default async ({
     return `${deviceName} | ${osName} ${osVersion}`
   }
 
-  let url = 'mailto:support@helium.com'
+  let url = `mailto:${supportEmail}`
 
   const body = [
     `Hotspot: ${kebabCase(animalHash(gateway))}`,

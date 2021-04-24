@@ -3,15 +3,20 @@ import { getWallet } from '../../utils/walletClient'
 
 export type FeaturesState = {
   discoveryEnabled: boolean
+  checklistEnabled: boolean
+  followHotspotEnabled: boolean
 }
 
 const initialState: FeaturesState = {
   discoveryEnabled: false,
+  checklistEnabled: false,
+  followHotspotEnabled: true,
 }
 
-export const fetchFeatures = createAsyncThunk<
-  Record<'discoveryEnabled', boolean>
->('features/get', async () => getWallet('features'))
+export const fetchFeatures = createAsyncThunk<FeaturesState>(
+  'features/get',
+  async () => getWallet('features'),
+)
 
 // This slice contains data related optional features within the app
 const featuresSlice = createSlice({
@@ -19,12 +24,10 @@ const featuresSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchFeatures.rejected, (state, data) => {
-      console.log('failed', data)
-    })
     builder.addCase(fetchFeatures.fulfilled, (state, { payload }) => {
-      console.log('success', payload)
       state.discoveryEnabled = payload.discoveryEnabled
+      state.checklistEnabled = payload.checklistEnabled
+      state.followHotspotEnabled = payload.followHotspotEnabled
     })
   },
 })

@@ -8,7 +8,10 @@ import {
   getHotspotActivityList,
   getHotspotDetails,
 } from '../../utils/appDataClient'
-import { getStaking } from '../../utils/stakingClient'
+import {
+  getOnboardingRecord,
+  OnboardingRecord,
+} from '../../utils/stakingClient'
 
 export type HotspotStatus = 'owned' | 'global' | 'new' | 'error' | 'initial'
 export const HotspotTypeKeys = [
@@ -18,6 +21,7 @@ export const HotspotTypeKeys = [
   'NEBRAOUT',
   'SYNCROBIT',
   'Bobcat',
+  'LONGAPONE',
 ] as const
 export type HotspotType = typeof HotspotTypeKeys[number]
 export type HotspotName =
@@ -27,6 +31,7 @@ export type HotspotName =
   | 'Nebra Outdoor Hotspot'
   | 'Bobcat Miner 300'
   | 'SyncroB.it Hotspot'
+  | 'LongAP One Hotspot'
 
 type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
 
@@ -43,28 +48,6 @@ export type HotspotDetails = {
   ethernetOnline?: boolean
   status?: HotspotStatus
   details?: Hotspot
-}
-
-type OnboardingRecord = {
-  id: number
-  onboardingKey: string
-  macWlan0: string
-  rpiSerial: string
-  batch: string
-  publicAddress: string
-  heliumSerial: string
-  macEth0: string
-  createdAt: string
-  updatedAt: string
-  makerId: number
-  maker: {
-    id: number
-    name: string
-    address: string
-    locationNonceLimit: number
-    createdAt: string
-    updatedAt: string
-  }
 }
 
 export type HotspotActivity = {
@@ -117,32 +100,39 @@ export type AllHotspotDetails = {
   hotspot?: Hotspot
   onboardingRecord?: OnboardingRecord
 }
-export const fetchHotspotDetails = createAsyncThunk<
+export const fetchConnectedHotspotDetails = createAsyncThunk<
   AllHotspotDetails,
   HotspotDetails
->('connectedHotspot/fetchHotspotDetails', async (details, thunkAPI) => {
-  thunkAPI.dispatch(connectedHotspotSlice.actions.initConnectedHotspot(details))
+>(
+  'connectedHotspot/fetchConnectedHotspotDetails',
+  async (details, thunkAPI) => {
+    thunkAPI.dispatch(
+      connectedHotspotSlice.actions.initConnectedHotspot(details),
+    )
 
-  if (!details.address) {
-    throw new Error('fetchHotspotDetails address is missing')
-  }
-  if (!details.onboardingAddress) {
-    throw new Error('fetchHotspotDetails onboardingAddress is missing')
-  }
+    if (!details.address) {
+      throw new Error('fetchConnectedHotspotDetails address is missing')
+    }
+    if (!details.onboardingAddress) {
+      throw new Error(
+        'fetchConnectedHotspotDetails onboardingAddress is missing',
+      )
+    }
 
-  const [hotspot, onboardingRecord] = await Promise.all([
-    getHotspotDetails(details.address).catch((e) => {
-      // Hotspot may not yet exist on the chain, let it fail silently
-      console.log('failed to get hotspot details', e)
-    }),
-    getStaking(`hotspots/${details.onboardingAddress}`),
-  ])
+    const [hotspot, onboardingRecord] = await Promise.all([
+      getHotspotDetails(details.address).catch((e) => {
+        // Hotspot may not yet exist on the chain, let it fail silently
+        console.log('failed to get hotspot details', e)
+      }),
+      getOnboardingRecord(details.onboardingAddress),
+    ])
 
-  return {
-    hotspot,
-    onboardingRecord,
-  } as AllHotspotDetails
-})
+    return {
+      hotspot,
+      onboardingRecord,
+    } as AllHotspotDetails
+  },
+)
 
 // This slice contains data related to a connected hotspot
 const connectedHotspotSlice = createSlice({
@@ -191,11 +181,14 @@ const connectedHotspotSlice = createSlice({
         ]
       },
     )
-    builder.addCase(fetchHotspotDetails.fulfilled, (state, { payload }) => {
-      state.onboardingRecord = payload.onboardingRecord
-      state.details = payload.hotspot
-    })
-    builder.addCase(fetchHotspotDetails.rejected, (state) => {
+    builder.addCase(
+      fetchConnectedHotspotDetails.fulfilled,
+      (state, { payload }) => {
+        state.onboardingRecord = payload.onboardingRecord
+        state.details = payload.hotspot
+      },
+    )
+    builder.addCase(fetchConnectedHotspotDetails.rejected, (state) => {
       state.details = undefined
     })
   },

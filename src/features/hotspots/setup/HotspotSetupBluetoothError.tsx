@@ -20,13 +20,13 @@ const HotspotSetupBluetoothError = () => {
   const navigation = useNavigation<HotspotSetupNavigationProp>()
   return (
     <Box flex={1}>
-      <Box flex={1}>
-        <Box marginBottom="l">
-          <Bluetooth />
-        </Box>
+      <Box flex={1} alignItems="center" justifyContent="center">
+        <Bluetooth />
         <Text
+          marginTop="l"
           variant="h1"
           maxFontSizeMultiplier={1}
+          textAlign="center"
           numberOfLines={2}
           adjustsFontSizeToFit
           marginBottom="xxl"
@@ -70,17 +70,12 @@ const HotspotSetupBluetoothError = () => {
           </Box>
         </Box>
       </Box>
-
-      <Box justifyContent="flex-end">
-        <Button
-          onPress={() =>
-            navigation.replace('HotspotSetupScanningScreen', params)
-          }
-          mode="contained"
-          variant="primary"
-          title={t('generic.scan_again')}
-        />
-      </Box>
+      <Button
+        onPress={() => navigation.replace('HotspotSetupScanningScreen', params)}
+        mode="contained"
+        variant="primary"
+        title={t('generic.scan_again')}
+      />
     </Box>
   )
 }

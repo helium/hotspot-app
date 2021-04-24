@@ -1,46 +1,68 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { memo, useEffect, useMemo, useState } from 'react'
 import { Hotspot } from '@helium/http'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
+import { BoxProps } from '@shopify/restyle'
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
 import { fetchChecklistActivity } from '../../../store/hotspotDetails/hotspotChecklistSlice'
 import Box from '../../../components/Box'
-import Text from '../../../components/Text'
-import CarotDown from '../../../assets/images/carot-down.svg'
-import CircleProgress from '../../../components/CircleProgress'
-import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import animateTransition from '../../../utils/animateTransition'
 import { useSpacing } from '../../../theme/themeHooks'
 import HotspotChecklistCarousel, {
   ChecklistItem,
 } from './HotspotChecklistCarousel'
+import { wp } from '../../../utils/layout'
+import { Theme } from '../../../theme/theme'
+import usePrevious from '../../../utils/usePrevious'
 
-type Props = {
+type Props = BoxProps<Theme> & {
   hotspot: Hotspot
   witnesses?: Hotspot[]
+  visible: boolean
 }
 
-const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
+const HotspotChecklist = ({
+  hotspot,
+  witnesses,
+  visible,
+  ...boxProps
+}: Props) => {
   const dispatch = useAppDispatch()
   const spacing = useSpacing()
   const { t } = useTranslation()
   const {
-    heliumData: { blockHeight },
-    hotspotChecklist: {
-      challengerTxn,
-      challengeeTxn,
-      witnessTxn,
-      dataTransferTxn,
-      loadingActivity,
-    },
-  } = useSelector((state: RootState) => state)
+    challengerTxn,
+    challengeeTxn,
+    witnessTxn,
+    dataTransferTxn,
+    loadingActivity,
+  } = useSelector((state: RootState) => state.hotspotChecklist)
+  const blockHeight = useSelector(
+    (state: RootState) => state.heliumData.blockHeight,
+  )
+  const prevHotspot = usePrevious(hotspot)
+  const [showSkeleton, setShowSkeleton] = useState(true)
 
   useEffect(() => {
-    dispatch(fetchChecklistActivity(hotspot.address))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    if (!visible) return
+    if (!prevHotspot || prevHotspot.address !== hotspot.address) {
+      animateTransition()
+      setShowSkeleton(true)
+      dispatch(fetchChecklistActivity(hotspot.address))
+    }
+  }, [dispatch, hotspot.address, prevHotspot, visible])
+
+  useEffect(() => {
+    if (!visible) return
+
+    if (showSkeleton && !loadingActivity) {
+      animateTransition()
+      setShowSkeleton(false)
+    }
+  }, [loadingActivity, showSkeleton, visible])
 
   const syncStatus = useMemo(() => {
     if (!hotspot?.status?.height || !blockHeight) {
@@ -172,75 +194,33 @@ const HotspotChecklist = ({ hotspot, witnesses }: Props) => {
     },
   ]
 
-  let numComplete = 0
-  checklistData.forEach((i) => {
-    if (i.complete) {
-      numComplete += 1
-    }
-  })
   checklistData.sort((a, b) => Number(b.complete) - Number(a.complete))
-  const [hidden, setHidden] = useState(true)
 
-  const toggleHidden = () => {
-    animateTransition()
-    setHidden(!hidden)
-  }
-
-  if (loadingActivity) {
-    return (
-      <SkeletonPlaceholder>
-        <SkeletonPlaceholder.Item
-          flexDirection="row"
-          alignItems="center"
-          marginStart={spacing.l}
-          marginBottom={spacing.m}
-        >
-          <SkeletonPlaceholder.Item width={32} height={32} borderRadius={32} />
-          <SkeletonPlaceholder.Item marginLeft={spacing.s}>
-            <SkeletonPlaceholder.Item
-              width={100}
-              height={20}
-              borderRadius={4}
-            />
-          </SkeletonPlaceholder.Item>
-        </SkeletonPlaceholder.Item>
-      </SkeletonPlaceholder>
-    )
-  }
+  if (!visible) return null
 
   return (
-    <Box>
-      <Box
-        flexDirection="row"
-        marginStart="l"
-        marginBottom="m"
-        alignItems="center"
-      >
-        <CircleProgress
-          percentage={(numComplete / checklistData.length) * 100}
-          centerColor="white"
-        />
-        <TouchableOpacityBox
-          flexDirection="row"
-          alignItems="center"
-          onPress={toggleHidden}
-        >
-          <>
-            <Text variant="h5" color="black" marginStart="s">
-              {t('checklist.title')}
-            </Text>
-            <Box marginStart="s">
-              <CarotDown
-                color="black"
-                style={{
-                  transform: [{ rotateX: hidden ? '0deg' : '180deg' }],
-                }}
-              />
-            </Box>
-          </>
-        </TouchableOpacityBox>
-      </Box>
-      {!hidden && <HotspotChecklistCarousel checklistData={checklistData} />}
+    <Box {...boxProps}>
+      {loadingActivity && (
+        <SkeletonPlaceholder>
+          <SkeletonPlaceholder.Item flexDirection="row">
+            <SkeletonPlaceholder.Item
+              width={wp(80)}
+              height={180}
+              marginStart={spacing.l}
+              borderRadius={8}
+            />
+            <SkeletonPlaceholder.Item
+              width={wp(80)}
+              height={180}
+              marginStart={spacing.s}
+              borderRadius={8}
+            />
+          </SkeletonPlaceholder.Item>
+        </SkeletonPlaceholder>
+      )}
+      {!loadingActivity && (
+        <HotspotChecklistCarousel checklistData={checklistData} />
+      )}
     </Box>
   )
 }

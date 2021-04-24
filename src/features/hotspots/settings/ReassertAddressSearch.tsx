@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Keyboard, SectionList } from 'react-native'
+import { Keyboard, Platform, SectionList } from 'react-native'
 import { useDebouncedCallback } from 'use-debounce'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -13,10 +13,9 @@ import {
   getPlaceGeography,
   PlaceGeography,
 } from '../../../utils/googlePlaces'
-import { hp } from '../../../utils/layout'
 
 type Props = {
-  onSelectPlace: (placeGeography: PlaceGeography) => void
+  onSelectPlace: (placeGeography: PlaceGeography, locationName: string) => void
 }
 
 const ReassertAddressSearch = ({ onSelectPlace }: Props) => {
@@ -52,7 +51,10 @@ const ReassertAddressSearch = ({ onSelectPlace }: Props) => {
     (searchResult: AutocompleteSearchResult) => async () => {
       const placeLocation = await getPlaceGeography(searchResult.placeId)
       Keyboard.dismiss()
-      onSelectPlace(placeLocation)
+      onSelectPlace(
+        placeLocation,
+        `${searchResult.mainText}, ${searchResult.secondaryText}`,
+      )
     },
     [onSelectPlace],
   )
@@ -99,7 +101,15 @@ const ReassertAddressSearch = ({ onSelectPlace }: Props) => {
   )
 
   return (
-    <Box height={hp(75)} padding="none" paddingTop="lx">
+    <Box
+      height={
+        Platform.OS === 'ios'
+          ? { smallPhone: 450, phone: 600 }
+          : { smallPhone: 300, phone: 450 }
+      }
+      padding="none"
+      paddingTop="lx"
+    >
       <SectionList
         keyExtractor={(item) => item.placeId}
         sections={sections}

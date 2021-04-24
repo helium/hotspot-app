@@ -81,8 +81,18 @@ export const postWallet = async (
   return makeRequest(url, opts)
 }
 
-export const deleteWallet = async (url: string, data?: unknown) =>
-  makeRequest(url, {
+export const deleteWallet = async (
+  url: string,
+  data?: unknown,
+  camelCase = false,
+) => {
+  const opts = {
     method: 'DELETE',
     body: data ? JSON.stringify(data) : null,
-  })
+  } as RequestInit
+  if (camelCase) {
+    opts.headers = { Accent: 'camel' }
+  }
+
+  return makeRequest(url, opts)
+}

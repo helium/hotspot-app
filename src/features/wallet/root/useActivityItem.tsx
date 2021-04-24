@@ -4,10 +4,12 @@ import {
   AddGatewayV1,
   AnyTransaction,
   AssertLocationV1,
+  AssertLocationV2,
   PaymentV1,
   PaymentV2,
   PendingTransaction,
   RewardsV1,
+  RewardsV2,
   TokenBurnV1,
   TransferHotspotV1,
 } from '@helium/http'
@@ -33,10 +35,12 @@ import { RootState } from '../../../store/rootReducer'
 
 export const TxnTypeKeys = [
   'rewards_v1',
+  'rewards_v2',
   'payment_v1',
   'payment_v2',
   'add_gateway_v1',
   'assert_location_v1',
+  'assert_location_v2',
   'transfer_hotspot_v1',
   'token_burn_v1',
 ] as const
@@ -99,8 +103,10 @@ const useActivityItem = (
       case 'payment_v2':
         return isSending ? 'blueBright' : 'greenMain'
       case 'assert_location_v1':
+      case 'assert_location_v2':
         return 'purpleMuted'
       case 'rewards_v1':
+      case 'rewards_v2':
         return 'purpleBright'
       case 'token_burn_v1':
         return 'orange'
@@ -125,11 +131,14 @@ const useActivityItem = (
         return isSending ? t('transactions.sent') : t('transactions.received')
       case 'assert_location_v1':
         return t('transactions.location')
+      case 'assert_location_v2':
+        return t('transactions.location_v2')
       case 'transfer_hotspot_v1':
         return isSelling
           ? t('transactions.transferSell')
           : t('transactions.transferBuy')
       case 'rewards_v1':
+      case 'rewards_v2':
         return t('transactions.mining')
       case 'token_burn_v1':
         return t('transactions.burnHNT')
@@ -148,8 +157,10 @@ const useActivityItem = (
           <ReceivedHnt width={35} height={24} />
         )
       case 'assert_location_v1':
+      case 'assert_location_v2':
         return <Location width={20} height={23} />
       case 'rewards_v1':
+      case 'rewards_v2':
         return <Rewards width={26} height={26} />
       case 'token_burn_v1':
         return <Burn width={23} height={28} />
@@ -169,8 +180,10 @@ const useActivityItem = (
           <ReceivedHnt width={32} height={18} />
         )
       case 'assert_location_v1':
+      case 'assert_location_v2':
         return <Location width={20} height={23} />
       case 'rewards_v1':
+      case 'rewards_v2':
         return <Rewards width={26} height={26} />
       case 'token_burn_v1':
         return <Burn width={23} height={28} />
@@ -186,7 +199,7 @@ const useActivityItem = (
       return isSending
     }
 
-    if (item instanceof RewardsV1) {
+    if (item instanceof RewardsV1 || item instanceof RewardsV2) {
       return false
     }
 
@@ -229,7 +242,7 @@ const useActivityItem = (
   )
 
   const fee = useMemo(async () => {
-    if (item instanceof RewardsV1) {
+    if (item instanceof RewardsV1 || item instanceof RewardsV2) {
       return ''
     }
 
@@ -242,6 +255,7 @@ const useActivityItem = (
     if (
       item instanceof AddGatewayV1 ||
       item instanceof AssertLocationV1 ||
+      item instanceof AssertLocationV2 ||
       item instanceof TokenBurnV1
     ) {
       return formatAmount('-', item.fee)
@@ -261,7 +275,11 @@ const useActivityItem = (
   }, [address, formatAmount, isSelling, item])
 
   const feePayer = useMemo(() => {
-    if (item instanceof AddGatewayV1 || item instanceof AssertLocationV1) {
+    if (
+      item instanceof AddGatewayV1 ||
+      item instanceof AssertLocationV1 ||
+      item instanceof AssertLocationV2
+    ) {
       return getMakerName(item.payer, makers)
     }
     return ''
@@ -271,13 +289,17 @@ const useActivityItem = (
     if (item instanceof TransferHotspotV1) {
       return formatAmount(isSelling ? '+' : '-', item.amountToSeller)
     }
-    if (item instanceof AssertLocationV1 || item instanceof AddGatewayV1) {
+    if (
+      item instanceof AssertLocationV1 ||
+      item instanceof AssertLocationV2 ||
+      item instanceof AddGatewayV1
+    ) {
       return formatAmount('-', item.stakingFee)
     }
     if (item instanceof TokenBurnV1) {
       return formatAmount('-', item.amount)
     }
-    if (item instanceof RewardsV1) {
+    if (item instanceof RewardsV1 || item instanceof RewardsV2) {
       return formatAmount('+', item.totalAmount)
     }
     if (item instanceof PaymentV1) {
@@ -301,6 +323,12 @@ const useActivityItem = (
         return formatAmount(
           '-',
           (pendingTxn.txn as AssertLocationV1).stakingFee,
+        )
+      }
+      if (pendingTxn.type === 'assert_location_v2') {
+        return formatAmount(
+          '-',
+          (pendingTxn.txn as AssertLocationV2).stakingFee,
         )
       }
       if (pendingTxn.type === 'payment_v2') {

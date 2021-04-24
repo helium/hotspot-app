@@ -1,7 +1,7 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { ScrollView } from 'react-native'
+import { ScrollView, StyleSheet } from 'react-native'
 import BackScreen from '../../../components/BackScreen'
 import { DebouncedButton } from '../../../components/Button'
 import Text from '../../../components/Text'
@@ -36,18 +36,15 @@ const HotspotSetupDiagnosticsScreen = () => {
         return 'hotspot_setup.diagnostics.bobcat_p_1'
       case 'SYNCROBIT':
         return 'hotspot_setup.diagnostics.syncrobit_p_1'
+      case 'LONGAPONE':
+        return 'hotspot_setup.diagnostics.longap_p_1'
     }
   }
 
   return (
-    <BackScreen
-      backgroundColor="primaryBackground"
-      paddingTop="none"
-      paddingBottom="s"
-      paddingHorizontal="lx"
-    >
-      <ScrollView>
-        <Box paddingVertical="lx">
+    <BackScreen backgroundColor="primaryBackground" paddingHorizontal="lx">
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <Box alignItems="center">
           <Clipboard />
           <Text
             variant="h1"
@@ -75,5 +72,13 @@ const HotspotSetupDiagnosticsScreen = () => {
     </BackScreen>
   )
 }
+
+const styles = StyleSheet.create({
+  scrollContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+})
 
 export default HotspotSetupDiagnosticsScreen

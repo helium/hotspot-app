@@ -1,20 +1,20 @@
 import { useNavigation } from '@react-navigation/native'
 import React, {
-  useMemo,
   memo,
-  useState,
-  useEffect,
   useCallback,
+  useEffect,
+  useMemo,
   useRef,
+  useState,
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Position } from 'geojson'
 import Search from '@assets/images/search.svg'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
+  BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetModalProvider,
-  BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
@@ -31,6 +31,8 @@ import { useSpacing } from '../../../theme/themeHooks'
 import BSHandle from '../../../components/BSHandle'
 import AddressSearchModal from './AddressSearchModal'
 import { PlaceGeography } from '../../../utils/googlePlaces'
+import hotspotOnboardingSlice from '../../../store/hotspots/hotspotOnboardingSlice'
+import { useAppDispatch } from '../../../store/store'
 
 const HotspotSetupPickLocationScreen = () => {
   const { t } = useTranslation()
@@ -44,6 +46,7 @@ const HotspotSetupPickLocationScreen = () => {
   const spacing = useSpacing()
   const insets = useSafeAreaInsets()
   const searchModal = useRef<BottomSheetModal>(null)
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     const sleepThenEnable = async () => {
@@ -65,11 +68,10 @@ const HotspotSetupPickLocationScreen = () => {
   }, [])
 
   const navNext = useCallback(() => {
-    navigation.navigate('HotspotSetupConfirmLocationScreen', {
-      hotspotCoords: markerCenter,
-      locationName,
-    })
-  }, [locationName, markerCenter, navigation])
+    dispatch(hotspotOnboardingSlice.actions.setLocationName(locationName))
+    dispatch(hotspotOnboardingSlice.actions.setHotspotCoords(markerCenter))
+    navigation.navigate('AntennaSetupScreen')
+  }, [dispatch, locationName, markerCenter, navigation])
 
   const onDidFinishLoadingMap = useCallback(
     (latitude: number, longitude: number) => {
@@ -109,7 +111,7 @@ const HotspotSetupPickLocationScreen = () => {
         right={spacing.m}
         zIndex={1}
       >
-        <Search width={30} height={30} />
+        <Search width={30} height={30} color="white" />
       </TouchableOpacityBox>
       <Box flex={1.2}>
         <Map
