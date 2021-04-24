@@ -14,7 +14,7 @@ import Box from '../../../components/Box'
 import useHaptic from '../../../utils/useHaptic'
 import { QrScanResult } from '../scan/scanTypes'
 import SendHeader from './SendHeader'
-import { SendTransfer, SendType, SendTransferUpdate } from './sendTypes'
+import { SendDetails, SendType, SendDetailsUpdate } from './sendTypes'
 import SendAmountAvailableBanner from './SendAmountAvailableBanner'
 import SendForm from './SendForm'
 import {
@@ -70,7 +70,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     account: { account },
   } = useSelector((state: RootState) => state)
 
-  const [sendTransfers, setSendTransfers] = useState<Array<SendTransfer>>([
+  const [sendDetails, setSendDetails] = useState<Array<SendDetails>>([
     {
       id: '0',
       address: '',
@@ -83,12 +83,10 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       memo: '',
     },
   ])
-  const setTransfer = (transferId: string, updates: SendTransferUpdate) => {
-    setSendTransfers(
-      sendTransfers.map((transfer) => {
-        return transfer.id === transferId
-          ? { ...transfer, ...updates }
-          : transfer
+  const updateSendDetails = (detailsId: string, updates: SendDetailsUpdate) => {
+    setSendDetails(
+      sendDetails.map((details) => {
+        return details.id === detailsId ? { ...details, ...updates } : details
       }),
     )
   }
@@ -150,7 +148,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   useEffect(() => {
     if (!scanResult) return
     setType(scanResult.type)
-    const scannedSendTransfers: Array<SendTransfer> = scanResult.payees.map(
+    const scannedSendDetails: Array<SendDetails> = scanResult.payees.map(
       ({ address, amount: scanAmount, memo = '' }, i) => {
         let amount = ''
         let balanceAmount = new Balance(0, CurrencyType.networkToken)
@@ -174,8 +172,8 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
         }
       },
     )
-    setSendTransfers(scannedSendTransfers)
-    const hasPresetAmount = some(scannedSendTransfers, ({ amount }) => !!amount)
+    setSendDetails(scannedSendDetails)
+    const hasPresetAmount = some(scannedSendDetails, ({ amount }) => !!amount)
     if (hasPresetAmount) setIsLocked(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scanResult])
@@ -183,7 +181,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   // validate transaction
   useEffect(() => {
     if (type === 'transfer') {
-      const { fee } = sendTransfers[0]
+      const { fee } = sendDetails[0]
       if (isSeller) {
         setHasSufficientBalance(true)
       } else {
@@ -207,7 +205,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       let hasBalance = true
       let isValidAddress = true
       let isValidBalanceAmount = true
-      sendTransfers.forEach(({ address, balanceAmount, fee }) => {
+      sendDetails.forEach(({ address, balanceAmount, fee }) => {
         const isValidTransferAddress =
           Address.isValid(address) && address !== account?.address
         if (!isValidTransferAddress) isValidAddress = false
@@ -226,7 +224,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     account,
-    sendTransfers,
+    sendDetails,
     transferData?.seller,
     transferData?.amountToSeller,
     hasValidActivity,
@@ -271,7 +269,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   }
 
   const handleSellerTransfer = async () => {
-    const { address, balanceAmount } = sendTransfers[0]
+    const { address, balanceAmount } = sendDetails[0]
     const seller = await getAddress()
     if (!hotspot || !seller) {
       throw new Error('missing hotspot or seller for transfer')
@@ -375,7 +373,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   const constructTxns = async () => {
     if (type === 'payment') {
       return Promise.all(
-        sendTransfers.map(async ({ address, balanceAmount }) => {
+        sendDetails.map(async ({ address, balanceAmount }) => {
           return makePaymentTxn(
             balanceAmount.integerBalance,
             address,
@@ -387,7 +385,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
 
     if (type === 'dc_burn') {
       return Promise.all(
-        sendTransfers.map(async ({ address, balanceAmount, memo }) => {
+        sendDetails.map(async ({ address, balanceAmount, memo }) => {
           return makeBurnTxn(
             balanceAmount.integerBalance,
             address,
@@ -440,12 +438,12 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
           lastReportedActivity={lastReportedActivity}
           onScanPress={navScan}
           onSubmit={handleSubmit}
-          sendTransfers={sendTransfers}
+          sendDetails={sendDetails}
           stalePocBlockCount={stalePocBlockCount}
           transferData={transferData}
           type={type}
           unlockForm={unlockForm}
-          updateTransfer={setTransfer}
+          updateSendDetails={updateSendDetails}
         />
       </Box>
       {isSeller && (

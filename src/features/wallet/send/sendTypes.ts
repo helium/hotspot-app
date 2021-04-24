@@ -14,7 +14,7 @@ export type SendStackParamList = {
   }
 }
 
-export type SendTransfer = {
+export type SendDetails = {
   id: string
   address: string
   addressAlias: string
@@ -26,7 +26,7 @@ export type SendTransfer = {
   fee: Balance<NetworkTokens>
 }
 
-export type SendTransferUpdate = {
+export type SendDetailsUpdate = {
   address?: string
   balanceAmount?: Balance<NetworkTokens>
   memo?: string

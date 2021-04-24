@@ -6,8 +6,8 @@ import Button from '../../../components/Button'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import LockedHeader from '../../../components/LockedHeader'
-import { SendTransfer, SendType, SendTransferUpdate } from './sendTypes'
-import SendTransferForm from './SendTransferForm'
+import { SendDetails, SendType, SendDetailsUpdate } from './sendTypes'
+import SendDetailsForm from './SendDetailsForm'
 import { Transfer } from '../../hotspots/transfers/TransferRequests'
 
 type Props = {
@@ -20,12 +20,12 @@ type Props = {
   lastReportedActivity?: string
   onScanPress: () => void
   onSubmit: () => void
-  sendTransfers: Array<SendTransfer>
+  sendDetails: Array<SendDetails>
   stalePocBlockCount?: number
   transferData?: Transfer
   type: SendType
   unlockForm: () => void
-  updateTransfer: (transferId: string, updates: SendTransferUpdate) => void
+  updateSendDetails: (detailsId: string, updates: SendDetailsUpdate) => void
 }
 
 const SendForm = ({
@@ -38,12 +38,12 @@ const SendForm = ({
   lastReportedActivity,
   onScanPress,
   onSubmit,
-  sendTransfers,
+  sendDetails,
   stalePocBlockCount,
   transferData,
   type,
   unlockForm,
-  updateTransfer,
+  updateSendDetails,
 }: Props) => {
   const { t } = useTranslation()
 
@@ -69,18 +69,18 @@ const SendForm = ({
             allowClose={type !== 'dc_burn'}
           />
         )}
-        {sendTransfers.map((sendTransfer) => (
-          <SendTransferForm
-            key={sendTransfer.id}
+        {sendDetails.map((details) => (
+          <SendDetailsForm
+            key={details.id}
             account={account}
             isLocked={isLocked}
             isSeller={isSeller}
             lastReportedActivity={lastReportedActivity}
             onScanPress={onScanPress}
-            sendTransfer={sendTransfer}
+            sendDetails={details}
             transferData={transferData}
             type={type}
-            updateTransfer={updateTransfer}
+            updateSendDetails={updateSendDetails}
           />
         ))}
       </ScrollView>

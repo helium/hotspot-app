@@ -14,7 +14,7 @@ import QrCode from '../../../assets/images/qr.svg'
 import Check from '../../../assets/images/check.svg'
 import { useColors } from '../../../theme/themeHooks'
 import LockedField from '../../../components/LockedField'
-import { SendTransfer, SendType, SendTransferUpdate } from './sendTypes'
+import { SendDetails, SendType, SendDetailsUpdate } from './sendTypes'
 import { Transfer } from '../../hotspots/transfers/TransferRequests'
 import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
 import { ensLookup } from '../../../utils/explorerClient'
@@ -32,22 +32,22 @@ type Props = {
   isSeller?: boolean
   lastReportedActivity?: string
   onScanPress: () => void
-  sendTransfer: SendTransfer
+  sendDetails: SendDetails
   transferData?: Transfer
   type: SendType
-  updateTransfer: (transferId: string, updates: SendTransferUpdate) => void
+  updateSendDetails: (detailsId: string, updates: SendDetailsUpdate) => void
 }
 
-const SendTransferForm = ({
+const SendDetailsForm = ({
   account,
   isLocked,
   isSeller,
   lastReportedActivity,
   onScanPress,
-  sendTransfer,
+  sendDetails,
   transferData,
   type,
-  updateTransfer,
+  updateSendDetails,
 }: Props) => {
   // Hook init
   const { t } = useTranslation()
@@ -56,23 +56,23 @@ const SendTransferForm = ({
   const { primaryMain } = useColors()
 
   // State init
-  const [address, setAddress] = useState<string>(sendTransfer.address)
+  const [address, setAddress] = useState<string>(sendDetails.address)
   const [addressAlias, setAddressAlias] = useState<string>(
-    sendTransfer.addressAlias,
+    sendDetails.addressAlias,
   )
   const [addressLoading, setAddressLoading] = useState(
-    sendTransfer.addressLoading,
+    sendDetails.addressLoading,
   )
-  const [amount, setAmount] = useState<string>(sendTransfer.amount)
+  const [amount, setAmount] = useState<string>(sendDetails.amount)
   const [balanceAmount, setBalanceAmount] = useState<Balance<NetworkTokens>>(
-    sendTransfer.balanceAmount,
+    sendDetails.balanceAmount,
   )
-  const [dcAmount, setDcAmount] = useState<string>(sendTransfer.dcAmount)
-  const [memo, setMemo] = useState<string>(sendTransfer.memo)
-  const [fee, setFee] = useState<Balance<NetworkTokens>>(sendTransfer.fee)
+  const [dcAmount, setDcAmount] = useState<string>(sendDetails.dcAmount)
+  const [memo, setMemo] = useState<string>(sendDetails.memo)
+  const [fee, setFee] = useState<Balance<NetworkTokens>>(sendDetails.fee)
 
   useEffect(() => {
-    updateTransfer(sendTransfer.id, {
+    updateSendDetails(sendDetails.id, {
       address,
       balanceAmount,
       memo,
@@ -417,4 +417,4 @@ const AddressExtra = ({
   )
 }
 
-export default SendTransferForm
+export default SendDetailsForm
