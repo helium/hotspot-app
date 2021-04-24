@@ -14,7 +14,7 @@ import Box from '../../../components/Box'
 import useHaptic from '../../../utils/useHaptic'
 import { QrScanResult } from '../scan/scanTypes'
 import SendHeader from './SendHeader'
-import { SendTransfer, SendType } from './sendTypes'
+import { SendTransfer, SendType, SendTransferUpdate } from './sendTypes'
 import SendAmountAvailableBanner from './SendAmountAvailableBanner'
 import SendForm from './SendForm'
 import {
@@ -83,7 +83,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       memo: '',
     },
   ])
-  const setTransfer = (transferId: string, updates: any) => {
+  const setTransfer = (transferId: string, updates: SendTransferUpdate) => {
     setSendTransfers(
       sendTransfers.map((transfer) => {
         return transfer.id === transferId

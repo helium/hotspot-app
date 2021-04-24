@@ -14,7 +14,7 @@ import QrCode from '../../../assets/images/qr.svg'
 import Check from '../../../assets/images/check.svg'
 import { useColors } from '../../../theme/themeHooks'
 import LockedField from '../../../components/LockedField'
-import { SendTransfer, SendType } from './sendTypes'
+import { SendTransfer, SendType, SendTransferUpdate } from './sendTypes'
 import { Transfer } from '../../hotspots/transfers/TransferRequests'
 import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
 import { ensLookup } from '../../../utils/explorerClient'
@@ -35,7 +35,7 @@ type Props = {
   sendTransfer: SendTransfer
   transferData?: Transfer
   type: SendType
-  updateTransfer: (transferId: number, updates: any) => void
+  updateTransfer: (transferId: string, updates: SendTransferUpdate) => void
 }
 
 const SendTransferForm = ({

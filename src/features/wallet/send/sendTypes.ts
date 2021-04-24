@@ -26,4 +26,10 @@ export type SendTransfer = {
   fee: Balance<NetworkTokens>
 }
 
+export type SendTransferUpdate = {
+  address?: string
+  balanceAmount?: Balance<NetworkTokens>
+  memo?: string
+}
+
 export type SendNavigationProps = StackNavigationProp<SendStackParamList>

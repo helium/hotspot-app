@@ -6,7 +6,7 @@ import Button from '../../../components/Button'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import LockedHeader from '../../../components/LockedHeader'
-import { SendTransfer, SendType } from './sendTypes'
+import { SendTransfer, SendType, SendTransferUpdate } from './sendTypes'
 import SendTransferForm from './SendTransferForm'
 import { Transfer } from '../../hotspots/transfers/TransferRequests'
 
@@ -25,7 +25,7 @@ type Props = {
   transferData?: Transfer
   type: SendType
   unlockForm: () => void
-  updateTransfer: (transferId: number, updates: any) => void
+  updateTransfer: (transferId: string, updates: SendTransferUpdate) => void
 }
 
 const SendForm = ({
