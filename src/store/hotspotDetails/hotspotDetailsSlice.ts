@@ -11,10 +11,10 @@ import {
 import { calculatePercentChange } from '../../features/hotspots/details/RewardsHelper'
 import {
   CacheRecord,
-  handleRejected,
-  handlePending,
-  handleFulfilled,
-  shouldRefresh,
+  handleCacheRejected,
+  handleCachePending,
+  handleCacheFulfilled,
+  hasValidCache,
 } from '../../utils/cacheUtils'
 
 type FetchDetailsParams = {
@@ -118,7 +118,7 @@ export const fetchHotspotData = createAsyncThunk<HotspotData, string>(
       }
     }).hotspotDetails
     const hotspotData = currentState.hotspotData[address] || {}
-    if (!shouldRefresh(hotspotData)) {
+    if (hasValidCache(hotspotData)) {
       throw new Error('Data already fetched')
     }
     const data = await Promise.all([
@@ -145,7 +145,7 @@ export const fetchHotspotChartData = createAsyncThunk<
     }).hotspotDetails
     const chartData = currentState.chartData[params.address] || {}
     const details = chartData[params.numDays]
-    if (!shouldRefresh(details)) {
+    if (hasValidCache(details)) {
       throw new Error('Data already fetched')
     }
     const bucket = params.numDays === 1 ? 'hour' : 'day'
@@ -223,7 +223,7 @@ const hotspotDetailsSlice = createSlice({
       const { address, numDays } = action.meta.arg
       const prevDetails = state.chartData[address] || {}
       const prevState = prevDetails[numDays] || {}
-      const nextState = handlePending(prevState)
+      const nextState = handleCachePending(prevState)
       state.chartData[address] = {
         ...state.chartData[address],
         [numDays]: nextState,
@@ -231,13 +231,13 @@ const hotspotDetailsSlice = createSlice({
     })
     builder.addCase(fetchHotspotChartData.fulfilled, (state, action) => {
       const { address, numDays } = action.meta.arg
-      state.chartData[address][numDays] = handleFulfilled(action.payload)
+      state.chartData[address][numDays] = handleCacheFulfilled(action.payload)
     })
     builder.addCase(fetchHotspotChartData.rejected, (state, action) => {
       const { address, numDays } = action.meta.arg
       const prevDetails = state.chartData[address] || {}
       const prevState = prevDetails[numDays] || {}
-      const nextState = handleRejected(prevState)
+      const nextState = handleCacheRejected(prevState)
       state.chartData[address] = {
         ...state.chartData[address],
         [numDays]: nextState,
@@ -246,7 +246,7 @@ const hotspotDetailsSlice = createSlice({
     builder.addCase(fetchHotspotData.pending, (state, action) => {
       const address = action.meta.arg
       const prevState = state.hotspotData[address] || {}
-      const nextState = handlePending(prevState)
+      const nextState = handleCachePending(prevState)
       state.hotspotData[address] = {
         ...state.hotspotData[address],
         ...nextState,
@@ -254,12 +254,12 @@ const hotspotDetailsSlice = createSlice({
     })
     builder.addCase(fetchHotspotData.fulfilled, (state, action) => {
       const address = action.meta.arg
-      state.hotspotData[address] = handleFulfilled(action.payload)
+      state.hotspotData[address] = handleCacheFulfilled(action.payload)
     })
     builder.addCase(fetchHotspotData.rejected, (state, action) => {
       const address = action.meta.arg
       const prevState = state.hotspotData[address] || {}
-      const nextState = handleRejected(prevState)
+      const nextState = handleCacheRejected(prevState)
       state.hotspotData[address] = {
         ...state.hotspotData[address],
         ...nextState,
