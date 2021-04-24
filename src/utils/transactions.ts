@@ -9,26 +9,22 @@ import {
 } from '@helium/transactions'
 import { getKeypair } from './secureAccount'
 import { getAccount } from './appDataClient'
+import { decimalSeparator, groupSeparator, locale } from './i18n'
 import * as Logger from './logger'
+import { SendDetails } from '../features/wallet/send/sendTypes'
 
 export const makePaymentTxn = async (
-  amount: number,
-  payeeB58: string,
+  paymentDetails: Array<SendDetails>,
   nonce: number,
 ): Promise<PaymentV2> => {
   const keypair = await getKeypair()
-  const payee = Address.fromB58(payeeB58)
-
   if (!keypair) throw new Error('missing keypair')
-
   const paymentTxn = new PaymentV2({
     payer: keypair.address,
-    payments: [
-      {
-        payee,
-        amount,
-      },
-    ],
+    payments: paymentDetails.map(({ address, balanceAmount }) => ({
+      payee: Address.fromB58(address),
+      amount: balanceAmount.integerBalance,
+    })),
     nonce,
   })
 

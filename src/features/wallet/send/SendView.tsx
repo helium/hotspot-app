@@ -71,6 +71,13 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     account: { account },
   } = useSelector((state: RootState) => state)
 
+  // SendView can support multiple "send" actions in a single transaction.
+  // - This is currently only supported for the "payment" send type.
+  // - Multiple payments can only be initialized by scanning a QR code (no ability to manually
+  //   add/remove payments directly from SendView UI).
+  // - We maintain an array of "sendDetails" in state here, but "dc_burn" and "transfer" actions
+  //   will effectively have only a single element (an assumption that's made in subsequent logic
+  //   like validation and submission).
   const [sendDetails, setSendDetails] = useState<Array<SendDetails>>([
     {
       id: '0',
@@ -173,7 +180,15 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
         }
       },
     )
-    setSendDetails(scannedSendDetails)
+    if (scannedSendDetails.length > 0) {
+      if (type === 'payment') {
+        // Only support multiple "send" actions for payments (not dc_burns or transfers)
+        setSendDetails(scannedSendDetails)
+      } else {
+        // Otherwise, only initialize SendView with the first entry received from QR scan
+        setSendDetails([scannedSendDetails[0]])
+      }
+    }
     const hasPresetAmount = some(scannedSendDetails, ({ amount }) => !!amount)
     if (hasPresetAmount) setIsLocked(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -352,34 +367,23 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     }
   }
 
-  const constructTxns = async () => {
+  const constructTxn = async () => {
     if (type === 'payment') {
-      return Promise.all(
-        sendDetails.map(async ({ address, balanceAmount }) => {
-          return makePaymentTxn(
-            balanceAmount.integerBalance,
-            address,
-            getNonce(),
-          )
-        }),
-      )
+      return makePaymentTxn(sendDetails, getNonce())
     }
 
     if (type === 'dc_burn') {
-      return Promise.all(
-        sendDetails.map(async ({ address, balanceAmount, memo }) => {
-          return makeBurnTxn(
-            balanceAmount.integerBalance,
-            address,
-            getNonce(),
-            memo,
-          )
-        }),
+      const { address, balanceAmount, memo } = sendDetails[0]
+      return makeBurnTxn(
+        balanceAmount.integerBalance,
+        address,
+        getNonce(),
+        memo,
       )
     }
 
     if (type === 'transfer') {
-      return [isSeller ? handleSellerTransfer() : handleBuyerTransfer()]
+      return isSeller ? handleSellerTransfer() : handleBuyerTransfer()
     }
 
     throw new Error('Unsupported transaction type')
@@ -387,8 +391,10 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
 
   const handleSubmit = async () => {
     try {
-      const txns = await constructTxns()
-      await Promise.all(txns.map(async (txn: any) => submitTxn(txn)))
+      const txn = await constructTxn()
+      if (txn) {
+        await submitTxn(txn)
+      }
       triggerNavHaptic()
       navigation.navigate('SendComplete')
     } catch (error) {
