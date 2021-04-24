@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { ActivityIndicator } from 'react-native'
+import { ActivityIndicator, Alert } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Address } from '@helium/crypto-react-native'
 import { Account } from '@helium/http'
-import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
+import Balance, {
+  CurrencyType,
+  DataCredits,
+  NetworkTokens,
+} from '@helium/currency'
 import { useAsync } from 'react-async-hook'
 import animalName from 'angry-purple-tiger'
 import InputField from '../../../components/InputField'
@@ -16,9 +20,15 @@ import { useColors } from '../../../theme/themeHooks'
 import LockedField from '../../../components/LockedField'
 import { SendDetails, SendType, SendDetailsUpdate } from './sendTypes'
 import { Transfer } from '../../hotspots/transfers/TransferRequests'
+import { useAppDispatch } from '../../../store/store'
+import {
+  fetchCurrentOraclePrice,
+  fetchPredictedOraclePrice,
+} from '../../../store/helium/heliumDataSlice'
 import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
 import { ensLookup } from '../../../utils/explorerClient'
 import { formatAmountInput } from '../../../utils/transactions'
+import * as Logger from '../../../utils/logger'
 import useHaptic from '../../../utils/useHaptic'
 import {
   calculateBurnTxnFee,
@@ -55,6 +65,7 @@ const SendDetailsForm = ({
   const { feeToHNT } = useFees()
   const { triggerNavHaptic } = useHaptic()
   const { primaryMain } = useColors()
+  const dispatch = useAppDispatch()
 
   // State init
   const [address, setAddress] = useState<string>(sendDetails.address)
@@ -108,7 +119,7 @@ const SendDetailsForm = ({
 
   // Update the required fee if HNT amount changes
   useAsync(async () => {
-    updateFee()
+    await updateFee()
   }, [balanceAmount, transferData?.amountToSeller])
 
   const getNonce = (): number => {
@@ -117,27 +128,37 @@ const SendDetailsForm = ({
   }
 
   const updateFee = async () => {
-    let dcFee
+    await dispatch(fetchCurrentOraclePrice())
+    await dispatch(fetchPredictedOraclePrice())
+    const dcFee = await calculateFee()
+    const hntFee = feeToHNT(dcFee)
+    setFee(hntFee)
+    return hntFee
+  }
+
+  const calculateFee = async (): Promise<Balance<DataCredits>> => {
     if (type === 'payment') {
-      dcFee = await calculatePaymentTxnFee(
+      return calculatePaymentTxnFee(
         balanceAmount.integerBalance,
         getNonce(),
         address,
       )
-    } else if (type === 'dc_burn') {
-      dcFee = await calculateBurnTxnFee(
+    }
+
+    if (type === 'dc_burn') {
+      return calculateBurnTxnFee(
         balanceAmount.integerBalance,
         address,
         getNonce(),
         memo,
       )
-    } else if (type === 'transfer') {
-      dcFee = await calculateTransferTxnFee(transferData?.partialTransaction)
-    } else {
-      throw new Error('Unsupported transaction type')
     }
-    const hntFee = feeToHNT(dcFee)
-    setFee(hntFee)
+
+    if (type === 'transfer') {
+      return calculateTransferTxnFee(transferData?.partialTransaction)
+    }
+
+    throw new Error('Unsupported transaction type')
   }
 
   // Helper to normalize direct "amount" input value
@@ -146,25 +167,37 @@ const SendDetailsForm = ({
     setAmount(formattedAmount)
   }
 
-  const setMaxAmount = () => {
+  const setMaxAmount = async () => {
     triggerNavHaptic()
+
     const balance = account?.balance
     if (!balance) return
-    if (fee > balance) {
-      const balanceStr = balance.toString(8, {
-        decimalSeparator,
-        groupSeparator,
-        showTicker: false,
-      })
-      setAmount(balanceStr)
-    } else {
-      const maxAmount = balance.minus(fee)
+
+    try {
+      const currentFee = await updateFee()
+      if (currentFee > balance) {
+        const balanceStr = balance.toString(8, {
+          decimalSeparator,
+          groupSeparator,
+          showTicker: false,
+        })
+        setAmount(balanceStr)
+        return
+      }
+
+      const maxAmount = balance.minus(currentFee)
       const maxAmountStr = maxAmount.toString(8, {
         decimalSeparator,
         groupSeparator,
         showTicker: false,
       })
       setAmount(maxAmountStr)
+    } catch (error) {
+      Logger.error(error)
+      Alert.alert(
+        t('send.send_max_fee.error_title'),
+        t('send.send_max_fee.error_description'),
+      )
     }
   }
 
