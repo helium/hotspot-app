@@ -181,8 +181,9 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   // validate transaction
   useEffect(() => {
     if (type === 'transfer') {
-      const { fee } = sendDetails[0]
+      const { address, fee } = sendDetails[0]
       if (isSeller) {
+        setIsValid(Address.isValid(address) && (hasValidActivity || false))
         setHasSufficientBalance(true)
       } else {
         const isValidSellerAddress = transferData
