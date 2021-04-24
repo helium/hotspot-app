@@ -18,6 +18,7 @@ import { SendDetails, SendType, SendDetailsUpdate } from './sendTypes'
 import { Transfer } from '../../hotspots/transfers/TransferRequests'
 import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
 import { ensLookup } from '../../../utils/explorerClient'
+import { formatAmountInput } from '../../../utils/transactions'
 import useHaptic from '../../../utils/useHaptic'
 import {
   calculateBurnTxnFee,
@@ -141,23 +142,8 @@ const SendDetailsForm = ({
 
   // Helper to normalize direct "amount" input value
   const setFormAmount = (formAmount: string) => {
-    if (formAmount === decimalSeparator || formAmount.includes('NaN')) {
-      return setAmount(`0${decimalSeparator}`)
-    }
-    const rawInteger = (formAmount.split(decimalSeparator)[0] || formAmount)
-      .split(groupSeparator)
-      .join('')
-    const integer = parseInt(rawInteger, 10).toLocaleString(locale)
-    let decimal = formAmount.split(decimalSeparator)[1]
-    if (integer === 'NaN') {
-      return setAmount('')
-    }
-    if (decimal && decimal.length >= 9) decimal = decimal.slice(0, 8)
-    setAmount(
-      formAmount.includes(decimalSeparator)
-        ? `${integer}${decimalSeparator}${decimal}`
-        : integer,
-    )
+    const formattedAmount = formatAmountInput(formAmount)
+    setAmount(formattedAmount)
   }
 
   const setMaxAmount = () => {
