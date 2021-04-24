@@ -114,7 +114,7 @@ export const fetchHotspotData = createAsyncThunk<HotspotData, string>(
   async (address: string, { getState }) => {
     const currentState = (getState() as {
       hotspotDetails: {
-        hotspotData: Record<string, HotspotDetailCache>
+        hotspotData: HotspotIndexed<HotspotDetailCache>
       }
     }).hotspotDetails
     const hotspotData = currentState.hotspotData[address] || {}
@@ -140,7 +140,7 @@ export const fetchHotspotChartData = createAsyncThunk<
   async (params: FetchDetailsParams, { getState }) => {
     const currentState = (getState() as {
       hotspotDetails: {
-        chartData: Record<string, Record<number, HotspotChartCache>>
+        chartData: HotspotIndexed<HotspotChartRecord>
       }
     }).hotspotDetails
     const chartData = currentState.chartData[params.address] || {}
@@ -194,12 +194,16 @@ type HotspotData = {
   hotspot?: Hotspot
 }
 
-type HotspotChartCache = CacheRecord<HotspotChartData>
-type HotspotDetailCache = CacheRecord<HotspotData>
+export type HotspotChartCache = CacheRecord<HotspotChartData>
+export type HotspotDetailCache = CacheRecord<HotspotData>
+export type HotspotAddress = string
+export type ChartTimelineIndex = number
+export type HotspotChartRecord = Record<ChartTimelineIndex, HotspotChartCache>
+export type HotspotIndexed<T> = Record<HotspotAddress, T>
 
 type HotspotDetailsState = {
-  chartData: Record<string, Record<number, HotspotChartCache>>
-  hotspotData: Record<string, HotspotDetailCache>
+  chartData: HotspotIndexed<HotspotChartRecord>
+  hotspotData: HotspotIndexed<HotspotDetailCache>
   showSettings: boolean
 }
 const initialState: HotspotDetailsState = {
