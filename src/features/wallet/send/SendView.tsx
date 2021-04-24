@@ -203,24 +203,22 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
         )
       }
     } else {
-      let hasBalance = true
-      let isValidAddress = true
-      let isValidBalanceAmount = true
+      let isValidSend = true
+      let totalSendAmount = new Balance(0, CurrencyType.networkToken)
       sendDetails.forEach(({ address, balanceAmount, fee }) => {
         const isValidTransferAddress =
           Address.isValid(address) && address !== account?.address
-        if (!isValidTransferAddress) isValidAddress = false
+        if (!isValidTransferAddress) isValidSend = false
         const isValidTransferAmount = balanceAmount.integerBalance > 0
-        if (!isValidTransferAmount) isValidBalanceAmount = false
-        const totalTxnAmount = balanceAmount.plus(fee)
-        // TODO balance compare/greater than/less than
-        const hasSufficientTransferBalance =
-          totalTxnAmount.integerBalance <=
-          (account?.balance?.integerBalance || 0)
-        if (!hasSufficientTransferBalance) hasBalance = false
+        if (!isValidTransferAmount) isValidSend = false
+        totalSendAmount = totalSendAmount.plus(balanceAmount.plus(fee))
       })
+      // TODO balance compare/greater than/less than
+      const hasBalance =
+        totalSendAmount.integerBalance <=
+        (account?.balance?.integerBalance || 0)
       setHasSufficientBalance(hasBalance)
-      setIsValid(hasSufficientBalance && isValidAddress && isValidBalanceAmount)
+      setIsValid(hasBalance && isValidSend)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
