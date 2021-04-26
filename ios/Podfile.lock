@@ -12,7 +12,7 @@ PODS:
     - UMPermissionsInterface
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
-  - EXConstants (9.2.0):
+  - EXConstants (10.1.3):
     - UMConstantsInterface
     - UMCore
   - EXFileSystem (9.2.0):
@@ -724,7 +724,7 @@ SPEC CHECKSUMS:
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXBarCodeScanner: aa1eda7595b8258471ff733acdb18f62cfd85813
-  EXConstants: f486f6b4a36b86e47ab258d4d2b7b2699786fdce
+  EXConstants: c4dd28acc12039c999612507a5f935556f2c86ce
   EXFileSystem: afe9b1fd937d30270bf5108ba44e2f4a1d1ad694
   EXHaptics: 6d2e09387f0eb4d3c8dc97ae905cbea8afe33651
   EXImageLoader: 7153fb1307ac643299a9072b71da0d276f4c7789

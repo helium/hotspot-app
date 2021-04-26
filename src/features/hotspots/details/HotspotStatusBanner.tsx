@@ -34,9 +34,10 @@ const HotspotStatusBanner = ({
   const prevHotspotAddress = usePrevious(hotspot.address)
 
   useEffect(() => {
+    if (visible === propsVisible) return
     animateTransition()
     setVisible(propsVisible)
-  }, [propsVisible])
+  }, [propsVisible, visible])
 
   useEffect(() => {
     if (prevHotspotAddress === hotspot.address || !visible) return

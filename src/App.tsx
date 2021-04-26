@@ -19,6 +19,7 @@ import Portal from '@burstware/react-native-portal'
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import * as SplashScreen from 'expo-splash-screen'
+import { NavigationContainer } from '@react-navigation/native'
 import { theme } from './theme/theme'
 import NavigationRoot from './navigation/NavigationRoot'
 import { useAppDispatch } from './store/store'
@@ -41,6 +42,8 @@ import { fetchStatus } from './store/helium/heliumStatusSlice'
 import notificationSlice, {
   fetchNotifications,
 } from './store/notifications/notificationSlice'
+import LinkProvider from './providers/LinkProvider'
+import { navigationRef } from './navigation/navigator'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -216,7 +219,11 @@ const App = () => {
                   <StatusBar translucent backgroundColor="transparent" />
                 )}
                 <Portal.Host>
-                  <NavigationRoot />
+                  <NavigationContainer ref={navigationRef}>
+                    <LinkProvider>
+                      <NavigationRoot />
+                    </LinkProvider>
+                  </NavigationContainer>
                 </Portal.Host>
               </SafeAreaProvider>
               <StatusBanner />

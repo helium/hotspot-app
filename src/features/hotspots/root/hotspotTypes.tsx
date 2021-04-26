@@ -1,9 +1,7 @@
 import { StackNavigationProp } from '@react-navigation/stack'
-import { Hotspot } from '@helium/http'
 
 export type HotspotStackParamList = {
-  HotspotsScreen: undefined
-  HotspotDetails: { hotspot: Hotspot }
+  HotspotsScreen: undefined | { address: string }
 }
 
 export type HotspotNavigationProp = StackNavigationProp<HotspotStackParamList>
