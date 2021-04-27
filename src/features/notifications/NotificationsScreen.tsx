@@ -44,7 +44,9 @@ const NotificationsScreen = () => {
           refreshing={markNotificationStatus === 'pending'}
         />
       )}
-      {notifications.length === 0 && <EmptyNotifications />}
+      {notifications.length === 0 && markNotificationStatus !== 'pending' && (
+        <EmptyNotifications />
+      )}
     </SafeAreaBox>
   )
 }
