@@ -18,6 +18,7 @@
     "pod-install": "cd ios && pod install && cd ..",
     "clean-install": "watchman watch-del-all && rm -rf $TMPDIR/react-native-packager-cache-* && rm -rf $TMPDIR/metro-bundler-cache-* && rm -rf node_modules/ && yarn cache clean && yarn install && yarn android-clean && yarn ios-clean && yarn pod-install",
     "clean-start": "yarn start -- --reset-cache",
+    "postinstall": "patch-package",
     "bump-patch": "npx react-native bump-version --skip-code-for all --type patch",
     "bump-minor": "npx react-native bump-version --skip-code-for all --type minor",
     "bump-major": "npx react-native bump-version --skip-code-for all --type major"
@@ -84,6 +85,8 @@
     "lottie-react-native": "^4.0.2",
     "number-to-locale-string-polyfill": "^1.0.9",
     "parse5": "^6.0.1",
+    "patch-package": "^6.4.7",
+    "postinstall-postinstall": "^2.1.0",
     "protobufjs": "^6.10.2",
     "qs": "^6.9.6",
     "query-string": "^7.0.0",
