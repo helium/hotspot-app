@@ -144,7 +144,7 @@ const DiscoveryModeRoot = ({ onClose, hotspot: propsHotspot }: Props) => {
     }
 
     if (viewState === 'results') {
-      animateTransition()
+      animateTransition('DiscoveryModeRoot.HandleBack')
       setViewState('begin')
       dispatch(discoverySlice.actions.clearSelections())
       fetchRecent()
@@ -154,7 +154,7 @@ const DiscoveryModeRoot = ({ onClose, hotspot: propsHotspot }: Props) => {
   const handleNewSelected = useCallback(async () => {
     if (!hotspot.address || !userAddress) return
 
-    animateTransition()
+    animateTransition('DiscoveryModeRoot.HandleNewSelected')
     setViewState('results')
 
     dispatch(startDiscovery({ hotspotAddress: hotspot.address }))
@@ -162,7 +162,7 @@ const DiscoveryModeRoot = ({ onClose, hotspot: propsHotspot }: Props) => {
 
   const handleRequestSelected = (request: DiscoveryRequest) => {
     dispatch(discoverySlice.actions.setSelectedRequest(request))
-    animateTransition()
+    animateTransition('DiscoveryModeRoot.HandleRequestSelected')
     setViewState('results')
   }
 

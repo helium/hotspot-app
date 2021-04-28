@@ -6,12 +6,12 @@ const useKeyboard = () => {
   const [keyboardHeight, setKeyboardHeight] = useState(0)
 
   function onKeyboardDidShow(e: KeyboardEvent): void {
-    animateTransition()
+    animateTransition('useKeyboard.OnKeyboardDidShow')
     setKeyboardHeight(e.endCoordinates.height)
   }
 
   function onKeyboardDidHide(): void {
-    animateTransition()
+    animateTransition('useKeyboard.OnKeyboardDidHide')
     setKeyboardHeight(0)
   }
 

@@ -35,7 +35,7 @@ const HotspotStatusBanner = ({
 
   useEffect(() => {
     if (visible === propsVisible) return
-    animateTransition()
+    animateTransition('HotspotStatusBanner')
     setVisible(propsVisible)
   }, [propsVisible, visible])
 

@@ -104,7 +104,9 @@ const HotspotsView = ({
     const shouldShowDetails = !!selectedHotspot || !!linkedHotspotAddress
     if (shouldShowDetails === showDetails) return
 
-    if (visible && prevVisible) animateTransition(false)
+    if (visible && prevVisible) {
+      animateTransition('HotspotsView.DetailsChange', false)
+    }
     setShowDetails(shouldShowDetails)
   }, [linkedHotspotAddress, prevVisible, selectedHotspot, showDetails, visible])
 
@@ -211,7 +213,7 @@ const HotspotsView = ({
     }
 
     if (showDetails) {
-      animateTransition(false)
+      animateTransition('HotspotsView.HandleBack', false)
       showHotspotDetails(undefined)
       setLinkedHotspotAddress('')
     }
@@ -263,11 +265,10 @@ const HotspotsView = ({
     [navigation],
   )
 
-  const handle = useCallback(() => {
-    const hide = !selectedHotspot && !linkedHotspotAddress
-
-    return <HotspotDetailsHandle showNav={!hide && showDetailsNav} />
-  }, [selectedHotspot, linkedHotspotAddress, showDetailsNav])
+  const cardHandle = useCallback(
+    () => <HotspotDetailsHandle showNav={showDetails && showDetailsNav} />,
+    [showDetails, showDetailsNav],
+  )
 
   const body = useMemo(() => {
     if (showDetails)
@@ -437,7 +438,7 @@ const HotspotsView = ({
         ref={listRef}
         snapPoints={snapPoints}
         index={bottomSheetIndex}
-        handleComponent={handle}
+        handleComponent={cardHandle}
         animatedIndex={animatedIndex}
         onChange={setBottomSheetIndex}
         enableContentPanningGesture={

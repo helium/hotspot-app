@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler'
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import {
   AppState,
@@ -63,6 +63,7 @@ const App = () => {
     'RCTBridge required dispatch_sync to load',
   ])
 
+  const appState = useRef(AppState.currentState)
   const dispatch = useAppDispatch()
 
   const {
@@ -111,8 +112,9 @@ const App = () => {
 
   // setup and listen for app state changes
   const handleChange = useCallback(
-    (newState: AppStateStatus) => {
-      dispatch(appSlice.actions.updateAppStateStatus(newState))
+    (nextAppState: AppStateStatus) => {
+      appState.current = nextAppState
+      dispatch(appSlice.actions.updateAppStateStatus(appState.current))
     },
     [dispatch],
   )
