@@ -6,7 +6,7 @@ import CarotRight from '@assets/images/carot-right.svg'
 import Balance, { NetworkTokens } from '@helium/currency'
 import { useSelector } from 'react-redux'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
-import TouchableOpacityBox from './BSTouchableOpacityBox'
+import { Pressable } from 'react-native'
 import Box from './Box'
 import Text from './Text'
 import useCurrency from '../utils/useCurrency'
@@ -70,79 +70,82 @@ const HotspotListItem = ({
 
   return (
     <Box marginBottom="xxs">
-      <TouchableOpacityBox
-        backgroundColor="grayBox"
-        flexDirection="row"
-        justifyContent="space-between"
-        alignItems="center"
-        padding="m"
-        onPress={handlePress}
-      >
-        <Box
-          flexDirection="row"
-          justifyContent="space-between"
-          alignItems="center"
-          flex={1}
-        >
-          <Box flexDirection="column">
-            <Box flexDirection="row" alignItems="center">
-              <Box
-                height={10}
-                width={10}
-                borderRadius="m"
-                backgroundColor={
-                  hotspot.status?.online === 'online' ? 'greenOnline' : 'yellow'
-                }
-              />
-              <Text
-                variant="body2Medium"
-                color="offblack"
-                paddingStart="s"
-                ellipsizeMode="tail"
-                numberOfLines={2}
-                maxWidth={210}
-              >
-                {animalName(hotspot.address)}
+      <Pressable onPress={handlePress}>
+        {({ pressed }) => (
+          <Box
+            backgroundColor={pressed ? 'grayHighlight' : 'grayBox'}
+            flexDirection="row"
+            justifyContent="space-between"
+            alignItems="center"
+            padding="m"
+            flex={1}
+          >
+            <Box flexDirection="column">
+              <Box flexDirection="row" alignItems="center">
+                <Box
+                  height={10}
+                  width={10}
+                  borderRadius="m"
+                  backgroundColor={
+                    hotspot.status?.online === 'online'
+                      ? 'greenOnline'
+                      : 'yellow'
+                  }
+                />
+                <Text
+                  variant="body2Medium"
+                  color="offblack"
+                  paddingStart="s"
+                  ellipsizeMode="tail"
+                  numberOfLines={2}
+                  maxWidth={210}
+                >
+                  {animalName(hotspot.address)}
+                </Text>
+              </Box>
+              <Text variant="body3Light" color="blueGray" marginTop="s">
+                {locationText}
               </Text>
+              <Box flexDirection="row" alignItems="center" marginTop="s">
+                {loading && !totalReward ? (
+                  <SkeletonPlaceholder speed={3000}>
+                    <SkeletonPlaceholder.Item
+                      height={15}
+                      width={168.5}
+                      borderRadius={4}
+                    />
+                  </SkeletonPlaceholder>
+                ) : (
+                  <>
+                    <Text
+                      onPress={toggleConvertHntToCurrency}
+                      variant="body2"
+                      color="grayDarkText"
+                      paddingEnd="s"
+                    >
+                      {reward}
+                    </Text>
+                    <Text variant="body2Light" color="blueGray">
+                      {percentSynced}
+                    </Text>
+                  </>
+                )}
+              </Box>
             </Box>
-            <Text variant="body3Light" color="blueGray" marginTop="s">
-              {locationText}
-            </Text>
-            <Box flexDirection="row" alignItems="center" marginTop="s">
-              {loading && !totalReward ? (
-                <SkeletonPlaceholder speed={3000}>
-                  <SkeletonPlaceholder.Item
-                    height={15}
-                    width={168.5}
-                    borderRadius={4}
-                  />
-                </SkeletonPlaceholder>
-              ) : (
-                <>
-                  <Text
-                    onPress={toggleConvertHntToCurrency}
-                    variant="body2"
-                    color="grayDarkText"
-                    paddingEnd="s"
-                  >
-                    {reward}
-                  </Text>
-                  <Text variant="body2Light" color="blueGray">
-                    {percentSynced}
-                  </Text>
-                </>
+            <Box
+              flexDirection="row"
+              alignItems="center"
+              justifyContent="center"
+            >
+              {showCarot && (
+                <Box marginStart="m">
+                  <CarotRight color="#C4C8E5" />
+                </Box>
               )}
             </Box>
           </Box>
-          <Box flexDirection="row" alignItems="center" justifyContent="center">
-            {showCarot && (
-              <Box marginStart="m">
-                <CarotRight color="#C4C8E5" />
-              </Box>
-            )}
-          </Box>
-        </Box>
-      </TouchableOpacityBox>
+        )}
+      </Pressable>
     </Box>
   )
 }
