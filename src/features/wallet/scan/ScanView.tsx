@@ -154,9 +154,6 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
                   {t('send.scan.send')}
                 </Text>
                 <Text marginBottom="xs">{t('send.scan.send_description')}</Text>
-                <Text variant="body2Bold" color="blueMain">
-                  {t('send.scan.learn_more')}
-                </Text>
               </Box>
               <Box marginBottom="s">
                 <Text
@@ -168,9 +165,6 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
                   {t('send.scan.burn')}
                 </Text>
                 <Text marginBottom="xs">{t('send.scan.burn_description')}</Text>
-                <Text variant="body2Bold" color="blueMain">
-                  {t('send.scan.learn_more')}
-                </Text>
               </Box>
               <Box marginBottom="s">
                 <Text
@@ -182,9 +176,6 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
                   {t('send.scan.view')}
                 </Text>
                 <Text marginBottom="xs">{t('send.scan.view_description')}</Text>
-                <Text variant="body2Bold" color="blueMain">
-                  {t('send.scan.learn_more')}
-                </Text>
               </Box>
             </Box>
           </BottomSheetScrollView>
