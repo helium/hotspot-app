@@ -7,6 +7,5 @@ jest.mock('react-native-reanimated', () =>
 global.window = {}
 global.window = global
 
-jest.mock('react-native/Libraries/Animated/src/NativeAnimatedHelper')
 jest.mock('@react-native-community/async-storage', () => mockAsyncStorage)
 jest.mock('react-native-device-info', () => mockRNDeviceInfo)
