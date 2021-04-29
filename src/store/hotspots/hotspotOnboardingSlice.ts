@@ -34,6 +34,9 @@ const hotspotOnboardingSlice = createSlice({
     setLocationName(state, action: PayloadAction<string>) {
       state.locationName = action.payload
     },
+    reset() {
+      return initialState
+    },
   },
 })
 
