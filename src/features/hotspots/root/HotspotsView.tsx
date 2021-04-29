@@ -26,7 +26,7 @@ import Settings from '../../../assets/images/settings.svg'
 import Map from '../../../components/Map'
 import { RootState } from '../../../store/rootReducer'
 import hotspotDetailsSlice from '../../../store/hotspotDetails/hotspotDetailsSlice'
-import HotspotMapButtons from './HotspotMapButtons'
+import HotspotsViewHeader from './HotspotsViewHeader'
 import useToggle from '../../../utils/useToggle'
 import HotspotsList from './HotspotsList'
 import HotspotDetails from '../details/HotspotDetails'
@@ -67,6 +67,11 @@ const HotspotsView = ({
   onViewMap,
   location: propsLocation,
 }: Props) => {
+  type BackStackEntry = {
+    viewState: 'details' | 'search' | 'list'
+    bottomSheetIndex: number
+  }
+  const [backStack, setBackStack] = useState<BackStackEntry[]>([])
   const navigation = useNavigation()
   const { params } = useRoute<Route>()
   const { t } = useTranslation()
@@ -83,15 +88,12 @@ const HotspotsView = ({
   const prevBottomSheetIndex = usePrevious(bottomSheetIndex)
   const visible = useVisible()
   const prevVisible = usePrevious(visible)
+  const prevShowDetails = usePrevious(showDetails)
 
   const animatedIndex = useSharedValue<number>(0)
 
   const [showWitnesses, toggleShowWitnesses] = useToggle(false)
 
-  const networkHotspots = useSelector(
-    (state: RootState) => state.networkHotspots.networkHotspots,
-    isEqual,
-  )
   const selectedHotspot = useSelector(
     (state: RootState) => state.hotspots.selectedHotspot,
     isEqual,
@@ -100,15 +102,20 @@ const HotspotsView = ({
     (state: RootState) => state.location.locationBlocked,
   )
 
+  const hotspotAddress = useMemo(
+    () => selectedHotspot?.address || linkedHotspotAddress || '',
+    [selectedHotspot, linkedHotspotAddress],
+  )
+
   useEffect(() => {
-    const shouldShowDetails = !!selectedHotspot || !!linkedHotspotAddress
+    const shouldShowDetails = !!hotspotAddress
     if (shouldShowDetails === showDetails) return
 
     if (visible && prevVisible) {
       animateTransition('HotspotsView.DetailsChange', false)
     }
     setShowDetails(shouldShowDetails)
-  }, [linkedHotspotAddress, prevVisible, selectedHotspot, showDetails, visible])
+  }, [hotspotAddress, prevVisible, showDetails, visible])
 
   useEffect(() => {
     setLinkedHotspotAddress(params?.address || '')
@@ -116,7 +123,7 @@ const HotspotsView = ({
 
   const snapPoints = useMemo(() => {
     if (showDetails) return [detailHeaderHeight, listHeight]
-    return [0, listHeight]
+    return [1, listHeight]
   }, [detailHeaderHeight, listHeight, showDetails])
 
   const hasHotspots = useMemo(
@@ -126,8 +133,7 @@ const HotspotsView = ({
 
   const hotspotDetailsData =
     useSelector(
-      (state: RootState) =>
-        state.hotspotDetails.hotspotData[selectedHotspot?.address || ''],
+      (state: RootState) => state.hotspotDetails.hotspotData[hotspotAddress],
     ) || {}
   const { witnesses, loading } = hotspotDetailsData || {}
 
@@ -171,15 +177,30 @@ const HotspotsView = ({
   )
 
   useEffect(() => {
-    if (animatedIndex.value === 0 && !selectedHotspot && !hasUserLocation) {
-      if (ownedHotspots && ownedHotspots.length > 0) {
-        setLocation([ownedHotspots[0].lng || 0, ownedHotspots[0].lat || 0]) // Set map loc to one of their hotspots
-      } else {
-        setLocation([122.4194, 37.7749]) // SF - This shouldn't actually be possible
-      }
+    if (hotspotAddress || hasUserLocation) return
+
+    if (
+      ownedHotspots &&
+      ownedHotspots.length > 0 &&
+      hotspotHasValidLocation(ownedHotspots[0])
+    ) {
+      setLocation([ownedHotspots[0].lng || 0, ownedHotspots[0].lat || 0]) // Set map loc to one of their hotspots
+    } else if (
+      followedHotspots &&
+      followedHotspots.length > 0 &&
+      hotspotHasValidLocation(followedHotspots[0])
+    ) {
+      setLocation([followedHotspots[0].lng || 0, followedHotspots[0].lat || 0]) // Set map loc to one of their followed hotspots
+    } else {
+      setLocation([122.4194, 37.7749]) // SF - This shouldn't actually be possible
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [networkHotspots])
+  }, [
+    bottomSheetIndex,
+    followedHotspots,
+    hasUserLocation,
+    hotspotAddress,
+    ownedHotspots,
+  ])
 
   const handleLayoutList = useCallback((event: LayoutChangeEvent) => {
     setListHeight(event.nativeEvent.layout.height - 166)
@@ -207,17 +228,33 @@ const HotspotsView = ({
   )
 
   const handleBack = useCallback(async () => {
+    if (
+      backStack.find(
+        (entry, idx) =>
+          idx !== backStack.length - 1 &&
+          entry.bottomSheetIndex === 0 &&
+          entry.viewState === 'list',
+      )
+    ) {
+      setBackStack([])
+      animateTransition('HotspotsView.HandleBack', false)
+      showHotspotDetails(undefined)
+      setLinkedHotspotAddress('')
+      return
+    }
+
     if (bottomSheetIndex === 0) {
       listRef.current?.snapTo(1)
       return
     }
 
-    if (showDetails) {
+    const last = backStack[backStack.length - 1]
+    if (last.viewState === 'details') {
       animateTransition('HotspotsView.HandleBack', false)
       showHotspotDetails(undefined)
       setLinkedHotspotAddress('')
     }
-  }, [bottomSheetIndex, showDetails, showHotspotDetails])
+  }, [backStack, bottomSheetIndex, showHotspotDetails])
 
   const dismissList = useCallback(() => {
     listRef.current?.snapTo(0)
@@ -252,9 +289,12 @@ const HotspotsView = ({
   )
 
   const hotspotHasLocation = useMemo(() => {
-    if (!selectedHotspot) return true
-    return hotspotHasValidLocation(selectedHotspot)
-  }, [selectedHotspot])
+    if (!hotspotAddress) return true
+
+    return hotspotHasValidLocation(
+      selectedHotspot || hotspotDetailsData.hotspot,
+    )
+  }, [hotspotAddress, hotspotDetailsData.hotspot, selectedHotspot])
 
   const toggleSettings = useCallback(() => {
     dispatch(hotspotDetailsSlice.actions.toggleShowSettings())
@@ -270,6 +310,32 @@ const HotspotsView = ({
     [showDetails, showDetailsNav],
   )
 
+  const updateBackStack = useCallback(
+    (viewState: 'list' | 'details' | 'search') => {
+      if (viewState === 'list' && bottomSheetIndex === 1) {
+        setBackStack([{ viewState, bottomSheetIndex }])
+        return
+      }
+
+      setBackStack((stack) => [...stack, { viewState, bottomSheetIndex }])
+    },
+    [bottomSheetIndex],
+  )
+
+  useEffect(() => {
+    if (showDetails) {
+      updateBackStack('details')
+      return
+    }
+
+    if (isSearching) {
+      updateBackStack('search')
+      return
+    }
+
+    updateBackStack('list')
+  }, [isSearching, showDetails, updateBackStack])
+
   const body = useMemo(() => {
     if (showDetails)
       return (
@@ -277,6 +343,7 @@ const HotspotsView = ({
           hotspotAddress={linkedHotspotAddress}
           hotspot={selectedHotspot}
           onLayoutHeader={handleDetailHeaderLayout}
+          onFailure={handleBack}
         />
       )
 
@@ -301,6 +368,7 @@ const HotspotsView = ({
     )
   }, [
     dismissList,
+    handleBack,
     handleDetailHeaderLayout,
     handlePresentDetails,
     handleSelectPlace,
@@ -327,7 +395,7 @@ const HotspotsView = ({
   }, [hasHotspots, isSearching, t])
 
   const leftMenuOptions = useMemo(() => {
-    if (showDetails || bottomSheetIndex === 0)
+    if (showDetails || bottomSheetIndex === 0) {
       return (
         <BackButton
           alignSelf="center"
@@ -336,8 +404,9 @@ const HotspotsView = ({
           onPress={handleBack}
         />
       )
+    }
     return <Text variant="h3">{title}</Text>
-  }, [handleBack, bottomSheetIndex, showDetails, title])
+  }, [showDetails, bottomSheetIndex, title, handleBack])
 
   const rightMenuOptions = useMemo(() => {
     if (isSearching && !showDetails && bottomSheetIndex === 1) {
@@ -354,10 +423,7 @@ const HotspotsView = ({
             <Settings width={22} height={22} color="white" />
           </TouchableOpacityBox>
 
-          <FollowButton
-            padding="s"
-            address={linkedHotspotAddress || selectedHotspot?.address || ''}
-          />
+          <FollowButton padding="s" address={hotspotAddress} />
         </>
       )
     }
@@ -380,8 +446,7 @@ const HotspotsView = ({
     handleSearching,
     handleHotspotSetup,
     toggleSettings,
-    linkedHotspotAddress,
-    selectedHotspot?.address,
+    hotspotAddress,
   ])
 
   return (
@@ -410,14 +475,19 @@ const HotspotsView = ({
           showNoLocation={!hotspotHasLocation}
           showNearbyHotspots
         />
-        <HotspotMapButtons
+        <HotspotsViewHeader
           animatedPosition={animatedIndex}
           showWitnesses={showWitnesses}
           toggleShowWitnesses={toggleShowWitnesses}
           loading={loading}
           detailHeaderHeight={detailHeaderHeight}
-          isVisible={!!selectedHotspot && hotspotHasLocation}
-          showNoLocation={!locationIsValid(propsLocation)}
+          buttonsVisible={
+            !!hotspotAddress &&
+            hotspotHasLocation &&
+            showDetails &&
+            prevShowDetails
+          }
+          showNoLocation={!locationIsValid(propsLocation) && !showDetails}
         />
       </Box>
       <Box

@@ -42,7 +42,7 @@ import { fetchStatus } from './store/helium/heliumStatusSlice'
 import notificationSlice, {
   fetchNotifications,
 } from './store/notifications/notificationSlice'
-import LinkProvider from './providers/LinkProvider'
+import AppLinkProvider from './providers/AppLinkProvider'
 import { navigationRef } from './navigation/navigator'
 
 SplashScreen.preventAutoHideAsync()
@@ -222,9 +222,9 @@ const App = () => {
                 )}
                 <Portal.Host>
                   <NavigationContainer ref={navigationRef}>
-                    <LinkProvider>
+                    <AppLinkProvider>
                       <NavigationRoot />
-                    </LinkProvider>
+                    </AppLinkProvider>
                   </NavigationContainer>
                 </Portal.Host>
               </SafeAreaProvider>

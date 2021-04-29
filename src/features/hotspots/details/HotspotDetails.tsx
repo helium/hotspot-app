@@ -31,11 +31,13 @@ type Props = {
   hotspotAddress?: string
   hotspot?: Hotspot
   onLayoutHeader?: ((event: LayoutChangeEvent) => void) | undefined
+  onFailure: () => void
 }
 const HotspotDetails = ({
   hotspot: propsHotspot,
   hotspotAddress,
   onLayoutHeader,
+  onFailure,
 }: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
@@ -84,12 +86,19 @@ const HotspotDetails = ({
     return getSyncStatus(hotspot.status?.height, blockHeight)
   }, [blockHeight, hotspot])
 
+  useEffect(() => {
+    if (hotspotDetailsData.loading === false && !hotspotDetailsData.hotspot) {
+      // hotspot couldn't be found - likely a bad app link or qr scan
+      onFailure()
+    }
+  }, [hotspotDetailsData.hotspot, hotspotDetailsData.loading, onFailure])
+
   // load hotspot & witness details
   useEffect(() => {
-    if (!hotspotAddress) return
+    if (!address) return
 
-    dispatch(fetchHotspotData(hotspotAddress))
-  }, [dispatch, hotspotAddress])
+    dispatch(fetchHotspotData(address))
+  }, [address, dispatch])
 
   // load chart data
   useEffect(() => {

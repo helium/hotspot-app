@@ -1,4 +1,11 @@
-import React, { createContext, ReactNode, useCallback, useContext } from 'react'
+import React, {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 import { Linking } from 'react-native'
 import queryString from 'query-string'
 import { BarCodeScannerResult } from 'expo-barcode-scanner'
@@ -7,11 +14,18 @@ import { useSelector } from 'react-redux'
 import useMount from '../utils/useMount'
 import { RootState } from '../store/rootReducer'
 import navigator from '../navigation/navigator'
-import { AppLink, AppLinkType, AppLinkKeys } from './appLinkTypes'
+import {
+  AppLink,
+  AppLinkFields,
+  AppLinkCategories,
+  AppLinkCategoryType,
+} from './appLinkTypes'
 
-const useLink = () => {
+const useAppLink = () => {
+  const [unhandledAppLink, setUnhandledLink] = useState<AppLink | null>(null)
+
   const {
-    app: { isPinRequiredForPayment },
+    app: { isPinRequiredForPayment, isLocked, isBackedUp },
   } = useSelector((state: RootState) => state)
 
   useMount(() => {
@@ -36,6 +50,11 @@ const useLink = () => {
 
   const navToAppLink = useCallback(
     (record: AppLink) => {
+      if (isLocked || !isBackedUp) {
+        setUnhandledLink(record)
+        return
+      }
+
       switch (record.type) {
         case 'hotspot':
           navigator.viewHotspot(record.address)
@@ -55,8 +74,16 @@ const useLink = () => {
         }
       }
     },
-    [isPinRequiredForPayment],
+    [isLocked, isPinRequiredForPayment, isBackedUp],
   )
+
+  useEffect(() => {
+    // Links will be handled once the app is unlocked
+    if (!unhandledAppLink || isLocked || !isBackedUp) return
+
+    navToAppLink(unhandledAppLink)
+    setUnhandledLink(null)
+  }, [isLocked, navToAppLink, unhandledAppLink, isBackedUp])
 
   const parseUrl = useCallback((url: string) => {
     if (!url) return
@@ -64,14 +91,18 @@ const useLink = () => {
     const parsed = queryString.parseUrl(url)
     if (parsed.url !== 'helium://app') return
 
-    return AppLinkKeys.reduce(
+    const record = AppLinkFields.reduce(
       (obj, k) => ({ ...obj, [k]: parsed.query[k] }),
       {},
     ) as AppLink
+    if (!record.type || !AppLinkCategories.find((k) => k === record.type)) {
+      throw new Error(`Unsupported QR Type: ${record.type}`)
+    }
+    return record
   }, [])
 
   const parseBarCodeData = useCallback(
-    (data: string, scanType: AppLinkType): AppLink => {
+    (data: string, scanType: AppLinkCategoryType): AppLink => {
       const urlParams = parseUrl(data)
       if (urlParams) {
         return urlParams
@@ -104,7 +135,7 @@ const useLink = () => {
   )
 
   const handleBarCode = useCallback(
-    async ({ data }: BarCodeScannerResult, scanType: AppLinkType) => {
+    async ({ data }: BarCodeScannerResult, scanType: AppLinkCategoryType) => {
       const scanResult = parseBarCodeData(data, scanType)
       navToAppLink(scanResult)
     },
@@ -118,14 +149,14 @@ const initialState = {
   handleBarCode: () => new Promise<void>((resolve) => resolve()),
 }
 
-const LinkContext = createContext<ReturnType<typeof useLink>>(initialState)
+const LinkContext = createContext<ReturnType<typeof useAppLink>>(initialState)
 
 const { Provider } = LinkContext
 
-const LinkProvider = ({ children }: { children: ReactNode }) => {
-  return <Provider value={useLink()}>{children}</Provider>
+const AppLinkProvider = ({ children }: { children: ReactNode }) => {
+  return <Provider value={useAppLink()}>{children}</Provider>
 }
 
-export const useLinkContext = () => useContext(LinkContext)
+export const useAppLinkContext = () => useContext(LinkContext)
 
-export default LinkProvider
+export default AppLinkProvider

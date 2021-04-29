@@ -14,11 +14,11 @@ import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import useHaptic from '../../../utils/useHaptic'
 import BSHandle from '../../../components/BSHandle'
 import { useSpacing } from '../../../theme/themeHooks'
-import { useLinkContext } from '../../../providers/LinkProvider'
-import { AppLinkType } from '../../../providers/appLinkTypes'
+import { useAppLinkContext } from '../../../providers/AppLinkProvider'
+import { AppLinkCategoryType } from '../../../providers/appLinkTypes'
 
 type Props = {
-  scanType?: AppLinkType
+  scanType?: AppLinkCategoryType
   showBottomSheet?: boolean
 }
 const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
@@ -28,7 +28,7 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
   const navigation = useNavigation()
   const spacing = useSpacing()
 
-  const { handleBarCode } = useLinkContext()
+  const { handleBarCode } = useAppLinkContext()
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -63,7 +63,7 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
 
   const handleFailedScan = () => {
     setScanned(true)
-    setTimeout(() => setScanned(false), 1000)
+    setTimeout(() => setScanned(false), 2000)
     triggerNotification('error')
   }
 
