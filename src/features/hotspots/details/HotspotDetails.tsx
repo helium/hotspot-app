@@ -3,8 +3,8 @@ import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import { Hotspot } from '@helium/http'
 import { LayoutChangeEvent } from 'react-native'
+import { Hotspot } from '@helium/http'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import StatusBadge from './StatusBadge'
@@ -27,16 +27,21 @@ import useToggle from '../../../utils/useToggle'
 import { getSyncStatus } from '../../../utils/hotspotUtils'
 import ShareHotspot from '../../../components/ShareHotspot'
 
-const HotspotDetails = ({
-  hotspot,
-  onLayoutHeader,
-}: {
+type Props = {
+  hotspotAddress?: string
   hotspot?: Hotspot
   onLayoutHeader?: ((event: LayoutChangeEvent) => void) | undefined
-}) => {
+  onFailure: () => void
+}
+const HotspotDetails = ({
+  hotspot: propsHotspot,
+  hotspotAddress,
+  onLayoutHeader,
+  onFailure,
+}: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const address = hotspot?.address || ''
+  const address = hotspotAddress || propsHotspot?.address || ''
   const hotspotChatData =
     useSelector(
       (state: RootState) => state.hotspotDetails.chartData[address],
@@ -65,6 +70,11 @@ const HotspotDetails = ({
 
   const [showStatusBanner, toggleShowStatusBanner] = useToggle(false)
 
+  const hotspot = useMemo(() => hotspotDetailsHotspot || propsHotspot, [
+    hotspotDetailsHotspot,
+    propsHotspot,
+  ])
+
   const rewardChartData = useMemo(() => {
     const data = getRewardChartData(rewards, timelineValue)
     return data || []
@@ -76,12 +86,19 @@ const HotspotDetails = ({
     return getSyncStatus(hotspot.status?.height, blockHeight)
   }, [blockHeight, hotspot])
 
+  useEffect(() => {
+    if (hotspotDetailsData.loading === false && !hotspotDetailsData.hotspot) {
+      // hotspot couldn't be found - likely a bad app link or qr scan
+      onFailure()
+    }
+  }, [hotspotDetailsData.hotspot, hotspotDetailsData.loading, onFailure])
+
   // load hotspot & witness details
   useEffect(() => {
-    if (!hotspot?.address) return
+    if (!address) return
 
-    dispatch(fetchHotspotData(hotspot.address))
-  }, [dispatch, hotspot?.address])
+    dispatch(fetchHotspotData(address))
+  }, [address, dispatch])
 
   // load chart data
   useEffect(() => {
@@ -148,7 +165,7 @@ const HotspotDetails = ({
 
   const handleSelectValueChanged = useCallback(
     (value: string | number, _index: number) => {
-      animateTransition()
+      animateTransition('HotspotDetails.HandleSelectValueChanged')
       setSelectedOption(value)
     },
     [],
@@ -199,21 +216,14 @@ const HotspotDetails = ({
             marginBottom="lx"
             height={30}
           >
-            {(hotspot?.status || hotspotDetailsHotspot?.status) && (
+            {hotspot?.status && (
               <StatusBadge
-                online={
-                  hotspot?.status?.online ||
-                  hotspotDetailsHotspot?.status?.online
-                }
+                online={hotspot?.status?.online}
                 syncStatus={syncStatus?.status}
                 onPress={toggleShowStatusBanner}
               />
             )}
-            <HexBadge
-              rewardScale={
-                hotspot.rewardScale || hotspotDetailsHotspot?.rewardScale
-              }
-            />
+            <HexBadge rewardScale={hotspot.rewardScale} />
           </Box>
         </Box>
 

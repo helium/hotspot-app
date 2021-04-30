@@ -32,7 +32,7 @@ const WalletScreen = () => {
   const prevBlockHeight = usePrevious(blockHeight)
 
   const updateTxnData = useCallback((data: AnyTransaction[]) => {
-    animateTransition()
+    animateTransition('WalletScreen.UpdateTxnData')
     setTransactionData(data)
   }, [])
 
@@ -105,7 +105,7 @@ const WalletScreen = () => {
 
     if (nextShowSkeleton !== showSkeleton) {
       if (visible) {
-        animateTransition()
+        animateTransition('WalletScreen.ShowSkeleton')
       }
       setShowSkeleton(nextShowSkeleton)
     }

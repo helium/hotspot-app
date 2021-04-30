@@ -12,11 +12,11 @@ const WifiSettingsContainer = ({ onFinished }: Props) => {
 
   const handleNetworkSelected = useCallback((wifi: string) => {
     setSelectedNetwork(wifi)
-    animateTransition()
+    animateTransition('WifiSettingsContainer.HandleNetworkSelected')
   }, [])
 
   const handleBack = useCallback(() => {
-    animateTransition()
+    animateTransition('WifiSettingsContainer.HandleBack')
     if (selectedNetwork) {
       setSelectedNetwork(null)
     } else {

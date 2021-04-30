@@ -63,7 +63,7 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace }: Props) => {
   }, [])
 
   useEffect(() => {
-    animateTransition()
+    animateTransition('HotspotSearch.Hotspots.Locations.Change')
   }, [hotspots, locations])
 
   const listData = useMemo(() => [...hotspots, ...locations], [

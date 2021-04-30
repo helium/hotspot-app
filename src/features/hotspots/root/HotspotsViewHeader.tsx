@@ -12,11 +12,11 @@ import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Text from '../../../components/Text'
 
-const HotspotMapButtons = ({
+const HotspotsViewHeader = ({
   animatedPosition,
   showWitnesses,
   toggleShowWitnesses,
-  isVisible = true,
+  buttonsVisible = true,
   loading,
   detailHeaderHeight,
   showNoLocation,
@@ -24,7 +24,7 @@ const HotspotMapButtons = ({
   animatedPosition: Animated.SharedValue<number>
   showWitnesses: boolean
   toggleShowWitnesses: () => void
-  isVisible?: boolean
+  buttonsVisible?: boolean
   loading: boolean
   detailHeaderHeight: number
   showNoLocation: boolean
@@ -36,19 +36,19 @@ const HotspotMapButtons = ({
       bottom: -100,
       left: 0,
       right: 0,
-      opacity: isVisible ? 1 : 0,
+      opacity: buttonsVisible || showNoLocation ? 1 : 0,
       transform: [
         {
           translateY: interpolate(
             animatedPosition.value,
             [-1, 0],
-            [0, -1 * (detailHeaderHeight + 220)],
+            [0, -1 * (detailHeaderHeight + (showNoLocation ? 80 : 220))],
             Extrapolate.CLAMP,
           ),
         },
       ],
     }),
-    [animatedPosition, isVisible, detailHeaderHeight],
+    [animatedPosition, buttonsVisible, detailHeaderHeight],
   )
 
   const loadingStyle = useMemo(
@@ -62,12 +62,12 @@ const HotspotMapButtons = ({
   return (
     <Animated.View style={style}>
       <Box padding="m" flexDirection="row" alignItems="center">
-        {!loading && (
+        {!loading && buttonsVisible && (
           <TouchableOpacityBox onPress={toggleShowWitnesses} width={44}>
             {showWitnesses ? <EyeCircleButtonYellow /> : <EyeCircleButton />}
           </TouchableOpacityBox>
         )}
-        {loading && (
+        {loading && buttonsVisible && (
           <Box
             height={44}
             width={44}
@@ -104,4 +104,4 @@ const HotspotMapButtons = ({
   )
 }
 
-export default HotspotMapButtons
+export default HotspotsViewHeader

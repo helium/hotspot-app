@@ -104,7 +104,7 @@ const DiscoveryModeResultsCard = ({
       }
     }
 
-    animateTransition()
+    animateTransition('DiscoveryModeResultsCard.Results')
     return (
       <Box justifyContent="space-between">
         {items.map((i) => (
@@ -137,11 +137,11 @@ const DiscoveryModeResultsCard = ({
   const handleFollowChange = useCallback((following) => {
     if (!following) return
 
-    animateTransition()
+    animateTransition('DiscoveryModeResultsCard.HandleFollowChange')
     setNewlyAdded(true)
 
     setTimeout(() => {
-      animateTransition()
+      animateTransition('DiscoveryModeResultsCard.HandleFollowChange.Timeout')
       setNewlyAdded(false)
     }, 3000)
   }, [])

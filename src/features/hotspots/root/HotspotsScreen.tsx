@@ -62,7 +62,7 @@ const HotspotsScreen = () => {
         }
       }
     },
-    [requestLocationPermission, dispatch, permissionResponse],
+    [dispatch, permissionResponse, requestLocationPermission],
   )
 
   const browseMap = useCallback(async () => {

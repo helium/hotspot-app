@@ -61,17 +61,17 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
   }, [enableBack, onClose])
 
   const toggleUpdateAntenna = () => {
-    animateTransition(false)
+    animateTransition('UpdateHotspotConfig.ToggleUpdateAntenna', false)
     setIsLocationChange(false)
     setState('antenna')
   }
   const toggleUpdateLocation = () => {
-    animateTransition(false)
+    animateTransition('UpdateHotspotConfig.ToggleUpdateLocation', false)
     setIsLocationChange(true)
     setState('location')
   }
   const onConfirm = () => {
-    animateTransition(false)
+    animateTransition('UpdateHotspotConfig.OnConfirm', false)
     const feeData = calculateAssertLocFee(undefined, undefined, undefined)
     const feeDc = new Balance(feeData.fee, CurrencyType.dataCredit)
     setLocationFee(

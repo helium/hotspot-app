@@ -9,6 +9,7 @@ import { Animated, GestureResponderEvent } from 'react-native'
 import useHaptic from '../../utils/useHaptic'
 import { ChartData } from './types'
 import { useColors } from '../../theme/themeHooks'
+import usePrevious from '../../utils/usePrevious'
 
 // TODO
 // animate in?
@@ -35,6 +36,7 @@ const BarChart = ({
   downColor,
 }: Props) => {
   const [focusedBar, setFocusedBar] = useState<ChartData | null>(null)
+  const prevFocusedBar = usePrevious(focusedBar)
   const { greenBright, blueBright, white } = useColors()
   const { triggerImpact } = useHaptic()
 
@@ -43,8 +45,11 @@ const BarChart = ({
     if (focusedBar) {
       triggerImpact()
     }
-    onFocus(focusedBar)
-  }, [focusedBar, onFocus, triggerImpact])
+
+    if (prevFocusedBar !== undefined && prevFocusedBar !== focusedBar) {
+      onFocus(focusedBar)
+    }
+  }, [focusedBar, onFocus, prevFocusedBar, triggerImpact])
 
   // support charts that have no down values
   const hasDownBars = useMemo(() => some(data, ({ down }) => down > 0), [data])
