@@ -28,6 +28,7 @@ import {
 } from '../../../utils/fees'
 import useCurrency from '../../../utils/useCurrency'
 import {
+  getMemoBytesLeft,
   makeBurnTxn,
   makeBuyerTransferHotspotTxn,
   makePaymentTxn,
@@ -222,11 +223,13 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       const hasBalance =
         totalTxnAmount.integerBalance <= (account?.balance?.integerBalance || 0)
       setHasSufficientBalance(hasBalance)
+      const memoLength = getMemoBytesLeft(memo)
       setIsValid(
         isValidAddress &&
           hasBalance &&
           address !== account?.address &&
-          balanceAmount.integerBalance > 0,
+          balanceAmount.integerBalance > 0 &&
+          memoLength.valid,
       )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -238,6 +241,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     transferData?.seller,
     transferData?.amountToSeller,
     hasValidActivity,
+    memo,
   ])
 
   const getNonce = (): number => {

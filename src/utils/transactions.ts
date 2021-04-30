@@ -164,3 +164,12 @@ export const isPayer = (
 
 export const isPendingTransaction = (item: unknown) =>
   !!(item as PendingTransaction).createdAt
+
+export const getMemoBytesLeft = (
+  memo: string,
+): { numBytes: number; valid: boolean } => {
+  if (!memo) return { numBytes: 8, valid: true }
+  const buff = Buffer.from(memo)
+  const size = buff.byteLength
+  return { numBytes: size < 8 ? 8 - size : 0, valid: size <= 8 }
+}

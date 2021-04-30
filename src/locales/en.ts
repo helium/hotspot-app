@@ -515,6 +515,10 @@ export default {
     memo: {
       label: 'Memo',
       placeholder: 'Enter Memo... (optional)',
+      bytes_left: '{{count}} byte left',
+      bytes_left_plural: '{{count}} bytes left',
+      length_error:
+        'Memo is too long. Please edit the memo to 8 bytes or less.',
     },
     sendMax: 'Send Max',
     button: {

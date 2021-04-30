@@ -17,6 +17,7 @@ import LockedField from '../../../components/LockedField'
 import { SendType } from './sendTypes'
 import { Transfer } from '../../hotspots/transfers/TransferRequests'
 import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
+import { getMemoBytesLeft } from '../../../utils/transactions'
 
 type Props = {
   isValid: boolean
@@ -148,8 +149,32 @@ const SendForm = ({
         }
         footer={amount ? <FeeFooter fee={fee} /> : undefined}
       />
+      <InputField
+        defaultValue={memo}
+        onChange={onMemoChange}
+        label={t('send.memo.label')}
+        placeholder={t('send.memo.placeholder')}
+        footer={<MemoLengthCounter />}
+      />
     </Box>
   )
+
+  const MemoLengthCounter = () => {
+    if (!memo) return null
+    const bytesLeft = getMemoBytesLeft(memo)
+    return (
+      <Text
+        variant="mono"
+        color={bytesLeft.valid ? 'grayText' : 'redMedium'}
+        fontSize={11}
+        paddingTop="xs"
+      >
+        {bytesLeft.valid
+          ? t('send.memo.bytes_left', { count: bytesLeft.numBytes })
+          : t('send.memo.length_error')}
+      </Text>
+    )
+  }
 
   const renderBurnForm = () => (
     <Box>
