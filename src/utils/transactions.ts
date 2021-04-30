@@ -15,6 +15,7 @@ export const makePaymentTxn = async (
   amount: number,
   payeeB58: string,
   nonce: number,
+  memo?: string,
 ): Promise<PaymentV2> => {
   const keypair = await getKeypair()
   const payee = Address.fromB58(payeeB58)
@@ -27,6 +28,7 @@ export const makePaymentTxn = async (
       {
         payee,
         amount,
+        memo: memo || undefined,
       },
     ],
     nonce,

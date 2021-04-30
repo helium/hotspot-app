@@ -50,6 +50,7 @@ export const calculatePaymentTxnFee = async (
   amount: number,
   nonce: number,
   payeeB58?: string,
+  memo?: string,
 ) => {
   const keypair = await getKeypair()
   if (!keypair) throw new Error('missing keypair')
@@ -67,6 +68,7 @@ export const calculatePaymentTxnFee = async (
       {
         payee,
         amount,
+        memo: memo || undefined,
       },
     ],
     nonce,

@@ -269,6 +269,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
         balanceAmount.integerBalance,
         getNonce(),
         address,
+        memo,
       )
     }
 
@@ -442,7 +443,12 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
 
   const constructTxn = async () => {
     if (type === 'payment') {
-      return makePaymentTxn(balanceAmount.integerBalance, address, getNonce())
+      return makePaymentTxn(
+        balanceAmount.integerBalance,
+        address,
+        getNonce(),
+        memo,
+      )
     }
 
     if (type === 'dc_burn') {
