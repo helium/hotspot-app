@@ -29,28 +29,27 @@ const useVisible = (props?: Props) => {
   useEffect(() => {
     if (appStateStatus === 'background' && prevAppState !== 'background') {
       handleVisibility(false)
+      return
     }
 
-    if (appStateStatus === 'active' && prevAppState === 'background') {
+    if (appStateStatus === 'active' && prevAppState !== 'active') {
       handleVisibility(true)
     }
   }, [appStateStatus, handleVisibility, prevAppState])
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('blur', () => {
+    return navigation.addListener('blur', () => {
       handleVisibility(false)
     })
 
-    return unsubscribe
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handleVisibility])
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    return navigation.addListener('focus', () => {
       handleVisibility(true)
     })
 
-    return unsubscribe
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handleVisibility])
 

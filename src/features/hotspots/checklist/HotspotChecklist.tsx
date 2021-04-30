@@ -49,7 +49,7 @@ const HotspotChecklist = ({
   useEffect(() => {
     if (!visible) return
     if (!prevHotspot || prevHotspot.address !== hotspot.address) {
-      animateTransition()
+      animateTransition('HotspotChecklist.HotspotChange')
       setShowSkeleton(true)
       dispatch(fetchChecklistActivity(hotspot.address))
     }
@@ -59,7 +59,7 @@ const HotspotChecklist = ({
     if (!visible) return
 
     if (showSkeleton && !loadingActivity) {
-      animateTransition()
+      animateTransition('HotspotChecklist.LoadingChange')
       setShowSkeleton(false)
     }
   }, [loadingActivity, showSkeleton, visible])

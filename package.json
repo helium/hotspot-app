@@ -1,6 +1,6 @@
 {
   "name": "Helium",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -70,6 +70,7 @@
     "date-fns": "^2.16.1",
     "expo-barcode-scanner": "^9.1.0",
     "expo-haptics": "^8.3.0",
+    "expo-linking": "^2.2.3",
     "expo-local-authentication": "^9.3.0",
     "expo-location": "^9.0.1",
     "expo-permissions": "^9.3.0",
@@ -88,6 +89,7 @@
     "postinstall-postinstall": "^2.1.0",
     "protobufjs": "^6.10.2",
     "qs": "^6.9.6",
+    "query-string": "^7.0.0",
     "react": "17.0.1",
     "react-async-hook": "^3.6.2",
     "react-i18next": "^11.7.3",

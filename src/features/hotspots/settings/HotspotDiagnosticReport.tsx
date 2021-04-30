@@ -190,7 +190,7 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
 
   useEffect(() => {
     if (diagnostics) {
-      animateTransition()
+      animateTransition('HotspotDiagnosticReport.FinishLoad')
       setLoading(false)
     }
   }, [diagnostics])

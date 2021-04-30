@@ -10,16 +10,10 @@ import { LayoutChangeEvent } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { Hotspot } from '@helium/http'
-import { BottomSheetModal } from '@gorhom/bottom-sheet'
-import {
-  Extrapolate,
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated'
-import { useNavigation } from '@react-navigation/native'
+import BottomSheet, { BottomSheetModal } from '@gorhom/bottom-sheet'
+import { useSharedValue } from 'react-native-reanimated'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { GeoJsonProperties } from 'geojson'
-import HotspotIcon from '@assets/images/hotspot-icon-white.svg'
 import { isEqual } from 'lodash'
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import Search from '@assets/images/search.svg'
@@ -32,13 +26,10 @@ import Settings from '../../../assets/images/settings.svg'
 import Map from '../../../components/Map'
 import { RootState } from '../../../store/rootReducer'
 import hotspotDetailsSlice from '../../../store/hotspotDetails/hotspotDetailsSlice'
-import BSHandle from '../../../components/BSHandle'
-import HotspotMapButtons from './HotspotMapButtons'
+import HotspotsViewHeader from './HotspotsViewHeader'
 import useToggle from '../../../utils/useToggle'
 import HotspotsList from './HotspotsList'
 import HotspotDetails from '../details/HotspotDetails'
-import { ReAnimatedBox } from '../../../components/AnimatedBox'
-import { useColors } from '../../../theme/themeHooks'
 import BackButton from '../../../components/BackButton'
 import HotspotsEmpty from './HotspotsEmpty'
 import HotspotSettingsProvider from '../settings/HotspotSettingsProvider'
@@ -48,13 +39,16 @@ import HotspotDetailsHandle from '../details/HotspotDetailsHandle'
 import HotspotSearch from './HotspotSearch'
 import { getPlaceGeography, PlacePrediction } from '../../../utils/googlePlaces'
 import hotspotSearchSlice from '../../../store/hotspotSearch/hotspotSearchSlice'
-import animateTransition from '../../../utils/animateTransition'
 import FollowButton from '../../../components/FollowButton'
 import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
 import {
   locationIsValid,
   hotspotHasValidLocation,
 } from '../../../utils/location'
+import { HotspotStackParamList } from './hotspotTypes'
+import animateTransition from '../../../utils/animateTransition'
+import usePrevious from '../../../utils/usePrevious'
+import useVisible from '../../../utils/useVisible'
 
 type Props = {
   ownedHotspots?: Hotspot[]
@@ -64,7 +58,7 @@ type Props = {
   onViewMap: (prompt: boolean) => void
 }
 
-type ViewState = 'list' | 'search' | 'details' | 'details_and_map' | 'map'
+type Route = RouteProp<HotspotStackParamList, 'HotspotsScreen'>
 
 const HotspotsView = ({
   ownedHotspots,
@@ -73,37 +67,33 @@ const HotspotsView = ({
   onViewMap,
   location: propsLocation,
 }: Props) => {
+  type BackStackEntry = {
+    viewState: 'details' | 'search' | 'list'
+    bottomSheetIndex: number
+  }
+  const [backStack, setBackStack] = useState<BackStackEntry[]>([])
   const navigation = useNavigation()
+  const { params } = useRoute<Route>()
   const { t } = useTranslation()
   const dispatch = useDispatch()
-  const colors = useColors()
-  const [viewState, setViewState] = useState<ViewState>(
-    startOnMap ? 'map' : 'list',
-  )
+  const [linkedHotspotAddress, setLinkedHotspotAddress] = useState('')
   const [location, setLocation] = useState(propsLocation)
-  const [backViewState, setBackViewState] = useState<ViewState>(viewState)
-  const [detailsSnapIndex, setDetailsSnapIndex] = useState(startOnMap ? 0 : 1)
   const [showDetailsNav, setShowDetailsNav] = useState(false)
+  const [showDetails, setShowDetails] = useState(false)
+  const [isSearching, setIsSearching] = useState(false)
   const listRef = useRef<BottomSheetModal>(null)
-  const detailsRef = useRef<BottomSheetModal>(null)
-  const [listHeight, setListHeight] = useState(0)
-  const [detailHeaderHeight, setDetailHeaderHeight] = useState(0)
+  const [listHeight, setListHeight] = useState(144)
+  const [detailHeaderHeight, setDetailHeaderHeight] = useState(144)
+  const [bottomSheetIndex, setBottomSheetIndex] = useState(startOnMap ? 0 : 1)
+  const prevBottomSheetIndex = usePrevious(bottomSheetIndex)
+  const visible = useVisible()
+  const prevVisible = usePrevious(visible)
+  const prevShowDetails = usePrevious(showDetails)
 
-  const listSnapPoints = useMemo(() => [listHeight], [listHeight])
-
-  const detailSnapPoints = useMemo(() => {
-    return [detailHeaderHeight, '75%']
-  }, [detailHeaderHeight])
-
-  const animatedListPosition = useSharedValue<number>(0)
-  const animatedDetailsPosition = useSharedValue<number>(0)
+  const animatedIndex = useSharedValue<number>(0)
 
   const [showWitnesses, toggleShowWitnesses] = useToggle(false)
 
-  const networkHotspots = useSelector(
-    (state: RootState) => state.networkHotspots.networkHotspots,
-    isEqual,
-  )
   const selectedHotspot = useSelector(
     (state: RootState) => state.hotspots.selectedHotspot,
     isEqual,
@@ -112,6 +102,30 @@ const HotspotsView = ({
     (state: RootState) => state.location.locationBlocked,
   )
 
+  const hotspotAddress = useMemo(
+    () => selectedHotspot?.address || linkedHotspotAddress || '',
+    [selectedHotspot, linkedHotspotAddress],
+  )
+
+  useEffect(() => {
+    const shouldShowDetails = !!hotspotAddress
+    if (shouldShowDetails === showDetails) return
+
+    if (visible && prevVisible) {
+      animateTransition('HotspotsView.DetailsChange', false)
+    }
+    setShowDetails(shouldShowDetails)
+  }, [hotspotAddress, prevVisible, showDetails, visible])
+
+  useEffect(() => {
+    setLinkedHotspotAddress(params?.address || '')
+  }, [params])
+
+  const snapPoints = useMemo(() => {
+    if (showDetails) return [detailHeaderHeight, listHeight]
+    return [1, listHeight]
+  }, [detailHeaderHeight, listHeight, showDetails])
+
   const hasHotspots = useMemo(
     () => ownedHotspots?.length || followedHotspots?.length,
     [followedHotspots?.length, ownedHotspots?.length],
@@ -119,23 +133,9 @@ const HotspotsView = ({
 
   const hotspotDetailsData =
     useSelector(
-      (state: RootState) =>
-        state.hotspotDetails.hotspotData[selectedHotspot?.address || ''],
+      (state: RootState) => state.hotspotDetails.hotspotData[hotspotAddress],
     ) || {}
   const { witnesses, loading } = hotspotDetailsData || {}
-
-  const updateViewState = useCallback(
-    (nextState: ViewState, backState: ViewState = 'list') => {
-      if (nextState === viewState) return
-
-      setBackViewState(backState)
-      if (viewState !== 'map') {
-        animateTransition(false)
-      }
-      setViewState(nextState)
-    },
-    [viewState],
-  )
 
   const showHotspotDetails = useCallback(
     (hotspot?: Hotspot, showNav = false) => {
@@ -150,38 +150,22 @@ const HotspotsView = ({
   }, [propsLocation])
 
   useEffect(() => {
-    switch (viewState) {
-      case 'details':
-        setDetailsSnapIndex(1)
-        listRef.current?.dismiss()
-        detailsRef.current?.present()
-        break
-      case 'search':
-      case 'list':
-        listRef.current?.present()
-        detailsRef.current?.dismiss()
-        break
-      case 'map':
-        detailsRef.current?.dismiss()
-        listRef.current?.dismiss()
-        break
-      case 'details_and_map':
-        setDetailsSnapIndex(0)
-        listRef.current?.dismiss()
-        detailsRef.current?.present()
-        break
-    }
-  }, [viewState, startOnMap])
+    if (
+      isSearching ||
+      showDetails ||
+      bottomSheetIndex !== 0 ||
+      bottomSheetIndex === prevBottomSheetIndex
+    )
+      return
 
-  const focusClosestHotspot = useCallback(() => {
-    const localHotspots = Object.values(networkHotspots)
-    if (!hasHotspots && localHotspots && localHotspots[0]) {
-      const hotspot = {
-        ...localHotspots[0],
-      } as Hotspot
-      showHotspotDetails(hotspot)
-    }
-  }, [hasHotspots, networkHotspots, showHotspotDetails])
+    onViewMap(true)
+  }, [
+    bottomSheetIndex,
+    isSearching,
+    onViewMap,
+    prevBottomSheetIndex,
+    showDetails,
+  ])
 
   const hasUserLocation = useMemo(
     () =>
@@ -193,15 +177,30 @@ const HotspotsView = ({
   )
 
   useEffect(() => {
-    if (viewState === 'map' && !selectedHotspot && !hasUserLocation) {
-      if (ownedHotspots && ownedHotspots.length > 0) {
-        setLocation([ownedHotspots[0].lng || 0, ownedHotspots[0].lat || 0]) // Set map loc to one of their hotspots
-      } else {
-        setLocation([122.4194, 37.7749]) // SF - This shouldn't actually be possible
-      }
+    if (hotspotAddress || hasUserLocation) return
+
+    if (
+      ownedHotspots &&
+      ownedHotspots.length > 0 &&
+      hotspotHasValidLocation(ownedHotspots[0])
+    ) {
+      setLocation([ownedHotspots[0].lng || 0, ownedHotspots[0].lat || 0]) // Set map loc to one of their hotspots
+    } else if (
+      followedHotspots &&
+      followedHotspots.length > 0 &&
+      hotspotHasValidLocation(followedHotspots[0])
+    ) {
+      setLocation([followedHotspots[0].lng || 0, followedHotspots[0].lat || 0]) // Set map loc to one of their followed hotspots
+    } else {
+      setLocation([122.4194, 37.7749]) // SF - This shouldn't actually be possible
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [viewState, networkHotspots])
+  }, [
+    bottomSheetIndex,
+    followedHotspots,
+    hasUserLocation,
+    hotspotAddress,
+    ownedHotspots,
+  ])
 
   const handleLayoutList = useCallback((event: LayoutChangeEvent) => {
     setListHeight(event.nativeEvent.layout.height - 166)
@@ -212,54 +211,54 @@ const HotspotsView = ({
   }, [])
 
   const handlePresentDetails = useCallback(
-    (backView: ViewState) => (hotspot: Hotspot, showNav = false) => {
-      updateViewState('details', backView)
+    () => (hotspot: Hotspot, showNav = false) => {
       showHotspotDetails(hotspot, showNav)
     },
-    [showHotspotDetails, updateViewState],
+    [showHotspotDetails],
   )
-
-  const handleListDismiss = useCallback(() => {
-    if (viewState === 'details') return
-    updateViewState('map')
-    onViewMap(true)
-  }, [updateViewState, viewState, onViewMap])
-
-  const handleDetailsChange = useCallback((index: number) => {
-    if (index === 1) {
-      setViewState('details')
-    } else if (index === 0) {
-      setViewState('details_and_map')
-    }
-  }, [])
 
   const handleSelectPlace = useCallback(
     async (place: PlacePrediction) => {
-      updateViewState('map', 'search')
       showHotspotDetails(undefined)
       const placeLocation = await getPlaceGeography(place.placeId)
       setLocation([placeLocation.lng, placeLocation.lat])
+      listRef.current?.snapTo(0)
     },
-    [showHotspotDetails, updateViewState],
+    [showHotspotDetails],
   )
 
-  const handlePressMyHotspots = useCallback(() => {
-    if (ownedHotspots && ownedHotspots.length > 0) {
-      showHotspotDetails(ownedHotspots[0])
-    } else {
-      focusClosestHotspot()
+  const handleBack = useCallback(async () => {
+    if (
+      backStack.find(
+        (entry, idx) =>
+          idx !== backStack.length - 1 &&
+          entry.bottomSheetIndex === 0 &&
+          entry.viewState === 'list',
+      )
+    ) {
+      setBackStack([])
+      animateTransition('HotspotsView.HandleBack', false)
+      showHotspotDetails(undefined)
+      setLinkedHotspotAddress('')
+      return
     }
-    updateViewState('details_and_map')
-  }, [focusClosestHotspot, ownedHotspots, showHotspotDetails, updateViewState])
+
+    if (bottomSheetIndex === 0) {
+      listRef.current?.snapTo(1)
+      return
+    }
+
+    const last = backStack[backStack.length - 1]
+    if (last.viewState === 'details') {
+      animateTransition('HotspotsView.HandleBack', false)
+      showHotspotDetails(undefined)
+      setLinkedHotspotAddress('')
+    }
+  }, [backStack, bottomSheetIndex, showHotspotDetails])
 
   const dismissList = useCallback(() => {
-    updateViewState('map')
-  }, [updateViewState])
-
-  const handleBack = useCallback(() => {
-    updateViewState(backViewState)
-    showHotspotDetails(undefined)
-  }, [updateViewState, backViewState, showHotspotDetails])
+    listRef.current?.snapTo(0)
+  }, [])
 
   useEffect(() => {
     const navParent = navigation.dangerouslyGetParent() as BottomTabNavigationProp<RootStackParamList>
@@ -278,46 +277,8 @@ const HotspotsView = ({
         ...properties,
       } as Hotspot
       showHotspotDetails(hotspot)
-      updateViewState(
-        'details_and_map',
-        backViewState === 'search' ? 'search' : 'list',
-      )
     },
-    [backViewState, showHotspotDetails, updateViewState],
-  )
-
-  const backdropStyles = useAnimatedStyle(
-    () => ({
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      top: 0,
-      bottom: 0,
-      backgroundColor: colors.purpleMain,
-      opacity: interpolate(
-        animatedListPosition.value,
-        [0, 1],
-        [0, 1],
-        Extrapolate.CLAMP,
-      ),
-    }),
-    [animatedListPosition, colors, listSnapPoints],
-  )
-
-  const backdropTitleStyles = useAnimatedStyle(
-    () => ({
-      transform: [
-        {
-          translateY: interpolate(
-            animatedListPosition.value,
-            [0, 1],
-            [-100, 0],
-            Extrapolate.CLAMP,
-          ),
-        },
-      ],
-    }),
-    [animatedListPosition, listSnapPoints],
+    [showHotspotDetails],
   )
 
   const containerStyles = useMemo(
@@ -328,9 +289,12 @@ const HotspotsView = ({
   )
 
   const hotspotHasLocation = useMemo(() => {
-    if (!selectedHotspot) return true
-    return hotspotHasValidLocation(selectedHotspot)
-  }, [selectedHotspot])
+    if (!hotspotAddress) return true
+
+    return hotspotHasValidLocation(
+      selectedHotspot || hotspotDetailsData.hotspot,
+    )
+  }, [hotspotAddress, hotspotDetailsData.hotspot, selectedHotspot])
 
   const toggleSettings = useCallback(() => {
     dispatch(hotspotDetailsSlice.actions.toggleShowSettings())
@@ -341,24 +305,59 @@ const HotspotsView = ({
     [navigation],
   )
 
-  const detailsHandle = useCallback(() => {
-    if (!selectedHotspot) return null
+  const cardHandle = useCallback(
+    () => <HotspotDetailsHandle showNav={showDetails && showDetailsNav} />,
+    [showDetails, showDetailsNav],
+  )
 
-    return <HotspotDetailsHandle showNav={showDetailsNav} />
-  }, [selectedHotspot, showDetailsNav])
+  const updateBackStack = useCallback(
+    (viewState: 'list' | 'details' | 'search') => {
+      if (viewState === 'list' && bottomSheetIndex === 1) {
+        setBackStack([{ viewState, bottomSheetIndex }])
+        return
+      }
 
-  const listBody = useMemo(() => {
-    if (viewState === 'search') {
+      setBackStack((stack) => [...stack, { viewState, bottomSheetIndex }])
+    },
+    [bottomSheetIndex],
+  )
+
+  useEffect(() => {
+    if (showDetails) {
+      updateBackStack('details')
+      return
+    }
+
+    if (isSearching) {
+      updateBackStack('search')
+      return
+    }
+
+    updateBackStack('list')
+  }, [isSearching, showDetails, updateBackStack])
+
+  const body = useMemo(() => {
+    if (showDetails)
+      return (
+        <HotspotDetails
+          hotspotAddress={linkedHotspotAddress}
+          hotspot={selectedHotspot}
+          onLayoutHeader={handleDetailHeaderLayout}
+          onFailure={handleBack}
+        />
+      )
+
+    if (isSearching) {
       return (
         <HotspotSearch
-          onSelectHotspot={handlePresentDetails('search')}
+          onSelectHotspot={handlePresentDetails()}
           onSelectPlace={handleSelectPlace}
         />
       )
     }
 
     if (hasHotspots)
-      return <HotspotsList onSelectHotspot={handlePresentDetails('list')} />
+      return <HotspotsList onSelectHotspot={handlePresentDetails()} />
 
     return (
       <HotspotsEmpty
@@ -369,60 +368,69 @@ const HotspotsView = ({
     )
   }, [
     dismissList,
+    handleBack,
+    handleDetailHeaderLayout,
     handlePresentDetails,
     handleSelectPlace,
     hasHotspots,
+    isSearching,
+    linkedHotspotAddress,
     locationBlocked,
-    viewState,
+    selectedHotspot,
+    showDetails,
   ])
 
-  const detailBody = useMemo(() => {
-    return (
-      <HotspotDetails
-        hotspot={selectedHotspot}
-        onLayoutHeader={handleDetailHeaderLayout}
-      />
-    )
-  }, [handleDetailHeaderLayout, selectedHotspot])
-
-  const setSearching = useCallback(
+  const handleSearching = useCallback(
     (searching: boolean) => () => {
-      if (searching) {
-        updateViewState('search')
-      } else {
-        updateViewState('list')
-      }
+      setIsSearching(searching)
       dispatch(hotspotSearchSlice.actions.clear())
     },
-    [dispatch, updateViewState],
+    [dispatch],
   )
 
-  const menuOptions = useMemo(() => {
-    if (viewState === 'search') {
+  const title = useMemo(() => {
+    if (isSearching) return t('hotspots.search.title')
+    if (hasHotspots) return t('hotspots.owned.title')
+    return t('hotspots.owned.title_no_hotspots')
+  }, [hasHotspots, isSearching, t])
+
+  const leftMenuOptions = useMemo(() => {
+    if (showDetails || bottomSheetIndex === 0) {
       return (
-        <TouchableOpacityBox onPress={setSearching(false)} padding="s">
+        <BackButton
+          alignSelf="center"
+          paddingHorizontal="none"
+          paddingVertical="m"
+          onPress={handleBack}
+        />
+      )
+    }
+    return <Text variant="h3">{title}</Text>
+  }, [showDetails, bottomSheetIndex, title, handleBack])
+
+  const rightMenuOptions = useMemo(() => {
+    if (isSearching && !showDetails && bottomSheetIndex === 1) {
+      return (
+        <TouchableOpacityBox onPress={handleSearching(false)} padding="s">
           <Close width={22} height={22} color="white" />
         </TouchableOpacityBox>
       )
     }
-    if (
-      (viewState === 'details' || viewState === 'details_and_map') &&
-      selectedHotspot
-    ) {
+    if (showDetails) {
       return (
         <>
           <TouchableOpacityBox onPress={toggleSettings} padding="s">
             <Settings width={22} height={22} color="white" />
           </TouchableOpacityBox>
 
-          <FollowButton padding="s" address={selectedHotspot?.address} />
+          <FollowButton padding="s" address={hotspotAddress} />
         </>
       )
     }
-    if (viewState === 'list') {
+    if (bottomSheetIndex === 1)
       return (
         <>
-          <TouchableOpacityBox onPress={setSearching(true)} padding="s">
+          <TouchableOpacityBox onPress={handleSearching(true)} padding="s">
             <Search width={22} height={22} color="white" />
           </TouchableOpacityBox>
           <TouchableOpacityBox onPress={handleHotspotSetup} padding="s">
@@ -430,21 +438,16 @@ const HotspotsView = ({
           </TouchableOpacityBox>
         </>
       )
-    }
     return null
   }, [
+    isSearching,
+    showDetails,
+    bottomSheetIndex,
+    handleSearching,
     handleHotspotSetup,
-    selectedHotspot,
-    setSearching,
     toggleSettings,
-    viewState,
+    hotspotAddress,
   ])
-
-  const title = useMemo(() => {
-    if (viewState === 'search') return t('hotspots.search.title')
-    if (hasHotspots) return t('hotspots.owned.title')
-    return t('hotspots.owned.title_no_hotspots')
-  }, [hasHotspots, t, viewState])
 
   return (
     <Box flex={1} flexDirection="column" justifyContent="space-between">
@@ -472,82 +475,51 @@ const HotspotsView = ({
           showNoLocation={!hotspotHasLocation}
           showNearbyHotspots
         />
-        <HotspotMapButtons
-          animatedPosition={animatedDetailsPosition}
+        <HotspotsViewHeader
+          animatedPosition={animatedIndex}
           showWitnesses={showWitnesses}
           toggleShowWitnesses={toggleShowWitnesses}
           loading={loading}
           detailHeaderHeight={detailHeaderHeight}
-          isVisible={!!selectedHotspot && hotspotHasLocation}
-          showNoLocation={!locationIsValid(propsLocation)}
+          buttonsVisible={
+            !!hotspotAddress &&
+            hotspotHasLocation &&
+            showDetails &&
+            prevShowDetails
+          }
+          showNoLocation={!locationIsValid(propsLocation) && !showDetails}
         />
-        <ReAnimatedBox pointerEvents="none" style={backdropStyles} />
-        <ReAnimatedBox
-          position="absolute"
-          top={0}
-          width="100%"
-          padding="m"
-          style={backdropTitleStyles}
-        >
-          <TouchableOpacityBox
-            flexDirection="row"
-            justifyContent="center"
-            onPress={handlePressMyHotspots}
-          >
-            <Box marginRight="s">
-              <HotspotIcon />
-            </Box>
-            <Text variant="body1Bold" color="white">
-              {hasHotspots
-                ? t('hotspots.owned.title')
-                : t('hotspots.owned.title_no_hotspots')}
-            </Text>
-          </TouchableOpacityBox>
-        </ReAnimatedBox>
       </Box>
       <Box
         flexDirection="row"
         justifyContent="space-between"
         alignItems="center"
-        padding="m"
+        paddingHorizontal="m"
+        height={75}
       >
-        {viewState !== 'list' && viewState !== 'search' ? (
-          <BackButton
-            paddingHorizontal="none"
-            paddingVertical="s"
-            onPress={handleBack}
-          />
-        ) : (
-          <Text variant="h3">{title}</Text>
-        )}
+        {leftMenuOptions}
 
         <Box flexDirection="row" justifyContent="space-between">
-          {menuOptions}
+          {rightMenuOptions}
         </Box>
       </Box>
 
-      <BottomSheetModal
+      <BottomSheet
         ref={listRef}
-        snapPoints={listSnapPoints}
-        index={0}
-        handleComponent={BSHandle}
-        animatedIndex={animatedListPosition}
-        onDismiss={handleListDismiss}
+        snapPoints={snapPoints}
+        index={bottomSheetIndex}
+        handleComponent={cardHandle}
+        animatedIndex={animatedIndex}
+        onChange={setBottomSheetIndex}
+        enableContentPanningGesture={
+          !isSearching || (isSearching && showDetails)
+        }
+        enableHandlePanningGesture={
+          !isSearching || (isSearching && showDetails)
+        }
       >
-        {listBody}
-      </BottomSheetModal>
-
-      <BottomSheetModal
-        ref={detailsRef}
-        snapPoints={detailSnapPoints}
-        index={detailsSnapIndex}
-        handleComponent={detailsHandle}
-        animatedIndex={animatedDetailsPosition}
-        dismissOnPanDown={false}
-        onChange={handleDetailsChange}
-      >
-        {detailBody}
-      </BottomSheetModal>
+        {body}
+      </BottomSheet>
 
       <HotspotSettingsProvider>
         <HotspotSettings hotspot={selectedHotspot} />

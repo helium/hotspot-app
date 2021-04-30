@@ -1,6 +1,5 @@
 import { Hotspot } from '@helium/http'
 import { getUnixTime } from 'date-fns'
-import { cloneDeep } from 'lodash'
 import React, {
   memo,
   useCallback,
@@ -10,8 +9,8 @@ import React, {
   useState,
 } from 'react'
 import { useAsync } from 'react-async-hook'
-import Config from 'react-native-config'
 import { useSelector } from 'react-redux'
+import animalName from 'angry-purple-tiger'
 import discoverySlice, {
   fetchDiscoveryById,
   fetchRecentDiscoveries,
@@ -32,10 +31,9 @@ import DiscoveryModeResults from './DiscoveryModeResults'
 type State = 'begin' | 'results'
 
 type Props = { onClose: () => void; hotspot: Hotspot }
-const DiscoveryModeRoot = ({ onClose, hotspot: propsHotspot }: Props) => {
+const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
   const [viewState, setViewState] = useState<State>('begin')
   const [time, setTime] = useState(0)
-  const [hotspot, setHotspot] = useState(propsHotspot)
   const { enableBack } = useHotspotSettingsContext()
   const { result: userAddress } = useAsync(getSecureItem, ['address'])
   const dispatch = useAppDispatch()
@@ -63,23 +61,6 @@ const DiscoveryModeRoot = ({ onClose, hotspot: propsHotspot }: Props) => {
       fetchRecent()
     }
   }, [fetchRecent, viewState])
-
-  useEffect(() => {
-    // TODO: Remove this and just use the hotspot from props
-
-    const lat = Number(Config.DISCO_HOTSPOT_LAT)
-    const lng = Number(Config.DISCO_HOTSPOT_LNG)
-    const address = Config.DISCO_HOTSPOT_ADDRESS
-    const name = Config.DISCO_HOTSPOT_NAME
-    if (lat && lng && address && name) {
-      const cloned = cloneDeep(propsHotspot)
-      cloned.lat = lat
-      cloned.lng = lng
-      cloned.address = address
-      cloned.name = name
-      setHotspot(cloned)
-    }
-  }, [propsHotspot])
 
   const requestSeconds = useMemo(() => {
     const insertDate = selectedRequest
@@ -144,7 +125,7 @@ const DiscoveryModeRoot = ({ onClose, hotspot: propsHotspot }: Props) => {
     }
 
     if (viewState === 'results') {
-      animateTransition()
+      animateTransition('DiscoveryModeRoot.HandleBack')
       setViewState('begin')
       dispatch(discoverySlice.actions.clearSelections())
       fetchRecent()
@@ -154,15 +135,20 @@ const DiscoveryModeRoot = ({ onClose, hotspot: propsHotspot }: Props) => {
   const handleNewSelected = useCallback(async () => {
     if (!hotspot.address || !userAddress) return
 
-    animateTransition()
+    animateTransition('DiscoveryModeRoot.HandleNewSelected')
     setViewState('results')
 
-    dispatch(startDiscovery({ hotspotAddress: hotspot.address }))
-  }, [dispatch, hotspot.address, userAddress])
+    dispatch(
+      startDiscovery({
+        hotspotAddress: hotspot.address,
+        hotspotName: hotspot.name || animalName(hotspot.address),
+      }),
+    )
+  }, [dispatch, hotspot.address, hotspot.name, userAddress])
 
   const handleRequestSelected = (request: DiscoveryRequest) => {
     dispatch(discoverySlice.actions.setSelectedRequest(request))
-    animateTransition()
+    animateTransition('DiscoveryModeRoot.HandleRequestSelected')
     setViewState('results')
   }
 

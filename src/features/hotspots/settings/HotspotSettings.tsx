@@ -96,7 +96,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
   const setNextState = useCallback(
     (s: State) => {
       if (s === settingsState) return
-      animateTransition()
+      animateTransition('HotspotSettings.SetNextState')
       setSettingsState(s)
     },
     [settingsState],

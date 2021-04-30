@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Device } from 'react-native-ble-plx'
 import { useSelector } from 'react-redux'
-import { useAsync } from 'react-async-hook'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import Paired from '../../../assets/images/paired.svg'
@@ -10,14 +9,12 @@ import { HotspotOptions, HotspotOptionsKeys } from './HotspotSettingsTypes'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Diagnostic from '../../../assets/images/diagnostic.svg'
 import Wifi from '../../../assets/images/wifi.svg'
-import Reassert from '../../../assets/images/reassert.svg'
 import Firmware from '../../../assets/images/firmware.svg'
 import Chevron from '../../../assets/images/chevron-right.svg'
 import { useColors } from '../../../theme/themeHooks'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import { RootState } from '../../../store/rootReducer'
 import animateTransition from '../../../utils/animateTransition'
-import { getSecureItem } from '../../../utils/secureAccount'
 
 type Opts = 'scan' | HotspotOptions
 type Props = { hotspot?: Device; optionSelected: (option: Opts) => void }
@@ -26,10 +23,6 @@ const HotspotDiagnosticOptions = ({ hotspot, optionSelected }: Props) => {
   const firmware = useSelector(
     (state: RootState) => state.connectedHotspot.firmware,
   )
-  const owner = useSelector(
-    (state: RootState) => state.connectedHotspot.details?.owner,
-  )
-  const { result: address } = useAsync(getSecureItem, ['address'])
 
   const { purpleMain } = useColors()
   const { checkFirmwareCurrent } = useConnectedHotspotContext()
@@ -40,18 +33,8 @@ const HotspotDiagnosticOptions = ({ hotspot, optionSelected }: Props) => {
     }
   }, [firmware, checkFirmwareCurrent])
 
-  const optionKeys = useMemo(() => {
-    const opts = [...HotspotOptionsKeys]
-
-    if (owner !== address) {
-      opts.splice(opts.indexOf('reassert'), 1)
-    }
-
-    return opts
-  }, [address, owner])
-
   const selectOption = (opt: Opts) => () => {
-    animateTransition()
+    animateTransition('HotspotDiagnosticOptions.SelectOption')
     optionSelected(opt)
   }
 
@@ -68,7 +51,7 @@ const HotspotDiagnosticOptions = ({ hotspot, optionSelected }: Props) => {
           </Text>
         </Box>
       </Box>
-      {optionKeys.map((k, index) => {
+      {HotspotOptionsKeys.map((k, index) => {
         return (
           <TouchableOpacityBox
             key={k}
@@ -81,17 +64,16 @@ const HotspotDiagnosticOptions = ({ hotspot, optionSelected }: Props) => {
             onPress={selectOption(k)}
             paddingHorizontal="m"
             borderBottomLeftRadius={
-              index === optionKeys.length - 1 ? 'l' : undefined
+              index === HotspotOptionsKeys.length - 1 ? 'l' : undefined
             }
             borderBottomRightRadius={
-              index === optionKeys.length - 1 ? 'l' : undefined
+              index === HotspotOptionsKeys.length - 1 ? 'l' : undefined
             }
             borderTopLeftRadius={index === 0 ? 'l' : undefined}
             borderTopRightRadius={index === 0 ? 'l' : undefined}
           >
             {k === 'diagnostic' && <Diagnostic />}
             {k === 'wifi' && <Wifi />}
-            {k === 'reassert' && <Reassert />}
             {k === 'firmware' && <Firmware />}
             <Text
               variant="body1"
