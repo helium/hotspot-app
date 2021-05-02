@@ -23,6 +23,7 @@ export type NotificationState = {
   pushNotification?: OSNotification
   notifications: Notification[]
   markNotificationStatus: Loading
+  loadingNotification: boolean
 }
 
 export const fetchNotifications = createAsyncThunk<Notification[]>(
@@ -41,6 +42,7 @@ export const markNotificationsViewed = createAsyncThunk<Notification[]>(
 const initialState = {
   notifications: [],
   markNotificationStatus: 'idle',
+  loadingNotification: false,
 } as NotificationState
 
 const notificationSlice = createSlice({
@@ -68,8 +70,15 @@ const notificationSlice = createSlice({
     builder.addCase(markNotificationsViewed.rejected, (state, _action) => {
       state.markNotificationStatus = 'rejected'
     })
+    builder.addCase(fetchNotifications.pending, (state, _action) => {
+      state.loadingNotification = true
+    })
     builder.addCase(fetchNotifications.fulfilled, (state, { payload }) => {
       state.notifications = payload
+      state.loadingNotification = false
+    })
+    builder.addCase(fetchNotifications.rejected, (state, _action) => {
+      state.loadingNotification = false
     })
   },
 })

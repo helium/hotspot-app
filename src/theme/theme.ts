@@ -30,6 +30,7 @@ const palette = {
   grayDarkText: '#515686',
   grayLightText: '#A7AACD',
   grayPurple: '#E3E5F8',
+  grayHighlight: '#EBEDF9',
 
   redMain: '#F97570',
   redMedium: '#FF6666',

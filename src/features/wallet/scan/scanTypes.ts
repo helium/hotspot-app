@@ -1,19 +1,8 @@
-export type ScanType = 'payment' | 'dc_burn' | 'transfer'
-
-type Payee = {
-  address: string
-  amount?: string
-  memo?: string
-}
-
-export interface QrScanResult {
-  type: ScanType
-  payees: Array<Payee>
-}
+import { AppLink } from '../../../providers/appLinkTypes'
 
 export type ScanStackParamList = {
   Scan: {
-    type?: ScanType
+    type?: AppLink
     showBottomSheet?: boolean
   }
 }

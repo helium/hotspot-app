@@ -56,7 +56,7 @@ const ReassertLocation = ({
   )
 
   const handleBack = useCallback(() => {
-    animateTransition(false)
+    animateTransition('ReassertLocation.HandleBack', false)
     switch (state) {
       case 'fee':
         onFinished(undefined, '')
@@ -83,7 +83,7 @@ const ReassertLocation = ({
   }
 
   const handleSearch = useCallback(() => {
-    animateTransition(false)
+    animateTransition('ReassertLocation.HandleSearch', false)
     onStateChange('search')
     setState('search')
   }, [onStateChange])
@@ -113,7 +113,7 @@ const ReassertLocation = ({
           {...feeData}
           hotspot={hotspot}
           onChangeLocation={() => {
-            animateTransition(false)
+            animateTransition('ReassertLocation.OnChangeLocation', false)
             onStateChange('update')
             setState('update')
           }}
@@ -135,7 +135,7 @@ const ReassertLocation = ({
           locationSelected={(latitude, longitude, name) => {
             setUpdatedLocation({ latitude, longitude })
             setLocationName(name)
-            animateTransition(false)
+            animateTransition('ReassertLocation.LocationSelected', false)
             onStateChange('confirm')
             setState('confirm')
           }}

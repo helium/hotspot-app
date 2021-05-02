@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native'
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FlatList } from 'react-native-gesture-handler'
 import { Edge } from 'react-native-safe-area-context'
@@ -24,6 +24,11 @@ const HotspotSetupSelectionScreen = () => {
   const navigation = useNavigation<HotspotSetupNavigationProp>()
   const dispatch = useAppDispatch()
   const edges = useMemo((): Edge[] => ['top', 'left', 'right'], [])
+
+  // clear any existing onboarding state
+  useEffect(() => {
+    dispatch(hotspotOnboardingSlice.actions.reset())
+  }, [dispatch])
 
   const handlePress = useCallback(
     (hotspotType: HotspotType) => () => {

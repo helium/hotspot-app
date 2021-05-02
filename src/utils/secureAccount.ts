@@ -106,6 +106,14 @@ const makeSignature = async (token: { address: string; time: number }) => {
   return buffer.toString('base64')
 }
 
+export const makeDiscoverySignature = async (hotspotAddress: string) => {
+  const keypair = await getKeypair()
+  if (!keypair) return
+  const buffer = await keypair.sign(hotspotAddress)
+
+  return buffer.toString('base64')
+}
+
 const makeWalletApiToken = async (address: string) => {
   const time = Math.floor(Date.now() / 1000)
 
