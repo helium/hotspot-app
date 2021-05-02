@@ -221,14 +221,19 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     } else {
       let isValidSend = true
       let totalSendAmount = new Balance(0, CurrencyType.networkToken)
-      sendDetails.forEach(({ address, balanceAmount, fee }) => {
+      sendDetails.forEach(({ address, balanceAmount }) => {
         const isValidTransferAddress =
           Address.isValid(address) && address !== account?.address
         if (!isValidTransferAddress) isValidSend = false
         const isValidTransferAmount = balanceAmount.integerBalance > 0
         if (!isValidTransferAmount) isValidSend = false
-        totalSendAmount = totalSendAmount.plus(balanceAmount.plus(fee))
+        totalSendAmount = totalSendAmount.plus(balanceAmount)
       })
+      // Only one fee is charged per transaction regardless of how many individual payments are
+      // made, so add the fee once from the first send detail
+      if (sendDetails.length > 0) {
+        totalSendAmount = totalSendAmount.plus(sendDetails[0].fee)
+      }
       // TODO balance compare/greater than/less than
       const hasBalance =
         totalSendAmount.integerBalance <=
