@@ -22,6 +22,7 @@ import { fetchNetworkHotspots } from '../../../../store/networkHotspots/networkH
 import { getHotspotDetails } from '../../../../utils/appDataClient'
 import DiscoveryModeResultsCard from './DiscoveryModeResultsCard'
 import { usesMetricSystem } from '../../../../utils/i18n'
+import filterDiscoveryResponses from './filterDiscoveryResponses'
 
 type Props = {
   request?: DiscoveryRequest | null
@@ -38,9 +39,9 @@ const DiscoveryModeResults = ({
   requestTime,
 }: Props) => {
   const { t } = useTranslation()
-  const [deDupedResponses, setDeDupedResponses] = useState<DiscoveryResponse[]>(
-    [],
-  )
+  const [filteredResponses, setFilteredResponses] = useState<
+    DiscoveryResponse[]
+  >([])
   const [overlayDetails, setOverlayDetails] = useState<
     {
       distance: string
@@ -75,16 +76,11 @@ const DiscoveryModeResults = ({
 
   useEffect(() => {
     if (request) {
-      const filtered = request.responses.filter(
-        (responseA, index, responses) =>
-          responses.findIndex(
-            (responseB) =>
-              responseB.hotspotAddress === responseA.hotspotAddress,
-          ) === index,
+      setFilteredResponses(
+        filterDiscoveryResponses(hotspot.address, request.responses),
       )
-      setDeDupedResponses(filtered)
     }
-  }, [request])
+  }, [hotspot.address, request])
 
   const showOverlay = async ({ name, lat, lng, address }: MapSelectDetail) => {
     let distance = ''
@@ -140,7 +136,7 @@ const DiscoveryModeResults = ({
         networkHotspots={networkHotspots}
         hotspotAddress={hotspot.address}
         hotspotCoords={hotspotCoords}
-        responses={deDupedResponses}
+        responses={filteredResponses}
         onSelect={showOverlay}
         selectedHotspot={overlayDetails}
         isPolling={isPolling}
@@ -148,7 +144,7 @@ const DiscoveryModeResults = ({
         iterations={iterations}
       />
       <DiscoveryModeResultsCard
-        numResponses={deDupedResponses.length}
+        numResponses={filteredResponses.length}
         request={request}
         isPolling={isPolling}
         overlayDetails={overlayDetails}

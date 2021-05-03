@@ -61,6 +61,7 @@ const App = () => {
     'Native splash screen is already hidden',
     'No Native splash screen',
     'RCTBridge required dispatch_sync to load',
+    'Require cycle',
   ])
 
   const appState = useRef(AppState.currentState)

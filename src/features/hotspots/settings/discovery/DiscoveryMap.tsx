@@ -176,7 +176,7 @@ const DiscoveryMap = ({
     setMapLoaded(true)
     cameraRef.current?.setCamera({
       centerCoordinate: hotspotCoords,
-      zoomLevel: 13,
+      zoomLevel: 12,
     })
   }, [hotspotCoords])
 

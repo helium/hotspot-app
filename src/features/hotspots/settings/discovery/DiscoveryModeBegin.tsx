@@ -22,6 +22,7 @@ type Props = {
   onBeginNew: () => void
   onRequestSelected: (request: DiscoveryRequest) => void
   error: boolean
+  hotspotAddress: string
 }
 const DiscoveryModeBegin = ({
   onClose,
@@ -29,6 +30,7 @@ const DiscoveryModeBegin = ({
   onBeginNew,
   onRequestSelected,
   error,
+  hotspotAddress,
 }: Props) => {
   const { t } = useTranslation()
   const [hasInfo, setHasInfo] = useState(false)
@@ -95,6 +97,7 @@ const DiscoveryModeBegin = ({
             onRequestSelected={onRequestSelected}
             requestsRemaining={recentDiscoveryInfo.requestsRemaining}
             requests={recentDiscoveryInfo.recentRequests}
+            hotspotAddress={hotspotAddress}
           />
         )}
         {!hasInfo && !error && (

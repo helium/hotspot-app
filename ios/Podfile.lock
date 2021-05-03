@@ -54,7 +54,7 @@ PODS:
     - MapboxMobileEvents (= 0.10.2)
   - MapboxMobileEvents (0.10.2)
   - MultiplatformBleAdapter (0.1.7)
-  - OneSignal (3.1.0)
+  - OneSignal (3.4.3)
   - RCT-Folly (2020.01.13.00):
     - boost-for-react-native
     - DoubleConversion
@@ -276,10 +276,10 @@ PODS:
     - Mapbox-iOS-SDK (~> 5.9.0)
     - React
     - React-Core
-  - react-native-onesignal (4.0.3):
-    - OneSignal (= 3.1.0)
+  - react-native-onesignal (4.0.8):
+    - OneSignal (= 3.4.3)
     - React (< 1.0.0, >= 0.13.0)
-  - react-native-safe-area-context (3.1.9):
+  - react-native-safe-area-context (3.2.0):
     - React-Core
   - react-native-sodium (0.3.9):
     - React
@@ -353,7 +353,7 @@ PODS:
     - React-Core
   - RNCClipboard (1.5.1):
     - React-Core
-  - RNCMaskedView (0.1.10):
+  - RNCMaskedView (0.1.11):
     - React
   - RNDeviceInfo (7.4.0):
     - React-Core
@@ -390,12 +390,12 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (2.17.1):
+  - RNScreens (2.18.1):
     - React-Core
-  - RNSentry (2.2.0):
+  - RNSentry (2.4.2):
     - React-Core
     - Sentry (= 6.1.4)
-  - RNSVG (12.1.0):
+  - RNSVG (12.1.1):
     - React
   - Sentry (6.1.4):
     - Sentry/Core (= 6.1.4)
@@ -442,7 +442,7 @@ DEPENDENCIES:
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - lottie-ios (from `../node_modules/lottie-ios`)
   - lottie-react-native (from `../node_modules/lottie-react-native`)
-  - OneSignal (< 4.0, >= 3.0.0-beta)
+  - OneSignal (< 4.0, >= 3.0.0)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
@@ -677,14 +677,14 @@ SPEC CHECKSUMS:
   EXSecureStore: 1b571851e6068b30b8ec097be848a04603c03bae
   EXSplashScreen: ab5984afcca91e0af6b3138f01a8c47dc4955c51
   FBLazyVector: 49cbe4b43e445b06bf29199b6ad2057649e4c8f5
-  FBReactNativeSpec: ef7076047ecfe23933320b0fb2b844474516e2e8
+  FBReactNativeSpec: 3560256311b67bbddc2ce503625e9edde9a6ee1d
   glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
   lottie-ios: 48fac6be217c76937e36e340e2d09cf7b10b7f5f
   lottie-react-native: 4dff8fe8d10ddef9e7880e770080f4a56121397e
   Mapbox-iOS-SDK: a5915700ec84bc1a7f8b3e746d474789e35b7956
   MapboxMobileEvents: 2bc0ca2eedb627b73cf403258dce2b2fa98074a6
   MultiplatformBleAdapter: 975cfb2a333b2c42b7a11628bd100ccb61872da2
-  OneSignal: a5853b3c7f7bce791353a15db019b5ccd5b8585b
+  OneSignal: e4dfb1912410f302dc9661ce98fc829f6c18ff6a
   RCT-Folly: ec7a233ccc97cc556cf7237f0db1ff65b986f27c
   RCTRequired: 2f8cb5b7533219bf4218a045f92768129cf7050a
   RCTTypeSafety: 512728b73549e72ad7330b92f3d42936f2a4de5b
@@ -701,8 +701,8 @@ SPEC CHECKSUMS:
   react-native-config: c98128a72bc2c3a1ca72caec0b021f0fa944aa29
   react-native-currency-format: cd0a30868fddb004c3b5b5e9b7fe7717876927f5
   react-native-mapbox-gl: eec7e5be5b874cfceb79fcfe24d595411015153a
-  react-native-onesignal: a69eeb12486e7739ed8f180e6ddd915be77721ba
-  react-native-safe-area-context: b6e0e284002381d2ff29fa4fff42b4d8282e3c94
+  react-native-onesignal: 50b047c674b79ba700218338fdefb45220da4db5
+  react-native-safe-area-context: f0906bf8bc9835ac9a9d3f97e8bde2a997d8da79
   react-native-sodium: be31e3fd97b1e9abd0853d7623fbec4b390b6615
   React-perflogger: 9c547d8f06b9bf00cb447f2b75e8d7f19b7e02af
   React-RCTActionSheet: 3080b6e12e0e1a5b313c8c0050699b5c794a1b11
@@ -719,14 +719,14 @@ SPEC CHECKSUMS:
   ReactNativeART: 78edc68dd4a1e675338cd0cd113319cf3a65f2ab
   RNCAsyncStorage: b03032fdbdb725bea0bd9e5ec5a7272865ae7398
   RNCClipboard: 41d8d918092ae8e676f18adada19104fa3e68495
-  RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
+  RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
   RNDeviceInfo: 9538a884f862fe4aa0d7cead9f34e292d41ba8f6
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
   RNLocalize: 7c7aeda16c01db7a0918981c14875c0a53be9b79
   RNReanimated: 64f6c5789f82818c07ba3c71864b73619cb23c76
-  RNScreens: b6c9607e6fe47c1b6e2f1910d2acd46dd7ecea3a
-  RNSentry: 6aeba1adc242fd22a6826acae92f430697b47a9c
-  RNSVG: ce9d996113475209013317e48b05c21ee988d42e
+  RNScreens: f7ad633b2e0190b77b6a7aab7f914fad6f198d8d
+  RNSentry: e86fb2e2fec0365644f4b582938bf66be515acce
+  RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
   Sentry: 9d055e2de30a77685e86b219acf02e59b82091fc
   UMAppLoader: 5db5dc03176c6238da9c8b3657a370137882a4ad
   UMBarCodeScannerInterface: 017672479f93de88d94c3a50dfb66b5348b65989
@@ -744,6 +744,6 @@ SPEC CHECKSUMS:
   Yoga: 8c8436d4171c87504c648ae23b1d81242bdf3bbf
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: e3d17d50427df3955117324d4ea4f525a3d3955a
+PODFILE CHECKSUM: 3c458b2a6713e6069f7c7b6de556497db22c933a
 
 COCOAPODS: 1.10.1
