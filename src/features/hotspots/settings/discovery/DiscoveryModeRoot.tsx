@@ -27,6 +27,7 @@ import { getSecureItem } from '../../../../utils/secureAccount'
 import { useHotspotSettingsContext } from '../HotspotSettingsProvider'
 import DiscoveryModeBegin from './DiscoveryModeBegin'
 import DiscoveryModeResults from './DiscoveryModeResults'
+import useMount from '../../../../utils/useMount'
 
 type State = 'begin' | 'results'
 
@@ -55,6 +56,10 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
 
     dispatch(fetchRecentDiscoveries({ hotspotAddress: hotspot.address }))
   }, [dispatch, hotspot.address, userAddress])
+
+  useMount(() => {
+    dispatch(discoverySlice.actions.clearSelections())
+  })
 
   useEffect(() => {
     if (viewState === 'begin') {
@@ -165,6 +170,7 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
           onClose={onClose}
           recentDiscoveryInfo={recentDiscoveryInfo}
           error={infoLoading === 'rejected'}
+          hotspotAddress={hotspot.address}
         />
       )
     case 'results':
