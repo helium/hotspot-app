@@ -49,6 +49,7 @@ const DiscoveryModeSessionInfo = ({
           isLast={isLast}
           item={props.item}
           date={props.item.insertedAt}
+          errorCode={props.item.errorCode}
           responseCount={
             filterDiscoveryResponses(hotspotAddress, props.item.responses)
               .length

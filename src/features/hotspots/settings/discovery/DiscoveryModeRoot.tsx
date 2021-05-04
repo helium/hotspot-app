@@ -28,16 +28,21 @@ import { useHotspotSettingsContext } from '../HotspotSettingsProvider'
 import DiscoveryModeBegin from './DiscoveryModeBegin'
 import DiscoveryModeResults from './DiscoveryModeResults'
 import useMount from '../../../../utils/useMount'
+import useAlert from '../../../../utils/useAlert'
 
 type State = 'begin' | 'results'
 
 type Props = { onClose: () => void; hotspot: Hotspot }
 const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
   const [viewState, setViewState] = useState<State>('begin')
+  const [errorShownForRequestId, setErrorShownForRequestId] = useState<
+    Record<string, boolean>
+  >({})
   const [time, setTime] = useState(0)
   const { enableBack } = useHotspotSettingsContext()
   const { result: userAddress } = useAsync(getSecureItem, ['address'])
   const dispatch = useAppDispatch()
+  const { showOKAlert } = useAlert()
   const requestInterval = useRef<NodeJS.Timeout>()
   const clockInterval = useRef<NodeJS.Timeout>()
   const recentDiscoveryInfo = useSelector(
@@ -60,6 +65,40 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
   useMount(() => {
     dispatch(discoverySlice.actions.clearSelections())
   })
+
+  const handleBack = useCallback(() => {
+    if (viewState === 'begin') {
+      onClose()
+      return
+    }
+
+    if (viewState === 'results') {
+      animateTransition('DiscoveryModeRoot.HandleBack')
+      setViewState('begin')
+      dispatch(discoverySlice.actions.clearSelections())
+      fetchRecent()
+    }
+  }, [dispatch, fetchRecent, onClose, viewState])
+
+  useEffect(() => {
+    if (
+      !selectedRequest ||
+      !selectedRequest.errorCode ||
+      errorShownForRequestId[selectedRequest.id]
+    )
+      return
+
+    setErrorShownForRequestId((prev) => ({
+      ...prev,
+      [selectedRequest.id]: true,
+    }))
+
+    handleBack()
+    showOKAlert({
+      titleKey: 'discovery.session_error_prompt.title',
+      messageKey: 'discovery.session_error_prompt.message',
+    })
+  }, [errorShownForRequestId, handleBack, selectedRequest, showOKAlert])
 
   useEffect(() => {
     if (viewState === 'begin') {
@@ -122,20 +161,6 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
       }
     }
   }, [dispatch, requestId, selectedRequest?.id, shouldPoll])
-
-  const handleBack = useCallback(() => {
-    if (viewState === 'begin') {
-      onClose()
-      return
-    }
-
-    if (viewState === 'results') {
-      animateTransition('DiscoveryModeRoot.HandleBack')
-      setViewState('begin')
-      dispatch(discoverySlice.actions.clearSelections())
-      fetchRecent()
-    }
-  }, [dispatch, fetchRecent, onClose, viewState])
 
   const handleNewSelected = useCallback(async () => {
     if (!hotspot.address || !userAddress) return
