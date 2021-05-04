@@ -5,11 +5,12 @@ import {
   PaymentV2,
   AnyTransaction,
 } from '@helium/http'
-import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
+import Balance, { CurrencyType } from '@helium/currency'
+import { Payment as PaymentType } from '@helium/http/build/models/Transaction'
 import Box from '../../../../components/Box'
 import PaymentItem from './PaymentItem'
+import { decodeMemoString } from '../../../../utils/transactions'
 
-type Payments = { payee: string; amount: Balance<NetworkTokens> }[]
 type Props = { item: AnyTransaction | PendingTransaction; address: string }
 const Payment = ({ item, address }: Props) => {
   if (item.type !== 'payment_v1' && item.type !== 'payment_v2') return null
@@ -21,14 +22,23 @@ const Payment = ({ item, address }: Props) => {
     <Box flex={1}>
       <PaymentItem text={payer} mode="from" isMyAccount={payer === address} />
       {payments.map((p, index) => (
-        <PaymentItem
-          key={p.payee}
-          text={p.payee}
-          isMyAccount={p.payee === address}
-          mode="to"
-          isFirst={false}
-          isLast={index === payments.length - 1}
-        />
+        <Box key={p.payee}>
+          <PaymentItem
+            text={p.payee}
+            isMyAccount={p.payee === address}
+            mode="to"
+            isFirst={false}
+            isLast={index === payments.length - 1}
+          />
+          {p.memo !== undefined && (
+            <PaymentItem
+              text={decodeMemoString(p.memo)}
+              mode="memo"
+              isFirst={false}
+              isLast
+            />
+          )}
+        </Box>
       ))}
     </Box>
   )
@@ -42,7 +52,9 @@ const getPayer = (item: AnyTransaction | PendingTransaction): string => {
   return (item as PendingTransaction).txn?.payer
 }
 
-const getPayments = (item: AnyTransaction | PendingTransaction): Payments => {
+const getPayments = (
+  item: AnyTransaction | PendingTransaction,
+): PaymentType[] => {
   if (item instanceof PaymentV2) {
     return item.payments
   }
