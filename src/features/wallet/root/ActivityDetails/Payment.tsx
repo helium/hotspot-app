@@ -28,14 +28,14 @@ const Payment = ({ item, address }: Props) => {
             isMyAccount={p.payee === address}
             mode="to"
             isFirst={false}
-            isLast={index === payments.length - 1}
+            isLast={p.memo === undefined && index === payments.length - 1}
           />
           {p.memo !== undefined && (
             <PaymentItem
               text={decodeMemoString(p.memo)}
               mode="memo"
               isFirst={false}
-              isLast
+              isLast={index === payments.length - 1}
             />
           )}
         </Box>
