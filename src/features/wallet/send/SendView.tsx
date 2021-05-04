@@ -54,11 +54,11 @@ import {
   fetchCurrentOraclePrice,
   fetchPredictedOraclePrice,
 } from '../../../store/helium/heliumDataSlice'
-import { AppLink, AppLinkType } from '../../../providers/appLinkTypes'
+import { AppLink, AppLinkCategoryType } from '../../../providers/appLinkTypes'
 
 type Props = {
   scanResult?: AppLink
-  sendType?: AppLinkType
+  sendType?: AppLinkCategoryType
   hotspot?: Hotspot
   isSeller?: boolean
 }
@@ -73,7 +73,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
   )
-  const [type, setType] = useState<AppLinkType>(sendType || 'payment')
+  const [type, setType] = useState<AppLinkCategoryType>(sendType || 'payment')
   const [address, setAddress] = useState<string>('')
   const [addressAlias, setAddressAlias] = useState<string>()
   const [addressLoading, setAddressLoading] = useState(false)
