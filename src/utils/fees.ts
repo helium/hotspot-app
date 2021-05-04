@@ -16,6 +16,7 @@ import { useSelector } from 'react-redux'
 import { useCallback } from 'react'
 import { getKeypair } from './secureAccount'
 import { RootState } from '../store/rootReducer'
+import { encodeMemoString } from './transactions'
 
 export const useFees = () => {
   const { currentOraclePrice, predictedOraclePrices } = useSelector(
@@ -68,7 +69,7 @@ export const calculatePaymentTxnFee = async (
       {
         payee,
         amount,
-        memo: memo || undefined,
+        memo: encodeMemoString(memo),
       },
     ],
     nonce,

@@ -11,12 +11,14 @@ import { getKeypair } from './secureAccount'
 import { getAccount } from './appDataClient'
 import * as Logger from './logger'
 
-export const encodeMemoString = (utf8Input: string) => {
+export const encodeMemoString = (utf8Input: string | undefined) => {
+  if (!utf8Input) return undefined
   const buff = Buffer.from(utf8Input, 'utf8')
   return buff.toString('base64')
 }
 
-export const decodeMemoString = (base64String: string) => {
+export const decodeMemoString = (base64String: string | undefined) => {
+  if (!base64String) return undefined
   const buff = Buffer.from(base64String, 'base64')
   return buff.toString('utf8')
 }
@@ -38,7 +40,7 @@ export const makePaymentTxn = async (
       {
         payee,
         amount,
-        memo: memo ? encodeMemoString(memo) : undefined,
+        memo: encodeMemoString(memo),
       },
     ],
     nonce,
