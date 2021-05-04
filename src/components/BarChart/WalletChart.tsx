@@ -3,6 +3,7 @@ import { ActivityIndicator, TouchableWithoutFeedback } from 'react-native'
 import { isEqual } from 'lodash'
 import { useSelector } from 'react-redux'
 import { add } from 'date-fns'
+import { useTranslation } from 'react-i18next'
 import ChartContainer from './ChartContainer'
 import CarotLeft from '../../assets/images/carot-left.svg'
 import CarotRight from '../../assets/images/carot-right.svg'
@@ -31,6 +32,7 @@ const WalletChart = ({ height }: Props) => {
     activity: { filter },
     heliumData: { blockHeight },
   } = useSelector((state: RootState) => state, selectorIsEqual)
+  const { t } = useTranslation()
 
   const { hntToDisplayVal } = useCurrency()
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
@@ -141,7 +143,13 @@ const WalletChart = ({ height }: Props) => {
         )}
         {!showDataRange && (
           <>
-            <TouchableWithoutFeedback onPress={changeTimeframe('daily')}>
+            <TouchableWithoutFeedback
+              onPress={changeTimeframe('daily')}
+              accessibilityRole="button"
+              accessibilityLabel={t(
+                'wallet.chartRanges.days.accessibilityLabel',
+              )}
+            >
               <Text
                 variant="body1"
                 maxFontSizeMultiplier={1.1}
@@ -149,10 +157,16 @@ const WalletChart = ({ height }: Props) => {
                 fontSize={16}
                 opacity={activityChartRange === 'daily' ? 1 : 0.3}
               >
-                14D
+                {t('wallet.chartRanges.days.label')}
               </Text>
             </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback onPress={changeTimeframe('weekly')}>
+            <TouchableWithoutFeedback
+              onPress={changeTimeframe('weekly')}
+              accessibilityRole="button"
+              accessibilityLabel={t(
+                'wallet.chartRanges.weeks.accessibilityLabel',
+              )}
+            >
               <Text
                 paddingRight="m"
                 maxFontSizeMultiplier={1.1}
@@ -160,17 +174,23 @@ const WalletChart = ({ height }: Props) => {
                 fontSize={16}
                 opacity={activityChartRange === 'weekly' ? 1 : 0.3}
               >
-                12W
+                {t('wallet.chartRanges.weeks.label')}
               </Text>
             </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback onPress={changeTimeframe('monthly')}>
+            <TouchableWithoutFeedback
+              onPress={changeTimeframe('monthly')}
+              accessibilityRole="button"
+              accessibilityLabel={t(
+                'wallet.chartRanges.months.accessibilityLabel',
+              )}
+            >
               <Text
                 maxFontSizeMultiplier={1.1}
                 fontSize={16}
                 variant="body1"
                 opacity={activityChartRange === 'monthly' ? 1 : 0.3}
               >
-                12M
+                {t('wallet.chartRanges.months.label')}
               </Text>
             </TouchableWithoutFeedback>
           </>
