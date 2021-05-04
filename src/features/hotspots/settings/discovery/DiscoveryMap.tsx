@@ -214,6 +214,7 @@ const DiscoveryMap = ({
         rotateEnabled={false}
         pitchEnabled={false}
         compassEnabled={false}
+        zoomEnabled={false}
         onDidFinishLoadingMap={setupMap}
       >
         <MapboxGL.Camera ref={cameraRef} />
