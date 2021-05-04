@@ -15,9 +15,7 @@ import { TransferHotspotV1 } from '@helium/transactions'
 import { RootState } from '../../../store/rootReducer'
 import Box from '../../../components/Box'
 import useHaptic from '../../../utils/useHaptic'
-import { QrScanResult } from '../scan/scanTypes'
 import SendHeader from './SendHeader'
-import { SendType } from './sendTypes'
 import SendAmountAvailableBanner from './SendAmountAvailableBanner'
 import SendForm from './SendForm'
 import {
@@ -57,10 +55,11 @@ import {
   fetchCurrentOraclePrice,
   fetchPredictedOraclePrice,
 } from '../../../store/helium/heliumDataSlice'
+import { AppLink, AppLinkCategoryType } from '../../../providers/appLinkTypes'
 
 type Props = {
-  scanResult?: QrScanResult
-  sendType?: SendType
+  scanResult?: AppLink
+  sendType?: AppLinkCategoryType
   hotspot?: Hotspot
   isSeller?: boolean
 }
@@ -75,7 +74,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
   )
-  const [type, setType] = useState<SendType>(sendType || 'payment')
+  const [type, setType] = useState<AppLinkCategoryType>(sendType || 'payment')
   const [address, setAddress] = useState<string>('')
   const [addressAlias, setAddressAlias] = useState<string>()
   const [addressLoading, setAddressLoading] = useState(false)

@@ -44,7 +44,7 @@ const WifiSettings = ({ onNetworkSelected, onError }: Props) => {
       setLoading(true)
       const wifiNetworks = await scanForWifiNetworks()
       const configured = await scanForWifiNetworks(true)
-      animateTransition()
+      animateTransition('WifiSettings.ScanWifi')
       setNetworks(wifiNetworks || [])
       setConfiguredNetworks(configured || [])
       setLoading(false)
@@ -75,7 +75,7 @@ const WifiSettings = ({ onNetworkSelected, onError }: Props) => {
         return
       }
 
-      animateTransition()
+      animateTransition('WifiSettings.MaybeForgetConfiguredNetwork')
       setLoading(true)
       await removeConfiguredWifi(networkToForget)
     },

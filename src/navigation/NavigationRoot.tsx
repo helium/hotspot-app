@@ -1,12 +1,11 @@
-import React, { memo, useCallback, useEffect } from 'react'
-import { NavigationContainer } from '@react-navigation/native'
+import React, { memo, useEffect, useMemo } from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
 import { useSelector } from 'react-redux'
 import changeNavigationBarColor from 'react-native-navigation-bar-color'
 import Onboarding from '../features/onboarding/OnboardingNavigator'
 import { RootState } from '../store/rootReducer'
 import defaultScreenOptions from './defaultScreenOptions'
-import RootNav from './main/HomeNavigator'
+import HomeNav from './main/HomeNavigator'
 import { useColors } from '../theme/themeHooks'
 
 const OnboardingStack = createStackNavigator()
@@ -20,7 +19,7 @@ const NavigationRoot = () => {
     changeNavigationBarColor(colors.primaryBackground, true, false)
   }, [colors.primaryBackground])
 
-  const currentScreen = useCallback(() => {
+  const currentScreen = useMemo(() => {
     if (!isBackedUp)
       return (
         <OnboardingStack.Navigator
@@ -40,12 +39,12 @@ const NavigationRoot = () => {
         headerMode="none"
         screenOptions={defaultScreenOptions}
       >
-        <MainStack.Screen name="MainTab" component={RootNav} />
+        <MainStack.Screen name="MainTab" component={HomeNav} />
       </MainStack.Navigator>
     )
   }, [isBackedUp])
 
-  return <NavigationContainer>{currentScreen()}</NavigationContainer>
+  return currentScreen
 }
 
 export default memo(NavigationRoot)

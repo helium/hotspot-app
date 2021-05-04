@@ -81,7 +81,7 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
   }, [enable, getState, showOKCancelAlert])
 
   const rescan = useCallback(async () => {
-    animateTransition()
+    animateTransition('HotspotDiagnosticsConnection.Rescan')
     await checkBluetooth()
     setScanComplete(false)
   }, [checkBluetooth])
@@ -103,7 +103,7 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
   useEffect(() => {
     const scan = async () => {
       await scanForHotspots(2000)
-      animateTransition()
+      animateTransition('HotspotDiagnosticsConnection.ScanComplete')
       setScanComplete(true)
     }
     if (!scanComplete && bleEnabled && locationEnabled) {

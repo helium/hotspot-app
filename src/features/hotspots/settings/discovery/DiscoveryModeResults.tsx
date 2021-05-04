@@ -108,7 +108,7 @@ const DiscoveryModeResults = ({
         ? `${deets.rewardScale.toFixed(3)}`
         : ''
 
-      animateTransition()
+      animateTransition('DiscoveryModeResults.ShowOverlay')
       setOverlayDetails({
         lat,
         lng,
@@ -121,7 +121,7 @@ const DiscoveryModeResults = ({
   }
 
   const hideOverlay = () => {
-    animateTransition()
+    animateTransition('DiscoveryMode.HideOverlay')
     setOverlayDetails(undefined)
   }
 
