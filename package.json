@@ -50,7 +50,7 @@
     "@react-native-community/blur": "^3.6.0",
     "@react-native-community/clipboard": "^1.5.1",
     "@react-native-community/masked-view": "^0.1.10",
-    "@react-native-mapbox-gl/maps": "^8.0.0",
+    "@react-native-mapbox-gl/maps": "^8.2.0-beta2",
     "@react-navigation/bottom-tabs": "5.11.3",
     "@react-navigation/native": "^5.8.4",
     "@react-navigation/stack": "^5.12.1",

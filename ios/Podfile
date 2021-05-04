@@ -14,10 +14,10 @@ target 'Helium' do
     :hermes_enabled => false
   )
 
-    target 'HeliumTests' do
-      inherit! :complete
+  target 'HeliumTests' do
+    inherit! :complete
     # Pods for testing
-    end
+  end
 
   # Enables Flipper.
   #
@@ -25,7 +25,12 @@ target 'Helium' do
   # you should disable the next line.
   #use_flipper!()
 
+  pre_install do |installer|
+    $RNMBGL.pre_install(installer)
+  end
+
   post_install do |installer|
+    $RNMBGL.post_install(installer)
     react_native_post_install(installer)
   end
 end
