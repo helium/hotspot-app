@@ -7,39 +7,48 @@ import Animated, {
 import EyeCircleButton from '@assets/images/eye-circle-button.svg'
 import EyeCircleButtonYellow from '@assets/images/eye-circle-button-yellow.svg'
 import { ActivityIndicator } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import Text from '../../../components/Text'
 
-const HotspotMapButtons = ({
+const HotspotsViewHeader = ({
   animatedPosition,
   showWitnesses,
   toggleShowWitnesses,
-  isVisible = true,
+  buttonsVisible = true,
   loading,
+  detailHeaderHeight,
+  showNoLocation,
 }: {
   animatedPosition: Animated.SharedValue<number>
   showWitnesses: boolean
   toggleShowWitnesses: () => void
-  isVisible?: boolean
+  buttonsVisible?: boolean
   loading: boolean
+  detailHeaderHeight: number
+  showNoLocation: boolean
 }) => {
+  const { t } = useTranslation()
   const style = useAnimatedStyle(
     () => ({
       position: 'absolute',
       bottom: -100,
-      opacity: isVisible ? 1 : 0,
+      left: 0,
+      right: 0,
+      opacity: buttonsVisible || showNoLocation ? 1 : 0,
       transform: [
         {
           translateY: interpolate(
             animatedPosition.value,
             [-1, 0],
-            [0, -320],
+            [0, -1 * (detailHeaderHeight + (showNoLocation ? 80 : 220))],
             Extrapolate.CLAMP,
           ),
         },
       ],
     }),
-    [animatedPosition, isVisible],
+    [animatedPosition, buttonsVisible, detailHeaderHeight],
   )
 
   const loadingStyle = useMemo(
@@ -52,16 +61,16 @@ const HotspotMapButtons = ({
 
   return (
     <Animated.View style={style}>
-      <Box padding="m" flexDirection="row">
-        {!loading && (
-          <TouchableOpacityBox onPress={toggleShowWitnesses}>
+      <Box padding="m" flexDirection="row" alignItems="center">
+        {!loading && buttonsVisible && (
+          <TouchableOpacityBox onPress={toggleShowWitnesses} width={44}>
             {showWitnesses ? <EyeCircleButtonYellow /> : <EyeCircleButton />}
           </TouchableOpacityBox>
         )}
-        {loading && (
+        {loading && buttonsVisible && (
           <Box
-            height={43}
-            width={43}
+            height={44}
+            width={44}
             alignItems="center"
             justifyContent="center"
             style={loadingStyle}
@@ -77,9 +86,22 @@ const HotspotMapButtons = ({
         {/* <TouchableOpacityBox marginStart="s"> */}
         {/*  <HexCircleButton /> */}
         {/* </TouchableOpacityBox> */}
+        {showNoLocation && (
+          <Text
+            variant="medium"
+            fontSize={22}
+            color="white"
+            maxFontSizeMultiplier={1}
+            flex={1}
+            textAlign="center"
+          >
+            {t('hotspot_details.no_location')}
+          </Text>
+        )}
+        <Box height={44} width={44} />
       </Box>
     </Animated.View>
   )
 }
 
-export default HotspotMapButtons
+export default HotspotsViewHeader

@@ -1,5 +1,6 @@
 import { StackNavigationProp } from '@react-navigation/stack'
-import { QrScanResult } from '../../features/wallet/scan/scanTypes'
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
+import { AppLink } from '../../providers/appLinkTypes'
 
 export type MainTabType = 'Hotspots' | 'Wallet' | 'Notifications' | 'More'
 
@@ -23,13 +24,22 @@ export type RootStackParamList = {
   LockScreen: {
     requestType: LockScreenRequestType
     lock?: boolean
-    scanResult?: QrScanResult
+    scanResult?: AppLink
   }
   HotspotSetup: undefined
   Scan: undefined
   Send: {
-    scanResult?: QrScanResult
+    scanResult?: AppLink
   }
 }
 
 export type RootNavigationProp = StackNavigationProp<RootStackParamList>
+
+export type MainTabParamList = {
+  Hotspots: undefined
+  Wallet: undefined
+  Notifications: undefined
+  More: undefined
+}
+
+export type MainTabNavigationProp = BottomTabNavigationProp<MainTabParamList>

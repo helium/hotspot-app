@@ -18,7 +18,7 @@ export type HeliumDataState = {
   currentPrices?: Record<string, number>
   makers?: Maker[]
   hotspotCount?: number
-  blockTime: number
+  blockTime?: number
 }
 const initialState: HeliumDataState = {
   predictedOraclePrices: [],

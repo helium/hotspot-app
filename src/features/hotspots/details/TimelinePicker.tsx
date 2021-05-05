@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Box from '../../../components/Box'
-import Bars from '../../../assets/images/bars.svg'
-import HeliumActionSheet from '../../../components/HeliumActionSheet'
+import HeliumSelect from '../../../components/HeliumSelect'
+import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
 
 type Props = {
   index?: number
@@ -13,12 +13,19 @@ const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
   const { t } = useTranslation()
 
   const data = useMemo(() => {
-    const values = ['1', '7', '14', '30']
+    const values = [1, 7, 14, 30]
     const labels: string[] = t('hotspot_details.picker_options', {
       returnObjects: true,
     })
 
-    return labels.map((label, i) => ({ label, value: values[i] }))
+    return labels.map(
+      (label, i) =>
+        ({
+          label,
+          value: values[i],
+          color: 'purpleMain',
+        } as HeliumSelectItemType),
+    )
   }, [t])
 
   const [selectedOption, setSelectedOption] = useState(data[index])
@@ -26,7 +33,7 @@ const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
   const handleValueChanged = useCallback(
     (_value, i) => {
       setSelectedOption(data[i])
-      onTimelineChanged?.(parseInt(data[i].value, 10))
+      onTimelineChanged?.(data[i].value as number)
     },
     [data, onTimelineChanged],
   )
@@ -37,14 +44,10 @@ const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
       alignItems="center"
       marginVertical="m"
       width="100%"
-      paddingHorizontal="l"
     >
-      <Bars />
-      <HeliumActionSheet
-        title={t('hotspot_details.picker_prompt')}
-        marginHorizontal="xs"
-        prefix={t('hotspot_details.picker_title')}
+      <HeliumSelect
         data={data}
+        variant="flat"
         selectedValue={selectedOption.value}
         onValueChanged={handleValueChanged}
       />

@@ -4,7 +4,8 @@ import { Colors } from '../theme/theme'
 import Text from './Text'
 import TouchableOpacityBox from './TouchableOpacityBox'
 
-export type BubbleSelectItemType = {
+export type HeliumSelectVariant = 'bubble' | 'flat'
+export type HeliumSelectItemType = {
   label: string
   value: string | number
   Icon?: React.FC<SvgProps>
@@ -13,24 +14,38 @@ export type BubbleSelectItemType = {
 
 type Props = {
   selected: boolean
-  item: BubbleSelectItemType
+  item: HeliumSelectItemType
   onPress: () => void
+  variant: HeliumSelectVariant
 }
 
-const BubbleSelectItem = ({
+const HeliumSelectItem = ({
   selected,
   item: { label, color, Icon },
   onPress,
+  variant,
 }: Props) => {
   const textColor = useMemo(() => {
+    if (variant === 'flat') {
+      if (selected) return color
+      return 'purpleText'
+    }
+
     if (selected) return 'white'
     return 'purpleText'
-  }, [selected])
+  }, [color, selected, variant])
 
   const backgroundColor = useMemo(() => {
+    if (variant === 'flat') return undefined
+
     if (selected) return color
     return 'white'
-  }, [color, selected])
+  }, [color, selected, variant])
+
+  const text = useMemo(() => {
+    if (variant === 'flat') return label.toUpperCase()
+    return label
+  }, [label, variant])
 
   return (
     <TouchableOpacityBox
@@ -44,11 +59,16 @@ const BubbleSelectItem = ({
       paddingHorizontal="ms"
     >
       {!!Icon && selected && <Icon height={16} width={16} color="white" />}
-      <Text variant="body2" color={textColor} marginLeft="xs">
-        {label}
+      <Text
+        variant={variant === 'flat' ? 'bold' : 'regular'}
+        fontSize={variant === 'flat' ? 13 : 16}
+        color={textColor}
+        marginLeft={Icon ? 'xs' : 'none'}
+      >
+        {text}
       </Text>
     </TouchableOpacityBox>
   )
 }
 
-export default memo(BubbleSelectItem)
+export default memo(HeliumSelectItem)

@@ -1,20 +1,24 @@
 import React, { useCallback } from 'react'
 import { useSelector } from 'react-redux'
+import { ActivityIndicator } from 'react-native'
 import SafeAreaBox from '../../components/SafeAreaBox'
-import {
-  fetchNotifications,
-  markNotificationsViewed,
-} from '../../store/account/accountSlice'
 import { RootState } from '../../store/rootReducer'
 import { useAppDispatch } from '../../store/store'
 import useVisible from '../../utils/useVisible'
 import EmptyNotifications from './EmptyNotifications'
 import NotificationList from './NotificationList'
+import {
+  fetchNotifications,
+  markNotificationsViewed,
+} from '../../store/notifications/notificationSlice'
+import Box from '../../components/Box'
 
 const NotificationsScreen = () => {
   const {
-    account: { notifications, markNotificationStatus },
-  } = useSelector((state: RootState) => state)
+    notifications,
+    markNotificationStatus,
+    loadingNotification,
+  } = useSelector((state: RootState) => state.notifications)
   const dispatch = useAppDispatch()
 
   const markAsRead = useCallback(() => {
@@ -44,7 +48,14 @@ const NotificationsScreen = () => {
           refreshing={markNotificationStatus === 'pending'}
         />
       )}
-      {notifications.length === 0 && <EmptyNotifications />}
+      {notifications.length === 0 && !loadingNotification && (
+        <EmptyNotifications />
+      )}
+      {notifications.length === 0 && loadingNotification && (
+        <Box justifyContent="center" alignItems="center" flex={1}>
+          <ActivityIndicator color="white" />
+        </Box>
+      )}
     </SafeAreaBox>
   )
 }

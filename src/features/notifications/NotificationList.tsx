@@ -5,10 +5,10 @@ import { FlatList, RefreshControl } from 'react-native'
 import { formatDistance, fromUnixTime } from 'date-fns'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
-import { Notification } from '../../store/account/accountSlice'
 import NotificationGroup from './NotificationGroup'
 import NotificationShow from './NotificationShow'
 import animateTransition from '../../utils/animateTransition'
+import { Notification } from '../../store/notifications/notificationSlice'
 
 type Props = {
   notifications: Notification[]
@@ -56,10 +56,10 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
     )
 
     const arr = Object.keys(grouped)
-      .map((k) => grouped[k])
+      .map((k) => grouped[k].sort((a, b) => a.time - b.time))
       .sort((a, b) => b[0].time - a[0].time)
 
-    animateTransition()
+    animateTransition('NotificationList.SortedAndGrouped')
     setGroupedNotifications(arr)
   }, [allNotifications])
 

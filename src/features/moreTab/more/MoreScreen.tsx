@@ -127,7 +127,7 @@ const MoreScreen = () => {
           style: 'cancel',
         },
         {
-          text: t('generic.ok'),
+          text: t('more.sections.app.signOut'),
           style: 'destructive',
           onPress: () => {
             dispatch(appSlice.actions.signOut())

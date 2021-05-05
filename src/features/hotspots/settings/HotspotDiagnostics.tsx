@@ -22,7 +22,7 @@ const HotspotDiagnostics = ({ updateTitle }: Props) => {
 
   const onConnected = useCallback((hotspot: Device) => {
     setConnectedHotspot(hotspot)
-    animateTransition()
+    animateTransition('HotspotDiagnostics.OnConnected')
     setState('options')
   }, [])
 
@@ -41,7 +41,7 @@ const HotspotDiagnostics = ({ updateTitle }: Props) => {
           disableBack()
           break
       }
-      animateTransition()
+      animateTransition('HotspotDiagnostics.HandleOptionSelected')
       setState(opt)
     },
     [disableBack, t, updateTitle],

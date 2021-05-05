@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { makeDiscoverySignature } from '../../utils/secureAccount'
 import { getWallet, postWallet } from '../../utils/walletClient'
 import { Loading } from '../activity/activitySlice'
 import { DiscoveryRequest, RecentDiscoveryInfo } from './discoveryTypes'
@@ -24,12 +25,15 @@ export const fetchRecentDiscoveries = createAsyncThunk<
 
 export const startDiscovery = createAsyncThunk<
   DiscoveryRequest,
-  { hotspotAddress: string }
->('discovery/start', async ({ hotspotAddress }) => {
+  { hotspotAddress: string; hotspotName: string }
+>('discovery/start', async ({ hotspotAddress, hotspotName }) => {
+  const signature = await makeDiscoverySignature(hotspotAddress)
   return postWallet(
     'discoveries',
     {
       hotspot_address: hotspotAddress,
+      hotspot_name: hotspotName,
+      signature,
     },
     true,
   )

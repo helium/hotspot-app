@@ -25,6 +25,7 @@ export type AntennaId =
   | 'syncrobit_us'
   | 'syncrobit_eu'
   | 'rak_custom'
+  | 'longapone_eu'
   | 'custom'
 export type Antenna = { id: AntennaId; gain: number }
 export const Antennas: Record<AntennaId, Antenna> = {
@@ -33,11 +34,12 @@ export const Antennas: Record<AntennaId, Antenna> = {
   rak_hotspot_us: { id: 'rak_hotspot_us', gain: 2.3 },
   rak_hotspot_eu: { id: 'rak_hotspot_eu', gain: 2.8 },
   nebra_outdoor: { id: 'nebra_outdoor', gain: 3 },
-  nebra_indoor: { id: 'nebra_indoor', gain: 2 },
+  nebra_indoor: { id: 'nebra_indoor', gain: 3 },
   bobcat: { id: 'bobcat', gain: 4 },
   syncrobit_us: { id: 'syncrobit_us', gain: 1.2 },
   syncrobit_eu: { id: 'syncrobit_eu', gain: 2.3 },
   rak_custom: { id: 'rak_custom', gain: 5.8 },
+  longapone_eu: { id: 'longapone_eu', gain: 3 },
   custom: { id: 'custom', gain: 1 },
 }
 
@@ -61,7 +63,6 @@ const HotspotConfigurationPicker = ({
   const gainInputRef = useRef<TextInput | null>(null)
   const elevationInputRef = useRef<TextInput | null>(null)
 
-  const [elevation, setElevation] = useState<string>()
   const [gain, setGain] = useState<string | undefined>(
     selectedAntenna
       ? selectedAntenna.gain.toLocaleString(locale, {
@@ -116,20 +117,13 @@ const HotspotConfigurationPicker = ({
       })
     }
     setGain(gainString)
-    onGainUpdated(
-      gain
-        ? parseFloat(
-            gain.replace(groupSeparator, '').replace(decimalSeparator, '.'),
-          )
-        : 0,
-    )
+    onGainUpdated(parseFloat(gainString))
   }
 
-  const onChangeElevation = (text: string) => setElevation(text)
-  const onDoneEditingElevation = () => {
-    const elevationInteger = elevation
+  const onChangeElevation = (text: string) => {
+    const elevationInteger = text
       ? parseInt(
-          elevation.replace(groupSeparator, '').replace(decimalSeparator, '.'),
+          text.replace(groupSeparator, '').replace(decimalSeparator, '.'),
           10,
         )
       : 0
@@ -139,7 +133,6 @@ const HotspotConfigurationPicker = ({
     } else {
       stringElevation = elevationInteger.toString()
     }
-    setElevation(stringElevation)
     onElevationUpdated(parseInt(stringElevation, 10))
   }
 
@@ -173,14 +166,13 @@ const HotspotConfigurationPicker = ({
     >
       <HeliumActionSheet
         title={t('antennas.onboarding.select')}
-        prefixVariant="regular"
-        prefixFontSize={14}
+        textProps={{ variant: 'medium', fontSize: 16, color: 'black' }}
         initialValue={t('antennas.onboarding.select')}
         data={antennaData}
-        carotColor="black"
+        iconColor="black"
         selectedValue={selectedAntenna?.id}
-        onValueChanged={onSelectAntenna}
-        displayTextJustifyContent="space-between"
+        onValueSelected={onSelectAntenna}
+        buttonProps={{ justifyContent: 'space-between' }}
         padding="m"
         paddingVertical="lm"
       />
@@ -212,7 +204,7 @@ const HotspotConfigurationPicker = ({
               value={gain}
               returnKeyType="done"
               onChangeText={onChangeGain}
-              onSubmitEditing={onDoneEditingGain}
+              onEndEditing={onDoneEditingGain}
               editable={selectedAntenna?.id === 'custom'}
             />
             <Text marginLeft="xxs">{t('antennas.onboarding.dbi')}</Text>
@@ -241,8 +233,6 @@ const HotspotConfigurationPicker = ({
             keyboardType="numeric"
             returnKeyType="done"
             onChangeText={onChangeElevation}
-            onSubmitEditing={onDoneEditingElevation}
-            value={elevation}
           />
         </Box>
       </TouchableWithoutFeedback>

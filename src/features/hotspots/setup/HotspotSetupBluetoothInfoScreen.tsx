@@ -67,51 +67,49 @@ const HotspotSetupBluetoothInfoScreen = () => {
     <BackScreen
       backgroundColor="primaryBackground"
       paddingHorizontal="lx"
-      paddingTop={{ phone: 'xl', smallPhone: 'none' }}
-      paddingBottom={{ phone: 'xl', smallPhone: 'm' }}
       alignItems="center"
-      justifyContent="flex-end"
+      justifyContent="center"
     >
-      <Bluetooth />
-      <Text
-        marginTop={{ phone: 'xl', smallPhone: 's' }}
-        maxFontSizeMultiplier={1}
-        variant="h1"
-        numberOfLines={2}
-        adjustsFontSizeToFit
-        marginBottom="l"
-        textAlign="center"
-      >
-        {t('hotspot_setup.pair.title')}
-      </Text>
-      <Text
-        maxFontSizeMultiplier={1.05}
-        marginBottom={{ phone: 'lx', smallPhone: 's' }}
-        variant="subtitleBold"
-        textAlign="center"
-        color="white"
-      >
-        {t(`hotspot_setup.pair.${hotspotType.toLowerCase()}_subtitle_1`)}
-      </Text>
-      <Text
-        maxFontSizeMultiplier={1.05}
-        marginBottom="xl"
-        variant="subtitle"
-        textAlign="center"
-        numberOfLines={8}
-        adjustsFontSizeToFit
-      >
-        {t(`hotspot_setup.pair.${hotspotType.toLowerCase()}_subtitle_2`)}
-      </Text>
-      <Box flex={1} width="100%" justifyContent="flex-end">
-        <DebouncedButton
-          width="100%"
-          variant="primary"
-          mode="contained"
-          title={t('hotspot_setup.pair.scan')}
-          onPress={checkBluetooth}
-        />
+      <Box alignItems="center" justifyContent="center" flex={1}>
+        <Bluetooth />
+        <Text
+          marginTop={{ phone: 'xl', smallPhone: 's' }}
+          maxFontSizeMultiplier={1}
+          variant="h1"
+          numberOfLines={2}
+          adjustsFontSizeToFit
+          marginBottom="l"
+          textAlign="center"
+        >
+          {t('hotspot_setup.pair.title')}
+        </Text>
+        <Text
+          maxFontSizeMultiplier={1.05}
+          marginBottom={{ phone: 'lx', smallPhone: 's' }}
+          variant="subtitleBold"
+          textAlign="center"
+          color="white"
+        >
+          {t(`hotspot_setup.pair.${hotspotType.toLowerCase()}_subtitle_1`)}
+        </Text>
+        <Text
+          maxFontSizeMultiplier={1.05}
+          marginBottom="xl"
+          variant="subtitle"
+          textAlign="center"
+          numberOfLines={8}
+          adjustsFontSizeToFit
+        >
+          {t(`hotspot_setup.pair.${hotspotType.toLowerCase()}_subtitle_2`)}
+        </Text>
       </Box>
+      <DebouncedButton
+        width="100%"
+        variant="primary"
+        mode="contained"
+        title={t('hotspot_setup.pair.scan')}
+        onPress={checkBluetooth}
+      />
     </BackScreen>
   )
 }

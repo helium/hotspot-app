@@ -70,7 +70,7 @@ const AccountEnterPassphraseScreen = () => {
       await sleep(1000)
       setWord(null)
       setChallengeWords(generateChallengeWords(findTargetWord(step)))
-      animateTransition()
+      animateTransition('AccountEnterPassphraseScreen.OnPressWord')
     }
   }
 
@@ -82,7 +82,7 @@ const AccountEnterPassphraseScreen = () => {
         carouselRef.current?.snapToItem(step + 1)
         setStep(step + 1)
         setWord(null)
-        animateTransition()
+        animateTransition('AccountEnterPassphraseScreen.NextStep')
         setChallengeWords(generateChallengeWords(findTargetWord(step + 1)))
       }
     }, 1000)

@@ -66,7 +66,7 @@ const ReassertLocationUpdate = ({
   useEffect(() => {
     const sleepThenEnable = async () => {
       await sleep(3000)
-      animateTransition()
+      animateTransition('ReassertLocationUpdate')
       setDisabled(false)
     }
     sleepThenEnable()

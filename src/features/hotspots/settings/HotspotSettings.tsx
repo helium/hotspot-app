@@ -96,7 +96,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
   const setNextState = useCallback(
     (s: State) => {
       if (s === settingsState) return
-      animateTransition()
+      animateTransition('HotspotSettings.SetNextState')
       setSettingsState(s)
     },
     [settingsState],
@@ -347,7 +347,15 @@ const HotspotSettings = ({ hotspot }: Props) => {
           marginHorizontal={settingsState === 'discoveryMode' ? 'none' : 'ms'}
           style={{ transform: [{ translateY: slideUpAnimRef.current }] }}
         >
-          <Box>
+          <TouchableOpacityBox
+            top={0}
+            left={0}
+            bottom={0}
+            right={0}
+            position="absolute"
+            onPress={handleClose}
+          />
+          <Box alignSelf="flex-start">
             {(settingsState === 'init' || settingsState === 'scan') && (
               <Text
                 variant="h2"

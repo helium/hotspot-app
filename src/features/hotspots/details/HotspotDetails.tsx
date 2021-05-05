@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
+import { LayoutChangeEvent } from 'react-native'
 import { Hotspot } from '@helium/http'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -12,45 +13,104 @@ import HotspotDetailChart from './HotspotDetailChart'
 import { RootState } from '../../../store/rootReducer'
 import { getRewardChartData } from './RewardsHelper'
 import { useAppDispatch } from '../../../store/store'
-import { fetchHotspotDetails } from '../../../store/hotspotDetails/hotspotDetailsSlice'
+import {
+  fetchHotspotChartData,
+  fetchHotspotData,
+} from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import HexBadge from './HexBadge'
 import HotspotChecklist from '../checklist/HotspotChecklist'
-import Address from '../../../components/Address'
+import animateTransition from '../../../utils/animateTransition'
+import HeliumSelect from '../../../components/HeliumSelect'
+import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
+import HotspotStatusBanner from './HotspotStatusBanner'
+import useToggle from '../../../utils/useToggle'
+import { getSyncStatus } from '../../../utils/hotspotUtils'
+import ShareHotspot from '../../../components/ShareHotspot'
 
-const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
+type Props = {
+  hotspotAddress?: string
+  hotspot?: Hotspot
+  onLayoutHeader?: ((event: LayoutChangeEvent) => void) | undefined
+  onFailure: () => void
+}
+const HotspotDetails = ({
+  hotspot: propsHotspot,
+  hotspotAddress,
+  onLayoutHeader,
+  onFailure,
+}: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
+  const address = hotspotAddress || propsHotspot?.address || ''
+  const hotspotChatData =
+    useSelector(
+      (state: RootState) => state.hotspotDetails.chartData[address],
+    ) || {}
+  const hotspotDetailsData =
+    useSelector(
+      (state: RootState) => state.hotspotDetails.hotspotData[address],
+    ) || {}
+  const blockHeight = useSelector(
+    (state: RootState) => state.heliumData.blockHeight,
+  )
+  const [timelineValue, setTimelineValue] = useState(14)
   const {
-    hotspot: hotspotDetailsHotspot,
-    numDays,
     rewards,
     rewardSum,
     rewardsChange,
-    loading,
+    loading = true,
     witnessSums,
     witnessAverage,
     witnessChange,
     challengeSums,
     challengeSum,
     challengeChange,
-    witnesses,
-  } = useSelector((state: RootState) => state.hotspotDetails)
-  const { account } = useSelector((state: RootState) => state.account)
+  } = hotspotChatData[timelineValue] || {}
+  const { hotspot: hotspotDetailsHotspot, witnesses } = hotspotDetailsData || {}
+
+  const [showStatusBanner, toggleShowStatusBanner] = useToggle(false)
+
+  const hotspot = useMemo(() => hotspotDetailsHotspot || propsHotspot, [
+    hotspotDetailsHotspot,
+    propsHotspot,
+  ])
 
   const rewardChartData = useMemo(() => {
-    const data = getRewardChartData(rewards, numDays)
+    const data = getRewardChartData(rewards, timelineValue)
     return data || []
-  }, [numDays, rewards])
+  }, [timelineValue, rewards])
 
-  const [timelineValue, setTimelineValue] = useState(14)
+  const syncStatus = useMemo(() => {
+    if (!hotspot?.status) return
+
+    return getSyncStatus(hotspot.status?.height, blockHeight)
+  }, [blockHeight, hotspot])
 
   useEffect(() => {
-    if (!hotspot) return
+    if (hotspotDetailsData.loading === false && !hotspotDetailsData.hotspot) {
+      // hotspot couldn't be found - likely a bad app link or qr scan
+      onFailure()
+    }
+  }, [hotspotDetailsData.hotspot, hotspotDetailsData.loading, onFailure])
+
+  // load hotspot & witness details
+  useEffect(() => {
+    if (!address) return
+
+    dispatch(fetchHotspotData(address))
+  }, [address, dispatch])
+
+  // load chart data
+  useEffect(() => {
+    if (!hotspot?.address) return
 
     dispatch(
-      fetchHotspotDetails({ address: hotspot.address, numDays: timelineValue }),
+      fetchHotspotChartData({
+        address: hotspot?.address,
+        numDays: timelineValue,
+      }),
     )
-  }, [dispatch, hotspot, timelineValue])
+  }, [dispatch, hotspot?.address, timelineValue])
 
   const witnessChartData = useMemo(() => {
     return (
@@ -58,11 +118,11 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
         up: Math.round(w.avg),
         down: 0,
         label: w.timestamp,
-        showTime: numDays === 1,
-        id: `witness-${numDays}-${w.timestamp}`,
+        showTime: timelineValue === 1,
+        id: `witness-${timelineValue}-${w.timestamp}`,
       })) || []
     )
-  }, [numDays, witnessSums])
+  }, [timelineValue, witnessSums])
 
   const challengeChartData = useMemo(() => {
     return (
@@ -70,95 +130,152 @@ const HotspotDetails = ({ hotspot }: { hotspot?: Hotspot }) => {
         up: Math.round(w.sum),
         down: 0,
         label: w.timestamp,
-        showTime: numDays === 1,
-        id: `challenge-${numDays}-${w.timestamp}`,
+        showTime: timelineValue === 1,
+        id: `challenge-${timelineValue}-${w.timestamp}`,
       })) || []
     )
-  }, [numDays, challengeSums])
+  }, [timelineValue, challengeSums])
+
+  const formattedHotspotName = useMemo(() => {
+    if (!hotspot) return ''
+
+    const name = animalName(hotspot.address)
+    const pieces = name.split(' ')
+    if (pieces.length < 3) return name
+
+    return [`${pieces[0]} ${pieces[1]}`, pieces[2]]
+  }, [hotspot])
+
+  const selectData = useMemo(() => {
+    return [
+      {
+        label: t('hotspot_details.overview'),
+        value: 'overview',
+        color: 'purpleMain',
+      } as HeliumSelectItemType,
+      {
+        label: t('hotspot_details.checklist'),
+        value: 'checklist',
+        color: 'purpleMain',
+      } as HeliumSelectItemType,
+    ]
+  }, [t])
+
+  const [selectedOption, setSelectedOption] = useState(selectData[0].value)
+
+  const handleSelectValueChanged = useCallback(
+    (value: string | number, _index: number) => {
+      animateTransition('HotspotDetails.HandleSelectValueChanged')
+      setSelectedOption(value)
+    },
+    [],
+  )
 
   if (!hotspot) return null
 
   return (
     <BottomSheetScrollView keyboardShouldPersistTaps="always">
       <Box paddingBottom="l">
-        <Box
-          marginBottom="m"
-          flexDirection="row"
-          justifyContent="space-between"
-          alignItems="center"
-          paddingHorizontal="l"
-        >
-          <Text
-            variant="h2"
-            color="black"
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            flex={1}
+        <Box onLayout={onLayoutHeader}>
+          <Box
+            marginBottom="lm"
+            justifyContent="space-between"
+            alignItems="center"
           >
-            {animalName(hotspot.address)}
-          </Text>
-        </Box>
-        <Box
-          flexDirection="row"
-          justifyContent="space-between"
-          alignItems="center"
-          marginBottom="xl"
-          paddingHorizontal="l"
-        >
-          <Box flexDirection="row" height={32}>
-            {hotspot?.status || hotspotDetailsHotspot?.status ? (
-              <StatusBadge
-                online={
-                  hotspot?.status?.online ||
-                  hotspotDetailsHotspot?.status?.online
-                }
-              />
-            ) : null}
-            <HexBadge
-              rewardScale={
-                hotspot.rewardScale || hotspotDetailsHotspot?.rewardScale
-              }
-            />
+            <Text
+              variant="regular"
+              fontSize={29}
+              lineHeight={31}
+              color="black"
+              textAlign="center"
+              numberOfLines={1}
+              adjustsFontSizeToFit
+            >
+              {formattedHotspotName[0]}
+            </Text>
+            <Box flexDirection="row" alignItems="center">
+              <Box width={40} />
+              <Text
+                variant="regular"
+                fontSize={29}
+                lineHeight={31}
+                color="black"
+                textAlign="center"
+                numberOfLines={1}
+                adjustsFontSizeToFit
+              >
+                {formattedHotspotName[1]}
+              </Text>
+
+              <ShareHotspot hotspot={hotspot} />
+            </Box>
           </Box>
-          <Address
-            address={hotspot.owner}
-            ellipsizeMode="tail"
-            variant="regular"
-            text={
-              hotspot.owner === account?.address
-                ? t('hotspot_details.owner_you')
-                : t('hotspot_details.owner', {
-                    address: hotspot.owner,
-                  })
-            }
-            maxWidth={128}
-            color="grayLightText"
+          <Box
+            flexDirection="row"
+            justifyContent="center"
+            marginBottom="lx"
+            height={30}
+          >
+            {hotspot?.status && (
+              <StatusBadge
+                online={hotspot?.status?.online}
+                syncStatus={syncStatus?.status}
+                onPress={toggleShowStatusBanner}
+              />
+            )}
+            <HexBadge rewardScale={hotspot.rewardScale} />
+          </Box>
+        </Box>
+
+        <HotspotStatusBanner
+          hotspot={hotspot}
+          marginBottom="l"
+          visible={showStatusBanner}
+          onDismiss={toggleShowStatusBanner}
+        />
+
+        <Box width="100%" justifyContent="center" flexDirection="row">
+          <HeliumSelect
+            showGradient={false}
+            marginTop="m"
+            data={selectData}
+            selectedValue={selectedOption}
+            onValueChanged={handleSelectValueChanged}
           />
         </Box>
-        <HotspotChecklist hotspot={hotspot} witnesses={witnesses} />
-        <TimelinePicker index={2} onTimelineChanged={setTimelineValue} />
-        <HotspotDetailChart
-          title={t('hotspot_details.reward_title')}
-          number={rewardSum?.total.toFixed(2)}
-          change={rewardsChange}
-          data={rewardChartData}
-          loading={loading}
+        <HotspotChecklist
+          marginTop="lx"
+          visible={selectedOption === 'checklist'}
+          hotspot={hotspot}
+          witnesses={witnesses}
         />
-        <HotspotDetailChart
-          title={t('hotspot_details.witness_title')}
-          number={witnessAverage?.toFixed(0)}
-          change={witnessChange}
-          data={witnessChartData}
-          loading={loading}
-        />
-        <HotspotDetailChart
-          title={t('hotspot_details.challenge_title')}
-          subTitle={t('hotspot_details.challenge_sub_title')}
-          number={challengeSum?.toFixed(0)}
-          change={challengeChange}
-          data={challengeChartData}
-          loading={loading}
-        />
+
+        {selectedOption === 'overview' && (
+          <>
+            <TimelinePicker index={2} onTimelineChanged={setTimelineValue} />
+            <HotspotDetailChart
+              title={t('hotspot_details.reward_title')}
+              number={rewardSum?.total.toFixed(2)}
+              change={rewardsChange}
+              data={rewardChartData}
+              loading={loading}
+            />
+            <HotspotDetailChart
+              title={t('hotspot_details.witness_title')}
+              number={witnessAverage?.toFixed(0)}
+              change={witnessChange}
+              data={witnessChartData}
+              loading={loading}
+            />
+            <HotspotDetailChart
+              title={t('hotspot_details.challenge_title')}
+              number={challengeSum?.toFixed(0)}
+              change={challengeChange}
+              data={challengeChartData}
+              loading={loading}
+            />
+          </>
+        )}
       </Box>
     </BottomSheetScrollView>
   )

@@ -5,8 +5,6 @@ import { StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
-import { Address } from '@helium/crypto-react-native'
-import { useSelector } from 'react-redux'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import Crosshair from './Crosshair'
@@ -14,13 +12,13 @@ import { wp } from '../../../utils/layout'
 import Close from '../../../assets/images/close.svg'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import useHaptic from '../../../utils/useHaptic'
-import { QrScanResult, ScanType } from './scanTypes'
 import BSHandle from '../../../components/BSHandle'
 import { useSpacing } from '../../../theme/themeHooks'
-import { RootState } from '../../../store/rootReducer'
+import { useAppLinkContext } from '../../../providers/AppLinkProvider'
+import { AppLinkCategoryType } from '../../../providers/appLinkTypes'
 
 type Props = {
-  scanType?: ScanType
+  scanType?: AppLinkCategoryType
   showBottomSheet?: boolean
 }
 const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
@@ -29,9 +27,8 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
   const [scanned, setScanned] = useState(false)
   const navigation = useNavigation()
   const spacing = useSpacing()
-  const {
-    app: { isPinRequiredForPayment },
-  } = useSelector((state: RootState) => state)
+
+  const { handleBarCode } = useAppLinkContext()
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -51,56 +48,22 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
     triggerNavHaptic()
   }
 
-  const handleBarCodeScanned = async ({ data }: BarCodeScannerResult) => {
+  const handleBarCodeScanned = async (result: BarCodeScannerResult) => {
     if (scanned) return
 
     try {
-      const scanResult = parseBarCodeData(data)
+      await handleBarCode(result, scanType)
 
       setScanned(true)
       triggerNotification('success')
-
-      if (isPinRequiredForPayment) {
-        navigation.navigate('LockScreen', {
-          requestType: 'send',
-          scanResult,
-        })
-      } else {
-        navigation.navigate('Send', { scanResult })
-      }
     } catch (error) {
       handleFailedScan()
     }
   }
 
-  const parseBarCodeData = (data: string): QrScanResult => {
-    if (Address.isValid(data)) {
-      return {
-        type: scanType,
-        address: data,
-      }
-    }
-
-    try {
-      const scanResult: QrScanResult = JSON.parse(data)
-
-      if (
-        !['payment', 'dc_burn'].includes(scanResult.type) ||
-        !scanResult.address ||
-        !Address.isValid(scanResult.address)
-      ) {
-        throw new Error('Invalid transaction encoding')
-      }
-
-      return scanResult
-    } catch (error) {
-      throw new Error('Invalid transaction encoding')
-    }
-  }
-
   const handleFailedScan = () => {
     setScanned(true)
-    setTimeout(() => setScanned(false), 1000)
+    setTimeout(() => setScanned(false), 2000)
     triggerNotification('error')
   }
 
@@ -154,9 +117,6 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
                   {t('send.scan.send')}
                 </Text>
                 <Text marginBottom="xs">{t('send.scan.send_description')}</Text>
-                <Text variant="body2Bold" color="blueMain">
-                  {t('send.scan.learn_more')}
-                </Text>
               </Box>
               <Box marginBottom="s">
                 <Text
@@ -168,9 +128,6 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
                   {t('send.scan.burn')}
                 </Text>
                 <Text marginBottom="xs">{t('send.scan.burn_description')}</Text>
-                <Text variant="body2Bold" color="blueMain">
-                  {t('send.scan.learn_more')}
-                </Text>
               </Box>
               <Box marginBottom="s">
                 <Text
@@ -182,9 +139,6 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
                   {t('send.scan.view')}
                 </Text>
                 <Text marginBottom="xs">{t('send.scan.view_description')}</Text>
-                <Text variant="body2Bold" color="blueMain">
-                  {t('send.scan.learn_more')}
-                </Text>
               </Box>
             </Box>
           </BottomSheetScrollView>

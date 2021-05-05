@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler'
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import {
   AppState,
@@ -10,7 +10,7 @@ import {
   UIManager,
 } from 'react-native'
 import { ThemeProvider } from '@shopify/restyle'
-import OneSignal from 'react-native-onesignal'
+import OneSignal, { OpenedEvent } from 'react-native-onesignal'
 import Config from 'react-native-config'
 import { useSelector } from 'react-redux'
 import MapboxGL from '@react-native-mapbox-gl/maps'
@@ -19,6 +19,7 @@ import Portal from '@burstware/react-native-portal'
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import * as SplashScreen from 'expo-splash-screen'
+import { NavigationContainer } from '@react-navigation/native'
 import { theme } from './theme/theme'
 import NavigationRoot from './navigation/NavigationRoot'
 import { useAppDispatch } from './store/store'
@@ -38,6 +39,11 @@ import { fetchFeatures } from './store/features/featuresSlice'
 import usePrevious from './utils/usePrevious'
 import StatusBanner from './components/StatusBanner'
 import { fetchStatus } from './store/helium/heliumStatusSlice'
+import notificationSlice, {
+  fetchNotifications,
+} from './store/notifications/notificationSlice'
+import AppLinkProvider from './providers/AppLinkProvider'
+import { navigationRef } from './navigation/navigator'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -57,6 +63,7 @@ const App = () => {
     'RCTBridge required dispatch_sync to load',
   ])
 
+  const appState = useRef(AppState.currentState)
   const dispatch = useAppDispatch()
 
   const {
@@ -82,20 +89,32 @@ const App = () => {
     dispatch(fetchBlockHeight())
     dispatch(fetchInitialData())
     dispatch(fetchStatus())
+    dispatch(fetchNotifications())
   }, [dispatch])
 
   // initialize external libraries
   useAsync(configChainVars, [])
   useEffect(() => {
     OneSignal.setAppId(Config.ONE_SIGNAL_APP_ID)
+    OneSignal.setNotificationOpenedHandler((event: OpenedEvent) => {
+      // handles opening a notification
+      dispatch(
+        notificationSlice.actions.pushNotificationOpened(event.notification),
+      )
+    })
+    OneSignal.setNotificationWillShowInForegroundHandler(() => {
+      // handles fetching new notifications while the app is in focus
+      dispatch(fetchNotifications())
+    })
     MapboxGL.setAccessToken(Config.MAPBOX_ACCESS_TOKEN)
     Logger.init()
-  }, [])
+  }, [dispatch])
 
   // setup and listen for app state changes
   const handleChange = useCallback(
-    (newState: AppStateStatus) => {
-      dispatch(appSlice.actions.updateAppStateStatus(newState))
+    (nextAppState: AppStateStatus) => {
+      appState.current = nextAppState
+      dispatch(appSlice.actions.updateAppStateStatus(appState.current))
     },
     [dispatch],
   )
@@ -202,7 +221,11 @@ const App = () => {
                   <StatusBar translucent backgroundColor="transparent" />
                 )}
                 <Portal.Host>
-                  <NavigationRoot />
+                  <NavigationContainer ref={navigationRef}>
+                    <AppLinkProvider>
+                      <NavigationRoot />
+                    </AppLinkProvider>
+                  </NavigationContainer>
                 </Portal.Host>
               </SafeAreaProvider>
               <StatusBanner />

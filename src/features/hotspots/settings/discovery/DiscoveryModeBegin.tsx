@@ -38,7 +38,7 @@ const DiscoveryModeBegin = ({
 
   useEffect(() => {
     if (hasInfo !== !!recentDiscoveryInfo) {
-      animateTransition()
+      animateTransition('DiscoveryModeBegin.HasInfo')
       setHasInfo(!!recentDiscoveryInfo)
     }
   }, [hasInfo, recentDiscoveryInfo])

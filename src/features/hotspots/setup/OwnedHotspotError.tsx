@@ -17,7 +17,7 @@ const OwnedHotspotErrorScreen = () => {
 
   return (
     <BackScreen>
-      <Box flex={1} justifyContent="center" paddingBottom="xxl">
+      <Box flex={1} justifyContent="center">
         <Text variant="h1" marginBottom="l" maxFontSizeMultiplier={1}>
           {t('hotspot_setup.owned_hotspot.title')}
         </Text>
@@ -38,14 +38,12 @@ const OwnedHotspotErrorScreen = () => {
           {t('hotspot_setup.owned_hotspot.subtitle_2')}
         </Text>
       </Box>
-      <Box>
-        <Button
-          title={t('hotspot_setup.onboarding_error.next')}
-          mode="contained"
-          variant="primary"
-          onPress={navExit}
-        />
-      </Box>
+      <Button
+        title={t('hotspot_setup.onboarding_error.next')}
+        mode="contained"
+        variant="primary"
+        onPress={navExit}
+      />
     </BackScreen>
   )
 }

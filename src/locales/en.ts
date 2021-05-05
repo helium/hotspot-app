@@ -50,8 +50,7 @@ export default {
     },
     create_pin: {
       title: 'Set PIN Code',
-      subtitle:
-        'As a final secure step, let’s secure your account with a PIN Code.',
+      subtitle: 'Let’s secure your account with a PIN Code.',
     },
     confirm_pin: {
       title: 'Repeat PIN',
@@ -93,6 +92,7 @@ export default {
     next: "I've read the guide",
   },
   generic: {
+    clear: 'Clear',
     done: 'Done',
     understand: 'I understand',
     blocks: 'Blocks',
@@ -132,6 +132,7 @@ export default {
     something_went_wrong: 'Something went wrong',
     hnt_to_currency: '{{currencyType}}. Data from CoinGecko',
     search_location: 'Search for an address or place',
+    unavailable: 'Unavailable',
   },
   hotspot_setup: {
     selection: {
@@ -596,7 +597,7 @@ export default {
         signOutAlert: {
           title: 'Warning!',
           body:
-            'This will remove all account info from this device. The only way to restore access to your account and Hotspots will be by using your 12 word recovery seed phrase.',
+            'You are signing out of your account. Do you have your 12 recovery words? If you don’t, you will lose access to:\n\n- your Hotspots\n- your HNT\n- your Wallet',
         },
       },
     },
@@ -653,6 +654,8 @@ export default {
     },
     ticker:
       '{{formattedHotspotCount}} Hotspots • Oracle Price: {{oraclePrice}} • Block Time: {{formattedBlockTime}} secs • ',
+    ticker_no_block:
+      '{{formattedHotspotCount}} Hotspots • Oracle Price: {{oraclePrice}} • ',
   },
   permissions: {
     location: {
@@ -703,7 +706,7 @@ export default {
     title: 'Hotspot Settings',
     pairing: {
       title: 'Update Wi-Fi or Run Diagnostics',
-      subtitle: 'Paring required before proceeding.',
+      subtitle: 'Pairing required before proceeding.',
       scan: 'Pair',
     },
     transfer: {
@@ -753,6 +756,8 @@ export default {
       email_client_missing:
         'Could not find a compatible email client installed',
       other_info: 'Other Information',
+      unavailable_warning:
+        '* Diagnostics may be unavailable before a Hotspot is fully booted. If data is missing, please go back and generate the diagnostic report again.',
     },
     wifi: {
       title: 'Wi-Fi Network',
@@ -793,6 +798,7 @@ export default {
     },
   },
   hotspot_details: {
+    checklist: 'Checklist',
     title: 'Hotspot Details',
     owner: 'Owned by {{address}}',
     owner_you: 'Owned by you',
@@ -802,10 +808,26 @@ export default {
     challenge_title: 'Challenges',
     challenge_sub_title: '(witness, challenger, or challengee)',
     picker_title: 'Past',
-    picker_options: ['24 Hours', '7 Days', '14 Days', '30 Days'],
+    overview: 'Overview',
+    no_location: 'No Location',
+    picker_options: [
+      'Past 24 Hours',
+      'Past 7 Days',
+      'Past 14 Days',
+      'Past 30 Days',
+    ],
     picker_prompt: 'Select Range',
     status_online: 'Online',
     status_offline: 'Needs Attention',
+    status_syncing: 'Syncing',
+    status_prompt_online: {
+      title: 'Hotspot is online and syncing.',
+      subtitle_active: 'Status: Block {{hotspotBlock}} of {{currentBlock}}',
+      subtitle_starting: 'Beginning to sync...',
+    },
+    status_prompt_offline: {
+      title: 'Hotspot is offline and not syncing.',
+    },
     options: {
       settings: 'Settings',
       viewExplorer: 'View on Explorer',
@@ -977,6 +999,7 @@ export default {
     bobcat: 'Bobcat Miner 300 (All)',
     syncrobit_us: 'Syncrob.it (US 915)',
     syncrobit_eu: 'Syncrob.it (EU 868)',
+    longapone_eu: 'LongAP One (EU 868)',
     rak_custom: 'RAK Antenna',
     custom: 'Custom Antenna',
     onboarding: {

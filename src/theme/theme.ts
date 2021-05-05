@@ -30,6 +30,7 @@ const palette = {
   grayDarkText: '#515686',
   grayLightText: '#A7AACD',
   grayPurple: '#E3E5F8',
+  grayHighlight: '#EBEDF9',
 
   redMain: '#F97570',
   redMedium: '#FF6666',
@@ -58,6 +59,8 @@ const palette = {
   greenDarkText: '#1B875E',
   greenChecklist: '#26D694',
 
+  orangeExtraDark: '#C97C09',
+  orangeDark: '#FCB345',
   orange: '#FF852F',
   yellow: '#FFCB46',
   gold: '#FFC769',
