@@ -710,6 +710,11 @@ export default {
     discovery: {
       title: 'Discovery Mode',
       subtitle: 'Identify ideal Hotspot placement.',
+      no_location_error: {
+        title: 'Unable to Start Discovery Mode',
+        message:
+          'Please set a Hotspot location before initiating Discovery Mode.',
+      },
     },
     diagnostics: {
       title: 'Diagnostic Report',
