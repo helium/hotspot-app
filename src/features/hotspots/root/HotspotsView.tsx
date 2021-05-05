@@ -49,6 +49,7 @@ import { HotspotStackParamList } from './hotspotTypes'
 import animateTransition from '../../../utils/animateTransition'
 import usePrevious from '../../../utils/usePrevious'
 import useVisible from '../../../utils/useVisible'
+import { hp } from '../../../utils/layout'
 
 type Props = {
   ownedHotspots?: Hotspot[]
@@ -82,7 +83,7 @@ const HotspotsView = ({
   const [showDetails, setShowDetails] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
   const listRef = useRef<BottomSheetModal>(null)
-  const [listHeight, setListHeight] = useState(0)
+  const [listHeight] = useState(hp(66))
   const [detailHeaderHeight, setDetailHeaderHeight] = useState(144)
   const [bottomSheetIndex, setBottomSheetIndex] = useState(startOnMap ? 0 : 1)
   const prevBottomSheetIndex = usePrevious(bottomSheetIndex)
@@ -201,10 +202,6 @@ const HotspotsView = ({
     hotspotAddress,
     ownedHotspots,
   ])
-
-  const handleLayoutList = useCallback((event: LayoutChangeEvent) => {
-    setListHeight(event.nativeEvent.layout.height - 166)
-  }, [])
 
   const handleDetailHeaderLayout = useCallback((event: LayoutChangeEvent) => {
     setDetailHeaderHeight(event.nativeEvent.layout.height)
@@ -458,7 +455,6 @@ const HotspotsView = ({
         borderTopLeftRadius="xl"
         borderTopRightRadius="xl"
         style={containerStyles}
-        onLayout={handleLayoutList}
         overflow="hidden"
       >
         <Map

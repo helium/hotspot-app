@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { Hotspot } from '@helium/http'
 import animalName from 'angry-purple-tiger'
-import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
+import { FlatList } from 'react-native-gesture-handler'
 import Box from '../../../components/Box'
 import SearchInput from '../../../components/SearchInput'
 import hotspotSearchSlice, {
@@ -133,7 +133,7 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace }: Props) => {
         initialValue={searchTerm}
       />
       {!!searchTerm && (
-        <BottomSheetFlatList
+        <FlatList
           data={listData}
           keyboardShouldPersistTaps="always"
           keyExtractor={keyExtractor}
