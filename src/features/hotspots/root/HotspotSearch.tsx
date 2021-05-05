@@ -102,9 +102,11 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace }: Props) => {
         title = item.description
       } else if (item.name) {
         title = animalName(item.address)
-        if (item.geocode) {
+        if (item.geocode?.longCity && item.geocode.shortState) {
           const { longCity, shortState } = item.geocode
           subtitle = `${longCity}${longCity ? ', ' : ''}${shortState}`
+        } else {
+          subtitle = t('hotspot_details.no_location_title')
         }
       }
       return (
@@ -117,7 +119,7 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace }: Props) => {
         />
       )
     },
-    [listData.length, onPressItem],
+    [listData.length, onPressItem, t],
   )
 
   return (
