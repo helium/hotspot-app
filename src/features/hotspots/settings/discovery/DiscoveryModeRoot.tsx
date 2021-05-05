@@ -29,6 +29,7 @@ import DiscoveryModeBegin from './DiscoveryModeBegin'
 import DiscoveryModeResults from './DiscoveryModeResults'
 import useMount from '../../../../utils/useMount'
 import useAlert from '../../../../utils/useAlert'
+import { getSyncStatus, SyncStatus } from '../../../../utils/hotspotUtils'
 
 type State = 'begin' | 'results'
 
@@ -55,6 +56,9 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
     (state: RootState) => state.discovery.selectedRequest,
   )
   const requestId = useSelector((state: RootState) => state.discovery.requestId)
+  const blockHeight = useSelector(
+    (state: RootState) => state.heliumData.blockHeight,
+  )
 
   const fetchRecent = useCallback(() => {
     if (!hotspot.address || !userAddress) return
@@ -165,16 +169,30 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
   const handleNewSelected = useCallback(async () => {
     if (!hotspot.address || !userAddress) return
 
-    animateTransition('DiscoveryModeRoot.HandleNewSelected')
-    setViewState('results')
-
-    dispatch(
-      startDiscovery({
-        hotspotAddress: hotspot.address,
-        hotspotName: hotspot.name || animalName(hotspot.address),
-      }),
-    )
-  }, [dispatch, hotspot.address, hotspot.name, userAddress])
+    const hotspotHeight = hotspot.status?.height || 0
+    const { status } = getSyncStatus(hotspotHeight, blockHeight)
+    if (status !== SyncStatus.full) {
+      showOKAlert({
+        titleKey: 'discovery.syncing_prompt.title',
+        messageKey: 'discovery.syncing_prompt.message',
+      })
+    } else {
+      dispatch(
+        startDiscovery({
+          hotspotAddress: hotspot.address,
+          hotspotName: hotspot.name || animalName(hotspot.address),
+        }),
+      )
+    }
+  }, [
+    blockHeight,
+    dispatch,
+    hotspot.address,
+    hotspot.name,
+    hotspot.status?.height,
+    showOKAlert,
+    userAddress,
+  ])
 
   const handleRequestSelected = (request: DiscoveryRequest) => {
     dispatch(discoverySlice.actions.setSelectedRequest(request))

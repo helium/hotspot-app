@@ -950,6 +950,10 @@ export default {
     online: 'ONLINE',
   },
   discovery: {
+    syncing_prompt: {
+      title: 'Hotspot is Syncing',
+      message: 'Please try again later.',
+    },
     session_error_prompt: {
       title: 'Unable to initiate Discovery Mode',
       message:
