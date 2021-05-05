@@ -950,9 +950,19 @@ export default {
     online: 'ONLINE',
   },
   discovery: {
+    troubleshooting_guide: 'Troubleshooting Guide',
     syncing_prompt: {
-      title: 'Hotspot is Syncing',
-      message: 'Please try again later.',
+      title: 'Unable to initiate Discovery Mode',
+      message: 'Hotspot must be fully synced, please try again later.',
+    },
+    offline_prompt: {
+      title: 'Unable to initiate Discovery Mode',
+      message: 'Hotspot is offline, connect to internet and try again.',
+    },
+    relay_prompt: {
+      title: 'Hotspot is Relayed',
+      message:
+        'Relayed Hotspots running Discovery Mode may not receive responses from neighboring Hotspots. To take a Hotspot out of Relay, please visit the troubleshooting guide.',
     },
     session_error_prompt: {
       title: 'Unable to initiate Discovery Mode',

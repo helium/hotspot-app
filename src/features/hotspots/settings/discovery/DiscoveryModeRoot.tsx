@@ -1,5 +1,3 @@
-import { Hotspot } from '@helium/http'
-import { getUnixTime } from 'date-fns'
 import React, {
   memo,
   useCallback,
@@ -8,9 +6,13 @@ import React, {
   useRef,
   useState,
 } from 'react'
+import { Hotspot } from '@helium/http'
+import { getUnixTime } from 'date-fns'
 import { useAsync } from 'react-async-hook'
+import { Alert, Linking } from 'react-native'
 import { useSelector } from 'react-redux'
 import animalName from 'angry-purple-tiger'
+import { useTranslation } from 'react-i18next'
 import discoverySlice, {
   fetchDiscoveryById,
   fetchRecentDiscoveries,
@@ -29,7 +31,14 @@ import DiscoveryModeBegin from './DiscoveryModeBegin'
 import DiscoveryModeResults from './DiscoveryModeResults'
 import useMount from '../../../../utils/useMount'
 import useAlert from '../../../../utils/useAlert'
-import { getSyncStatus, SyncStatus } from '../../../../utils/hotspotUtils'
+import {
+  getSyncStatus,
+  isRelay,
+  SyncStatus,
+} from '../../../../utils/hotspotUtils'
+
+const troubleshootingURL =
+  'https://intercom.help/heliumnetwork/en/articles/3207912-troubleshooting-network-connection-issues'
 
 type State = 'begin' | 'results'
 
@@ -39,6 +48,7 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
   const [errorShownForRequestId, setErrorShownForRequestId] = useState<
     Record<string, boolean>
   >({})
+  const { t } = useTranslation()
   const [time, setTime] = useState(0)
   const { enableBack } = useHotspotSettingsContext()
   const { result: userAddress } = useAsync(getSecureItem, ['address'])
@@ -166,6 +176,15 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
     }
   }, [dispatch, requestId, selectedRequest?.id, shouldPoll])
 
+  const initiateDiscovery = useCallback(() => {
+    dispatch(
+      startDiscovery({
+        hotspotAddress: hotspot.address,
+        hotspotName: hotspot.name || animalName(hotspot.address),
+      }),
+    )
+  }, [dispatch, hotspot.address, hotspot.name])
+
   const handleNewSelected = useCallback(async () => {
     if (!hotspot.address || !userAddress) return
 
@@ -176,23 +195,38 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
         titleKey: 'discovery.syncing_prompt.title',
         messageKey: 'discovery.syncing_prompt.message',
       })
-    } else {
-      dispatch(
-        startDiscovery({
-          hotspotAddress: hotspot.address,
-          hotspotName: hotspot.name || animalName(hotspot.address),
-        }),
+    } else if (hotspot.status?.online !== 'online') {
+      showOKAlert({
+        titleKey: 'discovery.offline_prompt.title',
+        messageKey: 'discovery.offline_prompt.message',
+      })
+    } else if (isRelay(hotspot.status?.listenAddrs)) {
+      Alert.alert(
+        t('discovery.relay_prompt.title'),
+        t('discovery.relay_prompt.message'),
+        [
+          {
+            text: t('generic.ok'),
+            onPress: () => initiateDiscovery(),
+          },
+          {
+            text: t('discovery.troubleshooting_guide'),
+            style: 'cancel',
+            onPress: () => {
+              if (Linking.canOpenURL(troubleshootingURL))
+                Linking.openURL(troubleshootingURL)
+            },
+          },
+          {
+            text: t('generic.cancel'),
+            style: 'destructive',
+          },
+        ],
       )
+    } else {
+      initiateDiscovery()
     }
-  }, [
-    blockHeight,
-    dispatch,
-    hotspot.address,
-    hotspot.name,
-    hotspot.status?.height,
-    showOKAlert,
-    userAddress,
-  ])
+  }, [blockHeight, hotspot, initiateDiscovery, showOKAlert, t, userAddress])
 
   const handleRequestSelected = (request: DiscoveryRequest) => {
     dispatch(discoverySlice.actions.setSelectedRequest(request))

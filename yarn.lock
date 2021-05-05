@@ -1249,10 +1249,10 @@
   dependencies:
     bignumber.js "^9.0.0"
 
-"@helium/http@^3.32.0":
-  version "3.33.0"
-  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.33.0.tgz#a5814977d0466e3bbcccca0249cf2b13c7890d47"
-  integrity sha512-KcD9JsCSj71yMp9Dxt4o1x1+/66ULHctFQtVObUZFxCVVDYCb5c9sWDfMFrum8KXOgMmU12BDpwAIriAwFu5mA==
+"@helium/http@^3.34.0":
+  version "3.34.0"
+  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.34.0.tgz#6b7615e59e4680930d684876a7c35a9f9fe05577"
+  integrity sha512-nohnz2TuU/IYtBEeBQFDknCfFwbWlWDj8nMWYksTqMgjAmx0QyiaIWuJA+xrwv3U9bcCqCPIWt0vLhvtjD9+Zw==
   dependencies:
     "@helium/currency" "^3.25.1"
     axios "^0.21.1"
@@ -1267,7 +1267,7 @@
   dependencies:
     protobufjs "^6.8.9"
 
-"@helium/proto@^1.3.0":
+"@helium/proto@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@helium/proto/-/proto-1.4.0.tgz#7a0ce268642173966519c2fb5f6e57508bff76d1"
   integrity sha512-0yzzwfwpygowZNqB/9+vI/0gq5TV55ALAUqVuX6TbZZd9DGv4+AHICLiaIandLBBmNPpFzJ0c/IBdBcHJS/g1w==
@@ -1275,12 +1275,12 @@
     protobufjs "^6.8.9"
 
 "@helium/transactions@^3.30.0":
-  version "3.30.0"
-  resolved "https://registry.yarnpkg.com/@helium/transactions/-/transactions-3.30.0.tgz#b0bdc20f08f6573271a05f37542c070ea0cefc54"
-  integrity sha512-LuZI7ybo4czDDXYEIqDreAdCH954Nj9MxIPDJxRAsChmWX7v76JTyAJUk5PYNgXePXL7Grl9+xRc4l+9jvKGqQ==
+  version "3.34.0"
+  resolved "https://registry.yarnpkg.com/@helium/transactions/-/transactions-3.34.0.tgz#2c568c2cbd67a8bf0e097d2f0e52f9270e6d8eac"
+  integrity sha512-7ICGl56FGQi8SllnbpTzpoGzQuy4NYMQMs2XjgxXXlcAVjt/y444+zBQ8OKhrUyr76a0PELFplNc/eidCiWJgQ==
   dependencies:
     "@helium/crypto" "^3.24.0"
-    "@helium/proto" "^1.3.0"
+    "@helium/proto" "^1.4.0"
     "@types/libsodium-wrappers" "^0.7.8"
     long "^4.0.0"
     path "^0.12.7"
@@ -10467,9 +10467,9 @@ react-deep-force-update@^1.0.0:
   integrity sha512-WUSQJ4P/wWcusaH+zZmbECOk7H5N2pOIl0vzheeornkIMhu+qrNdGFm0bDZLCb0hSF0jf/kH1SgkNGfBdTc4wA==
 
 react-devtools-core@^4.6.0:
-  version "4.13.0"
-  resolved "https://registry.yarnpkg.com/react-devtools-core/-/react-devtools-core-4.13.0.tgz#fa80ee03b1a975c1d9898e24de841e45a4b22d30"
-  integrity sha512-KR+0pLw8wTjOVr+9AECe5ctmycaAjbmxN3bbdB0vmlwm0JkxNnKMxDzanf+4V8IuPBQWgm8qdWpbSOqhu1l14g==
+  version "4.13.1"
+  resolved "https://registry.yarnpkg.com/react-devtools-core/-/react-devtools-core-4.13.1.tgz#84e1b51a8cb2034e1e2276851ace7874cbb8f083"
+  integrity sha512-+N7vZgjQWqkPe/q7yltXOi20U3Zy4WdXax9IcLCNB4nWsUxLrkVF0Mqbsr3h4m/j0dA4046QpJOnlwdWVQuiFw==
   dependencies:
     shell-quote "^1.6.1"
     ws "^7"
@@ -12599,9 +12599,9 @@ v8-to-istanbul@^4.1.3:
     source-map "^0.7.3"
 
 v8-to-istanbul@^7.0.0:
-  version "7.1.1"
-  resolved "https://registry.yarnpkg.com/v8-to-istanbul/-/v8-to-istanbul-7.1.1.tgz#04bfd1026ba4577de5472df4f5e89af49de5edda"
-  integrity sha512-p0BB09E5FRjx0ELN6RgusIPsSPhtgexSRcKETybEs6IGOTXJSZqfwxp7r//55nnu0f1AxltY5VvdVqy2vZf9AA==
+  version "7.1.2"
+  resolved "https://registry.yarnpkg.com/v8-to-istanbul/-/v8-to-istanbul-7.1.2.tgz#30898d1a7fa0c84d225a2c1434fb958f290883c1"
+  integrity sha512-TxNb7YEUwkLXCQYeudi6lgQ/SZrzNO4kMdlqVxaZPUIUjCv6iSSypUQX70kNBSERpQ8fk48+d61FXk+tgqcWow==
   dependencies:
     "@types/istanbul-lib-coverage" "^2.0.1"
     convert-source-map "^1.6.0"
