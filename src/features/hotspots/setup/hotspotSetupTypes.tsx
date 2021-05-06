@@ -1,5 +1,6 @@
 import { StackNavigationProp } from '@react-navigation/stack'
 import { HotspotType } from '../../../store/connectedHotspot/connectedHotspotSlice'
+import { HotspotConnectStatus } from '../../../utils/useHotspot'
 
 export type HotspotSetupStackParamList = {
   HotspotSetupSelectionScreen: undefined
@@ -10,7 +11,7 @@ export type HotspotSetupStackParamList = {
   HotspotSetupScanningScreen: { hotspotType: HotspotType }
   HotspotSetupPickHotspotScreen: { hotspotType: HotspotType }
   HotspotSetupConnectingScreen: { hotspotId: string }
-  OnboardingErrorScreen: undefined
+  OnboardingErrorScreen: { connectStatus: HotspotConnectStatus }
   HotspotSetupPickWifiScreen: {
     networks: string[]
     connectedNetworks: string[]
