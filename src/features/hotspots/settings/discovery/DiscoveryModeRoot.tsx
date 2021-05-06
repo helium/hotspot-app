@@ -36,6 +36,8 @@ import {
   isRelay,
   SyncStatus,
 } from '../../../../utils/hotspotUtils'
+import { hotspotHasValidLocation } from '../../../../utils/location'
+import useGetLocation from '../../../../utils/useGetLocation'
 
 const troubleshootingURL =
   'https://intercom.help/heliumnetwork/en/articles/3207912-troubleshooting-network-connection-issues'
@@ -49,16 +51,21 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
     Record<string, boolean>
   >({})
   const { t } = useTranslation()
+  const maybeGetLocation = useGetLocation()
   const [time, setTime] = useState(0)
   const { enableBack } = useHotspotSettingsContext()
   const { result: userAddress } = useAsync(getSecureItem, ['address'])
   const dispatch = useAppDispatch()
-  const { showOKAlert } = useAlert()
+  const { showOKAlert, showOKCancelAlert } = useAlert()
   const requestInterval = useRef<NodeJS.Timeout>()
   const clockInterval = useRef<NodeJS.Timeout>()
   const recentDiscoveryInfo = useSelector(
     (state: RootState) => state.discovery.recentDiscoveryInfo,
   )
+  const { currentLocation, locationBlocked } = useSelector(
+    (state: RootState) => state.location,
+  )
+
   const infoLoading = useSelector(
     (state: RootState) => state.discovery.infoLoading,
   )
@@ -176,14 +183,62 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
     }
   }, [dispatch, requestId, selectedRequest?.id, shouldPoll])
 
-  const initiateDiscovery = useCallback(() => {
-    dispatch(
-      startDiscovery({
-        hotspotAddress: hotspot.address,
-        hotspotName: hotspot.name || animalName(hotspot.address),
-      }),
-    )
-  }, [dispatch, hotspot.address, hotspot.name])
+  const dispatchDiscovery = useCallback(
+    (lat: number, lng: number) => {
+      dispatch(
+        startDiscovery({
+          hotspotAddress: hotspot.address,
+          hotspotName: hotspot.name || animalName(hotspot.address),
+          mapCoords: [lng, lat],
+        }),
+      )
+      setViewState('results')
+    },
+    [dispatch, hotspot],
+  )
+
+  const initiateDiscovery = useCallback(async () => {
+    if (!hotspotHasValidLocation(hotspot)) {
+      const decision = await showOKCancelAlert({
+        messageKey:
+          'hotspot_settings.discovery.unasserted_hotspot_warning.message',
+        titleKey: 'hotspot_settings.discovery.unasserted_hotspot_warning.title',
+        okKey: 'generic.continue',
+      })
+      if (!decision) return
+
+      if (locationBlocked) {
+        const locDecision = await showOKCancelAlert({
+          titleKey: 'generic.error',
+          messageKey: 'generic.location_blocked',
+          okKey: 'generic.go_to_settings',
+        })
+        if (locDecision) Linking.openSettings()
+      } else if (!currentLocation) {
+        const coords = await maybeGetLocation('skip')
+        if (!coords) {
+          showOKAlert({
+            titleKey: 'generic.error',
+            messageKey: 'generic.unable_to_get_location',
+          })
+        } else {
+          dispatchDiscovery(coords.latitude, coords.longitude)
+        }
+      } else {
+        dispatchDiscovery(currentLocation.latitude, currentLocation.longitude)
+      }
+    } else {
+      dispatchDiscovery(hotspot.lat || 0, hotspot.lng || 0)
+    }
+  }, [
+    currentLocation,
+    dispatchDiscovery,
+    hotspot,
+    locationBlocked,
+    maybeGetLocation,
+    showOKAlert,
+    showOKCancelAlert,
+  ])
 
   const handleNewSelected = useCallback(async () => {
     if (!hotspot.address || !userAddress) return

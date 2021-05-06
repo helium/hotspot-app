@@ -14,12 +14,14 @@ const usePermissionManager = () => {
     return response
   }
 
-  const requestLocationPermission = async () => {
-    const decision = await showOKCancelAlert({
-      titleKey: 'permissions.location.title',
-      messageKey: 'permissions.location.message',
-    })
-    if (!decision) return false
+  const requestLocationPermission = async (showAlert = true) => {
+    if (showAlert) {
+      const decision = await showOKCancelAlert({
+        titleKey: 'permissions.location.title',
+        messageKey: 'permissions.location.message',
+      })
+      if (!decision) return false
+    }
 
     return requestPermission(LOCATION)
   }

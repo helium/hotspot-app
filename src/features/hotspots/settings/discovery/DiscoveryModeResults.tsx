@@ -54,25 +54,23 @@ const DiscoveryModeResults = ({
     isEqual,
   )
 
-  const hotspotCoords = useMemo(() => {
-    return [hotspot.lng || 0, hotspot.lat || 0]
-  }, [hotspot.lat, hotspot.lng])
+  const coords = useSelector((state: RootState) => state.discovery.mapCoords)
 
   useEffect(() => {
     const oneMileInDegrees = 1 / 69 // close enough => depends on your location. It's 68.7 at the equator and 69.4 at the poles, but yolo
     const offset = 15 * oneMileInDegrees // TODO: 15 mile offset. Is this adequate?
 
     const northEastCoordinates = [
-      hotspotCoords[0] + offset,
-      hotspotCoords[1] + offset,
+      coords[0] + offset,
+      coords[1] + offset,
     ] as GeoJSON.Position
     const southWestCoordinates = [
-      hotspotCoords[0] - offset,
-      hotspotCoords[1] - offset,
+      coords[0] - offset,
+      coords[1] - offset,
     ] as GeoJSON.Position
 
     dispatch(fetchNetworkHotspots([southWestCoordinates, northEastCoordinates])) // find all hotspots 15 miles in every direction
-  }, [dispatch, hotspotCoords])
+  }, [dispatch, coords])
 
   useEffect(() => {
     if (request) {
@@ -135,7 +133,7 @@ const DiscoveryModeResults = ({
       <DiscoveryMap
         networkHotspots={networkHotspots}
         hotspotAddress={hotspot.address}
-        hotspotCoords={hotspotCoords}
+        coords={coords}
         responses={filteredResponses}
         onSelect={showOverlay}
         selectedHotspot={overlayDetails}
