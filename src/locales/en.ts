@@ -109,6 +109,9 @@ export default {
     go_to_settings: 'Go to Settings',
     hotspot: 'Hotspot',
     location: 'Location',
+    unable_to_get_location: 'We were unable to get your location',
+    location_blocked:
+      "Location is turned off. Go to your phone's settings to allow Location Services.",
     challenger: 'Challenger',
     learn_more: 'Learn More',
     cancel: 'Cancel',
@@ -714,6 +717,11 @@ export default {
         title: 'Unable to Start Discovery Mode',
         message:
           'Please set a Hotspot location before initiating Discovery Mode.',
+      },
+      unasserted_hotspot_warning: {
+        title: 'Hotspot Does Not Have A Location',
+        message:
+          "To visualize Hotspots that respond, we will use your phone's location as a placeholder for the Hotspot.",
       },
     },
     diagnostics: {

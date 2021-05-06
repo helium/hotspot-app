@@ -6,30 +6,25 @@ import NearestHotspot from '@assets/images/nearestHotspot.svg'
 import OfflineHotspot from '@assets/images/offlineHotspot.svg'
 import FollowedHotspot from '@assets/images/follow.svg'
 import TopHotspot from '@assets/images/topHotspot.svg'
-import { PermissionResponse } from 'expo-permissions'
 import { useNavigation } from '@react-navigation/native'
 import Box from '../../../components/Box'
 import hotspotsSlice, {
   HotspotSort,
 } from '../../../store/hotspots/hotspotsSlice'
 import { useAppDispatch } from '../../../store/store'
-import usePermissionManager from '../../../utils/usePermissionManager'
 import { RootState } from '../../../store/rootReducer'
 import usePrevious from '../../../utils/usePrevious'
-import locationSlice, {
-  getLocationPermission,
-  getLocation,
-} from '../../../store/location/locationSlice'
 import HeliumSelect from '../../../components/HeliumSelect'
 import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
+import useGetLocation from '../../../utils/useGetLocation'
 
 const HotspotsPicker = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const { requestLocationPermission } = usePermissionManager()
+  const maybeGetLocation = useGetLocation()
   const order = useSelector((state: RootState) => state.hotspots.order)
   const navigation = useNavigation()
-  const { currentLocation, permissionResponse, locationBlocked } = useSelector(
+  const { currentLocation, locationBlocked } = useSelector(
     (state: RootState) => state.location,
   )
   const followHotspotEnabled = useSelector(
@@ -37,40 +32,14 @@ const HotspotsPicker = () => {
   )
   const prevOrder = usePrevious(order)
 
-  const maybeGetLocation = useCallback(
-    async (okToPromptUser: boolean) => {
-      // We don't know if we can request location
-      let permResponse = permissionResponse
-      if (!permResponse) {
-        const { payload } = await dispatch(getLocationPermission())
-        permResponse = payload as PermissionResponse
-      }
-      if (!permResponse) return // this shouldn't happen unless shit hits the fan
-
-      if (permResponse.granted) {
-        dispatch(getLocation())
-      } else if (okToPromptUser && permResponse.canAskAgain) {
-        const response = await requestLocationPermission()
-
-        if (response) {
-          dispatch(locationSlice.actions.updateLocationPermission(response))
-        }
-
-        if (response && response.granted) {
-          dispatch(getLocation())
-        } else {
-          // Switch them to new hotspots, if we don't get location permission
-          dispatch(hotspotsSlice.actions.changeFilter(HotspotSort.New))
-        }
-      }
-    },
-    [requestLocationPermission, dispatch, permissionResponse],
-  )
+  const locationDeniedHandler = useCallback(() => {
+    dispatch(hotspotsSlice.actions.changeFilter(HotspotSort.New))
+  }, [dispatch])
 
   useEffect(() => {
-    maybeGetLocation(false)
+    maybeGetLocation(false, locationDeniedHandler)
     return navigation.addListener('focus', () => {
-      maybeGetLocation(false)
+      maybeGetLocation(false, locationDeniedHandler)
       dispatch(hotspotsSlice.actions.changeFilterData(currentLocation))
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -85,8 +54,14 @@ const HotspotsPicker = () => {
       return
 
     // They've switched to Nearest filter and we don't have a location
-    maybeGetLocation(true)
-  }, [currentLocation, maybeGetLocation, order, prevOrder])
+    maybeGetLocation(true, locationDeniedHandler)
+  }, [
+    currentLocation,
+    locationDeniedHandler,
+    maybeGetLocation,
+    order,
+    prevOrder,
+  ])
 
   useEffect(() => {
     dispatch(hotspotsSlice.actions.changeFilterData(currentLocation))

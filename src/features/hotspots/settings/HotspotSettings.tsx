@@ -47,7 +47,6 @@ import DiscoveryModeIcon from '../../../assets/images/discovery_mode_icon.svg'
 import DiscoveryModeRoot from './discovery/DiscoveryModeRoot'
 import UpdateIcon from '../../../assets/images/update_hotspot_icon.svg'
 import UpdateHotspotConfig from './updateHotspot/UpdateHotspotConfig'
-import useAlert from '../../../utils/useAlert'
 
 type State = 'init' | 'scan' | 'transfer' | 'discoveryMode' | 'updateHotspot'
 
@@ -69,7 +68,6 @@ const HotspotSettings = ({ hotspot }: Props) => {
     disableBack,
     enableBack,
   } = useHotspotSettingsContext()
-  const { showOKAlert } = useAlert()
   const { purpleMain } = useColors()
   const { account } = useSelector((state: RootState) => state.account)
   const discoveryEnabled = useSelector(
@@ -149,16 +147,8 @@ const HotspotSettings = ({ hotspot }: Props) => {
   }, [hotspot, t])
 
   const onPressDiscoveryMode = useCallback(() => {
-    const geo = hotspot?.geocode
-    if (!geo?.longStreet && !geo?.longCity && !geo?.shortCountry) {
-      showOKAlert({
-        titleKey: 'hotspot_settings.discovery.no_location_error.title',
-        messageKey: 'hotspot_settings.discovery.no_location_error.message',
-      })
-    } else {
-      setNextState('discoveryMode')
-    }
-  }, [hotspot?.geocode, setNextState, showOKAlert])
+    setNextState('discoveryMode')
+  }, [setNextState])
 
   const onPressUpdateHotspot = useCallback(() => {
     setNextState('updateHotspot')

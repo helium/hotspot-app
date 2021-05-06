@@ -35,7 +35,7 @@ export type MapSelectDetail = {
   address: string
 }
 type Props = BoxProps<Theme> & {
-  hotspotCoords: number[]
+  coords: number[]
   hotspotAddress: string
   responses: DiscoveryResponse[]
   onSelect: ({ lat, lng, name }: MapSelectDetail) => void
@@ -47,7 +47,7 @@ type Props = BoxProps<Theme> & {
 }
 export const ANIM_LOOP_LENGTH_MS = 3000
 const DiscoveryMap = ({
-  hotspotCoords,
+  coords,
   hotspotAddress,
   responses,
   onSelect,
@@ -126,7 +126,7 @@ const DiscoveryMap = ({
             id: hotspotAddress,
             geometry: {
               type: 'Point',
-              coordinates: hotspotCoords,
+              coordinates: coords,
             },
           },
         ],
@@ -162,7 +162,7 @@ const DiscoveryMap = ({
           properties: {},
           geometry: {
             type: 'LineString',
-            coordinates: [hotspotCoords, [r.long, r.lat]],
+            coordinates: [coords, [r.long, r.lat]],
           },
         })),
       } as GeoJSON.FeatureCollection
@@ -170,15 +170,15 @@ const DiscoveryMap = ({
     }
 
     return sources
-  }, [hotspotAddress, hotspotCoords, networkHotspots, responses])
+  }, [hotspotAddress, coords, networkHotspots, responses])
 
   const setupMap = useCallback(async () => {
     setMapLoaded(true)
     cameraRef.current?.setCamera({
-      centerCoordinate: hotspotCoords,
+      centerCoordinate: coords,
       zoomLevel: 12,
     })
-  }, [hotspotCoords])
+  }, [coords])
 
   const onShapeSourcePress = useCallback(
     (event: OnPressEvent) => {
@@ -217,7 +217,7 @@ const DiscoveryMap = ({
         zoomEnabled={false}
         onDidFinishLoadingMap={setupMap}
       >
-        <MapboxGL.Camera ref={cameraRef} />
+        <MapboxGL.Camera ref={cameraRef} zoomLevel={12} />
 
         <MapboxGL.ShapeSource
           id="nearbyHotspots"
