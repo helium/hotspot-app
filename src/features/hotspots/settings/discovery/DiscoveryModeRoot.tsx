@@ -206,7 +206,7 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
         t('discovery.relay_prompt.message'),
         [
           {
-            text: t('generic.ok'),
+            text: t('generic.continue'),
             onPress: () => initiateDiscovery(),
           },
           {
