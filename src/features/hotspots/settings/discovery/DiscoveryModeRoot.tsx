@@ -38,9 +38,7 @@ import {
 } from '../../../../utils/hotspotUtils'
 import { hotspotHasValidLocation } from '../../../../utils/location'
 import useGetLocation from '../../../../utils/useGetLocation'
-
-const troubleshootingURL =
-  'https://intercom.help/heliumnetwork/en/articles/3207912-troubleshooting-network-connection-issues'
+import Articles from '../../../../constants/articles'
 
 type State = 'begin' | 'results'
 
@@ -268,8 +266,8 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
             text: t('discovery.troubleshooting_guide'),
             style: 'cancel',
             onPress: () => {
-              if (Linking.canOpenURL(troubleshootingURL))
-                Linking.openURL(troubleshootingURL)
+              if (Linking.canOpenURL(Articles.Relay))
+                Linking.openURL(Articles.Relay)
             },
           },
           {
