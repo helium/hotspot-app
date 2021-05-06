@@ -1641,10 +1641,10 @@
   dependencies:
     bignumber.js "^9.0.0"
 
-"@helium/http@^3.32.0":
-  version "3.32.0"
-  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.32.0.tgz#70d99bf090e1e1112a84fc0fc22563a85b12e472"
-  integrity sha512-8xjTT86A6BUGnHXgXVWYVB6ajhi6sO51etXRQDe6fgXxHMue1kZu93N+CGlHKYfL+4mBx75jBsA0qs02irJssw==
+"@helium/http@^3.34.0":
+  version "3.34.0"
+  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.34.0.tgz#6b7615e59e4680930d684876a7c35a9f9fe05577"
+  integrity sha512-nohnz2TuU/IYtBEeBQFDknCfFwbWlWDj8nMWYksTqMgjAmx0QyiaIWuJA+xrwv3U9bcCqCPIWt0vLhvtjD9+Zw==
   dependencies:
     "@helium/currency" "^3.25.1"
     axios "^0.21.1"
@@ -1659,20 +1659,20 @@
   dependencies:
     protobufjs "^6.8.9"
 
-"@helium/proto@^1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@helium/proto/-/proto-1.3.0.tgz#68657f6c11bdafc9a6cf2920ccd535c5ae244064"
-  integrity sha512-zzkNXDpSeLTrP3U2uBuqkYe2OhlCd8EJi7mowM44XBvba/hx8kHUY53ss3gTJamNpCh8NdbXQtjdCqfg3pQZSg==
+"@helium/proto@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@helium/proto/-/proto-1.4.0.tgz#7a0ce268642173966519c2fb5f6e57508bff76d1"
+  integrity sha512-0yzzwfwpygowZNqB/9+vI/0gq5TV55ALAUqVuX6TbZZd9DGv4+AHICLiaIandLBBmNPpFzJ0c/IBdBcHJS/g1w==
   dependencies:
     protobufjs "^6.8.9"
 
-"@helium/transactions@^3.30.0":
-  version "3.30.0"
-  resolved "https://registry.yarnpkg.com/@helium/transactions/-/transactions-3.30.0.tgz#b0bdc20f08f6573271a05f37542c070ea0cefc54"
-  integrity sha512-LuZI7ybo4czDDXYEIqDreAdCH954Nj9MxIPDJxRAsChmWX7v76JTyAJUk5PYNgXePXL7Grl9+xRc4l+9jvKGqQ==
+"@helium/transactions@^3.34.0":
+  version "3.34.0"
+  resolved "https://registry.yarnpkg.com/@helium/transactions/-/transactions-3.34.0.tgz#2c568c2cbd67a8bf0e097d2f0e52f9270e6d8eac"
+  integrity sha512-7ICGl56FGQi8SllnbpTzpoGzQuy4NYMQMs2XjgxXXlcAVjt/y444+zBQ8OKhrUyr76a0PELFplNc/eidCiWJgQ==
   dependencies:
     "@helium/crypto" "^3.24.0"
-    "@helium/proto" "^1.3.0"
+    "@helium/proto" "^1.4.0"
     "@types/libsodium-wrappers" "^0.7.8"
     long "^4.0.0"
     path "^0.12.7"
