@@ -5,13 +5,14 @@ import Close from '@assets/images/close.svg'
 import CarotDown from '@assets/images/carot-down.svg'
 import Kabob from '@assets/images/kabob.svg'
 import { useTranslation } from 'react-i18next'
-import { FlatList, Modal, StyleSheet } from 'react-native'
+import { Modal, StyleSheet } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated'
+import { FlatList } from 'react-native-gesture-handler'
 import { Colors, Theme } from '../theme/theme'
 import HeliumActionSheetItem, {
   HeliumActionSheetItemHeight,
@@ -37,6 +38,7 @@ type Props = BoxProps<Theme> & {
   iconColor?: Colors
   initialValue?: string
   iconVariant?: 'carot' | 'kabob' | 'none'
+  closeOnSelect?: boolean
 }
 type ListItem = { item: HeliumActionSheetItemType; index: number }
 
@@ -52,6 +54,7 @@ const HeliumActionSheet = ({
   initialValue,
   textProps,
   prefixTextProps,
+  closeOnSelect = true,
   ...boxProps
 }: Props) => {
   const insets = useSafeAreaInsets()
@@ -123,7 +126,9 @@ const HeliumActionSheet = ({
       index: number,
       action?: () => void,
     ) => async () => {
-      handleClose()
+      if (closeOnSelect) {
+        handleClose()
+      }
 
       if (action) {
         action()
@@ -132,7 +137,7 @@ const HeliumActionSheet = ({
         onValueSelected?.(value, index)
       }
     },
-    [handleClose, onValueSelected],
+    [closeOnSelect, handleClose, onValueSelected],
   )
 
   const renderItem = useCallback(
@@ -152,19 +157,21 @@ const HeliumActionSheet = ({
 
   const footer = useMemo(() => {
     return (
-      <TouchableOpacityBox
-        onPress={handleClose}
-        style={styles.cancelContainer}
-        height={49}
-        marginVertical="m"
-        alignItems="center"
-        justifyContent="center"
-        borderRadius="ms"
-      >
-        <Text variant="medium" fontSize={18} style={styles.cancelText}>
-          {t('generic.cancel')}
-        </Text>
-      </TouchableOpacityBox>
+      <Box marginBottom="xl">
+        <TouchableOpacityBox
+          onPress={handleClose}
+          style={styles.cancelContainer}
+          height={49}
+          marginVertical="m"
+          alignItems="center"
+          justifyContent="center"
+          borderRadius="ms"
+        >
+          <Text variant="medium" fontSize={18} style={styles.cancelText}>
+            {t('generic.cancel')}
+          </Text>
+        </TouchableOpacityBox>
+      </Box>
     )
   }, [handleClose, t])
 

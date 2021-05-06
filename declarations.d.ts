@@ -9,8 +9,6 @@ declare module 'angry-purple-tiger' {
   export default function fn(value: string): string
 }
 
-declare module '@burstware/react-native-portal'
-
 declare module 'react-native-currency-format' {
   export function format(value: number, currencyType: string): string
 }

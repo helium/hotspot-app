@@ -277,6 +277,9 @@ PODS:
     - React (< 1.0.0, >= 0.13.0)
   - react-native-safe-area-context (3.1.9):
     - React-Core
+  - react-native-simple-toast (1.1.3):
+    - React-Core
+    - Toast (~> 4.0.0)
   - react-native-sodium (0.3.9):
     - React
   - React-perflogger (0.64.0)
@@ -396,6 +399,7 @@ PODS:
   - Sentry (6.1.4):
     - Sentry/Core (= 6.1.4)
   - Sentry/Core (6.1.4)
+  - Toast (4.0.0)
   - UMAppLoader (1.3.0)
   - UMBarCodeScannerInterface (5.3.0)
   - UMCameraInterface (5.3.0)
@@ -459,6 +463,7 @@ DEPENDENCIES:
   - "react-native-mapbox-gl (from `../node_modules/@react-native-mapbox-gl/maps`)"
   - react-native-onesignal (from `../node_modules/react-native-onesignal`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-simple-toast (from `../node_modules/react-native-simple-toast`)
   - react-native-sodium (from `../node_modules/react-native-sodium`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -506,6 +511,7 @@ SPEC REPOS:
     - MultiplatformBleAdapter
     - OneSignal
     - Sentry
+    - Toast
     - ZXingObjC
 
 EXTERNAL SOURCES:
@@ -579,6 +585,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-onesignal"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-simple-toast:
+    :path: "../node_modules/react-native-simple-toast"
   react-native-sodium:
     :path: "../node_modules/react-native-sodium"
   React-perflogger:
@@ -672,14 +680,14 @@ SPEC CHECKSUMS:
   EXSplashScreen: ab5984afcca91e0af6b3138f01a8c47dc4955c51
   FBLazyVector: 49cbe4b43e445b06bf29199b6ad2057649e4c8f5
   FBReactNativeSpec: ef7076047ecfe23933320b0fb2b844474516e2e8
-  glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
+  glog: 7a8788d88d2a384c05df45e95c5e763e4d81f3ad
   lottie-ios: 48fac6be217c76937e36e340e2d09cf7b10b7f5f
   lottie-react-native: 4dff8fe8d10ddef9e7880e770080f4a56121397e
   Mapbox-iOS-SDK: a5915700ec84bc1a7f8b3e746d474789e35b7956
   MapboxMobileEvents: 2bc0ca2eedb627b73cf403258dce2b2fa98074a6
   MultiplatformBleAdapter: 975cfb2a333b2c42b7a11628bd100ccb61872da2
   OneSignal: a5853b3c7f7bce791353a15db019b5ccd5b8585b
-  RCT-Folly: ec7a233ccc97cc556cf7237f0db1ff65b986f27c
+  RCT-Folly: 1af344185a2506dec1e584dd5edaaa8fb6bcda5e
   RCTRequired: 2f8cb5b7533219bf4218a045f92768129cf7050a
   RCTTypeSafety: 512728b73549e72ad7330b92f3d42936f2a4de5b
   React: 98eac01574128a790f0bbbafe2d1a8607291ac24
@@ -697,6 +705,7 @@ SPEC CHECKSUMS:
   react-native-mapbox-gl: e0dea71cecc84e7a8744bf07bc8a3cc8dbef8894
   react-native-onesignal: a69eeb12486e7739ed8f180e6ddd915be77721ba
   react-native-safe-area-context: b6e0e284002381d2ff29fa4fff42b4d8282e3c94
+  react-native-simple-toast: bf002828cf816775a6809f7a9ec3907509bce11f
   react-native-sodium: be31e3fd97b1e9abd0853d7623fbec4b390b6615
   React-perflogger: 9c547d8f06b9bf00cb447f2b75e8d7f19b7e02af
   React-RCTActionSheet: 3080b6e12e0e1a5b313c8c0050699b5c794a1b11
@@ -722,6 +731,7 @@ SPEC CHECKSUMS:
   RNSentry: 6aeba1adc242fd22a6826acae92f430697b47a9c
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   Sentry: 9d055e2de30a77685e86b219acf02e59b82091fc
+  Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
   UMAppLoader: 5db5dc03176c6238da9c8b3657a370137882a4ad
   UMBarCodeScannerInterface: 017672479f93de88d94c3a50dfb66b5348b65989
   UMCameraInterface: 22bd2c4bf15dcf68530368fa5704af7490818457
