@@ -8,6 +8,8 @@ target 'Helium' do
   use_unimodules!
   config = use_native_modules!
 
+  pod 'OneSignal', '>= 3.0.0', '< 4.0'
+
   use_react_native!(
     :path => config[:reactNativePath],
     # to enable hermes on iOS, change `false` to `true` and then install pods
@@ -36,5 +38,5 @@ target 'Helium' do
 end
 
 target 'OneSignalNotificationServiceExtension' do
-  pod 'OneSignal', '>= 3.0.0-beta', '< 4.0'
+  pod 'OneSignal', '>= 3.0.0', '< 4.0'
 end

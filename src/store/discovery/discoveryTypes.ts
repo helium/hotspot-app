@@ -2,6 +2,7 @@ export type RecentDiscoveryInfo = {
   nextRenewal: string
   recentRequests: DiscoveryRequest[]
   requestsRemaining: number
+  requestsPerDay: number
 }
 
 export type DiscoveryRequest = {
@@ -9,6 +10,7 @@ export type DiscoveryRequest = {
   hotspotAddress: string
   responses: DiscoveryResponse[]
   insertedAt: string
+  errorCode: number
 }
 
 export type DiscoveryResponse = {

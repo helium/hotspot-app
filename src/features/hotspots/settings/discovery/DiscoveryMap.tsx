@@ -176,7 +176,7 @@ const DiscoveryMap = ({
     setMapLoaded(true)
     cameraRef.current?.setCamera({
       centerCoordinate: hotspotCoords,
-      zoomLevel: 13,
+      zoomLevel: 12,
     })
   }, [hotspotCoords])
 
@@ -214,6 +214,7 @@ const DiscoveryMap = ({
         rotateEnabled={false}
         pitchEnabled={false}
         compassEnabled={false}
+        zoomEnabled={false}
         onDidFinishLoadingMap={setupMap}
       >
         <MapboxGL.Camera ref={cameraRef} />

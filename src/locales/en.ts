@@ -710,6 +710,11 @@ export default {
     discovery: {
       title: 'Discovery Mode',
       subtitle: 'Identify ideal Hotspot placement.',
+      no_location_error: {
+        title: 'Unable to Start Discovery Mode',
+        message:
+          'Please set a Hotspot location before initiating Discovery Mode.',
+      },
     },
     diagnostics: {
       title: 'Diagnostic Report',
@@ -945,17 +950,38 @@ export default {
     online: 'ONLINE',
   },
   discovery: {
+    troubleshooting_guide: 'Troubleshooting Guide',
+    syncing_prompt: {
+      title: 'Unable to initiate Discovery Mode',
+      message: 'Hotspot must be fully synced, please try again later.',
+    },
+    offline_prompt: {
+      title: 'Unable to initiate Discovery Mode',
+      message: 'Hotspot is offline, connect to internet and try again.',
+    },
+    relay_prompt: {
+      title: 'Hotspot is Relayed',
+      message:
+        'Relayed Hotspots running Discovery Mode may not receive responses from neighboring Hotspots. To take a Hotspot out of Relay, please visit the troubleshooting guide.',
+    },
+    session_error_prompt: {
+      title: 'Unable to initiate Discovery Mode',
+      message:
+        'Hotspot may be behind a relay and is not responding. Check your router settings and try again.',
+    },
     begin: {
       title: 'Discovery Mode',
       subtitle:
         'Find out which Hotspots can hear you by sending radio packets for a short period of time.',
-      body: 'Discovery Mode is free to use for now, up to 5 sessions per day.',
+      body:
+        'Discovery Mode is free to use for now, up to {{requestsPerDay}} sessions per day.',
       previous_sessions: 'Previous Sessions',
       last_30_days: '(Last 30 Days)',
       start_session: 'Begin New Session',
       no_sessions: 'You’ve run out of sessions for today.\nTry again tomorrow.',
       responses: '{{count}} response',
       responses_plural: '{{count}} responses',
+      initiation_error: 'Unable to Initiate Session',
       error: {
         title: 'Error',
         subtitle:
