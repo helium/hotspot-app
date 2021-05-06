@@ -83,7 +83,7 @@ const HotspotsView = ({
   const [showDetails, setShowDetails] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
   const listRef = useRef<BottomSheetModal>(null)
-  const [listHeight] = useState(hp(66))
+  const listHeight = useRef(hp(66))
   const [detailHeaderHeight, setDetailHeaderHeight] = useState(144)
   const [bottomSheetIndex, setBottomSheetIndex] = useState(startOnMap ? 0 : 1)
   const prevBottomSheetIndex = usePrevious(bottomSheetIndex)
@@ -123,8 +123,8 @@ const HotspotsView = ({
   }, [params])
 
   const snapPoints = useMemo(() => {
-    if (showDetails) return [detailHeaderHeight, listHeight]
-    return [1, listHeight]
+    if (showDetails) return [detailHeaderHeight, listHeight.current]
+    return [1, listHeight.current]
   }, [detailHeaderHeight, listHeight, showDetails])
 
   const hasHotspots = useMemo(
