@@ -829,6 +829,7 @@ export default {
     status_online: 'Online',
     status_offline: 'Needs Attention',
     status_syncing: 'Syncing',
+    relayed: 'Relayed',
     status_prompt_online: {
       title: 'Hotspot is online and syncing.',
       subtitle_active: 'Status: Block {{hotspotBlock}} of {{currentBlock}}',
@@ -846,6 +847,11 @@ export default {
     no_location_body: 'Pair with the Hotspot to begin.',
     percent_synced: '{{percent}}% Synced',
     starting_sync: 'Starting Sync...',
+    relay_prompt: {
+      title: 'Hotspot is Relayed',
+      message:
+        "Hotspot's connection is being relayed through another Hotspot on the network which may affect mining. To take a Hotspot out of Relay, please visit the troubleshooting guide.",
+    },
   },
   transfer: {
     title: 'Transfer Hotspot',
