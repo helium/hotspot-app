@@ -376,6 +376,8 @@ export default {
         'There was an error constructing the Assert Location transaction. Please try again.',
       assert_loc_error_no_loc:
         'The selected location is invalid. Please try again.',
+      no_onboarding_key_title: 'No onboarding key found',
+      no_onboarding_key_message: 'Would you like to try again?',
     },
     enable_location: {
       title: 'Set Hotspot\nLocation',

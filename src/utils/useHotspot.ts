@@ -32,6 +32,14 @@ import { RootState } from '../store/rootReducer'
 import * as Logger from './logger'
 import useSubmitTxn from '../hooks/useSubmitTxn'
 
+export type HotspotConnectStatus =
+  | 'success'
+  | 'no_device_found'
+  | 'no_services_found'
+  | 'invalid_onboarding_address'
+  | 'no_onboarding_key'
+  | 'details_fetch_failure'
+
 export enum HotspotErrorCode {
   WAIT = 'wait',
   UNKNOWN = 'unknown',
@@ -111,14 +119,22 @@ const useHotspot = () => {
     return parsedStr
   }
 
-  const connectAndConfigHotspot = async (hotspotDevice: Device) => {
+  const handleConnectStatus = (status: HotspotConnectStatus) => {
+    if (status !== 'success') {
+      Logger.error(new Error(`Hotspot connect failed: ${status}`))
+    }
+    return status
+  }
+
+  const connectAndConfigHotspot = async (
+    hotspotDevice: Device,
+  ): Promise<HotspotConnectStatus> => {
     let connectedDevice = hotspotDevice
     const connected = await hotspotDevice.isConnected()
     if (!connected) {
       const device = await connect(hotspotDevice)
       if (!device) {
-        Logger.error(new Error('Hotspot connect failed: no device'))
-        return
+        return handleConnectStatus('no_device_found')
       }
       connectedDevice = device
     }
@@ -127,8 +143,7 @@ const useHotspot = () => {
       connectedDevice,
     )
     if (!deviceWithServices) {
-      Logger.error(new Error('Hotspot connect failed: no services'))
-      return
+      return handleConnectStatus('no_services_found')
     }
 
     connectedHotspot.current = deviceWithServices
@@ -148,6 +163,7 @@ const useHotspot = () => {
       Logger.error(
         new Error(`Invalid onboarding address: ${onboardingAddress}`),
       )
+      return handleConnectStatus('invalid_onboarding_address')
     }
 
     const details = {
@@ -160,15 +176,18 @@ const useHotspot = () => {
 
     Logger.breadcrumb('connectAndConfigHotspot - received details', details)
     const response = await dispatch(fetchConnectedHotspotDetails(details))
-    const payload = response.payload as AllHotspotDetails
+    let payload: AllHotspotDetails | null = null
+    if (response.payload) {
+      payload = response.payload as AllHotspotDetails
+    }
 
     await updateHotspotStatus(payload?.hotspot)
 
     if (!payload?.onboardingRecord?.onboardingKey) {
       Logger.error(new Error('Hotspot connect failed: no onboardingKey'))
-      return false
+      return handleConnectStatus('no_onboarding_key')
     }
-    return !!payload
+    return handleConnectStatus(payload ? 'success' : 'details_fetch_failure')
   }
 
   const scanForWifiNetworks = async (configured = false) => {
