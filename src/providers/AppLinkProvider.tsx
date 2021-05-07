@@ -23,6 +23,11 @@ import {
 
 const APP_LINK_PROTOCOL = 'helium://'
 
+export const createAppLink = (
+  resource: AppLinkCategoryType,
+  resourceId: string,
+) => `${APP_LINK_PROTOCOL}${resource}/${resourceId}`
+
 const useAppLink = () => {
   const [unhandledAppLink, setUnhandledLink] = useState<AppLink | null>(null)
 

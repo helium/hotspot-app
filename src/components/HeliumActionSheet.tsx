@@ -24,6 +24,7 @@ import Box from './Box'
 import TouchableOpacityBox from './TouchableOpacityBox'
 import BlurBox from './BlurBox'
 import { ReAnimatedBox } from './AnimatedBox'
+import useVisible from '../utils/useVisible'
 
 type Props = BoxProps<Theme> & {
   data: Array<HeliumActionSheetItemType>
@@ -97,6 +98,8 @@ const HeliumActionSheet = ({
   const handleClose = useCallback(async () => {
     setModalVisible(false)
   }, [])
+
+  useVisible({ onDisappear: handleClose })
 
   useEffect(() => {
     if (modalVisible) {

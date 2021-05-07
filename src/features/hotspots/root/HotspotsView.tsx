@@ -110,13 +110,15 @@ const HotspotsView = ({
 
   useEffect(() => {
     const shouldShowDetails = !!hotspotAddress
-    if (shouldShowDetails === showDetails) return
-
+    if (shouldShowDetails === showDetails) {
+      setShowDetailsNav(shouldShowDetails && !linkedHotspotAddress)
+      return
+    }
     if (visible && prevVisible) {
       animateTransition('HotspotsView.DetailsChange', false)
     }
     setShowDetails(shouldShowDetails)
-  }, [hotspotAddress, prevVisible, showDetails, visible])
+  }, [hotspotAddress, linkedHotspotAddress, prevVisible, showDetails, visible])
 
   useEffect(() => {
     setLinkedHotspotAddress(params?.address || '')
