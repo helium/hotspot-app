@@ -21,7 +21,7 @@ import { omit } from 'lodash'
 import { Theme } from '../../../../theme/theme'
 import Box from '../../../../components/Box'
 import { DiscoveryResponse } from '../../../../store/discovery/discoveryTypes'
-import { hotspotsToFeatures } from '../../../../utils/mapUtils'
+import { findBounds, hotspotsToFeatures } from '../../../../utils/mapUtils'
 import { useColors } from '../../../../theme/themeHooks'
 import { NetworkHotspot } from '../../../../store/networkHotspots/networkHotspotsSlice'
 import usePrevious from '../../../../utils/usePrevious'
@@ -35,7 +35,7 @@ export type MapSelectDetail = {
   address: string
 }
 type Props = BoxProps<Theme> & {
-  coords: number[]
+  mapCenter?: number[]
   hotspotAddress: string
   responses: DiscoveryResponse[]
   onSelect: ({ lat, lng, name }: MapSelectDetail) => void
@@ -47,7 +47,7 @@ type Props = BoxProps<Theme> & {
 }
 export const ANIM_LOOP_LENGTH_MS = 3000
 const DiscoveryMap = ({
-  coords,
+  mapCenter,
   hotspotAddress,
   responses,
   onSelect,
@@ -117,8 +117,17 @@ const DiscoveryMap = ({
       ...responseAddresses,
     ])
 
-    const sources = {
-      hotspot: {
+    const sources = {} as Record<
+      'hotspot' | 'nearbyHotspotMarker' | 'responses' | 'lines',
+      GeoJSON.FeatureCollection
+    >
+    sources.nearbyHotspotMarker = {
+      type: 'FeatureCollection',
+      features: hotspotsToFeatures(Object.values(nearbyHotspots)),
+    } as GeoJSON.FeatureCollection
+
+    if (mapCenter) {
+      sources.hotspot = {
         type: 'FeatureCollection',
         features: [
           {
@@ -126,19 +135,12 @@ const DiscoveryMap = ({
             id: hotspotAddress,
             geometry: {
               type: 'Point',
-              coordinates: coords,
+              coordinates: mapCenter,
             },
           },
         ],
-      } as GeoJSON.FeatureCollection,
-      nearbyHotspotMarker: {
-        type: 'FeatureCollection',
-        features: hotspotsToFeatures(Object.values(nearbyHotspots)),
-      } as GeoJSON.FeatureCollection,
-    } as Record<
-      'hotspot' | 'nearbyHotspotMarker' | 'responses' | 'lines',
-      GeoJSON.FeatureCollection
-    >
+      } as GeoJSON.FeatureCollection
+    }
 
     if (responses) {
       const responseCollection = {
@@ -155,30 +157,44 @@ const DiscoveryMap = ({
       } as GeoJSON.FeatureCollection
       sources.responses = responseCollection
 
-      const lines = {
-        type: 'FeatureCollection',
-        features: responses.map((r) => ({
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: 'LineString',
-            coordinates: [coords, [r.long, r.lat]],
-          },
-        })),
-      } as GeoJSON.FeatureCollection
-      sources.lines = lines
+      if (mapCenter) {
+        const lines = {
+          type: 'FeatureCollection',
+          features: responses.map((r) => ({
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: 'LineString',
+              coordinates: [mapCenter, [r.long, r.lat]],
+            },
+          })),
+        } as GeoJSON.FeatureCollection
+        sources.lines = lines
+      }
     }
 
     return sources
-  }, [hotspotAddress, coords, networkHotspots, responses])
+  }, [hotspotAddress, mapCenter, networkHotspots, responses])
 
   const setupMap = useCallback(async () => {
     setMapLoaded(true)
-    cameraRef.current?.setCamera({
-      centerCoordinate: coords,
-      zoomLevel: 12,
-    })
-  }, [coords])
+  }, [])
+
+  useEffect(() => {
+    if (!mapLoaded) return
+
+    if (mapCenter) {
+      cameraRef.current?.setCamera({
+        centerCoordinate: mapCenter,
+        zoomLevel: 12,
+      })
+    } else {
+      cameraRef.current?.setCamera({
+        bounds: findBounds(responses.map((r) => [r.long, r.lat])),
+        zoomLevel: 12,
+      })
+    }
+  }, [mapCenter, mapLoaded, responses])
 
   const onShapeSourcePress = useCallback(
     (event: OnPressEvent) => {

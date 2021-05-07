@@ -28,13 +28,15 @@ export const fetchRecentDiscoveries = createAsyncThunk<
 export const startDiscovery = createAsyncThunk<
   DiscoveryRequest,
   { hotspotAddress: string; hotspotName: string; mapCoords: number[] }
->('discovery/start', async ({ hotspotAddress, hotspotName }) => {
+>('discovery/start', async ({ hotspotAddress, hotspotName, mapCoords }) => {
   const signature = await makeDiscoverySignature(hotspotAddress)
   return postWallet(
     'discoveries',
     {
       hotspot_address: hotspotAddress,
       hotspot_name: hotspotName,
+      lat: mapCoords[1],
+      lng: mapCoords[0],
       signature,
     },
     true,

@@ -1008,6 +1008,12 @@ export default {
         subtitle:
           'There was a problem loading discovery mode. Please try again later',
       },
+      location_opts: {
+        hotspot: "Use Hotspot's Physical Location*",
+        asserted: 'Use Asserted Location',
+        info:
+          '*Useful if you want to test Hotspot coverage before setting a location',
+      },
     },
     results: {
       title: 'Discovery Mode Results',
@@ -1017,7 +1023,7 @@ export default {
       result_time: 'Time of Results',
       searching: 'Searching',
       distance: '{{distance}} {{unit}} away',
-      added_to_followed: 'Added to followed hotspots',
+      added_to_followed: 'Added to Followed Hotspots',
     },
     share: {
       subject: 'Discovery Results',
