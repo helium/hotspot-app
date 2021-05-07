@@ -286,7 +286,7 @@ const HotspotsView = ({
   )
 
   const hotspotHasLocation = useMemo(() => {
-    if (!hotspotAddress) return true
+    if (!hotspotAddress || !selectedHotspot) return true
 
     return hotspotHasValidLocation(
       selectedHotspot || hotspotDetailsData.hotspot,

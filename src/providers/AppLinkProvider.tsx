@@ -21,6 +21,8 @@ import {
   AppLinkCategoryType,
 } from './appLinkTypes'
 
+const APP_LINK_PROTOCOL = 'helium://'
+
 const useAppLink = () => {
   const [unhandledAppLink, setUnhandledLink] = useState<AppLink | null>(null)
 
@@ -89,12 +91,22 @@ const useAppLink = () => {
     if (!url) return
 
     const parsed = queryString.parseUrl(url)
-    if (parsed.url !== 'helium://app') return
+    if (!parsed.url.includes(APP_LINK_PROTOCOL)) return
 
     const record = AppLinkFields.reduce(
       (obj, k) => ({ ...obj, [k]: parsed.query[k] }),
       {},
     ) as AppLink
+
+    const path = parsed.url.replace(APP_LINK_PROTOCOL, '')
+    const [resourceType, resourceId] = path.split('/')
+    if (resourceType && AppLinkCategories.find((k) => k === resourceType)) {
+      record.type = resourceType as AppLinkCategoryType
+    }
+    if (resourceId) {
+      record.address = resourceId
+    }
+
     if (!record.type || !AppLinkCategories.find((k) => k === record.type)) {
       throw new Error(`Unsupported QR Type: ${record.type}`)
     }
