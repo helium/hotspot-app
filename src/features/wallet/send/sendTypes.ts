@@ -21,7 +21,6 @@ export type SendDetails = {
   balanceAmount: Balance<NetworkTokens>
   dcAmount: string
   memo: string
-  fee: Balance<NetworkTokens>
 }
 
 export type SendDetailsUpdate = {

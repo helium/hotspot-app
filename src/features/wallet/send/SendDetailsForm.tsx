@@ -3,11 +3,7 @@ import { ActivityIndicator, Alert } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Address } from '@helium/crypto-react-native'
 import { Account } from '@helium/http'
-import Balance, {
-  CurrencyType,
-  DataCredits,
-  NetworkTokens,
-} from '@helium/currency'
+import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
 import { useAsync } from 'react-async-hook'
 import animalName from 'angry-purple-tiger'
 import InputField from '../../../components/InputField'
@@ -18,39 +14,31 @@ import QrCode from '../../../assets/images/qr.svg'
 import Check from '../../../assets/images/check.svg'
 import { useColors } from '../../../theme/themeHooks'
 import LockedField from '../../../components/LockedField'
-import { SendDetails, SendType, SendDetailsUpdate } from './sendTypes'
+import { SendDetails, SendDetailsUpdate } from './sendTypes'
 import { Transfer } from '../../hotspots/transfers/TransferRequests'
-import { useAppDispatch } from '../../../store/store'
-import {
-  fetchCurrentOraclePrice,
-  fetchPredictedOraclePrice,
-} from '../../../store/helium/heliumDataSlice'
 import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
 import { ensLookup } from '../../../utils/explorerClient'
 import { formatAmountInput } from '../../../utils/transactions'
 import * as Logger from '../../../utils/logger'
 import useHaptic from '../../../utils/useHaptic'
-import {
-  calculateBurnTxnFee,
-  calculatePaymentTxnFee,
-  calculateTransferTxnFee,
-  useFees,
-} from '../../../utils/fees'
+import { AppLinkCategoryType } from '../../../providers/appLinkTypes'
 
 type Props = {
   account?: Account
+  fee: Balance<NetworkTokens>
   isLocked: boolean
   isSeller?: boolean
   lastReportedActivity?: string
   onScanPress: () => void
   sendDetails: SendDetails
   transferData?: Transfer
-  type: SendType
+  type: AppLinkCategoryType
   updateSendDetails: (detailsId: string, updates: SendDetailsUpdate) => void
 }
 
 const SendDetailsForm = ({
   account,
+  fee,
   isLocked,
   isSeller,
   lastReportedActivity,
@@ -62,10 +50,8 @@ const SendDetailsForm = ({
 }: Props) => {
   // Hook init
   const { t } = useTranslation()
-  const { feeToHNT } = useFees()
   const { triggerNavHaptic } = useHaptic()
   const { primaryMain } = useColors()
-  const dispatch = useAppDispatch()
 
   // State init
   const [address, setAddress] = useState<string>(sendDetails.address)
@@ -81,7 +67,6 @@ const SendDetailsForm = ({
   )
   const [dcAmount, setDcAmount] = useState<string>(sendDetails.dcAmount)
   const [memo, setMemo] = useState<string>(sendDetails.memo)
-  const [fee, setFee] = useState<Balance<NetworkTokens>>(sendDetails.fee)
 
   useEffect(() => {
     updateSendDetails(sendDetails.id, {
@@ -117,50 +102,6 @@ const SendDetailsForm = ({
     setBalanceAmount(hntBalance)
   }, [amount])
 
-  // Update the required fee if HNT amount changes
-  useAsync(async () => {
-    await updateFee()
-  }, [balanceAmount, transferData?.amountToSeller])
-
-  const getNonce = (): number => {
-    if (!account?.speculativeNonce) return 1
-    return account.speculativeNonce + 1
-  }
-
-  const updateFee = async () => {
-    await dispatch(fetchCurrentOraclePrice())
-    await dispatch(fetchPredictedOraclePrice())
-    const dcFee = await calculateFee()
-    const hntFee = feeToHNT(dcFee)
-    setFee(hntFee)
-    return hntFee
-  }
-
-  const calculateFee = async (): Promise<Balance<DataCredits>> => {
-    if (type === 'payment') {
-      return calculatePaymentTxnFee(
-        balanceAmount.integerBalance,
-        getNonce(),
-        address,
-      )
-    }
-
-    if (type === 'dc_burn') {
-      return calculateBurnTxnFee(
-        balanceAmount.integerBalance,
-        address,
-        getNonce(),
-        memo,
-      )
-    }
-
-    if (type === 'transfer') {
-      return calculateTransferTxnFee(transferData?.partialTransaction)
-    }
-
-    throw new Error('Unsupported transaction type')
-  }
-
   // Helper to normalize direct "amount" input value
   const setFormAmount = (formAmount: string) => {
     const formattedAmount = formatAmountInput(formAmount)
@@ -174,8 +115,7 @@ const SendDetailsForm = ({
     if (!balance) return
 
     try {
-      const currentFee = await updateFee()
-      if (currentFee > balance) {
+      if (fee > balance) {
         const balanceStr = balance.toString(8, {
           decimalSeparator,
           groupSeparator,
@@ -185,7 +125,7 @@ const SendDetailsForm = ({
         return
       }
 
-      const maxAmount = balance.minus(currentFee)
+      const maxAmount = balance.minus(fee)
       const maxAmountStr = maxAmount.toString(8, {
         decimalSeparator,
         groupSeparator,
@@ -204,23 +144,14 @@ const SendDetailsForm = ({
   const renderLockedPaymentForm = () => (
     <>
       <LockedField label={t('send.address.label')} value={address} />
-      <LockedField
-        label={t('send.amount.label')}
-        value={amount}
-        footer={amount ? <FeeFooter fee={fee} /> : undefined}
-        bottom
-      />
+      <LockedField label={t('send.amount.label')} value={amount} bottom />
     </>
   )
 
   const renderLockedBurnForm = () => (
     <>
       <LockedField label={t('send.address.label')} value={address} />
-      <LockedField
-        label={t('send.amount.label')}
-        value={amount}
-        footer={amount ? <FeeFooter fee={fee} /> : undefined}
-      />
+      <LockedField label={t('send.amount.label')} value={amount} />
       <LockedField label={t('send.dcAmount.label')} value={dcAmount} />
       <LockedField label={t('send.memo.label')} value={memo} bottom />
     </>
@@ -256,7 +187,6 @@ const SendDetailsForm = ({
             </Text>
           </TouchableOpacityBox>
         }
-        footer={amount ? <FeeFooter fee={fee} /> : undefined}
       />
     </>
   )
@@ -292,7 +222,6 @@ const SendDetailsForm = ({
         value={amount}
         label={t('send.amount.label')}
         placeholder={t('send.amount.placeholder')}
-        footer={amount ? <FeeFooter fee={fee} /> : undefined}
       />
       <InputField
         type="numeric"
@@ -359,7 +288,6 @@ const SendDetailsForm = ({
           transferData?.amountToSeller?.floatBalance?.toLocaleString(locale) ||
           '0'
         }
-        footer={<FeeFooter fee={fee} />}
       />
       <LockedField
         label={t('send.hotspot_label')}
@@ -383,18 +311,6 @@ const SendDetailsForm = ({
       {!isLocked && type === 'dc_burn' && renderBurnForm()}
       {isSeller && type === 'transfer' && renderSellerTransferForm()}
       {!isSeller && type === 'transfer' && renderBuyerTransferForm()}
-    </Box>
-  )
-}
-
-const FeeFooter = ({ fee }: { fee: Balance<NetworkTokens> }) => {
-  const { t } = useTranslation()
-  return (
-    <Box marginTop="xs">
-      <Text variant="mono" color="grayText" fontSize={11}>
-        +{fee.toString(8, { decimalSeparator, groupSeparator })}{' '}
-        {t('generic.fee').toUpperCase()}
-      </Text>
     </Box>
   )
 }

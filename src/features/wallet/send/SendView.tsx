@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { Alert } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
-import Balance, { CurrencyType } from '@helium/currency'
+import Balance, {
+  CurrencyType,
+  DataCredits,
+  NetworkTokens,
+} from '@helium/currency'
 import { Address } from '@helium/crypto-react-native'
 import { useAsync } from 'react-async-hook'
 import { useSelector } from 'react-redux'
@@ -16,6 +20,12 @@ import SendHeader from './SendHeader'
 import { SendDetails, SendDetailsUpdate } from './sendTypes'
 import SendAmountAvailableBanner from './SendAmountAvailableBanner'
 import SendForm from './SendForm'
+import {
+  calculateBurnTxnFee,
+  calculatePaymentTxnFee,
+  calculateTransferTxnFee,
+  useFees,
+} from '../../../utils/fees'
 import {
   makeBurnTxn,
   makeBuyerTransferHotspotTxn,
@@ -71,9 +81,14 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   const [isLocked, setIsLocked] = useState(false)
   const [isValid, setIsValid] = useState(false)
   const [hasSufficientBalance, setHasSufficientBalance] = useState(false)
+  const [fee, setFee] = useState<Balance<NetworkTokens>>(
+    new Balance(0, CurrencyType.networkToken),
+  )
   const {
     account: { account },
   } = useSelector((state: RootState) => state)
+
+  const { feeToHNT } = useFees()
 
   // SendView can support multiple "send" actions in a single transaction.
   // - This is currently only supported for the "payment" send type.
@@ -91,7 +106,6 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       amount: '',
       balanceAmount: new Balance(0, CurrencyType.networkToken),
       dcAmount: '',
-      fee: new Balance(0, CurrencyType.networkToken),
       memo: '',
     },
   ])
@@ -189,7 +203,6 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
             balanceAmount,
             dcAmount: '',
             memo,
-            fee: new Balance(0, CurrencyType.networkToken),
           }
         },
       )
@@ -205,7 +218,6 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
           balanceAmount,
           dcAmount: '',
           memo: scanResult.memo || '',
-          fee: new Balance(0, CurrencyType.networkToken),
         },
       ]
     }
@@ -226,7 +238,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   // validate transaction
   useEffect(() => {
     if (type === 'transfer') {
-      const { address, fee } = sendDetails[0]
+      const { address } = sendDetails[0]
       if (isSeller) {
         setIsValid(Address.isValid(address) && (hasValidActivity || false))
         setHasSufficientBalance(true)
@@ -258,11 +270,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
         if (!isValidTransferAmount) isValidSend = false
         totalSendAmount = totalSendAmount.plus(balanceAmount)
       })
-      // Only one fee is charged per transaction regardless of how many individual payments are
-      // made, so add the fee once from the first send detail
-      if (sendDetails.length > 0) {
-        totalSendAmount = totalSendAmount.plus(sendDetails[0].fee)
-      }
+      totalSendAmount = totalSendAmount.plus(fee)
       // TODO balance compare/greater than/less than
       const hasBalance =
         totalSendAmount.integerBalance <=
@@ -282,6 +290,41 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   const getNonce = (): number => {
     if (!account?.speculativeNonce) return 1
     return account.speculativeNonce + 1
+  }
+
+  const updateFee = async () => {
+    await dispatch(fetchCurrentOraclePrice())
+    await dispatch(fetchPredictedOraclePrice())
+    const dcFee = await calculateFee()
+    const hntFee = feeToHNT(dcFee)
+    setFee(hntFee)
+    return hntFee
+  }
+
+  // compute fee
+  useAsync(async () => {
+    await updateFee()
+  }, [sendDetails, transferData?.amountToSeller])
+
+  const calculateFee = async (): Promise<Balance<DataCredits>> => {
+    if (type === 'payment') {
+      return calculatePaymentTxnFee(sendDetails, getNonce())
+    }
+
+    if (type === 'dc_burn' && sendDetails.length > 0) {
+      return calculateBurnTxnFee(
+        sendDetails[0].balanceAmount.integerBalance,
+        sendDetails[0].address,
+        getNonce(),
+        sendDetails[0].memo,
+      )
+    }
+
+    if (type === 'transfer') {
+      return calculateTransferTxnFee(transferData?.partialTransaction)
+    }
+
+    throw new Error('Unsupported transaction type')
   }
 
   const navBack = () => {
@@ -452,6 +495,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       <Box flex={3} backgroundColor="white" paddingHorizontal="l">
         <SendForm
           account={account}
+          fee={fee}
           hasSufficientBalance={hasSufficientBalance}
           hasValidActivity={hasValidActivity}
           isLocked={isLocked}

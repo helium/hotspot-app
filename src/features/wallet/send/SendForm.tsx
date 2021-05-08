@@ -2,16 +2,20 @@ import React from 'react'
 import { ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Account } from '@helium/http'
+import Balance, { NetworkTokens } from '@helium/currency'
 import Button from '../../../components/Button'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import LockedHeader from '../../../components/LockedHeader'
-import { SendDetails, SendType, SendDetailsUpdate } from './sendTypes'
+import { SendDetails, SendDetailsUpdate } from './sendTypes'
 import SendDetailsForm from './SendDetailsForm'
 import { Transfer } from '../../hotspots/transfers/TransferRequests'
+import { AppLinkCategoryType } from '../../../providers/appLinkTypes'
+import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
 
 type Props = {
   account?: Account
+  fee: Balance<NetworkTokens>
   hasSufficientBalance?: boolean
   hasValidActivity?: boolean
   isLocked: boolean
@@ -23,13 +27,14 @@ type Props = {
   sendDetails: Array<SendDetails>
   stalePocBlockCount?: number
   transferData?: Transfer
-  type: SendType
+  type: AppLinkCategoryType
   unlockForm: () => void
   updateSendDetails: (detailsId: string, updates: SendDetailsUpdate) => void
 }
 
 const SendForm = ({
   account,
+  fee,
   hasSufficientBalance,
   hasValidActivity,
   isLocked,
@@ -73,6 +78,7 @@ const SendForm = ({
           <SendDetailsForm
             key={details.id}
             account={account}
+            fee={fee}
             isLocked={isLocked}
             isSeller={isSeller}
             lastReportedActivity={lastReportedActivity}
@@ -111,6 +117,19 @@ const SendForm = ({
         mode="contained"
         disabled={!isValid}
       />
+      {fee && <FeeFooter fee={fee} />}
+    </Box>
+  )
+}
+
+const FeeFooter = ({ fee }: { fee: Balance<NetworkTokens> }) => {
+  const { t } = useTranslation()
+  return (
+    <Box marginTop="xs">
+      <Text variant="mono" color="grayText" fontSize={11}>
+        +{fee.toString(8, { decimalSeparator, groupSeparator })}{' '}
+        {t('generic.fee').toUpperCase()}
+      </Text>
     </Box>
   )
 }
