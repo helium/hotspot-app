@@ -49,6 +49,7 @@ import { HotspotStackParamList } from './hotspotTypes'
 import animateTransition from '../../../utils/animateTransition'
 import usePrevious from '../../../utils/usePrevious'
 import useVisible from '../../../utils/useVisible'
+import { hp } from '../../../utils/layout'
 
 type Props = {
   ownedHotspots?: Hotspot[]
@@ -82,7 +83,7 @@ const HotspotsView = ({
   const [showDetails, setShowDetails] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
   const listRef = useRef<BottomSheetModal>(null)
-  const [listHeight, setListHeight] = useState(144)
+  const listHeight = useRef(hp(66))
   const [detailHeaderHeight, setDetailHeaderHeight] = useState(144)
   const [bottomSheetIndex, setBottomSheetIndex] = useState(startOnMap ? 0 : 1)
   const prevBottomSheetIndex = usePrevious(bottomSheetIndex)
@@ -109,21 +110,23 @@ const HotspotsView = ({
 
   useEffect(() => {
     const shouldShowDetails = !!hotspotAddress
-    if (shouldShowDetails === showDetails) return
-
+    if (shouldShowDetails === showDetails) {
+      setShowDetailsNav(shouldShowDetails && !linkedHotspotAddress)
+      return
+    }
     if (visible && prevVisible) {
       animateTransition('HotspotsView.DetailsChange', false)
     }
     setShowDetails(shouldShowDetails)
-  }, [hotspotAddress, prevVisible, showDetails, visible])
+  }, [hotspotAddress, linkedHotspotAddress, prevVisible, showDetails, visible])
 
   useEffect(() => {
     setLinkedHotspotAddress(params?.address || '')
   }, [params])
 
   const snapPoints = useMemo(() => {
-    if (showDetails) return [detailHeaderHeight, listHeight]
-    return [1, listHeight]
+    if (showDetails) return [detailHeaderHeight, listHeight.current]
+    return [1, listHeight.current]
   }, [detailHeaderHeight, listHeight, showDetails])
 
   const hasHotspots = useMemo(
@@ -201,10 +204,6 @@ const HotspotsView = ({
     hotspotAddress,
     ownedHotspots,
   ])
-
-  const handleLayoutList = useCallback((event: LayoutChangeEvent) => {
-    setListHeight(event.nativeEvent.layout.height - 166)
-  }, [])
 
   const handleDetailHeaderLayout = useCallback((event: LayoutChangeEvent) => {
     setDetailHeaderHeight(event.nativeEvent.layout.height)
@@ -289,7 +288,7 @@ const HotspotsView = ({
   )
 
   const hotspotHasLocation = useMemo(() => {
-    if (!hotspotAddress) return true
+    if (!hotspotAddress || !selectedHotspot) return true
 
     return hotspotHasValidLocation(
       selectedHotspot || hotspotDetailsData.hotspot,
@@ -458,7 +457,6 @@ const HotspotsView = ({
         borderTopLeftRadius="xl"
         borderTopRightRadius="xl"
         style={containerStyles}
-        onLayout={handleLayoutList}
         overflow="hidden"
       >
         <Map

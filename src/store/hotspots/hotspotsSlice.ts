@@ -204,10 +204,17 @@ export const fetchHotspotsData = createAsyncThunk(
     const appState = getState() as { features: FeaturesState }
     const followEnabled = appState.features.followHotspotEnabled
 
-    const allHotspots = await Promise.all([
-      getHotspots(),
-      followEnabled ? getWallet('hotspots/follow', null, true) : [],
-    ])
+    const hotspotPromises = [getHotspots()]
+    if (followEnabled) {
+      hotspotPromises.push(getWallet('hotspots/follow', null, true))
+    }
+    const allHotspots = await Promise.all(
+      hotspotPromises.map((p) =>
+        p.catch((e) => {
+          Logger.error(e)
+        }),
+      ),
+    )
 
     const [hotspots = [], followedHotspots = []]: [
       Hotspot[],

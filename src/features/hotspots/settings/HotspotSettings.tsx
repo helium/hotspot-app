@@ -69,7 +69,6 @@ const HotspotSettings = ({ hotspot }: Props) => {
     enableBack,
   } = useHotspotSettingsContext()
   const { purpleMain } = useColors()
-
   const { account } = useSelector((state: RootState) => state.account)
   const discoveryEnabled = useSelector(
     (state: RootState) => state.features.discoveryEnabled,

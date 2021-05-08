@@ -24,7 +24,7 @@ const HotspotSetupConnectingScreen = () => {
     params: { hotspotId },
   } = useRoute<Route>()
 
-  const { showOKAlert } = useAlert()
+  const { showOKAlert, showOKCancelAlert } = useAlert()
 
   const {
     availableHotspots,
@@ -39,11 +39,23 @@ const HotspotSetupConnectingScreen = () => {
     const unsubscribe = navigation.addListener('focus', async () => {
       try {
         // connect to hotspot
-        const success = await connectAndConfigHotspot(hotspot)
+        const connectStatus = await connectAndConfigHotspot(hotspot)
+
+        if (connectStatus === 'no_onboarding_key') {
+          // prompt to retry
+          const decision = await showOKCancelAlert({
+            titleKey: 'hotspot_setup.add_hotspot.no_onboarding_key_title',
+            messageKey: 'hotspot_setup.add_hotspot.no_onboarding_key_message',
+          })
+          if (decision) {
+            navigation.goBack()
+            return
+          }
+        }
 
         // check for valid onboarding record
-        if (!success) {
-          navigation.navigate('OnboardingErrorScreen')
+        if (connectStatus !== 'success') {
+          navigation.navigate('OnboardingErrorScreen', { connectStatus })
           return
         }
 

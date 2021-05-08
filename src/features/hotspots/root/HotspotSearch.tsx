@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { Hotspot } from '@helium/http'
 import animalName from 'angry-purple-tiger'
-import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
+import { FlatList } from 'react-native-gesture-handler'
 import Box from '../../../components/Box'
 import SearchInput from '../../../components/SearchInput'
 import hotspotSearchSlice, {
@@ -102,9 +102,11 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace }: Props) => {
         title = item.description
       } else if (item.name) {
         title = animalName(item.address)
-        if (item.geocode) {
+        if (item.geocode?.longCity && item.geocode.shortState) {
           const { longCity, shortState } = item.geocode
           subtitle = `${longCity}${longCity ? ', ' : ''}${shortState}`
+        } else {
+          subtitle = t('hotspot_details.no_location_title')
         }
       }
       return (
@@ -117,7 +119,7 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace }: Props) => {
         />
       )
     },
-    [listData.length, onPressItem],
+    [listData.length, onPressItem, t],
   )
 
   return (
@@ -133,7 +135,7 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace }: Props) => {
         initialValue={searchTerm}
       />
       {!!searchTerm && (
-        <BottomSheetFlatList
+        <FlatList
           data={listData}
           keyboardShouldPersistTaps="always"
           keyExtractor={keyExtractor}

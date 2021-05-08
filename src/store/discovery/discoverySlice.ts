@@ -9,11 +9,13 @@ export type DiscoveryState = {
   infoLoading: Loading
   selectedRequest?: DiscoveryRequest | null
   requestId?: number | null
+  mapCoords: number[]
 }
 
 const initialState: DiscoveryState = {
   recentDiscoveryInfo: null,
   infoLoading: 'idle',
+  mapCoords: [0, 0],
 }
 
 export const fetchRecentDiscoveries = createAsyncThunk<
@@ -25,7 +27,7 @@ export const fetchRecentDiscoveries = createAsyncThunk<
 
 export const startDiscovery = createAsyncThunk<
   DiscoveryRequest,
-  { hotspotAddress: string; hotspotName: string }
+  { hotspotAddress: string; hotspotName: string; mapCoords: number[] }
 >('discovery/start', async ({ hotspotAddress, hotspotName }) => {
   const signature = await makeDiscoverySignature(hotspotAddress)
   return postWallet(
@@ -75,9 +77,20 @@ const discoverySlice = createSlice({
     builder.addCase(fetchDiscoveryById.fulfilled, (state, { payload }) => {
       state.selectedRequest = payload
     })
-    builder.addCase(startDiscovery.pending, (state) => {
-      state.selectedRequest = null
-    })
+    builder.addCase(
+      startDiscovery.pending,
+      (
+        state,
+        {
+          meta: {
+            arg: { mapCoords },
+          },
+        },
+      ) => {
+        state.mapCoords = mapCoords
+        state.selectedRequest = null
+      },
+    )
     builder.addCase(startDiscovery.fulfilled, (state, { payload }) => {
       state.requestId = payload.id
     })

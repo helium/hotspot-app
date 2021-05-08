@@ -11,7 +11,6 @@ import queryString from 'query-string'
 import { BarCodeScannerResult } from 'expo-barcode-scanner'
 import { Address } from '@helium/crypto-react-native'
 import { useSelector } from 'react-redux'
-import { get } from 'lodash'
 import useMount from '../utils/useMount'
 import { RootState } from '../store/rootReducer'
 import navigator from '../navigation/navigator'
@@ -20,10 +19,20 @@ import {
   AppLinkFields,
   AppLinkCategories,
   AppLinkCategoryType,
+  AppLinkPayment,
 } from './appLinkTypes'
 
+const APP_LINK_PROTOCOL = 'helium://'
+
+export const createAppLink = (
+  resource: AppLinkCategoryType,
+  resourceId: string,
+) => `${APP_LINK_PROTOCOL}${resource}/${resourceId}`
+
 const useAppLink = () => {
-  const [unhandledAppLink, setUnhandledLink] = useState<AppLink | null>(null)
+  const [unhandledAppLink, setUnhandledLink] = useState<
+    AppLink | AppLinkPayment | null
+  >(null)
 
   const {
     app: { isPinRequiredForPayment, isLocked, isBackedUp },
@@ -50,7 +59,7 @@ const useAppLink = () => {
   })
 
   const navToAppLink = useCallback(
-    (record: AppLink) => {
+    (record: AppLink | AppLinkPayment) => {
       if (isLocked || !isBackedUp) {
         setUnhandledLink(record)
         return
@@ -58,7 +67,7 @@ const useAppLink = () => {
 
       switch (record.type) {
         case 'hotspot':
-          navigator.viewHotspot(record.address)
+          navigator.viewHotspot((record as AppLink).address)
           break
 
         case 'dc_burn':
@@ -90,17 +99,22 @@ const useAppLink = () => {
     if (!url) return
 
     const parsed = queryString.parseUrl(url)
-    if (parsed.url !== 'helium://app') return
+    if (!parsed.url.includes(APP_LINK_PROTOCOL)) return
 
-    const record = AppLinkFields.reduce((obj, k) => {
-      if (k === 'type') return { ...obj, type: parsed.query.type }
-      // Only one payee per URL is currently supported, so embed subsequent fields on single
-      // payee object
-      return {
-        ...obj,
-        payees: [{ ...get(obj, 'payees[0]', {}), [k]: parsed.query[k] }],
-      }
-    }, {}) as AppLink
+    const record = AppLinkFields.reduce(
+      (obj, k) => ({ ...obj, [k]: parsed.query[k] }),
+      {},
+    ) as AppLink
+
+    const path = parsed.url.replace(APP_LINK_PROTOCOL, '')
+    const [resourceType, resourceId] = path.split('/')
+    if (resourceType && AppLinkCategories.find((k) => k === resourceType)) {
+      record.type = resourceType as AppLinkCategoryType
+    }
+    if (resourceId) {
+      record.address = resourceId
+    }
+
     if (!record.type || !AppLinkCategories.find((k) => k === record.type)) {
       throw new Error(`Unsupported QR Type: ${record.type}`)
     }
@@ -115,7 +129,13 @@ const useAppLink = () => {
    * (4) stringified JSON object { type, payees: [{ address, amount?, memo? }] }
    */
   const parseBarCodeData = useCallback(
-    (data: string, scanType: AppLinkCategoryType): AppLink => {
+    (data: string, scanType: AppLinkCategoryType): AppLink | AppLinkPayment => {
+      const assertValidAddress = (address: string) => {
+        if (!address || !Address.isValid(address)) {
+          throw new Error('Invalid transaction encoding')
+        }
+      }
+
       // Case (1) helium deeplink URL
       const urlParams = parseUrl(data)
       if (urlParams) {
@@ -131,43 +151,51 @@ const useAppLink = () => {
       }
 
       try {
-        let scanResult: AppLink
         const rawScanResult = JSON.parse(data)
+        const type = rawScanResult.type || scanType
 
-        if (rawScanResult.address) {
+        if (type === 'dc_burn') {
           // Case (3) stringified JSON { type, address, amount?, memo? }
-          scanResult = {
-            type: rawScanResult.type || scanType,
-            payees: [
-              {
-                address: rawScanResult.address,
-                amount: rawScanResult.amount,
-                memo: rawScanResult.memo,
-              },
-            ],
+          const scanResult: AppLink = {
+            type,
+            address: rawScanResult.address,
+            amount: rawScanResult.amount,
+            memo: rawScanResult.memo,
           }
-        } else if (rawScanResult.payees) {
-          // Case (4) stringified JSON { type, payees: [{ address, amount?, memo? }] }
-          scanResult = {
-            type: rawScanResult.type || scanType,
-            payees: rawScanResult.payees,
-          }
-        } else {
-          // Unknown encoding
-          throw new Error('Invalid transaction encoding')
+          assertValidAddress(scanResult.address)
+          return scanResult
         }
 
-        // Validate attributes before returning
-        if (!['payment', 'dc_burn'].includes(scanResult.type)) {
-          throw new Error('Invalid transaction encoding')
-        }
-        scanResult.payees.forEach(({ address }) => {
-          if (!address || !Address.isValid(address)) {
+        if (type === 'payment') {
+          let scanResult: AppLinkPayment
+          if (rawScanResult.address) {
+            // Case (3) stringified JSON { type, address, amount?, memo? }
+            scanResult = {
+              type,
+              payees: [
+                {
+                  address: rawScanResult.address,
+                  amount: rawScanResult.amount,
+                  memo: rawScanResult.memo,
+                },
+              ],
+            }
+          } else if (rawScanResult.payees) {
+            // Case (4) stringified JSON { type, payees: [{ address, amount?, memo? }] }
+            scanResult = {
+              type,
+              payees: rawScanResult.payees,
+            }
+          } else {
             throw new Error('Invalid transaction encoding')
           }
-        })
 
-        return scanResult
+          scanResult.payees.forEach(({ address }) =>
+            assertValidAddress(address),
+          )
+          return scanResult
+        }
+        throw new Error('Invalid transaction encoding')
       } catch (error) {
         throw new Error('Invalid transaction encoding')
       }

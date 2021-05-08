@@ -47,12 +47,13 @@ import {
 } from '../../../store/helium/heliumDataSlice'
 import {
   AppLink,
-  AppLinkCategoryType as AppLinkType,
+  AppLinkPayment,
+  AppLinkCategoryType,
 } from '../../../providers/appLinkTypes'
 
 type Props = {
   scanResult?: AppLink
-  sendType?: AppLinkType
+  sendType?: AppLinkCategoryType
   hotspot?: Hotspot
   isSeller?: boolean
 }
@@ -66,7 +67,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
   )
-  const [type, setType] = useState<AppLinkType>(sendType || 'payment')
+  const [type, setType] = useState<AppLinkCategoryType>(sendType || 'payment')
   const [isLocked, setIsLocked] = useState(false)
   const [isValid, setIsValid] = useState(false)
   const [hasSufficientBalance, setHasSufficientBalance] = useState(false)
@@ -159,30 +160,55 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   useEffect(() => {
     if (!scanResult) return
     setType(scanResult.type)
-    const scannedSendDetails: Array<SendDetails> = scanResult.payees.map(
-      ({ address, amount: scanAmount, memo = '' }, i) => {
-        let amount = ''
-        let balanceAmount = new Balance(0, CurrencyType.networkToken)
-        if (scanAmount) {
-          balanceAmount = Balance.fromFloat(
-            parseFloat(scanAmount),
-            CurrencyType.networkToken,
-          )
-          amount = formatAmountInput(String(scanAmount))
-        }
-        return {
-          id: `transfer${i}`,
-          address,
+    const getAmountAndBalance = (scanAmount?: string) => {
+      let amount = ''
+      let balanceAmount = new Balance(0, CurrencyType.networkToken)
+      if (scanAmount) {
+        balanceAmount = Balance.fromFloat(
+          parseFloat(scanAmount),
+          CurrencyType.networkToken,
+        )
+        amount = formatAmountInput(String(scanAmount))
+      }
+      return { amount, balanceAmount }
+    }
+    let scannedSendDetails: Array<SendDetails>
+    const isAppLinkPayment = (scanRes: any): scanRes is AppLinkPayment => {
+      return scanRes.type === 'payment' && scanRes.payees
+    }
+    if (isAppLinkPayment(scanResult)) {
+      scannedSendDetails = scanResult.payees.map(
+        ({ address, amount: scanAmount, memo = '' }, i) => {
+          const { amount, balanceAmount } = getAmountAndBalance(scanAmount)
+          return {
+            id: `transfer${i}`,
+            address,
+            addressAlias: '',
+            addressLoading: false,
+            amount,
+            balanceAmount,
+            dcAmount: '',
+            memo,
+            fee: new Balance(0, CurrencyType.networkToken),
+          }
+        },
+      )
+    } else {
+      const { amount, balanceAmount } = getAmountAndBalance(scanResult.amount)
+      scannedSendDetails = [
+        {
+          id: 'transfer0',
+          address: scanResult.address,
           addressAlias: '',
           addressLoading: false,
           amount,
           balanceAmount,
           dcAmount: '',
-          memo,
+          memo: scanResult.memo || '',
           fee: new Balance(0, CurrencyType.networkToken),
-        }
-      },
-    )
+        },
+      ]
+    }
     if (scannedSendDetails.length > 0) {
       if (type === 'payment') {
         // Only support multiple "send" actions for payments (not dc_burns or transfers)

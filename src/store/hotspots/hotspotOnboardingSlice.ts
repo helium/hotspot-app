@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Antenna } from '../../components/HotspotConfigurationPicker'
+import { Antenna } from '../../constants/antennas'
 import { HotspotType } from '../connectedHotspot/connectedHotspotSlice'
 
 export type HotspotOnboardingState = {
