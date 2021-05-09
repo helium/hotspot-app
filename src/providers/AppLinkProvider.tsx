@@ -126,7 +126,7 @@ const useAppLink = () => {
    * (1) A helium deeplink URL
    * (2) address string
    * (3) stringified JSON object { type, address, amount?, memo? }
-   * (4) stringified JSON object { type, payees: [{ address, amount?, memo? }] }
+   * (4) stringified JSON object { type, payees: {[payeeAddress]: amount} }
    */
   const parseBarCodeData = useCallback(
     (data: string, scanType: AppLinkCategoryType): AppLink | AppLinkPayment => {
@@ -181,10 +181,12 @@ const useAppLink = () => {
               ],
             }
           } else if (rawScanResult.payees) {
-            // Case (4) stringified JSON { type, payees: [{ address, amount?, memo? }] }
             scanResult = {
               type,
-              payees: rawScanResult.payees,
+              payees: Object.entries(rawScanResult.payees).map((entries) => ({
+                address: entries[0],
+                amount: entries[1] as string,
+              })),
             }
           } else {
             throw new Error('Invalid transaction encoding')
