@@ -2,6 +2,7 @@ import React from 'react'
 import { ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Account } from '@helium/http'
+import { some } from 'lodash'
 import Balance, { NetworkTokens } from '@helium/currency'
 import Button from '../../../components/Button'
 import Box from '../../../components/Box'
@@ -65,6 +66,8 @@ const SendForm = ({
     }
   }
 
+  const shouldShowFee = some(sendDetails, ({ amount }) => amount)
+
   return (
     <Box height="100%" justifyContent="space-between" paddingBottom="xl">
       <ScrollView contentContainerStyle={{ marginTop: 16 }}>
@@ -117,7 +120,7 @@ const SendForm = ({
         mode="contained"
         disabled={!isValid}
       />
-      {fee && <FeeFooter fee={fee} />}
+      {shouldShowFee && <FeeFooter fee={fee} />}
     </Box>
   )
 }
@@ -125,8 +128,8 @@ const SendForm = ({
 const FeeFooter = ({ fee }: { fee: Balance<NetworkTokens> }) => {
   const { t } = useTranslation()
   return (
-    <Box marginTop="xs">
-      <Text variant="mono" color="grayText" fontSize={11}>
+    <Box marginTop="m">
+      <Text variant="mono" color="grayText" alignSelf="center" fontSize={11}>
         +{fee.toString(8, { decimalSeparator, groupSeparator })}{' '}
         {t('generic.fee').toUpperCase()}
       </Text>
