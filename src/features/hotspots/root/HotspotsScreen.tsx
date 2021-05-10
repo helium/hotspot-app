@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo, useCallback } from 'react'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { useSelector } from 'react-redux'
 import { ActivityIndicator } from 'react-native'
-import SafeAreaBox from '../../../components/SafeAreaBox'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { RootState } from '../../../store/rootReducer'
 import HotspotsView from './HotspotsView'
 import HotspotsEmpty from './HotspotsEmpty'
@@ -19,6 +19,7 @@ import useGetLocation from '../../../utils/useGetLocation'
 const HotspotsScreen = () => {
   const maybeGetLocation = useGetLocation()
   const hotspots = useSelector((state: RootState) => state.hotspots.hotspots)
+  const insets = useSafeAreaInsets()
   const followedHotspots = useSelector(
     (state: RootState) => state.hotspots.followedHotspots,
   )
@@ -62,8 +63,12 @@ const HotspotsScreen = () => {
     return 'view'
   }, [followedHotspots.length, hotspots.length, hotspotsLoaded, location])
 
+  const containerStyle = useMemo(() => ({ paddingTop: insets.top }), [
+    insets.top,
+  ])
+
   return (
-    <SafeAreaBox backgroundColor="primaryBackground" flex={1} edges={['top']}>
+    <Box backgroundColor="primaryBackground" flex={1} style={containerStyle}>
       <BottomSheetModalProvider>
         {viewState === 'empty' && (
           <Box flex={1} justifyContent="center">
@@ -88,7 +93,7 @@ const HotspotsScreen = () => {
           </Box>
         )}
       </BottomSheetModalProvider>
-    </SafeAreaBox>
+    </Box>
   )
 }
 
