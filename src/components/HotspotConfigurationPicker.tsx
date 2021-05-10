@@ -13,6 +13,7 @@ import TouchableOpacityBox from './TouchableOpacityBox'
 import InfoIcon from '../assets/images/info-hollow.svg'
 import { decimalSeparator, groupSeparator, locale } from '../utils/i18n'
 import { useColors } from '../theme/themeHooks'
+import { Antenna, Antennas } from '../constants/antennas'
 
 export type AntennaId =
   | 'helium_us'
@@ -74,7 +75,7 @@ const HotspotConfigurationPicker = ({
       : undefined,
   )
 
-  const onSelectAntenna = (value: string | number, index: number) => {
+  const onSelectAntenna = (_value: string | number, index: number) => {
     const antenna = Object.values(Antennas)[index]
     onAntennaUpdated(antenna)
     onGainUpdated(antenna.gain)

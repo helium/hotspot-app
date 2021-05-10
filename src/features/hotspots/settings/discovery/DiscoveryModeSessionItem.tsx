@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react'
+import React, { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import Chevron from '@assets/images/chevron-right.svg'
 import { useAsync } from 'react-async-hook'
@@ -15,6 +15,7 @@ type Props = {
   isFirst: boolean
   isLast: boolean
   date: string
+  errorCode: number
 }
 const DiscoveryModeSessionItem = ({
   item,
@@ -23,6 +24,7 @@ const DiscoveryModeSessionItem = ({
   onRequestSelected,
   date,
   responseCount,
+  errorCode,
 }: Props) => {
   const { t } = useTranslation()
   const { result: formattedDate = '' } = useAsync(DateModule.formatDate, [
@@ -30,9 +32,15 @@ const DiscoveryModeSessionItem = ({
     'MMMM d h:mma',
   ])
 
+  const hasError = useMemo(() => errorCode !== 0, [errorCode])
+
   const handleRequestSelected = useCallback(() => {
-    onRequestSelected(item)
-  }, [item, onRequestSelected])
+    if (!hasError) {
+      onRequestSelected(item)
+    } else {
+      // TODO: Prompt user with meaningful error based on code (not yet defined)
+    }
+  }, [hasError, item, onRequestSelected])
 
   return (
     <TouchableOpacityBox
@@ -54,12 +62,14 @@ const DiscoveryModeSessionItem = ({
           {formattedDate}
         </Text>
         <Text variant="body2" color="grayText">
-          {t('discovery.begin.responses', {
-            count: responseCount,
-          })}
+          {!hasError
+            ? t('discovery.begin.responses', {
+                count: responseCount,
+              })
+            : t('discovery.begin.initiation_error')}
         </Text>
       </Box>
-      <Chevron color="black" />
+      {!hasError && <Chevron color="black" />}
     </TouchableOpacityBox>
   )
 }

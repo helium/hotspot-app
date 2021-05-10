@@ -1,5 +1,3 @@
-import { Hotspot } from '@helium/http'
-import { getUnixTime } from 'date-fns'
 import React, {
   memo,
   useCallback,
@@ -8,9 +6,13 @@ import React, {
   useRef,
   useState,
 } from 'react'
+import { Hotspot } from '@helium/http'
+import { getUnixTime } from 'date-fns'
 import { useAsync } from 'react-async-hook'
+import { Alert, Linking } from 'react-native'
 import { useSelector } from 'react-redux'
 import animalName from 'angry-purple-tiger'
+import { useTranslation } from 'react-i18next'
 import discoverySlice, {
   fetchDiscoveryById,
   fetchRecentDiscoveries,
@@ -27,21 +29,41 @@ import { getSecureItem } from '../../../../utils/secureAccount'
 import { useHotspotSettingsContext } from '../HotspotSettingsProvider'
 import DiscoveryModeBegin from './DiscoveryModeBegin'
 import DiscoveryModeResults from './DiscoveryModeResults'
+import useMount from '../../../../utils/useMount'
+import useAlert from '../../../../utils/useAlert'
+import {
+  getSyncStatus,
+  isRelay,
+  SyncStatus,
+} from '../../../../utils/hotspotUtils'
+import { hotspotHasValidLocation } from '../../../../utils/location'
+import useGetLocation from '../../../../utils/useGetLocation'
+import Articles from '../../../../constants/articles'
 
 type State = 'begin' | 'results'
 
 type Props = { onClose: () => void; hotspot: Hotspot }
 const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
   const [viewState, setViewState] = useState<State>('begin')
+  const [errorShownForRequestId, setErrorShownForRequestId] = useState<
+    Record<string, boolean>
+  >({})
+  const { t } = useTranslation()
+  const maybeGetLocation = useGetLocation()
   const [time, setTime] = useState(0)
   const { enableBack } = useHotspotSettingsContext()
   const { result: userAddress } = useAsync(getSecureItem, ['address'])
   const dispatch = useAppDispatch()
+  const { showOKAlert, showOKCancelAlert } = useAlert()
   const requestInterval = useRef<NodeJS.Timeout>()
   const clockInterval = useRef<NodeJS.Timeout>()
   const recentDiscoveryInfo = useSelector(
     (state: RootState) => state.discovery.recentDiscoveryInfo,
   )
+  const { currentLocation, locationBlocked } = useSelector(
+    (state: RootState) => state.location,
+  )
+
   const infoLoading = useSelector(
     (state: RootState) => state.discovery.infoLoading,
   )
@@ -49,12 +71,53 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
     (state: RootState) => state.discovery.selectedRequest,
   )
   const requestId = useSelector((state: RootState) => state.discovery.requestId)
+  const blockHeight = useSelector(
+    (state: RootState) => state.heliumData.blockHeight,
+  )
 
   const fetchRecent = useCallback(() => {
     if (!hotspot.address || !userAddress) return
 
     dispatch(fetchRecentDiscoveries({ hotspotAddress: hotspot.address }))
   }, [dispatch, hotspot.address, userAddress])
+
+  useMount(() => {
+    dispatch(discoverySlice.actions.clearSelections())
+  })
+
+  const handleBack = useCallback(() => {
+    if (viewState === 'begin') {
+      onClose()
+      return
+    }
+
+    if (viewState === 'results') {
+      animateTransition('DiscoveryModeRoot.HandleBack')
+      setViewState('begin')
+      dispatch(discoverySlice.actions.clearSelections())
+      fetchRecent()
+    }
+  }, [dispatch, fetchRecent, onClose, viewState])
+
+  useEffect(() => {
+    if (
+      !selectedRequest ||
+      !selectedRequest.errorCode ||
+      errorShownForRequestId[selectedRequest.id]
+    )
+      return
+
+    setErrorShownForRequestId((prev) => ({
+      ...prev,
+      [selectedRequest.id]: true,
+    }))
+
+    handleBack()
+    showOKAlert({
+      titleKey: 'discovery.session_error_prompt.title',
+      messageKey: 'discovery.session_error_prompt.message',
+    })
+  }, [errorShownForRequestId, handleBack, selectedRequest, showOKAlert])
 
   useEffect(() => {
     if (viewState === 'begin') {
@@ -118,33 +181,105 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
     }
   }, [dispatch, requestId, selectedRequest?.id, shouldPoll])
 
-  const handleBack = useCallback(() => {
-    if (viewState === 'begin') {
-      onClose()
-      return
-    }
+  const dispatchDiscovery = useCallback(
+    (lat: number, lng: number) => {
+      dispatch(
+        startDiscovery({
+          hotspotAddress: hotspot.address,
+          hotspotName: hotspot.name || animalName(hotspot.address),
+          mapCoords: [lng, lat],
+        }),
+      )
+      setViewState('results')
+    },
+    [dispatch, hotspot],
+  )
 
-    if (viewState === 'results') {
-      animateTransition('DiscoveryModeRoot.HandleBack')
-      setViewState('begin')
-      dispatch(discoverySlice.actions.clearSelections())
-      fetchRecent()
+  const initiateDiscovery = useCallback(async () => {
+    if (!hotspotHasValidLocation(hotspot)) {
+      const decision = await showOKCancelAlert({
+        messageKey:
+          'hotspot_settings.discovery.unasserted_hotspot_warning.message',
+        titleKey: 'hotspot_settings.discovery.unasserted_hotspot_warning.title',
+        okKey: 'generic.continue',
+      })
+      if (!decision) return
+
+      if (locationBlocked) {
+        const locDecision = await showOKCancelAlert({
+          titleKey: 'generic.error',
+          messageKey: 'generic.location_blocked',
+          okKey: 'generic.go_to_settings',
+        })
+        if (locDecision) Linking.openSettings()
+      } else if (!currentLocation) {
+        const coords = await maybeGetLocation('skip')
+        if (!coords) {
+          showOKAlert({
+            titleKey: 'generic.error',
+            messageKey: 'generic.unable_to_get_location',
+          })
+        } else {
+          dispatchDiscovery(coords.latitude, coords.longitude)
+        }
+      } else {
+        dispatchDiscovery(currentLocation.latitude, currentLocation.longitude)
+      }
+    } else {
+      dispatchDiscovery(hotspot.lat || 0, hotspot.lng || 0)
     }
-  }, [dispatch, fetchRecent, onClose, viewState])
+  }, [
+    currentLocation,
+    dispatchDiscovery,
+    hotspot,
+    locationBlocked,
+    maybeGetLocation,
+    showOKAlert,
+    showOKCancelAlert,
+  ])
 
   const handleNewSelected = useCallback(async () => {
     if (!hotspot.address || !userAddress) return
 
-    animateTransition('DiscoveryModeRoot.HandleNewSelected')
-    setViewState('results')
-
-    dispatch(
-      startDiscovery({
-        hotspotAddress: hotspot.address,
-        hotspotName: hotspot.name || animalName(hotspot.address),
-      }),
-    )
-  }, [dispatch, hotspot.address, hotspot.name, userAddress])
+    const hotspotHeight = hotspot.status?.height || 0
+    const { status } = getSyncStatus(hotspotHeight, blockHeight)
+    if (status !== SyncStatus.full) {
+      showOKAlert({
+        titleKey: 'discovery.syncing_prompt.title',
+        messageKey: 'discovery.syncing_prompt.message',
+      })
+    } else if (hotspot.status?.online !== 'online') {
+      showOKAlert({
+        titleKey: 'discovery.offline_prompt.title',
+        messageKey: 'discovery.offline_prompt.message',
+      })
+    } else if (isRelay(hotspot.status?.listenAddrs)) {
+      Alert.alert(
+        t('discovery.relay_prompt.title'),
+        t('discovery.relay_prompt.message'),
+        [
+          {
+            text: t('generic.continue'),
+            onPress: () => initiateDiscovery(),
+          },
+          {
+            text: t('discovery.troubleshooting_guide'),
+            style: 'cancel',
+            onPress: () => {
+              if (Linking.canOpenURL(Articles.Relay))
+                Linking.openURL(Articles.Relay)
+            },
+          },
+          {
+            text: t('generic.cancel'),
+            style: 'destructive',
+          },
+        ],
+      )
+    } else {
+      initiateDiscovery()
+    }
+  }, [blockHeight, hotspot, initiateDiscovery, showOKAlert, t, userAddress])
 
   const handleRequestSelected = (request: DiscoveryRequest) => {
     dispatch(discoverySlice.actions.setSelectedRequest(request))
@@ -165,6 +300,7 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
           onClose={onClose}
           recentDiscoveryInfo={recentDiscoveryInfo}
           error={infoLoading === 'rejected'}
+          hotspotAddress={hotspot.address}
         />
       )
     case 'results':

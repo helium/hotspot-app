@@ -1,20 +1,14 @@
 import React from 'react'
 import { Linking } from 'react-native'
 import Clipboard from '@react-native-community/clipboard'
-import Portal from '@burstware/react-native-portal'
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated'
 import { useTranslation } from 'react-i18next'
 import { useActionSheet } from '@expo/react-native-action-sheet'
+import Toast from 'react-native-simple-toast'
 import Text from './Text'
 import { Colors, Spacing, TextVariant } from '../theme/theme'
 import TouchableOpacityBox from './TouchableOpacityBox'
 import { EXPLORER_BASE_URL } from '../utils/config'
 import useHaptic from '../utils/useHaptic'
-import Box from './Box'
 
 type Props = {
   address: string | undefined
@@ -44,23 +38,9 @@ const Address = ({
   const { t } = useTranslation()
   const { triggerNavHaptic } = useHaptic()
   const { showActionSheetWithOptions } = useActionSheet()
-  const toastPosition = useSharedValue(-100)
-  const toastStyle = useAnimatedStyle(() => {
-    return {
-      bottom: toastPosition.value,
-    }
-  })
 
-  function showToast() {
-    'worklet'
-
-    toastPosition.value = withSpring(100, { stiffness: 500, damping: 25 })
-  }
-
-  function hideToast() {
-    'worklet'
-
-    toastPosition.value = withSpring(-100)
+  const showToast = () => {
+    Toast.show(t('wallet.copiedToClipboard', { address: truncatedAddress }))
   }
 
   if (!address) return null
@@ -76,7 +56,6 @@ const Address = ({
   const copyAddress = () => {
     Clipboard.setString(address)
     showToast()
-    setTimeout(() => hideToast(), 3000)
     triggerNavHaptic()
   }
 
@@ -129,31 +108,6 @@ const Address = ({
           {text || address}
         </Text>
       </TouchableOpacityBox>
-      <Portal>
-        <Animated.View
-          style={[
-            {
-              position: 'absolute',
-              width: '100%',
-              flexDirection: 'row',
-              justifyContent: 'center',
-            },
-            toastStyle,
-          ]}
-        >
-          <Box
-            backgroundColor="grayDark"
-            borderRadius="round"
-            paddingVertical="s"
-            paddingHorizontal="m"
-            opacity={0.98}
-          >
-            <Text variant="body2" color="white" textAlign="center">
-              {t('wallet.copiedToClipboard', { address: truncatedAddress })}
-            </Text>
-          </Box>
-        </Animated.View>
-      </Portal>
     </>
   )
 }

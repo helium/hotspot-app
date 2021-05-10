@@ -109,6 +109,9 @@ export default {
     go_to_settings: 'Go to Settings',
     hotspot: 'Hotspot',
     location: 'Location',
+    unable_to_get_location: 'We were unable to get your location',
+    location_blocked:
+      "Location is turned off. Go to your phone's settings to allow Location Services.",
     challenger: 'Challenger',
     learn_more: 'Learn More',
     cancel: 'Cancel',
@@ -384,6 +387,8 @@ export default {
         'There was an error constructing the Assert Location transaction. Please try again.',
       assert_loc_error_no_loc:
         'The selected location is invalid. Please try again.',
+      no_onboarding_key_title: 'No onboarding key found',
+      no_onboarding_key_message: 'Would you like to try again?',
     },
     enable_location: {
       title: 'Set Hotspot\nLocation',
@@ -499,6 +504,11 @@ export default {
         body: 'Blue signifies HNT <blue>leaving</blue> your account.',
       },
     ],
+    chartRanges: {
+      days: { label: '14D', accessibilityLabel: '14 Days' },
+      weeks: { label: '12W', accessibilityLabel: '12 Weeks' },
+      months: { label: '12M', accessibilityLabel: '12 Months' },
+    },
   },
   send: {
     title: {
@@ -721,6 +731,16 @@ export default {
     discovery: {
       title: 'Discovery Mode',
       subtitle: 'Identify ideal Hotspot placement.',
+      no_location_error: {
+        title: 'Unable to Start Discovery Mode',
+        message:
+          'Please set a Hotspot location before initiating Discovery Mode.',
+      },
+      unasserted_hotspot_warning: {
+        title: 'Hotspot Does Not Have A Location',
+        message:
+          "To visualize Hotspots that respond, we will use your phone's location as a placeholder for the Hotspot.",
+      },
     },
     diagnostics: {
       title: 'Diagnostic Report',
@@ -820,6 +840,7 @@ export default {
     status_online: 'Online',
     status_offline: 'Needs Attention',
     status_syncing: 'Syncing',
+    relayed: 'Relayed',
     status_prompt_online: {
       title: 'Hotspot is online and syncing.',
       subtitle_active: 'Status: Block {{hotspotBlock}} of {{currentBlock}}',
@@ -837,6 +858,11 @@ export default {
     no_location_body: 'Pair with the Hotspot to begin.',
     percent_synced: '{{percent}}% Synced',
     starting_sync: 'Starting Sync...',
+    relay_prompt: {
+      title: 'Hotspot is Relayed',
+      message:
+        "Hotspot's connection is being relayed through another Hotspot on the network which may affect mining. To take a Hotspot out of Relay, please visit the troubleshooting guide.",
+    },
   },
   transfer: {
     title: 'Transfer Hotspot',
@@ -956,17 +982,38 @@ export default {
     online: 'ONLINE',
   },
   discovery: {
+    troubleshooting_guide: 'Troubleshooting Guide',
+    syncing_prompt: {
+      title: 'Unable to initiate Discovery Mode',
+      message: 'Hotspot must be fully synced, please try again later.',
+    },
+    offline_prompt: {
+      title: 'Unable to initiate Discovery Mode',
+      message: 'Hotspot is offline, connect to internet and try again.',
+    },
+    relay_prompt: {
+      title: 'Hotspot is Relayed',
+      message:
+        'Relayed Hotspots running Discovery Mode may not receive responses from neighboring Hotspots. To take a Hotspot out of Relay, please visit the troubleshooting guide.',
+    },
+    session_error_prompt: {
+      title: 'Unable to initiate Discovery Mode',
+      message:
+        'Hotspot may be behind a relay and is not responding. Check your router settings and try again.',
+    },
     begin: {
       title: 'Discovery Mode',
       subtitle:
         'Find out which Hotspots can hear you by sending radio packets for a short period of time.',
-      body: 'Discovery Mode is free to use for now, up to 5 sessions per day.',
+      body:
+        'Discovery Mode is free to use for now, up to {{requestsPerDay}} sessions per day.',
       previous_sessions: 'Previous Sessions',
       last_30_days: '(Last 30 Days)',
       start_session: 'Begin New Session',
       no_sessions: 'You’ve run out of sessions for today.\nTry again tomorrow.',
       responses: '{{count}} response',
       responses_plural: '{{count}} responses',
+      initiation_error: 'Unable to Initiate Session',
       error: {
         title: 'Error',
         subtitle:

@@ -22,6 +22,7 @@ import { fetchNetworkHotspots } from '../../../../store/networkHotspots/networkH
 import { getHotspotDetails } from '../../../../utils/appDataClient'
 import DiscoveryModeResultsCard from './DiscoveryModeResultsCard'
 import { usesMetricSystem } from '../../../../utils/i18n'
+import filterDiscoveryResponses from './filterDiscoveryResponses'
 
 type Props = {
   request?: DiscoveryRequest | null
@@ -38,9 +39,9 @@ const DiscoveryModeResults = ({
   requestTime,
 }: Props) => {
   const { t } = useTranslation()
-  const [deDupedResponses, setDeDupedResponses] = useState<DiscoveryResponse[]>(
-    [],
-  )
+  const [filteredResponses, setFilteredResponses] = useState<
+    DiscoveryResponse[]
+  >([])
   const [overlayDetails, setOverlayDetails] = useState<
     {
       distance: string
@@ -53,38 +54,31 @@ const DiscoveryModeResults = ({
     isEqual,
   )
 
-  const hotspotCoords = useMemo(() => {
-    return [hotspot.lng || 0, hotspot.lat || 0]
-  }, [hotspot.lat, hotspot.lng])
+  const coords = useSelector((state: RootState) => state.discovery.mapCoords)
 
   useEffect(() => {
     const oneMileInDegrees = 1 / 69 // close enough => depends on your location. It's 68.7 at the equator and 69.4 at the poles, but yolo
     const offset = 15 * oneMileInDegrees // TODO: 15 mile offset. Is this adequate?
 
     const northEastCoordinates = [
-      hotspotCoords[0] + offset,
-      hotspotCoords[1] + offset,
+      coords[0] + offset,
+      coords[1] + offset,
     ] as GeoJSON.Position
     const southWestCoordinates = [
-      hotspotCoords[0] - offset,
-      hotspotCoords[1] - offset,
+      coords[0] - offset,
+      coords[1] - offset,
     ] as GeoJSON.Position
 
     dispatch(fetchNetworkHotspots([southWestCoordinates, northEastCoordinates])) // find all hotspots 15 miles in every direction
-  }, [dispatch, hotspotCoords])
+  }, [dispatch, coords])
 
   useEffect(() => {
     if (request) {
-      const filtered = request.responses.filter(
-        (responseA, index, responses) =>
-          responses.findIndex(
-            (responseB) =>
-              responseB.hotspotAddress === responseA.hotspotAddress,
-          ) === index,
+      setFilteredResponses(
+        filterDiscoveryResponses(hotspot.address, request.responses),
       )
-      setDeDupedResponses(filtered)
     }
-  }, [request])
+  }, [hotspot.address, request])
 
   const showOverlay = async ({ name, lat, lng, address }: MapSelectDetail) => {
     let distance = ''
@@ -139,8 +133,8 @@ const DiscoveryModeResults = ({
       <DiscoveryMap
         networkHotspots={networkHotspots}
         hotspotAddress={hotspot.address}
-        hotspotCoords={hotspotCoords}
-        responses={deDupedResponses}
+        coords={coords}
+        responses={filteredResponses}
         onSelect={showOverlay}
         selectedHotspot={overlayDetails}
         isPolling={isPolling}
@@ -148,7 +142,7 @@ const DiscoveryModeResults = ({
         iterations={iterations}
       />
       <DiscoveryModeResultsCard
-        numResponses={deDupedResponses.length}
+        numResponses={filteredResponses.length}
         request={request}
         isPolling={isPolling}
         overlayDetails={overlayDetails}

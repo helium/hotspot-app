@@ -42,7 +42,9 @@ const HotspotSetupConfirmLocationScreen = () => {
   useEffect(() => {
     if (error) {
       Logger.error(error)
-      navigation.navigate('OnboardingErrorScreen')
+      navigation.navigate('OnboardingErrorScreen', {
+        connectStatus: 'no_onboarding_key',
+      })
     }
   }, [error, navigation])
 

@@ -15,7 +15,6 @@ import Config from 'react-native-config'
 import { useSelector } from 'react-redux'
 import MapboxGL from '@react-native-mapbox-gl/maps'
 import { useAsync } from 'react-async-hook'
-import Portal from '@burstware/react-native-portal'
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import * as SplashScreen from 'expo-splash-screen'
@@ -61,6 +60,7 @@ const App = () => {
     'Native splash screen is already hidden',
     'No Native splash screen',
     'RCTBridge required dispatch_sync to load',
+    'Require cycle',
   ])
 
   const appState = useRef(AppState.currentState)
@@ -220,13 +220,11 @@ const App = () => {
                 {Platform.OS === 'android' && (
                   <StatusBar translucent backgroundColor="transparent" />
                 )}
-                <Portal.Host>
-                  <NavigationContainer ref={navigationRef}>
-                    <AppLinkProvider>
-                      <NavigationRoot />
-                    </AppLinkProvider>
-                  </NavigationContainer>
-                </Portal.Host>
+                <NavigationContainer ref={navigationRef}>
+                  <AppLinkProvider>
+                    <NavigationRoot />
+                  </AppLinkProvider>
+                </NavigationContainer>
               </SafeAreaProvider>
               <StatusBanner />
               <SecurityScreen

@@ -22,6 +22,7 @@ type Props = {
   onBeginNew: () => void
   onRequestSelected: (request: DiscoveryRequest) => void
   error: boolean
+  hotspotAddress: string
 }
 const DiscoveryModeBegin = ({
   onClose,
@@ -29,6 +30,7 @@ const DiscoveryModeBegin = ({
   onBeginNew,
   onRequestSelected,
   error,
+  hotspotAddress,
 }: Props) => {
   const { t } = useTranslation()
   const [hasInfo, setHasInfo] = useState(false)
@@ -78,14 +80,18 @@ const DiscoveryModeBegin = ({
           <Text variant="light" fontSize={16} maxFontSizeMultiplier={1.1}>
             {t('discovery.begin.subtitle')}
           </Text>
-          <Text
-            variant="regular"
-            fontSize={14}
-            color="purpleDark"
-            maxFontSizeMultiplier={1.2}
-          >
-            {t('discovery.begin.body')}
-          </Text>
+          {recentDiscoveryInfo && (
+            <Text
+              variant="regular"
+              fontSize={14}
+              color="purpleDark"
+              maxFontSizeMultiplier={1.2}
+            >
+              {t('discovery.begin.body', {
+                requestsPerDay: recentDiscoveryInfo.requestsPerDay,
+              })}
+            </Text>
+          )}
         </Box>
       </Box>
       <Box flex={367} margin="l">
@@ -95,6 +101,7 @@ const DiscoveryModeBegin = ({
             onRequestSelected={onRequestSelected}
             requestsRemaining={recentDiscoveryInfo.requestsRemaining}
             requests={recentDiscoveryInfo.recentRequests}
+            hotspotAddress={hotspotAddress}
           />
         )}
         {!hasInfo && !error && (

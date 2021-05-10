@@ -7,11 +7,13 @@ import ShareHotspotIco from '@assets/images/shareHotspot.svg'
 import GlobeIco from '@assets/images/globe.svg'
 import Clipboard from '@react-native-community/clipboard'
 import { Linking, Share } from 'react-native'
+import Toast from 'react-native-simple-toast'
 import HeliumActionSheet from './HeliumActionSheet'
 import { HeliumActionSheetItemType } from './HeliumActionSheetItem'
 import { TouchableOpacityBoxProps } from './TouchableOpacityBox'
 import useHaptic from '../utils/useHaptic'
 import { EXPLORER_BASE_URL } from '../utils/config'
+import { createAppLink } from '../providers/AppLinkProvider'
 
 type Props = { hotspot: Hotspot }
 const ShareHotspot = ({ hotspot }: Props) => {
@@ -41,7 +43,8 @@ const ShareHotspot = ({ hotspot }: Props) => {
         label: t('hotspot_details.options.share'),
         value: 'share',
         Icon: ShareHotspotIco,
-        action: () => Share.share({ message: explorerUrl }),
+        action: () =>
+          Share.share({ message: createAppLink('hotspot', hotspot.address) }),
       },
       {
         label: `${t('generic.copy')} ${t('generic.address')}`,
@@ -50,10 +53,18 @@ const ShareHotspot = ({ hotspot }: Props) => {
         action: () => {
           Clipboard.setString(hotspot.address)
           triggerNotification('success')
+          const { address } = hotspot
+          const truncatedAddress = [
+            address.slice(0, 8),
+            address.slice(-8),
+          ].join('...')
+          Toast.show(
+            t('wallet.copiedToClipboard', { address: truncatedAddress }),
+          )
         },
       },
     ] as HeliumActionSheetItemType[]
-  }, [explorerUrl, hotspot.address, t, triggerNotification])
+  }, [explorerUrl, hotspot, t, triggerNotification])
 
   return (
     <HeliumActionSheet
@@ -62,6 +73,7 @@ const ShareHotspot = ({ hotspot }: Props) => {
       iconColor="grayMain"
       title={startCase(hotspot.name)}
       data={actionSheetData}
+      closeOnSelect={false}
     />
   )
 }
