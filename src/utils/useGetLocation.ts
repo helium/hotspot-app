@@ -14,12 +14,12 @@ import usePrevious from './usePrevious'
 const useGetLocation = () => {
   const dispatch = useAppDispatch()
   const { requestLocationPermission } = usePermissionManager()
-  const { permissionResponse } = useSelector(
-    (state: RootState) => state.location,
+  const permissionResponse = useSelector(
+    (state: RootState) => state.location.permissionResponse,
   )
-  const {
-    app: { appStateStatus },
-  } = useSelector((state: RootState) => state)
+  const appStateStatus = useSelector(
+    (state: RootState) => state.app.appStateStatus,
+  )
   const prevAppStateStatus = usePrevious(appStateStatus)
 
   useEffect(() => {
