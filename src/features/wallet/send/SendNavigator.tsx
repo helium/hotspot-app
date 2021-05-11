@@ -8,20 +8,18 @@ import { RootStackParamList } from '../../../navigation/main/tabTypes'
 
 const SendStack = createStackNavigator()
 
-type Route = RouteProp<RootStackParamList, 'Send'>
+type Route = RouteProp<RootStackParamList, 'SendStack'>
 
 type Props = {
   route: Route
 }
 const SendNavigator = ({ route }: Props) => {
-  const scanResult = route?.params?.scanResult
-  const sendParams = { scanResult }
   return (
     <SendStack.Navigator headerMode="none">
       <SendStack.Screen
         name="Send"
         component={SendScreen}
-        initialParams={sendParams}
+        initialParams={route.params}
       />
       <SendStack.Screen name="SendScan" component={ScanScreen} />
       <SendStack.Screen name="SendComplete" component={SendCompleteScreen} />

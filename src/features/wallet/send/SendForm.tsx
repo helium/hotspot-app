@@ -5,7 +5,7 @@ import { Address } from '@helium/crypto-react-native'
 import Balance, { NetworkTokens } from '@helium/currency'
 import animalName from 'angry-purple-tiger'
 import InputField from '../../../components/InputField'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -14,14 +14,14 @@ import Check from '../../../assets/images/check.svg'
 import { useColors } from '../../../theme/themeHooks'
 import LockedHeader from '../../../components/LockedHeader'
 import LockedField from '../../../components/LockedField'
-import { SendType } from './sendTypes'
 import { Transfer } from '../../hotspots/transfers/TransferRequests'
 import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
+import { AppLinkCategoryType } from '../../../providers/appLinkTypes'
 
 type Props = {
   isValid: boolean
   isLocked: boolean
-  type: SendType
+  type?: AppLinkCategoryType
   address: string
   addressAlias?: string
   addressLoading?: boolean
@@ -216,6 +216,8 @@ const SendForm = ({
             <TouchableOpacityBox
               onPress={onScanPress}
               padding="s"
+              paddingHorizontal="m"
+              marginRight="n_s"
               position="absolute"
               right={0}
             >
@@ -294,7 +296,7 @@ const SendForm = ({
           {t('send.label_error')}
         </Text>
       )}
-      <Button
+      <DebouncedButton
         onPress={onSubmit}
         title={getButtonTitle()}
         variant="primary"

@@ -55,16 +55,26 @@ import {
   fetchPredictedOraclePrice,
 } from '../../../store/helium/heliumDataSlice'
 import { AppLink, AppLinkCategoryType } from '../../../providers/appLinkTypes'
+import { SendNavigationProps } from './sendTypes'
+import { MainTabNavigationProp } from '../../../navigation/main/tabTypes'
 
 type Props = {
   scanResult?: AppLink
   sendType?: AppLinkCategoryType
   hotspot?: Hotspot
   isSeller?: boolean
+  canSubmit?: boolean
 }
 
-const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
-  const navigation = useNavigation()
+const SendView = ({
+  scanResult,
+  sendType,
+  hotspot,
+  isSeller,
+  canSubmit = true,
+}: Props) => {
+  const tabNavigation = useNavigation<MainTabNavigationProp>()
+  const sendNavigation = useNavigation<SendNavigationProps>()
   const { t } = useTranslation()
   const { networkTokensToDataCredits } = useCurrency()
   const submitTxn = useSubmitTxn()
@@ -86,6 +96,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   const [isLocked, setIsLocked] = useState(false)
   const [isValid, setIsValid] = useState(false)
   const [hasSufficientBalance, setHasSufficientBalance] = useState(false)
+  const [transferData, setTransferData] = useState<Transfer>()
   const [fee, setFee] = useState<Balance<NetworkTokens>>(
     new Balance(0, CurrencyType.networkToken),
   )
@@ -106,6 +117,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   const [lastReportedActivity, setLastReportedActivity] = useState<string>()
   const [hasValidActivity, setHasValidActivity] = useState<boolean>()
   const [stalePocBlockCount, setStalePocBlockCount] = useState<number>()
+
   useAsync(async () => {
     if (type === 'transfer' && hotspot?.address && blockHeight) {
       const chainVars = await getChainVars()
@@ -121,7 +133,6 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   }, [hotspot?.address, blockHeight, type])
 
   // load transfer data
-  const [transferData, setTransferData] = useState<Transfer>()
   useEffect(() => {
     const fetchTransfer = async () => {
       if (!hotspot) {
@@ -139,7 +150,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
           t('transfer.canceled_alert_title'),
           t('transfer.canceled_alert_body'),
         )
-        navigation.goBack()
+        sendNavigation.goBack()
       }
     }
     if (!isSeller && type === 'transfer') {
@@ -239,10 +250,10 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     hasValidActivity,
   ])
 
-  const getNonce = (): number => {
+  const getNonce = useCallback((): number => {
     if (!account?.speculativeNonce) return 1
     return account.speculativeNonce + 1
-  }
+  }, [account?.speculativeNonce])
 
   const updateFee = async () => {
     await dispatch(fetchCurrentOraclePrice())
@@ -284,12 +295,12 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
   }
 
   const navBack = () => {
-    navigation.navigate('Wallet')
+    tabNavigation.navigate('Wallet')
     triggerNavHaptic()
   }
 
   const navScan = () => {
-    navigation.navigate('SendScan')
+    sendNavigation.navigate('SendScan', { type })
     triggerNavHaptic()
   }
 
@@ -334,7 +345,7 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     triggerNavHaptic()
   }
 
-  const handleSellerTransfer = async () => {
+  const handleSellerTransfer = useCallback(async () => {
     const seller = await getAddress()
     if (!hotspot || !seller) {
       throw new Error('missing hotspot or seller for transfer')
@@ -364,29 +375,32 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       throw new Error('transfer already exists')
     }
     return undefined
-  }
+  }, [address, balanceAmount.integerBalance, hotspot, t])
 
-  const checkTransferAmountChanged = (transfer: Transfer) => {
-    if (
-      transfer.amountToSeller?.integerBalance !==
-      transferData?.amountToSeller?.integerBalance
-    ) {
-      setTransferData(transfer)
-      Alert.alert(
-        t('transfer.amount_changed_alert_title'),
-        t('transfer.amount_changed_alert_body', {
-          amount: transfer?.amountToSeller?.toString(undefined, {
-            groupSeparator,
-            decimalSeparator,
-            showTicker: false,
+  const checkTransferAmountChanged = useCallback(
+    (transfer: Transfer) => {
+      if (
+        transfer.amountToSeller?.integerBalance !==
+        transferData?.amountToSeller?.integerBalance
+      ) {
+        setTransferData(transfer)
+        Alert.alert(
+          t('transfer.amount_changed_alert_title'),
+          t('transfer.amount_changed_alert_body', {
+            amount: transfer?.amountToSeller?.toString(undefined, {
+              groupSeparator,
+              decimalSeparator,
+              showTicker: false,
+            }),
           }),
-        }),
-      )
-      throw new Error('transfer amount changed')
-    }
-  }
+        )
+        throw new Error('transfer amount changed')
+      }
+    },
+    [t, transferData?.amountToSeller?.integerBalance],
+  )
 
-  const handleBuyerTransfer = async (): Promise<TransferHotspotV1> => {
+  const handleBuyerTransfer = useCallback(async (): Promise<TransferHotspotV1> => {
     if (!hotspot) {
       throw new Error('missing hotspot for buyer transfer')
     }
@@ -433,9 +447,9 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
       }
       throw error
     }
-  }
+  }, [checkTransferAmountChanged, hotspot, t])
 
-  const constructTxn = async () => {
+  const constructTxn = useCallback(async () => {
     if (type === 'payment') {
       return makePaymentTxn(balanceAmount.integerBalance, address, getNonce())
     }
@@ -454,23 +468,41 @@ const SendView = ({ scanResult, sendType, hotspot, isSeller }: Props) => {
     }
 
     throw new Error('Unsupported transaction type')
-  }
+  }, [
+    address,
+    balanceAmount.integerBalance,
+    getNonce,
+    handleBuyerTransfer,
+    handleSellerTransfer,
+    isSeller,
+    memo,
+    type,
+  ])
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
+    if (!canSubmit) return
     try {
       const txn = await constructTxn()
       if (txn) {
         await submitTxn(txn)
       }
       triggerNavHaptic()
-      navigation.navigate('SendComplete')
+      sendNavigation.navigate('SendComplete')
     } catch (error) {
       Logger.error(error)
       if (type !== 'transfer') {
         Alert.alert(t('generic.error'), t('send.error'))
       }
     }
-  }
+  }, [
+    canSubmit,
+    constructTxn,
+    sendNavigation,
+    submitTxn,
+    t,
+    triggerNavHaptic,
+    type,
+  ])
 
   const handleAddressChange = useCallback(async (newAddress: string) => {
     if (newAddress.match(/.*\.eth$/)) {

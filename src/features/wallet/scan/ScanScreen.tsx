@@ -12,7 +12,6 @@ type Props = {
 
 const ScanScreen = ({ route }: Props) => {
   const type = route?.params?.type
-  const showBottomSheet = route?.params?.showBottomSheet
   return (
     <Box
       backgroundColor="white"
@@ -21,7 +20,7 @@ const ScanScreen = ({ route }: Props) => {
       alignContent="center"
       flexDirection="column"
     >
-      <ScanView scanType={type} showBottomSheet={showBottomSheet} />
+      <ScanView scanType={type} showBottomSheet={type !== 'transfer'} />
     </Box>
   )
 }
