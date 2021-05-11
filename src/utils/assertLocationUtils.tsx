@@ -2,7 +2,11 @@ import { AssertLocationV2, Transaction } from '@helium/transactions'
 import { Balance, CurrencyType } from '@helium/currency'
 import { calculateAssertLocFee } from './fees'
 import { makeAssertLocTxn } from './transactions'
-import { getAddress, getCurrentOraclePrice } from './appDataClient'
+import {
+  getAddress,
+  getCurrentOraclePrice,
+  getHotspotDetails,
+} from './appDataClient'
 import { getStakingSignedTransaction, OnboardingRecord } from './stakingClient'
 import { getH3Location } from './h3Utils'
 
@@ -12,16 +16,20 @@ export const assertLocationTxn = async (
   lng: number | undefined,
   decimalGain = 1.2,
   elevation = 0,
-  nonce = 0,
   onboardingRecord: OnboardingRecord | undefined,
   updatingLocation: boolean,
 ) => {
-  const newNonce = nonce + 1
-  const isFree = await hasFreeLocationAssert(nonce, onboardingRecord)
+  if (!gateway) {
+    return undefined
+  }
+
+  const { speculativeNonce = 0 } = await getHotspotDetails(gateway)
+  const newNonce = speculativeNonce + 1
+  const isFree = await hasFreeLocationAssert(speculativeNonce, onboardingRecord)
   const owner = await getAddress()
   const payer = isFree ? onboardingRecord?.maker?.address : owner
 
-  if (!owner || !payer || !gateway || !lat || !lng) {
+  if (!owner || !payer || !lat || !lng) {
     return undefined
   }
 
