@@ -37,11 +37,9 @@ import {
   SyncStatus,
 } from '../../../../utils/hotspotUtils'
 import { hotspotHasValidLocation } from '../../../../utils/location'
-import useGetLocation from '../../../../utils/useGetLocation'
 import Articles from '../../../../constants/articles'
 
 type State = 'begin' | 'results'
-
 type Props = { onClose: () => void; hotspot: Hotspot }
 const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
   const [viewState, setViewState] = useState<State>('begin')
@@ -49,19 +47,15 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
     Record<string, boolean>
   >({})
   const { t } = useTranslation()
-  const maybeGetLocation = useGetLocation()
   const [time, setTime] = useState(0)
   const { enableBack } = useHotspotSettingsContext()
   const { result: userAddress } = useAsync(getSecureItem, ['address'])
   const dispatch = useAppDispatch()
-  const { showOKAlert, showOKCancelAlert } = useAlert()
+  const { showOKAlert } = useAlert()
   const requestInterval = useRef<NodeJS.Timeout>()
   const clockInterval = useRef<NodeJS.Timeout>()
   const recentDiscoveryInfo = useSelector(
     (state: RootState) => state.discovery.recentDiscoveryInfo,
-  )
-  const { currentLocation, locationBlocked } = useSelector(
-    (state: RootState) => state.location,
   )
 
   const infoLoading = useSelector(
@@ -182,104 +176,67 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
   }, [dispatch, requestId, selectedRequest?.id, shouldPoll])
 
   const dispatchDiscovery = useCallback(
-    (lat: number, lng: number) => {
+    (mapCoords: number[]) => {
       dispatch(
         startDiscovery({
           hotspotAddress: hotspot.address,
           hotspotName: hotspot.name || animalName(hotspot.address),
-          mapCoords: [lng, lat],
+          mapCoords,
         }),
       )
       setViewState('results')
     },
     [dispatch, hotspot],
   )
-
-  const initiateDiscovery = useCallback(async () => {
-    if (!hotspotHasValidLocation(hotspot)) {
-      const decision = await showOKCancelAlert({
-        messageKey:
-          'hotspot_settings.discovery.unasserted_hotspot_warning.message',
-        titleKey: 'hotspot_settings.discovery.unasserted_hotspot_warning.title',
-        okKey: 'generic.continue',
-      })
-      if (!decision) return
-
-      if (locationBlocked) {
-        const locDecision = await showOKCancelAlert({
-          titleKey: 'generic.error',
-          messageKey: 'generic.location_blocked',
-          okKey: 'generic.go_to_settings',
-        })
-        if (locDecision) Linking.openSettings()
-      } else if (!currentLocation) {
-        const coords = await maybeGetLocation('skip')
-        if (!coords) {
-          showOKAlert({
-            titleKey: 'generic.error',
-            messageKey: 'generic.unable_to_get_location',
-          })
-        } else {
-          dispatchDiscovery(coords.latitude, coords.longitude)
-        }
-      } else {
-        dispatchDiscovery(currentLocation.latitude, currentLocation.longitude)
-      }
-    } else {
-      dispatchDiscovery(hotspot.lat || 0, hotspot.lng || 0)
-    }
-  }, [
-    currentLocation,
-    dispatchDiscovery,
+  const hotspotCoordsValid = useMemo(() => hotspotHasValidLocation(hotspot), [
     hotspot,
-    locationBlocked,
-    maybeGetLocation,
-    showOKAlert,
-    showOKCancelAlert,
   ])
 
-  const handleNewSelected = useCallback(async () => {
-    if (!hotspot.address || !userAddress) return
+  const handleNewSelected = useCallback(
+    async (coords: number[]) => {
+      if (!hotspot.address || !userAddress) return
 
-    const hotspotHeight = hotspot.status?.height || 0
-    const { status } = getSyncStatus(hotspotHeight, blockHeight)
-    if (status !== SyncStatus.full) {
-      showOKAlert({
-        titleKey: 'discovery.syncing_prompt.title',
-        messageKey: 'discovery.syncing_prompt.message',
-      })
-    } else if (hotspot.status?.online !== 'online') {
-      showOKAlert({
-        titleKey: 'discovery.offline_prompt.title',
-        messageKey: 'discovery.offline_prompt.message',
-      })
-    } else if (isRelay(hotspot.status?.listenAddrs)) {
-      Alert.alert(
-        t('discovery.relay_prompt.title'),
-        t('discovery.relay_prompt.message'),
-        [
-          {
-            text: t('generic.continue'),
-            onPress: () => initiateDiscovery(),
-          },
-          {
-            text: t('discovery.troubleshooting_guide'),
-            style: 'cancel',
-            onPress: () => {
-              if (Linking.canOpenURL(Articles.Relay))
-                Linking.openURL(Articles.Relay)
+      const hotspotHeight = hotspot.status?.height || 0
+      const { status } = getSyncStatus(hotspotHeight, blockHeight)
+      if (status !== SyncStatus.full) {
+        showOKAlert({
+          titleKey: 'discovery.syncing_prompt.title',
+          messageKey: 'discovery.syncing_prompt.message',
+        })
+      } else if (hotspot.status?.online !== 'online') {
+        showOKAlert({
+          titleKey: 'discovery.offline_prompt.title',
+          messageKey: 'discovery.offline_prompt.message',
+        })
+      } else if (isRelay(hotspot.status?.listenAddrs)) {
+        Alert.alert(
+          t('discovery.relay_prompt.title'),
+          t('discovery.relay_prompt.message'),
+          [
+            {
+              text: t('generic.continue'),
+              onPress: () => dispatchDiscovery(coords),
             },
-          },
-          {
-            text: t('generic.cancel'),
-            style: 'destructive',
-          },
-        ],
-      )
-    } else {
-      initiateDiscovery()
-    }
-  }, [blockHeight, hotspot, initiateDiscovery, showOKAlert, t, userAddress])
+            {
+              text: t('discovery.troubleshooting_guide'),
+              style: 'cancel',
+              onPress: () => {
+                if (Linking.canOpenURL(Articles.Relay))
+                  Linking.openURL(Articles.Relay)
+              },
+            },
+            {
+              text: t('generic.cancel'),
+              style: 'destructive',
+            },
+          ],
+        )
+      } else {
+        dispatchDiscovery(coords)
+      }
+    },
+    [hotspot, blockHeight, dispatchDiscovery, showOKAlert, t, userAddress],
+  )
 
   const handleRequestSelected = (request: DiscoveryRequest) => {
     dispatch(discoverySlice.actions.setSelectedRequest(request))
@@ -300,7 +257,8 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
           onClose={onClose}
           recentDiscoveryInfo={recentDiscoveryInfo}
           error={infoLoading === 'rejected'}
-          hotspotAddress={hotspot.address}
+          hotspot={hotspot}
+          hotspotCoordsValid={hotspotCoordsValid}
         />
       )
     case 'results':

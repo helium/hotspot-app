@@ -11,6 +11,8 @@ export type DiscoveryRequest = {
   responses: DiscoveryResponse[]
   insertedAt: string
   errorCode: number
+  lat: string
+  lng: string
 }
 
 export type DiscoveryResponse = {

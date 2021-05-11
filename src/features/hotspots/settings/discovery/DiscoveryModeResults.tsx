@@ -23,6 +23,7 @@ import { getHotspotDetails } from '../../../../utils/appDataClient'
 import DiscoveryModeResultsCard from './DiscoveryModeResultsCard'
 import { usesMetricSystem } from '../../../../utils/i18n'
 import filterDiscoveryResponses from './filterDiscoveryResponses'
+import { locationIsValid } from '../../../../utils/location'
 
 type Props = {
   request?: DiscoveryRequest | null
@@ -54,23 +55,45 @@ const DiscoveryModeResults = ({
     isEqual,
   )
 
-  const coords = useSelector((state: RootState) => state.discovery.mapCoords)
+  const assertedhotspotCoords = useSelector(
+    (state: RootState) => state.discovery.mapCoords,
+  )
+
+  const mapCenter = useMemo(() => {
+    // request coords take precendence
+    if (
+      request?.lat &&
+      request.lng &&
+      request.lng !== '0' &&
+      request.lat !== '0'
+    ) {
+      return [parseFloat(request.lng), parseFloat(request.lat)]
+    }
+
+    if (locationIsValid(assertedhotspotCoords)) return assertedhotspotCoords
+  }, [assertedhotspotCoords, request])
 
   useEffect(() => {
+    // TODO: What do we do if we don't have a location? Pick the first responder?
+    if (!mapCenter && filteredResponses.length === 0) return
+
     const oneMileInDegrees = 1 / 69 // close enough => depends on your location. It's 68.7 at the equator and 69.4 at the poles, but yolo
     const offset = 15 * oneMileInDegrees // TODO: 15 mile offset. Is this adequate?
-
+    const center = mapCenter || [
+      filteredResponses[0].long,
+      filteredResponses[0].lat,
+    ]
     const northEastCoordinates = [
-      coords[0] + offset,
-      coords[1] + offset,
+      center[0] + offset,
+      center[1] + offset,
     ] as GeoJSON.Position
     const southWestCoordinates = [
-      coords[0] - offset,
-      coords[1] - offset,
+      center[0] - offset,
+      center[1] - offset,
     ] as GeoJSON.Position
 
     dispatch(fetchNetworkHotspots([southWestCoordinates, northEastCoordinates])) // find all hotspots 15 miles in every direction
-  }, [dispatch, coords])
+  }, [dispatch, filteredResponses, mapCenter])
 
   useEffect(() => {
     if (request) {
@@ -133,7 +156,7 @@ const DiscoveryModeResults = ({
       <DiscoveryMap
         networkHotspots={networkHotspots}
         hotspotAddress={hotspot.address}
-        coords={coords}
+        mapCenter={mapCenter}
         responses={filteredResponses}
         onSelect={showOverlay}
         selectedHotspot={overlayDetails}
