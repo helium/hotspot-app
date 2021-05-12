@@ -13,12 +13,12 @@ import HotspotOutlineIcon from '../../../assets/images/hotspotOutlineIcon.svg'
 import Close from '../../../assets/images/close.svg'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Text from '../../../components/Text'
-import { SendType } from './sendTypes'
+import { AppLinkCategoryType } from '../../../providers/appLinkTypes'
 
 const ReanimatedBox = Animated.createAnimatedComponent(Box)
 
 type Props = {
-  type: SendType
+  type?: AppLinkCategoryType
   onClosePress: () => void
 }
 
