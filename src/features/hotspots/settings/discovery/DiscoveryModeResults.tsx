@@ -74,7 +74,6 @@ const DiscoveryModeResults = ({
   }, [assertedhotspotCoords, request])
 
   useEffect(() => {
-    // TODO: What do we do if we don't have a location? Pick the first responder?
     if (!mapCenter && filteredResponses.length === 0) return
 
     const oneMileInDegrees = 1 / 69 // close enough => depends on your location. It's 68.7 at the equator and 69.4 at the poles, but yolo
@@ -82,7 +81,7 @@ const DiscoveryModeResults = ({
     const center = mapCenter || [
       filteredResponses[0].long,
       filteredResponses[0].lat,
-    ]
+    ] // If we're using the hotspot's physical location, use the first responder as center
     const northEastCoordinates = [
       center[0] + offset,
       center[1] + offset,

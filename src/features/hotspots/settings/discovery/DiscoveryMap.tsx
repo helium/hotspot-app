@@ -189,9 +189,12 @@ const DiscoveryMap = ({
         zoomLevel: 12,
       })
     } else {
+      const coords = responses.map((r) => [r.long, r.lat])
+      const bounds = findBounds(coords)
+      if (!bounds) return
+
       cameraRef.current?.setCamera({
-        bounds: findBounds(responses.map((r) => [r.long, r.lat])),
-        zoomLevel: 12,
+        bounds,
       })
     }
   }, [mapCenter, mapLoaded, responses])
@@ -235,68 +238,76 @@ const DiscoveryMap = ({
       >
         <MapboxGL.Camera ref={cameraRef} zoomLevel={12} />
 
-        <MapboxGL.ShapeSource
-          id="nearbyHotspots"
-          shape={shapeSources.nearbyHotspotMarker}
-          onPress={onShapeSourcePress}
-        >
-          <MapboxGL.CircleLayer
-            id="selectedNearbyLayer"
-            style={styles.selectedHotspot}
-            filter={nearbyCircleFilter}
-          />
-          <MapboxGL.CircleLayer
-            id="nearbyHotspotMarker"
-            aboveLayerID="selectedNearbyLayer"
-            style={styles.nearbyHotspotMarker}
-          />
-        </MapboxGL.ShapeSource>
+        {shapeSources.nearbyHotspotMarker && (
+          <MapboxGL.ShapeSource
+            id="nearbyHotspots"
+            shape={shapeSources.nearbyHotspotMarker}
+            onPress={onShapeSourcePress}
+          >
+            <MapboxGL.CircleLayer
+              id="selectedNearbyLayer"
+              style={styles.selectedHotspot}
+              filter={nearbyCircleFilter}
+            />
+            <MapboxGL.CircleLayer
+              id="nearbyHotspotMarker"
+              aboveLayerID="selectedNearbyLayer"
+              style={styles.nearbyHotspotMarker}
+            />
+          </MapboxGL.ShapeSource>
+        )}
 
-        <MapboxGL.ShapeSource
-          id="responses"
-          shape={shapeSources.responses}
-          onPress={onShapeSourcePress}
-        >
-          <MapboxGL.CircleLayer
-            id="selectedResponseLayer"
-            style={styles.selectedHotspot}
-            filter={responsesCircleFilter}
-          />
-          <MapboxGL.CircleLayer
-            id="hotspotResponses"
-            aboveLayerID="selectedResponseLayer"
-            style={styles.responses}
-          />
-        </MapboxGL.ShapeSource>
+        {shapeSources.responses && (
+          <MapboxGL.ShapeSource
+            id="responses"
+            shape={shapeSources.responses}
+            onPress={onShapeSourcePress}
+          >
+            <MapboxGL.CircleLayer
+              id="selectedResponseLayer"
+              style={styles.selectedHotspot}
+              filter={responsesCircleFilter}
+            />
+            <MapboxGL.CircleLayer
+              id="hotspotResponses"
+              aboveLayerID="selectedResponseLayer"
+              style={styles.responses}
+            />
+          </MapboxGL.ShapeSource>
+        )}
 
-        <MapboxGL.ShapeSource id="line1" shape={shapeSources.lines}>
-          <MapboxGL.LineLayer id="linelayer1" style={styles.line} />
-        </MapboxGL.ShapeSource>
+        {shapeSources.lines && (
+          <MapboxGL.ShapeSource id="line1" shape={shapeSources.lines}>
+            <MapboxGL.LineLayer id="linelayer1" style={styles.line} />
+          </MapboxGL.ShapeSource>
+        )}
 
-        <MapboxGL.ShapeSource id="sourceHotspot" shape={shapeSources.hotspot}>
-          <MapboxGL.Animated.CircleLayer
-            id="hotspotLocationOuterEllipse"
-            style={{
-              circleRadius: sizeAnim.current,
-              circleColor: '#7679B0',
-              circleOpacity: opacityAnim.current,
-            }}
-          />
-          <MapboxGL.Animated.CircleLayer
-            id="hotspotLocationInnerEllipse"
-            aboveLayerID="hotspotLocationOuterEllipse"
-            style={{
-              circleRadius: innerAnim.current,
-              circleColor: '#ccc',
-              circleOpacity: opacityAnim.current,
-            }}
-          />
-          <MapboxGL.CircleLayer
-            id="hotspotLocation"
-            aboveLayerID="hotspotLocationInnerEllipse"
-            style={styles.hotspotLocation}
-          />
-        </MapboxGL.ShapeSource>
+        {shapeSources.hotspot && (
+          <MapboxGL.ShapeSource id="sourceHotspot" shape={shapeSources.hotspot}>
+            <MapboxGL.Animated.CircleLayer
+              id="hotspotLocationOuterEllipse"
+              style={{
+                circleRadius: sizeAnim.current,
+                circleColor: '#7679B0',
+                circleOpacity: opacityAnim.current,
+              }}
+            />
+            <MapboxGL.Animated.CircleLayer
+              id="hotspotLocationInnerEllipse"
+              aboveLayerID="hotspotLocationOuterEllipse"
+              style={{
+                circleRadius: innerAnim.current,
+                circleColor: '#ccc',
+                circleOpacity: opacityAnim.current,
+              }}
+            />
+            <MapboxGL.CircleLayer
+              id="hotspotLocation"
+              aboveLayerID="hotspotLocationInnerEllipse"
+              style={styles.hotspotLocation}
+            />
+          </MapboxGL.ShapeSource>
+        )}
       </MapboxGL.MapView>
     </Box>
   )
