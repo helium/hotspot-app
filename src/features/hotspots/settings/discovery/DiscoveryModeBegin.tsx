@@ -80,13 +80,12 @@ const DiscoveryModeBegin = ({
 
   return (
     <Box height={hp(85)}>
-      <Box backgroundColor="purpleMain" height={260}>
+      <Box backgroundColor="purpleMain" height={210}>
         <Box
           paddingLeft="l"
           flexDirection="row"
           justifyContent="space-between"
           alignItems="center"
-          marginBottom="l"
         >
           <DiscoveryIcon color="white" height={29} width={40} />
           <TouchableOpacityBox padding="ms" onPress={onClose}>
@@ -100,7 +99,7 @@ const DiscoveryModeBegin = ({
           justifyContent="space-between"
           flex={1}
         >
-          <Text variant="medium" fontSize={28} maxFontSizeMultiplier={1}>
+          <Text variant="medium" fontSize={24} maxFontSizeMultiplier={1}>
             {t('discovery.begin.title')}
           </Text>
           <Text variant="light" fontSize={16} maxFontSizeMultiplier={1.1}>
@@ -110,7 +109,7 @@ const DiscoveryModeBegin = ({
             <Text
               variant="regular"
               fontSize={14}
-              color="purpleDark"
+              color="white"
               maxFontSizeMultiplier={1.2}
             >
               {t('discovery.begin.body', {
@@ -120,12 +119,13 @@ const DiscoveryModeBegin = ({
           )}
         </Box>
       </Box>
-      <DiscoveryModeLocationOptions
-        onValueChanged={setLocationOption}
-        value={locationOption}
-        hotspotCoordsValid={hotspotCoordsValid}
-      />
-      <Box margin="l" flex={1}>
+      {hotspotCoordsValid && (
+        <DiscoveryModeLocationOptions
+          onValueChanged={setLocationOption}
+          value={locationOption}
+        />
+      )}
+      <Box margin="l" marginTop={hotspotCoordsValid ? 's' : 'm'} flex={1}>
         {hasInfo && recentDiscoveryInfo && (
           <DiscoveryModeSessionInfo
             onBeginNew={handleNewSession}

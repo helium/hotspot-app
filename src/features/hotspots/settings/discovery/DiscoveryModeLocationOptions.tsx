@@ -13,29 +13,22 @@ export type DiscoveryLocationOption = 'asserted' | 'hotspot'
 type Props = {
   value: DiscoveryLocationOption
   onValueChanged: (value: DiscoveryLocationOption) => void
-  hotspotCoordsValid: boolean
 }
-const DiscoveryModeLocationOptions = ({
-  value,
-  onValueChanged,
-  hotspotCoordsValid,
-}: Props) => {
+const DiscoveryModeLocationOptions = ({ value, onValueChanged }: Props) => {
   const { t } = useTranslation()
-  const { blueGrayLight, purpleMain } = useColors()
+  const { purpleMain } = useColors()
   const data = useMemo(
     () => [
       {
         label: 'discovery.begin.location_opts.asserted',
         value: 'asserted' as DiscoveryLocationOption,
-        disabled: !hotspotCoordsValid,
       },
       {
         label: 'discovery.begin.location_opts.hotspot',
         value: 'hotspot' as DiscoveryLocationOption,
-        disabled: false,
       },
     ],
-    [hotspotCoordsValid],
+    [],
   )
 
   const handlePress = useCallback(
@@ -52,18 +45,17 @@ const DiscoveryModeLocationOptions = ({
           flexDirection="row"
           alignItems="center"
           onPress={handlePress(rowData.value)}
-          disabled={rowData.disabled}
         >
           {selected ? (
             <RadioSelected color={purpleMain} />
           ) : (
-            <Radio color={rowData.disabled ? blueGrayLight : purpleMain} />
+            <Radio color={purpleMain} />
           )}
           <Text
             variant="bold"
             fontSize={16}
             lineHeight={27}
-            color={rowData.disabled ? 'blueGrayLight' : 'black'}
+            color="black"
             marginLeft="s"
           >
             {t(rowData.label)}
@@ -71,7 +63,7 @@ const DiscoveryModeLocationOptions = ({
         </TouchableOpacityBox>
       )
     },
-    [data, value, handlePress, purpleMain, blueGrayLight, t],
+    [data, value, handlePress, purpleMain, t],
   )
 
   return (
@@ -81,7 +73,7 @@ const DiscoveryModeLocationOptions = ({
         renderItem={renderItem}
         keyExtractor={({ value: v }) => v}
       />
-      <Text variant="body2" color="grayText" marginTop="m">
+      <Text variant="body2" color="grayText" marginTop="s">
         {t('discovery.begin.location_opts.info')}
       </Text>
     </Box>
