@@ -188,11 +188,14 @@ const DiscoveryMap = ({
         centerCoordinate: mapCenter,
         zoomLevel: 12,
       })
-    } else {
-      const coords = responses.map((r) => [r.long, r.lat])
-      const bounds = findBounds(coords)
-      if (!bounds) return
+      return
+    }
 
+    const coords = responses.map((r) => [r.long, r.lat])
+    const bounds = findBounds(coords)
+    if (!bounds) {
+      cameraRef.current?.setCamera({ zoomLevel: 1 })
+    } else {
       cameraRef.current?.setCamera({
         bounds,
       })

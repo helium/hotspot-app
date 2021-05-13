@@ -68,7 +68,7 @@ const DiscoveryModeSessionInfo = ({
           <Box flexDirection="row" alignItems="flex-end" marginBottom="m">
             <Text
               variant="regular"
-              fontSize={21}
+              fontSize={17}
               color="black"
               lineHeight={21}
               maxFontSizeMultiplier={1}
