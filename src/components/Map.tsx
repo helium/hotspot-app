@@ -10,16 +10,26 @@ import { useSelector } from 'react-redux'
 import { useAsync } from 'react-async-hook'
 import MapboxGL, {
   CircleLayerStyle,
+  FillLayerStyle,
+  LineLayerStyle,
   OnPressEvent,
   RegionPayload,
   SymbolLayerStyle,
 } from '@react-native-mapbox-gl/maps'
-import { Feature, GeoJsonProperties, Point, Position } from 'geojson'
+import {
+  Feature,
+  FeatureCollection,
+  GeoJsonProperties,
+  Point,
+  Position,
+} from 'geojson'
 import { Hotspot } from '@helium/http'
 import { BoxProps } from '@shopify/restyle'
 import { StyleProp, ViewStyle } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { isEqual } from 'lodash'
+import { h3ToGeo } from 'h3-js'
+import geojson2h3 from 'geojson2h3'
 import Box from './Box'
 import Text from './Text'
 import NoLocation from '../assets/images/no-location.svg'
@@ -82,6 +92,7 @@ const Map = ({
   const camera = useRef<MapboxGL.Camera>(null)
   const [loaded, setLoaded] = useState(false)
   const [userCoords, setUserCoords] = useState({ latitude: 0, longitude: 0 })
+  const [h3Features, setH3Features] = useState<FeatureCollection>()
   const styles = useMemo(() => makeStyles(colors), [colors])
 
   const networkHotspots = useSelector(
@@ -109,6 +120,9 @@ const Map = ({
         dispatch(fetchNetworkHotspots(bounds))
       }
     }
+    const currentBounds = await map.current?.getVisibleBounds()
+    const [hexFeatures] = getFeatures(currentBounds)
+    setH3Features(hexFeatures)
   }, [dispatch, onMapMoved, showNearbyHotspots])
 
   const centerUserLocation = useCallback(() => {
@@ -143,8 +157,63 @@ const Map = ({
     })
   }, [showUserLocation, userCoords, zoomLevel])
 
+  const getFeatures = (bounds: Position[] | undefined): FeatureCollection[] => {
+    if (!bounds) return [{} as FeatureCollection, {} as FeatureCollection]
+    const bbox = {
+      sw: {
+        lng: bounds[0][0],
+        lat: bounds[0][1],
+      },
+      ne: {
+        lng: bounds[1][0],
+        lat: bounds[1][1],
+      },
+    }
+    const bboxFeature = {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [bbox.sw.lng, bbox.sw.lat],
+            [bbox.sw.lng, bbox.ne.lat],
+            [bbox.ne.lng, bbox.ne.lat],
+            [bbox.ne.lng, bbox.sw.lat],
+            [bbox.sw.lng, bbox.sw.lat],
+          ],
+        ],
+      },
+    } as Feature
+
+    const hexagons = geojson2h3.featureToH3Set(bboxFeature, 8)
+
+    const hexPolygon = geojson2h3.h3SetToFeatureCollection(hexagons)
+    const points = {
+      type: 'FeatureCollection',
+      features: hexagons.map((hex) => ({
+        type: 'Feature',
+        properties: {
+          hex,
+        },
+        geometry: {
+          type: 'Point',
+          coordinates: h3ToGeo(hex).reverse(),
+        },
+      })),
+    } as FeatureCollection
+
+    return [hexPolygon, points]
+  }
+
   const onDidFinishLoad = useCallback(() => {
     setLoaded(true)
+
+    const loadHexagons = async () => {
+      const currentBounds = await map.current?.getVisibleBounds()
+      const [hexFeatures] = getFeatures(currentBounds)
+      setH3Features(hexFeatures)
+    }
+    loadHexagons()
   }, [])
 
   const onShapeSourcePress = useCallback(
@@ -299,6 +368,12 @@ const Map = ({
           animationDuration={animationDuration}
         />
         <MapboxGL.Images images={mapImages} />
+        {h3Features && (
+          <MapboxGL.ShapeSource id="hexagons" shape={h3Features}>
+            <MapboxGL.LineLayer id="hexagonLine" style={styles.hexagon} />
+            <MapboxGL.FillLayer id="hexagonFill" style={styles.hexagonFill} />
+          </MapboxGL.ShapeSource>
+        )}
         <MapboxGL.ShapeSource
           id="networkHotspots"
           shape={shapeSources.networkHotspotFeatures}
@@ -371,6 +446,15 @@ const makeStyles = (colors: typeof theme.colors) => ({
     circleColor: colors.purpleMuted,
     circleRadius: 6,
   } as StyleProp<CircleLayerStyle>,
+  hexagon: {
+    lineWidth: 3,
+    lineColor: '#1C1E3B',
+  } as StyleProp<LineLayerStyle>,
+  hexagonFill: {
+    fillOpacity: 0.4,
+    fillColor: '#4F5293',
+    fillOutlineColor: '#1C1E3B',
+  } as StyleProp<FillLayerStyle>,
 })
 
 const hotspotsEqual = (prev: Hotspot[], next: Hotspot[]) => {
