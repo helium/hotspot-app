@@ -191,10 +191,15 @@ const DiscoveryMap = ({
       return
     }
 
+    if (responses.length === 0) {
+      cameraRef.current?.setCamera({ zoomLevel: 1 })
+      return
+    }
+
     const coords = responses.map((r) => [r.long, r.lat])
     const bounds = findBounds(coords)
-    if (!bounds) {
-      cameraRef.current?.setCamera({ zoomLevel: 1 })
+    if (responses.length === 1) {
+      cameraRef.current?.setCamera({ zoomLevel: 12, bounds })
     } else {
       cameraRef.current?.setCamera({
         bounds,
