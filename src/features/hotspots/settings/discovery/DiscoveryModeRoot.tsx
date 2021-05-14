@@ -18,10 +18,7 @@ import discoverySlice, {
   fetchRecentDiscoveries,
   startDiscovery,
 } from '../../../../store/discovery/discoverySlice'
-import {
-  DiscoveryRequest,
-  DISCOVERY_DURATION_MINUTES,
-} from '../../../../store/discovery/discoveryTypes'
+import { DiscoveryRequest } from '../../../../store/discovery/discoveryTypes'
 import { RootState } from '../../../../store/rootReducer'
 import { useAppDispatch } from '../../../../store/store'
 import animateTransition from '../../../../utils/animateTransition'
@@ -36,7 +33,6 @@ import {
   isRelay,
   SyncStatus,
 } from '../../../../utils/hotspotUtils'
-import { hotspotHasValidLocation } from '../../../../utils/location'
 import Articles from '../../../../constants/articles'
 
 type State = 'begin' | 'results'
@@ -48,6 +44,7 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
   >({})
   const { t } = useTranslation()
   const [time, setTime] = useState(0)
+  const [requestLength, setRequestLength] = useState(60)
   const { enableBack } = useHotspotSettingsContext()
   const { result: userAddress } = useAsync(getSecureItem, ['address'])
   const dispatch = useAppDispatch()
@@ -57,7 +54,6 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
   const recentDiscoveryInfo = useSelector(
     (state: RootState) => state.discovery.recentDiscoveryInfo,
   )
-
   const infoLoading = useSelector(
     (state: RootState) => state.discovery.infoLoading,
   )
@@ -134,8 +130,14 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
     if (!selectedRequest) {
       return true
     }
-    return time - requestSeconds < DISCOVERY_DURATION_MINUTES * 60
-  }, [requestSeconds, selectedRequest, time, viewState])
+    return time - requestSeconds < requestLength
+  }, [requestLength, requestSeconds, selectedRequest, time, viewState])
+
+  useEffect(() => {
+    if (!recentDiscoveryInfo?.requestLength) return
+
+    setRequestLength(recentDiscoveryInfo.requestLength)
+  }, [recentDiscoveryInfo])
 
   useEffect(() => {
     if (clockInterval.current) {
@@ -175,68 +177,58 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
     }
   }, [dispatch, requestId, selectedRequest?.id, shouldPoll])
 
-  const dispatchDiscovery = useCallback(
-    (mapCoords: number[]) => {
-      dispatch(
-        startDiscovery({
-          hotspotAddress: hotspot.address,
-          hotspotName: hotspot.name || animalName(hotspot.address),
-          mapCoords,
-        }),
+  const dispatchDiscovery = useCallback(() => {
+    dispatch(
+      startDiscovery({
+        hotspotAddress: hotspot.address,
+        hotspotName: hotspot.name || animalName(hotspot.address),
+      }),
+    )
+    setViewState('results')
+  }, [dispatch, hotspot])
+
+  const handleNewSelected = useCallback(async () => {
+    if (!hotspot.address || !userAddress) return
+
+    const hotspotHeight = hotspot.status?.height || 0
+    const { status } = getSyncStatus(hotspotHeight, blockHeight)
+    if (status !== SyncStatus.full) {
+      showOKAlert({
+        titleKey: 'discovery.syncing_prompt.title',
+        messageKey: 'discovery.syncing_prompt.message',
+      })
+    } else if (hotspot.status?.online !== 'online') {
+      showOKAlert({
+        titleKey: 'discovery.offline_prompt.title',
+        messageKey: 'discovery.offline_prompt.message',
+      })
+    } else if (isRelay(hotspot.status?.listenAddrs)) {
+      Alert.alert(
+        t('discovery.relay_prompt.title'),
+        t('discovery.relay_prompt.message'),
+        [
+          {
+            text: t('generic.continue'),
+            onPress: () => dispatchDiscovery(),
+          },
+          {
+            text: t('discovery.troubleshooting_guide'),
+            style: 'cancel',
+            onPress: () => {
+              if (Linking.canOpenURL(Articles.Relay))
+                Linking.openURL(Articles.Relay)
+            },
+          },
+          {
+            text: t('generic.cancel'),
+            style: 'destructive',
+          },
+        ],
       )
-      setViewState('results')
-    },
-    [dispatch, hotspot],
-  )
-  const hotspotCoordsValid = useMemo(() => hotspotHasValidLocation(hotspot), [
-    hotspot,
-  ])
-
-  const handleNewSelected = useCallback(
-    async (coords: number[]) => {
-      if (!hotspot.address || !userAddress) return
-
-      const hotspotHeight = hotspot.status?.height || 0
-      const { status } = getSyncStatus(hotspotHeight, blockHeight)
-      if (status !== SyncStatus.full) {
-        showOKAlert({
-          titleKey: 'discovery.syncing_prompt.title',
-          messageKey: 'discovery.syncing_prompt.message',
-        })
-      } else if (hotspot.status?.online !== 'online') {
-        showOKAlert({
-          titleKey: 'discovery.offline_prompt.title',
-          messageKey: 'discovery.offline_prompt.message',
-        })
-      } else if (isRelay(hotspot.status?.listenAddrs)) {
-        Alert.alert(
-          t('discovery.relay_prompt.title'),
-          t('discovery.relay_prompt.message'),
-          [
-            {
-              text: t('generic.continue'),
-              onPress: () => dispatchDiscovery(coords),
-            },
-            {
-              text: t('discovery.troubleshooting_guide'),
-              style: 'cancel',
-              onPress: () => {
-                if (Linking.canOpenURL(Articles.Relay))
-                  Linking.openURL(Articles.Relay)
-              },
-            },
-            {
-              text: t('generic.cancel'),
-              style: 'destructive',
-            },
-          ],
-        )
-      } else {
-        dispatchDiscovery(coords)
-      }
-    },
-    [hotspot, blockHeight, dispatchDiscovery, showOKAlert, t, userAddress],
-  )
+    } else {
+      dispatchDiscovery()
+    }
+  }, [hotspot, blockHeight, dispatchDiscovery, showOKAlert, t, userAddress])
 
   const handleRequestSelected = (request: DiscoveryRequest) => {
     dispatch(discoverySlice.actions.setSelectedRequest(request))
@@ -258,7 +250,6 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
           recentDiscoveryInfo={recentDiscoveryInfo}
           error={infoLoading === 'rejected'}
           hotspot={hotspot}
-          hotspotCoordsValid={hotspotCoordsValid}
         />
       )
     case 'results':
@@ -269,6 +260,7 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
           isPolling={shouldPoll}
           currentTime={time}
           requestTime={requestSeconds}
+          requestLength={requestLength}
         />
       )
   }

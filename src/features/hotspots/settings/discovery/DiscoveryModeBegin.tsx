@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ActivityIndicator } from 'react-native'
 import { Hotspot } from '@helium/http'
@@ -16,18 +16,14 @@ import DiscoveryModeSessionInfo from './DiscoveryModeSessionInfo'
 import animateTransition from '../../../../utils/animateTransition'
 import useAlert from '../../../../utils/useAlert'
 import { useColors } from '../../../../theme/themeHooks'
-import DiscoveryModeLocationOptions, {
-  DiscoveryLocationOption,
-} from './DiscoveryModeLocationOptions'
 
 type Props = {
   onClose: () => void
   recentDiscoveryInfo?: RecentDiscoveryInfo | null
-  onBeginNew: (coords: number[]) => void
+  onBeginNew: () => void
   onRequestSelected: (request: DiscoveryRequest) => void
   error: boolean
   hotspot: Hotspot
-  hotspotCoordsValid: boolean
 }
 
 const DiscoveryModeBegin = ({
@@ -37,13 +33,10 @@ const DiscoveryModeBegin = ({
   onRequestSelected,
   error,
   hotspot,
-  hotspotCoordsValid,
 }: Props) => {
   const { t } = useTranslation()
   const [hasInfo, setHasInfo] = useState(false)
-  const [locationOption, setLocationOption] = useState<DiscoveryLocationOption>(
-    hotspotCoordsValid ? 'asserted' : 'hotspot',
-  )
+
   const { showOKAlert } = useAlert()
   const [alertShown, setAlertShown] = useState(false)
   const colors = useColors()
@@ -69,14 +62,6 @@ const DiscoveryModeBegin = ({
     }
     showError()
   }, [showOKAlert, error, onClose, alertShown])
-
-  const handleNewSession = useCallback(async () => {
-    const useAssLoc = locationOption === 'asserted'
-    onBeginNew([
-      useAssLoc && hotspot.lng ? hotspot.lng : 0,
-      useAssLoc && hotspot.lat ? hotspot.lat : 0,
-    ])
-  }, [hotspot.lat, hotspot.lng, locationOption, onBeginNew])
 
   return (
     <Box height={hp(85)}>
@@ -119,16 +104,10 @@ const DiscoveryModeBegin = ({
           )}
         </Box>
       </Box>
-      {hotspotCoordsValid && (
-        <DiscoveryModeLocationOptions
-          onValueChanged={setLocationOption}
-          value={locationOption}
-        />
-      )}
-      <Box margin="l" marginTop={hotspotCoordsValid ? 's' : 'm'} flex={1}>
+      <Box margin="l" marginTop="m" flex={1}>
         {hasInfo && recentDiscoveryInfo && (
           <DiscoveryModeSessionInfo
-            onBeginNew={handleNewSession}
+            onBeginNew={onBeginNew}
             onRequestSelected={onRequestSelected}
             requestsRemaining={recentDiscoveryInfo.requestsRemaining}
             requests={recentDiscoveryInfo.recentRequests}
