@@ -1009,7 +1009,7 @@ export default {
           'There was a problem loading discovery mode. Please try again later',
       },
       location_opts: {
-        hotspot: "Use Hotspot's Physical Location*",
+        hotspot: 'Use Temporary Location*',
         asserted: 'Use Asserted Location',
         info:
           '*Useful if you want to test Hotspot coverage before setting a location',
