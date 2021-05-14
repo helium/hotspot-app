@@ -1,7 +1,8 @@
-import React, { memo, useCallback, useEffect, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ActivityIndicator } from 'react-native'
 import { Hotspot } from '@helium/http'
+import { isEqual } from 'lodash'
 import Text from '../../../../components/Text'
 import { hp } from '../../../../utils/layout'
 import Box from '../../../../components/Box'
@@ -16,18 +17,14 @@ import DiscoveryModeSessionInfo from './DiscoveryModeSessionInfo'
 import animateTransition from '../../../../utils/animateTransition'
 import useAlert from '../../../../utils/useAlert'
 import { useColors } from '../../../../theme/themeHooks'
-import DiscoveryModeLocationOptions, {
-  DiscoveryLocationOption,
-} from './DiscoveryModeLocationOptions'
 
 type Props = {
   onClose: () => void
   recentDiscoveryInfo?: RecentDiscoveryInfo | null
-  onBeginNew: (coords: number[]) => void
+  onBeginNew: () => void
   onRequestSelected: (request: DiscoveryRequest) => void
   error: boolean
   hotspot: Hotspot
-  hotspotCoordsValid: boolean
 }
 
 const DiscoveryModeBegin = ({
@@ -37,23 +34,22 @@ const DiscoveryModeBegin = ({
   onRequestSelected,
   error,
   hotspot,
-  hotspotCoordsValid,
 }: Props) => {
   const { t } = useTranslation()
-  const [hasInfo, setHasInfo] = useState(false)
-  const [locationOption, setLocationOption] = useState<DiscoveryLocationOption>(
-    hotspotCoordsValid ? 'asserted' : 'hotspot',
+  const [recentRequests, setRecentRequests] = useState(
+    recentDiscoveryInfo?.recentRequests,
   )
+
   const { showOKAlert } = useAlert()
   const [alertShown, setAlertShown] = useState(false)
   const colors = useColors()
 
   useEffect(() => {
-    if (hasInfo !== !!recentDiscoveryInfo) {
-      animateTransition('DiscoveryModeBegin.HasInfo')
-      setHasInfo(!!recentDiscoveryInfo)
-    }
-  }, [hasInfo, recentDiscoveryInfo])
+    if (isEqual(recentDiscoveryInfo?.recentRequests, recentRequests)) return
+
+    animateTransition('DiscoveryModeBegin.SetDiscoInfo')
+    setRecentRequests(recentDiscoveryInfo?.recentRequests)
+  }, [recentDiscoveryInfo?.recentRequests, recentRequests])
 
   useEffect(() => {
     if (alertShown || !error) return
@@ -69,14 +65,6 @@ const DiscoveryModeBegin = ({
     }
     showError()
   }, [showOKAlert, error, onClose, alertShown])
-
-  const handleNewSession = useCallback(async () => {
-    const useAssLoc = locationOption === 'asserted'
-    onBeginNew([
-      useAssLoc && hotspot.lng ? hotspot.lng : 0,
-      useAssLoc && hotspot.lat ? hotspot.lat : 0,
-    ])
-  }, [hotspot.lat, hotspot.lng, locationOption, onBeginNew])
 
   return (
     <Box height={hp(85)}>
@@ -105,7 +93,7 @@ const DiscoveryModeBegin = ({
           <Text variant="light" fontSize={16} maxFontSizeMultiplier={1.1}>
             {t('discovery.begin.subtitle')}
           </Text>
-          {recentDiscoveryInfo && (
+          {recentRequests && (
             <Text
               variant="regular"
               fontSize={14}
@@ -113,29 +101,23 @@ const DiscoveryModeBegin = ({
               maxFontSizeMultiplier={1.2}
             >
               {t('discovery.begin.body', {
-                requestsPerDay: recentDiscoveryInfo.requestsPerDay,
+                requestsPerDay: recentDiscoveryInfo?.requestsPerDay,
               })}
             </Text>
           )}
         </Box>
       </Box>
-      {hotspotCoordsValid && (
-        <DiscoveryModeLocationOptions
-          onValueChanged={setLocationOption}
-          value={locationOption}
-        />
-      )}
-      <Box margin="l" marginTop={hotspotCoordsValid ? 's' : 'm'} flex={1}>
-        {hasInfo && recentDiscoveryInfo && (
+      <Box margin="l" marginTop="m" flex={1}>
+        {recentRequests && (
           <DiscoveryModeSessionInfo
-            onBeginNew={handleNewSession}
+            onBeginNew={onBeginNew}
             onRequestSelected={onRequestSelected}
-            requestsRemaining={recentDiscoveryInfo.requestsRemaining}
-            requests={recentDiscoveryInfo.recentRequests}
+            requestsRemaining={recentDiscoveryInfo?.requestsRemaining || 0}
+            requests={recentRequests}
             hotspotAddress={hotspot.address}
           />
         )}
-        {!hasInfo && !error && (
+        {!recentRequests && !error && (
           <Box flex={1} alignItems="center" justifyContent="center">
             <ActivityIndicator color="gray" />
           </Box>

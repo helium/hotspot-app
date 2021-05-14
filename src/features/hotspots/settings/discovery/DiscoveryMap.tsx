@@ -34,7 +34,6 @@ export type MapSelectDetail = {
   address: string
 }
 type Props = BoxProps<Theme> & {
-  mapCenter?: number[]
   hotspotAddress: string
   responses: DiscoveryResponse[]
   onSelect: ({ lat, lng, name }: MapSelectDetail) => void
@@ -44,7 +43,6 @@ type Props = BoxProps<Theme> & {
 }
 export const ANIM_LOOP_LENGTH_MS = 3000
 const DiscoveryMap = ({
-  mapCenter,
   hotspotAddress,
   responses,
   onSelect,
@@ -113,29 +111,13 @@ const DiscoveryMap = ({
     ])
 
     const sources = {} as Record<
-      'hotspot' | 'nearbyHotspotMarker' | 'responses' | 'lines',
+      'nearbyHotspotMarker' | 'responses',
       GeoJSON.FeatureCollection
     >
     sources.nearbyHotspotMarker = {
       type: 'FeatureCollection',
       features: hotspotsToFeatures(Object.values(nearbyHotspots)),
     } as GeoJSON.FeatureCollection
-
-    if (mapCenter) {
-      sources.hotspot = {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            id: hotspotAddress,
-            geometry: {
-              type: 'Point',
-              coordinates: mapCenter,
-            },
-          },
-        ],
-      } as GeoJSON.FeatureCollection
-    }
 
     if (responses) {
       const responseCollection = {
@@ -151,25 +133,10 @@ const DiscoveryMap = ({
         })),
       } as GeoJSON.FeatureCollection
       sources.responses = responseCollection
-
-      if (mapCenter) {
-        const lines = {
-          type: 'FeatureCollection',
-          features: responses.map((r) => ({
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'LineString',
-              coordinates: [mapCenter, [r.long, r.lat]],
-            },
-          })),
-        } as GeoJSON.FeatureCollection
-        sources.lines = lines
-      }
     }
 
     return sources
-  }, [hotspotAddress, mapCenter, networkHotspots, responses])
+  }, [hotspotAddress, networkHotspots, responses])
 
   const setupMap = useCallback(async () => {
     setMapLoaded(true)
@@ -177,14 +144,6 @@ const DiscoveryMap = ({
 
   useEffect(() => {
     if (!mapLoaded) return
-
-    if (mapCenter) {
-      cameraRef.current?.setCamera({
-        centerCoordinate: mapCenter,
-        zoomLevel: 12,
-      })
-      return
-    }
 
     if (responses.length === 0) {
       cameraRef.current?.setCamera({ zoomLevel: 1 })
@@ -200,7 +159,7 @@ const DiscoveryMap = ({
         bounds,
       })
     }
-  }, [mapCenter, mapLoaded, responses])
+  }, [mapLoaded, responses])
 
   const onShapeSourcePress = useCallback(
     (event: OnPressEvent) => {
@@ -272,39 +231,6 @@ const DiscoveryMap = ({
               id="hotspotResponses"
               aboveLayerID="selectedResponseLayer"
               style={styles.responses}
-            />
-          </MapboxGL.ShapeSource>
-        )}
-
-        {shapeSources.lines && (
-          <MapboxGL.ShapeSource id="line1" shape={shapeSources.lines}>
-            <MapboxGL.LineLayer id="linelayer1" style={styles.line} />
-          </MapboxGL.ShapeSource>
-        )}
-
-        {shapeSources.hotspot && (
-          <MapboxGL.ShapeSource id="sourceHotspot" shape={shapeSources.hotspot}>
-            <MapboxGL.Animated.CircleLayer
-              id="hotspotLocationOuterEllipse"
-              style={{
-                circleRadius: sizeAnim.current,
-                circleColor: '#7679B0',
-                circleOpacity: opacityAnim.current,
-              }}
-            />
-            <MapboxGL.Animated.CircleLayer
-              id="hotspotLocationInnerEllipse"
-              aboveLayerID="hotspotLocationOuterEllipse"
-              style={{
-                circleRadius: innerAnim.current,
-                circleColor: '#ccc',
-                circleOpacity: opacityAnim.current,
-              }}
-            />
-            <MapboxGL.CircleLayer
-              id="hotspotLocation"
-              aboveLayerID="hotspotLocationInnerEllipse"
-              style={styles.hotspotLocation}
             />
           </MapboxGL.ShapeSource>
         )}

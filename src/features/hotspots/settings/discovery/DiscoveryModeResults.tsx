@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useMemo, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import { Hotspot } from '@helium/http'
 import { useTranslation } from 'react-i18next'
 import { isEqual, startCase } from 'lodash'
@@ -19,7 +19,6 @@ import { getHotspotDetails } from '../../../../utils/appDataClient'
 import DiscoveryModeResultsCard from './DiscoveryModeResultsCard'
 import { usesMetricSystem } from '../../../../utils/i18n'
 import filterDiscoveryResponses from './filterDiscoveryResponses'
-import { locationIsValid } from '../../../../utils/location'
 
 type Props = {
   request?: DiscoveryRequest | null
@@ -27,6 +26,7 @@ type Props = {
   isPolling: boolean
   requestTime: number
   currentTime: number
+  requestLength: number
 }
 const DiscoveryModeResults = ({
   request,
@@ -34,6 +34,7 @@ const DiscoveryModeResults = ({
   isPolling,
   currentTime,
   requestTime,
+  requestLength,
 }: Props) => {
   const { t } = useTranslation()
   const [filteredResponses, setFilteredResponses] = useState<
@@ -51,33 +52,12 @@ const DiscoveryModeResults = ({
     isEqual,
   )
 
-  const assertedhotspotCoords = useSelector(
-    (state: RootState) => state.discovery.mapCoords,
-  )
-
-  const mapCenter = useMemo(() => {
-    // request coords take precendence
-    if (
-      request?.lat &&
-      request.lng &&
-      request.lng !== '0' &&
-      request.lat !== '0'
-    ) {
-      return [parseFloat(request.lng), parseFloat(request.lat)]
-    }
-
-    if (locationIsValid(assertedhotspotCoords)) return assertedhotspotCoords
-  }, [assertedhotspotCoords, request])
-
   useEffect(() => {
-    if (!mapCenter && filteredResponses.length === 0) return
+    if (filteredResponses.length === 0) return
 
     const oneMileInDegrees = 1 / 69 // close enough => depends on your location. It's 68.7 at the equator and 69.4 at the poles, but yolo
     const offset = 15 * oneMileInDegrees // TODO: 15 mile offset. Is this adequate?
-    const center = mapCenter || [
-      filteredResponses[0].long,
-      filteredResponses[0].lat,
-    ] // If we're using the hotspot's physical location, use the first responder as center
+    const center = [filteredResponses[0].long, filteredResponses[0].lat] // use the first responder as center
     const northEastCoordinates = [
       center[0] + offset,
       center[1] + offset,
@@ -88,7 +68,7 @@ const DiscoveryModeResults = ({
     ] as GeoJSON.Position
 
     dispatch(fetchNetworkHotspots([southWestCoordinates, northEastCoordinates])) // find all hotspots 15 miles in every direction
-  }, [dispatch, filteredResponses, mapCenter])
+  }, [dispatch, filteredResponses])
 
   useEffect(() => {
     if (request) {
@@ -142,7 +122,6 @@ const DiscoveryModeResults = ({
       <DiscoveryMap
         networkHotspots={networkHotspots}
         hotspotAddress={hotspot.address}
-        mapCenter={mapCenter}
         responses={filteredResponses}
         onSelect={showOverlay}
         selectedHotspot={overlayDetails}
@@ -156,6 +135,7 @@ const DiscoveryModeResults = ({
         hideOverlay={hideOverlay}
         requestTime={requestTime}
         currentTime={currentTime}
+        requestLength={requestLength}
       />
     </Box>
   )

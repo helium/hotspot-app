@@ -1,16 +1,13 @@
 import React, { memo, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Platform } from 'react-native'
-import { addMinutes } from 'date-fns/esm'
+import { addSeconds } from 'date-fns'
 import Box from '../../../../components/Box'
 import Button from '../../../../components/Button'
 import Card from '../../../../components/Card'
 import { MapSelectDetail } from './DiscoveryMap'
 import Text from '../../../../components/Text'
-import {
-  DiscoveryRequest,
-  DISCOVERY_DURATION_MINUTES,
-} from '../../../../store/discovery/discoveryTypes'
+import { DiscoveryRequest } from '../../../../store/discovery/discoveryTypes'
 import animateTransition from '../../../../utils/animateTransition'
 import DiscoveryModeSearching from './DiscoveryModeSearching'
 import BlurBox from '../../../../components/BlurBox'
@@ -45,6 +42,7 @@ type Props = {
   numResponses: number
   requestTime: number
   currentTime: number
+  requestLength: number
 }
 const DiscoveryModeResultsCard = ({
   request,
@@ -54,6 +52,7 @@ const DiscoveryModeResultsCard = ({
   hideOverlay,
   requestTime,
   currentTime,
+  requestLength,
 }: Props) => {
   const { t } = useTranslation()
   const { shareResults } = useShareDiscovery(request)
@@ -64,13 +63,13 @@ const DiscoveryModeResultsCard = ({
     if (isPolling || !request) return
 
     const date = new Date(request.insertedAt)
-    const resultDate = addMinutes(date, DISCOVERY_DURATION_MINUTES)
+    const resultDate = addSeconds(date, requestLength)
     const formatted = await DateModule.formatDate(
       resultDate.toISOString(),
       'MMMM d h:mma',
     )
     setResultDateStr(formatted)
-  }, [isPolling, request])
+  }, [isPolling, request, requestLength])
 
   const results = useMemo(() => {
     let elapsed = ''
@@ -82,14 +81,11 @@ const DiscoveryModeResultsCard = ({
     ]
     if (request) {
       const seconds = currentTime - requestTime
-      const minutes = Math.floor(seconds / 60)
       if (seconds >= 0) {
-        if (minutes >= DISCOVERY_DURATION_MINUTES) {
-          elapsed = `${DISCOVERY_DURATION_MINUTES}:00`
+        if (seconds >= requestLength) {
+          elapsed = new Date(requestLength * 1000).toISOString().substr(14, 5)
         } else {
-          elapsed = `${minutes}:${String(
-            Math.floor(seconds - minutes * 60),
-          ).padStart(2, '0')}`
+          elapsed = new Date(seconds * 1000).toISOString().substr(14, 5)
         }
         items.push({
           label: t('discovery.results.elapsed_time'),
@@ -121,6 +117,7 @@ const DiscoveryModeResultsCard = ({
     isPolling,
     numResponses,
     request,
+    requestLength,
     requestTime,
     resultDateStr,
     t,
