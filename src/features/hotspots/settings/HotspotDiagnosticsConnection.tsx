@@ -77,14 +77,16 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
     if (Platform.OS === 'android') {
       await enable()
     }
-    setBleEnabled(true)
+    setScanComplete(true)
   }, [enable, getState, showOKCancelAlert])
 
   const rescan = useCallback(async () => {
     animateTransition('HotspotDiagnosticsConnection.Rescan')
     await checkBluetooth()
-    setScanComplete(false)
-  }, [checkBluetooth])
+    if (bleEnabled) {
+      setScanComplete(false)
+    }
+  }, [bleEnabled, checkBluetooth])
 
   const handleConnectFailure = useCallback(
     async (messageKey?: string, titleKey = 'something went wrong') => {
