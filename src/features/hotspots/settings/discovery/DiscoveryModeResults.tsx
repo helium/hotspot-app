@@ -5,14 +5,10 @@ import { isEqual, startCase } from 'lodash'
 import haversine from 'haversine-distance'
 import { useSelector } from 'react-redux'
 import Box from '../../../../components/Box'
-import DiscoveryMap, {
-  MapSelectDetail,
-  ANIM_LOOP_LENGTH_MS,
-} from './DiscoveryMap'
+import DiscoveryMap, { MapSelectDetail } from './DiscoveryMap'
 import {
   DiscoveryRequest,
   DiscoveryResponse,
-  DISCOVERY_DURATION_MINUTES,
 } from '../../../../store/discovery/discoveryTypes'
 import animateTransition from '../../../../utils/animateTransition'
 import { hp } from '../../../../utils/layout'
@@ -141,15 +137,6 @@ const DiscoveryModeResults = ({
     setOverlayDetails(undefined)
   }
 
-  const iterations = useMemo(() => {
-    const nowInSec = Date.now() / 1000
-    const diffSec = requestTime + DISCOVERY_DURATION_MINUTES * 60 - nowInSec
-    if (diffSec > 0) {
-      return Math.ceil(diffSec / (ANIM_LOOP_LENGTH_MS / 1000))
-    }
-    return 20
-  }, [requestTime])
-
   return (
     <Box height={hp(85)}>
       <DiscoveryMap
@@ -160,8 +147,6 @@ const DiscoveryModeResults = ({
         onSelect={showOverlay}
         selectedHotspot={overlayDetails}
         isPolling={isPolling}
-        requestTime={requestTime}
-        iterations={iterations}
       />
       <DiscoveryModeResultsCard
         numResponses={filteredResponses.length}

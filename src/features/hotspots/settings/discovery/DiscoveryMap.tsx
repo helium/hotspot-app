@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, {
   memo,
@@ -42,8 +41,6 @@ type Props = BoxProps<Theme> & {
   networkHotspots: Record<string, NetworkHotspot>
   selectedHotspot?: MapSelectDetail
   isPolling: boolean
-  requestTime: number
-  iterations: number
 }
 export const ANIM_LOOP_LENGTH_MS = 3000
 const DiscoveryMap = ({
@@ -54,8 +51,6 @@ const DiscoveryMap = ({
   networkHotspots,
   selectedHotspot,
   isPolling,
-  requestTime,
-  iterations,
   ...props
 }: Props) => {
   const opacityAnim = useRef(new Animated.Value(0))
@@ -238,13 +233,10 @@ const DiscoveryMap = ({
         style={styles.map}
         styleURL={styleURL}
         logoEnabled={false}
-        rotateEnabled={false}
-        pitchEnabled={false}
         compassEnabled={false}
-        zoomEnabled={false}
         onDidFinishLoadingMap={setupMap}
       >
-        <MapboxGL.Camera ref={cameraRef} zoomLevel={12} />
+        <MapboxGL.Camera ref={cameraRef} maxZoomLevel={12} />
 
         {shapeSources.nearbyHotspotMarker && (
           <MapboxGL.ShapeSource
