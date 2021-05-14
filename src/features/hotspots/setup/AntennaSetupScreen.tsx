@@ -11,13 +11,11 @@ import Text from '../../../components/Text'
 import Button from '../../../components/Button'
 import DiscoveryModeIcon from '../../../assets/images/discovery_mode_icon.svg'
 import { useColors } from '../../../theme/themeHooks'
-import HotspotConfigurationPicker, {
-  Antenna,
-  Antennas,
-} from '../../../components/HotspotConfigurationPicker'
+import HotspotConfigurationPicker from '../../../components/HotspotConfigurationPicker'
 import hotspotOnboardingSlice from '../../../store/hotspots/hotspotOnboardingSlice'
 import { useAppDispatch } from '../../../store/store'
 import { RootState } from '../../../store/rootReducer'
+import { Antenna, Antennas } from '../../../constants/antennas'
 
 const AntennaSetupScreen = () => {
   const { t } = useTranslation()
