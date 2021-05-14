@@ -13,6 +13,7 @@ import { Alert, Linking } from 'react-native'
 import { useSelector } from 'react-redux'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
+import { isEqual } from 'lodash'
 import discoverySlice, {
   fetchDiscoveryById,
   fetchRecentDiscoveries,
@@ -52,7 +53,8 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
   const requestInterval = useRef<NodeJS.Timeout>()
   const clockInterval = useRef<NodeJS.Timeout>()
   const recentDiscoveryInfo = useSelector(
-    (state: RootState) => state.discovery.recentDiscoveryInfo,
+    (state: RootState) => state.discovery.recentDiscoveryInfos[hotspot.address],
+    isEqual,
   )
   const infoLoading = useSelector(
     (state: RootState) => state.discovery.infoLoading,
