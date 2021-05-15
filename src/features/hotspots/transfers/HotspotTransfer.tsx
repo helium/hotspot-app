@@ -45,8 +45,11 @@ const HotspotTransfer = ({
 
   const navigateToTransfer = () => {
     onCloseSettings()
-    navigation.goBack()
-    navigation.navigate('Transfer', { hotspot, isSeller: true })
+    navigation.navigate('SendStack', {
+      hotspot,
+      isSeller: true,
+      type: 'transfer',
+    })
   }
 
   return (

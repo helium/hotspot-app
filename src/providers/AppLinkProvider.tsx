@@ -35,7 +35,7 @@ const useAppLink = () => {
   >(null)
 
   const {
-    app: { isPinRequiredForPayment, isLocked, isBackedUp },
+    app: { isLocked, isBackedUp },
   } = useSelector((state: RootState) => state)
 
   useMount(() => {
@@ -72,19 +72,12 @@ const useAppLink = () => {
 
         case 'dc_burn':
         case 'payment':
-        case 'transfer': {
-          if (isPinRequiredForPayment) {
-            navigator.lock({
-              requestType: 'send',
-              scanResult: record,
-            })
-          } else {
-            navigator.send({ scanResult: record })
-          }
-        }
+        case 'transfer':
+          navigator.send({ scanResult: record })
+          break
       }
     },
-    [isLocked, isPinRequiredForPayment, isBackedUp],
+    [isLocked, isBackedUp],
   )
 
   useEffect(() => {

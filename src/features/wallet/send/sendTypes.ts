@@ -9,7 +9,12 @@ export type SendStackParamList = {
     type?: AppLinkCategoryType
     hotspot?: Hotspot
     isSeller?: boolean
+    pinVerified?: 'fail' | 'pass'
   }
+  SendScan: {
+    type?: AppLinkCategoryType
+  }
+  SendComplete: undefined
 }
 
 export type SendDetails = {

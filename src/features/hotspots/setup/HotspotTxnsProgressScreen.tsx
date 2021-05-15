@@ -99,7 +99,6 @@ const HotspotTxnsProgressScreen = () => {
           lng,
           gain,
           elevation,
-          connectedHotspot.details?.nonce,
           connectedHotspot.onboardingRecord,
           true,
         )

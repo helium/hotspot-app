@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Linking, Platform } from 'react-native'
-import { Device } from 'react-native-ble-plx'
+import { Device, State } from 'react-native-ble-plx'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Box from '../../../components/Box'
@@ -52,7 +52,7 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
   const checkBluetooth = useCallback(async () => {
     const state = await getState()
 
-    if (state === 'PoweredOn') {
+    if (state === State.PoweredOn) {
       setBleEnabled(true)
       return
     }
@@ -102,7 +102,10 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
 
   useEffect(() => {
     const scan = async () => {
-      await scanForHotspots(2000)
+      const state = await getState()
+      if (state === State.PoweredOn) {
+        await scanForHotspots(2000)
+      }
       animateTransition('HotspotDiagnosticsConnection.ScanComplete')
       setScanComplete(true)
     }

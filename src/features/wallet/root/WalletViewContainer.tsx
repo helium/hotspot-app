@@ -4,7 +4,6 @@ import { useNavigation } from '@react-navigation/native'
 import BottomSheet from '@gorhom/bottom-sheet'
 import Qr from '@assets/images/qr.svg'
 import { AnyTransaction, PendingTransaction } from '@helium/http'
-import { useSelector } from 'react-redux'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import BalanceCard from './BalanceCard/BalanceCard'
@@ -19,7 +18,7 @@ import WalletIntroCarousel from './WalletIntroCarousel'
 import { Loading } from '../../../store/activity/activitySlice'
 import { ActivityViewState, FilterType } from './walletTypes'
 import WalletView from './WalletView'
-import { RootState } from '../../../store/rootReducer'
+import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
 type Props = {
   layout: WalletLayout
@@ -45,10 +44,7 @@ const WalletViewContainer = ({
   activityViewState,
 }: Props) => {
   const { t } = useTranslation()
-  const navigation = useNavigation()
-  const {
-    app: { isPinRequiredForPayment },
-  } = useSelector((state: RootState) => state)
+  const navigation = useNavigation<RootNavigationProp>()
   const { triggerNavHaptic } = useHaptic()
 
   const activityCardRef = useRef<BottomSheet>(null)
@@ -59,19 +55,13 @@ const WalletViewContainer = ({
 
   const navScan = useCallback(() => {
     triggerNavHaptic()
-    navigation.navigate('Scan')
+    navigation.navigate('ScanStack')
   }, [navigation, triggerNavHaptic])
 
   const handleSendPress = useCallback(() => {
     triggerNavHaptic()
-    if (isPinRequiredForPayment) {
-      navigation.navigate('LockScreen', {
-        requestType: 'send',
-      })
-    } else {
-      navigation.navigate('Send')
-    }
-  }, [isPinRequiredForPayment, navigation, triggerNavHaptic])
+    navigation.navigate('SendStack')
+  }, [navigation, triggerNavHaptic])
 
   const toggleShowReceive = useCallback(() => {
     if (activityViewState === 'no_activity') {

@@ -1,6 +1,8 @@
 import React, { memo, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ActivityIndicator } from 'react-native'
+import { Hotspot } from '@helium/http'
+import { isEqual } from 'lodash'
 import Text from '../../../../components/Text'
 import { hp } from '../../../../utils/layout'
 import Box from '../../../../components/Box'
@@ -22,28 +24,32 @@ type Props = {
   onBeginNew: () => void
   onRequestSelected: (request: DiscoveryRequest) => void
   error: boolean
-  hotspotAddress: string
+  hotspot: Hotspot
 }
+
 const DiscoveryModeBegin = ({
   onClose,
   recentDiscoveryInfo,
   onBeginNew,
   onRequestSelected,
   error,
-  hotspotAddress,
+  hotspot,
 }: Props) => {
   const { t } = useTranslation()
-  const [hasInfo, setHasInfo] = useState(false)
+  const [recentRequests, setRecentRequests] = useState(
+    recentDiscoveryInfo?.recentRequests,
+  )
+
   const { showOKAlert } = useAlert()
   const [alertShown, setAlertShown] = useState(false)
   const colors = useColors()
 
   useEffect(() => {
-    if (hasInfo !== !!recentDiscoveryInfo) {
-      animateTransition('DiscoveryModeBegin.HasInfo')
-      setHasInfo(!!recentDiscoveryInfo)
-    }
-  }, [hasInfo, recentDiscoveryInfo])
+    if (isEqual(recentDiscoveryInfo?.recentRequests, recentRequests)) return
+
+    animateTransition('DiscoveryModeBegin.SetDiscoInfo')
+    setRecentRequests(recentDiscoveryInfo?.recentRequests)
+  }, [recentDiscoveryInfo?.recentRequests, recentRequests])
 
   useEffect(() => {
     if (alertShown || !error) return
@@ -61,11 +67,19 @@ const DiscoveryModeBegin = ({
   }, [showOKAlert, error, onClose, alertShown])
 
   return (
-    <Box height={Math.min(640, hp(85))}>
-      <Box flex={273} backgroundColor="purpleMain" alignItems="flex-end">
-        <TouchableOpacityBox padding="ms" onPress={onClose}>
-          <Close color={colors.blackTransparent} />
-        </TouchableOpacityBox>
+    <Box height={hp(85)}>
+      <Box backgroundColor="purpleMain" height={210}>
+        <Box
+          paddingLeft="l"
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <DiscoveryIcon color="white" height={29} width={40} />
+          <TouchableOpacityBox padding="ms" onPress={onClose}>
+            <Close color={colors.blackTransparent} />
+          </TouchableOpacityBox>
+        </Box>
         <Box
           width="100%"
           paddingHorizontal="l"
@@ -73,38 +87,37 @@ const DiscoveryModeBegin = ({
           justifyContent="space-between"
           flex={1}
         >
-          <DiscoveryIcon color="white" height={29} width={40} />
-          <Text variant="medium" fontSize={28} maxFontSizeMultiplier={1}>
+          <Text variant="medium" fontSize={24} maxFontSizeMultiplier={1}>
             {t('discovery.begin.title')}
           </Text>
           <Text variant="light" fontSize={16} maxFontSizeMultiplier={1.1}>
             {t('discovery.begin.subtitle')}
           </Text>
-          {recentDiscoveryInfo && (
+          {recentRequests && (
             <Text
               variant="regular"
               fontSize={14}
-              color="purpleDark"
+              color="white"
               maxFontSizeMultiplier={1.2}
             >
               {t('discovery.begin.body', {
-                requestsPerDay: recentDiscoveryInfo.requestsPerDay,
+                requestsPerDay: recentDiscoveryInfo?.requestsPerDay,
               })}
             </Text>
           )}
         </Box>
       </Box>
-      <Box flex={367} margin="l">
-        {hasInfo && recentDiscoveryInfo && (
+      <Box margin="l" marginTop="m" flex={1}>
+        {recentRequests && (
           <DiscoveryModeSessionInfo
             onBeginNew={onBeginNew}
             onRequestSelected={onRequestSelected}
-            requestsRemaining={recentDiscoveryInfo.requestsRemaining}
-            requests={recentDiscoveryInfo.recentRequests}
-            hotspotAddress={hotspotAddress}
+            requestsRemaining={recentDiscoveryInfo?.requestsRemaining || 0}
+            requests={recentRequests}
+            hotspotAddress={hotspot.address}
           />
         )}
-        {!hasInfo && !error && (
+        {!recentRequests && !error && (
           <Box flex={1} alignItems="center" justifyContent="center">
             <ActivityIndicator color="gray" />
           </Box>

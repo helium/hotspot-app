@@ -9,9 +9,7 @@ import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
 import Box from '../../../../components/Box'
 import Button from '../../../../components/Button'
 import * as Logger from '../../../../utils/logger'
-import HotspotConfigurationPicker, {
-  Antenna,
-} from '../../../../components/HotspotConfigurationPicker'
+import HotspotConfigurationPicker from '../../../../components/HotspotConfigurationPicker'
 import animateTransition from '../../../../utils/animateTransition'
 import ReassertLocation, {
   Coords,
@@ -28,6 +26,7 @@ import { getOnboardingRecord } from '../../../../utils/stakingClient'
 import useSubmitTxn from '../../../../hooks/useSubmitTxn'
 import { decimalSeparator, groupSeparator } from '../../../../utils/i18n'
 import { calculateAssertLocFee } from '../../../../utils/fees'
+import { Antenna } from '../../../../constants/antennas'
 
 type Props = {
   onClose: () => void
@@ -143,7 +142,6 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
         location.longitude,
         hotspotGain,
         hotspot.elevation,
-        hotspot.nonce,
         onboardingRecord,
         isLocationChange,
       )
@@ -155,7 +153,6 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
       hotspot.lng,
       gain,
       elevation,
-      hotspot.nonce,
       onboardingRecord,
       false,
     )

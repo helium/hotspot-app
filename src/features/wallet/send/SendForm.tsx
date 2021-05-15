@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Account } from '@helium/http'
 import { some } from 'lodash'
 import Balance, { NetworkTokens } from '@helium/currency'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import LockedHeader from '../../../components/LockedHeader'
@@ -113,7 +113,7 @@ const SendForm = ({
           {t('send.label_error')}
         </Text>
       )}
-      <Button
+      <DebouncedButton
         onPress={onSubmit}
         title={getButtonTitle()}
         variant="primary"

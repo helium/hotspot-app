@@ -63,27 +63,29 @@ const DiscoveryModeSessionInfo = ({
 
   return (
     <>
-      <Box flexDirection="row" alignItems="flex-end" marginBottom="m">
-        <Text
-          variant="regular"
-          fontSize={21}
-          color="black"
-          lineHeight={21}
-          maxFontSizeMultiplier={1}
-        >
-          {t('discovery.begin.previous_sessions')}
-        </Text>
-        <Text
-          variant="light"
-          fontSize={14}
-          color="purpleDark"
-          marginLeft="xs"
-          lineHeight={21}
-        >
-          {t('discovery.begin.last_30_days')}
-        </Text>
-      </Box>
       <FlatList
+        ListHeaderComponent={
+          <Box flexDirection="row" alignItems="flex-end" marginBottom="m">
+            <Text
+              variant="regular"
+              fontSize={17}
+              color="black"
+              lineHeight={21}
+              maxFontSizeMultiplier={1}
+            >
+              {t('discovery.begin.previous_sessions')}
+            </Text>
+            <Text
+              variant="light"
+              fontSize={14}
+              color="purpleDark"
+              marginLeft="xs"
+              lineHeight={21}
+            >
+              {t('discovery.begin.last_30_days')}
+            </Text>
+          </Box>
+        }
         data={requests}
         keyExtractor={keyExtractor}
         renderItem={renderItem}

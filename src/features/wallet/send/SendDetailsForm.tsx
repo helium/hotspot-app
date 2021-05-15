@@ -281,7 +281,6 @@ const SendDetailsForm = ({
         label={t('send.address.seller')}
         value={transferData?.seller || ''}
       />
-      ,
       <LockedField
         label={t('send.amount.label_transfer')}
         value={

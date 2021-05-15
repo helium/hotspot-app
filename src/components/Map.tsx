@@ -23,56 +23,15 @@ import { isEqual } from 'lodash'
 import Box from './Box'
 import Text from './Text'
 import NoLocation from '../assets/images/no-location.svg'
-import { hotspotsToFeatures } from '../utils/mapUtils'
+import { findBounds, hotspotsToFeatures } from '../utils/mapUtils'
 import CurrentLocationButton from './CurrentLocationButton'
-import { Theme } from '../theme/theme'
+import { theme, Theme } from '../theme/theme'
 import { useColors } from '../theme/themeHooks'
 import { useAppDispatch } from '../store/store'
 import { RootState } from '../store/rootReducer'
 import { fetchNetworkHotspots } from '../store/networkHotspots/networkHotspotsSlice'
 
 const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
-
-type LatLng = {
-  lat: number
-  lng: number
-}
-
-type MapBounds = {
-  ne: number[]
-  sw: number[]
-  paddingLeft?: number
-  paddingRight?: number
-  paddingTop?: number
-  paddingBottom?: number
-}
-
-const findBounds = (coords: LatLng[]): MapBounds | undefined => {
-  if (coords.length === 0) {
-    return undefined
-  }
-
-  let minLon = coords[0].lng
-  let maxLon = coords[0].lng
-  let minLat = coords[0].lat
-  let maxLat = coords[0].lat
-
-  coords.forEach((m) => {
-    if (m.lng < minLon) minLon = m.lng
-    if (m.lng > maxLon) maxLon = m.lng
-    if (m.lat < minLat) minLat = m.lat
-    if (m.lat > maxLat) maxLat = m.lat
-  })
-
-  return {
-    ne: [maxLon, maxLat],
-    sw: [minLon, minLat],
-    paddingBottom: 250,
-    paddingLeft: 30,
-    paddingRight: 30,
-    paddingTop: 30,
-  }
-}
 
 type Props = BoxProps<Theme> & {
   onMapMoved?: (coords?: Position) => void
@@ -263,21 +222,18 @@ const Map = ({
   )
 
   const bounds = useMemo(() => {
-    const boundsLocations: LatLng[] = []
+    const boundsLocations: number[][] = []
 
     if (mapCenter && !selectedHotspot) {
-      boundsLocations.push({ lng: mapCenter[0], lat: mapCenter[1] })
+      boundsLocations.push(mapCenter)
     }
 
     if (selectedHotspot && selectedHotspot.lat && selectedHotspot.lng) {
-      boundsLocations.push({
-        lng: selectedHotspot.lng,
-        lat: selectedHotspot.lat,
-      })
+      boundsLocations.push([selectedHotspot.lng, selectedHotspot.lat])
     }
 
     witnesses.forEach((w) => {
-      if (w.lat && w.lng) boundsLocations.push({ lng: w.lng, lat: w.lat })
+      if (w.lat && w.lng) boundsLocations.push([w.lng, w.lat])
     })
 
     return findBounds(boundsLocations)
@@ -388,7 +344,7 @@ const Map = ({
   )
 }
 
-const makeStyles = (colors) => ({
+const makeStyles = (colors: typeof theme.colors) => ({
   map: {
     width: '100%',
     height: '100%',

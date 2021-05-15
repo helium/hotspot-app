@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, {
   memo,
@@ -21,7 +20,7 @@ import { omit } from 'lodash'
 import { Theme } from '../../../../theme/theme'
 import Box from '../../../../components/Box'
 import { DiscoveryResponse } from '../../../../store/discovery/discoveryTypes'
-import { hotspotsToFeatures } from '../../../../utils/mapUtils'
+import { findBounds, hotspotsToFeatures } from '../../../../utils/mapUtils'
 import { useColors } from '../../../../theme/themeHooks'
 import { NetworkHotspot } from '../../../../store/networkHotspots/networkHotspotsSlice'
 import usePrevious from '../../../../utils/usePrevious'
@@ -35,27 +34,21 @@ export type MapSelectDetail = {
   address: string
 }
 type Props = BoxProps<Theme> & {
-  coords: number[]
   hotspotAddress: string
   responses: DiscoveryResponse[]
   onSelect: ({ lat, lng, name }: MapSelectDetail) => void
   networkHotspots: Record<string, NetworkHotspot>
   selectedHotspot?: MapSelectDetail
   isPolling: boolean
-  requestTime: number
-  iterations: number
 }
 export const ANIM_LOOP_LENGTH_MS = 3000
 const DiscoveryMap = ({
-  coords,
   hotspotAddress,
   responses,
   onSelect,
   networkHotspots,
   selectedHotspot,
   isPolling,
-  requestTime,
-  iterations,
   ...props
 }: Props) => {
   const opacityAnim = useRef(new Animated.Value(0))
@@ -117,28 +110,14 @@ const DiscoveryMap = ({
       ...responseAddresses,
     ])
 
-    const sources = {
-      hotspot: {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            id: hotspotAddress,
-            geometry: {
-              type: 'Point',
-              coordinates: coords,
-            },
-          },
-        ],
-      } as GeoJSON.FeatureCollection,
-      nearbyHotspotMarker: {
-        type: 'FeatureCollection',
-        features: hotspotsToFeatures(Object.values(nearbyHotspots)),
-      } as GeoJSON.FeatureCollection,
-    } as Record<
-      'hotspot' | 'nearbyHotspotMarker' | 'responses' | 'lines',
+    const sources = {} as Record<
+      'nearbyHotspotMarker' | 'responses',
       GeoJSON.FeatureCollection
     >
+    sources.nearbyHotspotMarker = {
+      type: 'FeatureCollection',
+      features: hotspotsToFeatures(Object.values(nearbyHotspots)),
+    } as GeoJSON.FeatureCollection
 
     if (responses) {
       const responseCollection = {
@@ -154,31 +133,33 @@ const DiscoveryMap = ({
         })),
       } as GeoJSON.FeatureCollection
       sources.responses = responseCollection
-
-      const lines = {
-        type: 'FeatureCollection',
-        features: responses.map((r) => ({
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: 'LineString',
-            coordinates: [coords, [r.long, r.lat]],
-          },
-        })),
-      } as GeoJSON.FeatureCollection
-      sources.lines = lines
     }
 
     return sources
-  }, [hotspotAddress, coords, networkHotspots, responses])
+  }, [hotspotAddress, networkHotspots, responses])
 
   const setupMap = useCallback(async () => {
     setMapLoaded(true)
-    cameraRef.current?.setCamera({
-      centerCoordinate: coords,
-      zoomLevel: 12,
-    })
-  }, [coords])
+  }, [])
+
+  useEffect(() => {
+    if (!mapLoaded) return
+
+    if (responses.length === 0) {
+      cameraRef.current?.setCamera({ zoomLevel: 1 })
+      return
+    }
+
+    const coords = responses.map((r) => [r.long, r.lat])
+    const bounds = findBounds(coords)
+    if (responses.length === 1) {
+      cameraRef.current?.setCamera({ zoomLevel: 12, bounds })
+    } else {
+      cameraRef.current?.setCamera({
+        bounds,
+      })
+    }
+  }, [mapLoaded, responses])
 
   const onShapeSourcePress = useCallback(
     (event: OnPressEvent) => {
@@ -211,76 +192,48 @@ const DiscoveryMap = ({
         style={styles.map}
         styleURL={styleURL}
         logoEnabled={false}
-        rotateEnabled={false}
-        pitchEnabled={false}
         compassEnabled={false}
-        zoomEnabled={false}
         onDidFinishLoadingMap={setupMap}
       >
-        <MapboxGL.Camera ref={cameraRef} zoomLevel={12} />
+        <MapboxGL.Camera ref={cameraRef} maxZoomLevel={12} />
 
-        <MapboxGL.ShapeSource
-          id="nearbyHotspots"
-          shape={shapeSources.nearbyHotspotMarker}
-          onPress={onShapeSourcePress}
-        >
-          <MapboxGL.CircleLayer
-            id="selectedNearbyLayer"
-            style={styles.selectedHotspot}
-            filter={nearbyCircleFilter}
-          />
-          <MapboxGL.CircleLayer
-            id="nearbyHotspotMarker"
-            aboveLayerID="selectedNearbyLayer"
-            style={styles.nearbyHotspotMarker}
-          />
-        </MapboxGL.ShapeSource>
+        {shapeSources.nearbyHotspotMarker && (
+          <MapboxGL.ShapeSource
+            id="nearbyHotspots"
+            shape={shapeSources.nearbyHotspotMarker}
+            onPress={onShapeSourcePress}
+          >
+            <MapboxGL.CircleLayer
+              id="selectedNearbyLayer"
+              style={styles.selectedHotspot}
+              filter={nearbyCircleFilter}
+            />
+            <MapboxGL.CircleLayer
+              id="nearbyHotspotMarker"
+              aboveLayerID="selectedNearbyLayer"
+              style={styles.nearbyHotspotMarker}
+            />
+          </MapboxGL.ShapeSource>
+        )}
 
-        <MapboxGL.ShapeSource
-          id="responses"
-          shape={shapeSources.responses}
-          onPress={onShapeSourcePress}
-        >
-          <MapboxGL.CircleLayer
-            id="selectedResponseLayer"
-            style={styles.selectedHotspot}
-            filter={responsesCircleFilter}
-          />
-          <MapboxGL.CircleLayer
-            id="hotspotResponses"
-            aboveLayerID="selectedResponseLayer"
-            style={styles.responses}
-          />
-        </MapboxGL.ShapeSource>
-
-        <MapboxGL.ShapeSource id="line1" shape={shapeSources.lines}>
-          <MapboxGL.LineLayer id="linelayer1" style={styles.line} />
-        </MapboxGL.ShapeSource>
-
-        <MapboxGL.ShapeSource id="sourceHotspot" shape={shapeSources.hotspot}>
-          <MapboxGL.Animated.CircleLayer
-            id="hotspotLocationOuterEllipse"
-            style={{
-              circleRadius: sizeAnim.current,
-              circleColor: '#7679B0',
-              circleOpacity: opacityAnim.current,
-            }}
-          />
-          <MapboxGL.Animated.CircleLayer
-            id="hotspotLocationInnerEllipse"
-            aboveLayerID="hotspotLocationOuterEllipse"
-            style={{
-              circleRadius: innerAnim.current,
-              circleColor: '#ccc',
-              circleOpacity: opacityAnim.current,
-            }}
-          />
-          <MapboxGL.CircleLayer
-            id="hotspotLocation"
-            aboveLayerID="hotspotLocationInnerEllipse"
-            style={styles.hotspotLocation}
-          />
-        </MapboxGL.ShapeSource>
+        {shapeSources.responses && (
+          <MapboxGL.ShapeSource
+            id="responses"
+            shape={shapeSources.responses}
+            onPress={onShapeSourcePress}
+          >
+            <MapboxGL.CircleLayer
+              id="selectedResponseLayer"
+              style={styles.selectedHotspot}
+              filter={responsesCircleFilter}
+            />
+            <MapboxGL.CircleLayer
+              id="hotspotResponses"
+              aboveLayerID="selectedResponseLayer"
+              style={styles.responses}
+            />
+          </MapboxGL.ShapeSource>
+        )}
       </MapboxGL.MapView>
     </Box>
   )
