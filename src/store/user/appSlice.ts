@@ -44,6 +44,7 @@ type Restore = {
   isBackedUp: boolean
   isPinRequired: boolean
   isPinRequiredForPayment: boolean
+  isDeploymentModeEnabled: boolean
   authInterval: number
   isLocked: boolean
   isHapticDisabled: boolean
@@ -61,6 +62,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       getSecureItem('hapticDisabled'),
       getSecureItem('convertHntToCurrency'),
       getSecureItem('address'),
+      getSecureItem('deploymentModeEnabled'),
     ])
     const isBackedUp = vals[0]
     const address = vals[6]
@@ -75,6 +77,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       isLocked: vals[1],
       isHapticDisabled: vals[4],
       convertHntToCurrency: vals[5],
+      isDeploymentModeEnabled: vals[6],
     }
   },
 )
