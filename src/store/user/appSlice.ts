@@ -77,7 +77,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       isLocked: vals[1],
       isHapticDisabled: vals[4],
       convertHntToCurrency: vals[5],
-      isDeploymentModeEnabled: vals[6],
+      isDeploymentModeEnabled: vals[7],
     }
   },
 )
