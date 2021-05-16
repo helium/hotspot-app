@@ -12,6 +12,7 @@ import { Intervals } from '../../features/moreTab/more/useAuthIntervals'
 export type AppState = {
   isBackedUp: boolean
   isHapticDisabled: boolean
+  isDeploymentModeEnabled: boolean
   convertHntToCurrency: boolean
   isSettingUpHotspot: boolean
   isRestored: boolean
@@ -26,6 +27,7 @@ export type AppState = {
 const initialState: AppState = {
   isBackedUp: false,
   isHapticDisabled: false,
+  isDeploymentModeEnabled: false,
   convertHntToCurrency: false,
   isSettingUpHotspot: false,
   isRestored: false,
@@ -99,6 +101,10 @@ const appSlice = createSlice({
     requirePinForPayment: (state, action: PayloadAction<boolean>) => {
       state.isPinRequiredForPayment = action.payload
       setSecureItem('requirePinForPayment', action.payload)
+    },
+    enableDeploymentMode: (state, action: PayloadAction<boolean>) => {
+      state.isDeploymentModeEnabled = action.payload
+      setSecureItem('deploymentModeEnabled', action.payload)
     },
     updateHapticEnabled: (state, action: PayloadAction<boolean>) => {
       state.isHapticDisabled = action.payload
