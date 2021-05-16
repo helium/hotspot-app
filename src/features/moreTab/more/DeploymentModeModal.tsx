@@ -154,7 +154,7 @@ const DeploymentModeModal = ({ onClose = () => {} }: Props) => {
               width="48%"
             >
               <Text variant="medium" fontSize={18} style={styles.confirmText}>
-                Confirm
+                {t('generic.submit')}
               </Text>
             </TouchableOpacityBox>
           </Box>
