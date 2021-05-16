@@ -576,6 +576,14 @@ export default {
           after_4_hr: 'After 4 hours',
         },
         revealWords: 'Reveal Words',
+        deploymentMode: {
+          title: 'Deployment Mode',
+          enableButton: 'Enable Deployment Mode',
+          description:
+            'Deployment mode will disable the option to view your secret words.',
+          warning:
+            'This can only be disabled by logging out and reimporting your account.',
+        },
       },
       learn: {
         title: 'Learn',
