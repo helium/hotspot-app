@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, SectionList } from 'react-native'
 import { useSelector } from 'react-redux'
@@ -27,6 +27,7 @@ import Account from '../../../assets/images/account.svg'
 import Box from '../../../components/Box'
 import DiscordItem from './DiscordItem'
 import AppInfoItem from './AppInfoItem'
+import DeploymentModeModal from './DeploymentModeModal'
 import activitySlice from '../../../store/activity/activitySlice'
 import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
 import { SUPPORTED_LANGUAGUES } from '../../../utils/i18n'
@@ -44,6 +45,10 @@ const MoreScreen = () => {
   const { changeLanguage, language } = useLanguageContext()
   const navigation = useNavigation<MoreNavigationProp & RootNavigationProp>()
   const spacing = useSpacing()
+  const [
+    showingDeploymentModeConfirmation,
+    setShowingDeploymentModeConfirmation,
+  ] = useState(false)
 
   useEffect(() => {
     if (!params?.pinVerifiedFor) return
@@ -201,6 +206,21 @@ const MoreScreen = () => {
       {
         title: t('more.sections.security.revealWords'),
         onPress: handleRevealWords,
+        disabled: app.isDeploymentModeEnabled,
+      },
+      {
+        title: t('more.sections.security.deploymentMode.enableButton'),
+        value: app.isDeploymentModeEnabled,
+        onToggle: () => {
+          setShowingDeploymentModeConfirmation(true)
+        },
+        renderModal: () =>
+          showingDeploymentModeConfirmation && (
+            <DeploymentModeModal
+              onClose={() => setShowingDeploymentModeConfirmation(false)}
+            />
+          ),
+        disabled: app.isDeploymentModeEnabled,
       },
     ]
     return [
@@ -272,6 +292,9 @@ const MoreScreen = () => {
     app.convertHntToCurrency,
     app.authInterval,
     app.isPinRequiredForPayment,
+    app.isDeploymentModeEnabled,
+    showingDeploymentModeConfirmation,
+    setShowingDeploymentModeConfirmation,
     handleRevealWords,
     language,
     handleLanguageChange,
@@ -326,6 +349,7 @@ const MoreScreen = () => {
         )}
         renderSectionFooter={({ section: { footer } }) => footer}
       />
+      {showingDeploymentModeConfirmation && <DeploymentModeModal />}
     </SafeAreaBox>
   )
 }

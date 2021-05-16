@@ -19,13 +19,25 @@ export type MoreListItemType = {
   destructive?: boolean
   onPress?: () => void
   onToggle?: (value: boolean) => void
+  renderModal?: () => void
   value?: boolean | string | number
   select?: SelectProps
   openUrl?: string
+  disabled?: boolean
 }
 
 const MoreListItem = ({
-  item: { title, value, destructive, onToggle, onPress, select, openUrl },
+  item: {
+    title,
+    value,
+    destructive,
+    onToggle,
+    onPress,
+    renderModal,
+    select,
+    openUrl,
+    disabled,
+  },
   isTop = false,
   isBottom = false,
 }: {
@@ -60,6 +72,11 @@ const MoreListItem = ({
     [],
   )
 
+  let textColor = 'primaryText'
+  if (destructive && !disabled) textColor = 'redMain'
+  if (destructive && disabled) textColor = 'redMedium'
+  if (!destructive && disabled) textColor = 'disabled'
+
   return (
     <TouchableOpacityBox
       flexDirection="row"
@@ -70,13 +87,14 @@ const MoreListItem = ({
       paddingHorizontal="ms"
       marginBottom="xxxs"
       onPress={handlePress}
-      disabled={!(onPress || openUrl)}
+      disabled={disabled || !(onPress || openUrl)}
       borderTopLeftRadius={isTop ? 'm' : 'none'}
       borderTopRightRadius={isTop ? 'm' : 'none'}
       borderBottomLeftRadius={isBottom ? 'm' : 'none'}
       borderBottomRightRadius={isBottom ? 'm' : 'none'}
     >
-      <Text variant="body2" color={destructive ? 'redMain' : 'primaryText'}>
+      {renderModal && renderModal()}
+      <Text variant="body2" color={textColor}>
         {title}
       </Text>
       {!onToggle && !select && onPress && (
@@ -89,6 +107,7 @@ const MoreListItem = ({
           onValueChange={onToggle}
           trackColor={trackColor}
           thumbColor={colors.white}
+          disabled={disabled}
         />
       )}
       {select && (
