@@ -97,7 +97,7 @@ const WalletScreen = () => {
     ) {
       setActivityViewState('no_activity')
     }
-  }, [filter, activityViewState, txns])
+  }, [filter, activityViewState, txns, visible])
 
   useEffect(() => {
     const nextShowSkeleton =
@@ -105,7 +105,7 @@ const WalletScreen = () => {
 
     if (nextShowSkeleton !== showSkeleton) {
       if (visible) {
-        animateTransition('WalletScreen.ShowSkeleton')
+        animateTransition('WalletScreen.ShowSkeleton', false)
       }
       setShowSkeleton(nextShowSkeleton)
     }
