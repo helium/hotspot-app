@@ -10,11 +10,12 @@ import HeliumNotification from '../../assets/images/heliumNotification.svg'
 import Text from '../../components/Text'
 import CloseModal from '../../assets/images/closeModal.svg'
 import BlurBox from '../../components/BlurBox'
-import { Notification } from '../../store/account/accountSlice'
 import TouchableOpacityBox from '../../components/TouchableOpacityBox'
 import { useSpacing } from '../../theme/themeHooks'
 import parseMarkup from '../../utils/parseMarkup'
 import Button from '../../components/Button'
+import { Notification } from '../../store/notifications/notificationSlice'
+import { RootNavigationProp } from '../../navigation/main/tabTypes'
 
 type Props = {
   notification: Notification | null
@@ -24,7 +25,7 @@ const NotificationShow = ({ notification, onClose }: Props) => {
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const spacing = useSpacing()
-  const navigation = useNavigation()
+  const navigation = useNavigation<RootNavigationProp>()
 
   const { body, title, time, footer, share_text: shareText } = notification || {
     body: '',
@@ -37,9 +38,10 @@ const NotificationShow = ({ notification, onClose }: Props) => {
 
   const onViewTransferRequest = () => {
     onClose()
-    navigation.navigate('Transfer', {
-      hotspot: { address: notification?.hotspot_address },
+    navigation.navigate('SendStack', {
+      hotspotAddress: notification?.hotspot_address || undefined,
       isSeller: false,
+      type: 'transfer',
     })
   }
 

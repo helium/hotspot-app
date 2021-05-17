@@ -10,7 +10,6 @@ import Balance, {
 import { Address } from '@helium/crypto-react-native'
 import { useAsync } from 'react-async-hook'
 import { useSelector } from 'react-redux'
-import { Hotspot } from '@helium/http'
 import { TransferHotspotV1 } from '@helium/transactions'
 import { RootState } from '../../../store/rootReducer'
 import Box from '../../../components/Box'
@@ -61,7 +60,7 @@ import { MainTabNavigationProp } from '../../../navigation/main/tabTypes'
 type Props = {
   scanResult?: AppLink
   sendType?: AppLinkCategoryType
-  hotspot?: Hotspot
+  hotspotAddress?: string
   isSeller?: boolean
   canSubmit?: boolean
 }
@@ -69,7 +68,7 @@ type Props = {
 const SendView = ({
   scanResult,
   sendType,
-  hotspot,
+  hotspotAddress,
   isSeller,
   canSubmit = true,
 }: Props) => {
@@ -119,23 +118,23 @@ const SendView = ({
   const [stalePocBlockCount, setStalePocBlockCount] = useState<number>()
 
   useAsync(async () => {
-    if (type === 'transfer' && hotspot?.address && blockHeight) {
+    if (type === 'transfer' && hotspotAddress && blockHeight) {
       const chainVars = await getChainVars()
       const staleBlockCount = chainVars.transferHotspotStalePocBlocks as number
       const reportedActivity = await getHotspotsLastChallengeActivity(
-        hotspot.address,
+        hotspotAddress,
       )
       const lastActiveBlock = reportedActivity.block || 0
       setLastReportedActivity(reportedActivity.text)
       setHasValidActivity(blockHeight - lastActiveBlock < staleBlockCount)
       setStalePocBlockCount(staleBlockCount)
     }
-  }, [hotspot?.address, blockHeight, type])
+  }, [hotspotAddress, blockHeight, type])
 
   // load transfer data
   useEffect(() => {
     const fetchTransfer = async () => {
-      if (!hotspot) {
+      if (!hotspotAddress) {
         Alert.alert(
           t('transfer.canceled_alert_title'),
           t('transfer.canceled_alert_body'),
@@ -143,7 +142,7 @@ const SendView = ({
         return
       }
       try {
-        const transfer = await getTransfer(hotspot.address)
+        const transfer = await getTransfer(hotspotAddress)
         setTransferData(transfer)
       } catch (e) {
         Alert.alert(
@@ -347,11 +346,11 @@ const SendView = ({
 
   const handleSellerTransfer = useCallback(async () => {
     const seller = await getAddress()
-    if (!hotspot || !seller) {
+    if (!hotspotAddress || !seller) {
       throw new Error('missing hotspot or seller for transfer')
     }
     const partialTxn = await makeSellerTransferHotspotTxn(
-      hotspot.address,
+      hotspotAddress,
       address,
       seller,
       balanceAmount.integerBalance,
@@ -361,7 +360,7 @@ const SendView = ({
       throw new Error('failed to create seller TransferHotspotV1 transaction')
     }
     const transfer = createTransfer(
-      hotspot.address,
+      hotspotAddress,
       seller?.b58,
       address,
       partialTxn.toString(),
@@ -375,7 +374,7 @@ const SendView = ({
       throw new Error('transfer already exists')
     }
     return undefined
-  }, [address, balanceAmount.integerBalance, hotspot, t])
+  }, [address, balanceAmount.integerBalance, hotspotAddress, t])
 
   const checkTransferAmountChanged = useCallback(
     (transfer: Transfer) => {
@@ -401,11 +400,11 @@ const SendView = ({
   )
 
   const handleBuyerTransfer = useCallback(async (): Promise<TransferHotspotV1> => {
-    if (!hotspot) {
+    if (!hotspotAddress) {
       throw new Error('missing hotspot for buyer transfer')
     }
     try {
-      const transfer = await getTransfer(hotspot.address)
+      const transfer = await getTransfer(hotspotAddress)
       if (!transfer) {
         throw new Error('transfer no longer active')
       }
@@ -425,7 +424,7 @@ const SendView = ({
         throw new Error('transfer nonce invalid')
       }
       const txn = await makeBuyerTransferHotspotTxn(transferHotspotTxn)
-      const deleteResponse = await deleteTransfer(hotspot.address, true)
+      const deleteResponse = await deleteTransfer(hotspotAddress, true)
       if (!deleteResponse) {
         Alert.alert(
           t('transfer.incomplete_alert_title'),
@@ -447,7 +446,7 @@ const SendView = ({
       }
       throw error
     }
-  }, [checkTransferAmountChanged, hotspot, t])
+  }, [checkTransferAmountChanged, hotspotAddress, t])
 
   const constructTxn = useCallback(async () => {
     if (type === 'payment') {
@@ -559,7 +558,9 @@ const SendView = ({
       {type === 'dc_burn' && (
         <SendAmountAvailableBanner amount={account?.balance} />
       )}
-      {type === 'transfer' && <TransferBanner hotspot={hotspot} />}
+      {type === 'transfer' && (
+        <TransferBanner hotspotAddress={hotspotAddress} />
+      )}
       <Box flex={3} backgroundColor="white" paddingHorizontal="l">
         <SendForm
           isSeller={isSeller}

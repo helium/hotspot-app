@@ -1,7 +1,6 @@
 import { StackNavigationProp } from '@react-navigation/stack'
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
-import { Hotspot } from '@helium/http'
-import { AppLink, AppLinkCategoryType } from '../../providers/appLinkTypes'
+import { SendRouteType } from '../../features/wallet/send/sendTypes'
 
 export type MainTabType = 'Hotspots' | 'Wallet' | 'Notifications' | 'More'
 
@@ -28,15 +27,7 @@ export type RootStackParamList = {
   }
   HotspotSetup: undefined
   ScanStack: undefined
-  SendStack:
-    | undefined
-    | {
-        scanResult?: AppLink
-        type?: AppLinkCategoryType
-        hotspot?: Hotspot
-        isSeller?: boolean
-        pinVerified?: 'fail' | 'pass'
-      }
+  SendStack: undefined | SendRouteType
 }
 
 export type RootNavigationProp = StackNavigationProp<RootStackParamList>
