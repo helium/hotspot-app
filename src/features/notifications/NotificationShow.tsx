@@ -10,11 +10,11 @@ import HeliumNotification from '../../assets/images/heliumNotification.svg'
 import Text from '../../components/Text'
 import CloseModal from '../../assets/images/closeModal.svg'
 import BlurBox from '../../components/BlurBox'
-import { Notification } from '../../store/account/accountSlice'
 import TouchableOpacityBox from '../../components/TouchableOpacityBox'
 import { useSpacing } from '../../theme/themeHooks'
 import parseMarkup from '../../utils/parseMarkup'
 import Button from '../../components/Button'
+import { Notification } from '../../store/notifications/notificationSlice'
 
 type Props = {
   notification: Notification | null
@@ -37,9 +37,10 @@ const NotificationShow = ({ notification, onClose }: Props) => {
 
   const onViewTransferRequest = () => {
     onClose()
-    navigation.navigate('Transfer', {
+    navigation.navigate('SendStack', {
       hotspot: { address: notification?.hotspot_address },
       isSeller: false,
+      type: 'transfer',
     })
   }
 
