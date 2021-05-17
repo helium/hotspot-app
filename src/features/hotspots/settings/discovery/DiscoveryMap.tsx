@@ -15,7 +15,7 @@ import MapboxGL, {
   Expression,
 } from '@react-native-mapbox-gl/maps'
 import { BoxProps } from '@shopify/restyle'
-import { Animated, Easing, StyleProp } from 'react-native'
+import { Platform, StyleProp } from 'react-native'
 import { omit } from 'lodash'
 import { Theme } from '../../../../theme/theme'
 import Box from '../../../../components/Box'
@@ -23,7 +23,7 @@ import { DiscoveryResponse } from '../../../../store/discovery/discoveryTypes'
 import { findBounds, hotspotsToFeatures } from '../../../../utils/mapUtils'
 import { useColors } from '../../../../theme/themeHooks'
 import { NetworkHotspot } from '../../../../store/networkHotspots/networkHotspotsSlice'
-import usePrevious from '../../../../utils/usePrevious'
+import useVisible from '../../../../utils/useVisible'
 
 const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
 
@@ -39,64 +39,28 @@ type Props = BoxProps<Theme> & {
   onSelect: ({ lat, lng, name }: MapSelectDetail) => void
   networkHotspots: Record<string, NetworkHotspot>
   selectedHotspot?: MapSelectDetail
-  isPolling: boolean
 }
-export const ANIM_LOOP_LENGTH_MS = 3000
+const isAndroid = Platform.OS === 'android'
+
 const DiscoveryMap = ({
   hotspotAddress,
   responses,
   onSelect,
   networkHotspots,
   selectedHotspot,
-  isPolling,
   ...props
 }: Props) => {
-  const opacityAnim = useRef(new Animated.Value(0))
-  const sizeAnim = useRef(new Animated.Value(0))
-  const innerAnim = useRef(new Animated.Value(25))
   const cameraRef = useRef<MapboxGL.Camera>(null)
   const mapRef = useRef<MapboxGL.MapView>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
-  const prevMapLoaded = usePrevious(mapLoaded)
-  const anim = useRef(
-    Animated.loop(
-      Animated.sequence([
-        Animated.parallel([
-          Animated.timing(opacityAnim.current, {
-            toValue: 0.15,
-            duration: ANIM_LOOP_LENGTH_MS / 2,
-            useNativeDriver: false,
-            easing: Easing.linear,
-          }),
-          Animated.timing(sizeAnim.current, {
-            toValue: 55,
-            duration: ANIM_LOOP_LENGTH_MS / 2,
-            useNativeDriver: false,
-          }),
-          Animated.timing(innerAnim.current, {
-            toValue: 35,
-            duration: ANIM_LOOP_LENGTH_MS / 2,
-            useNativeDriver: false,
-          }),
-        ]),
-        Animated.timing(opacityAnim.current, {
-          toValue: 0,
-          duration: ANIM_LOOP_LENGTH_MS / 2,
-          useNativeDriver: false,
-          easing: Easing.linear,
-        }),
-      ]),
-    ),
-  )
-  const { purpleMuted, purpleMain } = useColors()
+  const visible = useVisible({
+    onDisappear: () => {
+      if (!isAndroid) return
 
-  useEffect(() => {
-    if (isPolling && !prevMapLoaded && mapLoaded) {
-      anim.current.start()
-    } else if (!isPolling && mapLoaded) {
-      anim.current.reset()
-    }
-  }, [isPolling, mapLoaded, prevMapLoaded])
+      setMapLoaded(false)
+    },
+  })
+  const { purpleMuted, purpleMain } = useColors()
 
   const styles = useMemo(() => makeStyles({ purpleMuted, purpleMain }), [
     purpleMuted,
@@ -143,7 +107,7 @@ const DiscoveryMap = ({
   }, [])
 
   useEffect(() => {
-    if (!mapLoaded) return
+    if (!mapLoaded || !visible) return
 
     if (responses.length === 0) {
       cameraRef.current?.setCamera({ zoomLevel: 1 })
@@ -159,7 +123,7 @@ const DiscoveryMap = ({
         bounds,
       })
     }
-  }, [mapLoaded, responses])
+  }, [mapLoaded, responses, visible])
 
   const onShapeSourcePress = useCallback(
     (event: OnPressEvent) => {
@@ -187,54 +151,56 @@ const DiscoveryMap = ({
 
   return (
     <Box {...props}>
-      <MapboxGL.MapView
-        ref={mapRef}
-        style={styles.map}
-        styleURL={styleURL}
-        logoEnabled={false}
-        compassEnabled={false}
-        onDidFinishLoadingMap={setupMap}
-      >
-        <MapboxGL.Camera ref={cameraRef} maxZoomLevel={12} />
+      {(visible || !isAndroid) && (
+        <MapboxGL.MapView
+          ref={mapRef}
+          style={styles.map}
+          styleURL={styleURL}
+          logoEnabled={false}
+          compassEnabled={false}
+          onDidFinishLoadingMap={setupMap}
+        >
+          <MapboxGL.Camera ref={cameraRef} maxZoomLevel={12} />
 
-        {shapeSources.nearbyHotspotMarker && (
-          <MapboxGL.ShapeSource
-            id="nearbyHotspots"
-            shape={shapeSources.nearbyHotspotMarker}
-            onPress={onShapeSourcePress}
-          >
-            <MapboxGL.CircleLayer
-              id="selectedNearbyLayer"
-              style={styles.selectedHotspot}
-              filter={nearbyCircleFilter}
-            />
-            <MapboxGL.CircleLayer
-              id="nearbyHotspotMarker"
-              aboveLayerID="selectedNearbyLayer"
-              style={styles.nearbyHotspotMarker}
-            />
-          </MapboxGL.ShapeSource>
-        )}
+          {shapeSources.nearbyHotspotMarker && (
+            <MapboxGL.ShapeSource
+              id="nearbyHotspots"
+              shape={shapeSources.nearbyHotspotMarker}
+              onPress={onShapeSourcePress}
+            >
+              <MapboxGL.CircleLayer
+                id="selectedNearbyLayer"
+                style={styles.selectedHotspot}
+                filter={nearbyCircleFilter}
+              />
+              <MapboxGL.CircleLayer
+                id="nearbyHotspotMarker"
+                aboveLayerID="selectedNearbyLayer"
+                style={styles.nearbyHotspotMarker}
+              />
+            </MapboxGL.ShapeSource>
+          )}
 
-        {shapeSources.responses && (
-          <MapboxGL.ShapeSource
-            id="responses"
-            shape={shapeSources.responses}
-            onPress={onShapeSourcePress}
-          >
-            <MapboxGL.CircleLayer
-              id="selectedResponseLayer"
-              style={styles.selectedHotspot}
-              filter={responsesCircleFilter}
-            />
-            <MapboxGL.CircleLayer
-              id="hotspotResponses"
-              aboveLayerID="selectedResponseLayer"
-              style={styles.responses}
-            />
-          </MapboxGL.ShapeSource>
-        )}
-      </MapboxGL.MapView>
+          {shapeSources.responses && (
+            <MapboxGL.ShapeSource
+              id="responses"
+              shape={shapeSources.responses}
+              onPress={onShapeSourcePress}
+            >
+              <MapboxGL.CircleLayer
+                id="selectedResponseLayer"
+                style={styles.selectedHotspot}
+                filter={responsesCircleFilter}
+              />
+              <MapboxGL.CircleLayer
+                id="hotspotResponses"
+                aboveLayerID="selectedResponseLayer"
+                style={styles.responses}
+              />
+            </MapboxGL.ShapeSource>
+          )}
+        </MapboxGL.MapView>
+      )}
     </Box>
   )
 }
