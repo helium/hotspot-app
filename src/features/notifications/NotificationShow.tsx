@@ -15,6 +15,7 @@ import { useSpacing } from '../../theme/themeHooks'
 import parseMarkup from '../../utils/parseMarkup'
 import Button from '../../components/Button'
 import { Notification } from '../../store/notifications/notificationSlice'
+import { RootNavigationProp } from '../../navigation/main/tabTypes'
 
 type Props = {
   notification: Notification | null
@@ -24,7 +25,7 @@ const NotificationShow = ({ notification, onClose }: Props) => {
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const spacing = useSpacing()
-  const navigation = useNavigation()
+  const navigation = useNavigation<RootNavigationProp>()
 
   const { body, title, time, footer, share_text: shareText } = notification || {
     body: '',
@@ -38,7 +39,7 @@ const NotificationShow = ({ notification, onClose }: Props) => {
   const onViewTransferRequest = () => {
     onClose()
     navigation.navigate('SendStack', {
-      hotspot: { address: notification?.hotspot_address },
+      hotspotAddress: notification?.hotspot_address || undefined,
       isSeller: false,
       type: 'transfer',
     })
