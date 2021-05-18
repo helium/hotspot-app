@@ -488,7 +488,6 @@ const HotspotsView = ({
             onFeatureSelected={onMapHotspotSelected}
             interactive={hotspotHasLocation}
             showNoLocation={!hotspotHasLocation}
-            showNearbyHotspots
           />
         )}
         <HotspotsViewHeader

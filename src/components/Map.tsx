@@ -28,7 +28,6 @@ import { BoxProps } from '@shopify/restyle'
 import { StyleProp, ViewStyle } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { isEqual } from 'lodash'
-import { h3ToGeo } from 'h3-js'
 import geojson2h3 from 'geojson2h3'
 import Box from './Box'
 import Text from './Text'
@@ -40,6 +39,7 @@ import { useColors } from '../theme/themeHooks'
 import { useAppDispatch } from '../store/store'
 import { RootState } from '../store/rootReducer'
 import { fetchNetworkHotspots } from '../store/networkHotspots/networkHotspotsSlice'
+import { getH3Location } from '../utils/h3Utils'
 
 const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
 
@@ -63,6 +63,7 @@ type Props = BoxProps<Theme> & {
   showUserLocation?: boolean
   showNoLocation?: boolean
   showNearbyHotspots?: boolean
+  showOwnedHotspots?: boolean
 }
 const Map = ({
   onMapMoved,
@@ -83,6 +84,7 @@ const Map = ({
   onFeatureSelected = () => {},
   showNoLocation,
   showNearbyHotspots = false,
+  showOwnedHotspots = false,
   ...props
 }: Props) => {
   const dispatch = useAppDispatch()
@@ -92,7 +94,7 @@ const Map = ({
   const camera = useRef<MapboxGL.Camera>(null)
   const [loaded, setLoaded] = useState(false)
   const [userCoords, setUserCoords] = useState({ latitude: 0, longitude: 0 })
-  const [h3Features, setH3Features] = useState<FeatureCollection>()
+  const [h3GridFeatures, setH3GridFeatures] = useState<FeatureCollection>()
   const styles = useMemo(() => makeStyles(colors), [colors])
 
   const networkHotspots = useSelector(
@@ -109,6 +111,40 @@ const Map = ({
     }
   }, [loaded, dispatch])
 
+  const getH3GridFeatures = useMemo(
+    () => (bounds: Position[] | undefined): FeatureCollection => {
+      if (!bounds) return {} as FeatureCollection
+      const bbox = {
+        sw: {
+          lng: bounds[0][0],
+          lat: bounds[0][1],
+        },
+        ne: {
+          lng: bounds[1][0],
+          lat: bounds[1][1],
+        },
+      }
+      const bboxFeature = {
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [bbox.sw.lng, bbox.sw.lat],
+              [bbox.sw.lng, bbox.ne.lat],
+              [bbox.ne.lng, bbox.ne.lat],
+              [bbox.ne.lng, bbox.sw.lat],
+              [bbox.sw.lng, bbox.sw.lat],
+            ],
+          ],
+        },
+      } as Feature
+      const hexagons = geojson2h3.featureToH3Set(bboxFeature, 8)
+      return geojson2h3.h3SetToFeatureCollection(hexagons)
+    },
+    [],
+  )
+
   const onRegionDidChange = useCallback(async () => {
     if (onMapMoved) {
       const center = await map.current?.getCenter()
@@ -121,9 +157,9 @@ const Map = ({
       }
     }
     const currentBounds = await map.current?.getVisibleBounds()
-    const [hexFeatures] = getFeatures(currentBounds)
-    setH3Features(hexFeatures)
-  }, [dispatch, onMapMoved, showNearbyHotspots])
+    const features = getH3GridFeatures(currentBounds)
+    setH3GridFeatures(features)
+  }, [dispatch, getH3GridFeatures, onMapMoved, showNearbyHotspots])
 
   const centerUserLocation = useCallback(() => {
     camera.current?.setCamera({
@@ -157,64 +193,16 @@ const Map = ({
     })
   }, [showUserLocation, userCoords, zoomLevel])
 
-  const getFeatures = (bounds: Position[] | undefined): FeatureCollection[] => {
-    if (!bounds) return [{} as FeatureCollection, {} as FeatureCollection]
-    const bbox = {
-      sw: {
-        lng: bounds[0][0],
-        lat: bounds[0][1],
-      },
-      ne: {
-        lng: bounds[1][0],
-        lat: bounds[1][1],
-      },
-    }
-    const bboxFeature = {
-      type: 'Feature',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [bbox.sw.lng, bbox.sw.lat],
-            [bbox.sw.lng, bbox.ne.lat],
-            [bbox.ne.lng, bbox.ne.lat],
-            [bbox.ne.lng, bbox.sw.lat],
-            [bbox.sw.lng, bbox.sw.lat],
-          ],
-        ],
-      },
-    } as Feature
-
-    const hexagons = geojson2h3.featureToH3Set(bboxFeature, 8)
-
-    const hexPolygon = geojson2h3.h3SetToFeatureCollection(hexagons)
-    const points = {
-      type: 'FeatureCollection',
-      features: hexagons.map((hex) => ({
-        type: 'Feature',
-        properties: {
-          hex,
-        },
-        geometry: {
-          type: 'Point',
-          coordinates: h3ToGeo(hex).reverse(),
-        },
-      })),
-    } as FeatureCollection
-
-    return [hexPolygon, points]
-  }
-
   const onDidFinishLoad = useCallback(() => {
     setLoaded(true)
 
-    const loadHexagons = async () => {
+    const loadH3Grid = async () => {
       const currentBounds = await map.current?.getVisibleBounds()
-      const [hexFeatures] = getFeatures(currentBounds)
-      setH3Features(hexFeatures)
+      const features = getH3GridFeatures(currentBounds)
+      setH3GridFeatures(features)
     }
-    loadHexagons()
-  }, [])
+    loadH3Grid()
+  }, [getH3GridFeatures])
 
   const onShapeSourcePress = useCallback(
     (event: OnPressEvent) => {
@@ -234,8 +222,8 @@ const Map = ({
   }, [userCoords, loaded])
 
   const ownedHotspotFeatures = useMemo(
-    () => hotspotsToFeatures(ownedHotspots),
-    [ownedHotspots],
+    () => (showOwnedHotspots ? hotspotsToFeatures(ownedHotspots) : []),
+    [showOwnedHotspots, ownedHotspots],
   )
 
   const selectedHotspotFeatures = useMemo(
@@ -246,6 +234,13 @@ const Map = ({
   const witnessFeatures = useMemo(() => hotspotsToFeatures(witnesses), [
     witnesses,
   ])
+
+  const ownedRes8HexFeatures = useMemo(() => {
+    const ownedHexes = ownedHotspots?.map((h) =>
+      getH3Location(h.lat || 0, h.lng || 0, 8),
+    )
+    return geojson2h3.h3SetToFeatureCollection(ownedHexes)
+  }, [ownedHotspots])
 
   const networkHotspotFeatures = useMemo(
     () =>
@@ -368,12 +363,30 @@ const Map = ({
           animationDuration={animationDuration}
         />
         <MapboxGL.Images images={mapImages} />
-        {h3Features && (
-          <MapboxGL.ShapeSource id="hexagons" shape={h3Features}>
+        {h3GridFeatures && (
+          <MapboxGL.ShapeSource id="hexagons" shape={h3GridFeatures}>
             <MapboxGL.LineLayer id="hexagonLine" style={styles.hexagon} />
-            <MapboxGL.FillLayer id="hexagonFill" style={styles.hexagonFill} />
           </MapboxGL.ShapeSource>
         )}
+        {ownedRes8HexFeatures && (
+          <MapboxGL.ShapeSource id="ownedHexagons" shape={ownedRes8HexFeatures}>
+            <MapboxGL.FillLayer
+              id="ownedHexagonFill"
+              style={styles.ownedHexagonFill}
+            />
+          </MapboxGL.ShapeSource>
+        )}
+        <MapboxGL.VectorSource
+          id="tileServer"
+          url="https://helium-hotspots.s3-us-west-2.amazonaws.com/public.h3_res8.json"
+        >
+          <MapboxGL.FillLayer
+            id="hexagonFill"
+            sourceID="tileServer"
+            sourceLayerID="public.h3_res8"
+            style={styles.hexagonFill}
+          />
+        </MapboxGL.VectorSource>
         <MapboxGL.ShapeSource
           id="networkHotspots"
           shape={shapeSources.networkHotspotFeatures}
@@ -447,12 +460,17 @@ const makeStyles = (colors: typeof theme.colors) => ({
     circleRadius: 6,
   } as StyleProp<CircleLayerStyle>,
   hexagon: {
-    lineWidth: 3,
+    lineWidth: 1,
     lineColor: '#1C1E3B',
   } as StyleProp<LineLayerStyle>,
   hexagonFill: {
-    fillOpacity: 0.4,
+    fillOpacity: 0.6,
     fillColor: '#4F5293',
+    fillOutlineColor: '#1C1E3B',
+  } as StyleProp<FillLayerStyle>,
+  ownedHexagonFill: {
+    fillOpacity: 0.6,
+    fillColor: '#1D91F8',
     fillOutlineColor: '#1C1E3B',
   } as StyleProp<FillLayerStyle>,
 })
