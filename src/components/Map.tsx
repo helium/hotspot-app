@@ -181,10 +181,18 @@ const Map = ({
     return findBounds(boundsLocations)
   }, [mapCenter, selectedHex, selectedHotspot, witnesses])
 
-  const defaultCameraSettings = {
-    zoomLevel,
-    centerCoordinate: mapCenter,
-  }
+  const defaultCameraSettings = useMemo(
+    () => ({
+      zoomLevel,
+      centerCoordinate: mapCenter,
+    }),
+    [mapCenter, zoomLevel],
+  )
+
+  const selectedHotspots = useMemo(() => {
+    if (!selectedHotspot) return []
+    return [selectedHotspot]
+  }, [selectedHotspot])
 
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
@@ -258,15 +266,14 @@ const Map = ({
           fill
           fillColor={colors.yellow}
         />
-        {selectedHotspot && (
-          <HotspotsCoverage
-            id="selected"
-            hotspots={[selectedHotspot]}
-            outline
-            outlineColor={colors.white}
-            outlineWidth={2}
-          />
-        )}
+
+        <HotspotsCoverage
+          id="selected"
+          hotspots={selectedHotspots}
+          outline
+          outlineColor={colors.white}
+          outlineWidth={2}
+        />
       </MapboxGL.MapView>
       {currentLocationEnabled && (
         <CurrentLocationButton onPress={centerUserLocation} />

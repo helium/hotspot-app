@@ -1,25 +1,29 @@
 import MapboxGL, {
+  Expression,
   FillLayerStyle,
   LineLayerStyle,
   OnPressEvent,
 } from '@react-native-mapbox-gl/maps'
 import React, { memo, useCallback, useMemo } from 'react'
 import { StyleProp } from 'react-native'
-import { h3ToParent } from 'h3-js'
+import { h3ToParent, H3Index } from 'h3-js'
 import geojson2h3 from 'geojson2h3'
 import { Hotspot } from '@helium/http'
+import { DiscoveryResponse } from '../store/discovery/discoveryTypes'
 
+type CoverageItem = DiscoveryResponse | Hotspot
 type Props = {
   id: string
-  hotspots: Hotspot[]
+  hotspots?: CoverageItem[]
   fillColor?: string
   outlineColor?: string
   opacity?: number
-  onHotspotSelected?: (hotspot: Hotspot) => void
+  onHexSelected?: (id: string) => void
   visible?: boolean
   outlineWidth?: number
   fill?: boolean
   outline?: boolean
+  selectedHexId?: string
 }
 
 const HotspotsCoverage = ({
@@ -29,10 +33,11 @@ const HotspotsCoverage = ({
   outlineColor = '#1C1E3B',
   outlineWidth = 1,
   opacity = 0.6,
-  onHotspotSelected = () => {},
+  onHexSelected = () => {},
   visible = true,
   fill = false,
   outline = false,
+  selectedHexId,
 }: Props) => {
   const styles = useMemo(
     () => makeStyles(fillColor, outlineColor, opacity, outlineWidth),
@@ -41,20 +46,34 @@ const HotspotsCoverage = ({
 
   const onPress = useCallback(
     (event: OnPressEvent) => {
-      const { properties } = event.features[0]
-      if (properties) {
-        onHotspotSelected(properties as Hotspot)
-      }
+      if (!event.features.length || !event.features[0].id) return
+      onHexSelected(event.features[0].id as string)
     },
-    [onHotspotSelected],
+    [onHexSelected],
   )
 
   const features = useMemo(() => {
-    const ownedHexes = hotspots?.map((h) => h3ToParent(h.location || '', 8))
-    return geojson2h3.h3SetToFeatureCollection(ownedHexes)
+    const ownedHexes = (hotspots || [])
+      .map((h) => {
+        if (!h.location) return null
+        return h3ToParent(h.location, 8)
+      })
+      .filter((h) => h !== null) as H3Index[]
+    const retVal = geojson2h3.h3SetToFeatureCollection(
+      ownedHexes,
+      (h3Index) => ({
+        h3Index,
+      }),
+    )
+    return retVal
   }, [hotspots])
 
-  if (!visible) {
+  const outlineFilter = useMemo(
+    () => ['==', 'h3Index', selectedHexId || ''] as Expression,
+    [selectedHexId],
+  )
+
+  if (!visible || hotspots?.length === 0) {
     return null
   }
 
@@ -65,7 +84,13 @@ const HotspotsCoverage = ({
       onPress={onPress}
     >
       {fill && <MapboxGL.FillLayer id={`${id}Fill`} style={styles.fill} />}
-      {outline && <MapboxGL.LineLayer id={`${id}Line`} style={styles.line} />}
+      {outline && (
+        <MapboxGL.LineLayer
+          id={`${id}Line`}
+          style={styles.line}
+          filter={outlineFilter}
+        />
+      )}
     </MapboxGL.ShapeSource>
   )
 }

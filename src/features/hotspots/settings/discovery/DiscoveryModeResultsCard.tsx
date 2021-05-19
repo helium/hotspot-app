@@ -1,23 +1,18 @@
-import React, { memo, useCallback, useMemo, useState } from 'react'
+import React, { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Platform } from 'react-native'
 import { addSeconds } from 'date-fns'
+import { Hotspot } from '@helium/http'
 import Box from '../../../../components/Box'
 import Button from '../../../../components/Button'
 import Card from '../../../../components/Card'
-import { MapSelectDetail } from './DiscoveryMap'
 import Text from '../../../../components/Text'
 import { DiscoveryRequest } from '../../../../store/discovery/discoveryTypes'
 import animateTransition from '../../../../utils/animateTransition'
 import DiscoveryModeSearching from './DiscoveryModeSearching'
-import BlurBox from '../../../../components/BlurBox'
-import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
-import Close from '../../../../assets/images/closeModal.svg'
-import DistancePinIco from '../../../../assets/images/distancePin.svg'
-import RewardScaleIco from '../../../../assets/images/rewardsScale.svg'
 import useShareDiscovery from './useShareDiscovery'
 import DateModule from '../../../../utils/DateModule'
-import FollowButton from '../../../../components/FollowButton'
+import useMount from '../../../../utils/useMount'
+import { prettyPrintToConsole } from '../../../../utils/logger'
 
 type LineItemType = { label: string; value: string }
 const LineItem = ({ label, value }: LineItemType) => (
@@ -34,10 +29,7 @@ const LineItem = ({ label, value }: LineItemType) => (
 type Props = {
   request?: DiscoveryRequest | null
   isPolling: boolean
-  overlayDetails?: {
-    distance: string
-    rewardScale: string
-  } & MapSelectDetail
+  selectedHotspots: Hotspot[]
   hideOverlay: () => void
   numResponses: number
   requestTime: number
@@ -47,7 +39,7 @@ type Props = {
 const DiscoveryModeResultsCard = ({
   request,
   isPolling,
-  overlayDetails,
+  selectedHotspots,
   numResponses,
   hideOverlay,
   requestTime,
@@ -57,7 +49,14 @@ const DiscoveryModeResultsCard = ({
   const { t } = useTranslation()
   const { shareResults } = useShareDiscovery(request)
   const [resultDateStr, setResultDateStr] = useState('')
-  const [newlyAdded, setNewlyAdded] = useState(false)
+
+  useMount(() => {
+    // TODO: Remove
+    prettyPrintToConsole(selectedHotspots)
+    console.log(!!hideOverlay)
+
+    // TODO: Create hotspots carousel and use DiscoveryModeResultsCardItem
+  })
 
   useMemo(async () => {
     if (isPolling || !request) return
@@ -131,18 +130,6 @@ const DiscoveryModeResultsCard = ({
     }
   }, [isPolling])
 
-  const handleFollowChange = useCallback((following) => {
-    if (!following) return
-
-    animateTransition('DiscoveryModeResultsCard.HandleFollowChange')
-    setNewlyAdded(true)
-
-    setTimeout(() => {
-      animateTransition('DiscoveryModeResultsCard.HandleFollowChange.Timeout')
-      setNewlyAdded(false)
-    }, 3000)
-  }, [])
-
   return (
     <Box
       position="absolute"
@@ -152,93 +139,6 @@ const DiscoveryModeResultsCard = ({
       minHeight={210}
       marginHorizontal="ms"
     >
-      {overlayDetails && (
-        <Box alignItems="center">
-          {newlyAdded && (
-            <Box
-              justifyContent="center"
-              backgroundColor="black"
-              borderRadius="round"
-              height={32}
-              marginBottom="ms"
-            >
-              <Text
-                variant="medium"
-                paddingHorizontal="ms"
-                fontSize={14}
-                color="white"
-                textAlign="center"
-              >
-                {t('discovery.results.added_to_followed')}
-              </Text>
-            </Box>
-          )}
-          <Box
-            marginBottom="s"
-            borderRadius="l"
-            overflow="hidden"
-            alignItems="center"
-            flexDirection="row"
-          >
-            <BlurBox
-              top={0}
-              left={0}
-              bottom={0}
-              right={0}
-              blurType={Platform.OS === 'android' ? 'dark' : 'light'}
-              opacity={0.6}
-              position="absolute"
-            />
-            <Box flex={1} marginBottom="m">
-              <Box
-                flex={1}
-                flexDirection="row"
-                alignItems="center"
-                marginBottom="n_m"
-              >
-                <FollowButton
-                  address={overlayDetails.address}
-                  padding="m"
-                  handleChange={handleFollowChange}
-                />
-                <Text variant="medium" fontSize={16} color="white">
-                  {overlayDetails.name}
-                </Text>
-              </Box>
-              <Box
-                flex={1}
-                flexDirection="row"
-                alignItems="center"
-                paddingTop="s"
-                paddingLeft="m"
-              >
-                <RewardScaleIco />
-                <Text
-                  variant="regular"
-                  fontSize={11}
-                  width={48}
-                  color="white"
-                  marginLeft="xs"
-                >
-                  {overlayDetails.rewardScale}
-                </Text>
-                <DistancePinIco />
-                <Text
-                  variant="regular"
-                  fontSize={11}
-                  color="white"
-                  marginLeft="xs"
-                >
-                  {overlayDetails.distance}
-                </Text>
-              </Box>
-            </Box>
-            <TouchableOpacityBox padding="m" onPress={hideOverlay}>
-              <Close height={22} width={22} color="white" opacity={0.6} />
-            </TouchableOpacityBox>
-          </Box>
-        </Box>
-      )}
       {isPolling && <DiscoveryModeSearching />}
       <Card
         style={styles.card}
@@ -268,6 +168,13 @@ const DiscoveryModeResultsCard = ({
             onPress={shareResults}
           />
         )}
+        <Box flexDirection="row">
+          {(selectedHotspots || []).map((h) => (
+            <Text variant="body1" color="black" key={h.address}>
+              {h.name}
+            </Text>
+          ))}
+        </Box>
       </Card>
     </Box>
   )

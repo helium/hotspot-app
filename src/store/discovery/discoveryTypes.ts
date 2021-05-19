@@ -28,4 +28,5 @@ export type DiscoveryResponse = {
   status: string
   lat: number
   long: number
+  location: string
 }

@@ -9,7 +9,7 @@ type Props = {
   res?: number
   color?: string
   width?: number
-  visible: boolean
+  visible?: boolean
 }
 
 const H3Grid = ({
@@ -17,7 +17,7 @@ const H3Grid = ({
   res = 8,
   color = '#1C1E3B',
   width = 1,
-  visible,
+  visible = true,
 }: Props) => {
   const styles = useMemo(() => makeStyles(color, width), [color, width])
 

@@ -1,4 +1,6 @@
+import { Hotspot } from '@helium/http'
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { getHotspotsForHexId } from '../../utils/appDataClient'
 import { makeDiscoverySignature } from '../../utils/secureAccount'
 import { getWallet, postWallet } from '../../utils/walletClient'
 import { Loading } from '../activity/activitySlice'
@@ -12,12 +14,19 @@ export type DiscoveryState = {
   infoLoading: Loading
   selectedRequest?: DiscoveryRequest | null
   requestId?: number | null
+  hotspotsForHexId: Record<string, Hotspot[]>
 }
 
 const initialState: DiscoveryState = {
   infoLoading: 'idle',
   recentDiscoveryInfos: {},
+  hotspotsForHexId: {},
 }
+
+export const fetchHotspotsForHex = createAsyncThunk<
+  Hotspot[],
+  { hexId: string }
+>('discovery/hotspotsForHex', async ({ hexId }) => getHotspotsForHexId(hexId))
 
 export const fetchRecentDiscoveries = createAsyncThunk<
   RecentDiscoveryInfo & { serverDate: string },
@@ -94,6 +103,12 @@ const discoverySlice = createSlice({
     builder.addCase(startDiscovery.fulfilled, (state, { payload }) => {
       state.requestId = payload.id
     })
+    builder.addCase(
+      fetchHotspotsForHex.fulfilled,
+      (state, { meta: { arg }, payload }) => {
+        state.hotspotsForHexId[arg.hexId] = payload
+      },
+    )
   },
 })
 

@@ -44,6 +44,11 @@ export const getHotspots = async () => {
   return newHotspotList.takeJSON(1000)
 }
 
+export const getHotspotsForHexId = async (hexId: string) => {
+  const hotspotsList = await client.hotspots.hex(hexId)
+  return hotspotsList.takeJSON(1000)
+}
+
 export const searchHotspots = async (searchTerm: string) => {
   const address = await getAddress()
   if (!address) return []

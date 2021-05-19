@@ -1249,10 +1249,10 @@
   dependencies:
     bignumber.js "^9.0.0"
 
-"@helium/http@^3.35.0":
-  version "3.35.0"
-  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.35.0.tgz#611dfebef12346fbc6e5f5703be469ab20d1fb69"
-  integrity sha512-Ad5fMiLDWxISPUbbjSPKZzmc+yuZZ3OgQmcjnd9Klhy5hoQNEb1DdIpm9MgjjGvduf9Nbawd1YGpFrZ97m08pA==
+"@helium/http@^3.36.0":
+  version "3.36.0"
+  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.36.0.tgz#be6c735ff8dc501022a9bf691f4a00cc048746bd"
+  integrity sha512-oAGC5BzPUmktimV/rx17gwDvXm7DsjZWePTKuAXRru6SEMtyFiBg14P1Obw36fgTomtHVy+Er4ZEtXS1VkO88w==
   dependencies:
     "@helium/currency" "^3.25.1"
     axios "^0.21.1"

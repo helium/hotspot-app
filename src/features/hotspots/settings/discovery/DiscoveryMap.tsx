@@ -10,49 +10,45 @@ import React, {
 import MapboxGL, {
   CircleLayerStyle,
   LineLayerStyle,
-  OnPressEvent,
   SymbolLayerStyle,
-  Expression,
 } from '@react-native-mapbox-gl/maps'
 import { BoxProps } from '@shopify/restyle'
 import { Platform, StyleProp } from 'react-native'
-import { omit } from 'lodash'
+import { Position } from 'geojson'
+import { Hotspot } from '@helium/http'
 import { Theme } from '../../../../theme/theme'
 import Box from '../../../../components/Box'
 import { DiscoveryResponse } from '../../../../store/discovery/discoveryTypes'
-import { findBounds, hotspotsToFeatures } from '../../../../utils/mapUtils'
+import { findBounds } from '../../../../utils/mapUtils'
 import { useColors } from '../../../../theme/themeHooks'
-import { NetworkHotspot } from '../../../../store/networkHotspots/networkHotspotsSlice'
 import useVisible from '../../../../utils/useVisible'
+import H3Grid from '../../../../components/H3Grid'
+import NetworkCoverage, {
+  HexProperties,
+} from '../../../../components/NetworkCoverage'
+import HotspotsCoverage from '../../../../components/HotspotsCoverage'
 
 const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
 
-export type MapSelectDetail = {
-  lat: number
-  lng: number
-  name: string
-  address: string
-}
 type Props = BoxProps<Theme> & {
-  hotspotAddress: string
   responses: DiscoveryResponse[]
-  onSelect: ({ lat, lng, name }: MapSelectDetail) => void
-  networkHotspots: Record<string, NetworkHotspot>
-  selectedHotspot?: MapSelectDetail
+  onSelectHex: (id: string) => void
+  selectedHotspots: Hotspot[]
+  selectedHexId?: string
 }
 const isAndroid = Platform.OS === 'android'
 
 const DiscoveryMap = ({
-  hotspotAddress,
   responses,
-  onSelect,
-  networkHotspots,
-  selectedHotspot,
+  onSelectHex,
+  selectedHexId,
   ...props
 }: Props) => {
+  const colors = useColors()
   const cameraRef = useRef<MapboxGL.Camera>(null)
   const mapRef = useRef<MapboxGL.MapView>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
+  const [mapBounds, setMapBounds] = useState<Position[]>()
   const visible = useVisible({
     onDisappear: () => {
       if (!isAndroid) return
@@ -60,47 +56,9 @@ const DiscoveryMap = ({
       setMapLoaded(false)
     },
   })
-  const { purpleMuted, purpleMain } = useColors()
+  const { purpleMain } = useColors()
 
-  const styles = useMemo(() => makeStyles({ purpleMuted, purpleMain }), [
-    purpleMuted,
-    purpleMain,
-  ])
-
-  const shapeSources = useMemo(() => {
-    const responseAddresses = responses?.map((r) => r.hotspotAddress) || []
-    const nearbyHotspots = omit(networkHotspots, [
-      hotspotAddress,
-      ...responseAddresses,
-    ])
-
-    const sources = {} as Record<
-      'nearbyHotspotMarker' | 'responses',
-      GeoJSON.FeatureCollection
-    >
-    sources.nearbyHotspotMarker = {
-      type: 'FeatureCollection',
-      features: hotspotsToFeatures(Object.values(nearbyHotspots)),
-    } as GeoJSON.FeatureCollection
-
-    if (responses) {
-      const responseCollection = {
-        type: 'FeatureCollection',
-        features: responses.map((r) => ({
-          type: 'Feature',
-          id: r.hotspotAddress,
-          properties: { ...r },
-          geometry: {
-            type: 'Point',
-            coordinates: [r.long, r.lat],
-          },
-        })),
-      } as GeoJSON.FeatureCollection
-      sources.responses = responseCollection
-    }
-
-    return sources
-  }, [hotspotAddress, networkHotspots, responses])
+  const styles = useMemo(() => makeStyles({ purpleMain }), [purpleMain])
 
   const setupMap = useCallback(async () => {
     setMapLoaded(true)
@@ -125,30 +83,17 @@ const DiscoveryMap = ({
     }
   }, [mapLoaded, responses, visible])
 
-  const onShapeSourcePress = useCallback(
-    (event: OnPressEvent) => {
-      const { properties } = event.features[0]
-      if (properties) {
-        onSelect({
-          name: properties.name,
-          lat: properties.lat,
-          lng: properties.lng || properties.long,
-          address: properties.address || properties.hotspotAddress,
-        })
-      }
+  const onRegionDidChange = useCallback(async () => {
+    const currentBounds = await mapRef.current?.getVisibleBounds()
+    setMapBounds(currentBounds)
+  }, [])
+
+  const handleNetworkHexPress = useCallback(
+    (hexProps: HexProperties) => {
+      onSelectHex(hexProps.id)
     },
-    [onSelect],
+    [onSelectHex],
   )
-
-  const nearbyCircleFilter = useMemo(
-    () => ['==', 'address', selectedHotspot?.address] as Expression,
-    [selectedHotspot?.address],
-  )
-  const responsesCircleFilter = useMemo(
-    () => ['==', 'hotspotAddress', selectedHotspot?.address] as Expression,
-    [selectedHotspot?.address],
-  )
-
   return (
     <Box {...props}>
       {(visible || !isAndroid) && (
@@ -156,49 +101,31 @@ const DiscoveryMap = ({
           ref={mapRef}
           style={styles.map}
           styleURL={styleURL}
+          onRegionDidChange={onRegionDidChange}
           logoEnabled={false}
           compassEnabled={false}
           onDidFinishLoadingMap={setupMap}
         >
           <MapboxGL.Camera ref={cameraRef} maxZoomLevel={12} />
 
-          {shapeSources.nearbyHotspotMarker && (
-            <MapboxGL.ShapeSource
-              id="nearbyHotspots"
-              shape={shapeSources.nearbyHotspotMarker}
-              onPress={onShapeSourcePress}
-            >
-              <MapboxGL.CircleLayer
-                id="selectedNearbyLayer"
-                style={styles.selectedHotspot}
-                filter={nearbyCircleFilter}
-              />
-              <MapboxGL.CircleLayer
-                id="nearbyHotspotMarker"
-                aboveLayerID="selectedNearbyLayer"
-                style={styles.nearbyHotspotMarker}
-              />
-            </MapboxGL.ShapeSource>
-          )}
-
-          {shapeSources.responses && (
-            <MapboxGL.ShapeSource
-              id="responses"
-              shape={shapeSources.responses}
-              onPress={onShapeSourcePress}
-            >
-              <MapboxGL.CircleLayer
-                id="selectedResponseLayer"
-                style={styles.selectedHotspot}
-                filter={responsesCircleFilter}
-              />
-              <MapboxGL.CircleLayer
-                id="hotspotResponses"
-                aboveLayerID="selectedResponseLayer"
-                style={styles.responses}
-              />
-            </MapboxGL.ShapeSource>
-          )}
+          <H3Grid bounds={mapBounds} />
+          <NetworkCoverage
+            onHexSelected={handleNetworkHexPress}
+            selectedHexId={selectedHexId}
+            outlineColor={colors.white}
+            outlineWidth={2}
+          />
+          <HotspotsCoverage
+            id="responders"
+            hotspots={responses}
+            fill
+            onHexSelected={onSelectHex}
+            fillColor={colors.yellow}
+            selectedHexId={selectedHexId}
+            outline
+            outlineColor={colors.white}
+            outlineWidth={2}
+          />
         </MapboxGL.MapView>
       )}
     </Box>
@@ -207,13 +134,7 @@ const DiscoveryMap = ({
 
 export default memo(DiscoveryMap)
 
-const makeStyles = ({
-  purpleMuted,
-  purpleMain,
-}: {
-  purpleMuted: string
-  purpleMain: string
-}) => ({
+const makeStyles = ({ purpleMain }: { purpleMain: string }) => ({
   map: { height: '100%', width: '100%' },
   hotspotLocation: {
     circleRadius: 9,
@@ -225,10 +146,6 @@ const makeStyles = ({
     circleColor: '#F4B81B',
     circleRadius: 6,
   } as StyleProp<SymbolLayerStyle>,
-  nearbyHotspotMarker: {
-    circleColor: purpleMuted,
-    circleRadius: 6,
-  } as StyleProp<CircleLayerStyle>,
   selectedHotspot: {
     circleRadius: 9,
     circleStrokeColor: 'white',
