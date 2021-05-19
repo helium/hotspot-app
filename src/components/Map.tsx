@@ -17,7 +17,6 @@ import { Hotspot } from '@helium/http'
 import { BoxProps } from '@shopify/restyle'
 import { StyleProp, ViewStyle } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import geojson2h3 from 'geojson2h3'
 import { h3ToGeo, h3ToParent } from 'h3-js'
 import Box from './Box'
 import Text from './Text'
@@ -28,6 +27,7 @@ import { theme, Theme } from '../theme/theme'
 import { useColors } from '../theme/themeHooks'
 import H3Grid from './H3Grid'
 import NetworkCoverage, { HexProperties } from './NetworkCoverage'
+import HotspotsCoverage from './HotspotsCoverage'
 
 const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
 
@@ -148,29 +148,6 @@ const Map = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userCoords, loaded])
 
-  const ownedFeatures = useMemo(() => {
-    const ownedHexes = ownedHotspots?.map((h) =>
-      h3ToParent(h.location || '', 8),
-    )
-    return geojson2h3.h3SetToFeatureCollection(ownedHexes)
-  }, [ownedHotspots])
-
-  const witnessFeatures = useMemo(() => {
-    const witnessHexes = witnesses?.map((h) => h3ToParent(h.location || '', 8))
-    return geojson2h3.h3SetToFeatureCollection(witnessHexes)
-  }, [witnesses])
-
-  const selectedFeatures = useMemo(() => {
-    if (selectedHotspot && selectedHotspot.location) {
-      const h3Location = h3ToParent(selectedHotspot.location, 8)
-      return geojson2h3.h3ToFeature(h3Location)
-    }
-    if (selectedHex) {
-      return geojson2h3.h3ToFeature(selectedHex)
-    }
-    return undefined
-  }, [selectedHex, selectedHotspot])
-
   const mapImages = useMemo(
     () => ({
       markerLocation: require('../assets/images/locationPurple.png'),
@@ -269,23 +246,26 @@ const Map = ({
           visible={showNearbyHotspots}
         />
         <H3Grid bounds={mapBounds} visible={showH3Grid} />
-        {ownedFeatures && (
-          <MapboxGL.ShapeSource id="ownedFeatures" shape={ownedFeatures}>
-            <MapboxGL.FillLayer id="ownedFill" style={styles.ownedFill} />
-          </MapboxGL.ShapeSource>
-        )}
-        {selectedFeatures && (
-          <MapboxGL.ShapeSource id="selectedFeatures" shape={selectedFeatures}>
-            <MapboxGL.LineLayer
-              id="selectedLine"
-              style={styles.selectedHexagon}
-            />
-          </MapboxGL.ShapeSource>
-        )}
-        {witnessFeatures && (
-          <MapboxGL.ShapeSource id="witnessFeatures" shape={witnessFeatures}>
-            <MapboxGL.FillLayer id="witnessFill" style={styles.witnessFill} />
-          </MapboxGL.ShapeSource>
+        <HotspotsCoverage
+          id="owned"
+          hotspots={ownedHotspots}
+          fill
+          opacity={0.4}
+        />
+        <HotspotsCoverage
+          id="witnesses"
+          hotspots={witnesses}
+          fill
+          fillColor={colors.yellow}
+        />
+        {selectedHotspot && (
+          <HotspotsCoverage
+            id="selected"
+            hotspots={[selectedHotspot]}
+            outline
+            outlineColor={colors.white}
+            outlineWidth={2}
+          />
         )}
       </MapboxGL.MapView>
       {currentLocationEnabled && (
