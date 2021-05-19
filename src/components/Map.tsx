@@ -18,7 +18,7 @@ import { BoxProps } from '@shopify/restyle'
 import { StyleProp, ViewStyle } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import geojson2h3 from 'geojson2h3'
-import { h3ToParent } from 'h3-js'
+import { h3ToGeo, h3ToParent } from 'h3-js'
 import Box from './Box'
 import Text from './Text'
 import NoLocation from '../assets/images/no-location.svg'
@@ -155,10 +155,21 @@ const Map = ({
     return geojson2h3.h3SetToFeatureCollection(ownedHexes)
   }, [ownedHotspots])
 
-  const selectedFeatures = useMemo(
-    () => (selectedHex ? geojson2h3.h3ToFeature(selectedHex) : undefined),
-    [selectedHex],
-  )
+  const witnessFeatures = useMemo(() => {
+    const witnessHexes = witnesses?.map((h) => h3ToParent(h.location || '', 8))
+    return geojson2h3.h3SetToFeatureCollection(witnessHexes)
+  }, [witnesses])
+
+  const selectedFeatures = useMemo(() => {
+    if (selectedHotspot && selectedHotspot.location) {
+      const h3Location = h3ToParent(selectedHotspot.location, 8)
+      return geojson2h3.h3ToFeature(h3Location)
+    }
+    if (selectedHex) {
+      return geojson2h3.h3ToFeature(selectedHex)
+    }
+    return undefined
+  }, [selectedHex, selectedHotspot])
 
   const mapImages = useMemo(
     () => ({
@@ -170,20 +181,28 @@ const Map = ({
   const bounds = useMemo(() => {
     const boundsLocations: number[][] = []
 
-    if (mapCenter && !selectedHotspot) {
+    if (mapCenter && !selectedHotspot && !selectedHex) {
       boundsLocations.push(mapCenter)
     }
 
-    if (selectedHotspot && selectedHotspot.lat && selectedHotspot.lng) {
-      boundsLocations.push([selectedHotspot.lng, selectedHotspot.lat])
+    if (selectedHotspot && selectedHotspot.location) {
+      const h3Location = h3ToParent(selectedHotspot.location, 8)
+      boundsLocations.push(h3ToGeo(h3Location).reverse())
+    }
+
+    if (selectedHex && !selectedHotspot) {
+      boundsLocations.push(h3ToGeo(selectedHex).reverse())
     }
 
     witnesses.forEach((w) => {
-      if (w.lat && w.lng) boundsLocations.push([w.lng, w.lat])
+      if (w.location) {
+        const h3Location = h3ToParent(w.location, 8)
+        boundsLocations.push(h3ToGeo(h3Location).reverse())
+      }
     })
 
     return findBounds(boundsLocations)
-  }, [mapCenter, selectedHotspot, witnesses])
+  }, [mapCenter, selectedHex, selectedHotspot, witnesses])
 
   const defaultCameraSettings = {
     zoomLevel,
@@ -252,10 +271,7 @@ const Map = ({
         <H3Grid bounds={mapBounds} visible={showH3Grid} />
         {ownedFeatures && (
           <MapboxGL.ShapeSource id="ownedFeatures" shape={ownedFeatures}>
-            <MapboxGL.FillLayer
-              id="ownedFill"
-              style={styles.ownedHexagonFill}
-            />
+            <MapboxGL.FillLayer id="ownedFill" style={styles.ownedFill} />
           </MapboxGL.ShapeSource>
         )}
         {selectedFeatures && (
@@ -264,6 +280,11 @@ const Map = ({
               id="selectedLine"
               style={styles.selectedHexagon}
             />
+          </MapboxGL.ShapeSource>
+        )}
+        {witnessFeatures && (
+          <MapboxGL.ShapeSource id="witnessFeatures" shape={witnessFeatures}>
+            <MapboxGL.FillLayer id="witnessFill" style={styles.witnessFill} />
           </MapboxGL.ShapeSource>
         )}
       </MapboxGL.MapView>
@@ -288,9 +309,14 @@ const makeStyles = (colors: typeof theme.colors) => ({
     lineWidth: 2,
     lineColor: colors.white,
   } as StyleProp<LineLayerStyle>,
-  ownedHexagonFill: {
+  ownedFill: {
     fillOpacity: 0.4,
     fillColor: colors.blueBright,
+    fillOutlineColor: '#1C1E3B',
+  } as StyleProp<FillLayerStyle>,
+  witnessFill: {
+    fillOpacity: 0.4,
+    fillColor: colors.yellow,
     fillOutlineColor: '#1C1E3B',
   } as StyleProp<FillLayerStyle>,
 })
