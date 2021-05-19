@@ -1,6 +1,6 @@
 {
   "name": "Helium",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -19,9 +19,9 @@
     "clean-install": "watchman watch-del-all && rm -rf $TMPDIR/react-native-packager-cache-* && rm -rf $TMPDIR/metro-bundler-cache-* && rm -rf node_modules/ && yarn cache clean && yarn install && yarn android-clean && yarn ios-clean && yarn pod-install",
     "clean-start": "yarn start -- --reset-cache",
     "postinstall": "patch-package",
-    "bump-patch": "npx react-native bump-version --skip-code-for all --type patch",
-    "bump-minor": "npx react-native bump-version --skip-code-for all --type minor",
-    "bump-major": "npx react-native bump-version --skip-code-for all --type major"
+    "bump-patch": "npx react-native bump-version --skip-semver-for android --skip-code-for all --type patch",
+    "bump-minor": "npx react-native bump-version --skip-semver-for android --skip-code-for all --type minor",
+    "bump-major": "npx react-native bump-version --skip-semver-for android --skip-code-for all --type major"
   },
   "husky": {
     "hooks": {

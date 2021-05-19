@@ -12,6 +12,7 @@ apply plugin: "com.android.application"
 apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
+import groovy.json.JsonSlurper
 import com.android.build.OutputFile
 
 /**
@@ -148,6 +149,13 @@ def getVersionCode = { ->
     return 4400000 // default higher for local builds - app center is 4300000 + build number
 }
 
+def getNpmVersion() {
+    def inputFile = file("$rootDir/../package.json")
+    def jsonPackage = new JsonSlurper().parseText(inputFile.text)
+
+    return jsonPackage["version"]
+}
+
 android {
     ndkVersion rootProject.ext.ndkVersion
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -162,7 +170,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode getVersionCode()
-        versionName "3.2.0"
+        versionName getNpmVersion()
     }
     splits {
         abi {

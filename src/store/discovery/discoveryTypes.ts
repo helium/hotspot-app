@@ -3,6 +3,7 @@ export type RecentDiscoveryInfo = {
   recentRequests: DiscoveryRequest[]
   requestsRemaining: number
   requestsPerDay: number
+  requestLength: number
 }
 
 export type DiscoveryRequest = {
@@ -28,5 +29,3 @@ export type DiscoveryResponse = {
   lat: number
   long: number
 }
-
-export const DISCOVERY_DURATION_MINUTES = 1

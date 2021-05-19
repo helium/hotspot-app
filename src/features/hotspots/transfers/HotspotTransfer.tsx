@@ -12,6 +12,7 @@ import Box from '../../../components/Box'
 import Button from '../../../components/Button'
 import { useHotspotSettingsContext } from '../settings/HotspotSettingsProvider'
 import { useColors } from '../../../theme/themeHooks'
+import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
 type Props = {
   onCloseTransfer: () => void
@@ -26,7 +27,7 @@ const HotspotTransfer = ({
 }: Props) => {
   const hotspotName = animalName(hotspot.address)
   const { t } = useTranslation()
-  const navigation = useNavigation()
+  const navigation = useNavigation<RootNavigationProp>()
   const [typedName, setTypedName] = useState('')
   const { enableBack } = useHotspotSettingsContext()
   const colors = useColors()
@@ -46,7 +47,7 @@ const HotspotTransfer = ({
   const navigateToTransfer = () => {
     onCloseSettings()
     navigation.navigate('SendStack', {
-      hotspot,
+      hotspotAddress: hotspot.address,
       isSeller: true,
       type: 'transfer',
     })
