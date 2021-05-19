@@ -348,7 +348,9 @@ export default {
       next: 'Exit Setup',
       disconnected:
         'There was an error connecting to the Hotspot. Please try again.',
-      title_connect_failed: 'Unable to Proceed',
+      title_connect_failed: 'Hotspot Pairing Failed',
+      body_connect_failed:
+        'Hotspot Miner is unable to respond to requests. Please reboot the Hotspot and try again later.',
     },
     add_hotspot: {
       title: 'Add Hotspot',
