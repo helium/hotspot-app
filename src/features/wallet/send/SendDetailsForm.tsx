@@ -148,6 +148,12 @@ const SendDetailsForm = ({
     <>
       <LockedField label={t('send.address.label')} value={address} />
       <LockedField label={t('send.amount.label')} value={amount} bottom />
+      <LockedField
+        label={t('send.memo.label')}
+        value={memo}
+        bottom
+        footer={<MemoLengthCounter />}
+      />
     </>
   )
 

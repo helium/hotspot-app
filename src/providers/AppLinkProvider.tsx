@@ -184,7 +184,7 @@ const useAppLink = () => {
             scanResult = {
               type,
               payees: Object.entries(rawScanResult.payees).map((entries) => {
-                const scanData = entries[1] as { amount: string; memo: string }
+                const scanData = entries[1] as { amount: string; memo?: string }
                 return {
                   address: entries[0],
                   amount: scanData.amount,
