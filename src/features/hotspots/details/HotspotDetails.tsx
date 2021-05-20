@@ -3,7 +3,7 @@ import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import { LayoutChangeEvent } from 'react-native'
+import { LayoutChangeEvent, Alert, Linking } from 'react-native'
 import { Hotspot } from '@helium/http'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -24,8 +24,10 @@ import HeliumSelect from '../../../components/HeliumSelect'
 import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
 import HotspotStatusBanner from './HotspotStatusBanner'
 import useToggle from '../../../utils/useToggle'
-import { getSyncStatus } from '../../../utils/hotspotUtils'
+import { getSyncStatus, isRelay } from '../../../utils/hotspotUtils'
 import ShareHotspot from '../../../components/ShareHotspot'
+import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import Articles from '../../../constants/articles'
 
 type Props = {
   hotspotAddress?: string
@@ -53,6 +55,7 @@ const HotspotDetails = ({
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
   )
+  const [isRelayed, setIsRelayed] = useState(false)
   const [timelineValue, setTimelineValue] = useState(14)
   const {
     rewards,
@@ -67,13 +70,16 @@ const HotspotDetails = ({
     challengeChange,
   } = hotspotChatData[timelineValue] || {}
   const { hotspot: hotspotDetailsHotspot, witnesses } = hotspotDetailsData || {}
-
   const [showStatusBanner, toggleShowStatusBanner] = useToggle(false)
 
   const hotspot = useMemo(() => hotspotDetailsHotspot || propsHotspot, [
     hotspotDetailsHotspot,
     propsHotspot,
   ])
+
+  useEffect(() => {
+    setIsRelayed(isRelay(hotspot?.status?.listenAddrs || []))
+  }, [hotspot])
 
   const rewardChartData = useMemo(() => {
     const data = getRewardChartData(rewards, timelineValue)
@@ -171,6 +177,26 @@ const HotspotDetails = ({
     [],
   )
 
+  const handleRelayedPress = useCallback(() => {
+    Alert.alert(
+      t('hotspot_details.relay_prompt.title'),
+      t('hotspot_details.relay_prompt.message'),
+      [
+        {
+          text: t('generic.ok'),
+        },
+        {
+          text: t('discovery.troubleshooting_guide'),
+          style: 'cancel',
+          onPress: () => {
+            if (Linking.canOpenURL(Articles.Relay))
+              Linking.openURL(Articles.Relay)
+          },
+        },
+      ],
+    )
+  }, [t])
+
   if (!hotspot) return null
 
   return (
@@ -224,6 +250,21 @@ const HotspotDetails = ({
               />
             )}
             <HexBadge rewardScale={hotspot.rewardScale} />
+            {isRelayed && (
+              <TouchableOpacityBox
+                backgroundColor="yellow"
+                paddingHorizontal="s"
+                borderRadius="ms"
+                alignItems="center"
+                justifyContent="center"
+                marginLeft="xs"
+                onPress={handleRelayedPress}
+              >
+                <Text color="white" variant="regular" fontSize={13}>
+                  {t('hotspot_details.relayed')}
+                </Text>
+              </TouchableOpacityBox>
+            )}
           </Box>
         </Box>
 

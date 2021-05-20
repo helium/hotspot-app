@@ -5,9 +5,11 @@ import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { useAppDispatch } from '../../../store/store'
 import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
+import CardHandle from '../../../components/CardHandle'
 
 type Props = { showNav?: boolean }
-const HotspotDetailsHandle = ({ showNav = true }: Props) => {
+export const HOTSPOT_SHEET_HANDLE_HEIGHT = 52
+const HotspotSheetHandle = ({ showNav = true }: Props) => {
   const dispatch = useAppDispatch()
 
   const prev = useCallback(() => {
@@ -22,9 +24,9 @@ const HotspotDetailsHandle = ({ showNav = true }: Props) => {
     <Box
       flexDirection="row"
       flex={1}
-      justifyContent="space-between"
+      justifyContent={showNav ? 'space-between' : 'center'}
       alignItems="center"
-      height={52}
+      height={HOTSPOT_SHEET_HANDLE_HEIGHT}
     >
       {showNav && (
         <>
@@ -35,11 +37,13 @@ const HotspotDetailsHandle = ({ showNav = true }: Props) => {
           >
             <Chevron color="#C2C5E4" height={20} width={20} />
           </TouchableOpacityBox>
+          <CardHandle />
           <TouchableOpacityBox onPress={next} paddingHorizontal="m">
             <Chevron color="#C2C5E4" height={20} width={20} />
           </TouchableOpacityBox>
         </>
       )}
+      {!showNav && <CardHandle />}
     </Box>
   )
 }
@@ -48,4 +52,4 @@ const styles = StyleSheet.create({
   prevButton: { transform: [{ rotate: '180deg' }] },
 })
 
-export default memo(HotspotDetailsHandle)
+export default memo(HotspotSheetHandle)

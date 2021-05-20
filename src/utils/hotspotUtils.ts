@@ -36,3 +36,11 @@ export const generateRewardScaleColor = (rewardScale: number): Colors => {
   }
   return 'redMain'
 }
+
+export const isRelay = (listen_addrs: string[]) => {
+  return !!(
+    listen_addrs &&
+    listen_addrs.length > 0 &&
+    listen_addrs[0].match('p2p-circuit')
+  )
+}

@@ -15,16 +15,18 @@ import { MoreNavigationProp } from '../moreTab/moreTypes'
 import { useAppDispatch } from '../../store/store'
 import appSlice from '../../store/user/appSlice'
 import SafeAreaBox from '../../components/SafeAreaBox'
+import { SendNavigationProps } from '../wallet/send/sendTypes'
 
 type Route = RouteProp<RootStackParamList, 'LockScreen'>
 
 const LockScreen = () => {
   const { t } = useTranslation()
   const {
-    params: { lock: shouldLock, requestType, scanResult },
+    params: { lock: shouldLock, requestType },
   } = useRoute<Route>()
   const rootNav = useNavigation<RootNavigationProp>()
   const moreNav = useNavigation<MoreNavigationProp>()
+  const sendNav = useNavigation<SendNavigationProps>()
   const [locked, setLocked] = useStateWithCallbackLazy(shouldLock)
   const dispatch = useAppDispatch()
 
@@ -37,21 +39,13 @@ const LockScreen = () => {
         rootNav.goBack()
       })
     } else if (requestType === 'send') {
-      rootNav.navigate('Send', { scanResult })
+      sendNav.navigate('Send', { pinVerified: 'pass' })
     } else {
       moreNav.navigate('MoreScreen', {
         pinVerifiedFor: requestType,
       })
     }
-  }, [
-    shouldLock,
-    requestType,
-    setLocked,
-    dispatch,
-    rootNav,
-    scanResult,
-    moreNav,
-  ])
+  }, [shouldLock, requestType, setLocked, dispatch, rootNav, sendNav, moreNav])
 
   const handleSignOut = useCallback(() => {
     Alert.alert(
@@ -72,6 +66,16 @@ const LockScreen = () => {
       ],
     )
   }, [t, dispatch])
+
+  const handleCancel = useCallback(() => {
+    if (shouldLock) {
+      handleSignOut()
+    } else if (requestType === 'send') {
+      sendNav.navigate('Send', { pinVerified: 'fail' })
+    } else {
+      rootNav.goBack()
+    }
+  }, [handleSignOut, requestType, rootNav, sendNav, shouldLock])
 
   useEffect(() => {
     const unsubscribe = rootNav.addListener('beforeRemove', (e) => {
@@ -102,7 +106,7 @@ const LockScreen = () => {
         title={t('auth.title')}
         subtitle={t('auth.enter_current')}
         pinSuccess={handleSuccess}
-        onCancel={shouldLock ? handleSignOut : moreNav.goBack}
+        onCancel={handleCancel}
         clearable={requestType === 'unlock'}
       />
     </SafeAreaBox>

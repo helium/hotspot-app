@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react'
-import { useNavigation } from '@react-navigation/native'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
@@ -7,11 +7,15 @@ import EmojiBlip from '../../../components/EmojiBlip'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
+import { HotspotSetupStackParamList } from './hotspotSetupTypes'
 
+type Route = RouteProp<HotspotSetupStackParamList, 'OnboardingErrorScreen'>
 const OnboardingErrorScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<RootNavigationProp>()
-
+  const {
+    params: { connectStatus },
+  } = useRoute<Route>()
   const navNext = useCallback(() => {
     navigation.navigate('MainTabs')
   }, [navigation])
@@ -26,6 +30,9 @@ const OnboardingErrorScreen = () => {
         <Text variant="h1">{t('hotspot_setup.onboarding_error.title')}</Text>
         <Text variant="body1" marginVertical="l">
           {t('hotspot_setup.onboarding_error.subtitle')}
+        </Text>
+        <Text variant="body2" marginVertical="l">
+          {connectStatus}
         </Text>
       </Box>
       <Box>

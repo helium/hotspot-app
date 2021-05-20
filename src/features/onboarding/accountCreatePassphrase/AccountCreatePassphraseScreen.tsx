@@ -36,7 +36,7 @@ const AccountCreatePassphraseScreen = () => {
 
   useEffect(() => {
     const viewedAll = viewedWords.every((w) => w)
-    if (!viewedAll) return
+    if (!viewedAll && !__DEV__) return
 
     setDisabled(false)
   }, [viewedWords])

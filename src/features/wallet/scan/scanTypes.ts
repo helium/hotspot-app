@@ -1,8 +1,7 @@
-import { AppLink } from '../../../providers/appLinkTypes'
+import { AppLinkCategoryType } from '../../../providers/appLinkTypes'
 
 export type ScanStackParamList = {
   Scan: {
-    type?: AppLink
-    showBottomSheet?: boolean
+    type?: AppLinkCategoryType
   }
 }

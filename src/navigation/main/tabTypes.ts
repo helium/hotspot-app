@@ -1,6 +1,6 @@
 import { StackNavigationProp } from '@react-navigation/stack'
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
-import { AppLink } from '../../providers/appLinkTypes'
+import { SendRouteType } from '../../features/wallet/send/sendTypes'
 
 export type MainTabType = 'Hotspots' | 'Wallet' | 'Notifications' | 'More'
 
@@ -24,13 +24,10 @@ export type RootStackParamList = {
   LockScreen: {
     requestType: LockScreenRequestType
     lock?: boolean
-    scanResult?: AppLink
   }
   HotspotSetup: undefined
-  Scan: undefined
-  Send: {
-    scanResult?: AppLink
-  }
+  ScanStack: undefined
+  SendStack: undefined | SendRouteType
 }
 
 export type RootNavigationProp = StackNavigationProp<RootStackParamList>

@@ -35,7 +35,9 @@ import HotspotsEmpty from './HotspotsEmpty'
 import HotspotSettingsProvider from '../settings/HotspotSettingsProvider'
 import HotspotSettings from '../settings/HotspotSettings'
 import { RootStackParamList } from '../../../navigation/main/tabTypes'
-import HotspotDetailsHandle from '../details/HotspotDetailsHandle'
+import HotspotSheetHandle, {
+  HOTSPOT_SHEET_HANDLE_HEIGHT,
+} from './HotspotSheetHandle'
 import HotspotSearch from './HotspotSearch'
 import { getPlaceGeography, PlacePrediction } from '../../../utils/googlePlaces'
 import hotspotSearchSlice from '../../../store/hotspotSearch/hotspotSearchSlice'
@@ -49,6 +51,8 @@ import { HotspotStackParamList } from './hotspotTypes'
 import animateTransition from '../../../utils/animateTransition'
 import usePrevious from '../../../utils/usePrevious'
 import useVisible from '../../../utils/useVisible'
+import { hp } from '../../../utils/layout'
+import useMount from '../../../utils/useMount'
 
 type Props = {
   ownedHotspots?: Hotspot[]
@@ -60,6 +64,7 @@ type Props = {
 
 type Route = RouteProp<HotspotStackParamList, 'HotspotsScreen'>
 
+const SHEET_ANIM_DURATION = 500
 const HotspotsView = ({
   ownedHotspots,
   followedHotspots,
@@ -81,8 +86,9 @@ const HotspotsView = ({
   const [showDetailsNav, setShowDetailsNav] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
+  const [showMap, setShowMap] = useState(false)
   const listRef = useRef<BottomSheetModal>(null)
-  const [listHeight, setListHeight] = useState(144)
+  const listHeight = useRef(hp(66))
   const [detailHeaderHeight, setDetailHeaderHeight] = useState(144)
   const [bottomSheetIndex, setBottomSheetIndex] = useState(startOnMap ? 0 : 1)
   const prevBottomSheetIndex = usePrevious(bottomSheetIndex)
@@ -109,21 +115,34 @@ const HotspotsView = ({
 
   useEffect(() => {
     const shouldShowDetails = !!hotspotAddress
-    if (shouldShowDetails === showDetails) return
-
+    if (shouldShowDetails === showDetails) {
+      setShowDetailsNav(shouldShowDetails && !linkedHotspotAddress)
+      return
+    }
     if (visible && prevVisible) {
       animateTransition('HotspotsView.DetailsChange', false)
     }
     setShowDetails(shouldShowDetails)
-  }, [hotspotAddress, prevVisible, showDetails, visible])
+  }, [hotspotAddress, linkedHotspotAddress, prevVisible, showDetails, visible])
 
   useEffect(() => {
     setLinkedHotspotAddress(params?.address || '')
   }, [params])
 
+  useMount(() => {
+    if (startOnMap) {
+      setShowMap(true)
+      return
+    }
+
+    setTimeout(() => {
+      setShowMap(true)
+    }, SHEET_ANIM_DURATION)
+  })
+
   const snapPoints = useMemo(() => {
-    if (showDetails) return [detailHeaderHeight, listHeight]
-    return [1, listHeight]
+    if (showDetails) return [detailHeaderHeight, listHeight.current]
+    return [1, listHeight.current]
   }, [detailHeaderHeight, listHeight, showDetails])
 
   const hasHotspots = useMemo(
@@ -201,10 +220,6 @@ const HotspotsView = ({
     hotspotAddress,
     ownedHotspots,
   ])
-
-  const handleLayoutList = useCallback((event: LayoutChangeEvent) => {
-    setListHeight(event.nativeEvent.layout.height - 166)
-  }, [])
 
   const handleDetailHeaderLayout = useCallback((event: LayoutChangeEvent) => {
     setDetailHeaderHeight(event.nativeEvent.layout.height)
@@ -289,7 +304,7 @@ const HotspotsView = ({
   )
 
   const hotspotHasLocation = useMemo(() => {
-    if (!hotspotAddress) return true
+    if (!hotspotAddress || !selectedHotspot) return true
 
     return hotspotHasValidLocation(
       selectedHotspot || hotspotDetailsData.hotspot,
@@ -306,7 +321,7 @@ const HotspotsView = ({
   )
 
   const cardHandle = useCallback(
-    () => <HotspotDetailsHandle showNav={showDetails && showDetailsNav} />,
+    () => <HotspotSheetHandle showNav={showDetails && showDetailsNav} />,
     [showDetails, showDetailsNav],
   )
 
@@ -458,23 +473,24 @@ const HotspotsView = ({
         borderTopLeftRadius="xl"
         borderTopRightRadius="xl"
         style={containerStyles}
-        onLayout={handleLayoutList}
         overflow="hidden"
       >
-        <Map
-          ownedHotspots={ownedHotspots}
-          selectedHotspot={selectedHotspot}
-          maxZoomLevel={14}
-          zoomLevel={14}
-          witnesses={showWitnesses ? witnesses : []}
-          mapCenter={location}
-          animationMode="easeTo"
-          animationDuration={800}
-          onFeatureSelected={onMapHotspotSelected}
-          interactive={hotspotHasLocation}
-          showNoLocation={!hotspotHasLocation}
-          showNearbyHotspots
-        />
+        {showMap && (
+          <Map
+            ownedHotspots={ownedHotspots}
+            selectedHotspot={selectedHotspot}
+            maxZoomLevel={14}
+            zoomLevel={14}
+            witnesses={showWitnesses ? witnesses : []}
+            mapCenter={location}
+            animationMode="easeTo"
+            animationDuration={800}
+            onFeatureSelected={onMapHotspotSelected}
+            interactive={hotspotHasLocation}
+            showNoLocation={!hotspotHasLocation}
+            showNearbyHotspots
+          />
+        )}
         <HotspotsViewHeader
           animatedPosition={animatedIndex}
           showWitnesses={showWitnesses}
@@ -511,6 +527,8 @@ const HotspotsView = ({
         handleComponent={cardHandle}
         animatedIndex={animatedIndex}
         onChange={setBottomSheetIndex}
+        handleHeight={HOTSPOT_SHEET_HANDLE_HEIGHT}
+        animationDuration={SHEET_ANIM_DURATION}
         enableContentPanningGesture={
           !isSearching || (isSearching && showDetails)
         }

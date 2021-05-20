@@ -5,15 +5,18 @@ import { Loading } from '../activity/activitySlice'
 import { DiscoveryRequest, RecentDiscoveryInfo } from './discoveryTypes'
 
 export type DiscoveryState = {
-  recentDiscoveryInfo: (RecentDiscoveryInfo & { serverDate: string }) | null
+  recentDiscoveryInfos: Record<
+    string,
+    RecentDiscoveryInfo & { serverDate: string }
+  >
   infoLoading: Loading
   selectedRequest?: DiscoveryRequest | null
   requestId?: number | null
 }
 
 const initialState: DiscoveryState = {
-  recentDiscoveryInfo: null,
   infoLoading: 'idle',
+  recentDiscoveryInfos: {},
 }
 
 export const fetchRecentDiscoveries = createAsyncThunk<
@@ -62,13 +65,23 @@ const discoverySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchRecentDiscoveries.pending, (state) => {
-      state.recentDiscoveryInfo = null
       state.infoLoading = 'pending'
     })
-    builder.addCase(fetchRecentDiscoveries.fulfilled, (state, { payload }) => {
-      state.recentDiscoveryInfo = payload
-      state.infoLoading = 'fulfilled'
-    })
+    builder.addCase(
+      fetchRecentDiscoveries.fulfilled,
+      (
+        state,
+        {
+          payload,
+          meta: {
+            arg: { hotspotAddress },
+          },
+        },
+      ) => {
+        state.recentDiscoveryInfos[hotspotAddress] = payload
+        state.infoLoading = 'fulfilled'
+      },
+    )
     builder.addCase(fetchRecentDiscoveries.rejected, (state) => {
       state.infoLoading = 'rejected'
     })

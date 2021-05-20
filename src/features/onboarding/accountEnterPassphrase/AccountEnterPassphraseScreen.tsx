@@ -118,7 +118,7 @@ const AccountEnterPassphraseScreen = () => {
         flex={1}
         overflow="hidden"
         backgroundColor="white"
-        padding="l"
+        paddingHorizontal="l"
         alignItems="center"
         flexDirection="row"
       >

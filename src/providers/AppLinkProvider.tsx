@@ -19,13 +19,24 @@ import {
   AppLinkFields,
   AppLinkCategories,
   AppLinkCategoryType,
+  AppLinkPayment,
+  Payee,
 } from './appLinkTypes'
 
+const APP_LINK_PROTOCOL = 'helium://'
+
+export const createAppLink = (
+  resource: AppLinkCategoryType,
+  resourceId: string,
+) => `${APP_LINK_PROTOCOL}${resource}/${resourceId}`
+
 const useAppLink = () => {
-  const [unhandledAppLink, setUnhandledLink] = useState<AppLink | null>(null)
+  const [unhandledAppLink, setUnhandledLink] = useState<
+    AppLink | AppLinkPayment | null
+  >(null)
 
   const {
-    app: { isPinRequiredForPayment, isLocked, isBackedUp },
+    app: { isLocked, isBackedUp },
   } = useSelector((state: RootState) => state)
 
   useMount(() => {
@@ -49,7 +60,7 @@ const useAppLink = () => {
   })
 
   const navToAppLink = useCallback(
-    (record: AppLink) => {
+    (record: AppLink | AppLinkPayment) => {
       if (isLocked || !isBackedUp) {
         setUnhandledLink(record)
         return
@@ -57,24 +68,17 @@ const useAppLink = () => {
 
       switch (record.type) {
         case 'hotspot':
-          navigator.viewHotspot(record.address)
+          navigator.viewHotspot((record as AppLink).address)
           break
 
         case 'dc_burn':
         case 'payment':
-        case 'transfer': {
-          if (isPinRequiredForPayment) {
-            navigator.lock({
-              requestType: 'send',
-              scanResult: record,
-            })
-          } else {
-            navigator.send({ scanResult: record })
-          }
-        }
+        case 'transfer':
+          navigator.send({ scanResult: record })
+          break
       }
     },
-    [isLocked, isPinRequiredForPayment, isBackedUp],
+    [isLocked, isBackedUp],
   )
 
   useEffect(() => {
@@ -89,44 +93,115 @@ const useAppLink = () => {
     if (!url) return
 
     const parsed = queryString.parseUrl(url)
-    if (parsed.url !== 'helium://app') return
+    if (!parsed.url.includes(APP_LINK_PROTOCOL)) return
 
     const record = AppLinkFields.reduce(
       (obj, k) => ({ ...obj, [k]: parsed.query[k] }),
       {},
     ) as AppLink
+
+    const path = parsed.url.replace(APP_LINK_PROTOCOL, '')
+    const [resourceType, resourceId] = path.split('/')
+    if (resourceType && AppLinkCategories.find((k) => k === resourceType)) {
+      record.type = resourceType as AppLinkCategoryType
+    }
+    if (resourceId) {
+      record.address = resourceId
+    }
+
     if (!record.type || !AppLinkCategories.find((k) => k === record.type)) {
       throw new Error(`Unsupported QR Type: ${record.type}`)
     }
     return record
   }, [])
 
+  /**
+   * The data scanned from the QR code is expected to be one of these possibilities:
+   * (1) A helium deeplink URL
+   * (2) address string
+   * (3) stringified JSON object { type, address, amount?, memo? }
+   * (4) stringified JSON object { type, payees: {[payeeAddress]: { amount, memo? }} }
+   */
   const parseBarCodeData = useCallback(
-    (data: string, scanType: AppLinkCategoryType): AppLink => {
+    (data: string, scanType: AppLinkCategoryType): AppLink | AppLinkPayment => {
+      const assertValidAddress = (address: string) => {
+        if (!address || !Address.isValid(address)) {
+          throw new Error('Invalid transaction encoding')
+        }
+      }
+
+      // Case (1) helium deeplink URL
       const urlParams = parseUrl(data)
       if (urlParams) {
         return urlParams
       }
 
+      // Case (2) address string
       if (Address.isValid(data)) {
+        if (scanType === 'transfer') {
+          return {
+            type: scanType,
+            address: data,
+          }
+        }
         return {
           type: scanType,
-          address: data,
+          payees: [{ address: data }],
         }
       }
 
       try {
-        const scanResult: AppLink = JSON.parse(data)
+        const rawScanResult = JSON.parse(data)
+        const type = rawScanResult.type || scanType
 
-        if (
-          !['payment', 'dc_burn'].includes(scanResult.type) ||
-          !scanResult.address ||
-          !Address.isValid(scanResult.address)
-        ) {
-          throw new Error('Invalid transaction encoding')
+        if (type === 'dc_burn') {
+          // Case (3) stringified JSON { type, address, amount?, memo? }
+          const scanResult: AppLink = {
+            type,
+            address: rawScanResult.address,
+            amount: rawScanResult.amount,
+            memo: rawScanResult.memo,
+          }
+          assertValidAddress(scanResult.address)
+          return scanResult
         }
 
-        return scanResult
+        if (type === 'payment') {
+          let scanResult: AppLinkPayment
+          if (rawScanResult.address) {
+            // Case (3) stringified JSON { type, address, amount?, memo? }
+            scanResult = {
+              type,
+              payees: [
+                {
+                  address: rawScanResult.address,
+                  amount: rawScanResult.amount,
+                  memo: rawScanResult.memo,
+                },
+              ],
+            }
+          } else if (rawScanResult.payees) {
+            scanResult = {
+              type,
+              payees: Object.entries(rawScanResult.payees).map((entries) => {
+                const scanData = entries[1] as { amount: string; memo: string }
+                return {
+                  address: entries[0],
+                  amount: scanData.amount,
+                  memo: scanData.memo,
+                } as Payee
+              }),
+            }
+          } else {
+            throw new Error('Invalid transaction encoding')
+          }
+
+          scanResult.payees.forEach(({ address }) =>
+            assertValidAddress(address),
+          )
+          return scanResult
+        }
+        throw new Error('Invalid transaction encoding')
       } catch (error) {
         throw new Error('Invalid transaction encoding')
       }

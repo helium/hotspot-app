@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { useSelector } from 'react-redux'
-import { PermissionResponse } from 'expo-permissions'
 import { ActivityIndicator } from 'react-native'
-import SafeAreaBox from '../../../components/SafeAreaBox'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { RootState } from '../../../store/rootReducer'
 import HotspotsView from './HotspotsView'
 import HotspotsEmpty from './HotspotsEmpty'
@@ -14,15 +13,13 @@ import {
   fetchRewards,
 } from '../../../store/hotspots/hotspotsSlice'
 import useVisible from '../../../utils/useVisible'
-import locationSlice, {
-  getLocationPermission,
-  getLocation,
-} from '../../../store/location/locationSlice'
-import usePermissionManager from '../../../utils/usePermissionManager'
 import { useAppDispatch } from '../../../store/store'
+import useGetLocation from '../../../utils/useGetLocation'
 
 const HotspotsScreen = () => {
+  const maybeGetLocation = useGetLocation()
   const hotspots = useSelector((state: RootState) => state.hotspots.hotspots)
+  const insets = useSafeAreaInsets()
   const followedHotspots = useSelector(
     (state: RootState) => state.hotspots.followedHotspots,
   )
@@ -31,38 +28,8 @@ const HotspotsScreen = () => {
   )
   const [startOnMap, setStartOnMap] = useState(false)
   const dispatch = useAppDispatch()
-  const { requestLocationPermission } = usePermissionManager()
-  const {
-    currentLocation: location,
-    permissionResponse,
-    locationBlocked,
-  } = useSelector((state: RootState) => state.location)
-
-  const maybeGetLocation = useCallback(
-    async (okToPromptUser: boolean) => {
-      // We don't know if we can request location
-      let permResponse = permissionResponse
-      if (!permResponse) {
-        const { payload } = await dispatch(getLocationPermission())
-        permResponse = payload as PermissionResponse
-      }
-      if (!permResponse) return // this shouldn't happen unless shit hits the fan
-
-      if (permResponse.granted) {
-        dispatch(getLocation())
-      } else if (okToPromptUser && permResponse.canAskAgain) {
-        const response = await requestLocationPermission()
-
-        if (response) {
-          dispatch(locationSlice.actions.updateLocationPermission(response))
-        }
-
-        if (response && response.granted) {
-          dispatch(getLocation())
-        }
-      }
-    },
-    [dispatch, permissionResponse, requestLocationPermission],
+  const { currentLocation: location, locationBlocked } = useSelector(
+    (state: RootState) => state.location,
   )
 
   const browseMap = useCallback(async () => {
@@ -96,8 +63,12 @@ const HotspotsScreen = () => {
     return 'view'
   }, [followedHotspots.length, hotspots.length, hotspotsLoaded, location])
 
+  const containerStyle = useMemo(() => ({ paddingTop: insets.top }), [
+    insets.top,
+  ])
+
   return (
-    <SafeAreaBox backgroundColor="primaryBackground" flex={1} edges={['top']}>
+    <Box backgroundColor="primaryBackground" flex={1} style={containerStyle}>
       <BottomSheetModalProvider>
         {viewState === 'empty' && (
           <Box flex={1} justifyContent="center">
@@ -122,7 +93,7 @@ const HotspotsScreen = () => {
           </Box>
         )}
       </BottomSheetModalProvider>
-    </SafeAreaBox>
+    </Box>
   )
 }
 

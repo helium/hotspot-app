@@ -13,6 +13,7 @@ import { HeliumActionSheetItemType } from './HeliumActionSheetItem'
 import { TouchableOpacityBoxProps } from './TouchableOpacityBox'
 import useHaptic from '../utils/useHaptic'
 import { EXPLORER_BASE_URL } from '../utils/config'
+import { createAppLink } from '../providers/AppLinkProvider'
 
 type Props = { hotspot: Hotspot }
 const ShareHotspot = ({ hotspot }: Props) => {
@@ -42,7 +43,8 @@ const ShareHotspot = ({ hotspot }: Props) => {
         label: t('hotspot_details.options.share'),
         value: 'share',
         Icon: ShareHotspotIco,
-        action: () => Share.share({ message: explorerUrl }),
+        action: () =>
+          Share.share({ message: createAppLink('hotspot', hotspot.address) }),
       },
       {
         label: `${t('generic.copy')} ${t('generic.address')}`,

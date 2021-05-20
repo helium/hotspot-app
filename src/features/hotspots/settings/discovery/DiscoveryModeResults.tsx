@@ -1,18 +1,14 @@
-import React, { memo, useEffect, useMemo, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import { Hotspot } from '@helium/http'
 import { useTranslation } from 'react-i18next'
 import { isEqual, startCase } from 'lodash'
 import haversine from 'haversine-distance'
 import { useSelector } from 'react-redux'
 import Box from '../../../../components/Box'
-import DiscoveryMap, {
-  MapSelectDetail,
-  ANIM_LOOP_LENGTH_MS,
-} from './DiscoveryMap'
+import DiscoveryMap, { MapSelectDetail } from './DiscoveryMap'
 import {
   DiscoveryRequest,
   DiscoveryResponse,
-  DISCOVERY_DURATION_MINUTES,
 } from '../../../../store/discovery/discoveryTypes'
 import animateTransition from '../../../../utils/animateTransition'
 import { hp } from '../../../../utils/layout'
@@ -22,6 +18,7 @@ import { fetchNetworkHotspots } from '../../../../store/networkHotspots/networkH
 import { getHotspotDetails } from '../../../../utils/appDataClient'
 import DiscoveryModeResultsCard from './DiscoveryModeResultsCard'
 import { usesMetricSystem } from '../../../../utils/i18n'
+import filterDiscoveryResponses from './filterDiscoveryResponses'
 
 type Props = {
   request?: DiscoveryRequest | null
@@ -29,6 +26,7 @@ type Props = {
   isPolling: boolean
   requestTime: number
   currentTime: number
+  requestLength: number
 }
 const DiscoveryModeResults = ({
   request,
@@ -36,11 +34,12 @@ const DiscoveryModeResults = ({
   isPolling,
   currentTime,
   requestTime,
+  requestLength,
 }: Props) => {
   const { t } = useTranslation()
-  const [deDupedResponses, setDeDupedResponses] = useState<DiscoveryResponse[]>(
-    [],
-  )
+  const [filteredResponses, setFilteredResponses] = useState<
+    DiscoveryResponse[]
+  >([])
   const [overlayDetails, setOverlayDetails] = useState<
     {
       distance: string
@@ -53,38 +52,31 @@ const DiscoveryModeResults = ({
     isEqual,
   )
 
-  const hotspotCoords = useMemo(() => {
-    return [hotspot.lng || 0, hotspot.lat || 0]
-  }, [hotspot.lat, hotspot.lng])
-
   useEffect(() => {
+    if (filteredResponses.length === 0) return
+
     const oneMileInDegrees = 1 / 69 // close enough => depends on your location. It's 68.7 at the equator and 69.4 at the poles, but yolo
     const offset = 15 * oneMileInDegrees // TODO: 15 mile offset. Is this adequate?
-
+    const center = [filteredResponses[0].long, filteredResponses[0].lat] // use the first responder as center
     const northEastCoordinates = [
-      hotspotCoords[0] + offset,
-      hotspotCoords[1] + offset,
+      center[0] + offset,
+      center[1] + offset,
     ] as GeoJSON.Position
     const southWestCoordinates = [
-      hotspotCoords[0] - offset,
-      hotspotCoords[1] - offset,
+      center[0] - offset,
+      center[1] - offset,
     ] as GeoJSON.Position
 
     dispatch(fetchNetworkHotspots([southWestCoordinates, northEastCoordinates])) // find all hotspots 15 miles in every direction
-  }, [dispatch, hotspotCoords])
+  }, [dispatch, filteredResponses])
 
   useEffect(() => {
     if (request) {
-      const filtered = request.responses.filter(
-        (responseA, index, responses) =>
-          responses.findIndex(
-            (responseB) =>
-              responseB.hotspotAddress === responseA.hotspotAddress,
-          ) === index,
+      setFilteredResponses(
+        filterDiscoveryResponses(hotspot.address, request.responses),
       )
-      setDeDupedResponses(filtered)
     }
-  }, [request])
+  }, [hotspot.address, request])
 
   const showOverlay = async ({ name, lat, lng, address }: MapSelectDetail) => {
     let distance = ''
@@ -125,36 +117,25 @@ const DiscoveryModeResults = ({
     setOverlayDetails(undefined)
   }
 
-  const iterations = useMemo(() => {
-    const nowInSec = Date.now() / 1000
-    const diffSec = requestTime + DISCOVERY_DURATION_MINUTES * 60 - nowInSec
-    if (diffSec > 0) {
-      return Math.ceil(diffSec / (ANIM_LOOP_LENGTH_MS / 1000))
-    }
-    return 20
-  }, [requestTime])
-
   return (
     <Box height={hp(85)}>
       <DiscoveryMap
         networkHotspots={networkHotspots}
         hotspotAddress={hotspot.address}
-        hotspotCoords={hotspotCoords}
-        responses={deDupedResponses}
+        responses={filteredResponses}
         onSelect={showOverlay}
         selectedHotspot={overlayDetails}
         isPolling={isPolling}
-        requestTime={requestTime}
-        iterations={iterations}
       />
       <DiscoveryModeResultsCard
-        numResponses={deDupedResponses.length}
+        numResponses={filteredResponses.length}
         request={request}
         isPolling={isPolling}
         overlayDetails={overlayDetails}
         hideOverlay={hideOverlay}
         requestTime={requestTime}
         currentTime={currentTime}
+        requestLength={requestLength}
       />
     </Box>
   )
