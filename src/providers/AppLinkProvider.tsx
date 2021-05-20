@@ -138,6 +138,12 @@ const useAppLink = () => {
 
       // Case (2) address string
       if (Address.isValid(data)) {
+        if (scanType === 'transfer') {
+          return {
+            type: scanType,
+            address: data,
+          }
+        }
         return {
           type: scanType,
           payees: [{ address: data }],
