@@ -89,6 +89,9 @@ const SendView = ({
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
   )
+  const currentOraclePrice = useSelector(
+    (state: RootState) => state.heliumData.currentOraclePrice,
+  )
   const [type, setType] = useState<AppLinkCategoryType>(sendType || 'payment')
   const [isLocked, setIsLocked] = useState(false)
   const [isValid, setIsValid] = useState(false)
@@ -221,6 +224,7 @@ const SendView = ({
       )
     } else {
       const { amount, balanceAmount } = getAmountAndBalance(scanResult.amount)
+      const balanceDc = balanceAmount.toDataCredits(currentOraclePrice?.price)
       scannedSendDetails = [
         {
           id: 'transfer0',
@@ -229,7 +233,11 @@ const SendView = ({
           addressLoading: false,
           amount,
           balanceAmount,
-          dcAmount: '',
+          dcAmount: balanceDc.toString(0, {
+            showTicker: false,
+            decimalSeparator,
+            groupSeparator,
+          }),
           memo: scanResult.memo || '',
         },
       ]
