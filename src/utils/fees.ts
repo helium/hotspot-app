@@ -16,7 +16,6 @@ import { useSelector } from 'react-redux'
 import { useCallback } from 'react'
 import { getKeypair } from './secureAccount'
 import { RootState } from '../store/rootReducer'
-import { SendDetails } from '../features/wallet/send/sendTypes'
 
 export const useFees = () => {
   const { currentOraclePrice, predictedOraclePrices } = useSelector(
@@ -48,22 +47,28 @@ const emptyB58Address = () =>
   Address.fromB58('13PuqyWXzPYeXcF1B9ZRx7RLkEygeL374ZABiQdwRSNzASdA1sn')
 
 export const calculatePaymentTxnFee = async (
-  paymentDetails: Array<SendDetails>,
+  amount: number,
   nonce: number,
+  payeeB58?: string,
 ) => {
   const keypair = await getKeypair()
   if (!keypair) throw new Error('missing keypair')
 
+  // if a payee isn't supplied, we use a dummy address
+  let payee: Address
+  if (payeeB58 && Address.isValid(payeeB58)) {
+    payee = Address.fromB58(payeeB58)
+  } else {
+    payee = emptyB58Address()
+  }
   const paymentTxn = new PaymentV2({
     payer: keypair.address,
-    payments: paymentDetails.map(({ address, balanceAmount }) => ({
-      // if a payee address isn't supplied, we use a dummy address
-      payee:
-        address && Address.isValid(address)
-          ? Address.fromB58(address)
-          : emptyB58Address(),
-      amount: balanceAmount.integerBalance,
-    })),
+    payments: [
+      {
+        payee,
+        amount,
+      },
+    ],
     nonce,
   })
 

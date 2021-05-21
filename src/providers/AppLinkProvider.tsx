@@ -19,8 +19,6 @@ import {
   AppLinkFields,
   AppLinkCategories,
   AppLinkCategoryType,
-  AppLinkPayment,
-  Payee,
 } from './appLinkTypes'
 
 const APP_LINK_PROTOCOL = 'helium://'
@@ -31,9 +29,7 @@ export const createAppLink = (
 ) => `${APP_LINK_PROTOCOL}${resource}/${resourceId}`
 
 const useAppLink = () => {
-  const [unhandledAppLink, setUnhandledLink] = useState<
-    AppLink | AppLinkPayment | null
-  >(null)
+  const [unhandledAppLink, setUnhandledLink] = useState<AppLink | null>(null)
 
   const {
     app: { isLocked, isBackedUp },
@@ -60,7 +56,7 @@ const useAppLink = () => {
   })
 
   const navToAppLink = useCallback(
-    (record: AppLink | AppLinkPayment) => {
+    (record: AppLink) => {
       if (isLocked || !isBackedUp) {
         setUnhandledLink(record)
         return
@@ -68,7 +64,7 @@ const useAppLink = () => {
 
       switch (record.type) {
         case 'hotspot':
-          navigator.viewHotspot((record as AppLink).address)
+          navigator.viewHotspot(record.address)
           break
 
         case 'dc_burn':
@@ -115,93 +111,32 @@ const useAppLink = () => {
     return record
   }, [])
 
-  /**
-   * The data scanned from the QR code is expected to be one of these possibilities:
-   * (1) A helium deeplink URL
-   * (2) address string
-   * (3) stringified JSON object { type, address, amount?, memo? }
-   * (4) stringified JSON object { type, payees: {[payeeAddress]: { amount, memo? }} }
-   */
   const parseBarCodeData = useCallback(
-    (data: string, scanType: AppLinkCategoryType): AppLink | AppLinkPayment => {
-      const assertValidAddress = (address: string) => {
-        if (!address || !Address.isValid(address)) {
-          throw new Error('Invalid transaction encoding')
-        }
-      }
-
-      // Case (1) helium deeplink URL
+    (data: string, scanType: AppLinkCategoryType): AppLink => {
       const urlParams = parseUrl(data)
       if (urlParams) {
         return urlParams
       }
 
-      // Case (2) address string
       if (Address.isValid(data)) {
-        if (scanType === 'transfer') {
-          return {
-            type: scanType,
-            address: data,
-          }
-        }
         return {
           type: scanType,
-          payees: [{ address: data }],
+          address: data,
         }
       }
 
       try {
-        const rawScanResult = JSON.parse(data)
-        const type = rawScanResult.type || scanType
+        const scanResult: AppLink = JSON.parse(data)
 
-        if (type === 'dc_burn') {
-          // Case (3) stringified JSON { type, address, amount?, memo? }
-          const scanResult: AppLink = {
-            type,
-            address: rawScanResult.address,
-            amount: rawScanResult.amount,
-            memo: rawScanResult.memo,
-          }
-          assertValidAddress(scanResult.address)
-          return scanResult
+        if (
+          !['payment', 'dc_burn'].includes(scanResult.type) ||
+          !scanResult.address ||
+          !Address.isValid(scanResult.address)
+        ) {
+          throw new Error('Invalid transaction encoding')
         }
 
-        if (type === 'payment') {
-          let scanResult: AppLinkPayment
-          if (rawScanResult.address) {
-            // Case (3) stringified JSON { type, address, amount?, memo? }
-            scanResult = {
-              type,
-              payees: [
-                {
-                  address: rawScanResult.address,
-                  amount: rawScanResult.amount,
-                  memo: rawScanResult.memo,
-                },
-              ],
-            }
-          } else if (rawScanResult.payees) {
-            scanResult = {
-              type,
-              payees: Object.entries(rawScanResult.payees).map((entries) => {
-                const scanData = entries[1] as { amount: string; memo: string }
-                return {
-                  address: entries[0],
-                  amount: scanData.amount,
-                  memo: scanData.memo,
-                } as Payee
-              }),
-            }
-          } else {
-            throw new Error('Invalid transaction encoding')
-          }
-
-          scanResult.payees.forEach(({ address }) =>
-            assertValidAddress(address),
-          )
-          return scanResult
-        }
-        throw new Error('Invalid transaction encoding')
+        return scanResult
       } catch (error) {
         throw new Error('Invalid transaction encoding')
       }
