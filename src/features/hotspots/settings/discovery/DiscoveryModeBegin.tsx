@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ActivityIndicator } from 'react-native'
 import { Hotspot } from '@helium/http'
@@ -66,6 +66,25 @@ const DiscoveryModeBegin = ({
     showError()
   }, [showOKAlert, error, onClose, alertShown])
 
+  const subtitle = useMemo(() => {
+    const length = recentDiscoveryInfo?.requestLength || 0
+    const seconds = length % 60
+    const minutes = Math.floor(length / 60)
+
+    let duration = ''
+    if (minutes) {
+      duration = t('generic.minutes', { count: minutes })
+    }
+    if (seconds) {
+      duration = `${duration}${duration ? ' ' : ''}${t('generic.seconds', {
+        count: seconds,
+      })}`
+    }
+    return t('discovery.begin.subtitle', {
+      duration,
+    })
+  }, [recentDiscoveryInfo?.requestLength, t])
+
   return (
     <Box height={hp(85)}>
       <Box backgroundColor="purpleMain" height={210}>
@@ -90,8 +109,8 @@ const DiscoveryModeBegin = ({
           <Text variant="medium" fontSize={24} maxFontSizeMultiplier={1}>
             {t('discovery.begin.title')}
           </Text>
-          <Text variant="light" fontSize={16} maxFontSizeMultiplier={1.1}>
-            {t('discovery.begin.subtitle')}
+          <Text variant="regular" fontSize={16} maxFontSizeMultiplier={1.1}>
+            {subtitle}
           </Text>
           {recentRequests && (
             <Text
