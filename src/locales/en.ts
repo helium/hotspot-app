@@ -136,6 +136,10 @@ export default {
     hnt_to_currency: '{{currencyType}}. Data from CoinGecko',
     search_location: 'Search for an address or place',
     unavailable: 'Unavailable',
+    minutes: '{{count}} minute',
+    minutes_plural: '{{count}} minutes',
+    seconds: '{{count}} second',
+    seconds_plural: '{{count}} seconds',
   },
   hotspot_setup: {
     selection: {
@@ -993,7 +997,7 @@ export default {
     begin: {
       title: 'Discovery Mode',
       subtitle:
-        'Find out which Hotspots can hear you by sending radio packets for a short period of time.',
+        'Find out which Hotspots can hear you by sending radio packets for {{duration}}.',
       body:
         'Discovery Mode is free to use for now, up to {{requestsPerDay}} sessions per day.',
       previous_sessions: 'Previous Sessions',
