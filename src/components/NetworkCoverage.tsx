@@ -96,8 +96,10 @@ const NetworkCoverage = ({
             id="hotspotCount"
             sourceID="tileServerPoints"
             sourceLayerID="public.points"
+            minZoomLevel={11}
             style={{
               textField: '{hotspot_count}',
+              textOpacity: ['case', ['==', ['get', 'hotspot_count'], 1], 0, 1],
             }}
           />
         </MapboxGL.VectorSource>

@@ -479,8 +479,8 @@ const HotspotsView = ({
           <Map
             ownedHotspots={ownedHotspots}
             selectedHotspot={selectedHotspot}
-            maxZoomLevel={14}
-            zoomLevel={14}
+            maxZoomLevel={12}
+            zoomLevel={12}
             witnesses={showWitnesses ? witnesses : []}
             mapCenter={location}
             animationMode="easeTo"

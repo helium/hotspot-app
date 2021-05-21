@@ -52,7 +52,11 @@ const H3Grid = ({
 
   return (
     <MapboxGL.ShapeSource id="h3Grid" shape={sourceSet}>
-      <MapboxGL.LineLayer id="h3GridLine" style={styles.gridLine} />
+      <MapboxGL.LineLayer
+        id="h3GridLine"
+        style={styles.gridLine}
+        minZoomLevel={11}
+      />
     </MapboxGL.ShapeSource>
   )
 }
