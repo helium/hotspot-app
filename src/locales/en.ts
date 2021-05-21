@@ -145,6 +145,21 @@ export default {
     selection: {
       title: 'Choose\nyour Hotspot.',
       subtitle: 'What kind of Hotspot do you\nwish to add?',
+<<<<<<< HEAD
+=======
+      helium: 'Helium Hotspot',
+      rak: 'RAK Hotspot Miner',
+      nebrain: 'Nebra Indoor Hotspot',
+      nebraout: 'Nebra Outdoor Hotspot',
+      bobcat: 'Bobcat Miner 300',
+      syncrobit: 'SyncroB.it Hotspot',
+      longapone: 'LongAP One Hotspot',
+      seeed: 'SenseCAP M1',
+      third_party_header: 'Other Hotspots',
+      helium_edition: 'For the Helium Network',
+      fine_print:
+        'RAK Hotspot Miners have special firmware preloaded by RAK. Double check your hardware is a RAK Hotspot Miner before proceeding.',
+>>>>>>> 3af92c2 (add sensecap-m1 hotspot)
     },
     education: {
       title: 'Placing\nyour Hotspot.',
@@ -971,6 +986,23 @@ export default {
     },
   },
   antennas: {
+<<<<<<< HEAD
+=======
+    helium_us: 'Helium Hotspot (US 915)',
+    helium_eu: 'Helium Hotspot (EU 868)',
+    rak_hotspot_us: 'RAK Hotspot Miner (US 915)',
+    rak_hotspot_eu: 'RAK Hotspot Miner (EU 868)',
+    nebra_outdoor: 'Nebra Outdoor Hotspot',
+    nebra_indoor: 'Nebra Indoor Hotspot',
+    bobcat: 'Bobcat Miner 300 (All)',
+    syncrobit_us: 'Syncrob.it (US 915)',
+    syncrobit_eu: 'Syncrob.it (EU 868)',
+    longapone_eu: 'LongAP One (EU 868)',
+    rak_custom: 'RAK Antenna',
+    sensecap_m1_us: 'SenseCAP M1 (US 915)',
+    sensecap_m1_eu: 'SenseCAP M1 (EU 868)',
+    custom: 'Custom Antenna',
+>>>>>>> 3af92c2 (add sensecap-m1 hotspot)
     onboarding: {
       title: 'Antenna Setup',
       subtitle: 'Submit antenna and height details for your Hotspot.',
