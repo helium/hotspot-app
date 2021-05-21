@@ -139,6 +139,7 @@ export default {
       nebrain: 'Nebra Indoor Hotspot',
       nebraout: 'Nebra Outdoor Hotspot',
       bobcat: 'Bobcat Miner 300',
+      seeed: 'SenseCAP M1',
       syncrobit: 'SyncroB.it Hotspot',
       third_party_header: '其他 Hotspot',
       helium_edition: '关于 Helium Network',
@@ -179,6 +180,8 @@ export default {
         '<b><white>诊断支持帮助 Bobcat 安全确认您的 Hotspot 问题。</white></b>\n\nBobcat 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@bobcatminer.com</b></purple>。',
       syncrobit_p_1:
         '<b><white>诊断支持帮助 SyncroB.it 安全确认您的 Hotspot 问题。</white></b>\n\nSyncroB.it 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@syncrob.it</b></purple>。',
+      seeed_p_1:
+        '<b><white>诊断支持帮助我们安全确认您的M1网关问题。</white></b>\n\n我们不会访问私人秘钥，且仅可访问您的M1网关，无法访问您网络中的其他设备。\n\n若您选择退出诊断支持，请邮件联系<purple><b>SenseCAP@seeed.cc/b></purple>并提供您的相关购买记录和详细问题描述以获得技术支持。',
     },
     power: {
       title: '开机',
@@ -190,6 +193,8 @@ export default {
       bobcat_subtitle_1:
         '将电源适配器插入靠窗的插座，并将天线插入 Hotspot 背面并旋紧。',
       syncrobit_subtitle_1: '连接天线并插接设备',
+      seeed_subtitle_1:
+        '请将天线接入M1网关背面SMA天线座子并旋紧，将5V-3A电源适配器接入USB-C电源接口并接通电源。',
       helium_subtitle_2: '您的 Hotspot 将随即启动，就绪后会亮起绿色指示灯。',
       rak_subtitle_2: '开机后，RAK Hotspot Miner 将亮起红色 LED 指示灯。',
       nebrain_subtitle_2:
@@ -199,6 +204,8 @@ export default {
       bobcat_subtitle_2: '当指示灯由红色变为黄色，即表示 Hotspot 准备就绪。',
       syncrobit_subtitle_2:
         '开机后，SyncroB.it Hotspot 将亮起蓝色 LED 指示灯。',
+      seeed_subtitle_2:
+        '开机约30秒后，背面的蓝色指示灯从熄灭状态变为快闪模式，表示M1网关已准备就绪。',
     },
     pair: {
       title: '蓝牙',
@@ -210,6 +217,8 @@ export default {
       bobcat_subtitle_1:
         '使用随附的大头针按下 Hotspot 背面的 BT 按钮，长按 5 秒钟。',
       syncrobit_subtitle_1: 'SyncroB.it Hotspot 上没有配对按钮。',
+      seeed_subtitle_1:
+        '按下M1背面的蓝牙配置按钮约5秒钟。',
       helium_subtitle_2: '继续操作之前，请确保您手机上的蓝牙已开启',
       rak_subtitle_2:
         'RAK Hotspot Miner 开机后，蓝牙会自动启用 5 分钟。\n\nHotspot 最多需要 1 分钟即可完全启动。',
@@ -221,6 +230,8 @@ export default {
         '当指示灯由黄色变为蓝色，即表示 Hotspot 准备进行配对。\n\n请务必打开您手机的蓝牙功能！',
       syncrobit_subtitle_2:
         'SyncroB.it Hotspot 开机后，蓝牙会自动启用 5 分钟。\n\nHotspot 最多需要 1 分钟即可完全启动。',
+      seeed_subtitle_2:
+        '当指示灯从快闪模式变为慢闪模式，即表示M1网关蓝牙等待连接中。\n\n请打开手机蓝牙功能并从列表中选择对应网关',
       alert_no_permissions: {
         title: '授权蓝牙',
         body: 'Helium 需要蓝牙使用权限。您可以在“设置”中启用蓝牙权限。',

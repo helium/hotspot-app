@@ -28,6 +28,9 @@ const imagesByHotspotName: Record<string, any> = {
   'LongAP One': (
     <Image source={require('../assets/images/longap-one-hotspot.png')} />
   ),
+  'SenseCAP M1': (
+    <Image source={require('../assets/images/sensecap-m1.png')} />
+  ),
 }
 
 const HotspotPairingList = ({

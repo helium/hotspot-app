@@ -10,6 +10,8 @@ export type AntennaId =
   | 'syncrobit_eu'
   | 'rak_custom'
   | 'longapone_eu'
+  | 'sensecap_m1_us'
+  | 'sensecap_m1_eu'
   | 'custom'
 
 export type Antenna = { id: AntennaId; gain: number }
@@ -26,5 +28,7 @@ export const Antennas: Record<AntennaId, Antenna> = {
   syncrobit_eu: { id: 'syncrobit_eu', gain: 2.3 },
   rak_custom: { id: 'rak_custom', gain: 5.8 },
   longapone_eu: { id: 'longapone_eu', gain: 3 },
+  sensecap_m1_us: { id: 'sensecap_m1_us', gain: 1.2 },
+  sensecap_m1_eu: { id: 'sensecap_m1_eu', gain: 1.2 },
   custom: { id: 'custom', gain: 1 },
 }

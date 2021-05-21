@@ -45,6 +45,8 @@ const AntennaSetupScreen = () => {
         return isUS ? Antennas.syncrobit_us : Antennas.syncrobit_eu
       case 'LONGAPONE':
         return Antennas.longapone_eu
+      case 'Seeed':
+        return isUS ? Antennas.sensecap_m1_us : Antennas.sensecap_m1_eu
     }
   }, [hotspotType])
 

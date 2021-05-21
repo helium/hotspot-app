@@ -13,6 +13,7 @@ import NEBRAOUT from '../../../assets/images/nebra-out.svg'
 import BOBCAT from '../../../assets/images/bobcat.svg'
 import SYNCROBIT from '../../../assets/images/syncrobit.svg'
 import LONGAPONE from '../../../assets/images/longap-one.svg'
+import SEEED from '../../../assets/images/sensecap-m1.svg'
 import Text from '../../../components/Text'
 
 type Props = {
@@ -58,6 +59,8 @@ const HotspotSelectionListItem = ({
         return <SYNCROBIT color={svgColor} {...svgProps} />
       case 'LONGAPONE':
         return <LONGAPONE color={svgColor} {...svgProps} />
+      case 'Seeed':
+        return <SEEED color={svgColor} {...svgProps} />
     }
   }, [svgColor, hotspotType, svgProps])
 

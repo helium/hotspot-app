@@ -38,6 +38,8 @@ const HotspotSetupDiagnosticsScreen = () => {
         return 'hotspot_setup.diagnostics.syncrobit_p_1'
       case 'LONGAPONE':
         return 'hotspot_setup.diagnostics.longap_p_1'
+      case 'Seeed':
+        return 'hotspot_setup.diagnostics.seeed_p_1'
     }
   }
 

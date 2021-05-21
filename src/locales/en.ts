@@ -148,6 +148,7 @@ export default {
       bobcat: 'Bobcat Miner 300',
       syncrobit: 'SyncroB.it Hotspot',
       longapone: 'LongAP One Hotspot',
+      seeed: 'SenseCAP M1',
       third_party_header: 'Other Hotspots',
       helium_edition: 'For the Helium Network',
       fine_print:
@@ -191,6 +192,8 @@ export default {
         '<b><white>Diagnostic support allows SyncroB.it to identify issues with your Hotspot in a secure way.</white></b>\n\nSyncroB.it will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@syncrob.it</b></purple> from the email used to purchase the Hotspot.',
       longap_p_1:
         '<b><white>Diagnostic support allows LongAP to identify issues with your Hotspot in a secure way.</white></b>\n\nLongAP will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@longap.com</b></purple> from the email used to purchase the Hotspot.',
+      seeed_p_1:
+        '<b><white>Diagnostic support allows us to identify issues with your M1 gateway in a secure way.</white></b>\n\nWe will never access to private keys and will only ever be able to access your M1 gateway and not other devices on your network.\n\nIf you would like to opt-out of diagnostic support, please email  <purple><b>SenseCAP@seeed.cc</b></purple>  and provide us with your purchase infomation and detailed problem discription to get support. ',
     },
     power: {
       title: 'Power Up',
@@ -208,6 +211,8 @@ export default {
       syncrobit_subtitle_1: 'Attach the antenna and plug in the device',
       longapone_subtitle_1:
         "Attach the antenna's and plug in the provided power adapter.",
+      seeed_subtitle_1:
+        'Attach the antenna to the SMA antenna connector and plug the provided 5V-3A power adapter to the USB-C power connector.',
       helium_subtitle_2:
         'Your Hotspot will boot up, and its light will become Green when ready.',
       rak_subtitle_2:
@@ -222,6 +227,8 @@ export default {
         'The SyncroB.it Hotspot LED bar will light up blue once it’s powered on.',
       longapone_subtitle_2:
         'The LongAP One PWR LED will light up once it’s powered on.',
+      seeed_subtitle_2:
+        'About 30 seconds, the blue indicator light on the back of M1 changes from off to fast flash mode, indicating that the M1 gateway is ready.',
     },
     pair: {
       title: 'Bluetooth',
@@ -238,6 +245,8 @@ export default {
         'There is no pairing button on the SyncroB.it Hotspot.',
       longapone_subtitle_1:
         'Use a paperclip to shortly press the button in the little hole right of the LEDs.',
+      seeed_subtitle_1:
+        'Press the button on the back of M1 for 5 seconds.',
       helium_subtitle_2:
         "Ensure your phone's bluetooth is on before proceeding",
       rak_subtitle_2:
@@ -252,6 +261,8 @@ export default {
         'Bluetooth is automatically enabled for 5 minutes after the SyncroB.it Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.',
       longapone_subtitle_2:
         'Once the PWR LED is slowly blinking\n\nPress Next to scan.',
+      seeed_subtitle_2:
+        'The blue indicator light on the back of M1 will change from fast flash mode to slow flash mode, indicating that M1 gateway is waiting for connection.\n\nMake sure your phone has turned on the bluetooth pairing mode and select the SenseCAP M1 from the device list.',
       alert_no_permissions: {
         title: 'Authorize Bluetooth',
         body:
@@ -1043,6 +1054,8 @@ export default {
     syncrobit_eu: 'Syncrob.it (EU 868)',
     longapone_eu: 'LongAP One (EU 868)',
     rak_custom: 'RAK Antenna',
+    sensecap_m1_us: 'SenseCAP M1 (US 915)',
+    sensecap_m1_eu: 'SenseCAP M1 (EU 868)',
     custom: 'Custom Antenna',
     onboarding: {
       title: 'Antenna Setup',
