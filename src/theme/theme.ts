@@ -17,6 +17,7 @@ const palette = {
   blueLight: '#51AEFF',
   blueMain: '#4BABFF',
   blueDark: '#232E39',
+  blueDarkest: '#1C1E3B',
 
   grayLight: '#DADADA',
   grayExtraLight: '#788AB4',
@@ -62,7 +63,7 @@ const palette = {
   orangeExtraDark: '#C97C09',
   orangeDark: '#FCB345',
   orange: '#FF852F',
-  yellow: '#FFCB46',
+  yellow: '#FCC945',
   gold: '#FFC769',
   gray: '#687A8C',
 

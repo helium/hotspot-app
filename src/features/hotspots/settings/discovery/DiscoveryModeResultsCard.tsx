@@ -1,18 +1,22 @@
-import React, { memo, useMemo, useState } from 'react'
+import React, { memo, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { addSeconds } from 'date-fns'
 import { Hotspot } from '@helium/http'
+import Carousel from 'react-native-snap-carousel'
 import Box from '../../../../components/Box'
 import Button from '../../../../components/Button'
 import Card from '../../../../components/Card'
 import Text from '../../../../components/Text'
-import { DiscoveryRequest } from '../../../../store/discovery/discoveryTypes'
+import {
+  DiscoveryRequest,
+  DiscoveryResponse,
+} from '../../../../store/discovery/discoveryTypes'
 import animateTransition from '../../../../utils/animateTransition'
 import DiscoveryModeSearching from './DiscoveryModeSearching'
 import useShareDiscovery from './useShareDiscovery'
 import DateModule from '../../../../utils/DateModule'
-import useMount from '../../../../utils/useMount'
-import { prettyPrintToConsole } from '../../../../utils/logger'
+import { wp } from '../../../../utils/layout'
+import DiscoveryModeResultsCardItem from './DiscoveryModeResultsCardItem'
 
 type LineItemType = { label: string; value: string }
 const LineItem = ({ label, value }: LineItemType) => (
@@ -31,7 +35,7 @@ type Props = {
   isPolling: boolean
   selectedHotspots: Hotspot[]
   hideOverlay: () => void
-  numResponses: number
+  responses: DiscoveryResponse[]
   requestTime: number
   currentTime: number
   requestLength: number
@@ -40,7 +44,7 @@ const DiscoveryModeResultsCard = ({
   request,
   isPolling,
   selectedHotspots,
-  numResponses,
+  responses,
   hideOverlay,
   requestTime,
   currentTime,
@@ -49,14 +53,6 @@ const DiscoveryModeResultsCard = ({
   const { t } = useTranslation()
   const { shareResults } = useShareDiscovery(request)
   const [resultDateStr, setResultDateStr] = useState('')
-
-  useMount(() => {
-    // TODO: Remove
-    prettyPrintToConsole(selectedHotspots)
-    console.log(!!hideOverlay)
-
-    // TODO: Create hotspots carousel and use DiscoveryModeResultsCardItem
-  })
 
   useMemo(async () => {
     if (isPolling || !request) return
@@ -75,7 +71,7 @@ const DiscoveryModeResultsCard = ({
     const items: LineItemType[] = [
       {
         label: t('discovery.results.responded'),
-        value: `${numResponses}`,
+        value: `${responses.length}`,
       },
     ]
     if (request) {
@@ -114,10 +110,10 @@ const DiscoveryModeResultsCard = ({
   }, [
     currentTime,
     isPolling,
-    numResponses,
     request,
     requestLength,
     requestTime,
+    responses.length,
     resultDateStr,
     t,
   ])
@@ -130,17 +126,41 @@ const DiscoveryModeResultsCard = ({
     }
   }, [isPolling])
 
+  const carouselData = useMemo(() => {
+    return selectedHotspots
+  }, [selectedHotspots])
+
+  type CarouselItem = { item: Hotspot }
+  const renderItem = useCallback(
+    ({ item }: CarouselItem) => {
+      return (
+        <DiscoveryModeResultsCardItem
+          address={item.address}
+          rewardScale={item.rewardScale}
+          name={item.name}
+          distance={6969}
+          hideOverlay={hideOverlay}
+        />
+      )
+    },
+    [hideOverlay],
+  )
+
   return (
-    <Box
-      position="absolute"
-      bottom={0}
-      left={0}
-      right={0}
-      minHeight={210}
-      marginHorizontal="ms"
-    >
+    <Box position="absolute" bottom={0} left={0} right={0} minHeight={210}>
+      <Carousel
+        layout="default"
+        vertical={false}
+        data={carouselData}
+        renderItem={renderItem}
+        sliderWidth={wp(100)}
+        itemWidth={wp(100)}
+        inactiveSlideScale={1}
+      />
+
       {isPolling && <DiscoveryModeSearching />}
       <Card
+        marginHorizontal="ms"
         style={styles.card}
         variant="modal"
         backgroundColor="white"
@@ -168,13 +188,6 @@ const DiscoveryModeResultsCard = ({
             onPress={shareResults}
           />
         )}
-        <Box flexDirection="row">
-          {(selectedHotspots || []).map((h) => (
-            <Text variant="body1" color="black" key={h.address}>
-              {h.name}
-            </Text>
-          ))}
-        </Box>
       </Card>
     </Box>
   )

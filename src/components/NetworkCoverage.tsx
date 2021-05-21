@@ -6,7 +6,6 @@ import MapboxGL, {
 } from '@react-native-mapbox-gl/maps'
 import React, { memo, useCallback, useMemo } from 'react'
 import { StyleProp } from 'react-native'
-import { prettyPrintToConsole } from '../utils/logger'
 
 export type HexProperties = {
   avg_reward_scale: number
@@ -45,7 +44,6 @@ const NetworkCoverage = ({
   const onPress = useCallback(
     (event: OnPressEvent) => {
       if (!onHexSelected) return
-      prettyPrintToConsole(event)
 
       const { properties } = event.features[0]
       if (properties) {

@@ -3,23 +3,32 @@ import React, { memo, useMemo } from 'react'
 import { Feature, Position } from 'geojson'
 import geojson2h3 from 'geojson2h3'
 import { StyleProp } from 'react-native'
+import { Colors } from '../theme/theme'
+import { useColors } from '../theme/themeHooks'
 
 type Props = {
   bounds?: Position[]
   res?: number
-  color?: string
+  color?: Colors
   width?: number
   visible?: boolean
+  lineLayerIndex?: number
 }
 
 const H3Grid = ({
   bounds,
   res = 8,
-  color = '#1C1E3B',
+  color = 'blueDarkest',
   width = 1,
   visible = true,
+  lineLayerIndex = 1,
 }: Props) => {
-  const styles = useMemo(() => makeStyles(color, width), [color, width])
+  const colors = useColors()
+  const styles = useMemo(() => makeStyles(colors[color], width), [
+    color,
+    colors,
+    width,
+  ])
 
   const boundingBox = useMemo(() => {
     return {
@@ -43,7 +52,9 @@ const H3Grid = ({
 
   const sourceSet = useMemo(() => {
     const hexagons = geojson2h3.featureToH3Set(boundingBox, res)
-    return geojson2h3.h3SetToFeatureCollection(hexagons)
+    return geojson2h3.h3SetToFeatureCollection(hexagons, (h3Index) => ({
+      id: h3Index,
+    }))
   }, [boundingBox, res])
 
   if (!bounds || !visible) {
@@ -54,8 +65,9 @@ const H3Grid = ({
     <MapboxGL.ShapeSource id="h3Grid" shape={sourceSet}>
       <MapboxGL.LineLayer
         id="h3GridLine"
-        style={styles.gridLine}
         minZoomLevel={11}
+        layerIndex={lineLayerIndex}
+        style={styles.gridLine}
       />
     </MapboxGL.ShapeSource>
   )

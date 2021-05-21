@@ -15,7 +15,6 @@ import MapboxGL, {
 import { BoxProps } from '@shopify/restyle'
 import { Platform, StyleProp } from 'react-native'
 import { Position } from 'geojson'
-import { Hotspot } from '@helium/http'
 import { Theme } from '../../../../theme/theme'
 import Box from '../../../../components/Box'
 import { DiscoveryResponse } from '../../../../store/discovery/discoveryTypes'
@@ -23,17 +22,13 @@ import { findBounds } from '../../../../utils/mapUtils'
 import { useColors } from '../../../../theme/themeHooks'
 import useVisible from '../../../../utils/useVisible'
 import H3Grid from '../../../../components/H3Grid'
-import NetworkCoverage, {
-  HexProperties,
-} from '../../../../components/NetworkCoverage'
-import HotspotsCoverage from '../../../../components/HotspotsCoverage'
+import Coverage from '../../../../components/Coverage'
 
 const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
 
 type Props = BoxProps<Theme> & {
   responses: DiscoveryResponse[]
   onSelectHex: (id: string) => void
-  selectedHotspots: Hotspot[]
   selectedHexId?: string
 }
 const isAndroid = Platform.OS === 'android'
@@ -44,7 +39,6 @@ const DiscoveryMap = ({
   selectedHexId,
   ...props
 }: Props) => {
-  const colors = useColors()
   const cameraRef = useRef<MapboxGL.Camera>(null)
   const mapRef = useRef<MapboxGL.MapView>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
@@ -59,6 +53,10 @@ const DiscoveryMap = ({
   const { purpleMain } = useColors()
 
   const styles = useMemo(() => makeStyles({ purpleMain }), [purpleMain])
+
+  const showCoverage = useMemo(() => {
+    return responses.find((r) => !!r.location)
+  }, [responses])
 
   const setupMap = useCallback(async () => {
     setMapLoaded(true)
@@ -88,12 +86,6 @@ const DiscoveryMap = ({
     setMapBounds(currentBounds)
   }, [])
 
-  const handleNetworkHexPress = useCallback(
-    (hexProps: HexProperties) => {
-      onSelectHex(hexProps.id)
-    },
-    [onSelectHex],
-  )
   return (
     <Box {...props}>
       {(visible || !isAndroid) && (
@@ -106,26 +98,23 @@ const DiscoveryMap = ({
           compassEnabled={false}
           onDidFinishLoadingMap={setupMap}
         >
-          <MapboxGL.Camera ref={cameraRef} maxZoomLevel={12} />
+          <MapboxGL.Camera
+            ref={cameraRef}
+            defaultSettings={{ centerCoordinate: [-122.4194, 37.7749] }}
+            maxZoomLevel={12}
+            minZoomLevel={10}
+            followUserLocation={responses.length === 0}
+          />
 
           <H3Grid bounds={mapBounds} />
-          <NetworkCoverage
-            onHexSelected={handleNetworkHexPress}
-            selectedHexId={selectedHexId}
-            outlineColor={colors.white}
-            outlineWidth={2}
-          />
-          <HotspotsCoverage
-            id="responders"
-            hotspots={responses}
-            fill
-            onHexSelected={onSelectHex}
-            fillColor={colors.yellow}
-            selectedHexId={selectedHexId}
-            outline
-            outlineColor={colors.white}
-            outlineWidth={2}
-          />
+          {showCoverage && (
+            <Coverage
+              showCount
+              onHexSelected={onSelectHex}
+              selectedHexId={selectedHexId}
+              witnesses={responses}
+            />
+          )}
         </MapboxGL.MapView>
       )}
     </Box>

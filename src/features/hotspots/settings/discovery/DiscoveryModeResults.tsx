@@ -54,6 +54,7 @@ const DiscoveryModeResults = ({
   }, [hotspot.address, request])
 
   const showOverlay = async (hexId: string) => {
+    animateTransition('DiscoveryMode.ShowOverlay')
     setSelectedHexId(hexId)
     dispatch(fetchHotspotsForHex({ hexId }))
   }
@@ -69,10 +70,9 @@ const DiscoveryModeResults = ({
         responses={filteredResponses}
         onSelectHex={showOverlay}
         selectedHexId={selectedHexId}
-        selectedHotspots={selectedHotspots}
       />
       <DiscoveryModeResultsCard
-        numResponses={filteredResponses.length}
+        responses={filteredResponses}
         request={request}
         isPolling={isPolling}
         selectedHotspots={selectedHotspots}
