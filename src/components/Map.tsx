@@ -252,6 +252,7 @@ const Map = ({
         <NetworkCoverage
           onHexSelected={onHexSelected}
           visible={showNearbyHotspots}
+          showCount
         />
         <H3Grid bounds={mapBounds} visible={showH3Grid} />
         <HotspotsCoverage

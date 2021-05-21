@@ -23,6 +23,7 @@ type Props = {
   selectedHexId?: string
   outlineWidth?: number
   outline?: boolean
+  showCount?: boolean
 }
 
 const NetworkCoverage = ({
@@ -34,6 +35,7 @@ const NetworkCoverage = ({
   selectedHexId,
   outlineWidth = 1,
   outline = true,
+  showCount = false,
 }: Props) => {
   const styles = useMemo(
     () => makeStyles(fillColor, outlineColor, opacity, outlineWidth),
@@ -63,27 +65,44 @@ const NetworkCoverage = ({
   }
 
   return (
-    <MapboxGL.VectorSource
-      id="tileServer"
-      url="https://helium-hotspots.s3-us-west-2.amazonaws.com/public.h3_res8.json"
-      onPress={onPress}
-    >
-      <MapboxGL.FillLayer
-        id="hexagonFill"
-        sourceID="tileServer"
-        sourceLayerID="public.h3_res8"
-        style={styles.hexagonFill}
-      />
-      {outline && (
-        <MapboxGL.LineLayer
-          id="hexagonLine"
-          sourceID="tileServer"
+    <>
+      <MapboxGL.VectorSource
+        id="tileServerH3"
+        url="https://helium-hotspots.s3-us-west-2.amazonaws.com/public.h3_res8.json"
+        onPress={onPress}
+      >
+        <MapboxGL.FillLayer
+          id="hexagonFill"
+          sourceID="tileServerH3"
           sourceLayerID="public.h3_res8"
-          style={styles.line}
-          filter={outlineFilter}
+          style={styles.hexagonFill}
         />
+        {outline && (
+          <MapboxGL.LineLayer
+            id="hexagonLine"
+            sourceID="tileServer"
+            sourceLayerID="public.h3_res8"
+            style={styles.line}
+            filter={outlineFilter}
+          />
+        )}
+      </MapboxGL.VectorSource>
+      {showCount && (
+        <MapboxGL.VectorSource
+          id="tileServerPoints"
+          url="https://helium-hotspots.s3-us-west-2.amazonaws.com/public.points.json"
+        >
+          <MapboxGL.SymbolLayer
+            id="hotspotCount"
+            sourceID="tileServerPoints"
+            sourceLayerID="public.points"
+            style={{
+              textField: '{hotspot_count}',
+            }}
+          />
+        </MapboxGL.VectorSource>
       )}
-    </MapboxGL.VectorSource>
+    </>
   )
 }
 
