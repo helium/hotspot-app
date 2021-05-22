@@ -1,68 +1,53 @@
-/* eslint-disable react/jsx-props-no-spreading */
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import React, { memo, useMemo, useCallback, useState, useEffect } from 'react'
 import { BoxProps } from '@shopify/restyle'
 import Close from '@assets/images/close.svg'
-import CarotDown from '@assets/images/carot-down.svg'
-import Kabob from '@assets/images/kabob.svg'
+import CarotDown from '@assets/images/carot-down-picker.svg'
 import { useTranslation } from 'react-i18next'
-import { Modal, StyleSheet } from 'react-native'
+import { FlatList, Modal, StyleSheet } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated'
-import { FlatList } from 'react-native-gesture-handler'
-import { Colors, Theme } from '../theme/theme'
+import { Theme } from '../theme/theme'
 import HeliumActionSheetItem, {
-  HeliumActionSheetItemHeight,
   HeliumActionSheetItemType,
+  HeliumActionSheetItemHeight,
 } from './HeliumActionSheetItem'
 import { useColors } from '../theme/themeHooks'
-import Text, { TextProps } from './Text'
+import Text from './Text'
 import Box from './Box'
 import TouchableOpacityBox from './TouchableOpacityBox'
 import BlurBox from './BlurBox'
 import { ReAnimatedBox } from './AnimatedBox'
-import useVisible from '../utils/useVisible'
+import sleep from '../utils/sleep'
 
 type Props = BoxProps<Theme> & {
   data: Array<HeliumActionSheetItemType>
-  selectedValue?: string | number
-  onValueSelected?: (itemValue: string | number, itemIndex: number) => void
+  selectedValue: string | number
+  onValueChanged: (itemValue: string | number, itemIndex: number) => void
   title?: string
   prefix?: string
   minWidth?: number
-  textProps?: TextProps
-  prefixTextProps?: TextProps
-  buttonProps?: BoxProps<Theme>
-  iconColor?: Colors
-  initialValue?: string
-  iconVariant?: 'carot' | 'kabob' | 'none'
-  closeOnSelect?: boolean
+  listFormat?: boolean
 }
 type ListItem = { item: HeliumActionSheetItemType; index: number }
 
 const HeliumActionSheet = ({
   data,
   selectedValue,
-  onValueSelected,
+  onValueChanged,
   title,
   prefix,
-  iconVariant = 'carot',
-  iconColor: carotColor = 'purpleMain',
-  buttonProps,
-  initialValue,
-  textProps,
-  prefixTextProps,
-  closeOnSelect = true,
+  listFormat,
   ...boxProps
 }: Props) => {
   const insets = useSafeAreaInsets()
   const [modalVisible, setModalVisible] = useState(false)
   const [sheetHeight, setSheetHeight] = useState(0)
   const { t } = useTranslation()
-  const colors = useColors()
+  const { purpleGray } = useColors()
   const offset = useSharedValue(0)
 
   const animatedStyles = useAnimatedStyle(() => {
@@ -99,8 +84,6 @@ const HeliumActionSheet = ({
     setModalVisible(false)
   }, [])
 
-  useVisible({ onDisappear: handleClose })
-
   useEffect(() => {
     if (modalVisible) {
       offset.value = 0
@@ -111,12 +94,9 @@ const HeliumActionSheet = ({
   const keyExtractor = useCallback((item) => item.value, [])
 
   const buttonTitle = useMemo(() => {
-    if (initialValue && !selectedValue) {
-      return initialValue
-    }
     const item = data.find((d) => d.value === selectedValue)
-    return item?.label || ''
-  }, [data, initialValue, selectedValue])
+    return ` ${item?.label || ''}`
+  }, [data, selectedValue])
 
   const selected = useCallback(
     (value: string | number) => value === selectedValue,
@@ -124,32 +104,21 @@ const HeliumActionSheet = ({
   )
 
   const handleItemSelected = useCallback(
-    (
-      value: string | number,
-      index: number,
-      action?: () => void,
-    ) => async () => {
-      if (closeOnSelect) {
-        handleClose()
-      }
-
-      if (action) {
-        action()
-      }
-      if (onValueSelected) {
-        onValueSelected?.(value, index)
-      }
+    (value: string | number, index: number) => async () => {
+      handleClose()
+      await sleep(100)
+      onValueChanged(value, index)
     },
-    [closeOnSelect, handleClose, onValueSelected],
+    [handleClose, onValueChanged],
   )
 
   const renderItem = useCallback(
-    ({ index, item: { label, value, Icon, action } }: ListItem) => {
+    ({ index, item: { label, value, Icon } }: ListItem) => {
       return (
         <HeliumActionSheetItem
           label={label}
           value={value}
-          onPress={handleItemSelected(value, index, action)}
+          onPress={handleItemSelected(value, index)}
           selected={selected(value)}
           Icon={Icon}
         />
@@ -160,82 +129,61 @@ const HeliumActionSheet = ({
 
   const footer = useMemo(() => {
     return (
-      <Box marginBottom="xl">
-        <TouchableOpacityBox
-          onPress={handleClose}
-          style={styles.cancelContainer}
-          height={49}
-          marginVertical="m"
-          alignItems="center"
-          justifyContent="center"
-          borderRadius="ms"
-        >
-          <Text variant="medium" fontSize={18} style={styles.cancelText}>
-            {t('generic.cancel')}
-          </Text>
-        </TouchableOpacityBox>
-      </Box>
+      <TouchableOpacityBox
+        onPress={handleClose}
+        style={styles.cancelContainer}
+        height={49}
+        marginVertical="m"
+        alignItems="center"
+        justifyContent="center"
+        borderRadius="ms"
+      >
+        <Text variant="medium" fontSize={18} style={styles.cancelText}>
+          {t('generic.cancel')}
+        </Text>
+      </TouchableOpacityBox>
     )
   }, [handleClose, t])
-
-  const icon = useMemo(() => {
-    if (iconVariant === 'none') return
-
-    if (iconVariant === 'kabob') return <Kabob color={colors[carotColor]} />
-
-    return <CarotDown color={colors[carotColor]} />
-  }, [carotColor, colors, iconVariant])
 
   const displayText = useMemo(() => {
     return (
       <TouchableOpacityBox
+        paddingVertical="xs"
         onPress={handlePresentModalPress}
         flexDirection="row"
         alignItems="center"
         justifyContent="flex-end"
-        {...buttonProps}
+        minWidth={100}
       >
-        <Box flexDirection="row">
-          {!!prefix && (
-            <Text
-              color="black"
-              maxFontSizeMultiplier={1}
-              marginRight="xs"
-              variant="bold"
-              fontSize={20}
-              {...prefixTextProps}
-            >
-              {prefix}
-            </Text>
-          )}
-          {!!buttonTitle && (
-            <Text
-              maxFontSizeMultiplier={1}
-              marginRight="s"
-              variant="bold"
-              fontSize={20}
-              color="purpleMain"
-              {...textProps}
-            >
-              {buttonTitle}
-            </Text>
-          )}
-        </Box>
-        {icon}
+        {!!prefix && (
+          <Text
+            variant="bold"
+            fontSize={20}
+            color="black"
+            maxFontSizeMultiplier={1}
+          >
+            {prefix}
+          </Text>
+        )}
+        <Text
+          variant={listFormat ? 'regular' : 'bold'}
+          fontSize={listFormat ? 16 : 20}
+          maxFontSizeMultiplier={1}
+          color={listFormat ? 'purpleBrightMuted' : 'purpleMain'}
+          marginRight="s"
+        >
+          {buttonTitle}
+        </Text>
+        {!listFormat && <CarotDown />}
       </TouchableOpacityBox>
     )
-  }, [
-    handlePresentModalPress,
-    buttonProps,
-    prefix,
-    prefixTextProps,
-    buttonTitle,
-    textProps,
-    icon,
-  ])
+  }, [buttonTitle, handlePresentModalPress, listFormat, prefix])
 
   return (
-    <Box {...boxProps}>
+    <Box
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...boxProps}
+    >
       {displayText}
 
       <Modal
@@ -274,7 +222,7 @@ const HeliumActionSheet = ({
                 paddingHorizontal="m"
                 marginEnd="n_m"
               >
-                <Close color={colors.purpleGray} height={14} width={14} />
+                <Close color={purpleGray} height={14} width={14} />
               </TouchableOpacityBox>
             </Box>
             <FlatList
