@@ -214,12 +214,12 @@ const MoreScreen = () => {
         onToggle: () => {
           setShowingDeploymentModeConfirmation(true)
         },
-        renderModal: () =>
-          showingDeploymentModeConfirmation && (
-            <DeploymentModeModal
-              onClose={() => setShowingDeploymentModeConfirmation(false)}
-            />
-          ),
+        renderModal: () => (
+          <DeploymentModeModal
+            isVisible={showingDeploymentModeConfirmation}
+            onClose={() => setShowingDeploymentModeConfirmation(false)}
+          />
+        ),
         disabled: app.isDeploymentModeEnabled,
       },
     ]
