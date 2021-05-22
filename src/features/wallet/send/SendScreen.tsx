@@ -17,7 +17,7 @@ const SendScreen = ({ route }: Props) => {
   const rootNavigation = useNavigation<RootNavigationProp>()
   const scanResult = route?.params?.scanResult
   const type = route?.params?.type
-  const hotspot = route?.params?.hotspot
+  const hotspotAddress = route?.params?.hotspotAddress
   const isSeller = route?.params?.isSeller
   const isPinVerified = route?.params?.pinVerified
   const isPinRequiredForPayment = useSelector(
@@ -56,7 +56,7 @@ const SendScreen = ({ route }: Props) => {
         <SendView
           scanResult={scanResult}
           sendType={type}
-          hotspot={hotspot}
+          hotspotAddress={hotspotAddress}
           isSeller={isSeller}
           canSubmit={canSubmit}
         />

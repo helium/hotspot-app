@@ -21,7 +21,7 @@ export type AppLinkPayment = {
 }
 
 // Used by AppLink to represent multiple payees within a single blockchain transaction
-type Payee = {
+export type Payee = {
   address: string
   amount?: string
   memo?: string

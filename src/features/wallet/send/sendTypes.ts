@@ -1,16 +1,16 @@
 import { StackNavigationProp } from '@react-navigation/stack'
-import { Hotspot } from '@helium/http'
 import Balance, { NetworkTokens } from '@helium/currency'
 import { AppLink, AppLinkCategoryType } from '../../../providers/appLinkTypes'
 
+export type SendRouteType = {
+  scanResult?: AppLink
+  type?: AppLinkCategoryType
+  hotspotAddress?: string
+  isSeller?: boolean
+  pinVerified?: 'fail' | 'pass'
+}
 export type SendStackParamList = {
-  Send: {
-    scanResult?: AppLink
-    type?: AppLinkCategoryType
-    hotspot?: Hotspot
-    isSeller?: boolean
-    pinVerified?: 'fail' | 'pass'
-  }
+  Send: SendRouteType
   SendScan: {
     type?: AppLinkCategoryType
   }
