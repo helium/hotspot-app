@@ -49,8 +49,13 @@ const DeploymentModeModal = ({ isVisible, onClose = () => {} }: Props) => {
     onClose()
   }, [dispatch, onClose])
 
-  const modalBody = (
-    <>
+  return (
+    <HeliumBottomSheet
+      isVisible={isVisible}
+      onClose={onClose}
+      sheetHeight={sheetHeight}
+      title={t('more.sections.security.deploymentMode.title')}
+    >
       <Text>{t('more.sections.security.deploymentMode.description')}</Text>
       <Text marginTop="m" fontFamily={Font.main.semiBold}>
         {t('more.sections.security.deploymentMode.warning')}
@@ -70,17 +75,7 @@ const DeploymentModeModal = ({ isVisible, onClose = () => {} }: Props) => {
           </Text>
         </ActionButton>
       </Box>
-    </>
-  )
-
-  return (
-    <HeliumBottomSheet
-      body={modalBody}
-      isVisible={isVisible}
-      onClose={onClose}
-      sheetHeight={sheetHeight}
-      title={t('more.sections.security.deploymentMode.title')}
-    />
+    </HeliumBottomSheet>
   )
 }
 

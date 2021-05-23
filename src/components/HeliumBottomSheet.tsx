@@ -18,7 +18,7 @@ import { ReAnimatedBox } from './AnimatedBox'
 import useVisible from '../utils/useVisible'
 
 type Props = BoxProps<Theme> & {
-  body?: React.ReactNode
+  children?: React.ReactNode
   isVisible: boolean
   onClose: () => void
   sheetHeight?: number
@@ -26,7 +26,7 @@ type Props = BoxProps<Theme> & {
 }
 
 const HeliumBottomSheet = ({
-  body,
+  children,
   isVisible,
   onClose,
   sheetHeight = 260,
@@ -107,7 +107,7 @@ const HeliumBottomSheet = ({
               <Close color={colors.purpleGray} height={14} width={14} />
             </TouchableOpacityBox>
           </Box>
-          {body}
+          {children}
         </ReAnimatedBox>
       </Box>
     </Modal>
