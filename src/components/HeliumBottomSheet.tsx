@@ -1,8 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { memo, useCallback, useEffect, useMemo } from 'react'
+import React, { memo, useCallback, useEffect } from 'react'
 import { BoxProps } from '@shopify/restyle'
 import Close from '@assets/images/close.svg'
-import { useTranslation } from 'react-i18next'
 import { Modal, StyleSheet } from 'react-native'
 import {
   useAnimatedStyle,
@@ -19,25 +18,20 @@ import { ReAnimatedBox } from './AnimatedBox'
 import useVisible from '../utils/useVisible'
 
 type Props = BoxProps<Theme> & {
-  body?: React.Component
-  confirmText?: string
+  body?: React.ReactNode
   isVisible: boolean
-  onConfirm?: () => void
-  onClose?: () => void
+  onClose: () => void
   sheetHeight?: number
-  title: string
+  title?: string
 }
 
 const HeliumBottomSheet = ({
   body,
-  confirmText,
   isVisible,
-  onConfirm,
   onClose,
   sheetHeight = 260,
   title,
 }: Props) => {
-  const { t } = useTranslation()
   const colors = useColors()
   const offset = useSharedValue(0)
 
@@ -60,12 +54,8 @@ const HeliumBottomSheet = ({
     [offset],
   )
 
-  const handleConfirm = useCallback(async () => {
-    if (onConfirm) onConfirm()
-  }, [onConfirm])
-
   const handleClose = useCallback(async () => {
-    if (onClose) onClose()
+    onClose()
   }, [onClose])
 
   useVisible({ onDisappear: handleClose })
@@ -76,46 +66,6 @@ const HeliumBottomSheet = ({
       animate(-sheetHeight)
     }
   }, [animate, isVisible, offset, sheetHeight])
-
-  const footer = useMemo(() => {
-    const commonButtonProps = {
-      height: 49,
-      marginVertical: 'm',
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderRadius: 'ms',
-      width: onConfirm ? '48%' : '100%',
-    }
-    const cancelButton = (
-      <TouchableOpacityBox
-        {...commonButtonProps}
-        onPress={handleClose}
-        style={styles.cancelContainer}
-      >
-        <Text variant="medium" fontSize={18} style={styles.cancelText}>
-          {t('generic.cancel')}
-        </Text>
-      </TouchableOpacityBox>
-    )
-    const confirmButton = onConfirm ? (
-      <TouchableOpacityBox
-        {...commonButtonProps}
-        onPress={handleConfirm}
-        style={styles.confirmContainer}
-      >
-        <Text variant="medium" fontSize={18} style={styles.confirmText}>
-          {confirmText || t('generic.submit')}
-        </Text>
-      </TouchableOpacityBox>
-    ) : null
-
-    return (
-      <Box marginBottom="xl" style={styles.footerContainer}>
-        {cancelButton}
-        {confirmButton}
-      </Box>
-    )
-  }, [handleClose, handleConfirm, confirmText, onConfirm, t])
 
   return (
     <Modal
@@ -158,7 +108,6 @@ const HeliumBottomSheet = ({
             </TouchableOpacityBox>
           </Box>
           {body}
-          {footer}
         </ReAnimatedBox>
       </Box>
     </Modal>
@@ -166,12 +115,7 @@ const HeliumBottomSheet = ({
 }
 
 const styles = StyleSheet.create({
-  cancelContainer: { backgroundColor: '#F0F0F5' },
-  cancelText: { color: '#B3B4D6' },
-  confirmContainer: { backgroundColor: '#F97570' },
-  confirmText: { color: '#FFFFFF' },
   divider: { borderBottomColor: '#F0F0F5' },
-  footerContainer: { flexDirection: 'row', justifyContent: 'space-between' },
 })
 
 export default memo(HeliumBottomSheet)
