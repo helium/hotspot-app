@@ -12,6 +12,7 @@ import { Intervals } from '../../features/moreTab/more/useAuthIntervals'
 export type AppState = {
   isBackedUp: boolean
   isHapticDisabled: boolean
+  isDeploymentModeEnabled: boolean
   convertHntToCurrency: boolean
   isSettingUpHotspot: boolean
   isRestored: boolean
@@ -26,6 +27,7 @@ export type AppState = {
 const initialState: AppState = {
   isBackedUp: false,
   isHapticDisabled: false,
+  isDeploymentModeEnabled: false,
   convertHntToCurrency: false,
   isSettingUpHotspot: false,
   isRestored: false,
@@ -42,6 +44,7 @@ type Restore = {
   isBackedUp: boolean
   isPinRequired: boolean
   isPinRequiredForPayment: boolean
+  isDeploymentModeEnabled: boolean
   authInterval: number
   isLocked: boolean
   isHapticDisabled: boolean
@@ -59,6 +62,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       getSecureItem('hapticDisabled'),
       getSecureItem('convertHntToCurrency'),
       getSecureItem('address'),
+      getSecureItem('deploymentModeEnabled'),
     ])
     const isBackedUp = vals[0]
     const address = vals[6]
@@ -73,6 +77,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       isLocked: vals[1],
       isHapticDisabled: vals[4],
       convertHntToCurrency: vals[5],
+      isDeploymentModeEnabled: vals[7],
     }
   },
 )
@@ -99,6 +104,10 @@ const appSlice = createSlice({
     requirePinForPayment: (state, action: PayloadAction<boolean>) => {
       state.isPinRequiredForPayment = action.payload
       setSecureItem('requirePinForPayment', action.payload)
+    },
+    enableDeploymentMode: (state, action: PayloadAction<boolean>) => {
+      state.isDeploymentModeEnabled = action.payload
+      setSecureItem('deploymentModeEnabled', action.payload)
     },
     updateHapticEnabled: (state, action: PayloadAction<boolean>) => {
       state.isHapticDisabled = action.payload

@@ -547,6 +547,14 @@ export default {
           after_4_hr: '4時間後',
         },
         revealWords: '単語を表示',
+        deploymentMode: {
+          title: '展開モード',
+          enableButton: '展開モードを有効にする',
+          description:
+            '展開モードでは、秘密の言葉を表示するオプションが無効になります。',
+          warning:
+            'これは、ログアウトしてアカウントを再インポートすることによってのみ無効にできます。',
+        },
       },
       learn: {
         title: '詳細',
