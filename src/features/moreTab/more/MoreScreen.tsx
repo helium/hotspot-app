@@ -349,7 +349,6 @@ const MoreScreen = () => {
         )}
         renderSectionFooter={({ section: { footer } }) => footer}
       />
-      {showingDeploymentModeConfirmation && <DeploymentModeModal />}
     </SafeAreaBox>
   )
 }
