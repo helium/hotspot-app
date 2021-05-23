@@ -22,7 +22,7 @@ type Props = BoxProps<Theme> & {
   isVisible: boolean
   onClose: () => void
   sheetHeight?: number
-  title: string
+  title?: string
 }
 
 const HeliumBottomSheet = ({
