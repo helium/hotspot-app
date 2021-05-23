@@ -4,7 +4,6 @@ import { StyleSheet, StyleProp, ViewStyle } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Font, Theme } from '../../../theme/theme'
-import { HeliumActionSheetItemHeight } from '../../../components/HeliumActionSheetItem'
 import appSlice from '../../../store/user/appSlice'
 import { useAppDispatch } from '../../../store/store'
 import Text from '../../../components/Text'
@@ -44,7 +43,7 @@ const DeploymentModeModal = ({ isVisible, onClose = () => {} }: Props) => {
   const dispatch = useAppDispatch()
   const insets = useSafeAreaInsets()
 
-  const sheetHeight = HeliumActionSheetItemHeight + 176 + (insets?.bottom || 0)
+  const sheetHeight = 236 + (insets?.bottom || 0)
   const enableDeploymentMode = useCallback(() => {
     dispatch(appSlice.actions.enableDeploymentMode(true))
     onClose()
