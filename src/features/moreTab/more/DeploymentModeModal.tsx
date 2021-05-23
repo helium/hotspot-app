@@ -4,7 +4,6 @@ import { StyleSheet, StyleProp, ViewStyle } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Font, Theme } from '../../../theme/theme'
-import { HeliumActionSheetItemHeight } from '../../../components/HeliumActionSheetItem'
 import appSlice from '../../../store/user/appSlice'
 import { useAppDispatch } from '../../../store/store'
 import Text from '../../../components/Text'
@@ -44,14 +43,19 @@ const DeploymentModeModal = ({ isVisible, onClose = () => {} }: Props) => {
   const dispatch = useAppDispatch()
   const insets = useSafeAreaInsets()
 
-  const sheetHeight = HeliumActionSheetItemHeight + 176 + (insets?.bottom || 0)
+  const sheetHeight = 236 + (insets?.bottom || 0)
   const enableDeploymentMode = useCallback(() => {
     dispatch(appSlice.actions.enableDeploymentMode(true))
     onClose()
   }, [dispatch, onClose])
 
-  const modalBody = (
-    <>
+  return (
+    <HeliumBottomSheet
+      isVisible={isVisible}
+      onClose={onClose}
+      sheetHeight={sheetHeight}
+      title={t('more.sections.security.deploymentMode.title')}
+    >
       <Text>{t('more.sections.security.deploymentMode.description')}</Text>
       <Text marginTop="m" fontFamily={Font.main.semiBold}>
         {t('more.sections.security.deploymentMode.warning')}
@@ -71,17 +75,7 @@ const DeploymentModeModal = ({ isVisible, onClose = () => {} }: Props) => {
           </Text>
         </ActionButton>
       </Box>
-    </>
-  )
-
-  return (
-    <HeliumBottomSheet
-      body={modalBody}
-      isVisible={isVisible}
-      onClose={onClose}
-      sheetHeight={sheetHeight}
-      title={t('more.sections.security.deploymentMode.title')}
-    />
+    </HeliumBottomSheet>
   )
 }
 

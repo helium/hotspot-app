@@ -200,19 +200,18 @@ const HeliumActionSheet = ({
     <Box {...boxProps}>
       {displayText}
       <HeliumBottomSheet
-        body={
-          <FlatList
-            data={data}
-            keyExtractor={keyExtractor}
-            renderItem={renderItem}
-            ListFooterComponent={footer}
-          />
-        }
         isVisible={modalVisible}
         onClose={handleClose}
         sheetHeight={sheetHeight}
         title={title}
-      />
+      >
+        <FlatList
+          data={data}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
+          ListFooterComponent={footer}
+        />
+      </HeliumBottomSheet>
     </Box>
   )
 }
