@@ -32,6 +32,7 @@ type Props = {
   visible?: boolean
   selectedHexId?: string
   outlineWidth?: number
+  selectedOutlineWidth?: number
   outline?: boolean
   showCount?: boolean
   witnesses?: CoverageItem[]
@@ -53,6 +54,7 @@ const Coverage = ({
   visible = true,
   selectedHexId,
   outlineWidth = 2,
+  selectedOutlineWidth = 5,
   outline = true,
   showCount = false,
   witnesses,
@@ -74,6 +76,7 @@ const Coverage = ({
       colors[selectedOutlineColor],
       fillOpacity,
       outlineWidth,
+      selectedOutlineWidth,
       witnessLocations,
       selectedHexId || '',
     )
@@ -83,6 +86,7 @@ const Coverage = ({
     networkColors.fill,
     networkColors.outline,
     outlineWidth,
+    selectedOutlineWidth,
     selectedOutlineColor,
     witnessColors.fill,
     witnessColors.outline,
@@ -162,6 +166,7 @@ const makeStyles = (
   selectedOutlineColor: string,
   fillOpacity: number,
   lineWidth: number,
+  selectedLineWidth: number,
   witnessLocations: string[],
   selectedHex?: string,
 ) => {
@@ -201,10 +206,11 @@ const makeStyles = (
       lineColor,
     } as StyleProp<LineLayerStyle>,
     outlineSelected: {
-      lineWidth,
+      lineWidth: selectedLineWidth,
       lineColor: selectedOutlineColor,
     } as StyleProp<LineLayerStyle>,
     text: {
+      textFont: ['Inter Semi Bold'],
       textColor: 'white',
       textSize: 18,
       textField: '{hotspot_count}',

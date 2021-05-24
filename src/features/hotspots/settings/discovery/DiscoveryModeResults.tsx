@@ -54,9 +54,7 @@ const DiscoveryModeResults = ({
   }, [hotspot.address, request])
 
   const showOverlay = async (hexId: string) => {
-    if (!selectedHexId) {
-      animateTransition('DiscoveryMode.ShowOverlay')
-    }
+    animateTransition('DiscoveryMode.ShowOverlay')
     setSelectedHexId(hexId)
     dispatch(fetchHotspotsForHex({ hexId }))
   }
