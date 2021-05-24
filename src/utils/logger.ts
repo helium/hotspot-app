@@ -1,6 +1,10 @@
 import * as Sentry from '@sentry/react-native'
 import Config from 'react-native-config'
 
+export const prettyPrintToConsole = (whatever: any, prefix = '') => {
+  console.log(`${prefix}\n${JSON.stringify(whatever, null, 2)}`)
+}
+
 export const init = () => {
   if (__DEV__) return
 
@@ -20,18 +24,18 @@ export const error = (e: unknown) => {
   Sentry.captureException(e)
 }
 
-export const breadcrumb = (
-  message: string,
-  data?: {
-    [key: string]: unknown
-  },
-) => {
-  Sentry.addBreadcrumb({
+export const breadcrumb = (message: string, data?: Sentry.Breadcrumb) => {
+  const crumb = {
     message,
     data,
-  })
-}
+  }
+  if (__DEV__ && Config.LOG_BREADCRUMBS === 'true') {
+    if (data) {
+      prettyPrintToConsole(crumb)
+    } else {
+      console.log(message)
+    }
+  }
 
-export const prettyPrintToConsole = (whatever: any, prefix = '') => {
-  console.log(`${prefix}\n${JSON.stringify(whatever, null, 2)}`)
+  Sentry.addBreadcrumb(crumb)
 }
