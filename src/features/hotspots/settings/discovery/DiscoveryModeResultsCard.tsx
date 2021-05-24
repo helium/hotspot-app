@@ -138,7 +138,6 @@ const DiscoveryModeResultsCard = ({
           address={item.address}
           rewardScale={item.rewardScale}
           name={item.name}
-          distance={6969}
           hideOverlay={hideOverlay}
         />
       )

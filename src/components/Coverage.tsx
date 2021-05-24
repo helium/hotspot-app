@@ -102,6 +102,11 @@ const Coverage = ({
     [onHexSelected],
   )
 
+  const selectedFilter = useMemo(
+    () => ['==', 'id', selectedHexId] as Expression,
+    [selectedHexId],
+  )
+
   if (!visible) {
     return null
   }
@@ -133,6 +138,15 @@ const Coverage = ({
             sourceID="network"
             sourceLayerID="public.h3_res8"
             style={styles.text}
+          />
+        )}
+        {outline && (
+          <MapboxGL.LineLayer
+            id="hexagonSelectedLine"
+            sourceID="tileServerSelectedOutline"
+            sourceLayerID="public.h3_res8"
+            style={styles.outlineSelected}
+            filter={selectedFilter}
           />
         )}
       </MapboxGL.VectorSource>
@@ -185,6 +199,10 @@ const makeStyles = (
     outline: {
       lineWidth,
       lineColor,
+    } as StyleProp<LineLayerStyle>,
+    outlineSelected: {
+      lineWidth,
+      lineColor: selectedOutlineColor,
     } as StyleProp<LineLayerStyle>,
     text: {
       textColor: 'white',
