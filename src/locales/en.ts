@@ -1024,6 +1024,7 @@ export default {
       searching: 'Searching',
       distance: '{{distance}} {{unit}} away',
       added_to_followed: 'Added to Followed Hotspots',
+      removed_from_followed: 'Removed from Followed Hotspots',
     },
     share: {
       subject: 'Discovery Results',

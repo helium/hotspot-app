@@ -207,6 +207,8 @@ export const theme = createTheme({
     inputPlaceholderText: palette.grayExtraLight,
   },
   spacing: {
+    n_xxxxl: -240,
+    n_xxxl: -120,
     n_xxl: -60,
     n_xl: -40,
     n_lx: -32,

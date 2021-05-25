@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useMemo, useState } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { Hotspot } from '@helium/http'
 import { useSelector } from 'react-redux'
 import Box from '../../../../components/Box'
@@ -53,16 +53,19 @@ const DiscoveryModeResults = ({
     }
   }, [hotspot.address, request])
 
-  const showOverlay = async (hexId: string) => {
-    animateTransition('DiscoveryMode.ShowOverlay')
-    setSelectedHexId(hexId)
-    dispatch(fetchHotspotsForHex({ hexId }))
-  }
+  const showOverlay = useCallback(
+    async (hexId: string) => {
+      animateTransition('DiscoveryMode.ShowOverlay')
+      setSelectedHexId(hexId)
+      dispatch(fetchHotspotsForHex({ hexId }))
+    },
+    [dispatch],
+  )
 
-  const hideOverlay = () => {
+  const hideOverlay = useCallback(() => {
     animateTransition('DiscoveryMode.HideOverlay')
     setSelectedHexId(undefined)
-  }
+  }, [])
 
   return (
     <Box height={hp(85)}>

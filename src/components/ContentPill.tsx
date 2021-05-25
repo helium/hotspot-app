@@ -8,7 +8,7 @@ import React, {
   useState,
   useEffect,
 } from 'react'
-import { StyleProp, ViewProps } from 'react-native'
+import { StyleProp, ViewProps, ViewStyle } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
 import { SvgProps } from 'react-native-svg'
 import { Colors, Theme } from '../theme/theme'
@@ -31,6 +31,7 @@ type Props = BoxProps<Theme> & {
   selectedIndex: number
   onPressItem: (index: number) => void
   contentContainerStyle?: StyleProp<ViewProps>
+  style?: ViewStyle
 }
 
 const ITEM_SIZE = 40

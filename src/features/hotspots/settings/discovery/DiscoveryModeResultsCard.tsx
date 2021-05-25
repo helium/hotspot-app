@@ -1,15 +1,7 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { addSeconds } from 'date-fns'
 import { Hotspot } from '@helium/http'
-import Carousel from 'react-native-snap-carousel'
 import HexPill from '@assets/images/hexPill.svg'
 import Box from '../../../../components/Box'
 import Button from '../../../../components/Button'
@@ -28,6 +20,7 @@ import DiscoveryModeResultsCardItem from './DiscoveryModeResultsCardItem'
 import ContentPill, {
   ContentPillItem,
 } from '../../../../components/ContentPill'
+import usePrevious from '../../../../utils/usePrevious'
 
 type LineItemType = { label: string; value: string }
 const LineItem = ({ label, value }: LineItemType) => (
@@ -44,7 +37,7 @@ const LineItem = ({ label, value }: LineItemType) => (
 type Props = {
   request?: DiscoveryRequest | null
   isPolling: boolean
-  selectedHotspots: Hotspot[]
+  selectedHotspots?: Hotspot[]
   hideOverlay: () => void
   responses: DiscoveryResponse[]
   requestTime: number
@@ -54,7 +47,7 @@ type Props = {
 const DiscoveryModeResultsCard = ({
   request,
   isPolling,
-  selectedHotspots: selectedHotspotsProp,
+  selectedHotspots,
   responses,
   hideOverlay,
   requestTime,
@@ -64,16 +57,12 @@ const DiscoveryModeResultsCard = ({
   const { t } = useTranslation()
   const { shareResults } = useShareDiscovery(request)
   const [resultDateStr, setResultDateStr] = useState('')
-  const [selectedHotspots, setSelectedHotspots] = useState([] as Hotspot[])
+  const prevSelectedHotspots = usePrevious(selectedHotspots)
   const [selectedHotspotIndex, setSelectedHotspotIndex] = useState(0)
-  const carouselRef = useRef<Carousel<Hotspot>>(null)
-
   useEffect(() => {
+    if (prevSelectedHotspots === selectedHotspots) return
     setSelectedHotspotIndex(0)
-
-    if (selectedHotspotsProp === selectedHotspots) return
-    setSelectedHotspots(selectedHotspotsProp)
-  }, [selectedHotspots, selectedHotspotsProp])
+  }, [prevSelectedHotspots, selectedHotspots])
 
   useMemo(async () => {
     if (isPolling || !request) return
@@ -147,25 +136,6 @@ const DiscoveryModeResultsCard = ({
     }
   }, [isPolling])
 
-  const carouselData = useMemo(() => {
-    return selectedHotspots
-  }, [selectedHotspots])
-
-  type CarouselItem = { item: Hotspot }
-  const renderItem = useCallback(
-    ({ item }: CarouselItem) => {
-      return (
-        <DiscoveryModeResultsCardItem
-          address={item.address}
-          rewardScale={item.rewardScale}
-          name={item.name}
-          hideOverlay={hideOverlay}
-        />
-      )
-    },
-    [hideOverlay],
-  )
-
   const pillData = useMemo(() => {
     if (!selectedHotspots?.length) return [] as ContentPillItem[]
 
@@ -181,32 +151,42 @@ const DiscoveryModeResultsCard = ({
     })
   }, [responses, selectedHotspots])
 
-  useEffect(() => {
-    carouselRef?.current?.snapToItem(selectedHotspotIndex)
-  }, [selectedHotspotIndex])
+  const currentHotspot = useMemo(() => {
+    if (
+      !selectedHotspots ||
+      selectedHotspots.length === 0 ||
+      selectedHotspotIndex >= selectedHotspots.length
+    )
+      return
+
+    return selectedHotspots[selectedHotspotIndex]
+  }, [selectedHotspotIndex, selectedHotspots])
 
   return (
-    <Box position="absolute" bottom={0} left={0} right={0} minHeight={210}>
-      {!!selectedHotspots?.length && selectedHotspots.length > 1 && (
+    <Box
+      position="absolute"
+      bottom={0}
+      left={0}
+      right={0}
+      minHeight={410}
+      justifyContent="flex-end"
+    >
+      {!!selectedHotspots?.length && (
         <ContentPill
           selectedIndex={selectedHotspotIndex}
           data={pillData}
+          marginStart={selectedHotspots.length > 1 ? undefined : 'n_xxl'}
           onPressItem={setSelectedHotspotIndex}
           marginBottom="lx"
           maxWidth={wp(90)}
         />
       )}
 
-      <Carousel
-        ref={carouselRef}
-        layout="default"
-        vertical={false}
-        data={carouselData}
-        renderItem={renderItem}
-        sliderWidth={wp(100)}
-        itemWidth={wp(100)}
-        inactiveSlideScale={1}
-        onSnapToItem={setSelectedHotspotIndex}
+      <DiscoveryModeResultsCardItem
+        address={currentHotspot?.address}
+        rewardScale={currentHotspot?.rewardScale}
+        name={currentHotspot?.name}
+        hideOverlay={hideOverlay}
       />
 
       {isPolling && <DiscoveryModeSearching />}
