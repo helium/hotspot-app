@@ -19,24 +19,31 @@ import {
 } from '../features/wallet/root/walletTypes'
 import { getSecureItem } from './secureAccount'
 import { fromNow } from './timeUtils'
+import * as Logger from './logger'
 
 const MAX = 100000
 const client = new Client()
 
+const breadcrumbOpts = { type: 'HTTP Request', category: 'appDataClient' }
+
 export const configChainVars = async () => {
+  Logger.breadcrumb('configChainVars', breadcrumbOpts)
   const vars = await client.vars.get()
   Transaction.config(vars)
 }
 
 export const getChainVars = async () => {
+  Logger.breadcrumb('getChainVars', breadcrumbOpts)
   return client.vars.get()
 }
 
 export const getAddress = async () => {
+  Logger.breadcrumb('getAddress', breadcrumbOpts)
   return getSecureItem('address')
 }
 
 export const getHotspots = async () => {
+  Logger.breadcrumb('getHotspots', breadcrumbOpts)
   const address = await getAddress()
   if (!address) return []
 
@@ -45,6 +52,7 @@ export const getHotspots = async () => {
 }
 
 export const searchHotspots = async (searchTerm: string) => {
+  Logger.breadcrumb('searchHotspots', breadcrumbOpts)
   const address = await getAddress()
   if (!address) return []
 
@@ -53,6 +61,7 @@ export const searchHotspots = async (searchTerm: string) => {
 }
 
 export const getHotspotDetails = async (address: string): Promise<Hotspot> => {
+  Logger.breadcrumb('getHotspotDetails', breadcrumbOpts)
   return client.hotspots.get(address)
 }
 
@@ -61,6 +70,7 @@ export const getHotspotRewardsSum = async (
   numDaysBack: number,
   date: Date = new Date(),
 ) => {
+  Logger.breadcrumb('getHotspotRewardsSum', breadcrumbOpts)
   const endDate = new Date(date)
   endDate.setDate(date.getDate() - numDaysBack)
   return client.hotspot(address).rewards.sum.get(endDate, date)
@@ -71,6 +81,7 @@ export const getHotspotRewards = async (
   numDaysBack: number,
   date: Date = new Date(),
 ) => {
+  Logger.breadcrumb('getHotspotRewards', breadcrumbOpts)
   const endDate = new Date(date)
   endDate.setDate(date.getDate() - numDaysBack)
   const list = await client
@@ -80,6 +91,7 @@ export const getHotspotRewards = async (
 }
 
 export const getHotspotWitnesses = async (address: string) => {
+  Logger.breadcrumb('getHotspotWitnesses', breadcrumbOpts)
   const list = await client.hotspot(address).witnesses.list()
   return list.take(MAX)
 }
@@ -90,6 +102,7 @@ export const getHotspotWitnessSums = async (params: {
   minTime: Date | NaturalDate
   maxTime?: Date | NaturalDate
 }) => {
+  Logger.breadcrumb('getHotspotWitnessSums', breadcrumbOpts)
   const list = await client.hotspot(params.address).witnesses.sum.list({
     minTime: params.minTime,
     maxTime: params.maxTime,
@@ -104,6 +117,7 @@ export const getHotspotChallengeSums = async (params: {
   minTime: Date | NaturalDate
   maxTime?: Date | NaturalDate
 }) => {
+  Logger.breadcrumb('getHotspotChallengeSums', breadcrumbOpts)
   const list = await client.hotspot(params.address).challenges.sum.list({
     minTime: params.minTime,
     maxTime: params.maxTime,
@@ -113,6 +127,7 @@ export const getHotspotChallengeSums = async (params: {
 }
 
 export const getAccount = async (address?: string) => {
+  Logger.breadcrumb('getAccount', breadcrumbOpts)
   const accountAddress = address || (await getAddress())
   if (!accountAddress) return
 
@@ -120,18 +135,33 @@ export const getAccount = async (address?: string) => {
   return data
 }
 
-export const getBlockHeight = () => client.blocks.getHeight()
+export const getBlockHeight = () => {
+  Logger.breadcrumb('getBlockHeight', breadcrumbOpts)
+  return client.blocks.getHeight()
+}
 
-export const getBlockStats = () => client.blocks.stats()
+export const getBlockStats = () => {
+  Logger.breadcrumb('getBlockStats', breadcrumbOpts)
+  return client.blocks.stats()
+}
 
-export const getStatCounts = () => client.stats.counts()
+export const getStatCounts = () => {
+  Logger.breadcrumb('getStatCounts', breadcrumbOpts)
+  return client.stats.counts()
+}
 
-export const getCurrentOraclePrice = async () => client.oracle.getCurrentPrice()
+export const getCurrentOraclePrice = async () => {
+  Logger.breadcrumb('getCurrentOraclePrice', breadcrumbOpts)
+  return client.oracle.getCurrentPrice()
+}
 
-export const getPredictedOraclePrice = async () =>
-  client.oracle.getPredictedPrice()
+export const getPredictedOraclePrice = async () => {
+  Logger.breadcrumb('getPredictedOraclePrice', breadcrumbOpts)
+  return client.oracle.getPredictedPrice()
+}
 
 export const getAccountTxnsList = async (filterType: FilterType) => {
+  Logger.breadcrumb('getAccountTxnsList', breadcrumbOpts)
   const address = await getAddress()
   if (!address) return
 
@@ -147,6 +177,7 @@ export const getHotspotActivityList = async (
   gateway: string,
   filterType: HotspotActivityType,
 ) => {
+  Logger.breadcrumb('getHotspotActivityList', breadcrumbOpts)
   const params = { filterTypes: HotspotActivityFilters[filterType] }
   return client.hotspot(gateway).activity.list(params)
 }
@@ -154,6 +185,7 @@ export const getHotspotActivityList = async (
 export const getHotspotsLastChallengeActivity = async (
   gatewayAddress: string,
 ) => {
+  Logger.breadcrumb('getHotspotsLastChallengeActivity', breadcrumbOpts)
   const hotspotActivityList = await client
     .hotspot(gatewayAddress)
     .activity.list({
@@ -178,6 +210,7 @@ export const txnFetchers = {} as Record<
 >
 
 export const initFetchers = async () => {
+  Logger.breadcrumb('initFetchers', breadcrumbOpts)
   const lists = await Promise.all(
     FilterKeys.map((key) => getAccountTxnsList(key)),
   )
