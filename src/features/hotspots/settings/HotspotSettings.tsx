@@ -156,7 +156,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
     // Check for pending assert
     const pendingTxns = await getAccountTxnsList('pending')
     const txns = (await pendingTxns?.take(20)) as PendingTransaction[]
-    const hasPending = txns?.some(
+    const hasPending = txns?.find(
       (tnx: PendingTransaction) =>
         tnx.txn.type === 'assert_location_v2' &&
         tnx.status === 'pending' &&
