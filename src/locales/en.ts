@@ -172,6 +172,18 @@ export default {
       ],
       next: "I've read the guide",
     },
+    qrScan: {
+      title: 'Scan QR Code',
+      subtitle:
+        'Visit makerhip19.com/onboarding to generate a QR code.\n\nYour wallet address is:\n<b><purple>{{address}}</purple></b>',
+    },
+    qrConfirm: {
+      title: 'Confirm\nInformation',
+      title_one_line: 'Confirm Information',
+      public_key: 'Public Key',
+      mac_address: 'MAC Address',
+      owner_address: 'Owner Address',
+    },
     diagnostics: {
       title: 'Diagnostics',
     },

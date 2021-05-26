@@ -1,10 +1,13 @@
 import React, { useCallback, useEffect } from 'react'
 import { ActivityIndicator, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { useNavigation } from '@react-navigation/native'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useAsync } from 'react-async-hook'
 import { useSelector } from 'react-redux'
-import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
+import {
+  HotspotSetupNavigationProp,
+  HotspotSetupStackParamList,
+} from './hotspotSetupTypes'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
 import ImageBox from '../../../components/ImageBox'
@@ -16,9 +19,15 @@ import * as Logger from '../../../utils/logger'
 import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
 import { loadLocationFeeData } from '../../../utils/assertLocationUtils'
 
+type Route = RouteProp<
+  HotspotSetupStackParamList,
+  'HotspotSetupConfirmLocationScreen'
+>
+
 const HotspotSetupConfirmLocationScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
+  const { params } = useRoute<Route>()
   const account = useSelector((state: RootState) => state.account.account)
   const onboardingRecord = useSelector(
     (state: RootState) => state.connectedHotspot.onboardingRecord,
@@ -49,8 +58,8 @@ const HotspotSetupConfirmLocationScreen = () => {
   }, [error, navigation])
 
   const navNext = useCallback(async () => {
-    navigation.replace('HotspotTxnsProgressScreen')
-  }, [navigation])
+    navigation.replace('HotspotTxnsProgressScreen', params)
+  }, [navigation, params])
 
   if (loading || !result) {
     return (

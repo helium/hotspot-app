@@ -9,8 +9,8 @@ import React, {
 import { Linking } from 'react-native'
 import queryString from 'query-string'
 import { BarCodeScannerResult } from 'expo-barcode-scanner'
-import { Address } from '@helium/crypto-react-native'
 import { useSelector } from 'react-redux'
+import { Address } from '@helium/crypto-react-native'
 import useMount from '../utils/useMount'
 import { RootState } from '../store/rootReducer'
 import navigator from '../navigation/navigator'
@@ -76,6 +76,14 @@ const useAppLink = () => {
         case 'transfer':
           navigator.send({ scanResult: record })
           break
+
+        case 'add_gateway': {
+          const { address: txnStr } = record as AppLink
+          if (!txnStr) return
+
+          navigator.confirmAddGateway(txnStr)
+          break
+        }
       }
     },
     [isLocked, isBackedUp],
@@ -95,9 +103,10 @@ const useAppLink = () => {
     const parsed = queryString.parseUrl(url)
     if (!parsed.url.includes(APP_LINK_PROTOCOL)) return
 
+    const params = queryString.parse(queryString.extract(url))
     const record = AppLinkFields.reduce(
       (obj, k) => ({ ...obj, [k]: parsed.query[k] }),
-      {},
+      params,
     ) as AppLink
 
     const path = parsed.url.replace(APP_LINK_PROTOCOL, '')
@@ -210,9 +219,14 @@ const useAppLink = () => {
   )
 
   const handleBarCode = useCallback(
-    async ({ data }: BarCodeScannerResult, scanType: AppLinkCategoryType) => {
+    (
+      { data }: BarCodeScannerResult,
+      scanType: AppLinkCategoryType,
+      opts?: Record<string, string>,
+    ) => {
       const scanResult = parseBarCodeData(data, scanType)
-      navToAppLink(scanResult)
+
+      navToAppLink({ ...scanResult, ...opts })
     },
     [navToAppLink, parseBarCodeData],
   )

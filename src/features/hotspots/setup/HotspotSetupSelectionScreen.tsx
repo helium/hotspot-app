@@ -7,7 +7,7 @@ import Fuse from 'fuse.js'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
-import HotspotSelectionListItem from './HotspotSelectionListItem'
+import HotspotSetupSelectionListItem from './HotspotSetupSelectionListItem'
 import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
 import hotspotOnboardingSlice from '../../../store/hotspots/hotspotOnboardingSlice'
 import { useAppDispatch } from '../../../store/store'
@@ -36,7 +36,12 @@ const HotspotSetupSelectionScreen = () => {
   const handlePress = useCallback(
     (hotspotType: HotspotType) => () => {
       dispatch(hotspotOnboardingSlice.actions.setHotspotType(hotspotType))
-      navigation.push('HotspotSetupEducationScreen', { hotspotType })
+      const qrScanFlow = ['QR_MAKER'].includes(hotspotType)
+      if (qrScanFlow) {
+        navigation.push('HotspotSetupScanQrScreen', { hotspotType })
+      } else {
+        navigation.push('HotspotSetupEducationScreen', { hotspotType })
+      }
     },
     [dispatch, navigation],
   )
@@ -67,7 +72,7 @@ const HotspotSetupSelectionScreen = () => {
       const isFirst = index === 0
       const isLast = index === data.length - 1
       return (
-        <HotspotSelectionListItem
+        <HotspotSetupSelectionListItem
           isFirst={isFirst}
           isLast={isLast}
           hotspotType={item}

@@ -1,19 +1,28 @@
 import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigation } from '@react-navigation/native'
-import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
+import {
+  HotspotSetupNavigationProp,
+  HotspotSetupStackParamList,
+} from './hotspotSetupTypes'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
 import Text from '../../../components/Text'
 
+type Route = RouteProp<
+  HotspotSetupStackParamList,
+  'HotspotSetupSkipLocationScreen'
+>
+
 const HotspotSetupSkipLocationScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
+  const { params } = useRoute<Route>()
 
   const navNext = useCallback(async () => {
-    navigation.replace('HotspotTxnsProgressScreen')
-  }, [navigation])
+    navigation.replace('HotspotTxnsProgressScreen', params)
+  }, [navigation, params])
 
   return (
     <BackScreen>

@@ -1,31 +1,38 @@
-import { useNavigation } from '@react-navigation/native'
-import React from 'react'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
+import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ScrollView } from 'react-native'
 import Button from '../../../components/Button'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
-import usePermissionManager from '../../../utils/usePermissionManager'
-import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
+import {
+  HotspotSetupNavigationProp,
+  HotspotSetupStackParamList,
+} from './hotspotSetupTypes'
 import LocationPin from '../../../assets/images/location-pin.svg'
 import Box from '../../../components/Box'
 import { ww } from '../../../utils/layout'
 import ImageBox from '../../../components/ImageBox'
 import BackButton from '../../../components/BackButton'
+import useGetLocation from '../../../utils/useGetLocation'
 
+type Route = RouteProp<
+  HotspotSetupStackParamList,
+  'HotspotSetupLocationInfoScreen'
+>
 const HotspotSetupLocationInfoScreen = () => {
   const { t } = useTranslation()
-  const { requestLocationPermission } = usePermissionManager()
+  const { params } = useRoute<Route>()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
-  const checkLocationPermissions = async () => {
-    const response = await requestLocationPermission()
-    if (response && response.granted) {
-      navigation.navigate('HotspotSetupPickLocationScreen')
-    }
-  }
+  const maybeGetLocation = useGetLocation()
+
+  const checkLocationPermissions = useCallback(async () => {
+    await maybeGetLocation(true)
+    navigation.navigate('HotspotSetupPickLocationScreen', params)
+  }, [maybeGetLocation, navigation, params])
 
   const skipLocationAssert = () => {
-    navigation.navigate('HotspotSetupSkipLocationScreen')
+    navigation.navigate('HotspotSetupSkipLocationScreen', params)
   }
 
   const goBack = () => {
