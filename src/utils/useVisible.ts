@@ -1,21 +1,22 @@
 import { useNavigation } from '@react-navigation/native'
 import { useCallback, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { RootState } from '../store/rootReducer'
-import usePrevious from './usePrevious'
+import useAppState from 'react-native-appstate-hook'
+import useMount from './useMount'
 
 type Props = { onAppear?: () => void; onDisappear?: () => void }
 const useVisible = (props?: Props) => {
   const { onAppear, onDisappear } = props || {}
-  const {
-    app: { appStateStatus },
-  } = useSelector((state: RootState) => state)
+
+  const { appState } = useAppState({
+    onChange: (newAppState) => handleVisibility(newAppState === 'active'),
+  })
   const navigation = useNavigation()
-  const prevAppState = usePrevious(appStateStatus)
   const [visible, setVisible] = useState(false)
 
   const handleVisibility = useCallback(
     (isVisible: boolean) => {
+      if (isVisible === visible) return
+
       setVisible(isVisible)
       if (isVisible) {
         onAppear?.()
@@ -23,19 +24,12 @@ const useVisible = (props?: Props) => {
         onDisappear?.()
       }
     },
-    [onDisappear, onAppear],
+    [visible, onAppear, onDisappear],
   )
 
-  useEffect(() => {
-    if (appStateStatus === 'background' && prevAppState !== 'background') {
-      handleVisibility(false)
-      return
-    }
-
-    if (appStateStatus === 'active' && prevAppState !== 'active') {
-      handleVisibility(true)
-    }
-  }, [appStateStatus, handleVisibility, prevAppState])
+  useMount(() => {
+    handleVisibility(appState === 'active')
+  })
 
   useEffect(() => {
     return navigation.addListener('blur', () => {
