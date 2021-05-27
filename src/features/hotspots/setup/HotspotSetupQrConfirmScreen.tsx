@@ -15,6 +15,7 @@ import { useBreakpoints, useColors } from '../../../theme/themeHooks'
 import { getOnboardingRecord } from '../../../utils/stakingClient'
 import animateTransition from '../../../utils/animateTransition'
 import Button from '../../../components/Button'
+import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
 type Route = RouteProp<
   HotspotSetupStackParamList,
@@ -30,6 +31,9 @@ const HotspotSetupQrConfirmScreen = () => {
   const [publicKey, setPublicKey] = useState('')
   const [macAddress, setMacAddress] = useState('')
   const [ownerAddress, setOwnerAddress] = useState('')
+  const rootNav = useNavigation<RootNavigationProp>()
+
+  const handleClose = useCallback(() => rootNav.navigate('MainTabs'), [rootNav])
 
   useEffect(() => {
     if (!publicKey) return
@@ -64,6 +68,7 @@ const HotspotSetupQrConfirmScreen = () => {
     <BackScreen
       backgroundColor="primaryBackground"
       paddingTop={{ smallPhone: 's', phone: 'lx' }}
+      onClose={handleClose}
     >
       <Box
         height={52}

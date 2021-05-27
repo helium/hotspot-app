@@ -1,5 +1,5 @@
-import React from 'react'
-import { RouteProp, useRoute } from '@react-navigation/native'
+import React, { useCallback } from 'react'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import QrIcon from '@assets/images/qr.svg'
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner'
@@ -17,6 +17,7 @@ import { getSecureItem } from '../../../utils/secureAccount'
 import TextTransform from '../../../components/TextTransform'
 import { useAppLinkContext } from '../../../providers/AppLinkProvider'
 import useHaptic from '../../../utils/useHaptic'
+import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotSetupScanQrScreen'>
 
@@ -27,6 +28,13 @@ const HotspotSetupScanQrScreen = () => {
   const { result: address } = useAsync(getSecureItem, ['address'])
   const { handleBarCode } = useAppLinkContext()
   const { triggerNotification } = useHaptic()
+  const navigation = useNavigation<RootNavigationProp>()
+
+  const handleClose = useCallback(() => navigation.navigate('MainTabs'), [
+    navigation,
+  ])
+
+  // TODO: Make messaging specific to hotspot type
 
   const handleBarCodeScanned = useDebouncedCallback(
     (result: BarCodeScannerResult) => {
@@ -50,6 +58,7 @@ const HotspotSetupScanQrScreen = () => {
     <BackScreen
       backgroundColor="primaryBackground"
       paddingTop={{ smallPhone: 's', phone: 'lx' }}
+      onClose={handleClose}
     >
       <Box
         height={52}

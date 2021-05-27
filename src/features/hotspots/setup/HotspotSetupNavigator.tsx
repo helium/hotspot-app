@@ -31,7 +31,7 @@ const HotspotSetup = () => {
   return (
     <HotspotSetupStack.Navigator
       headerMode="none"
-      screenOptions={{ ...defaultScreenOptions, gestureEnabled: false }}
+      screenOptions={{ ...defaultScreenOptions }}
     >
       <HotspotSetupStack.Screen
         name="HotspotSetupSelectionScreen"

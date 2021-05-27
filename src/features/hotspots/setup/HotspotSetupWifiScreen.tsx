@@ -12,11 +12,14 @@ import TextInput from '../../../components/TextInput'
 import Button from '../../../components/Button'
 import Password from '../../../assets/images/password.svg'
 import Box from '../../../components/Box'
+import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotSetupWifiScreen'>
 const HotspotSetupWifiScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
+  const rootNav = useNavigation<RootNavigationProp>()
+
   const {
     params: { network },
   } = useRoute<Route>()
@@ -27,6 +30,8 @@ const HotspotSetupWifiScreen = () => {
     setSecureTextEntry(!secureTextEntry)
   }, [secureTextEntry])
 
+  const handleClose = useCallback(() => rootNav.navigate('MainTabs'), [rootNav])
+
   const navNext = async () => {
     navigation.replace('HotspotSetupWifiConnectingScreen', {
       network,
@@ -35,7 +40,7 @@ const HotspotSetupWifiScreen = () => {
   }
 
   return (
-    <BackScreen>
+    <BackScreen onClose={handleClose}>
       <KeyboardAvoidingView
         style={styles.keyboardAvoidingView}
         behavior="padding"

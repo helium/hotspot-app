@@ -7,8 +7,9 @@ import {
 } from './hotspotSetupTypes'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import Text from '../../../components/Text'
+import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
 type Route = RouteProp<
   HotspotSetupStackParamList,
@@ -18,14 +19,18 @@ type Route = RouteProp<
 const HotspotSetupSkipLocationScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
+  const rootNav = useNavigation<RootNavigationProp>()
+
   const { params } = useRoute<Route>()
+
+  const handleClose = useCallback(() => rootNav.navigate('MainTabs'), [rootNav])
 
   const navNext = useCallback(async () => {
     navigation.replace('HotspotTxnsProgressScreen', params)
   }, [navigation, params])
 
   return (
-    <BackScreen>
+    <BackScreen onClose={handleClose}>
       <Box flex={1} justifyContent="center" paddingBottom="xxl">
         <Text variant="h1" marginBottom="l" maxFontSizeMultiplier={1}>
           {t('hotspot_setup.skip_location.title')}
@@ -48,7 +53,7 @@ const HotspotSetupSkipLocationScreen = () => {
         </Text>
       </Box>
       <Box>
-        <Button
+        <DebouncedButton
           title={t('hotspot_setup.location_fee.next')}
           mode="contained"
           variant="secondary"

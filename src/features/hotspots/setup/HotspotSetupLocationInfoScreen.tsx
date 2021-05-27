@@ -1,42 +1,36 @@
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
 import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ScrollView } from 'react-native'
 import Button from '../../../components/Button'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
-import {
-  HotspotSetupNavigationProp,
-  HotspotSetupStackParamList,
-} from './hotspotSetupTypes'
+import usePermissionManager from '../../../utils/usePermissionManager'
+import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
 import LocationPin from '../../../assets/images/location-pin.svg'
 import Box from '../../../components/Box'
 import { ww } from '../../../utils/layout'
 import ImageBox from '../../../components/ImageBox'
-import BackButton from '../../../components/BackButton'
-import useGetLocation from '../../../utils/useGetLocation'
+import BackScreen from '../../../components/BackScreen'
+import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
-type Route = RouteProp<
-  HotspotSetupStackParamList,
-  'HotspotSetupLocationInfoScreen'
->
 const HotspotSetupLocationInfoScreen = () => {
   const { t } = useTranslation()
-  const { params } = useRoute<Route>()
+  const { requestLocationPermission } = usePermissionManager()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
-  const maybeGetLocation = useGetLocation()
+  const rootNav = useNavigation<RootNavigationProp>()
 
-  const checkLocationPermissions = useCallback(async () => {
-    await maybeGetLocation(true)
-    navigation.navigate('HotspotSetupPickLocationScreen', params)
-  }, [maybeGetLocation, navigation, params])
+  const handleClose = useCallback(() => rootNav.navigate('MainTabs'), [rootNav])
 
-  const skipLocationAssert = () => {
-    navigation.navigate('HotspotSetupSkipLocationScreen', params)
+  const checkLocationPermissions = async () => {
+    const response = await requestLocationPermission()
+    if (response && response.granted) {
+      navigation.navigate('HotspotSetupPickLocationScreen')
+    }
   }
 
-  const goBack = () => {
-    navigation.goBack()
+  const skipLocationAssert = () => {
+    navigation.navigate('HotspotSetupSkipLocationScreen')
   }
 
   return (
@@ -47,7 +41,7 @@ const HotspotSetupLocationInfoScreen = () => {
           left={-(ww - 585 / 2)}
           source={require('../../../assets/images/world.png')}
         />
-        <BackButton marginTop="l" paddingHorizontal="m" onPress={goBack} />
+        <BackScreen backgroundColor="transparent" onClose={handleClose} />
       </Box>
       <SafeAreaBox
         height={496}

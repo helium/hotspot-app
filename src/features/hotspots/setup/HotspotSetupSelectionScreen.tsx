@@ -36,6 +36,8 @@ const HotspotSetupSelectionScreen = () => {
   const handlePress = useCallback(
     (hotspotType: HotspotType) => () => {
       dispatch(hotspotOnboardingSlice.actions.setHotspotType(hotspotType))
+
+      // TODO: Remove the generic QR_MAKER and add specific hotspot types
       const qrScanFlow = ['QR_MAKER'].includes(hotspotType)
       if (qrScanFlow) {
         navigation.push('HotspotSetupScanQrScreen', { hotspotType })
@@ -95,8 +97,11 @@ const HotspotSetupSelectionScreen = () => {
   return (
     <BackScreen
       backgroundColor="primaryBackground"
+      paddingTop="m"
       padding="lx"
       paddingBottom="none"
+      hideBack
+      onClose={navigation.goBack}
       edges={edges}
     >
       <Text variant="h1" numberOfLines={2} adjustsFontSizeToFit>

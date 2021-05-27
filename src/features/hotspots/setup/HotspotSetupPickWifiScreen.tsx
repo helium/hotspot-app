@@ -19,6 +19,7 @@ import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Checkmark from '../../../assets/images/check.svg'
 import { RootState } from '../../../store/rootReducer'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
+import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
 const WifiItem = ({
   name,
@@ -60,6 +61,8 @@ type Route = RouteProp<HotspotSetupStackParamList, 'HotspotSetupPickWifiScreen'>
 const HotspotSetupPickWifiScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
+  const rootNav = useNavigation<RootNavigationProp>()
+
   const { connectedHotspot } = useSelector((state: RootState) => state)
   const {
     params: { networks, connectedNetworks },
@@ -71,6 +74,8 @@ const HotspotSetupPickWifiScreen = () => {
     connectedNetworks,
   )
   const [scanning, setScanning] = useState(false)
+
+  const handleClose = useCallback(() => rootNav.navigate('MainTabs'), [rootNav])
 
   const hasNetworks = useMemo(() => {
     if (!wifiNetworks?.length) return false
@@ -101,7 +106,11 @@ const HotspotSetupPickWifiScreen = () => {
   }
 
   return (
-    <BackScreen padding="none" backgroundColor="primaryBackground">
+    <BackScreen
+      padding="none"
+      backgroundColor="primaryBackground"
+      onClose={handleClose}
+    >
       <Box backgroundColor="primaryBackground" padding="m" alignItems="center">
         <Box flexDirection="row" justifyContent="center" marginBottom="lm">
           <Wifi />
