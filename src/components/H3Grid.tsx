@@ -12,7 +12,6 @@ type Props = {
   color?: Colors
   width?: number
   visible?: boolean
-  lineLayerIndex?: number
 }
 
 const H3Grid = ({
@@ -21,7 +20,6 @@ const H3Grid = ({
   color = 'blueDarkest',
   width = 1,
   visible = true,
-  lineLayerIndex = 1,
 }: Props) => {
   const colors = useColors()
   const styles = useMemo(() => makeStyles(colors[color], width), [
@@ -66,7 +64,6 @@ const H3Grid = ({
       <MapboxGL.LineLayer
         id="h3GridLine"
         minZoomLevel={11}
-        layerIndex={lineLayerIndex}
         style={styles.gridLine}
       />
     </MapboxGL.ShapeSource>

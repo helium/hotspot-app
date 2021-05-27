@@ -17,7 +17,7 @@ type Props = {
   fillColor?: string
   outlineColor?: string
   opacity?: number
-  onHexSelected?: (hexProperties: HexProperties) => void
+  onHexSelected?: (is: string) => void
   visible?: boolean
   selectedHexId?: string
   outlineWidth?: number
@@ -47,7 +47,7 @@ const NetworkCoverage = ({
 
       const { properties } = event.features[0]
       if (properties) {
-        onHexSelected(properties as HexProperties)
+        onHexSelected(properties.id)
       }
     },
     [onHexSelected],
@@ -89,6 +89,7 @@ const NetworkCoverage = ({
         <MapboxGL.VectorSource
           id="tileServerPoints"
           url="https://helium-hotspots.s3-us-west-2.amazonaws.com/public.points.json"
+          onPress={onPress}
         >
           <MapboxGL.SymbolLayer
             id="hotspotCount"

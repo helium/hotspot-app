@@ -13,7 +13,6 @@ import { Hotspot } from '@helium/http'
 import BottomSheet, { BottomSheetModal } from '@gorhom/bottom-sheet'
 import { useSharedValue } from 'react-native-reanimated'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
-import { GeoJsonProperties } from 'geojson'
 import { isEqual } from 'lodash'
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import Search from '@assets/images/search.svg'
@@ -53,6 +52,7 @@ import usePrevious from '../../../utils/usePrevious'
 import useVisible from '../../../utils/useVisible'
 import { hp } from '../../../utils/layout'
 import useMount from '../../../utils/useMount'
+import { fetchHotspotsForHex } from '../../../store/discovery/discoverySlice'
 
 type Props = {
   ownedHotspots?: Hotspot[]
@@ -83,7 +83,6 @@ const HotspotsView = ({
   const dispatch = useDispatch()
   const [linkedHotspotAddress, setLinkedHotspotAddress] = useState('')
   const [location, setLocation] = useState(propsLocation)
-  const [showDetailsNav, setShowDetailsNav] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
   const [showMap, setShowMap] = useState(false)
@@ -95,9 +94,13 @@ const HotspotsView = ({
   const visible = useVisible()
   const prevVisible = usePrevious(visible)
   const prevShowDetails = usePrevious(showDetails)
-
+  const hotspotsForHexId = useSelector(
+    (state: RootState) => state.discovery.hotspotsForHexId,
+  )
+  const [selectedHexId, setSelectedHexId] = useState<string>()
+  const [selectedHotspotIndex, setSelectedHotspotIndex] = useState(0)
   const animatedIndex = useSharedValue<number>(0)
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [showWitnesses, toggleShowWitnesses] = useToggle(false)
 
   const selectedHotspot = useSelector(
@@ -116,7 +119,6 @@ const HotspotsView = ({
   useEffect(() => {
     const shouldShowDetails = !!hotspotAddress
     if (shouldShowDetails === showDetails) {
-      setShowDetailsNav(shouldShowDetails && !linkedHotspotAddress)
       return
     }
     if (visible && prevVisible) {
@@ -154,11 +156,10 @@ const HotspotsView = ({
     useSelector(
       (state: RootState) => state.hotspotDetails.hotspotData[hotspotAddress],
     ) || {}
-  const { witnesses, loading } = hotspotDetailsData || {}
+  const { witnesses } = hotspotDetailsData || {}
 
   const showHotspotDetails = useCallback(
-    (hotspot?: Hotspot, showNav = false) => {
-      setShowDetailsNav(showNav)
+    (hotspot?: Hotspot) => {
       dispatch(hotspotsSlice.actions.selectHotspot(hotspot))
     },
     [dispatch],
@@ -226,8 +227,8 @@ const HotspotsView = ({
   }, [])
 
   const handlePresentDetails = useCallback(
-    () => (hotspot: Hotspot, showNav = false) => {
-      showHotspotDetails(hotspot, showNav)
+    () => (hotspot: Hotspot) => {
+      showHotspotDetails(hotspot)
     },
     [showHotspotDetails],
   )
@@ -286,11 +287,28 @@ const HotspotsView = ({
     })
   }, [handleBack, navigation])
 
-  const onMapHotspotSelected = useCallback(
-    (properties: GeoJsonProperties) => {
-      const hotspot = {
-        ...properties,
-      } as Hotspot
+  const hexHotspots = useMemo(() => {
+    if (!selectedHexId) return []
+    return hotspotsForHexId[selectedHexId]
+  }, [hotspotsForHexId, selectedHexId])
+
+  const onMapHexSelected = useCallback(
+    async (hexId: string) => {
+      setSelectedHexId(hexId)
+      setSelectedHotspotIndex(0)
+      const result = (await dispatch(fetchHotspotsForHex({ hexId }))) as {
+        payload?: Hotspot[]
+      }
+      if (result && result.payload && result.payload.length) {
+        showHotspotDetails(result.payload[0] as Hotspot)
+      }
+    },
+    [dispatch, showHotspotDetails],
+  )
+
+  const onHotspotSelected = useCallback(
+    (index, hotspot) => {
+      setSelectedHotspotIndex(index)
       showHotspotDetails(hotspot)
     },
     [showHotspotDetails],
@@ -321,8 +339,8 @@ const HotspotsView = ({
   )
 
   const cardHandle = useCallback(
-    () => <HotspotSheetHandle showNav={showDetails && showDetailsNav} />,
-    [showDetails, showDetailsNav],
+    () => <HotspotSheetHandle showNav={false} />,
+    [],
   )
 
   const updateBackStack = useCallback(
@@ -479,13 +497,14 @@ const HotspotsView = ({
           <Map
             ownedHotspots={ownedHotspots}
             selectedHotspot={selectedHotspot}
-            maxZoomLevel={12}
-            zoomLevel={12}
+            maxZoomLevel={13}
+            zoomLevel={13}
             witnesses={showWitnesses ? witnesses : []}
+            followedHotspots={followedHotspots}
             mapCenter={location}
             animationMode="easeTo"
             animationDuration={800}
-            onFeatureSelected={onMapHotspotSelected}
+            onHexSelected={onMapHexSelected}
             interactive={hotspotHasLocation}
             showNoLocation={!hotspotHasLocation}
             showNearbyHotspots
@@ -494,10 +513,12 @@ const HotspotsView = ({
         )}
         <HotspotsViewHeader
           animatedPosition={animatedIndex}
-          showWitnesses={showWitnesses}
-          toggleShowWitnesses={toggleShowWitnesses}
-          loading={loading}
+          hexHotspots={hexHotspots}
+          ownedHotspots={ownedHotspots}
           detailHeaderHeight={detailHeaderHeight}
+          onHotspotSelected={onHotspotSelected}
+          followedHotspots={followedHotspots}
+          selectedHotspotIndex={selectedHotspotIndex}
           buttonsVisible={
             !!hotspotAddress &&
             hotspotHasLocation &&

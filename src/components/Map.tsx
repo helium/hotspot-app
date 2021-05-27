@@ -12,12 +12,13 @@ import MapboxGL, {
   RegionPayload,
   SymbolLayerStyle,
 } from '@react-native-mapbox-gl/maps'
-import { Feature, GeoJsonProperties, Point, Position } from 'geojson'
+import { Feature, Point, Position } from 'geojson'
 import { Hotspot } from '@helium/http'
 import { BoxProps } from '@shopify/restyle'
 import { StyleProp, ViewStyle } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { h3ToGeo, h3ToParent } from 'h3-js'
+import { differenceBy } from 'lodash'
 import Box from './Box'
 import Text from './Text'
 import NoLocation from '../assets/images/no-location.svg'
@@ -26,7 +27,7 @@ import CurrentLocationButton from './CurrentLocationButton'
 import { theme, Theme } from '../theme/theme'
 import { useColors } from '../theme/themeHooks'
 import H3Grid from './H3Grid'
-import NetworkCoverage, { HexProperties } from './NetworkCoverage'
+import NetworkCoverage from './NetworkCoverage'
 import HotspotsCoverage from './HotspotsCoverage'
 
 const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
@@ -35,12 +36,13 @@ type Props = BoxProps<Theme> & {
   onMapMoved?: (coords?: Position) => void
   onDidFinishLoadingMap?: (latitude: number, longitude: number) => void
   onMapMoving?: (feature: Feature<Point, RegionPayload>) => void
-  onFeatureSelected?: (properties: GeoJsonProperties) => void
+  onHexSelected?: (id: string) => void
 
   currentLocationEnabled?: boolean
   zoomLevel?: number
   mapCenter?: number[]
   ownedHotspots?: Hotspot[]
+  followedHotspots?: Hotspot[]
   selectedHotspot?: Hotspot
   witnesses?: Hotspot[]
   animationMode?: 'flyTo' | 'easeTo' | 'moveTo'
@@ -69,10 +71,11 @@ const Map = ({
   maxZoomLevel = 16,
   minZoomLevel = 0,
   interactive = true,
-  onFeatureSelected = () => {},
+  onHexSelected = () => {},
   showNoLocation,
   showNearbyHotspots = false,
   showH3Grid = false,
+  followedHotspots,
   ...props
 }: Props) => {
   const colors = useColors()
@@ -136,9 +139,9 @@ const Map = ({
     loadMapBounds()
   }, [])
 
-  const onHexSelected = (properties: HexProperties) => {
-    setSelectedHex(properties.id)
-    onFeatureSelected(properties) // TODO: update to pass hotspot in hex
+  const onHexPress = (id: string) => {
+    setSelectedHex(id)
+    onHexSelected(id)
   }
 
   useEffect(() => {
@@ -193,6 +196,14 @@ const Map = ({
     if (!selectedHotspot) return []
     return [selectedHotspot]
   }, [selectedHotspot])
+
+  const followedHexes = useMemo(
+    () =>
+      differenceBy(followedHotspots, ownedHotspots, (h) =>
+        h3ToParent(h.location || '', 8),
+      ),
+    [followedHotspots, ownedHotspots],
+  )
 
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
@@ -250,27 +261,37 @@ const Map = ({
         />
         <MapboxGL.Images images={mapImages} />
         <NetworkCoverage
-          onHexSelected={onHexSelected}
+          onHexSelected={onHexPress}
           visible={showNearbyHotspots}
           showCount
         />
         <H3Grid bounds={mapBounds} visible={showH3Grid} />
         <HotspotsCoverage
           id="owned"
+          onHexSelected={onHexPress}
           hotspots={ownedHotspots}
           fill
           opacity={0.4}
         />
         <HotspotsCoverage
+          id="followed"
+          onHexSelected={onHexPress}
+          hotspots={followedHexes}
+          fill
+          fillColor={colors.purpleBright}
+          opacity={0.4}
+        />
+        <HotspotsCoverage
           id="witnesses"
+          onHexSelected={onHexPress}
           hotspots={witnesses}
           fill
           fillColor={colors.yellow}
         />
-
         <HotspotsCoverage
           id="selected"
           hotspots={selectedHotspots}
+          hexes={selectedHex ? [selectedHex] : []}
           outline
           outlineColor={colors.white}
           outlineWidth={2}
