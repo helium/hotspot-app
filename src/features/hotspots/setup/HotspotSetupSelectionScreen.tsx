@@ -99,7 +99,6 @@ const HotspotSetupSelectionScreen = () => {
       backgroundColor="primaryBackground"
       paddingTop="m"
       padding="lx"
-      paddingBottom="none"
       hideBack
       onClose={navigation.goBack}
       edges={edges}
