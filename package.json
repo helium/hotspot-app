@@ -68,6 +68,7 @@
     "compare-versions": "^3.6.0",
     "date-fns": "^2.16.1",
     "expo-barcode-scanner": "^9.1.0",
+    "expo-camera": "^11.0.3",
     "expo-haptics": "^8.3.0",
     "expo-linking": "^2.2.3",
     "expo-local-authentication": "^9.3.0",

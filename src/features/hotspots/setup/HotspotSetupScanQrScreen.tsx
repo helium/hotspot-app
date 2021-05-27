@@ -3,6 +3,7 @@ import { RouteProp, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import QrIcon from '@assets/images/qr.svg'
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner'
+import { Camera } from 'expo-camera'
 import { useAsync } from 'react-async-hook'
 import { useDebouncedCallback } from 'use-debounce/lib'
 import Toast from 'react-native-simple-toast'
@@ -81,11 +82,20 @@ const HotspotSetupScanQrScreen = () => {
       />
       <Box flex={1} />
 
-      <Box borderRadius="xl" overflow="hidden" backgroundColor="greenBright">
-        <BarCodeScanner
+      <Box
+        borderRadius="xl"
+        overflow="hidden"
+        width="100%"
+        aspectRatio={1}
+        backgroundColor="black"
+      >
+        <Camera
+          barCodeScannerSettings={{
+            barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+          }}
           onBarCodeScanned={handleBarCodeScanned.callback}
-          barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
-          style={styles.scanner}
+          ratio="1:1"
+          style={StyleSheet.absoluteFill}
         />
       </Box>
     </BackScreen>
@@ -93,5 +103,3 @@ const HotspotSetupScanQrScreen = () => {
 }
 
 export default HotspotSetupScanQrScreen
-
-const styles = StyleSheet.create({ scanner: { width: '100%', aspectRatio: 1 } })
