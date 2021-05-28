@@ -98,6 +98,12 @@ const NetworkCoverage = ({
             minZoomLevel={11}
             style={{
               textField: '{hotspot_count}',
+              textColor: [
+                'case',
+                ['==', ['get', 'id'], selectedHexId || ''],
+                '#FFFFFF',
+                '#000000',
+              ],
               textOpacity: ['case', ['==', ['get', 'hotspot_count'], 1], 0, 1],
             }}
           />

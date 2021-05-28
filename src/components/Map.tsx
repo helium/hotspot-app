@@ -260,11 +260,6 @@ const Map = ({
           animationDuration={animationDuration}
         />
         <MapboxGL.Images images={mapImages} />
-        <NetworkCoverage
-          onHexSelected={onHexPress}
-          visible={showNearbyHotspots}
-          showCount
-        />
         <H3Grid bounds={mapBounds} visible={showH3Grid} />
         <HotspotsCoverage
           id="owned"
@@ -295,6 +290,12 @@ const Map = ({
           outline
           outlineColor={colors.white}
           outlineWidth={2}
+        />
+        <NetworkCoverage
+          onHexSelected={onHexPress}
+          visible={showNearbyHotspots}
+          selectedHexId={selectedHex}
+          showCount
         />
       </MapboxGL.MapView>
       {currentLocationEnabled && (

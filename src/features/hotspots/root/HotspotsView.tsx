@@ -21,7 +21,6 @@ import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Add from '../../../assets/images/add.svg'
-import Settings from '../../../assets/images/settings.svg'
 import Map from '../../../components/Map'
 import { RootState } from '../../../store/rootReducer'
 import hotspotDetailsSlice from '../../../store/hotspotDetails/hotspotDetailsSlice'
@@ -40,11 +39,10 @@ import HotspotSheetHandle, {
 import HotspotSearch from './HotspotSearch'
 import { getPlaceGeography, PlacePrediction } from '../../../utils/googlePlaces'
 import hotspotSearchSlice from '../../../store/hotspotSearch/hotspotSearchSlice'
-import FollowButton from '../../../components/FollowButton'
 import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
 import {
-  locationIsValid,
   hotspotHasValidLocation,
+  locationIsValid,
 } from '../../../utils/location'
 import { HotspotStackParamList } from './hotspotTypes'
 import animateTransition from '../../../utils/animateTransition'
@@ -339,8 +337,13 @@ const HotspotsView = ({
   )
 
   const cardHandle = useCallback(
-    () => <HotspotSheetHandle showNav={false} />,
-    [],
+    () => (
+      <HotspotSheetHandle
+        hotspot={selectedHotspot}
+        toggleSettings={toggleSettings}
+      />
+    ),
+    [selectedHotspot, toggleSettings],
   )
 
   const updateBackStack = useCallback(
@@ -449,18 +452,7 @@ const HotspotsView = ({
         </TouchableOpacityBox>
       )
     }
-    if (showDetails) {
-      return (
-        <>
-          <TouchableOpacityBox onPress={toggleSettings} padding="s">
-            <Settings width={22} height={22} color="white" />
-          </TouchableOpacityBox>
-
-          <FollowButton padding="s" address={hotspotAddress} />
-        </>
-      )
-    }
-    if (bottomSheetIndex === 1)
+    if (bottomSheetIndex === 1 && !showDetails)
       return (
         <>
           <TouchableOpacityBox onPress={handleSearching(true)} padding="s">
@@ -478,8 +470,6 @@ const HotspotsView = ({
     bottomSheetIndex,
     handleSearching,
     handleHotspotSetup,
-    toggleSettings,
-    hotspotAddress,
   ])
 
   return (
@@ -537,7 +527,7 @@ const HotspotsView = ({
       >
         {leftMenuOptions}
 
-        <Box flexDirection="row" justifyContent="space-between">
+        <Box flexDirection="row" justifyContent="space-between" height={40}>
           {rightMenuOptions}
         </Box>
       </Box>
