@@ -181,7 +181,7 @@ export default {
       syncrobit_p_1:
         '<b><white>诊断支持帮助 SyncroB.it 安全确认您的 Hotspot 问题。</white></b>\n\nSyncroB.it 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@syncrob.it</b></purple>。',
       seeed_p_1:
-        '<b><white>诊断支持帮助我们安全确认您的M1网关问题。</white></b>\n\n我们不会访问私人秘钥，且仅可访问您的M1网关，无法访问您网络中的其他设备。\n\n若您选择退出诊断支持，请邮件联系<purple><b>SenseCAP@seeed.cc/b></purple>并提供您的相关购买记录和详细问题描述以获得技术支持。',
+        '<b><white>诊断支持帮助我们安全确认您的M1网关问题。</white></b>\n\n我们不会访问私人秘钥，且仅可访问您的M1网关，无法访问您网络中的其他设备。\n\n若您选择退出诊断支持，请邮件联系<purple><b>SenseCAP@seeed.cc</b></purple>并提供您的相关购买记录和详细问题描述以获得技术支持。',
     },
     power: {
       title: '开机',
@@ -231,7 +231,7 @@ export default {
       syncrobit_subtitle_2:
         'SyncroB.it Hotspot 开机后，蓝牙会自动启用 5 分钟。\n\nHotspot 最多需要 1 分钟即可完全启动。',
       seeed_subtitle_2:
-        '当指示灯从快闪模式变为慢闪模式，即表示M1网关蓝牙等待连接中。\n\n请打开手机蓝牙功能并从列表中选择对应网关',
+        '当指示灯变为慢闪模式，即表示M1网关蓝牙等待连接中，\n\n请打开手机蓝牙功能并从列表中选择对应网关。',
       alert_no_permissions: {
         title: '授权蓝牙',
         body: 'Helium 需要蓝牙使用权限。您可以在“设置”中启用蓝牙权限。',

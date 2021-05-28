@@ -262,7 +262,7 @@ export default {
       longapone_subtitle_2:
         'Once the PWR LED is slowly blinking\n\nPress Next to scan.',
       seeed_subtitle_2:
-        'The blue indicator light on the back of M1 will change from fast flash mode to slow flash mode, indicating that M1 gateway is waiting for connection.\n\nMake sure your phone has turned on the bluetooth pairing mode and select the SenseCAP M1 from the device list.',
+        'The blue indicator light on the back of M1 will change to slow flash mode, indicating that M1 gateway is waiting for connection.\n\nMake sure your phone has turned on the bluetooth pairing mode and select the SenseCAP M1 from the device list.',
       alert_no_permissions: {
         title: 'Authorize Bluetooth',
         body:
