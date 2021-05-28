@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Account } from '@helium/http'
@@ -66,7 +66,13 @@ const SendForm = ({
     }
   }
 
-  const shouldShowFee = some(sendDetails, ({ amount }) => amount)
+  const shouldShowFee = useMemo(
+    () =>
+      some(sendDetails, ({ balanceAmount }) => {
+        return balanceAmount.floatBalance !== 0
+      }),
+    [sendDetails],
+  )
 
   return (
     <Box height="100%" justifyContent="space-between" paddingBottom="xl">
