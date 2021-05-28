@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { AppStateStatus } from 'react-native'
 import OneSignal from 'react-native-onesignal'
 import {
   deleteSecureItem,
@@ -12,7 +11,7 @@ import { Intervals } from '../../features/moreTab/more/useAuthIntervals'
 export type AppState = {
   isBackedUp: boolean
   isHapticDisabled: boolean
-  isDeploymentModeEnabled: boolean
+  isSecureModeEnabled: boolean
   convertHntToCurrency: boolean
   isSettingUpHotspot: boolean
   isRestored: boolean
@@ -22,12 +21,11 @@ export type AppState = {
   lastIdle: number | null
   isLocked: boolean
   isRequestingPermission: boolean
-  appStateStatus: AppStateStatus
 }
 const initialState: AppState = {
   isBackedUp: false,
   isHapticDisabled: false,
-  isDeploymentModeEnabled: false,
+  isSecureModeEnabled: false,
   convertHntToCurrency: false,
   isSettingUpHotspot: false,
   isRestored: false,
@@ -37,14 +35,13 @@ const initialState: AppState = {
   lastIdle: null,
   isLocked: false,
   isRequestingPermission: false,
-  appStateStatus: 'unknown',
 }
 
 type Restore = {
   isBackedUp: boolean
   isPinRequired: boolean
   isPinRequiredForPayment: boolean
-  isDeploymentModeEnabled: boolean
+  isSecureModeEnabled: boolean
   authInterval: number
   isLocked: boolean
   isHapticDisabled: boolean
@@ -62,7 +59,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       getSecureItem('hapticDisabled'),
       getSecureItem('convertHntToCurrency'),
       getSecureItem('address'),
-      getSecureItem('deploymentModeEnabled'),
+      getSecureItem('secureModeEnabled'),
     ])
     const isBackedUp = vals[0]
     const address = vals[6]
@@ -77,7 +74,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       isLocked: vals[1],
       isHapticDisabled: vals[4],
       convertHntToCurrency: vals[5],
-      isDeploymentModeEnabled: vals[7],
+      isSecureModeEnabled: vals[7],
     }
   },
 )
@@ -105,9 +102,9 @@ const appSlice = createSlice({
       state.isPinRequiredForPayment = action.payload
       setSecureItem('requirePinForPayment', action.payload)
     },
-    enableDeploymentMode: (state, action: PayloadAction<boolean>) => {
-      state.isDeploymentModeEnabled = action.payload
-      setSecureItem('deploymentModeEnabled', action.payload)
+    enableSecureMode: (state, action: PayloadAction<boolean>) => {
+      state.isSecureModeEnabled = action.payload
+      setSecureItem('secureModeEnabled', action.payload)
     },
     updateHapticEnabled: (state, action: PayloadAction<boolean>) => {
       state.isHapticDisabled = action.payload
@@ -140,11 +137,6 @@ const appSlice = createSlice({
       if (!state.isLocked) {
         state.lastIdle = null
       }
-    },
-    updateAppStateStatus: (state, action: PayloadAction<AppStateStatus>) => {
-      if (action.payload === state.appStateStatus) return
-
-      state.appStateStatus = action.payload
     },
     requestingPermission: (state, action: PayloadAction<boolean>) => {
       state.isRequestingPermission = action.payload

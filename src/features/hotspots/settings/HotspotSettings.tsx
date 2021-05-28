@@ -16,7 +16,8 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import animalName from 'angry-purple-tiger'
-import { Hotspot } from '@helium/http'
+import { Hotspot, PendingTransaction } from '@helium/http'
+import Toast from 'react-native-simple-toast'
 import BlurBox from '../../../components/BlurBox'
 import Card from '../../../components/Card'
 import Text from '../../../components/Text'
@@ -47,6 +48,7 @@ import DiscoveryModeIcon from '../../../assets/images/discovery_mode_icon.svg'
 import DiscoveryModeRoot from './discovery/DiscoveryModeRoot'
 import UpdateIcon from '../../../assets/images/update_hotspot_icon.svg'
 import UpdateHotspotConfig from './updateHotspot/UpdateHotspotConfig'
+import { getAccountTxnsList } from '../../../utils/appDataClient'
 
 type State = 'init' | 'scan' | 'transfer' | 'discoveryMode' | 'updateHotspot'
 
@@ -150,9 +152,22 @@ const HotspotSettings = ({ hotspot }: Props) => {
     setNextState('discoveryMode')
   }, [setNextState])
 
-  const onPressUpdateHotspot = useCallback(() => {
-    setNextState('updateHotspot')
-  }, [setNextState])
+  const onPressUpdateHotspot = useCallback(async () => {
+    // Check for pending assert
+    const pendingTxns = await getAccountTxnsList('pending')
+    const txns = (await pendingTxns?.take(20)) as PendingTransaction[]
+    const hasPending = txns?.find(
+      (tnx: PendingTransaction) =>
+        tnx.txn.type === 'assert_location_v2' &&
+        tnx.status === 'pending' &&
+        tnx.txn.gateway === hotspot?.address,
+    )
+    if (hasPending) {
+      Toast.show(t('hotspot_settings.reassert.already_pending'), Toast.LONG)
+    } else {
+      setNextState('updateHotspot')
+    }
+  }, [hotspot?.address, setNextState, t])
 
   const onPressTransferSetting = useCallback(() => {
     if (hasActiveTransfer) {
@@ -251,7 +266,11 @@ const HotspotSettings = ({ hotspot }: Props) => {
 
     if (settingsState === 'updateHotspot') {
       return (
-        <UpdateHotspotConfig onClose={onCloseOwnerSettings} hotspot={hotspot} />
+        <UpdateHotspotConfig
+          onClose={onCloseOwnerSettings}
+          onCloseSettings={handleClose}
+          hotspot={hotspot}
+        />
       )
     }
 

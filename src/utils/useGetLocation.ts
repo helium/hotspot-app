@@ -1,5 +1,6 @@
 import { PermissionResponse } from 'expo-permissions'
 import { useCallback, useEffect } from 'react'
+import useAppState from 'react-native-appstate-hook'
 import { useSelector } from 'react-redux'
 import locationSlice, {
   getLocation,
@@ -12,22 +13,21 @@ import usePermissionManager from './usePermissionManager'
 import usePrevious from './usePrevious'
 
 const useGetLocation = () => {
+  const { appState } = useAppState()
   const dispatch = useAppDispatch()
   const { requestLocationPermission } = usePermissionManager()
   const permissionResponse = useSelector(
     (state: RootState) => state.location.permissionResponse,
   )
-  const appStateStatus = useSelector(
-    (state: RootState) => state.app.appStateStatus,
-  )
-  const prevAppStateStatus = usePrevious(appStateStatus)
+
+  const prevAppState = usePrevious(appState)
 
   useEffect(() => {
-    if (appStateStatus === 'active' && prevAppStateStatus === 'background') {
+    if (appState === 'active' && prevAppState === 'background') {
       // They might have gone to phone settings and changed the location permission
       dispatch(getLocationPermission())
     }
-  }, [appStateStatus, dispatch, prevAppStateStatus])
+  }, [appState, dispatch, prevAppState])
 
   const dispatchGetLocation = useCallback(async () => {
     const { payload } = await dispatch(getLocation())

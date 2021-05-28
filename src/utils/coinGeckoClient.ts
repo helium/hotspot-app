@@ -1,5 +1,10 @@
+import * as Logger from './logger'
+
+const breadcrumbOpts = { type: 'HTTP Request', category: 'coinGeckoClient' }
+
 // eslint-disable-next-line import/prefer-default-export
 export const getCurrentPrices = async () => {
+  Logger.breadcrumb('getCurrentPrices', breadcrumbOpts)
   const response = await fetch(
     'https://api.coingecko.com/api/v3/coins/helium?localization=false&tickers=false&community_data=false&developer_data=false',
   )

@@ -493,10 +493,10 @@ export default {
           after_4_hr: '4 小时后',
         },
         revealWords: '显示助记词',
-        deploymentMode: {
-          title: '部署方式',
-          enableButton: '启用部署模式',
-          description: '部署模式将禁用查看您的秘密单词的选项。',
+        secureMode: {
+          title: '安全模式',
+          enableButton: '启用安全模式',
+          description: '安全模式将禁用查看您的秘密单词的选项。',
           warning: '只能通过注销并重新导入您的帐户来禁用此功能。',
         },
       },

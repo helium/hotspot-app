@@ -38,14 +38,14 @@ type Props = BoxProps<Theme> & {
   onClose?: () => void
 }
 
-const DeploymentModeModal = ({ isVisible, onClose = () => {} }: Props) => {
+const SecureModeModal = ({ isVisible, onClose = () => {} }: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const insets = useSafeAreaInsets()
 
   const sheetHeight = 236 + (insets?.bottom || 0)
-  const enableDeploymentMode = useCallback(() => {
-    dispatch(appSlice.actions.enableDeploymentMode(true))
+  const enableSecureMode = useCallback(() => {
+    dispatch(appSlice.actions.enableSecureMode(true))
     onClose()
   }, [dispatch, onClose])
 
@@ -54,11 +54,11 @@ const DeploymentModeModal = ({ isVisible, onClose = () => {} }: Props) => {
       isVisible={isVisible}
       onClose={onClose}
       sheetHeight={sheetHeight}
-      title={t('more.sections.security.deploymentMode.title')}
+      title={t('more.sections.security.secureMode.title')}
     >
-      <Text>{t('more.sections.security.deploymentMode.description')}</Text>
+      <Text>{t('more.sections.security.secureMode.description')}</Text>
       <Text marginTop="m" fontFamily={Font.main.semiBold}>
-        {t('more.sections.security.deploymentMode.warning')}
+        {t('more.sections.security.secureMode.warning')}
       </Text>
       <Box marginBottom="xl" style={styles.footerContainer}>
         <ActionButton onPress={onClose} style={styles.cancelContainer}>
@@ -67,7 +67,7 @@ const DeploymentModeModal = ({ isVisible, onClose = () => {} }: Props) => {
           </Text>
         </ActionButton>
         <ActionButton
-          onPress={enableDeploymentMode}
+          onPress={enableSecureMode}
           style={styles.confirmContainer}
         >
           <Text variant="medium" fontSize={18} style={styles.confirmText}>
@@ -90,4 +90,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default DeploymentModeModal
+export default SecureModeModal

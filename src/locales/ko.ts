@@ -532,10 +532,10 @@ export default {
           after_4_hr: '4시간 후',
         },
         revealWords: '단어 공개',
-        deploymentMode: {
-          title: '배포 모드',
-          enableButton: '배포 모드 활성화',
-          description: '배포 모드는 비밀 단어를 보는 옵션을 비활성화합니다.',
+        secureMode: {
+          title: '보안 모드',
+          enableButton: '보안 모드 활성화',
+          description: '보안 모드는 비밀 단어를 보는 옵션을 비활성화합니다.',
           warning:
             '로그 아웃하고 계정을 다시 가져와야 비활성화 할 수 있습니다.',
         },

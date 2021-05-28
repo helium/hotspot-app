@@ -582,11 +582,11 @@ export default {
           after_4_hr: 'After 4 hours',
         },
         revealWords: 'Reveal Words',
-        deploymentMode: {
-          title: 'Deployment Mode',
-          enableButton: 'Enable Deployment Mode',
+        secureMode: {
+          title: 'Secure Mode',
+          enableButton: 'Enable Secure Mode',
           description:
-            'Deployment mode will disable the option to view your secret words.',
+            'Secure mode will disable the option to view your secret words.',
           warning:
             'This can only be disabled by logging out and reimporting your account.',
         },
@@ -818,6 +818,9 @@ export default {
       new_location: 'New Location',
       antenna_details: 'Antenna/Height Details',
       update_antenna: 'Update Antenna',
+      submit: 'Update Hotspot transaction submitted and now pending.',
+      already_pending:
+        'Unable to update Hotspot while a transaction is pending. Please try again later.',
     },
   },
   hotspot_details: {
