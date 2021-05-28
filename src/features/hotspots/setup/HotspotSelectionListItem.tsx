@@ -57,10 +57,10 @@ const HotspotSelectionListItem = ({
         return <BOBCAT color={svgColor} {...svgProps} />
       case 'SYNCROBIT':
         return <SYNCROBIT color={svgColor} {...svgProps} />
-      case 'Finestra':
-        return <FINESTRA color={svgColor} {...svgProps} />
       case 'LONGAPONE':
         return <LONGAPONE color={svgColor} {...svgProps} />
+      case 'Finestra':
+        return <FINESTRA color={svgColor} {...svgProps} />
     }
   }, [svgColor, hotspotType, svgProps])
 
