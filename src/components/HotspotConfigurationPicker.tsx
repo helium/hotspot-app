@@ -147,6 +147,7 @@ const HotspotConfigurationPicker = ({
         buttonProps={{ justifyContent: 'space-between' }}
         padding="m"
         paddingVertical="lm"
+        maxModalHeight={700}
       />
       <Box backgroundColor="grayLight" height={1} />
       <TouchableWithoutFeedback onPress={focusGain}>
