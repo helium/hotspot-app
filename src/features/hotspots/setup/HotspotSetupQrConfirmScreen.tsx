@@ -12,7 +12,10 @@ import {
   HotspotSetupStackParamList,
 } from './hotspotSetupTypes'
 import { useBreakpoints, useColors } from '../../../theme/themeHooks'
-import { getOnboardingRecord } from '../../../utils/stakingClient'
+import {
+  getOnboardingRecord,
+  OnboardingRecord,
+} from '../../../utils/stakingClient'
 import animateTransition from '../../../utils/animateTransition'
 import Button from '../../../components/Button'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
@@ -31,6 +34,7 @@ const HotspotSetupQrConfirmScreen = () => {
   const [publicKey, setPublicKey] = useState('')
   const [macAddress, setMacAddress] = useState('')
   const [ownerAddress, setOwnerAddress] = useState('')
+  const [onboardingRecord, setOnboardingRecord] = useState<OnboardingRecord>()
   const rootNav = useNavigation<RootNavigationProp>()
 
   const handleClose = useCallback(() => rootNav.navigate('MainTabs'), [rootNav])
@@ -38,12 +42,13 @@ const HotspotSetupQrConfirmScreen = () => {
   useEffect(() => {
     if (!publicKey) return
 
-    const getMac = async () => {
+    const getRecord = async () => {
       const record = await getOnboardingRecord(publicKey)
       animateTransition('HotspotSetupQrConfirmScreen.GetMac')
       setMacAddress(record.macEth0)
+      setOnboardingRecord(record)
     }
-    getMac()
+    getRecord()
   }, [publicKey])
 
   useEffect(() => {
@@ -55,14 +60,14 @@ const HotspotSetupQrConfirmScreen = () => {
     setOwnerAddress(addGatewayTxn.owner?.b58 || '')
   }, [params])
 
-  const navNext = useCallback(
-    () =>
-      navigation.push('HotspotSetupLocationInfoScreen', {
-        addGatewayTxn: params.addGatewayTxn,
-        hotspotAddress: publicKey,
-      }),
-    [navigation, params.addGatewayTxn, publicKey],
-  )
+  const navNext = useCallback(() => {
+    if (!onboardingRecord) return
+    navigation.push('HotspotSetupLocationInfoScreen', {
+      addGatewayTxn: params.addGatewayTxn,
+      hotspotAddress: publicKey,
+      onboardingRecord,
+    })
+  }, [navigation, onboardingRecord, params.addGatewayTxn, publicKey])
 
   return (
     <BackScreen

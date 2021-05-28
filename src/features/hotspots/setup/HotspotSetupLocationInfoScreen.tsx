@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ScrollView } from 'react-native'
@@ -6,7 +6,10 @@ import Button from '../../../components/Button'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import usePermissionManager from '../../../utils/usePermissionManager'
-import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
+import {
+  HotspotSetupNavigationProp,
+  HotspotSetupStackParamList,
+} from './hotspotSetupTypes'
 import LocationPin from '../../../assets/images/location-pin.svg'
 import Box from '../../../components/Box'
 import { ww } from '../../../utils/layout'
@@ -14,9 +17,15 @@ import ImageBox from '../../../components/ImageBox'
 import BackScreen from '../../../components/BackScreen'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
+type Route = RouteProp<
+  HotspotSetupStackParamList,
+  'HotspotSetupLocationInfoScreen'
+>
+
 const HotspotSetupLocationInfoScreen = () => {
   const { t } = useTranslation()
   const { requestLocationPermission } = usePermissionManager()
+  const { params } = useRoute<Route>()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
   const rootNav = useNavigation<RootNavigationProp>()
 
@@ -25,12 +34,12 @@ const HotspotSetupLocationInfoScreen = () => {
   const checkLocationPermissions = async () => {
     const response = await requestLocationPermission()
     if (response && response.granted) {
-      navigation.navigate('HotspotSetupPickLocationScreen')
+      navigation.navigate('HotspotSetupPickLocationScreen', params)
     }
   }
 
   const skipLocationAssert = () => {
-    navigation.navigate('HotspotSetupSkipLocationScreen')
+    navigation.navigate('HotspotSetupSkipLocationScreen', params)
   }
 
   return (
