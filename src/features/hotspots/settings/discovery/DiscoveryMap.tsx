@@ -50,6 +50,7 @@ const DiscoveryMap = ({
   selectedHotspot,
   ...props
 }: Props) => {
+  const { purpleMuted, purpleMain } = useColors()
   const cameraRef = useRef<MapboxGL.Camera>(null)
   const mapRef = useRef<MapboxGL.MapView>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
@@ -60,7 +61,6 @@ const DiscoveryMap = ({
       setMapLoaded(false)
     },
   })
-  const { purpleMuted, purpleMain } = useColors()
 
   const styles = useMemo(() => makeStyles({ purpleMuted, purpleMain }), [
     purpleMuted,

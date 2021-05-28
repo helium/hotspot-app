@@ -818,6 +818,9 @@ export default {
       new_location: 'New Location',
       antenna_details: 'Antenna/Height Details',
       update_antenna: 'Update Antenna',
+      submit: 'Update Hotspot transaction submitted and now pending.',
+      already_pending:
+        'Unable to update Hotspot while a transaction is pending. Please try again later.',
     },
   },
   hotspot_details: {

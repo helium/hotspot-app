@@ -1,14 +1,8 @@
 import 'react-native-gesture-handler'
-import React, { useCallback, useEffect, useRef } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
-import {
-  AppState,
-  AppStateStatus,
-  LogBox,
-  Platform,
-  StatusBar,
-  UIManager,
-} from 'react-native'
+import { LogBox, Platform, StatusBar, UIManager } from 'react-native'
+import useAppState from 'react-native-appstate-hook'
 import { ThemeProvider } from '@shopify/restyle'
 import OneSignal, { OpenedEvent } from 'react-native-onesignal'
 import Config from 'react-native-config'
@@ -63,7 +57,7 @@ const App = () => {
     'Require cycle',
   ])
 
-  const appState = useRef(AppState.currentState)
+  const { appState } = useAppState()
   const dispatch = useAppDispatch()
 
   const {
@@ -74,9 +68,8 @@ const App = () => {
     isBackedUp,
     isRequestingPermission,
     isLocked,
-    appStateStatus,
   } = useSelector((state: RootState) => state.app)
-  const prevAppStateStatus = usePrevious(appStateStatus)
+  const prevAppState = usePrevious(appState)
 
   const fetchDataStatus = useSelector(
     (state: RootState) => state.account.fetchDataStatus,
@@ -110,35 +103,19 @@ const App = () => {
     Logger.init()
   }, [dispatch])
 
-  // setup and listen for app state changes
-  const handleChange = useCallback(
-    (nextAppState: AppStateStatus) => {
-      appState.current = nextAppState
-      dispatch(appSlice.actions.updateAppStateStatus(appState.current))
-    },
-    [dispatch],
-  )
-
   // fetch feature flags for the app
   useEffect(() => {
     dispatch(fetchFeatures())
   }, [dispatch])
 
-  useEffect(() => {
-    AppState.addEventListener('change', handleChange)
-    return () => {
-      AppState.removeEventListener('change', handleChange)
-    }
-  }, [handleChange])
-
   // handle app state changes
   useEffect(() => {
-    if (appStateStatus === 'background' && !isLocked) {
+    if (appState === 'background' && !isLocked) {
       dispatch(appSlice.actions.updateLastIdle())
       return
     }
 
-    const isActive = appStateStatus === 'active'
+    const isActive = appState === 'active'
     const now = Date.now()
     const expiration = now - authInterval
     const lastIdleExpired = lastIdle && expiration > lastIdle
@@ -151,7 +128,7 @@ const App = () => {
       dispatch(appSlice.actions.lock(true))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [appStateStatus])
+  }, [appState])
 
   // restore user and then fetch initial data
   useEffect(() => {
@@ -164,10 +141,10 @@ const App = () => {
 
   // update initial data when app comes into foreground from background
   useEffect(() => {
-    if (prevAppStateStatus === 'background' && appStateStatus === 'active') {
+    if (prevAppState === 'background' && appState === 'active') {
       loadInitialData()
     }
-  }, [dispatch, appStateStatus, prevAppStateStatus, loadInitialData])
+  }, [dispatch, appState, prevAppState, loadInitialData])
 
   // hide splash screen
   useAsync(async () => {
@@ -228,9 +205,7 @@ const App = () => {
               </SafeAreaProvider>
               <StatusBanner />
               <SecurityScreen
-                visible={
-                  appStateStatus !== 'active' && appStateStatus !== 'unknown'
-                }
+                visible={appState !== 'active' && appState !== 'unknown'}
               />
             </ConnectedHotspotProvider>
           </BluetoothProvider>
