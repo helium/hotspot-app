@@ -32,10 +32,18 @@ export type HotspotSetupStackParamList = {
       }
     | undefined
   HotspotSetupPickLocationScreen:
-    | { addGatewayTxn: string; hotspotAddress: string }
+    | {
+        addGatewayTxn: string
+        hotspotAddress: string
+        onboardingRecord: OnboardingRecord
+      }
     | undefined
   AntennaSetupScreen:
-    | { addGatewayTxn: string; hotspotAddress: string }
+    | {
+        addGatewayTxn: string
+        hotspotAddress: string
+        onboardingRecord: OnboardingRecord
+      }
     | undefined
   HotspotSetupConfirmLocationScreen:
     | {

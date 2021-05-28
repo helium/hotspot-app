@@ -1,4 +1,5 @@
 import { round } from 'lodash'
+import { HotspotType } from '../store/connectedHotspot/connectedHotspotSlice'
 import { Colors } from '../theme/theme'
 
 export enum SyncStatus {
@@ -44,3 +45,6 @@ export const isRelay = (listen_addrs: string[]) => {
     listen_addrs[0].match('p2p-circuit')
   )
 }
+
+export const isOnboardedWithQR = (hotspotType: HotspotType) =>
+  (['QR_MAKER', 'LONGAPPRO'] as HotspotType[]).includes(hotspotType)

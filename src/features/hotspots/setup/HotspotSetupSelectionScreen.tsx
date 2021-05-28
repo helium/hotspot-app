@@ -15,6 +15,7 @@ import { HotspotType, HotspotModelKeys } from '../../../makers'
 import SearchInput from '../../../components/SearchInput'
 import animateTransition from '../../../utils/animateTransition'
 import { useBorderRadii } from '../../../theme/themeHooks'
+import { isOnboardedWithQR } from '../../../utils/hotspotUtils'
 
 const ItemSeparatorComponent = () => (
   <Box height={1} backgroundColor="primaryBackground" />
@@ -37,8 +38,8 @@ const HotspotSetupSelectionScreen = () => {
     (hotspotType: HotspotType) => () => {
       dispatch(hotspotOnboardingSlice.actions.setHotspotType(hotspotType))
 
-      // TODO: Remove the generic QR_MAKER and add specific hotspot types
-      const qrScanFlow = ['QR_MAKER'].includes(hotspotType)
+      // TODO: Remove the generic QR_MAKER
+      const qrScanFlow = isOnboardedWithQR(hotspotType)
       if (qrScanFlow) {
         navigation.push('HotspotSetupScanQrScreen', { hotspotType })
       } else {
