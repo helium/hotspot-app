@@ -196,6 +196,40 @@ export default {
     },
     pair: {
       title: 'Bluetooth',
+<<<<<<< HEAD
+=======
+      helium_subtitle_1:
+        'Press the black button on your Hotspot. Its light should turn blue.',
+      rak_subtitle_1: 'There is no pairing button on the RAK Hotspot Miner.',
+      nebrain_subtitle_1:
+        'Hold down the button on the back of the Nebra Indoor Hotspot until it starts flashing.',
+      nebraout_subtitle_1:
+        'There is no pairing button on the Nebra Outdoor Hotspot.',
+      bobcat_subtitle_1:
+        'Use the provided pin to press the BT Button on the back of the Hotspot and hold for 5 seconds.',
+      syncrobit_subtitle_1:
+        'There is no pairing button on the SyncroB.it Hotspot.',
+      longapone_subtitle_1:
+        'Use a paperclip to shortly press the button in the little hole right of the LEDs.',
+      seeed_subtitle_1:
+        'Press the button on the back of M1 for 5 seconds.',
+      helium_subtitle_2:
+        "Ensure your phone's bluetooth is on before proceeding",
+      rak_subtitle_2:
+        'Bluetooth is automatically enabled for 5 minutes after the RAK Hotspot Miner is powered on.\n\nHotspot can take up to 1 minute to fully boot up.',
+      nebrain_subtitle_2:
+        'Once the LED is slowly blinking and is ready to pair.\n\nPress Next to scan.',
+      nebraout_subtitle_2:
+        'Bluetooth is automatically enabled for 10 minutes after the Nebra Outdoor Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.',
+      bobcat_subtitle_2:
+        'The hotspot is ready to pair when the light goes from yellow to blue.\n\nMake sure your phone’s Bluetooth is turned on!',
+      syncrobit_subtitle_2:
+        'Bluetooth is automatically enabled for 5 minutes after the SyncroB.it Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.',
+      longapone_subtitle_2:
+        'Once the PWR LED is slowly blinking\n\nPress Next to scan.',
+      seeed_subtitle_2:
+        'The blue indicator light on the back of M1 will change to slow flash mode, indicating that M1 gateway is waiting for connection.\n\nMake sure your phone has turned on the bluetooth pairing mode and select the SenseCAP M1 from the device list.',
+>>>>>>> a774093 (modify picture and text)
       alert_no_permissions: {
         title: 'Authorize Bluetooth',
         body:

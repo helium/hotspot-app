@@ -161,6 +161,19 @@ export default {
     },
     diagnostics: {
       title: '诊断',
+<<<<<<< HEAD
+=======
+      p_1:
+        '<b><white>Hotspot 诊断支持帮助 Helium 安全确认您的 Hotspot 问题。</white></b>\n\nHelium 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@helium.com</b></purple>。',
+      nebra_p_1:
+        '<b><white>诊断支持帮助 Nebra LTD 安全确认您的 Hotspot 问题。</white></b>\n\nNebra 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@nebra.com</b></purple>。',
+      bobcat_p_1:
+        '<b><white>诊断支持帮助 Bobcat 安全确认您的 Hotspot 问题。</white></b>\n\nBobcat 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@bobcatminer.com</b></purple>。',
+      syncrobit_p_1:
+        '<b><white>诊断支持帮助 SyncroB.it 安全确认您的 Hotspot 问题。</white></b>\n\nSyncroB.it 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@syncrob.it</b></purple>。',
+      seeed_p_1:
+        '<b><white>诊断支持帮助我们安全确认您的M1网关问题。</white></b>\n\n我们不会访问私人秘钥，且仅可访问您的M1网关，无法访问您网络中的其他设备。\n\n若您选择退出诊断支持，请邮件联系<purple><b>SenseCAP@seeed.cc</b></purple>并提供您的相关购买记录和详细问题描述以获得技术支持。',
+>>>>>>> a774093 (modify picture and text)
     },
     power: {
       title: '开机',
@@ -168,6 +181,32 @@ export default {
     },
     pair: {
       title: '蓝牙',
+<<<<<<< HEAD
+=======
+      helium_subtitle_1: '按下 Hotspot 上的黑色按钮。指示灯应变成蓝色。',
+      rak_subtitle_1: 'RAK Hotspot Miner 上没有配对按钮。',
+      nebrain_subtitle_1:
+        '长按 Nebra Indoor Hotspot 背面的按钮，直到它的指示灯开始闪烁。',
+      nebraout_subtitle_1: 'Nebra Outdoor Hotspot 上没有配对按钮。',
+      bobcat_subtitle_1:
+        '使用随附的大头针按下 Hotspot 背面的 BT 按钮，长按 5 秒钟。',
+      syncrobit_subtitle_1: 'SyncroB.it Hotspot 上没有配对按钮。',
+      seeed_subtitle_1:
+        '按下M1背面的蓝牙配置按钮约5秒钟。',
+      helium_subtitle_2: '继续操作之前，请确保您手机上的蓝牙已开启',
+      rak_subtitle_2:
+        'RAK Hotspot Miner 开机后，蓝牙会自动启用 5 分钟。\n\nHotspot 最多需要 1 分钟即可完全启动。',
+      nebrain_subtitle_2:
+        'LED 指示灯变成缓慢闪烁后，即表示准备进行配对。\n\n按“下一步”开始扫描。',
+      nebraout_subtitle_2:
+        'Nebra Outdoor Hotspot 开机后，蓝牙会自动启用 10 分钟。\n\nHotspot 最多需要 1 分钟即可完全启动。',
+      bobcat_subtitle_2:
+        '当指示灯由黄色变为蓝色，即表示 Hotspot 准备进行配对。\n\n请务必打开您手机的蓝牙功能！',
+      syncrobit_subtitle_2:
+        'SyncroB.it Hotspot 开机后，蓝牙会自动启用 5 分钟。\n\nHotspot 最多需要 1 分钟即可完全启动。',
+      seeed_subtitle_2:
+        '当指示灯变为慢闪模式，即表示M1网关蓝牙等待连接中，\n\n请打开手机蓝牙功能并从列表中选择对应网关。',
+>>>>>>> a774093 (modify picture and text)
       alert_no_permissions: {
         title: '授权蓝牙',
         body: 'Helium 需要蓝牙使用权限。您可以在“设置”中启用蓝牙权限。',
