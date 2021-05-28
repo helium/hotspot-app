@@ -5,7 +5,6 @@ import { ScrollView } from 'react-native'
 import Button from '../../../components/Button'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
-import usePermissionManager from '../../../utils/usePermissionManager'
 import {
   HotspotSetupNavigationProp,
   HotspotSetupStackParamList,
@@ -16,6 +15,7 @@ import { ww } from '../../../utils/layout'
 import ImageBox from '../../../components/ImageBox'
 import BackScreen from '../../../components/BackScreen'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
+import useGetLocation from '../../../utils/useGetLocation'
 
 type Route = RouteProp<
   HotspotSetupStackParamList,
@@ -24,18 +24,16 @@ type Route = RouteProp<
 
 const HotspotSetupLocationInfoScreen = () => {
   const { t } = useTranslation()
-  const { requestLocationPermission } = usePermissionManager()
   const { params } = useRoute<Route>()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
   const rootNav = useNavigation<RootNavigationProp>()
+  const maybeGetLocation = useGetLocation()
 
   const handleClose = useCallback(() => rootNav.navigate('MainTabs'), [rootNav])
 
   const checkLocationPermissions = async () => {
-    const response = await requestLocationPermission()
-    if (response && response.granted) {
-      navigation.navigate('HotspotSetupPickLocationScreen', params)
-    }
+    await maybeGetLocation(true)
+    navigation.navigate('HotspotSetupPickLocationScreen', params)
   }
 
   const skipLocationAssert = () => {
