@@ -93,6 +93,7 @@
     "react-async-hook": "^3.6.2",
     "react-i18next": "^11.7.3",
     "react-native": "0.64.0",
+    "react-native-appstate-hook": "^1.0.5",
     "react-native-ble-plx": "^2.0.2",
     "react-native-config": "^1.4.1",
     "react-native-currency-format": "^1.0.19",

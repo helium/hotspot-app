@@ -126,7 +126,7 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
         onConnected(hotspot)
       } else {
         handleConnectFailure(
-          'hotspot_setup.onboarding_error.subtitle',
+          'hotspot_setup.onboarding_error.body_connect_failed',
           'hotspot_setup.onboarding_error.title_connect_failed',
         )
       }

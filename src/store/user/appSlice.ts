@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { AppStateStatus } from 'react-native'
 import OneSignal from 'react-native-onesignal'
 import {
   deleteSecureItem,
@@ -21,7 +20,6 @@ export type AppState = {
   lastIdle: number | null
   isLocked: boolean
   isRequestingPermission: boolean
-  appStateStatus: AppStateStatus
 }
 const initialState: AppState = {
   isBackedUp: false,
@@ -35,7 +33,6 @@ const initialState: AppState = {
   lastIdle: null,
   isLocked: false,
   isRequestingPermission: false,
-  appStateStatus: 'unknown',
 }
 
 type Restore = {
@@ -131,11 +128,6 @@ const appSlice = createSlice({
       if (!state.isLocked) {
         state.lastIdle = null
       }
-    },
-    updateAppStateStatus: (state, action: PayloadAction<AppStateStatus>) => {
-      if (action.payload === state.appStateStatus) return
-
-      state.appStateStatus = action.payload
     },
     requestingPermission: (state, action: PayloadAction<boolean>) => {
       state.isRequestingPermission = action.payload
