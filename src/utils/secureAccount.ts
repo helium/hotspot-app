@@ -23,7 +23,7 @@ const boolKeys = [
   'requirePinForPayment',
   'hapticDisabled',
   'convertHntToCurrency',
-  'deploymentModeEnabled',
+  'secureModeEnabled',
 ] as const
 type BooleanKey = typeof boolKeys[number]
 

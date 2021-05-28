@@ -27,7 +27,7 @@ import Account from '../../../assets/images/account.svg'
 import Box from '../../../components/Box'
 import DiscordItem from './DiscordItem'
 import AppInfoItem from './AppInfoItem'
-import DeploymentModeModal from './DeploymentModeModal'
+import SecureModeModal from './SecureModeModal'
 import activitySlice from '../../../store/activity/activitySlice'
 import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
 import { SUPPORTED_LANGUAGUES } from '../../../utils/i18n'
@@ -46,8 +46,8 @@ const MoreScreen = () => {
   const navigation = useNavigation<MoreNavigationProp & RootNavigationProp>()
   const spacing = useSpacing()
   const [
-    showingDeploymentModeConfirmation,
-    setShowingDeploymentModeConfirmation,
+    showingSecureModeConfirmation,
+    setShowingSecureModeConfirmation,
   ] = useState(false)
 
   useEffect(() => {
@@ -206,21 +206,21 @@ const MoreScreen = () => {
       {
         title: t('more.sections.security.revealWords'),
         onPress: handleRevealWords,
-        disabled: app.isDeploymentModeEnabled,
+        disabled: app.isSecureModeEnabled,
       },
       {
-        title: t('more.sections.security.deploymentMode.enableButton'),
-        value: app.isDeploymentModeEnabled,
+        title: t('more.sections.security.secureMode.enableButton'),
+        value: app.isSecureModeEnabled,
         onToggle: () => {
-          setShowingDeploymentModeConfirmation(true)
+          setShowingSecureModeConfirmation(true)
         },
         renderModal: () => (
-          <DeploymentModeModal
-            isVisible={showingDeploymentModeConfirmation}
-            onClose={() => setShowingDeploymentModeConfirmation(false)}
+          <SecureModeModal
+            isVisible={showingSecureModeConfirmation}
+            onClose={() => setShowingSecureModeConfirmation(false)}
           />
         ),
-        disabled: app.isDeploymentModeEnabled,
+        disabled: app.isSecureModeEnabled,
       },
     ]
     return [
@@ -292,9 +292,9 @@ const MoreScreen = () => {
     app.convertHntToCurrency,
     app.authInterval,
     app.isPinRequiredForPayment,
-    app.isDeploymentModeEnabled,
-    showingDeploymentModeConfirmation,
-    setShowingDeploymentModeConfirmation,
+    app.isSecureModeEnabled,
+    showingSecureModeConfirmation,
+    setShowingSecureModeConfirmation,
     handleRevealWords,
     language,
     handleLanguageChange,
