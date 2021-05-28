@@ -1,18 +1,18 @@
 import React from 'react'
 import { NavigationContainerRef } from '@react-navigation/native'
 import { LockScreenRequestType } from './main/tabTypes'
-import { AppLink } from '../providers/appLinkTypes'
+import { AppLink, AppLinkPayment } from '../providers/appLinkTypes'
 
 export const navigationRef = React.createRef<NavigationContainerRef>()
 
 const lock = (params: {
   requestType: LockScreenRequestType
-  scanResult: AppLink
+  scanResult: AppLink | AppLinkPayment
 }) => {
   navigationRef.current?.navigate('LockScreen', params)
 }
 
-const send = (params: { scanResult: AppLink }) => {
+const send = (params: { scanResult: AppLink | AppLinkPayment }) => {
   navigationRef.current?.navigate('Send', params)
 }
 

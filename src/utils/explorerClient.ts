@@ -1,8 +1,10 @@
 import * as Logger from './logger'
 import { EXPLORER_BASE_URL } from './config'
 
+const breadcrumbOpts = { type: 'HTTP Request', category: 'explorerClient' }
+
 const makeRequest = async (url: string, opts: RequestInit) => {
-  Logger.breadcrumb(`request: ${opts.method} ${url}`)
+  Logger.breadcrumb(`httpRequest ${opts.method} ${url}`, breadcrumbOpts)
   try {
     const route = [`${EXPLORER_BASE_URL}/api`, url].join('/')
 
@@ -17,7 +19,7 @@ const makeRequest = async (url: string, opts: RequestInit) => {
 
     if (!response.ok) {
       const errorMessage = `Bad response, status:${response.status} message:${response.statusText}`
-      Logger.breadcrumb(errorMessage)
+      Logger.breadcrumb(errorMessage, breadcrumbOpts)
       throw new Error(errorMessage)
     }
 
@@ -29,7 +31,7 @@ const makeRequest = async (url: string, opts: RequestInit) => {
       return text
     }
   } catch (error) {
-    Logger.breadcrumb('fetch failed')
+    Logger.breadcrumb('fetch failed', breadcrumbOpts)
     throw error
   }
 }

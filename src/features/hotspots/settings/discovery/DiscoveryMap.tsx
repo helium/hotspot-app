@@ -39,6 +39,7 @@ const DiscoveryMap = ({
   selectedHexId,
   ...props
 }: Props) => {
+  const { purpleMain } = useColors()
   const cameraRef = useRef<MapboxGL.Camera>(null)
   const mapRef = useRef<MapboxGL.MapView>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
@@ -50,7 +51,6 @@ const DiscoveryMap = ({
       setMapLoaded(false)
     },
   })
-  const { purpleMain } = useColors()
 
   const styles = useMemo(() => makeStyles({ purpleMain }), [purpleMain])
 

@@ -9,6 +9,7 @@ import {
 } from './appDataClient'
 import { getStakingSignedTransaction, OnboardingRecord } from './stakingClient'
 import { getH3Location } from './h3Utils'
+import * as Logger from './logger'
 
 export const assertLocationTxn = async (
   gateway: string | undefined,
@@ -23,7 +24,13 @@ export const assertLocationTxn = async (
     return undefined
   }
 
-  const { speculativeNonce = 0 } = await getHotspotDetails(gateway)
+  let speculativeNonce = 0
+  try {
+    const response = await getHotspotDetails(gateway)
+    speculativeNonce = response.speculativeNonce || 0
+  } catch (e) {
+    Logger.breadcrumb(`Could not find hotspot details for ${gateway}`)
+  }
   const newNonce = speculativeNonce + 1
   const isFree = await hasFreeLocationAssert(speculativeNonce, onboardingRecord)
   const owner = await getAddress()

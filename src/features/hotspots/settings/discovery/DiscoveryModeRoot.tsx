@@ -1,13 +1,5 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import React, { memo, useCallback, useEffect, useState } from 'react'
 import { Hotspot } from '@helium/http'
-import { getUnixTime } from 'date-fns'
 import { useAsync } from 'react-async-hook'
 import { Alert, Linking } from 'react-native'
 import { useSelector } from 'react-redux'
@@ -15,11 +7,13 @@ import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { isEqual } from 'lodash'
 import discoverySlice, {
-  fetchDiscoveryById,
   fetchRecentDiscoveries,
   startDiscovery,
 } from '../../../../store/discovery/discoverySlice'
-import { DiscoveryRequest } from '../../../../store/discovery/discoveryTypes'
+import {
+  DiscoveryRequest,
+  ViewState,
+} from '../../../../store/discovery/discoveryTypes'
 import { RootState } from '../../../../store/rootReducer'
 import { useAppDispatch } from '../../../../store/store'
 import animateTransition from '../../../../utils/animateTransition'
@@ -35,23 +29,25 @@ import {
   SyncStatus,
 } from '../../../../utils/hotspotUtils'
 import Articles from '../../../../constants/articles'
+import useDiscoveryPoll from './useDiscoveryPoll'
 
-type State = 'begin' | 'results'
 type Props = { onClose: () => void; hotspot: Hotspot }
 const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
-  const [viewState, setViewState] = useState<State>('begin')
+  const [viewState, setViewState] = useState<ViewState>('begin')
   const [errorShownForRequestId, setErrorShownForRequestId] = useState<
     Record<string, boolean>
   >({})
   const { t } = useTranslation()
-  const [time, setTime] = useState(0)
-  const [requestLength, setRequestLength] = useState(60)
   const { enableBack } = useHotspotSettingsContext()
   const { result: userAddress } = useAsync(getSecureItem, ['address'])
   const dispatch = useAppDispatch()
+  const { polling, currentTime, requestTime, requestLength } = useDiscoveryPoll(
+    {
+      viewState,
+      hotspot,
+    },
+  )
   const { showOKAlert } = useAlert()
-  const requestInterval = useRef<NodeJS.Timeout>()
-  const clockInterval = useRef<NodeJS.Timeout>()
   const recentDiscoveryInfo = useSelector(
     (state: RootState) => state.discovery.recentDiscoveryInfos[hotspot.address],
     isEqual,
@@ -62,7 +58,6 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
   const selectedRequest = useSelector(
     (state: RootState) => state.discovery.selectedRequest,
   )
-  const requestId = useSelector((state: RootState) => state.discovery.requestId)
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
   )
@@ -116,68 +111,6 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
       fetchRecent()
     }
   }, [fetchRecent, viewState])
-
-  const requestSeconds = useMemo(() => {
-    const insertDate = selectedRequest
-      ? new Date(selectedRequest.insertedAt)
-      : null
-    if (!insertDate) return 0
-
-    return getUnixTime(insertDate)
-  }, [selectedRequest])
-
-  const shouldPoll = useMemo(() => {
-    if (viewState === 'begin') return false
-
-    if (!selectedRequest) {
-      return true
-    }
-    return time - requestSeconds < requestLength
-  }, [requestLength, requestSeconds, selectedRequest, time, viewState])
-
-  useEffect(() => {
-    if (!recentDiscoveryInfo?.requestLength) return
-
-    setRequestLength(recentDiscoveryInfo.requestLength)
-  }, [recentDiscoveryInfo])
-
-  useEffect(() => {
-    if (clockInterval.current) {
-      clearInterval(clockInterval.current)
-      clockInterval.current = undefined
-    }
-
-    if (!recentDiscoveryInfo?.serverDate || !shouldPoll) return
-
-    const serverTime = getUnixTime(new Date(recentDiscoveryInfo?.serverDate))
-    setTime(serverTime)
-    clockInterval.current = setInterval(() => {
-      setTime((val) => val + 1)
-    }, 1000)
-  }, [recentDiscoveryInfo?.serverDate, shouldPoll])
-
-  useEffect(() => {
-    if (!shouldPoll) {
-      if (requestInterval.current) {
-        clearTimeout(requestInterval.current)
-      }
-      return
-    }
-
-    const reqId = requestId || selectedRequest?.id
-    if (!reqId) return
-    dispatch(fetchDiscoveryById({ requestId: reqId }))
-
-    requestInterval.current = setInterval(() => {
-      dispatch(fetchDiscoveryById({ requestId: reqId }))
-    }, 10000) // Poll Every ten seconds
-
-    return () => {
-      if (requestInterval.current) {
-        clearInterval(requestInterval.current)
-      }
-    }
-  }, [dispatch, requestId, selectedRequest?.id, shouldPoll])
 
   const dispatchDiscovery = useCallback(() => {
     dispatch(
@@ -263,9 +196,9 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
         <DiscoveryModeResults
           request={selectedRequest}
           hotspot={hotspot}
-          isPolling={shouldPoll}
-          currentTime={time}
-          requestTime={requestSeconds}
+          isPolling={polling}
+          currentTime={currentTime}
+          requestTime={requestTime}
           requestLength={requestLength}
         />
       )
