@@ -174,8 +174,10 @@ export default {
     },
     qrScan: {
       title: 'Scan QR Code',
-      subtitle:
-        'Visit makerhip19.com/onboarding to generate a QR code.\n\nYour wallet address is:\n<b><purple>{{address}}</purple></b>',
+      subtitle: {
+        qr_maker: 'Visit makerhip19.com/onboarding to generate a QR code.',
+      },
+      wallet_address: 'Your wallet address is:',
     },
     qrConfirm: {
       title: 'Confirm\nInformation',

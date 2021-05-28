@@ -8,13 +8,14 @@ import { useAsync } from 'react-async-hook'
 import { useDebouncedCallback } from 'use-debounce/lib'
 import Toast from 'react-native-simple-toast'
 import { StyleSheet } from 'react-native'
+import Clipboard from '@react-native-community/clipboard'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import { HotspotSetupStackParamList } from './hotspotSetupTypes'
 import { useColors } from '../../../theme/themeHooks'
 import { getSecureItem } from '../../../utils/secureAccount'
-import TextTransform from '../../../components/TextTransform'
 import { useAppLinkContext } from '../../../providers/AppLinkProvider'
 import useHaptic from '../../../utils/useHaptic'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
@@ -54,6 +55,12 @@ const HotspotSetupScanQrScreen = () => {
     { leading: true, trailing: false },
   )
 
+  const copyAddress = useCallback(() => {
+    Clipboard.setString(address || '')
+    triggerNotification('success')
+    Toast.show(t('wallet.copiedToClipboard', { address }))
+  }, [address, t, triggerNotification])
+
   return (
     <BackScreen
       backgroundColor="primaryBackground"
@@ -80,15 +87,34 @@ const HotspotSetupScanQrScreen = () => {
       >
         {t('hotspot_setup.qrScan.title')}
       </Text>
-      <TextTransform
+      <Text
         variant="subtitle"
         fontSize={{ smallPhone: 15, phone: 19 }}
         lineHeight={{ smallPhone: 20, phone: 26 }}
         maxFontSizeMultiplier={1}
         marginVertical={{ smallPhone: 's', phone: 'l' }}
-        i18nKey="hotspot_setup.qrScan.subtitle"
-        values={{ address }}
-      />
+      >
+        {t(`hotspot_setup.qrScan.subtitle.${params.hotspotType.toLowerCase()}`)}
+      </Text>
+      <Text
+        variant="subtitle"
+        fontSize={{ smallPhone: 15, phone: 19 }}
+        lineHeight={{ smallPhone: 20, phone: 26 }}
+        maxFontSizeMultiplier={1}
+      >
+        {t('hotspot_setup.qrScan.wallet_address')}
+      </Text>
+      <TouchableOpacity onPress={copyAddress}>
+        <Text
+          variant="bold"
+          fontSize={{ smallPhone: 15, phone: 19 }}
+          color="purpleMain"
+          lineHeight={{ smallPhone: 20, phone: 26 }}
+          maxFontSizeMultiplier={1}
+        >
+          {address}
+        </Text>
+      </TouchableOpacity>
       <Box flex={1} />
 
       <Box

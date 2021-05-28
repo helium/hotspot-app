@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import Fingerprint from '@assets/images/fingerprint.svg'
 import { AddGatewayV1 } from '@helium/transactions'
 import { ActivityIndicator } from 'react-native'
+import { useAsync } from 'react-async-hook'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -17,8 +18,9 @@ import {
   OnboardingRecord,
 } from '../../../utils/stakingClient'
 import animateTransition from '../../../utils/animateTransition'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
+import { getSecureItem } from '../../../utils/secureAccount'
 
 type Route = RouteProp<
   HotspotSetupStackParamList,
@@ -31,6 +33,7 @@ const HotspotSetupQrConfirmScreen = () => {
   const navigation = useNavigation<HotspotSetupNavigationProp>()
   const colors = useColors()
   const breakpoints = useBreakpoints()
+  const { result: address } = useAsync(getSecureItem, ['address'])
   const [publicKey, setPublicKey] = useState('')
   const [macAddress, setMacAddress] = useState('')
   const [ownerAddress, setOwnerAddress] = useState('')
@@ -181,11 +184,12 @@ const HotspotSetupQrConfirmScreen = () => {
         </Text>
       </Box>
       <Box flex={1} />
-      <Button
+      <DebouncedButton
         title={t('generic.next')}
         mode="contained"
         variant="primary"
         onPress={navNext}
+        disabled={publicKey !== address}
       />
     </BackScreen>
   )
