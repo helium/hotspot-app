@@ -4,14 +4,14 @@ import { useTranslation } from 'react-i18next'
 import { ActivityIndicator, Alert } from 'react-native'
 import { useAsync } from 'react-async-hook'
 import { Balance, CurrencyType } from '@helium/currency'
+import { useNavigation } from '@react-navigation/native'
+import Toast from 'react-native-simple-toast'
 import Text from '../../../../components/Text'
 import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
 import Box from '../../../../components/Box'
 import Button from '../../../../components/Button'
 import * as Logger from '../../../../utils/logger'
-import HotspotConfigurationPicker, {
-  Antenna,
-} from '../../../../components/HotspotConfigurationPicker'
+import HotspotConfigurationPicker from '../../../../components/HotspotConfigurationPicker'
 import animateTransition from '../../../../utils/animateTransition'
 import ReassertLocation, {
   Coords,
@@ -28,17 +28,20 @@ import { getOnboardingRecord } from '../../../../utils/stakingClient'
 import useSubmitTxn from '../../../../hooks/useSubmitTxn'
 import { decimalSeparator, groupSeparator } from '../../../../utils/i18n'
 import { calculateAssertLocFee } from '../../../../utils/fees'
+import { Antenna } from '../../../../constants/antennas'
 
 type Props = {
   onClose: () => void
+  onCloseSettings: () => void
   hotspot: Hotspot
 }
 
 type State = 'antenna' | 'location' | 'confirm'
 
-const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
+const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
   const { t } = useTranslation()
   const submitTxn = useSubmitTxn()
+  const navigation = useNavigation()
   const [state, setState] = useState<State>('antenna')
   const [antenna, setAntenna] = useState<Antenna>()
   const [gain, setGain] = useState<number>()
@@ -143,7 +146,6 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
         location.longitude,
         hotspotGain,
         hotspot.elevation,
-        hotspot.nonce,
         onboardingRecord,
         isLocationChange,
       )
@@ -155,7 +157,6 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
       hotspot.lng,
       gain,
       elevation,
-      hotspot.nonce,
       onboardingRecord,
       false,
     )
@@ -167,8 +168,13 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
       const txn = await constructTransaction()
       if (txn) {
         await submitTxn(txn)
-        onClose()
+        navigation.navigate('Wallet')
+        onCloseSettings()
+        setTimeout(() => {
+          Toast.show(t('hotspot_settings.reassert.submit'), Toast.LONG)
+        }, 500)
       } else {
+        setLoading(false)
         Logger.error(new Error('Assert failed with null txn'))
         Alert.alert(
           t('generic.error'),
@@ -176,13 +182,13 @@ const UpdateHotspotConfig = ({ onClose, hotspot }: Props) => {
         )
       }
     } catch (error) {
+      setLoading(false)
       Logger.error(error)
       Alert.alert(
         t('generic.error'),
         t('hotspot_setup.add_hotspot.assert_loc_error_body'),
       )
     }
-    setLoading(false)
   }
 
   const StatePicker = () => (

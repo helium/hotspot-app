@@ -1,18 +1,14 @@
-import React, { memo, useEffect, useMemo, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import { Hotspot } from '@helium/http'
 import { useTranslation } from 'react-i18next'
 import { isEqual, startCase } from 'lodash'
 import haversine from 'haversine-distance'
 import { useSelector } from 'react-redux'
 import Box from '../../../../components/Box'
-import DiscoveryMap, {
-  MapSelectDetail,
-  ANIM_LOOP_LENGTH_MS,
-} from './DiscoveryMap'
+import DiscoveryMap, { MapSelectDetail } from './DiscoveryMap'
 import {
   DiscoveryRequest,
   DiscoveryResponse,
-  DISCOVERY_DURATION_MINUTES,
 } from '../../../../store/discovery/discoveryTypes'
 import animateTransition from '../../../../utils/animateTransition'
 import { hp } from '../../../../utils/layout'
@@ -30,6 +26,7 @@ type Props = {
   isPolling: boolean
   requestTime: number
   currentTime: number
+  requestLength: number
 }
 const DiscoveryModeResults = ({
   request,
@@ -37,6 +34,7 @@ const DiscoveryModeResults = ({
   isPolling,
   currentTime,
   requestTime,
+  requestLength,
 }: Props) => {
   const { t } = useTranslation()
   const [filteredResponses, setFilteredResponses] = useState<
@@ -54,23 +52,23 @@ const DiscoveryModeResults = ({
     isEqual,
   )
 
-  const coords = useSelector((state: RootState) => state.discovery.mapCoords)
-
   useEffect(() => {
+    if (filteredResponses.length === 0) return
+
     const oneMileInDegrees = 1 / 69 // close enough => depends on your location. It's 68.7 at the equator and 69.4 at the poles, but yolo
     const offset = 15 * oneMileInDegrees // TODO: 15 mile offset. Is this adequate?
-
+    const center = [filteredResponses[0].long, filteredResponses[0].lat] // use the first responder as center
     const northEastCoordinates = [
-      coords[0] + offset,
-      coords[1] + offset,
+      center[0] + offset,
+      center[1] + offset,
     ] as GeoJSON.Position
     const southWestCoordinates = [
-      coords[0] - offset,
-      coords[1] - offset,
+      center[0] - offset,
+      center[1] - offset,
     ] as GeoJSON.Position
 
     dispatch(fetchNetworkHotspots([southWestCoordinates, northEastCoordinates])) // find all hotspots 15 miles in every direction
-  }, [dispatch, coords])
+  }, [dispatch, filteredResponses])
 
   useEffect(() => {
     if (request) {
@@ -119,27 +117,15 @@ const DiscoveryModeResults = ({
     setOverlayDetails(undefined)
   }
 
-  const iterations = useMemo(() => {
-    const nowInSec = Date.now() / 1000
-    const diffSec = requestTime + DISCOVERY_DURATION_MINUTES * 60 - nowInSec
-    if (diffSec > 0) {
-      return Math.ceil(diffSec / (ANIM_LOOP_LENGTH_MS / 1000))
-    }
-    return 20
-  }, [requestTime])
-
   return (
     <Box height={hp(85)}>
       <DiscoveryMap
         networkHotspots={networkHotspots}
         hotspotAddress={hotspot.address}
-        coords={coords}
         responses={filteredResponses}
         onSelect={showOverlay}
         selectedHotspot={overlayDetails}
         isPolling={isPolling}
-        requestTime={requestTime}
-        iterations={iterations}
       />
       <DiscoveryModeResultsCard
         numResponses={filteredResponses.length}
@@ -149,6 +135,7 @@ const DiscoveryModeResults = ({
         hideOverlay={hideOverlay}
         requestTime={requestTime}
         currentTime={currentTime}
+        requestLength={requestLength}
       />
     </Box>
   )

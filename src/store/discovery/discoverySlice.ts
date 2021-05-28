@@ -5,21 +5,21 @@ import { Loading } from '../activity/activitySlice'
 import { DiscoveryRequest, RecentDiscoveryInfo } from './discoveryTypes'
 
 export type DiscoveryState = {
-  recentDiscoveryInfo: (RecentDiscoveryInfo & { serverDate: string }) | null
+  recentDiscoveryInfos: Record<string, RecentDiscoveryInfo>
   infoLoading: Loading
+  requestLoading: Loading
   selectedRequest?: DiscoveryRequest | null
   requestId?: number | null
-  mapCoords: number[]
 }
 
 const initialState: DiscoveryState = {
-  recentDiscoveryInfo: null,
   infoLoading: 'idle',
-  mapCoords: [0, 0],
+  requestLoading: 'idle',
+  recentDiscoveryInfos: {},
 }
 
 export const fetchRecentDiscoveries = createAsyncThunk<
-  RecentDiscoveryInfo & { serverDate: string },
+  RecentDiscoveryInfo,
   { hotspotAddress: string }
 >('discovery/recent', async ({ hotspotAddress }) =>
   getWallet(`discoveries/${hotspotAddress}`, null, true),
@@ -27,7 +27,7 @@ export const fetchRecentDiscoveries = createAsyncThunk<
 
 export const startDiscovery = createAsyncThunk<
   DiscoveryRequest,
-  { hotspotAddress: string; hotspotName: string; mapCoords: number[] }
+  { hotspotAddress: string; hotspotName: string }
 >('discovery/start', async ({ hotspotAddress, hotspotName }) => {
   const signature = await makeDiscoverySignature(hotspotAddress)
   return postWallet(
@@ -55,7 +55,7 @@ const discoverySlice = createSlice({
   reducers: {
     setSelectedRequest: (state, action: PayloadAction<DiscoveryRequest>) => {
       state.selectedRequest = action.payload
-      state.requestId = null
+      state.requestId = action.payload.id
     },
     clearSelections: (state) => {
       state.selectedRequest = null
@@ -64,33 +64,39 @@ const discoverySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchRecentDiscoveries.pending, (state) => {
-      state.recentDiscoveryInfo = null
       state.infoLoading = 'pending'
     })
-    builder.addCase(fetchRecentDiscoveries.fulfilled, (state, { payload }) => {
-      state.recentDiscoveryInfo = payload
-      state.infoLoading = 'fulfilled'
-    })
-    builder.addCase(fetchRecentDiscoveries.rejected, (state) => {
-      state.infoLoading = 'rejected'
-    })
-    builder.addCase(fetchDiscoveryById.fulfilled, (state, { payload }) => {
-      state.selectedRequest = payload
-    })
     builder.addCase(
-      startDiscovery.pending,
+      fetchRecentDiscoveries.fulfilled,
       (
         state,
         {
+          payload,
           meta: {
-            arg: { mapCoords },
+            arg: { hotspotAddress },
           },
         },
       ) => {
-        state.mapCoords = mapCoords
-        state.selectedRequest = null
+        state.recentDiscoveryInfos[hotspotAddress] = payload
+        state.infoLoading = 'fulfilled'
       },
     )
+    builder.addCase(fetchRecentDiscoveries.rejected, (state) => {
+      state.infoLoading = 'rejected'
+    })
+    builder.addCase(fetchDiscoveryById.pending, (state) => {
+      state.requestLoading = 'pending'
+    })
+    builder.addCase(fetchDiscoveryById.rejected, (state) => {
+      state.requestLoading = 'rejected'
+    })
+    builder.addCase(fetchDiscoveryById.fulfilled, (state, { payload }) => {
+      state.requestLoading = 'fulfilled'
+      state.selectedRequest = payload
+    })
+    builder.addCase(startDiscovery.pending, (state) => {
+      state.selectedRequest = null
+    })
     builder.addCase(startDiscovery.fulfilled, (state, { payload }) => {
       state.requestId = payload.id
     })

@@ -1,26 +1,18 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import React, { memo, useCallback, useEffect, useState } from 'react'
 import { Hotspot } from '@helium/http'
-import { getUnixTime } from 'date-fns'
 import { useAsync } from 'react-async-hook'
 import { Alert, Linking } from 'react-native'
 import { useSelector } from 'react-redux'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
+import { isEqual } from 'lodash'
 import discoverySlice, {
-  fetchDiscoveryById,
   fetchRecentDiscoveries,
   startDiscovery,
 } from '../../../../store/discovery/discoverySlice'
 import {
   DiscoveryRequest,
-  DISCOVERY_DURATION_MINUTES,
+  ViewState,
 } from '../../../../store/discovery/discoveryTypes'
 import { RootState } from '../../../../store/rootReducer'
 import { useAppDispatch } from '../../../../store/store'
@@ -36,41 +28,36 @@ import {
   isRelay,
   SyncStatus,
 } from '../../../../utils/hotspotUtils'
-import { hotspotHasValidLocation } from '../../../../utils/location'
-import useGetLocation from '../../../../utils/useGetLocation'
 import Articles from '../../../../constants/articles'
-
-type State = 'begin' | 'results'
+import useDiscoveryPoll from './useDiscoveryPoll'
 
 type Props = { onClose: () => void; hotspot: Hotspot }
 const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
-  const [viewState, setViewState] = useState<State>('begin')
+  const [viewState, setViewState] = useState<ViewState>('begin')
   const [errorShownForRequestId, setErrorShownForRequestId] = useState<
     Record<string, boolean>
   >({})
   const { t } = useTranslation()
-  const maybeGetLocation = useGetLocation()
-  const [time, setTime] = useState(0)
   const { enableBack } = useHotspotSettingsContext()
   const { result: userAddress } = useAsync(getSecureItem, ['address'])
   const dispatch = useAppDispatch()
-  const { showOKAlert, showOKCancelAlert } = useAlert()
-  const requestInterval = useRef<NodeJS.Timeout>()
-  const clockInterval = useRef<NodeJS.Timeout>()
+  const { polling, currentTime, requestTime, requestLength } = useDiscoveryPoll(
+    {
+      viewState,
+      hotspot,
+    },
+  )
+  const { showOKAlert } = useAlert()
   const recentDiscoveryInfo = useSelector(
-    (state: RootState) => state.discovery.recentDiscoveryInfo,
+    (state: RootState) => state.discovery.recentDiscoveryInfos[hotspot.address],
+    isEqual,
   )
-  const { currentLocation, locationBlocked } = useSelector(
-    (state: RootState) => state.location,
-  )
-
   const infoLoading = useSelector(
     (state: RootState) => state.discovery.infoLoading,
   )
   const selectedRequest = useSelector(
     (state: RootState) => state.discovery.selectedRequest,
   )
-  const requestId = useSelector((state: RootState) => state.discovery.requestId)
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
   )
@@ -125,118 +112,15 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
     }
   }, [fetchRecent, viewState])
 
-  const requestSeconds = useMemo(() => {
-    const insertDate = selectedRequest
-      ? new Date(selectedRequest.insertedAt)
-      : null
-    if (!insertDate) return 0
-
-    return getUnixTime(insertDate)
-  }, [selectedRequest])
-
-  const shouldPoll = useMemo(() => {
-    if (viewState === 'begin') return false
-
-    if (!selectedRequest) {
-      return true
-    }
-    return time - requestSeconds < DISCOVERY_DURATION_MINUTES * 60
-  }, [requestSeconds, selectedRequest, time, viewState])
-
-  useEffect(() => {
-    if (clockInterval.current) {
-      clearInterval(clockInterval.current)
-      clockInterval.current = undefined
-    }
-
-    if (!recentDiscoveryInfo?.serverDate || !shouldPoll) return
-
-    const serverTime = getUnixTime(new Date(recentDiscoveryInfo?.serverDate))
-    setTime(serverTime)
-    clockInterval.current = setInterval(() => {
-      setTime((val) => val + 1)
-    }, 1000)
-  }, [recentDiscoveryInfo?.serverDate, shouldPoll])
-
-  useEffect(() => {
-    if (!shouldPoll) {
-      if (requestInterval.current) {
-        clearTimeout(requestInterval.current)
-      }
-      return
-    }
-
-    const reqId = requestId || selectedRequest?.id
-    if (!reqId) return
-    dispatch(fetchDiscoveryById({ requestId: reqId }))
-
-    requestInterval.current = setInterval(() => {
-      dispatch(fetchDiscoveryById({ requestId: reqId }))
-    }, 10000) // Poll Every ten seconds
-
-    return () => {
-      if (requestInterval.current) {
-        clearInterval(requestInterval.current)
-      }
-    }
-  }, [dispatch, requestId, selectedRequest?.id, shouldPoll])
-
-  const dispatchDiscovery = useCallback(
-    (lat: number, lng: number) => {
-      dispatch(
-        startDiscovery({
-          hotspotAddress: hotspot.address,
-          hotspotName: hotspot.name || animalName(hotspot.address),
-          mapCoords: [lng, lat],
-        }),
-      )
-      setViewState('results')
-    },
-    [dispatch, hotspot],
-  )
-
-  const initiateDiscovery = useCallback(async () => {
-    if (!hotspotHasValidLocation(hotspot)) {
-      const decision = await showOKCancelAlert({
-        messageKey:
-          'hotspot_settings.discovery.unasserted_hotspot_warning.message',
-        titleKey: 'hotspot_settings.discovery.unasserted_hotspot_warning.title',
-        okKey: 'generic.continue',
-      })
-      if (!decision) return
-
-      if (locationBlocked) {
-        const locDecision = await showOKCancelAlert({
-          titleKey: 'generic.error',
-          messageKey: 'generic.location_blocked',
-          okKey: 'generic.go_to_settings',
-        })
-        if (locDecision) Linking.openSettings()
-      } else if (!currentLocation) {
-        const coords = await maybeGetLocation('skip')
-        if (!coords) {
-          showOKAlert({
-            titleKey: 'generic.error',
-            messageKey: 'generic.unable_to_get_location',
-          })
-        } else {
-          dispatchDiscovery(coords.latitude, coords.longitude)
-        }
-      } else {
-        dispatchDiscovery(currentLocation.latitude, currentLocation.longitude)
-      }
-    } else {
-      dispatchDiscovery(hotspot.lat || 0, hotspot.lng || 0)
-    }
-  }, [
-    currentLocation,
-    dispatchDiscovery,
-    hotspot,
-    locationBlocked,
-    maybeGetLocation,
-    showOKAlert,
-    showOKCancelAlert,
-  ])
+  const dispatchDiscovery = useCallback(() => {
+    dispatch(
+      startDiscovery({
+        hotspotAddress: hotspot.address,
+        hotspotName: hotspot.name || animalName(hotspot.address),
+      }),
+    )
+    setViewState('results')
+  }, [dispatch, hotspot])
 
   const handleNewSelected = useCallback(async () => {
     if (!hotspot.address || !userAddress) return
@@ -260,7 +144,7 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
         [
           {
             text: t('generic.continue'),
-            onPress: () => initiateDiscovery(),
+            onPress: () => dispatchDiscovery(),
           },
           {
             text: t('discovery.troubleshooting_guide'),
@@ -277,9 +161,9 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
         ],
       )
     } else {
-      initiateDiscovery()
+      dispatchDiscovery()
     }
-  }, [blockHeight, hotspot, initiateDiscovery, showOKAlert, t, userAddress])
+  }, [hotspot, blockHeight, dispatchDiscovery, showOKAlert, t, userAddress])
 
   const handleRequestSelected = (request: DiscoveryRequest) => {
     dispatch(discoverySlice.actions.setSelectedRequest(request))
@@ -300,7 +184,7 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
           onClose={onClose}
           recentDiscoveryInfo={recentDiscoveryInfo}
           error={infoLoading === 'rejected'}
-          hotspotAddress={hotspot.address}
+          hotspot={hotspot}
         />
       )
     case 'results':
@@ -308,9 +192,10 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
         <DiscoveryModeResults
           request={selectedRequest}
           hotspot={hotspot}
-          isPolling={shouldPoll}
-          currentTime={time}
-          requestTime={requestSeconds}
+          isPolling={polling}
+          currentTime={currentTime}
+          requestTime={requestTime}
+          requestLength={requestLength}
         />
       )
   }

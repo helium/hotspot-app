@@ -3,6 +3,8 @@ export type RecentDiscoveryInfo = {
   recentRequests: DiscoveryRequest[]
   requestsRemaining: number
   requestsPerDay: number
+  requestLength: number
+  serverDate?: string
 }
 
 export type DiscoveryRequest = {
@@ -11,6 +13,9 @@ export type DiscoveryRequest = {
   responses: DiscoveryResponse[]
   insertedAt: string
   errorCode: number
+  lat: string
+  lng: string
+  serverDate?: string
 }
 
 export type DiscoveryResponse = {
@@ -27,4 +32,4 @@ export type DiscoveryResponse = {
   long: number
 }
 
-export const DISCOVERY_DURATION_MINUTES = 1
+export type ViewState = 'begin' | 'results'

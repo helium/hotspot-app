@@ -2,9 +2,14 @@ import { AssertLocationV2, Transaction } from '@helium/transactions'
 import { Balance, CurrencyType } from '@helium/currency'
 import { calculateAssertLocFee } from './fees'
 import { makeAssertLocTxn } from './transactions'
-import { getAddress, getCurrentOraclePrice } from './appDataClient'
+import {
+  getAddress,
+  getCurrentOraclePrice,
+  getHotspotDetails,
+} from './appDataClient'
 import { getStakingSignedTransaction, OnboardingRecord } from './stakingClient'
 import { getH3Location } from './h3Utils'
+import * as Logger from './logger'
 
 export const assertLocationTxn = async (
   gateway: string | undefined,
@@ -12,16 +17,26 @@ export const assertLocationTxn = async (
   lng: number | undefined,
   decimalGain = 1.2,
   elevation = 0,
-  nonce = 0,
   onboardingRecord: OnboardingRecord | undefined,
   updatingLocation: boolean,
 ) => {
-  const newNonce = nonce + 1
-  const isFree = await hasFreeLocationAssert(nonce, onboardingRecord)
+  if (!gateway) {
+    return undefined
+  }
+
+  let speculativeNonce = 0
+  try {
+    const response = await getHotspotDetails(gateway)
+    speculativeNonce = response.speculativeNonce || 0
+  } catch (e) {
+    Logger.breadcrumb(`Could not find hotspot details for ${gateway}`)
+  }
+  const newNonce = speculativeNonce + 1
+  const isFree = await hasFreeLocationAssert(speculativeNonce, onboardingRecord)
   const owner = await getAddress()
   const payer = isFree ? onboardingRecord?.maker?.address : owner
 
-  if (!owner || !payer || !gateway || !lat || !lng) {
+  if (!owner || !payer || !lat || !lng) {
     return undefined
   }
 

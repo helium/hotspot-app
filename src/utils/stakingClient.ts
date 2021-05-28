@@ -32,7 +32,10 @@ export type Maker = {
   updatedAt: string
 }
 
+const breadcrumbOpts = { type: 'HTTP Request', category: 'stakingClient' }
+
 const makeRequest = async (url: string, opts: RequestInit = {}) => {
+  Logger.breadcrumb(`httpRequest ${opts.method} ${url}`, breadcrumbOpts)
   try {
     const route = [Config.STAKING_API_BASE_URL, url].join('/')
 
@@ -52,7 +55,7 @@ const makeRequest = async (url: string, opts: RequestInit = {}) => {
       throw new Error(text)
     }
   } catch (error) {
-    Logger.breadcrumb(error)
+    Logger.breadcrumb(error, breadcrumbOpts)
     throw error
   }
 }
