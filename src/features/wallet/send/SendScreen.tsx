@@ -16,13 +16,20 @@ type Props = {
 const SendScreen = ({ route }: Props) => {
   const rootNavigation = useNavigation<RootNavigationProp>()
   const scanResult = route?.params?.scanResult
-  const type = route?.params?.type
   const hotspotAddress = route?.params?.hotspotAddress
   const isSeller = route?.params?.isSeller
   const isPinVerified = route?.params?.pinVerified
   const isPinRequiredForPayment = useSelector(
     (state: RootState) => state.app.isPinRequiredForPayment,
   )
+  const isSecureModeEnabled = useSelector(
+    (state: RootState) => state.app.isSecureModeEnabled,
+  )
+  const permanentPaymentAddress = useSelector(
+    (state: RootState) => state.app.permanentPaymentAddress,
+  )
+  // If "Secure Mode" is enabled, only allow payment transactions
+  const type = isSecureModeEnabled ? 'payment' : route?.params?.type
 
   useEffect(() => {
     // Check if pin is required, show lock screen if so
@@ -41,8 +48,15 @@ const SendScreen = ({ route }: Props) => {
 
   const canSubmit = useMemo(() => {
     if (!isPinRequiredForPayment) return true
+    // If "Secure Mode" is enabled but no permant address was provided, disable all send actions
+    if (isSecureModeEnabled && !permanentPaymentAddress) return false
     return isPinVerified === 'pass'
-  }, [isPinRequiredForPayment, isPinVerified])
+  }, [
+    isPinRequiredForPayment,
+    isPinVerified,
+    isSecureModeEnabled,
+    permanentPaymentAddress,
+  ])
 
   return (
     <>
@@ -59,6 +73,7 @@ const SendScreen = ({ route }: Props) => {
           hotspotAddress={hotspotAddress}
           isSeller={isSeller}
           canSubmit={canSubmit}
+          lockedPaymentAddress={permanentPaymentAddress}
         />
       </Box>
     </>

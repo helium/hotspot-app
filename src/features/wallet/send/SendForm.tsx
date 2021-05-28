@@ -20,6 +20,7 @@ type Props = {
   hasSufficientBalance?: boolean
   hasValidActivity?: boolean
   isLocked: boolean
+  isLockedAddress: boolean
   isSeller?: boolean
   isValid: boolean
   lastReportedActivity?: string
@@ -39,6 +40,7 @@ const SendForm = ({
   hasSufficientBalance,
   hasValidActivity,
   isLocked,
+  isLockedAddress,
   isSeller,
   isValid,
   lastReportedActivity,
@@ -83,6 +85,7 @@ const SendForm = ({
             account={account}
             fee={fee}
             isLocked={isLocked}
+            isLockedAddress={isLockedAddress}
             isSeller={isSeller}
             lastReportedActivity={lastReportedActivity}
             onScanPress={onScanPress}

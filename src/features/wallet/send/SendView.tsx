@@ -71,6 +71,7 @@ type Props = {
   hotspotAddress?: string
   isSeller?: boolean
   canSubmit?: boolean
+  lockedPaymentAddress?: string
 }
 
 const SendView = ({
@@ -79,6 +80,7 @@ const SendView = ({
   hotspotAddress,
   isSeller,
   canSubmit = true,
+  lockedPaymentAddress,
 }: Props) => {
   const tabNavigation = useNavigation<MainTabNavigationProp>()
   const sendNavigation = useNavigation<SendNavigationProps>()
@@ -116,7 +118,7 @@ const SendView = ({
   const [sendDetails, setSendDetails] = useState<Array<SendDetails>>([
     {
       id: '0',
-      address: '',
+      address: lockedPaymentAddress || '',
       addressAlias: '',
       addressLoading: false,
       amount: '',
@@ -538,6 +540,7 @@ const SendView = ({
         <SendForm
           account={account}
           fee={fee}
+          isLockedAddress={!!lockedPaymentAddress}
           hasSufficientBalance={hasSufficientBalance}
           hasValidActivity={hasValidActivity}
           isLocked={isLocked}
