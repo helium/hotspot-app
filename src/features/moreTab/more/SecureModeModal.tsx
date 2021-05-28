@@ -1,5 +1,6 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useState, useEffect } from 'react'
 import { BoxProps } from '@shopify/restyle'
+import { Address } from '@helium/crypto-react-native'
 import { StyleSheet, StyleProp, ViewStyle } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -10,13 +11,21 @@ import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import HeliumBottomSheet from '../../../components/HeliumBottomSheet'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import InputField from '../../../components/InputField'
+import Check from '../../../assets/images/check.svg'
 
 type ActionButtonProps = {
   children: React.ReactNode
+  disabled?: boolean
   onPress: () => void
   style?: StyleProp<ViewStyle>
 }
-const ActionButton = ({ children, onPress, style = {} }: ActionButtonProps) => {
+const ActionButton = ({
+  children,
+  disabled,
+  onPress,
+  style = {},
+}: ActionButtonProps) => {
   return (
     <TouchableOpacityBox
       height={49}
@@ -27,6 +36,7 @@ const ActionButton = ({ children, onPress, style = {} }: ActionButtonProps) => {
       width="48%"
       onPress={onPress}
       style={style}
+      disabled={disabled}
     >
       {children}
     </TouchableOpacityBox>
@@ -42,13 +52,24 @@ const SecureModeModal = ({ isVisible, onClose = () => {} }: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const insets = useSafeAreaInsets()
+  const [sendAddress, setSendAddress] = useState('')
 
-  const sheetHeight = 236 + (insets?.bottom || 0)
+  const sheetHeight = 382 + (insets?.bottom || 0)
   const enableSecureMode = useCallback(() => {
     dispatch(appSlice.actions.enableSecureMode(true))
+    dispatch(appSlice.actions.setPermanentPaymentAddress(sendAddress))
     onClose()
-  }, [dispatch, onClose])
+  }, [dispatch, sendAddress, onClose])
 
+  useEffect(() => {
+    if (!isVisible) setSendAddress('')
+  }, [isVisible])
+
+  // Only disable "Submit" if an address is provided but is invalid
+  const isValid = sendAddress ? Address.isValid(sendAddress) : true
+  const confirmationStyle = isValid
+    ? styles.confirmContainer
+    : styles.confirmContainerDisabled
   return (
     <HeliumBottomSheet
       isVisible={isVisible}
@@ -60,16 +81,25 @@ const SecureModeModal = ({ isVisible, onClose = () => {} }: Props) => {
       <Text marginTop="m" fontFamily={Font.main.semiBold}>
         {t('more.sections.security.secureMode.warning')}
       </Text>
+      <InputField
+        onChange={setSendAddress}
+        label={t('more.sections.security.secureMode.addressLabel')}
+        placeholder={t('send.address.placeholder')}
+        extra={
+          sendAddress && isValid ? (
+            <Box padding="s" position="absolute" right={0}>
+              <Check />
+            </Box>
+          ) : null
+        }
+      />
       <Box marginBottom="xl" style={styles.footerContainer}>
         <ActionButton onPress={onClose} style={styles.cancelContainer}>
           <Text variant="medium" fontSize={18} style={styles.cancelText}>
             {t('generic.cancel')}
           </Text>
         </ActionButton>
-        <ActionButton
-          onPress={enableSecureMode}
-          style={styles.confirmContainer}
-        >
+        <ActionButton onPress={enableSecureMode} style={confirmationStyle}>
           <Text variant="medium" fontSize={18} style={styles.confirmText}>
             {t('generic.submit')}
           </Text>
@@ -83,6 +113,7 @@ const styles = StyleSheet.create({
   cancelContainer: { backgroundColor: '#F0F0F5' },
   cancelText: { color: '#B3B4D6' },
   confirmContainer: { backgroundColor: '#F97570' },
+  confirmContainerDisabled: { backgroundColor: 'rgba(249, 117, 112, 0.5)' },
   confirmText: { color: '#FFFFFF' },
   footerContainer: {
     flexDirection: 'row',

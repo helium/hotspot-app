@@ -24,6 +24,7 @@ const boolKeys = [
   'hapticDisabled',
   'convertHntToCurrency',
   'secureModeEnabled',
+  'permanentPaymentAddress',
 ] as const
 type BooleanKey = typeof boolKeys[number]
 

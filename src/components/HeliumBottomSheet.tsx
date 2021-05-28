@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { memo, useCallback, useEffect } from 'react'
 import { BoxProps } from '@shopify/restyle'
 import Close from '@assets/images/close.svg'

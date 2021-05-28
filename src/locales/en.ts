@@ -586,9 +586,9 @@ export default {
           title: 'Secure Mode',
           enableButton: 'Enable Secure Mode',
           description:
-            'Secure mode will disable the option to view your secret words.',
-          warning:
-            'This can only be disabled by logging out and reimporting your account.',
+            'Activating secure mode will remove the ability to reveal the 12 words for this account. You will still be able to add hotspots and update their locations, and send funds to one whitelisted address if provided.',
+          warning: 'You must log out to disable this feature.',
+          addressLabel: 'Permanent recipient address',
         },
       },
       learn: {
