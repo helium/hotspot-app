@@ -54,10 +54,12 @@ const SecureModeModal = ({ isVisible, onClose = () => {} }: Props) => {
   const insets = useSafeAreaInsets()
   const [sendAddress, setSendAddress] = useState('')
 
-  const sheetHeight = 382 + (insets?.bottom || 0)
+  const sheetHeight = 400 + (insets?.bottom || 0)
   const enableSecureMode = useCallback(() => {
     dispatch(appSlice.actions.enableSecureMode(true))
-    dispatch(appSlice.actions.setPermanentPaymentAddress(sendAddress))
+    if (sendAddress) {
+      dispatch(appSlice.actions.setPermanentPaymentAddress(sendAddress))
+    }
     onClose()
   }, [dispatch, sendAddress, onClose])
 
@@ -78,7 +80,7 @@ const SecureModeModal = ({ isVisible, onClose = () => {} }: Props) => {
       title={t('more.sections.security.secureMode.title')}
     >
       <Text>{t('more.sections.security.secureMode.description')}</Text>
-      <Text marginTop="m" fontFamily={Font.main.semiBold}>
+      <Text marginVertical="m" fontFamily={Font.main.semiBold}>
         {t('more.sections.security.secureMode.warning')}
       </Text>
       <InputField
