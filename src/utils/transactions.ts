@@ -165,16 +165,27 @@ export const formatAmountInput = (formAmount: string) => {
   if (formAmount === decimalSeparator || formAmount.includes('NaN')) {
     return `0${decimalSeparator}`
   }
+  const amount = parseAmount(formAmount)
+  if (amount.integer === 'NaN') {
+    return ''
+  }
+  return formAmount.includes(decimalSeparator)
+    ? `${amount.integer}${decimalSeparator}${amount.decimal}`
+    : amount.integer
+}
+
+export const parseAmount = (formAmount: string) => {
+  if (formAmount === decimalSeparator || formAmount.includes('NaN')) {
+    return { rawInteger: 0, decimal: 0, integer: '0' }
+  }
   const rawInteger = (formAmount.split(decimalSeparator)[0] || formAmount)
     .split(groupSeparator)
     .join('')
   const integer = parseInt(rawInteger, 10).toLocaleString(locale)
   let decimal = formAmount.split(decimalSeparator)[1]
   if (integer === 'NaN') {
-    return ''
+    return { rawInteger: 0, decimal: 0, integer }
   }
   if (decimal && decimal.length >= 9) decimal = decimal.slice(0, 8)
-  return formAmount.includes(decimalSeparator)
-    ? `${integer}${decimalSeparator}${decimal}`
-    : integer
+  return { rawInteger, decimal, integer }
 }

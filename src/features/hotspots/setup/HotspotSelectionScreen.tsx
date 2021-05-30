@@ -80,6 +80,7 @@ const HotspotSetupSelectionScreen = () => {
         data={HotspotTypeKeys}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
+        ListFooterComponent={<Box height={32} />}
       />
     </BackScreen>
   )
