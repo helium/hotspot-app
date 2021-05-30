@@ -13,6 +13,7 @@ const stringKeys = [
   'authInterval',
   'walletApiToken',
   'language',
+  'permanentPaymentAddress',
 ] as const
 type StringKey = typeof stringKeys[number]
 
@@ -24,7 +25,6 @@ const boolKeys = [
   'hapticDisabled',
   'convertHntToCurrency',
   'secureModeEnabled',
-  'permanentPaymentAddress',
 ] as const
 type BooleanKey = typeof boolKeys[number]
 
