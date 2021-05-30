@@ -18,7 +18,7 @@ import { SendDetails, SendDetailsUpdate } from './sendTypes'
 import { Transfer } from '../../hotspots/transfers/TransferRequests'
 import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
 import { ensLookup } from '../../../utils/explorerClient'
-import { formatAmountInput } from '../../../utils/transactions'
+import { formatAmountInput, parseAmount } from '../../../utils/transactions'
 import * as Logger from '../../../utils/logger'
 import useHaptic from '../../../utils/useHaptic'
 import { AppLinkCategoryType } from '../../../providers/appLinkTypes'
@@ -97,8 +97,9 @@ const SendDetailsForm = ({
 
   // Update the internal HNT amount based on form input
   useEffect(() => {
+    const parsedAmount = parseAmount(amount)
     const hntBalance = Balance.fromFloat(
-      parseFloat(amount),
+      parseFloat(`${parsedAmount?.rawInteger}.${parsedAmount?.decimal}`),
       CurrencyType.networkToken,
     )
     setBalanceAmount(hntBalance)
