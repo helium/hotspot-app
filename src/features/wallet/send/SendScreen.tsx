@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from 'react'
 import { RouteProp, useNavigation } from '@react-navigation/native'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import Box from '../../../components/Box'
 import { SendStackParamList } from './sendTypes'
 import SendView from './SendView'
@@ -14,6 +15,7 @@ type Props = {
 }
 
 const SendScreen = ({ route }: Props) => {
+  const { t } = useTranslation()
   const rootNavigation = useNavigation<RootNavigationProp>()
   const scanResult = route?.params?.scanResult
   const hotspotAddress = route?.params?.hotspotAddress
@@ -30,6 +32,9 @@ const SendScreen = ({ route }: Props) => {
   )
   // If "Secure Mode" is enabled, only allow payment transactions
   const type = isSecureModeEnabled ? 'payment' : route?.params?.type
+  // If "Secure Mode" is enabled without a permanent payment address, disable all payments
+  const isSecureModePaymentsDisabled =
+    isSecureModeEnabled && !permanentPaymentAddress
 
   useEffect(() => {
     // Check if pin is required, show lock screen if so
@@ -48,15 +53,8 @@ const SendScreen = ({ route }: Props) => {
 
   const canSubmit = useMemo(() => {
     if (!isPinRequiredForPayment) return true
-    // If "Secure Mode" is enabled but no permant address was provided, disable all send actions
-    if (isSecureModeEnabled && !permanentPaymentAddress) return false
     return isPinVerified === 'pass'
-  }, [
-    isPinRequiredForPayment,
-    isPinVerified,
-    isSecureModeEnabled,
-    permanentPaymentAddress,
-  ])
+  }, [isPinRequiredForPayment, isPinVerified])
 
   return (
     <>
@@ -71,9 +69,15 @@ const SendScreen = ({ route }: Props) => {
           scanResult={scanResult}
           sendType={type}
           hotspotAddress={hotspotAddress}
+          isDisabled={isSecureModePaymentsDisabled}
           isSeller={isSeller}
           canSubmit={canSubmit}
           lockedPaymentAddress={permanentPaymentAddress}
+          warning={
+            isSecureModePaymentsDisabled
+              ? t('send.secureModePaymentsDisabled')
+              : undefined
+          }
         />
       </Box>
     </>

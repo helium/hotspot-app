@@ -69,18 +69,22 @@ type Props = {
   scanResult?: AppLink
   sendType?: AppLinkCategoryType
   hotspotAddress?: string
+  isDisabled: boolean
   isSeller?: boolean
   canSubmit?: boolean
   lockedPaymentAddress?: string
+  warning?: string
 }
 
 const SendView = ({
   scanResult,
   sendType,
   hotspotAddress,
+  isDisabled,
   isSeller,
   canSubmit = true,
   lockedPaymentAddress,
+  warning,
 }: Props) => {
   const tabNavigation = useNavigation<MainTabNavigationProp>()
   const sendNavigation = useNavigation<SendNavigationProps>()
@@ -95,7 +99,7 @@ const SendView = ({
     (state: RootState) => state.heliumData.currentOraclePrice,
   )
   const [type, setType] = useState<AppLinkCategoryType>(sendType || 'payment')
-  const [isLocked, setIsLocked] = useState(false)
+  const [isLocked, setIsLocked] = useState(isDisabled)
   const [isValid, setIsValid] = useState(false)
   const [hasSufficientBalance, setHasSufficientBalance] = useState(false)
   const [transferData, setTransferData] = useState<Transfer>()
@@ -540,10 +544,11 @@ const SendView = ({
         <SendForm
           account={account}
           fee={fee}
-          isLockedAddress={!!lockedPaymentAddress}
           hasSufficientBalance={hasSufficientBalance}
           hasValidActivity={hasValidActivity}
+          isDisabled={isDisabled}
           isLocked={isLocked}
+          isLockedAddress={!!lockedPaymentAddress}
           isSeller={isSeller}
           isValid={isValid}
           lastReportedActivity={lastReportedActivity}
@@ -555,6 +560,7 @@ const SendView = ({
           type={type}
           unlockForm={unlockForm}
           updateSendDetails={updateSendDetails}
+          warning={warning}
         />
       </Box>
       {isSeller && (
