@@ -175,8 +175,6 @@ export default {
     qrScan: {
       title: 'Scan QR Code',
       subtitle: {
-        qr_maker:
-          "Follow the hotspot manufacturer's instructions to generate a QR code.",
         longappro:
           'Visit dashboard.longap.com/onboard or the local management-console to generate a QR-code',
       },

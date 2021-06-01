@@ -35,8 +35,6 @@ const HotspotSetupScanQrScreen = () => {
     navigation,
   ])
 
-  // TODO: Make messaging specific to hotspot type
-
   const handleBarCodeScanned = useDebouncedCallback(
     (result: BarCodeScannerResult) => {
       try {

@@ -38,7 +38,6 @@ const HotspotSetupSelectionScreen = () => {
     (hotspotType: HotspotType) => () => {
       dispatch(hotspotOnboardingSlice.actions.setHotspotType(hotspotType))
 
-      // TODO: Remove the generic QR_MAKER
       const qrScanFlow = isOnboardedWithQR(hotspotType)
       if (qrScanFlow) {
         navigation.push('HotspotSetupScanQrScreen', { hotspotType })

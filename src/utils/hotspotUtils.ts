@@ -47,4 +47,4 @@ export const isRelay = (listen_addrs: string[]) => {
 }
 
 export const isOnboardedWithQR = (hotspotType: HotspotType) =>
-  (['QR_MAKER', 'LONGAPPRO'] as HotspotType[]).includes(hotspotType)
+  (['LONGAPPRO'] as HotspotType[]).includes(hotspotType)
