@@ -62,7 +62,7 @@ const HotspotSetupPowerScreen = () => {
           textAlign="center"
           color="white"
         >
-          {t(`hotspot_setup.power.${hotspotType.toLowerCase()}_subtitle_1`)}
+          {t(`makerHotspot.${hotspotType}.power.0`)}
         </Text>
         <Text
           marginBottom="xl"
@@ -70,7 +70,7 @@ const HotspotSetupPowerScreen = () => {
           variant="subtitle"
           textAlign="center"
         >
-          {t(`hotspot_setup.power.${hotspotType.toLowerCase()}_subtitle_2`)}
+          {t(`makerHotspot.${hotspotType}.power.1`)}
         </Text>
       </Box>
       <DebouncedButton

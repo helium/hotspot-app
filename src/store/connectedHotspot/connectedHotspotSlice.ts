@@ -14,27 +14,6 @@ import {
 } from '../../utils/stakingClient'
 
 export type HotspotStatus = 'owned' | 'global' | 'new' | 'error' | 'initial'
-export const HotspotTypeKeys = [
-  'Helium',
-  'RAK',
-  'NEBRAIN',
-  'NEBRAOUT',
-  'SYNCROBIT',
-  'Bobcat',
-  'LONGAPONE',
-  'Finestra',
-] as const
-export type HotspotType = typeof HotspotTypeKeys[number]
-export type HotspotName =
-  | 'RAK Hotspot Miner'
-  | 'Helium Hotspot'
-  | 'Nebra Indoor Hotspot'
-  | 'Nebra Outdoor Hotspot'
-  | 'Bobcat Miner 300'
-  | 'SyncroB.it Hotspot'
-  | 'LongAP One Hotspot'
-  | 'Finestra Miner'
-
 type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
 
 export type HotspotDetails = {

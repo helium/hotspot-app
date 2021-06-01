@@ -134,16 +134,6 @@ export default {
     selection: {
       title: '选择您的 Hotspot。\n',
       subtitle: '您想要添加什么样的 Hotspot?\n',
-      helium: 'Helium Hotspot',
-      rak: 'RAK Hotspot Miner',
-      nebrain: 'Nebra Indoor Hotspot',
-      nebraout: 'Nebra Outdoor Hotspot',
-      bobcat: 'Bobcat Miner 300',
-      syncrobit: 'SyncroB.it Hotspot',
-      third_party_header: '其他 Hotspot',
-      helium_edition: '关于 Helium Network',
-      fine_print:
-        'RAK Hotspot Miner 具有 RAK 预加载的专用固件。继续操作之前，请仔细检查所用的硬件是否为 RAK Hotspot Miner。',
     },
     education: {
       title: '放置\n您的 Hotspot。',
@@ -171,56 +161,13 @@ export default {
     },
     diagnostics: {
       title: '诊断',
-      p_1:
-        '<b><white>Hotspot 诊断支持帮助 Helium 安全确认您的 Hotspot 问题。</white></b>\n\nHelium 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@helium.com</b></purple>。',
-      nebra_p_1:
-        '<b><white>诊断支持帮助 Nebra LTD 安全确认您的 Hotspot 问题。</white></b>\n\nNebra 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@nebra.com</b></purple>。',
-      bobcat_p_1:
-        '<b><white>诊断支持帮助 Bobcat 安全确认您的 Hotspot 问题。</white></b>\n\nBobcat 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@bobcatminer.com</b></purple>。',
-      syncrobit_p_1:
-        '<b><white>诊断支持帮助 SyncroB.it 安全确认您的 Hotspot 问题。</white></b>\n\nSyncroB.it 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@syncrob.it</b></purple>。',
     },
     power: {
       title: '开机',
       next: '我已开机',
-      helium_subtitle_1: '连接天线，插接随附的电源适配器。',
-      rak_subtitle_1: '将电源适配器插入靠窗的插座。',
-      nebrain_subtitle_1: '连接天线，将随附的电源适配器插入靠窗的插座。',
-      nebraout_subtitle_1: '连接天线并正确连接电源。',
-      bobcat_subtitle_1:
-        '将电源适配器插入靠窗的插座，并将天线插入 Hotspot 背面并旋紧。',
-      syncrobit_subtitle_1: '连接天线并插接设备',
-      helium_subtitle_2: '您的 Hotspot 将随即启动，就绪后会亮起绿色指示灯。',
-      rak_subtitle_2: '开机后，RAK Hotspot Miner 将亮起红色 LED 指示灯。',
-      nebrain_subtitle_2:
-        '开机后，Nebra Indoor Hotspot 将亮起绿色 LED 指示灯。',
-      nebraout_subtitle_2:
-        '开机后，Nebra Outdoor Hotspot 将陆续亮起多个指示灯。',
-      bobcat_subtitle_2: '当指示灯由红色变为黄色，即表示 Hotspot 准备就绪。',
-      syncrobit_subtitle_2:
-        '开机后，SyncroB.it Hotspot 将亮起蓝色 LED 指示灯。',
     },
     pair: {
       title: '蓝牙',
-      helium_subtitle_1: '按下 Hotspot 上的黑色按钮。指示灯应变成蓝色。',
-      rak_subtitle_1: 'RAK Hotspot Miner 上没有配对按钮。',
-      nebrain_subtitle_1:
-        '长按 Nebra Indoor Hotspot 背面的按钮，直到它的指示灯开始闪烁。',
-      nebraout_subtitle_1: 'Nebra Outdoor Hotspot 上没有配对按钮。',
-      bobcat_subtitle_1:
-        '使用随附的大头针按下 Hotspot 背面的 BT 按钮，长按 5 秒钟。',
-      syncrobit_subtitle_1: 'SyncroB.it Hotspot 上没有配对按钮。',
-      helium_subtitle_2: '继续操作之前，请确保您手机上的蓝牙已开启',
-      rak_subtitle_2:
-        'RAK Hotspot Miner 开机后，蓝牙会自动启用 5 分钟。\n\nHotspot 最多需要 1 分钟即可完全启动。',
-      nebrain_subtitle_2:
-        'LED 指示灯变成缓慢闪烁后，即表示准备进行配对。\n\n按“下一步”开始扫描。',
-      nebraout_subtitle_2:
-        'Nebra Outdoor Hotspot 开机后，蓝牙会自动启用 10 分钟。\n\nHotspot 最多需要 1 分钟即可完全启动。',
-      bobcat_subtitle_2:
-        '当指示灯由黄色变为蓝色，即表示 Hotspot 准备进行配对。\n\n请务必打开您手机的蓝牙功能！',
-      syncrobit_subtitle_2:
-        'SyncroB.it Hotspot 开机后，蓝牙会自动启用 5 分钟。\n\nHotspot 最多需要 1 分钟即可完全启动。',
       alert_no_permissions: {
         title: '授权蓝牙',
         body: 'Helium 需要蓝牙使用权限。您可以在“设置”中启用蓝牙权限。',
