@@ -205,11 +205,13 @@ type HotspotDetailsState = {
   chartData: HotspotIndexed<HotspotChartRecord>
   hotspotData: HotspotIndexed<HotspotDetailCache>
   showSettings: boolean
+  showMapFilter: boolean
 }
 const initialState: HotspotDetailsState = {
   chartData: {},
   hotspotData: {},
   showSettings: false,
+  showMapFilter: false,
 }
 
 // This slice contains data related to hotspot details
@@ -220,6 +222,10 @@ const hotspotDetailsSlice = createSlice({
     toggleShowSettings: (state) => ({
       ...state,
       showSettings: !state.showSettings,
+    }),
+    toggleShowMapFilter: (state) => ({
+      ...state,
+      showMapFilter: !state.showMapFilter,
     }),
   },
   extraReducers: (builder) => {

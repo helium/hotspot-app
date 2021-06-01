@@ -36,7 +36,7 @@ const PhraseChip = ({
   }
 
   const getIcon = () => {
-    if (success) return <CheckMark />
+    if (success) return <CheckMark color="white" />
 
     if (fail) return <Fail />
 

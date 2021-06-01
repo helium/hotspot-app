@@ -12,6 +12,7 @@ import Text from '../../../components/Text'
 import { wp } from '../../../utils/layout'
 import ContentPill, { ContentPillItem } from '../../../components/ContentPill'
 import { Colors } from '../../../theme/theme'
+import MapFiltersButton, { MapFilters } from '../../map/MapFiltersButton'
 
 const HotspotsViewHeader = ({
   animatedPosition,
@@ -23,6 +24,8 @@ const HotspotsViewHeader = ({
   followedHotspots,
   onHotspotSelected = () => {},
   selectedHotspotIndex = 0,
+  onPressMapFilter = () => {},
+  mapFilter,
 }: {
   animatedPosition: Animated.SharedValue<number>
   buttonsVisible?: boolean
@@ -33,6 +36,8 @@ const HotspotsViewHeader = ({
   followedHotspots?: Hotspot[]
   onHotspotSelected?: (index: number, hotspot: Hotspot) => void
   selectedHotspotIndex: number
+  onPressMapFilter: () => void
+  mapFilter: MapFilters
 }) => {
   const { t } = useTranslation()
 
@@ -64,7 +69,16 @@ const HotspotsViewHeader = ({
   }, [])
 
   const pillData = useMemo(() => {
-    if (!hexHotspots?.length) return [] as ContentPillItem[]
+    if (!hexHotspots?.length)
+      return [
+        {
+          selectedBackgroundColor: 'blueGrayLight',
+          selectedIconColor: 'white',
+          iconColor: 'blueGrayLight',
+          icon: HexPill,
+          id: 'default',
+        },
+      ] as ContentPillItem[]
     return hexHotspots.map((h) => {
       const isOwned = ownedHotspots
         ? ownedHotspots.find((owned) => owned.address === h.address)
@@ -94,14 +108,24 @@ const HotspotsViewHeader = ({
   return (
     <Animated.View style={style}>
       <Box padding="xs" flexDirection="row" alignItems="center">
-        {hexHotspots && hexHotspots.length ? (
+        <Box
+          flex={1}
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+          marginRight="ms"
+        >
           <ContentPill
             selectedIndex={selectedHotspotIndex}
             data={pillData}
             onPressItem={onPressContentPill}
-            maxWidth={wp(90)}
+            maxWidth={wp(75)}
           />
-        ) : null}
+          <MapFiltersButton
+            onPressMapFilter={onPressMapFilter}
+            mapFilter={mapFilter}
+          />
+        </Box>
         {showNoLocation && (
           <Text
             variant="medium"
@@ -114,7 +138,6 @@ const HotspotsViewHeader = ({
             {t('hotspot_details.no_location')}
           </Text>
         )}
-        <Box height={44} width={44} />
       </Box>
     </Animated.View>
   )

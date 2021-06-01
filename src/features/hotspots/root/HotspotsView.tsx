@@ -51,6 +51,8 @@ import useVisible from '../../../utils/useVisible'
 import { hp } from '../../../utils/layout'
 import useMount from '../../../utils/useMount'
 import { fetchHotspotsForHex } from '../../../store/discovery/discoverySlice'
+import { MapFilters } from '../../map/MapFiltersButton'
+import MapFilterModal from '../../map/MapFilterModal'
 
 type Props = {
   ownedHotspots?: Hotspot[]
@@ -100,6 +102,7 @@ const HotspotsView = ({
   const animatedIndex = useSharedValue<number>(0)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [showWitnesses, toggleShowWitnesses] = useToggle(false)
+  const [mapFilter, setMapFilter] = useState(MapFilters.owned)
 
   const selectedHotspot = useSelector(
     (state: RootState) => state.hotspots.selectedHotspot,
@@ -336,6 +339,10 @@ const HotspotsView = ({
     [navigation],
   )
 
+  const onPressMapFilter = useCallback(() => {
+    dispatch(hotspotDetailsSlice.actions.toggleShowMapFilter())
+  }, [dispatch])
+
   const cardHandle = useCallback(
     () => (
       <HotspotSheetHandle
@@ -424,6 +431,12 @@ const HotspotsView = ({
     [dispatch],
   )
 
+  const onChangeMapFilter = useCallback((filter: MapFilters) => {
+    console.log(filter)
+    setMapFilter(filter)
+    // TODO: change map filter
+  }, [])
+
   const title = useMemo(() => {
     if (isSearching) return t('hotspots.search.title')
     if (hasHotspots) return t('hotspots.owned.title')
@@ -509,6 +522,8 @@ const HotspotsView = ({
           onHotspotSelected={onHotspotSelected}
           followedHotspots={followedHotspots}
           selectedHotspotIndex={selectedHotspotIndex}
+          mapFilter={mapFilter}
+          onPressMapFilter={onPressMapFilter}
           buttonsVisible={
             !!hotspotAddress &&
             hotspotHasLocation &&
@@ -554,6 +569,10 @@ const HotspotsView = ({
       <HotspotSettingsProvider>
         <HotspotSettings hotspot={selectedHotspot} />
       </HotspotSettingsProvider>
+      <MapFilterModal
+        mapFilter={mapFilter}
+        onChangeMapFilter={onChangeMapFilter}
+      />
     </Box>
   )
 }
