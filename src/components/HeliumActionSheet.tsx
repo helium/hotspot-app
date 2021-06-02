@@ -40,6 +40,7 @@ type Props = BoxProps<Theme> & {
   initialValue?: string
   iconVariant?: 'carot' | 'kabob' | 'none'
   closeOnSelect?: boolean
+  maxModalHeight?: number
 }
 type ListItem = { item: HeliumActionSheetItemType; index: number }
 
@@ -56,6 +57,7 @@ const HeliumActionSheet = ({
   textProps,
   prefixTextProps,
   closeOnSelect = true,
+  maxModalHeight,
   ...boxProps
 }: Props) => {
   const insets = useSafeAreaInsets()
@@ -85,11 +87,14 @@ const HeliumActionSheet = ({
   )
 
   useEffect(() => {
-    const nextSheetHeight =
+    let nextSheetHeight =
       data.length * HeliumActionSheetItemHeight + 156 + (insets?.bottom || 0)
+    if (maxModalHeight && nextSheetHeight > maxModalHeight) {
+      nextSheetHeight = maxModalHeight
+    }
     setSheetHeight(nextSheetHeight)
     animate(nextSheetHeight)
-  }, [animate, data.length, insets?.bottom])
+  }, [animate, data.length, insets?.bottom, maxModalHeight])
 
   const handlePresentModalPress = useCallback(async () => {
     setModalVisible(true)
@@ -281,8 +286,8 @@ const HeliumActionSheet = ({
               data={data}
               keyExtractor={keyExtractor}
               renderItem={renderItem}
-              ListFooterComponent={footer}
             />
+            {footer}
           </ReAnimatedBox>
         </Box>
       </Modal>

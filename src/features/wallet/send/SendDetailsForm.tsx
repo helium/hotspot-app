@@ -20,6 +20,7 @@ import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
 import { ensLookup } from '../../../utils/explorerClient'
 import {
   formatAmountInput,
+  parseAmount,
   getMemoBytesLeft,
 } from '../../../utils/transactions'
 import * as Logger from '../../../utils/logger'
@@ -98,8 +99,9 @@ const SendDetailsForm = ({
 
   // Update the internal HNT amount based on form input
   useEffect(() => {
+    const parsedAmount = parseAmount(amount)
     const hntBalance = Balance.fromFloat(
-      parseFloat(amount),
+      parseFloat(`${parsedAmount?.rawInteger}.${parsedAmount?.decimal}`),
       CurrencyType.networkToken,
     )
     setBalanceAmount(hntBalance)
