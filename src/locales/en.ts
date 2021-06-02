@@ -189,10 +189,59 @@ export default {
     },
     diagnostics: {
       title: 'Diagnostics',
+<<<<<<< HEAD
+=======
+      p_1:
+        '<b><white>Diagnostic support allows Helium to identify issues with your Hotspot in a secure way.</white></b>\n\nHelium will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@helium.com</b></purple> from the email used to purchase the Hotspot.',
+      nebra_p_1:
+        '<b><white>Diagnostic support allows Nebra LTD to identify issues with your Hotspot in a secure way.</white></b>\n\nNebra will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@nebra.com</b></purple> from the email used to purchase the Hotspot.',
+      bobcat_p_1:
+        '<b><white>Diagnostic support allows Bobcat to identify issues with your Hotspot in a secure way.</white></b>\n\nBobcat will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@bobcatminer.com</b></purple> from the email used to purchase the Hotspot.',
+      syncrobit_p_1:
+        '<b><white>Diagnostic support allows SyncroB.it to identify issues with your Hotspot in a secure way.</white></b>\n\nSyncroB.it will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@syncrob.it</b></purple> from the email used to purchase the Hotspot.',
+      longap_p_1:
+        '<b><white>Diagnostic support allows LongAP to identify issues with your Hotspot in a secure way.</white></b>\n\nLongAP will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@longap.com</b></purple> from the email used to purchase the Hotspot.',
+      seeed_p_1:
+        '<b><white>Diagnostic support allows us to identify issues with your M1 gateway in a secure way.</white></b>\n\nWe will never have access to private keys and will only ever be able to access your M1 gateway and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email  <purple><b>SenseCAP@seeed.cc</b></purple>  and provide us with your purchase information and detailed problem description to get support.',
+>>>>>>> aa98d87 (fix spelling mistakes)
     },
     power: {
       title: 'Power Up',
       next: "I'm powered up",
+<<<<<<< HEAD
+=======
+      helium_subtitle_1:
+        'Attach the antenna and plug in the provided power adapter.',
+      rak_subtitle_1:
+        'Plug in the provided power adapter into an outlet near a window.',
+      nebrain_subtitle_1:
+        'Attach the antenna and plug in the provided power adapter near a window.',
+      nebraout_subtitle_1:
+        'Attach the antenna and connect to an appropriate power source.',
+      bobcat_subtitle_1:
+        'Plug in the provided power adapter into an outlet near a window and screw in the provided antenna on the back of the Hotspot.',
+      syncrobit_subtitle_1: 'Attach the antenna and plug in the device',
+      longapone_subtitle_1:
+        "Attach the antenna's and plug in the provided power adapter.",
+      seeed_subtitle_1:
+        'Attach the antenna to the SMA antenna connector and plug the provided 5V-3A power adapter to the USB-C power connector.',
+      helium_subtitle_2:
+        'Your Hotspot will boot up, and its light will become Green when ready.',
+      rak_subtitle_2:
+        'The RAK Hotspot Miner will show a red LED light once it’s powered on.',
+      nebrain_subtitle_2:
+        'The Nebra Indoor Hotspot will have a green LED light up once it’s powered on.',
+      nebraout_subtitle_2:
+        'The Nebra Outdoor Hotspot will have multiple lights come on once it’s powered on.',
+      bobcat_subtitle_2:
+        'The Hotspot is ready when the light goes from red to yellow.',
+      syncrobit_subtitle_2:
+        'The SyncroB.it Hotspot LED bar will light up blue once it’s powered on.',
+      longapone_subtitle_2:
+        'The LongAP One PWR LED will light up once it’s powered on.',
+      seeed_subtitle_2:
+        'In 30 seconds, the blue indicator light on the back of M1 changes from off to fast flash mode, indicating that the M1 gateway is ready.',
+>>>>>>> aa98d87 (fix spelling mistakes)
     },
     pair: {
       title: 'Bluetooth',
