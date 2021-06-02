@@ -1,8 +1,8 @@
 import MapboxGL, {
-  Expression,
   FillLayerStyle,
   LineLayerStyle,
   OnPressEvent,
+  SymbolLayerStyle,
 } from '@react-native-mapbox-gl/maps'
 import React, { memo, useCallback, useMemo } from 'react'
 import { StyleProp } from 'react-native'
@@ -21,8 +21,8 @@ type Props = {
   visible?: boolean
   selectedHexId?: string
   outlineWidth?: number
-  outline?: boolean
   showCount?: boolean
+  showRewardScale?: boolean
 }
 
 const NetworkCoverage = ({
@@ -33,8 +33,8 @@ const NetworkCoverage = ({
   visible = true,
   selectedHexId,
   outlineWidth = 1,
-  outline = true,
   showCount = false,
+  showRewardScale = false,
 }: Props) => {
   const styles = useMemo(
     () => makeStyles(fillColor, outlineColor, opacity, outlineWidth),
@@ -53,8 +53,17 @@ const NetworkCoverage = ({
     [onHexSelected],
   )
 
-  const outlineFilter = useMemo(
-    () => ['==', 'id', selectedHexId || ''] as Expression,
+  const numberStyle = useMemo(
+    (): StyleProp<SymbolLayerStyle> => ({
+      textField: '{hotspot_count}',
+      textColor: [
+        'case',
+        ['==', ['get', 'id'], selectedHexId || ''],
+        '#FFFFFF',
+        '#000000',
+      ],
+      textOpacity: ['case', ['==', ['get', 'hotspot_count'], 1], 0, 1],
+    }),
     [selectedHexId],
   )
 
@@ -73,17 +82,8 @@ const NetworkCoverage = ({
           id="hexagonFill"
           sourceID="tileServerH3"
           sourceLayerID="public.h3_res8"
-          style={styles.hexagonFill}
+          style={showRewardScale ? styles.rewardFill : styles.hexagonFill}
         />
-        {outline && (
-          <MapboxGL.LineLayer
-            id="hexagonLine"
-            sourceID="tileServer"
-            sourceLayerID="public.h3_res8"
-            style={styles.line}
-            filter={outlineFilter}
-          />
-        )}
       </MapboxGL.VectorSource>
       {showCount && (
         <MapboxGL.VectorSource
@@ -96,16 +96,7 @@ const NetworkCoverage = ({
             sourceID="tileServerPoints"
             sourceLayerID="public.points"
             minZoomLevel={11}
-            style={{
-              textField: '{hotspot_count}',
-              textColor: [
-                'case',
-                ['==', ['get', 'id'], selectedHexId || ''],
-                '#FFFFFF',
-                '#000000',
-              ],
-              textOpacity: ['case', ['==', ['get', 'hotspot_count'], 1], 0, 1],
-            }}
+            style={numberStyle}
           />
         </MapboxGL.VectorSource>
       )}
@@ -124,7 +115,32 @@ const makeStyles = (
     fillColor,
     fillOutlineColor: '#1C1E3B',
   } as StyleProp<FillLayerStyle>,
-
+  rewardFill: {
+    fillOpacity: opacity,
+    fillColor: [
+      'case',
+      ['==', ['get', 'avg_reward_scale'], 0],
+      '#4F5293',
+      [
+        'interpolate',
+        ['linear'],
+        ['get', 'avg_reward_scale'],
+        0,
+        '#FF6666',
+        0.2,
+        '#FC8745',
+        0.4,
+        '#FEA053',
+        0.6,
+        '#FCC945',
+        0.8,
+        '#9FE14A',
+        1,
+        '#29D344',
+      ],
+    ],
+    fillOutlineColor: '#1C1E3B',
+  } as StyleProp<FillLayerStyle>,
   line: {
     lineWidth,
     lineColor: outlineColor,

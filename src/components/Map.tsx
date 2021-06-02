@@ -54,6 +54,7 @@ type Props = BoxProps<Theme> & {
   showNoLocation?: boolean
   showNearbyHotspots?: boolean
   showH3Grid?: boolean
+  showRewardScale?: boolean
 }
 const Map = ({
   onMapMoved,
@@ -76,6 +77,7 @@ const Map = ({
   showNearbyHotspots = false,
   showH3Grid = false,
   followedHotspots,
+  showRewardScale,
   ...props
 }: Props) => {
   const colors = useColors()
@@ -277,13 +279,6 @@ const Map = ({
           opacity={0.4}
         />
         <HotspotsCoverage
-          id="witnesses"
-          onHexSelected={onHexPress}
-          hotspots={witnesses}
-          fill
-          fillColor={colors.yellow}
-        />
-        <HotspotsCoverage
           id="selected"
           hotspots={selectedHotspots}
           hexes={selectedHex ? [selectedHex] : []}
@@ -295,7 +290,16 @@ const Map = ({
           onHexSelected={onHexPress}
           visible={showNearbyHotspots}
           selectedHexId={selectedHex}
+          showRewardScale={showRewardScale}
           showCount
+        />
+        <HotspotsCoverage
+          id="witnesses"
+          onHexSelected={onHexPress}
+          hotspots={witnesses}
+          fill
+          opacity={0.6}
+          fillColor={colors.yellow}
         />
       </MapboxGL.MapView>
       {currentLocationEnabled && (

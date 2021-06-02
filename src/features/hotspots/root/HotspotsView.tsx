@@ -25,7 +25,6 @@ import Map from '../../../components/Map'
 import { RootState } from '../../../store/rootReducer'
 import hotspotDetailsSlice from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import HotspotsViewHeader from './HotspotsViewHeader'
-import useToggle from '../../../utils/useToggle'
 import HotspotsList from './HotspotsList'
 import HotspotDetails from '../details/HotspotDetails'
 import BackButton from '../../../components/BackButton'
@@ -93,15 +92,12 @@ const HotspotsView = ({
   const prevBottomSheetIndex = usePrevious(bottomSheetIndex)
   const visible = useVisible()
   const prevVisible = usePrevious(visible)
-  const prevShowDetails = usePrevious(showDetails)
   const hotspotsForHexId = useSelector(
     (state: RootState) => state.discovery.hotspotsForHexId,
   )
   const [selectedHexId, setSelectedHexId] = useState<string>()
   const [selectedHotspotIndex, setSelectedHotspotIndex] = useState(0)
   const animatedIndex = useSharedValue<number>(0)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [showWitnesses, toggleShowWitnesses] = useToggle(false)
   const [mapFilter, setMapFilter] = useState(MapFilters.owned)
 
   const selectedHotspot = useSelector(
@@ -116,6 +112,16 @@ const HotspotsView = ({
     () => selectedHotspot?.address || linkedHotspotAddress || '',
     [selectedHotspot, linkedHotspotAddress],
   )
+
+  const showWitnesses = useMemo(() => mapFilter === MapFilters.witness, [
+    mapFilter,
+  ])
+
+  const showOwned = useMemo(() => mapFilter === MapFilters.owned, [mapFilter])
+
+  const showRewardScale = useMemo(() => mapFilter === MapFilters.reward, [
+    mapFilter,
+  ])
 
   useEffect(() => {
     const shouldShowDetails = !!hotspotAddress
@@ -432,9 +438,7 @@ const HotspotsView = ({
   )
 
   const onChangeMapFilter = useCallback((filter: MapFilters) => {
-    console.log(filter)
     setMapFilter(filter)
-    // TODO: change map filter
   }, [])
 
   const title = useMemo(() => {
@@ -498,12 +502,12 @@ const HotspotsView = ({
       >
         {showMap && (
           <Map
-            ownedHotspots={ownedHotspots}
+            ownedHotspots={showOwned ? ownedHotspots : []}
             selectedHotspot={selectedHotspot}
             maxZoomLevel={13}
             zoomLevel={13}
             witnesses={showWitnesses ? witnesses : []}
-            followedHotspots={followedHotspots}
+            followedHotspots={showOwned ? followedHotspots : []}
             mapCenter={location}
             animationMode="easeTo"
             animationDuration={800}
@@ -512,6 +516,7 @@ const HotspotsView = ({
             showNoLocation={!hotspotHasLocation}
             showNearbyHotspots
             showH3Grid
+            showRewardScale={showRewardScale}
           />
         )}
         <HotspotsViewHeader
@@ -524,12 +529,8 @@ const HotspotsView = ({
           selectedHotspotIndex={selectedHotspotIndex}
           mapFilter={mapFilter}
           onPressMapFilter={onPressMapFilter}
-          buttonsVisible={
-            !!hotspotAddress &&
-            hotspotHasLocation &&
-            showDetails &&
-            prevShowDetails
-          }
+          showDetails={showDetails}
+          buttonsVisible
           showNoLocation={!locationIsValid(propsLocation) && !showDetails}
         />
       </Box>

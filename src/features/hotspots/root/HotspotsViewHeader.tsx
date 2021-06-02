@@ -26,11 +26,13 @@ const HotspotsViewHeader = ({
   selectedHotspotIndex = 0,
   onPressMapFilter = () => {},
   mapFilter,
+  showDetails,
 }: {
   animatedPosition: Animated.SharedValue<number>
   buttonsVisible?: boolean
   detailHeaderHeight: number
   showNoLocation: boolean
+  showDetails: boolean
   hexHotspots: Hotspot[]
   ownedHotspots?: Hotspot[]
   followedHotspots?: Hotspot[]
@@ -44,7 +46,7 @@ const HotspotsViewHeader = ({
   const style = useAnimatedStyle(
     () => ({
       position: 'absolute',
-      bottom: -100,
+      bottom: showDetails ? -100 : -240,
       left: 0,
       right: 0,
       opacity: buttonsVisible || showNoLocation ? 1 : 0,
@@ -59,7 +61,7 @@ const HotspotsViewHeader = ({
         },
       ],
     }),
-    [animatedPosition, buttonsVisible, detailHeaderHeight],
+    [showDetails, animatedPosition, buttonsVisible, detailHeaderHeight],
   )
 
   const getContentColor = useCallback((isFollowed, isOwned): Colors => {
