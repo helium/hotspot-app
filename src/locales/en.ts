@@ -197,7 +197,7 @@ export default {
       longap_p_1:
         '<b><white>Diagnostic support allows LongAP to identify issues with your Hotspot in a secure way.</white></b>\n\nLongAP will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@longap.com</b></purple> from the email used to purchase the Hotspot.',
       seeed_p_1:
-        '<b><white>Diagnostic support allows us to identify issues with your M1 gateway in a secure way.</white></b>\n\nWe will never have access to private keys and will only ever be able to access your M1 gateway and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email  <purple><b>SenseCAP@seeed.cc</b></purple>  and provide us with your purchase information and detailed problem description to get support.',
+        '<b><white>Diagnostic support allows Seeed to identify issues with your Hotspot in a secure way.</white></b>\n\nSeeed will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>SenseCAP@seeed.cc</b></purple> from the email used to purchase the Hotspot.',
     },
     power: {
       title: 'Power Up',
