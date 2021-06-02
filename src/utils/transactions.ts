@@ -7,9 +7,10 @@ import {
   TokenBurnV1,
   TransferHotspotV1,
 } from '@helium/transactions'
+import Balance, { CurrencyType } from '@helium/currency'
 import { getKeypair } from './secureAccount'
 import { getAccount } from './appDataClient'
-import { decimalSeparator, groupSeparator, locale } from './i18n'
+import { decimalSeparator, groupSeparator } from './i18n'
 import * as Logger from './logger'
 import { SendDetails } from '../features/wallet/send/sendTypes'
 
@@ -181,8 +182,16 @@ export const parseAmount = (formAmount: string) => {
   const rawInteger = (formAmount.split(decimalSeparator)[0] || formAmount)
     .split(groupSeparator)
     .join('')
-  const integer = parseInt(rawInteger, 10).toLocaleString(locale)
   let decimal = formAmount.split(decimalSeparator)[1]
+  const integerBalance = Balance.fromFloat(
+    parseInt(rawInteger, 10),
+    CurrencyType.networkToken,
+  )
+  const integer = integerBalance.toString(0, {
+    showTicker: false,
+    decimalSeparator,
+    groupSeparator,
+  })
   if (integer === 'NaN') {
     return { rawInteger: 0, decimal: 0, integer }
   }
