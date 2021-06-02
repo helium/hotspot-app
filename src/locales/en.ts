@@ -937,7 +937,7 @@ export default {
     title: 'Checklist',
     blocks: {
       not:
-        'Hotspots must be fully synced before they can mine. New Hotspots can take up to 48 hours to sync.',
+        'Hotspots must be fully synced before they can mine. New Hotspots can take up to 96 hours to sync.',
       full: 'Hotspot is fully synced.',
       partial:
         'Hotspot is {{count}} block behind the Helium blockchain and is roughly {{percent}}% synced.',
@@ -955,7 +955,7 @@ export default {
       success: 'Hotspot issued a challenge {{count}} block ago.',
       success_plural: 'Hotspot issued a challenge {{count}} blocks ago.',
       fail:
-        "Hotspot hasn't issued a challenge yet. Hotspots create challenges automatically.",
+        "Hotspot hasn't issued a challenge yet. Hotspots create challenges automatically every 480 blocks, or approximately 8 hours.",
       title: 'Create a Challenge',
     },
     challenge_witness: {
@@ -968,7 +968,7 @@ export default {
       success_plural:
         'This Hotspot has {{count}} Hotspots in its witness list.',
       fail:
-        'No witnesses yet. Newly added Hotspots may take a few days to populate their witnesses.',
+        'No witnesses yet. New Hotspots, Hotspots with recently updated location or antenna settings will have zero witnesses.',
       title: 'Witness List',
     },
     challengee: {
@@ -976,7 +976,7 @@ export default {
       success_plural:
         'Hotspot last participated in a challenge {{count}} blocks ago.',
       fail:
-        'It can take a few hours to pass a challenge once a witness list is created.',
+        'Online Hotspots are challenged every 480 blocks (or 8 hours) and can take some time before being challenged.',
       title: 'Pass a Challenge',
     },
     data_transfer: {
