@@ -193,7 +193,7 @@ const SendView = ({
       let amount = ''
       let balanceAmount = new Balance(0, CurrencyType.networkToken)
       if (scanAmount) {
-        const floatAmount = parseFloat(scanAmount.split(',').join(''))
+        const floatAmount = parseFloat(scanAmount.replace(/,/g, ''))
         balanceAmount = Balance.fromFloat(
           floatAmount,
           CurrencyType.networkToken,

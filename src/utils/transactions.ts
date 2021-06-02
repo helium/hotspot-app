@@ -28,7 +28,6 @@ export const makePaymentTxn = async (
     })),
     nonce,
   })
-
   return paymentTxn.sign({ payer: keypair })
 }
 
@@ -162,39 +161,24 @@ export const isPayer = (
 export const isPendingTransaction = (item: unknown) =>
   !!(item as PendingTransaction).createdAt
 
-export const formatAmountInput = (formAmount: string) => {
-  if (formAmount === decimalSeparator || formAmount.includes('NaN')) {
-    return `0${decimalSeparator}`
-  }
-  const amount = parseAmount(formAmount)
-  if (amount.integer === 'NaN') {
-    return ''
-  }
-  return formAmount.includes(decimalSeparator)
-    ? `${amount.integer}${decimalSeparator}${amount.decimal}`
-    : amount.integer
-}
-
-export const parseAmount = (formAmount: string) => {
-  if (formAmount === decimalSeparator || formAmount.includes('NaN')) {
-    return { rawInteger: 0, decimal: 0, integer: '0' }
-  }
-  const rawInteger = (formAmount.split(decimalSeparator)[0] || formAmount)
+export const getInteger = (stringAmount: string) => {
+  return (stringAmount.split(decimalSeparator)[0] || '0')
     .split(groupSeparator)
     .join('')
-  let decimal = formAmount.split(decimalSeparator)[1]
-  const integerBalance = Balance.fromFloat(
-    parseInt(rawInteger, 10),
-    CurrencyType.networkToken,
-  )
-  const integer = integerBalance.toString(0, {
-    showTicker: false,
-    decimalSeparator,
-    groupSeparator,
-  })
-  if (integer === 'NaN') {
-    return { rawInteger: 0, decimal: 0, integer }
-  }
+}
+
+export const getDecimal = (stringAmount: string) => {
+  let decimal = stringAmount.split(decimalSeparator)[1]
   if (decimal && decimal.length >= 9) decimal = decimal.slice(0, 8)
-  return { rawInteger, decimal, integer }
+  return decimal
+}
+
+export const stringAmountToBalance = (formAmount: string) => {
+  if (formAmount === decimalSeparator || formAmount.includes('NaN')) {
+    return new Balance(0, CurrencyType.networkToken)
+  }
+  const integer = getInteger(formAmount)
+  const decimal = getDecimal(formAmount)
+  const floatAmount = parseFloat(`${integer}.${decimal}`)
+  return Balance.fromFloat(floatAmount, CurrencyType.networkToken)
 }
