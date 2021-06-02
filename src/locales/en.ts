@@ -197,7 +197,7 @@ export default {
       longap_p_1:
         '<b><white>Diagnostic support allows LongAP to identify issues with your Hotspot in a secure way.</white></b>\n\nLongAP will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@longap.com</b></purple> from the email used to purchase the Hotspot.',
       seeed_p_1:
-        '<b><white>Diagnostic support allows us to identify issues with your M1 gateway in a secure way.</white></b>\n\nWe will never access to private keys and will only ever be able to access your M1 gateway and not other devices on your network.\n\nIf you would like to opt-out of diagnostic support, please email  <purple><b>SenseCAP@seeed.cc</b></purple>  and provide us with your purchase infomation and detailed problem discription to get support. ',
+        '<b><white>Diagnostic support allows us to identify issues with your M1 gateway in a secure way.</white></b>\n\nWe will never have access to private keys and will only ever be able to access your M1 gateway and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email  <purple><b>SenseCAP@seeed.cc</b></purple>  and provide us with your purchase information and detailed problem description to get support.',
     },
     power: {
       title: 'Power Up',
@@ -232,7 +232,7 @@ export default {
       longapone_subtitle_2:
         'The LongAP One PWR LED will light up once it’s powered on.',
       seeed_subtitle_2:
-        'About 30 seconds, the blue indicator light on the back of M1 changes from off to fast flash mode, indicating that the M1 gateway is ready.',
+        'In 30 seconds, the blue indicator light on the back of M1 changes from off to fast flash mode, indicating that the M1 gateway is ready.',
     },
     pair: {
       title: 'Bluetooth',
