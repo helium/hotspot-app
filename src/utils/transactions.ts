@@ -174,7 +174,7 @@ export const getDecimal = (stringAmount: string) => {
 }
 
 export const stringAmountToBalance = (formAmount: string) => {
-  if (formAmount === decimalSeparator || formAmount.includes('NaN')) {
+  if (!formAmount || formAmount === decimalSeparator) {
     return new Balance(0, CurrencyType.networkToken)
   }
   const integer = getInteger(formAmount)
