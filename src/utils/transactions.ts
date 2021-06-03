@@ -7,9 +7,10 @@ import {
   TokenBurnV1,
   TransferHotspotV1,
 } from '@helium/transactions'
+import Balance, { CurrencyType } from '@helium/currency'
 import { getKeypair } from './secureAccount'
 import { getAccount } from './appDataClient'
-import { decimalSeparator, groupSeparator, locale } from './i18n'
+import { decimalSeparator, groupSeparator } from './i18n'
 import * as Logger from './logger'
 import { SendDetails } from '../features/wallet/send/sendTypes'
 
@@ -27,7 +28,6 @@ export const makePaymentTxn = async (
     })),
     nonce,
   })
-
   return paymentTxn.sign({ payer: keypair })
 }
 
@@ -161,20 +161,24 @@ export const isPayer = (
 export const isPendingTransaction = (item: unknown) =>
   !!(item as PendingTransaction).createdAt
 
-export const formatAmountInput = (formAmount: string) => {
-  if (formAmount === decimalSeparator || formAmount.includes('NaN')) {
-    return `0${decimalSeparator}`
-  }
-  const rawInteger = (formAmount.split(decimalSeparator)[0] || formAmount)
+export const getInteger = (stringAmount: string) => {
+  return (stringAmount.split(decimalSeparator)[0] || '0')
     .split(groupSeparator)
     .join('')
-  const integer = parseInt(rawInteger, 10).toLocaleString(locale)
-  let decimal = formAmount.split(decimalSeparator)[1]
-  if (integer === 'NaN') {
-    return ''
-  }
+}
+
+export const getDecimal = (stringAmount: string) => {
+  let decimal = stringAmount.split(decimalSeparator)[1]
   if (decimal && decimal.length >= 9) decimal = decimal.slice(0, 8)
-  return formAmount.includes(decimalSeparator)
-    ? `${integer}${decimalSeparator}${decimal}`
-    : integer
+  return decimal
+}
+
+export const stringAmountToBalance = (formAmount: string) => {
+  if (!formAmount || formAmount === decimalSeparator) {
+    return new Balance(0, CurrencyType.networkToken)
+  }
+  const integer = getInteger(formAmount)
+  const decimal = getDecimal(formAmount)
+  const floatAmount = parseFloat(`${integer}.${decimal}`)
+  return Balance.fromFloat(floatAmount, CurrencyType.networkToken)
 }
