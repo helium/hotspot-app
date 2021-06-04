@@ -39,6 +39,7 @@ const Payment = ({ item, address }: Props) => {
               mode="memo"
               isFirst={false}
               isLast={index === payments.length - 1}
+              isMemo
             />
           )}
         </Box>
