@@ -86,7 +86,6 @@ const Map = ({
   const camera = useRef<MapboxGL.Camera>(null)
   const [loaded, setLoaded] = useState(false)
   const [userCoords, setUserCoords] = useState({ latitude: 0, longitude: 0 })
-  const [selectedHex, setSelectedHex] = useState<string>()
   const [mapBounds, setMapBounds] = useState<Position[]>()
   const [mapZoomLevel, setMapZoomLevel] = useState<number>()
   const styles = useMemo(() => makeStyles(colors), [colors])
@@ -145,8 +144,12 @@ const Map = ({
     loadMapBounds()
   }, [])
 
+  const selectedHex = useMemo(
+    () => h3ToParent(selectedHotspot?.location || '', 8),
+    [selectedHotspot],
+  )
+
   const onHexPress = (id: string) => {
-    setSelectedHex(id)
     onHexSelected(id)
   }
 

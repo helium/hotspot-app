@@ -17,6 +17,7 @@ import { isEqual } from 'lodash'
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import Search from '@assets/images/search.svg'
 import Close from '@assets/images/closeMenu.svg'
+import { h3ToParent } from 'h3-js'
 import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
@@ -233,11 +234,28 @@ const HotspotsView = ({
     setDetailHeaderHeight(event.nativeEvent.layout.height)
   }, [])
 
+  const onMapHexSelected = useCallback(
+    async (hexId: string) => {
+      setSelectedHexId(hexId)
+      setSelectedHotspotIndex(0)
+      const result = (await dispatch(fetchHotspotsForHex({ hexId }))) as {
+        payload?: Hotspot[]
+      }
+      if (result && result.payload && result.payload.length) {
+        showHotspotDetails(result.payload[0] as Hotspot)
+      }
+    },
+    [dispatch, showHotspotDetails],
+  )
+
   const handlePresentDetails = useCallback(
-    () => (hotspot: Hotspot) => {
+    () => async (hotspot: Hotspot) => {
+      if (hotspot.location) {
+        await onMapHexSelected(h3ToParent(hotspot.location, 8))
+      }
       showHotspotDetails(hotspot)
     },
-    [showHotspotDetails],
+    [onMapHexSelected, showHotspotDetails],
   )
 
   const handleSelectPlace = useCallback(
@@ -298,20 +316,6 @@ const HotspotsView = ({
     if (!selectedHexId) return []
     return hotspotsForHexId[selectedHexId]
   }, [hotspotsForHexId, selectedHexId])
-
-  const onMapHexSelected = useCallback(
-    async (hexId: string) => {
-      setSelectedHexId(hexId)
-      setSelectedHotspotIndex(0)
-      const result = (await dispatch(fetchHotspotsForHex({ hexId }))) as {
-        payload?: Hotspot[]
-      }
-      if (result && result.payload && result.payload.length) {
-        showHotspotDetails(result.payload[0] as Hotspot)
-      }
-    },
-    [dispatch, showHotspotDetails],
-  )
 
   const onHotspotSelected = useCallback(
     (index, hotspot) => {
