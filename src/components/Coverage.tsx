@@ -9,6 +9,8 @@ import { h3ToParent } from 'h3-js'
 import React, { memo, useCallback, useMemo } from 'react'
 import { StyleProp } from 'react-native'
 import { Hotspot } from '@helium/http'
+import { Feature, Position } from 'geojson'
+import geojson2h3 from 'geojson2h3'
 import { DiscoveryResponse } from '../store/discovery/discoveryTypes'
 import { Colors } from '../theme/theme'
 import { useColors } from '../theme/themeHooks'
@@ -25,6 +27,7 @@ type HexColors = {
   outline: Colors
 }
 type Props = {
+  bounds?: Position[]
   witnessColors?: HexColors
   networkColors?: HexColors
   selectedOutlineColor?: Colors
@@ -40,6 +43,7 @@ type Props = {
 }
 
 const Coverage = ({
+  bounds,
   networkColors = {
     fill: 'grayText',
     outline: 'offblack',
@@ -59,16 +63,49 @@ const Coverage = ({
   showCount = false,
   witnesses,
 }: Props) => {
+  const boundingBox = useMemo(() => {
+    return {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: bounds
+          ? [
+              [
+                [bounds[0][0], bounds[0][1]],
+                [bounds[0][0], bounds[1][1]],
+                [bounds[1][0], bounds[1][1]],
+                [bounds[1][0], bounds[0][1]],
+                [bounds[0][0], bounds[0][1]],
+              ],
+            ]
+          : [],
+      },
+    } as Feature
+  }, [bounds])
+
+  const sourceSet = useMemo(() => {
+    const hexagons = geojson2h3.featureToH3Set(boundingBox, 8)
+    return geojson2h3.h3SetToFeatureCollection(hexagons, (h3Index) => ({
+      id: h3Index,
+    }))
+  }, [boundingBox])
+
   const colors = useColors()
   const styles = useMemo(() => {
-    const witnessLocations = (witnesses || [])
-      .map((w) => {
-        if (!w.location) return
-        return h3ToParent(w.location, 8)
-      })
-      .filter((w) => !!w) as string[]
+    const witnessLocations = [
+      ...new Set( // Need to filter duplicates or mapbox gets angry
+        (witnesses || [])
+          .map((w) => {
+            if (!w.location) return
+            return h3ToParent(w.location, 8)
+          })
+          .filter((w) => !!w) as string[],
+      ),
+    ]
 
     return makeStyles(
+      colors.blueDarkest,
+      1,
       colors[witnessColors.fill],
       colors[witnessColors.outline],
       colors[networkColors.fill],
@@ -114,9 +151,15 @@ const Coverage = ({
   if (!visible) {
     return null
   }
-
   return (
     <>
+      <MapboxGL.ShapeSource id="h3Grid" shape={sourceSet}>
+        <MapboxGL.LineLayer
+          id="h3GridLine"
+          minZoomLevel={11}
+          style={styles.gridLine}
+        />
+      </MapboxGL.ShapeSource>
       <MapboxGL.VectorSource
         id="network"
         url="https://helium-hotspots.s3-us-west-2.amazonaws.com/public.h3_res8.json"
@@ -136,14 +179,6 @@ const Coverage = ({
             style={styles.outline}
           />
         )}
-        {showCount && (
-          <MapboxGL.SymbolLayer
-            id="hotspotCount"
-            sourceID="network"
-            sourceLayerID="public.h3_res8"
-            style={styles.text}
-          />
-        )}
         {outline && (
           <MapboxGL.LineLayer
             id="hexagonSelectedLine"
@@ -154,11 +189,28 @@ const Coverage = ({
           />
         )}
       </MapboxGL.VectorSource>
+      {showCount && (
+        <MapboxGL.VectorSource
+          id="tileServerPoints"
+          url="https://helium-hotspots.s3-us-west-2.amazonaws.com/public.points.json"
+          onPress={onPress}
+        >
+          <MapboxGL.SymbolLayer
+            id="hotspotCount"
+            sourceID="tileServerPoints"
+            sourceLayerID="public.points"
+            minZoomLevel={11}
+            style={styles.text}
+          />
+        </MapboxGL.VectorSource>
+      )}
     </>
   )
 }
 
 const makeStyles = (
+  gridLineColor: string,
+  gridLineWidth: number,
   witnessFillColor: string,
   witnessOutlineColor: string,
   networkFillColor: string,
@@ -170,17 +222,6 @@ const makeStyles = (
   witnessLocations: string[],
   selectedHex?: string,
 ) => {
-  let lineColor = ['match', ['get', 'id']]
-  if (selectedHex) {
-    lineColor = [...lineColor, selectedHex, selectedOutlineColor]
-  }
-  lineColor = [
-    ...lineColor,
-    witnessLocations.filter((l) => l !== selectedHex),
-    witnessOutlineColor,
-    networkOutlineColor,
-  ]
-
   const fillColor = [
     'match',
     ['get', 'id'],
@@ -197,13 +238,17 @@ const makeStyles = (
   }
 
   return {
+    gridLine: {
+      lineWidth: gridLineWidth,
+      lineColor: gridLineColor,
+    } as StyleProp<LineLayerStyle>,
     fill: {
       fillOpacity: opacity,
       fillColor,
     } as StyleProp<FillLayerStyle>,
     outline: {
       lineWidth,
-      lineColor,
+      lineColor: networkOutlineColor,
     } as StyleProp<LineLayerStyle>,
     outlineSelected: {
       lineWidth: selectedLineWidth,

@@ -21,10 +21,7 @@ import { DiscoveryResponse } from '../../../../store/discovery/discoveryTypes'
 import { findBounds } from '../../../../utils/mapUtils'
 import { useColors } from '../../../../theme/themeHooks'
 import useVisible from '../../../../utils/useVisible'
-import H3Grid from '../../../../components/H3Grid'
-import NetworkCoverage from '../../../../components/NetworkCoverage'
-import HotspotsCoverage from '../../../../components/HotspotsCoverage'
-import NetworkNumbers from '../../../../components/NetworkNumbers'
+import Coverage from '../../../../components/Coverage'
 
 const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
 
@@ -41,7 +38,6 @@ const DiscoveryMap = ({
   selectedHexId,
   ...props
 }: Props) => {
-  const { purpleMain, yellow, white } = useColors()
   const cameraRef = useRef<MapboxGL.Camera>(null)
   const mapRef = useRef<MapboxGL.MapView>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
@@ -53,6 +49,7 @@ const DiscoveryMap = ({
       setMapLoaded(false)
     },
   })
+  const { purpleMain } = useColors()
 
   const styles = useMemo(() => makeStyles({ purpleMain }), [purpleMain])
 
@@ -88,6 +85,11 @@ const DiscoveryMap = ({
     setMapBounds(currentBounds)
   }, [])
 
+  const defaultSettings = useMemo(
+    () => ({ centerCoordinate: [-122.4194, 37.7749] }),
+    [],
+  )
+
   return (
     <Box {...props}>
       {(visible || !isAndroid) && (
@@ -102,39 +104,20 @@ const DiscoveryMap = ({
         >
           <MapboxGL.Camera
             ref={cameraRef}
-            defaultSettings={{ centerCoordinate: [-122.4194, 37.7749] }}
+            defaultSettings={defaultSettings}
             maxZoomLevel={12}
             minZoomLevel={10}
             followUserLocation={responses.length === 0}
           />
 
-          <H3Grid bounds={mapBounds} />
           {showCoverage && (
-            <>
-              <NetworkCoverage
-                onHexSelected={onSelectHex}
-                selectedHexId={selectedHexId}
-              />
-              <HotspotsCoverage
-                id="discoveryWitnesses"
-                hotspots={responses}
-                fill
-                onHexSelected={onSelectHex}
-                fillColor={yellow}
-                opacity={0.6}
-              />
-              <NetworkNumbers
-                onHexSelected={onSelectHex}
-                selectedHexId={selectedHexId}
-              />
-              <HotspotsCoverage
-                id="discoverySelected"
-                hexes={selectedHexId ? [selectedHexId] : []}
-                outline
-                outlineColor={white}
-                outlineWidth={2}
-              />
-            </>
+            <Coverage
+              bounds={mapBounds}
+              showCount
+              onHexSelected={onSelectHex}
+              selectedHexId={selectedHexId}
+              witnesses={responses}
+            />
           )}
         </MapboxGL.MapView>
       )}
