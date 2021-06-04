@@ -3,7 +3,7 @@ import { ActivityIndicator, Alert } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Address } from '@helium/crypto-react-native'
 import { Account } from '@helium/http'
-import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
+import Balance, { NetworkTokens } from '@helium/currency'
 import { useAsync } from 'react-async-hook'
 import animalName from 'angry-purple-tiger'
 import InputField from '../../../components/InputField'
@@ -19,8 +19,9 @@ import { Transfer } from '../../hotspots/transfers/TransferRequests'
 import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
 import { ensLookup } from '../../../utils/explorerClient'
 import {
-  formatAmountInput,
-  parseAmount,
+  getDecimal,
+  getInteger,
+  stringAmountToBalance,
   getMemoBytesLeft,
 } from '../../../utils/transactions'
 import * as Logger from '../../../utils/logger'
@@ -99,18 +100,32 @@ const SendDetailsForm = ({
 
   // Update the internal HNT amount based on form input
   useEffect(() => {
-    const parsedAmount = parseAmount(amount)
-    const hntBalance = Balance.fromFloat(
-      parseFloat(`${parsedAmount?.rawInteger}.${parsedAmount?.decimal}`),
-      CurrencyType.networkToken,
-    )
-    setBalanceAmount(hntBalance)
+    setBalanceAmount(stringAmountToBalance(amount))
   }, [amount])
 
   // Helper to normalize direct "amount" input value
-  const setFormAmount = (formAmount: string) => {
-    const formattedAmount = formatAmountInput(formAmount)
-    setAmount(formattedAmount)
+  const setFormAmount = (stringAmount: string) => {
+    if (!stringAmount) {
+      setAmount('')
+      return
+    }
+    if (stringAmount === decimalSeparator) {
+      setAmount(`0${decimalSeparator}`)
+      return
+    }
+    const integerValue = getInteger(stringAmount)
+    const integerValueAsBalance = stringAmountToBalance(integerValue)
+    const formattedInteger = integerValueAsBalance.toString(undefined, {
+      decimalSeparator,
+      groupSeparator,
+      showTicker: false,
+    })
+    const decimal = getDecimal(stringAmount)
+    setAmount(
+      stringAmount.includes(decimalSeparator)
+        ? `${formattedInteger}${decimalSeparator}${decimal}`
+        : formattedInteger,
+    )
   }
 
   const setMaxAmount = async () => {

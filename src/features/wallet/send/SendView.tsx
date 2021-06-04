@@ -34,7 +34,6 @@ import {
   makeBuyerTransferHotspotTxn,
   makePaymentTxn,
   makeSellerTransferHotspotTxn,
-  formatAmountInput,
   getMemoBytesLeft,
 } from '../../../utils/transactions'
 import {
@@ -195,11 +194,16 @@ const SendView = ({
       let amount = ''
       let balanceAmount = new Balance(0, CurrencyType.networkToken)
       if (scanAmount) {
+        const floatAmount = parseFloat(scanAmount.replace(/,/g, ''))
         balanceAmount = Balance.fromFloat(
-          parseFloat(scanAmount),
+          floatAmount,
           CurrencyType.networkToken,
         )
-        amount = formatAmountInput(String(scanAmount))
+        amount = balanceAmount.toString(8, {
+          showTicker: false,
+          decimalSeparator,
+          groupSeparator,
+        })
       }
       return { amount, balanceAmount }
     }
