@@ -22,7 +22,9 @@ import { findBounds } from '../../../../utils/mapUtils'
 import { useColors } from '../../../../theme/themeHooks'
 import useVisible from '../../../../utils/useVisible'
 import H3Grid from '../../../../components/H3Grid'
-import Coverage from '../../../../components/Coverage'
+import NetworkCoverage from '../../../../components/NetworkCoverage'
+import HotspotsCoverage from '../../../../components/HotspotsCoverage'
+import NetworkNumbers from '../../../../components/NetworkNumbers'
 
 const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
 
@@ -39,7 +41,7 @@ const DiscoveryMap = ({
   selectedHexId,
   ...props
 }: Props) => {
-  const { purpleMain } = useColors()
+  const { purpleMain, yellow, white } = useColors()
   const cameraRef = useRef<MapboxGL.Camera>(null)
   const mapRef = useRef<MapboxGL.MapView>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
@@ -108,12 +110,31 @@ const DiscoveryMap = ({
 
           <H3Grid bounds={mapBounds} />
           {showCoverage && (
-            <Coverage
-              showCount
-              onHexSelected={onSelectHex}
-              selectedHexId={selectedHexId}
-              witnesses={responses}
-            />
+            <>
+              <NetworkCoverage
+                onHexSelected={onSelectHex}
+                selectedHexId={selectedHexId}
+              />
+              <HotspotsCoverage
+                id="discoveryWitnesses"
+                hotspots={responses}
+                fill
+                onHexSelected={onSelectHex}
+                fillColor={yellow}
+                opacity={0.6}
+              />
+              <NetworkNumbers
+                onHexSelected={onSelectHex}
+                selectedHexId={selectedHexId}
+              />
+              <HotspotsCoverage
+                id="discoverySelected"
+                hexes={selectedHexId ? [selectedHexId] : []}
+                outline
+                outlineColor={white}
+                outlineWidth={2}
+              />
+            </>
           )}
         </MapboxGL.MapView>
       )}

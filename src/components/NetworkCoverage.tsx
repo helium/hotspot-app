@@ -2,10 +2,10 @@ import MapboxGL, {
   FillLayerStyle,
   LineLayerStyle,
   OnPressEvent,
-  SymbolLayerStyle,
 } from '@react-native-mapbox-gl/maps'
 import React, { memo, useCallback, useMemo } from 'react'
 import { StyleProp } from 'react-native'
+import NetworkNumbers from './NetworkNumbers'
 
 export type HexProperties = {
   avg_reward_scale: number
@@ -53,20 +53,6 @@ const NetworkCoverage = ({
     [onHexSelected],
   )
 
-  const numberStyle = useMemo(
-    (): StyleProp<SymbolLayerStyle> => ({
-      textField: '{hotspot_count}',
-      textColor: [
-        'case',
-        ['==', ['get', 'id'], selectedHexId || ''],
-        '#FFFFFF',
-        '#000000',
-      ],
-      textOpacity: ['case', ['==', ['get', 'hotspot_count'], 1], 0, 1],
-    }),
-    [selectedHexId],
-  )
-
   if (!visible) {
     return null
   }
@@ -86,19 +72,10 @@ const NetworkCoverage = ({
         />
       </MapboxGL.VectorSource>
       {showCount && (
-        <MapboxGL.VectorSource
-          id="tileServerPoints"
-          url="https://helium-hotspots.s3-us-west-2.amazonaws.com/public.points.json"
-          onPress={onPress}
-        >
-          <MapboxGL.SymbolLayer
-            id="hotspotCount"
-            sourceID="tileServerPoints"
-            sourceLayerID="public.points"
-            minZoomLevel={11}
-            style={numberStyle}
-          />
-        </MapboxGL.VectorSource>
+        <NetworkNumbers
+          onHexSelected={onHexSelected}
+          selectedHexId={selectedHexId}
+        />
       )}
     </>
   )

@@ -7,6 +7,7 @@ import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { isEqual } from 'lodash'
 import discoverySlice, {
+  fetchDiscoveryById,
   fetchRecentDiscoveries,
   startDiscovery,
 } from '../../../../store/discovery/discoverySlice'
