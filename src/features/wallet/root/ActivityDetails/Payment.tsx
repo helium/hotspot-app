@@ -9,7 +9,7 @@ import Balance, { CurrencyType } from '@helium/currency'
 import { Payment as PaymentType } from '@helium/http/build/models/Transaction'
 import Box from '../../../../components/Box'
 import PaymentItem from './PaymentItem'
-import { decodeMemoString } from '../../../../utils/transactions'
+import { decodeMemoString, DEFAULT_MEMO } from '../../../../utils/transactions'
 
 type Props = { item: AnyTransaction | PendingTransaction; address: string }
 const Payment = ({ item, address }: Props) => {
@@ -28,9 +28,12 @@ const Payment = ({ item, address }: Props) => {
             isMyAccount={p.payee === address}
             mode="to"
             isFirst={false}
-            isLast={p.memo === undefined && index === payments.length - 1}
+            isLast={
+              (p.memo === undefined || p.memo === DEFAULT_MEMO) &&
+              index === payments.length - 1
+            }
           />
-          {p.memo !== undefined && (
+          {p.memo !== undefined && p.memo !== DEFAULT_MEMO && (
             <PaymentItem
               text={decodeMemoString(p.memo)}
               mode="memo"

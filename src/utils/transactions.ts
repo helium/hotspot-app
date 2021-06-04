@@ -14,6 +14,8 @@ import { decimalSeparator, groupSeparator } from './i18n'
 import * as Logger from './logger'
 import { SendDetails } from '../features/wallet/send/sendTypes'
 
+export const DEFAULT_MEMO = 'AAAAAAAAAAA='
+
 export const encodeMemoString = (utf8Input: string | undefined) => {
   if (!utf8Input) return undefined
   const buff = Buffer.from(utf8Input, 'utf8')
