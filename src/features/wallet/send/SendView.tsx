@@ -34,6 +34,7 @@ import {
   makeBuyerTransferHotspotTxn,
   makePaymentTxn,
   makeSellerTransferHotspotTxn,
+  getMemoBytesLeft,
 } from '../../../utils/transactions'
 import {
   getAccount,
@@ -287,13 +288,15 @@ const SendView = ({
     } else {
       let isValidSend = true
       let totalSendAmount = new Balance(0, CurrencyType.networkToken)
-      sendDetails.forEach(({ address, balanceAmount }) => {
+      sendDetails.forEach(({ address, balanceAmount, memo }) => {
         const isValidTransferAddress =
           Address.isValid(address) && address !== account?.address
         if (!isValidTransferAddress) isValidSend = false
         const isValidTransferAmount = balanceAmount.integerBalance > 0
         if (!isValidTransferAmount) isValidSend = false
         totalSendAmount = totalSendAmount.plus(balanceAmount)
+        const memoLength = getMemoBytesLeft(memo)
+        if (!memoLength.valid) isValidSend = false
       })
       totalSendAmount = totalSendAmount.plus(fee)
       // TODO balance compare/greater than/less than

@@ -43,7 +43,7 @@
     "@helium/currency": "^3.25.1",
     "@helium/http": "^3.35.0",
     "@helium/proto-ble": "3.10.0",
-    "@helium/transactions": "^3.30.0",
+    "@helium/transactions": "^3.34.0",
     "@react-native-community/art": "^1.2.0",
     "@react-native-community/async-storage": "^1.12.1",
     "@react-native-community/blur": "^3.6.0",
