@@ -1,6 +1,6 @@
 import MapboxGL, { LineLayerStyle } from '@react-native-mapbox-gl/maps'
 import React, { memo, useMemo } from 'react'
-import { Feature, Position } from 'geojson'
+import { Feature, FeatureCollection, Position } from 'geojson'
 import geojson2h3 from 'geojson2h3'
 import { StyleProp } from 'react-native'
 import { Colors } from '../theme/theme'
@@ -12,6 +12,7 @@ type Props = {
   color?: Colors
   width?: number
   visible?: boolean
+  zoomLevel: number
 }
 
 const H3Grid = ({
@@ -20,6 +21,7 @@ const H3Grid = ({
   color = 'blueDarkest',
   width = 1,
   visible = true,
+  zoomLevel,
 }: Props) => {
   const colors = useColors()
   const styles = useMemo(() => makeStyles(colors[color], width), [
@@ -29,6 +31,7 @@ const H3Grid = ({
   ])
 
   const boundingBox = useMemo(() => {
+    if (zoomLevel < 11) return { type: 'Feature' } as Feature
     return {
       type: 'Feature',
       geometry: {
@@ -46,14 +49,16 @@ const H3Grid = ({
           : [],
       },
     } as Feature
-  }, [bounds])
+  }, [bounds, zoomLevel])
 
   const sourceSet = useMemo(() => {
+    if (zoomLevel < 11)
+      return { type: 'FeatureCollection', features: [] } as FeatureCollection
     const hexagons = geojson2h3.featureToH3Set(boundingBox, res)
     return geojson2h3.h3SetToFeatureCollection(hexagons, (h3Index) => ({
       id: h3Index,
     }))
-  }, [boundingBox, res])
+  }, [boundingBox, res, zoomLevel])
 
   if (!bounds || !visible) {
     return null

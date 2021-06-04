@@ -88,6 +88,7 @@ const Map = ({
   const [userCoords, setUserCoords] = useState({ latitude: 0, longitude: 0 })
   const [selectedHex, setSelectedHex] = useState<string>()
   const [mapBounds, setMapBounds] = useState<Position[]>()
+  const [mapZoomLevel, setMapZoomLevel] = useState<number>()
   const styles = useMemo(() => makeStyles(colors), [colors])
 
   const onRegionDidChange = useCallback(async () => {
@@ -97,6 +98,9 @@ const Map = ({
     }
     const currentBounds = await map.current?.getVisibleBounds()
     setMapBounds(currentBounds)
+
+    const currentZoomLevel = await map.current?.getZoom()
+    setMapZoomLevel(currentZoomLevel)
   }, [onMapMoved])
 
   const centerUserLocation = useCallback(() => {
@@ -262,7 +266,11 @@ const Map = ({
           animationDuration={animationDuration}
         />
         <MapboxGL.Images images={mapImages} />
-        <H3Grid bounds={mapBounds} visible={showH3Grid} />
+        <H3Grid
+          bounds={mapBounds}
+          visible={showH3Grid}
+          zoomLevel={mapZoomLevel || 16}
+        />
         <HotspotsCoverage
           id="owned"
           onHexSelected={onHexPress}

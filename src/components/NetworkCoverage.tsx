@@ -5,7 +5,7 @@ import MapboxGL, {
 } from '@react-native-mapbox-gl/maps'
 import React, { memo, useCallback, useMemo } from 'react'
 import { StyleProp } from 'react-native'
-import NetworkNumbers from './NetworkNumbers'
+import NetworkPointCoverage from './NetworkPointCoverage'
 
 export type HexProperties = {
   avg_reward_scale: number
@@ -68,13 +68,15 @@ const NetworkCoverage = ({
           id="hexagonFill"
           sourceID="tileServerH3"
           sourceLayerID="public.h3_res8"
+          minZoomLevel={10}
           style={showRewardScale ? styles.rewardFill : styles.hexagonFill}
         />
       </MapboxGL.VectorSource>
       {showCount && (
-        <NetworkNumbers
+        <NetworkPointCoverage
           onHexSelected={onHexSelected}
           selectedHexId={selectedHexId}
+          showRewardScale={showRewardScale}
         />
       )}
     </>
