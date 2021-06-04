@@ -1274,7 +1274,7 @@
   dependencies:
     protobufjs "^6.8.9"
 
-"@helium/transactions@^3.30.0":
+"@helium/transactions@^3.34.0":
   version "3.34.0"
   resolved "https://registry.yarnpkg.com/@helium/transactions/-/transactions-3.34.0.tgz#2c568c2cbd67a8bf0e097d2f0e52f9270e6d8eac"
   integrity sha512-7ICGl56FGQi8SllnbpTzpoGzQuy4NYMQMs2XjgxXXlcAVjt/y444+zBQ8OKhrUyr76a0PELFplNc/eidCiWJgQ==

@@ -14,6 +14,20 @@ import { decimalSeparator, groupSeparator } from './i18n'
 import * as Logger from './logger'
 import { SendDetails } from '../features/wallet/send/sendTypes'
 
+export const DEFAULT_MEMO = 'AAAAAAAAAAA='
+
+export const encodeMemoString = (utf8Input: string | undefined) => {
+  if (!utf8Input) return undefined
+  const buff = Buffer.from(utf8Input, 'utf8')
+  return buff.toString('base64')
+}
+
+export const decodeMemoString = (base64String: string | undefined) => {
+  if (!base64String) return ''
+  const buff = Buffer.from(base64String, 'base64')
+  return buff.toString('utf8')
+}
+
 export const makePaymentTxn = async (
   paymentDetails: Array<SendDetails>,
   nonce: number,
@@ -22,9 +36,10 @@ export const makePaymentTxn = async (
   if (!keypair) throw new Error('missing keypair')
   const paymentTxn = new PaymentV2({
     payer: keypair.address,
-    payments: paymentDetails.map(({ address, balanceAmount }) => ({
+    payments: paymentDetails.map(({ address, balanceAmount, memo }) => ({
       payee: Address.fromB58(address),
       amount: balanceAmount.integerBalance,
+      memo: encodeMemoString(memo),
     })),
     nonce,
   })
@@ -181,4 +196,13 @@ export const stringAmountToBalance = (formAmount: string) => {
   const decimal = getDecimal(formAmount)
   const floatAmount = parseFloat(`${integer}.${decimal}`)
   return Balance.fromFloat(floatAmount, CurrencyType.networkToken)
+}
+
+export const getMemoBytesLeft = (
+  memo: string,
+): { numBytes: number; valid: boolean } => {
+  if (!memo) return { numBytes: 8, valid: true }
+  const buff = Buffer.from(memo)
+  const size = buff.byteLength
+  return { numBytes: size < 8 ? 8 - size : 0, valid: size <= 8 }
 }

@@ -22,6 +22,7 @@ import {
   getDecimal,
   getInteger,
   stringAmountToBalance,
+  getMemoBytesLeft,
 } from '../../../utils/transactions'
 import * as Logger from '../../../utils/logger'
 import useHaptic from '../../../utils/useHaptic'
@@ -164,6 +165,12 @@ const SendDetailsForm = ({
     <>
       <LockedField label={t('send.address.label')} value={address} />
       <LockedField label={t('send.amount.label')} value={amount} bottom />
+      <LockedField
+        label={t('send.memo.label')}
+        value={memo}
+        bottom
+        footer={<MemoLengthCounter />}
+      />
     </>
   )
 
@@ -207,8 +214,32 @@ const SendDetailsForm = ({
           </TouchableOpacityBox>
         }
       />
+      <InputField
+        defaultValue={memo}
+        onChange={setMemo}
+        label={t('send.memo.label')}
+        placeholder={t('send.memo.placeholder')}
+        footer={<MemoLengthCounter />}
+      />
     </>
   )
+
+  const MemoLengthCounter = () => {
+    if (!memo) return null
+    const bytesLeft = getMemoBytesLeft(memo)
+    return (
+      <Text
+        variant="mono"
+        color={bytesLeft.valid ? 'grayText' : 'redMedium'}
+        fontSize={11}
+        paddingTop="xs"
+      >
+        {bytesLeft.valid
+          ? t('send.memo.bytes_left', { count: bytesLeft.numBytes })
+          : t('send.memo.length_error')}
+      </Text>
+    )
+  }
 
   const renderBurnForm = () => (
     <>
