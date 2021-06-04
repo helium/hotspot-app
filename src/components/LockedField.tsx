@@ -8,14 +8,23 @@ type Props = {
   value: string
   footer?: any
   bottom?: boolean
+  top?: boolean
 }
 
-const LockedField = ({ label, value, footer, bottom = false }: Props) => {
+const LockedField = ({
+  label,
+  value,
+  footer,
+  bottom = false,
+  top = false,
+}: Props) => {
   return (
     <Box
       backgroundColor="offwhite"
       padding="m"
       marginBottom="xs"
+      borderTopLeftRadius={top ? 'm' : 'none'}
+      borderTopRightRadius={top ? 'm' : 'none'}
       borderBottomLeftRadius={bottom ? 'm' : 'none'}
       borderBottomRightRadius={bottom ? 'm' : 'none'}
     >

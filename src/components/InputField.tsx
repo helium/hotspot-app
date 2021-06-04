@@ -18,6 +18,8 @@ type Props = {
   defaultValue?: string
   value?: string
   numberOfLines?: number
+  bottom?: boolean
+  top?: boolean
 }
 
 const InputField = ({
@@ -31,6 +33,8 @@ const InputField = ({
   defaultValue,
   value,
   numberOfLines,
+  bottom = false,
+  top = false,
 }: Props) => {
   const inputRef = useRef<TextInput | null>(null)
 
@@ -42,10 +46,13 @@ const InputField = ({
     <TouchableWithoutFeedback onPress={handleFocus}>
       <Box
         backgroundColor="offwhite"
-        borderRadius="m"
+        borderTopLeftRadius={top ? 'm' : 'none'}
+        borderTopRightRadius={top ? 'm' : 'none'}
+        borderBottomLeftRadius={bottom ? 'm' : 'none'}
+        borderBottomRightRadius={bottom ? 'm' : 'none'}
         paddingHorizontal="m"
         paddingVertical="m"
-        marginBottom="s"
+        marginBottom="xs"
       >
         <Box
           flexDirection="row"
