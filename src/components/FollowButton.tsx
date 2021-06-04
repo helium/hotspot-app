@@ -62,6 +62,7 @@ const FollowButton = ({
     <DebouncedTouchableOpacityBox
       duration={duration}
       onPress={toggleFollowing}
+      hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
       {...props}
     >
       <Follow color={color} />

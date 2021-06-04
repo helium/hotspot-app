@@ -29,7 +29,10 @@ const HotspotDetailsHandle = ({ hotspot, toggleSettings }: Props) => {
         <CardHandle />
       </Box>
       {showHotspotOptions && (
-        <TouchableOpacityBox onPress={toggleSettings}>
+        <TouchableOpacityBox
+          onPress={toggleSettings}
+          hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
+        >
           <Settings width={22} height={22} color={colors.grayPurple} />
         </TouchableOpacityBox>
       )}
