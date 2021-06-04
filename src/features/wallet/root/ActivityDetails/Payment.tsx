@@ -64,7 +64,7 @@ const getPayments = (
   }
 
   return ((item as PendingTransaction).txn?.payments || []).map(
-    (p: { payee: string; amount: number }) => ({
+    (p: { payee: string; amount: number; memo: string }) => ({
       ...p,
       amount: new Balance(p.amount, CurrencyType.networkToken),
     }),
