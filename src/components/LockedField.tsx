@@ -7,26 +7,26 @@ type Props = {
   label: string
   value: string
   footer?: any
-  bottom?: boolean
-  top?: boolean
+  isLast?: boolean
+  isFirst?: boolean
 }
 
 const LockedField = ({
   label,
   value,
   footer,
-  bottom = false,
-  top = false,
+  isLast = false,
+  isFirst = false,
 }: Props) => {
   return (
     <Box
       backgroundColor="offwhite"
       padding="m"
       marginBottom="xs"
-      borderTopLeftRadius={top ? 'm' : 'none'}
-      borderTopRightRadius={top ? 'm' : 'none'}
-      borderBottomLeftRadius={bottom ? 'm' : 'none'}
-      borderBottomRightRadius={bottom ? 'm' : 'none'}
+      borderTopLeftRadius={isFirst ? 'm' : 'none'}
+      borderTopRightRadius={isFirst ? 'm' : 'none'}
+      borderBottomLeftRadius={isLast ? 'm' : 'none'}
+      borderBottomRightRadius={isLast ? 'm' : 'none'}
     >
       <Box flexDirection="row" marginBottom="s">
         <Text letterSpacing={0.92} fontSize={13}>

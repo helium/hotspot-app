@@ -168,13 +168,13 @@ const SendDetailsForm = ({
       <LockedField
         label={t('send.address.label')}
         value={address}
-        top={index !== 0}
+        isFirst={index !== 0}
       />
       <LockedField label={t('send.amount.label')} value={amount} />
       <LockedField
         label={t('send.memo.label')}
         value={memo}
-        bottom
+        isLast
         footer={<MemoLengthCounter />}
       />
     </>
@@ -185,18 +185,18 @@ const SendDetailsForm = ({
       <LockedField
         label={t('send.address.label')}
         value={address}
-        top={index !== 0}
+        isFirst={index !== 0}
       />
       <LockedField label={t('send.amount.label')} value={amount} />
       <LockedField label={t('send.dcAmount.label')} value={dcAmount} />
-      <LockedField label={t('send.memo.label')} value={memo} bottom />
+      <LockedField label={t('send.memo.label')} value={memo} isLast />
     </>
   )
 
   const renderPaymentForm = () => (
     <>
       <InputField
-        top
+        isFirst
         defaultValue={address}
         onChange={setAddress}
         label={t('send.address.label')}
@@ -231,7 +231,7 @@ const SendDetailsForm = ({
         label={t('send.memo.label')}
         placeholder={t('send.memo.placeholder')}
         footer={<MemoLengthCounter />}
-        bottom
+        isLast
       />
     </>
   )
