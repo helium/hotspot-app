@@ -962,6 +962,7 @@ export default {
       searching: 'Searching',
       distance: '{{distance}} {{unit}} away',
       added_to_followed: 'Added to Followed Hotspots',
+      removed_from_followed: 'Removed from Followed Hotspots',
     },
     share: {
       subject: 'Discovery Results',
@@ -988,5 +989,26 @@ export default {
       desc:
         'A value between 1 and 15 to one decimal point. This is provided by your hotspot or antenna manufacturer.',
     },
+  },
+  map_filter: {
+    your_hotspots: {
+      title: 'Your Hotspots',
+      body: 'Shows followed and owned Hotspots',
+      followed: 'Followed',
+      owned: 'Owned',
+    },
+    witness: {
+      title: 'Witnesses',
+      body: 'Highlights witnesses for chosen Hotspot',
+      desc_title: 'What are Witnesses?',
+      desc_body:
+        'Witnesses are Hotspot that hear a Hotspots ‘Beacons’ and report Proof-of-Coverage receipts.',
+    },
+    reward: {
+      title: 'Reward Scaling',
+      body: 'Indicates hotspot density via reward scaling',
+    },
+    title: 'Map Filters',
+    button: 'Choose Map Filter',
   },
 }

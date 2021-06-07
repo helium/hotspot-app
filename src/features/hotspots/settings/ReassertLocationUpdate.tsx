@@ -111,6 +111,8 @@ const ReassertLocationUpdate = ({
         zoomLevel={16}
         onMapMoved={onMapMoved}
         interactive={!confirming}
+        showH3Grid
+        showNearbyHotspots
       />
       <ImageBox
         position="absolute"

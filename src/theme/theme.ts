@@ -7,6 +7,7 @@ const palette = {
   black: '#000000',
   white: '#FFFFFF',
   whiteTransparent: '#FFFFFF66',
+  whiteTransparent75: '#FFFFFFBF',
   blackTransparent: '#00000033',
   offwhite: '#F9FAFC',
   offblack: '#1E2051',
@@ -17,6 +18,7 @@ const palette = {
   blueLight: '#51AEFF',
   blueMain: '#4BABFF',
   blueDark: '#232E39',
+  blueDarkest: '#1C1E3B',
 
   grayLight: '#DADADA',
   grayExtraLight: '#788AB4',
@@ -62,7 +64,7 @@ const palette = {
   orangeExtraDark: '#C97C09',
   orangeDark: '#FCB345',
   orange: '#FF852F',
-  yellow: '#FFCB46',
+  yellow: '#FCC945',
   gold: '#FFC769',
   gray: '#687A8C',
 
@@ -206,6 +208,8 @@ export const theme = createTheme({
     inputPlaceholderText: palette.grayExtraLight,
   },
   spacing: {
+    n_xxxxl: -240,
+    n_xxxl: -120,
     n_xxl: -60,
     n_xl: -40,
     n_lx: -32,
