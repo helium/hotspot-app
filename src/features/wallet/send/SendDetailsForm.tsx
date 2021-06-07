@@ -33,6 +33,7 @@ type Props = {
   fee: Balance<NetworkTokens>
   isLocked: boolean
   isSeller?: boolean
+  index: number
   lastReportedActivity?: string
   onScanPress: () => void
   sendDetails: SendDetails
@@ -42,6 +43,7 @@ type Props = {
 }
 
 const SendDetailsForm = ({
+  index,
   account,
   fee,
   isLocked,
@@ -163,12 +165,16 @@ const SendDetailsForm = ({
 
   const renderLockedPaymentForm = () => (
     <>
-      <LockedField label={t('send.address.label')} value={address} />
-      <LockedField label={t('send.amount.label')} value={amount} bottom />
+      <LockedField
+        label={t('send.address.label')}
+        value={address}
+        isFirst={index !== 0}
+      />
+      <LockedField label={t('send.amount.label')} value={amount} />
       <LockedField
         label={t('send.memo.label')}
         value={memo}
-        bottom
+        isLast
         footer={<MemoLengthCounter />}
       />
     </>
@@ -176,16 +182,21 @@ const SendDetailsForm = ({
 
   const renderLockedBurnForm = () => (
     <>
-      <LockedField label={t('send.address.label')} value={address} />
+      <LockedField
+        label={t('send.address.label')}
+        value={address}
+        isFirst={index !== 0}
+      />
       <LockedField label={t('send.amount.label')} value={amount} />
       <LockedField label={t('send.dcAmount.label')} value={dcAmount} />
-      <LockedField label={t('send.memo.label')} value={memo} bottom />
+      <LockedField label={t('send.memo.label')} value={memo} isLast />
     </>
   )
 
   const renderPaymentForm = () => (
     <>
       <InputField
+        isFirst
         defaultValue={address}
         onChange={setAddress}
         label={t('send.address.label')}
@@ -220,6 +231,7 @@ const SendDetailsForm = ({
         label={t('send.memo.label')}
         placeholder={t('send.memo.placeholder')}
         footer={<MemoLengthCounter />}
+        isLast
       />
     </>
   )
