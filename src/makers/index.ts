@@ -5,6 +5,7 @@ import helium from './helium'
 import longAP from './longAP'
 import nebra from './nebra'
 import rak from './rak'
+import sensecap from './sensecap'
 import syncrobit from './syncrobit'
 import { LangType, supportedLangs } from '../utils/i18n/i18nTypes'
 import { HotspotMakerLangField } from './hotspotMakerTypes'
@@ -16,6 +17,7 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
   longAP,
   nebra,
   rak,
+  sensecap,
   syncrobit,
 }
 
@@ -26,6 +28,7 @@ export const HotspotMakerModels = {
   ...longAP.hotspots,
   ...nebra.hotspots,
   ...rak.hotspots,
+  ...sensecap.hotspots,
   ...syncrobit.hotspots,
 }
 
@@ -37,6 +40,7 @@ export const AntennaModels = {
   ...longAP.antennas,
   ...nebra.antennas,
   ...rak.antennas,
+  ...sensecap.antennas,
   ...syncrobit.antennas,
 }
 
