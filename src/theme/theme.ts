@@ -86,7 +86,7 @@ const textVariants = {
   h1: {
     fontFamily: Font.main.semiBold,
     fontSize: 40,
-    lineHeight: 45.5,
+    lineHeight: 39,
     color: 'primaryText',
   },
   h1s: {
@@ -318,7 +318,6 @@ export const theme = createTheme({
       borderRadius: 'm',
     },
     light: {
-      backgroundColor: 'grayBox',
       fontFamily: Font.main.regular,
       fontSize: 18,
       color: 'black',
