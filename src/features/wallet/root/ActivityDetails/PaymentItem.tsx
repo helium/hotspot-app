@@ -21,6 +21,7 @@ type Props = {
     | 'antenna'
     | 'elevation'
   isMyAccount?: boolean
+  isMemo?: boolean
 }
 const PaymentItem = ({
   text,
@@ -30,6 +31,7 @@ const PaymentItem = ({
   mode,
   title,
   isMyAccount,
+  isMemo = false,
 }: Props) => {
   const { t } = useTranslation()
 
@@ -62,7 +64,7 @@ const PaymentItem = ({
         flex={1}
         marginHorizontal="ms"
       >
-        <Address address={text} />
+        {isMemo ? <Text selectable>{text}</Text> : <Address address={text} />}
         {(isMyAccount || subText) && (
           <Text
             variant="light"
