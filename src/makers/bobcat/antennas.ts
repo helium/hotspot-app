@@ -1,4 +1,4 @@
-import { MakerAntenna } from './antennaMakerTypes'
+import { MakerAntenna } from '../antennaMakerTypes'
 
 const BOBCAT = {
   name: 'Bobcat Miner 300 (All)',

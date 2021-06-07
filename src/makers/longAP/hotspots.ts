@@ -1,6 +1,6 @@
 import HotspotIcon from '@assets/images/longap-one.svg'
-import { MakerHotspot } from './hotspotMakerTypes'
-import ANTENNAS from '../antennas/longAP'
+import { MakerHotspot } from '../hotspotMakerTypes'
+import ANTENNAS from './antennas'
 
 const LONGAP_ONE = {
   name: 'LongAP One Hotspot',

@@ -1,4 +1,4 @@
-import { MakerAntenna } from './antennaMakerTypes'
+import { MakerAntenna } from '../antennaMakerTypes'
 
 const RAK_US = {
   name: 'RAK Hotspot Miner (US 915)',

@@ -1,7 +1,7 @@
 import IndoorHotspotIcon from '@assets/images/nebra-in.svg'
 import OutdoorHotspotIcon from '@assets/images/nebra-out.svg'
-import { MakerHotspot } from './hotspotMakerTypes'
-import ANTENNAS from '../antennas/nebra'
+import { MakerHotspot } from '../hotspotMakerTypes'
+import ANTENNAS from './antennas'
 
 const NEBRA_INDOOR = {
   name: 'Nebra Indoor Hotspot',

@@ -1,4 +1,4 @@
-import { MakerAntenna } from './antennaMakerTypes'
+import { MakerAntenna } from '../antennaMakerTypes'
 
 const LONG_AP_ONE_EU = {
   name: 'LongAP One (EU 868)',

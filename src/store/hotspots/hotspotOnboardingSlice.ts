@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { MakerAntenna } from '../../makers/antennas/antennaMakerTypes'
-import { HotspotType } from '../../makers/hotspots'
+import { MakerAntenna } from '../../makers/antennaMakerTypes'
+import { HotspotType } from '../../makers'
 
 export type HotspotOnboardingState = {
   hotspotType?: HotspotType

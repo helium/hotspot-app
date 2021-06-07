@@ -27,7 +27,7 @@ import { locale } from '../../../utils/i18n'
 import useAlert from '../../../utils/useAlert'
 import usePrevious from '../../../utils/usePrevious'
 import { getSyncStatus, SyncStatus } from '../../../utils/hotspotUtils'
-import { getMakerSupportEmail } from '../../../utils/stakingClient'
+import { getMakerSupportEmail } from '../../../makers'
 
 type Info = {
   percentSynced: number

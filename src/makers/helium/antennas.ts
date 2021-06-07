@@ -1,4 +1,4 @@
-import { MakerAntenna } from './antennaMakerTypes'
+import { MakerAntenna } from '../antennaMakerTypes'
 
 const HELIUM_US = {
   name: 'Helium Hotspot (US 915)',

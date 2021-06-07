@@ -1,6 +1,6 @@
 import HotspotIcon from '@assets/images/bobcat.svg'
-import { MakerHotspot } from './hotspotMakerTypes'
-import ANTENNAS from '../antennas/bobcat'
+import { MakerHotspot } from '../hotspotMakerTypes'
+import ANTENNAS from './antennas'
 
 const BOBCAT_MINER_300 = {
   name: 'Bobcat Miner 300',

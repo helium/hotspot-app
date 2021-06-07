@@ -1,4 +1,4 @@
-import { MakerAntenna } from './antennaMakerTypes'
+import { MakerAntenna } from '../antennaMakerTypes'
 
 const FINESTRA_US = {
   name: 'Finestra Miner (US 915)',

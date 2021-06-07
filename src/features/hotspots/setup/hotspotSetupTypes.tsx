@@ -1,5 +1,5 @@
 import { StackNavigationProp } from '@react-navigation/stack'
-import { HotspotType } from '../../../makers/hotspots'
+import { HotspotType } from '../../../makers'
 import { HotspotConnectStatus } from '../../../utils/useHotspot'
 
 export type HotspotSetupStackParamList = {

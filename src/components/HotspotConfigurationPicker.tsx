@@ -13,8 +13,8 @@ import TouchableOpacityBox from './TouchableOpacityBox'
 import InfoIcon from '../assets/images/info-hollow.svg'
 import { decimalSeparator, groupSeparator, locale } from '../utils/i18n'
 import { useColors } from '../theme/themeHooks'
-import { AntennaModelKeys, AntennaModels } from '../makers/antennas'
-import { MakerAntenna } from '../makers/antennas/antennaMakerTypes'
+import { AntennaModelKeys, AntennaModels } from '../makers'
+import { MakerAntenna } from '../makers/antennaMakerTypes'
 
 type Props = {
   onAntennaUpdated: (antenna: MakerAntenna) => void

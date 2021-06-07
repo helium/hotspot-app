@@ -1,6 +1,6 @@
 import HotspotIcon from '@assets/images/rak.svg'
-import { MakerHotspot } from './hotspotMakerTypes'
-import ANTENNAS from '../antennas/rak'
+import { MakerHotspot } from '../hotspotMakerTypes'
+import ANTENNAS from './antennas'
 
 const RAK_V1 = {
   name: 'RAK Hotspot',

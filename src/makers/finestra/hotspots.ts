@@ -1,6 +1,6 @@
 import HotspotIcon from '@assets/images/finestra.svg'
-import { MakerHotspot } from './hotspotMakerTypes'
-import ANTENNAS from '../antennas/finestra'
+import { MakerHotspot } from '../hotspotMakerTypes'
+import ANTENNAS from './antennas'
 
 const FINESTRA_MINER = {
   name: 'Finestra Miner',

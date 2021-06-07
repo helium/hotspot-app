@@ -1,8 +1,8 @@
 import HotspotIcon from '@assets/images/syncrobit.svg'
-import { MakerHotspot } from './hotspotMakerTypes'
-import ANTENNAS from '../antennas/syncrobit'
+import { MakerHotspot } from '../hotspotMakerTypes'
+import ANTENNAS from './antennas'
 
-const Helium = {
+const Syncrobit = {
   name: 'SyncroB.it Hotspot',
   icon: HotspotIcon,
   translations: {
@@ -61,4 +61,4 @@ const Helium = {
   },
 } as MakerHotspot
 
-export default { Helium }
+export default { Syncrobit }
