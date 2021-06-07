@@ -136,16 +136,6 @@ export default {
     selection: {
       title: 'Hotspot\n선택.',
       subtitle: '어떤 종류의 Hotspot을\n추가하시겠어요?',
-      helium: 'Helium Hotspot',
-      rak: 'RAK Hotspot Miner',
-      nebrain: 'Nebra Indoor Hotspot',
-      nebraout: 'Nebra Outdoor Hotspot',
-      bobcat: 'Bobcat Miner 300',
-      syncrobit: 'SyncroB.it Hotspot',
-      third_party_header: '기타 Hotspot',
-      helium_edition: 'Helium Network의 경우',
-      fine_print:
-        'RAK Hotspot Miner에는 RAK가 사전 로드한 특수 펌웨어가 설치되어 있습니다. 계속하기 전에 하드웨어가 RAK Hotspot Miner인지 다시 확인하세요.',
     },
     education: {
       title: 'Hotspot\n배치.',
@@ -175,62 +165,13 @@ export default {
     },
     diagnostics: {
       title: '진단 도구',
-      p_1:
-        '<b><white>Helium은 진단 지원을 통해 안전한 방법으로 Hotspot에서 발생하는 문제를 식별할 수 있습니다.</white></b>\n\nHelium은 개인 키에 대한 액세스 권한이 없으며 네트워크 내의 다른 기기를 제외하고 Hotspot에만 액세스할 수 있습니다.\n\n진단 지원을 선택 취소하려면 Hotspot을 구매할 때 사용한 이메일을 통해 <purple><b>support@helium.com</b></purple>으로 이메일을 보내주시기 바랍니다.',
-      nebra_p_1:
-        '<b><white>Nebra LTD는 진단 지원을 통해 안전한 방법으로 Hotspot에서 발생하는 문제를 식별할 수 있습니다.</white></b>\n\nNebra는 개인 키에 대한 액세스 권한이 없으며 네트워크 내의 다른 기기를 제외하고 Hotspot에만 액세스할 수 있습니다.\n\n진단 지원을 선택 취소하려면 Hotspot을 구매할 때 사용한 이메일을 통해 <purple><b>support@nebra.com</b></purple>으로 이메일을 보내주시기 바랍니다.',
-      bobcat_p_1:
-        '<b><white>Bobcat은 진단 지원을 통해 안전한 방법으로 Hotspot에서 발생하는 문제를 식별할 수 있습니다.</white></b>\n\nBobcat은 개인 키에 대한 액세스 권한이 없으며 네트워크 내의 다른 기기를 제외하고 Hotspot에만 액세스할 수 있습니다.\n\n진단 지원을 선택 취소하려면 Hotspot을 구매할 때 사용한 이메일을 통해 <purple><b>support@bobcatminer.com</b></purple>으로 이메일을 보내주시기 바랍니다.',
-      syncrobit_p_1:
-        '<b><white>SyncroB.it는 진단 지원을 통해 안전한 방법으로 Hotspot에서 발생하는 문제를 식별할 수 있습니다.</white></b>\n\nSyncroB.it는 개인 키에 대한 액세스 권한이 없으며 네트워크 내의 다른 기기를 제외하고 Hotspot에만 액세스할 수 있습니다.\n\n진단 지원을 선택 취소하려면 Hotspot을 구매할 때 사용한 이메일을 통해 <purple><b>support@syncrob.it</b></purple>로 이메일을 보내주시기 바랍니다.',
     },
     power: {
       title: '전원 켜기',
       next: '전원을 켰습니다',
-      helium_subtitle_1: '안테나를 부착하고 제공된 전원 어댑터에 연결합니다.',
-      rak_subtitle_1: '제공된 전원 어댑터를 창가 부근의 콘센트에 연결합니다.',
-      nebrain_subtitle_1:
-        '안테나를 부착하고 창가 부근의 제공된 어댑터에 연결합니다.',
-      nebraout_subtitle_1: '안테나를 부착하고 적합한 전원에 연결합니다.',
-      bobcat_subtitle_1:
-        '제공된 전원 어댑터를 창가 부근의 콘센트에 연결하고 제공된 안테나를 Hotspot 뒷면에 나사로 고정합니다.',
-      syncrobit_subtitle_1: '안테나를 부착하고 기기를 연결합니다.',
-      helium_subtitle_2:
-        'Hotspot이 부팅되고 준비되면 표시등이 녹색으로 바뀝니다.',
-      rak_subtitle_2:
-        '전원이 켜지면 RAK Hotspot Miner에 빨간색 LED 표시등이 표시됩니다.',
-      nebrain_subtitle_2:
-        '전원이 켜지면 Nebra Indoor Hotspot에 초록색 LED 표시등이 표시됩니다.',
-      nebraout_subtitle_2:
-        '전원이 켜지면 Nebra Outdoor Hotspot에 여러 개의 표시등이 표시됩니다.',
-      bobcat_subtitle_2:
-        '표시등이 빨간색에서 노란색으로 바뀌면 Hotspot이 준비된 것입니다.',
-      syncrobit_subtitle_2:
-        '전원이 켜지면 SyncroB.it Hotspot에 LED 바가 파란색으로 표시됩니다.',
     },
     pair: {
       title: 'Bluetooth',
-      helium_subtitle_1:
-        'Hotspot에서 검은색 버튼을 누르세요. 표시등이 파란색으로 바뀝니다.',
-      rak_subtitle_1: 'RAK Hotspot Miner에는 페어링 버튼이 없습니다.',
-      nebrain_subtitle_1:
-        '표시등이 깜빡거릴 때까지 Nebra Indoor Hotspot의 뒷면에 있는 버튼을 누르세요.',
-      nebraout_subtitle_1: 'Nebra Outdoor Hotspot에는 페어링 버튼이 없습니다.',
-      bobcat_subtitle_1:
-        '제공된 핀을 사용하여 Hotspot 뒷면의 BT 버튼을 5초 동안 누르세요.',
-      syncrobit_subtitle_1: 'SyncroB.it Hotspot에는 페어링 버튼이 없습니다.',
-      helium_subtitle_2:
-        '계속하기 전에 휴대전화의 Bluetooth가 켜져 있는지 확인하세요',
-      rak_subtitle_2:
-        'RAK Hotspot Miner의 전원이 켜진 후 5분 동안 Bluetooth가 자동으로 활성화됩니다.\n\nHotspot이 완전히 부팅되는 데 최대 1분이 소요될 수 있습니다.',
-      nebrain_subtitle_2:
-        'LED가 천천히 깜박이면서 페어링할 준비가 된 것입니다.\n\n다음을 눌러 스캔합니다.',
-      nebraout_subtitle_2:
-        'Nebra Outdoor Hotspot의 전원이 켜진 후 10분 동안 Bluetooth가 자동으로 활성화됩니다.\n\nHotspot이 완전히 부팅되는 데 최대 1분이 소요될 수 있습니다.',
-      bobcat_subtitle_2:
-        '표시등이 노란색에서 파란색으로 바뀌면 Hotspot이 페어링할 준비가 된 것입니다.\n\n휴대전화의 Bluetooth가 켜져 있는지 확인하세요!',
-      syncrobit_subtitle_2:
-        'SyncroB.it Hotspot의 전원이 켜진 후 5분 동안 Bluetooth가 자동으로 활성화됩니다.\n\nHotspot이 완전히 부팅되는 데 최대 1분이 소요될 수 있습니다.',
       alert_no_permissions: {
         title: 'Bluetooth 승인',
         body:

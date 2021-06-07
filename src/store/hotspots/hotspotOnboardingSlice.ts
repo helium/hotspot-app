@@ -1,12 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Antenna } from '../../constants/antennas'
-import { HotspotType } from '../connectedHotspot/connectedHotspotSlice'
+import { MakerAntenna } from '../../makers/antennas/antennaMakerTypes'
+import { HotspotType } from '../../makers/hotspots'
 
 export type HotspotOnboardingState = {
   hotspotType?: HotspotType
   elevation?: number
   gain?: number
-  antenna?: Antenna
+  antenna?: MakerAntenna
   hotspotCoords?: number[]
   locationName?: string
 }
@@ -25,7 +25,7 @@ const hotspotOnboardingSlice = createSlice({
     setGain(state, action: PayloadAction<number>) {
       state.gain = action.payload
     },
-    setAntenna(state, action: PayloadAction<Antenna>) {
+    setAntenna(state, action: PayloadAction<MakerAntenna>) {
       state.antenna = action.payload
     },
     setHotspotCoords(state, action: PayloadAction<number[]>) {

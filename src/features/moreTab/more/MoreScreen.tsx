@@ -29,9 +29,9 @@ import DiscordItem from './DiscordItem'
 import AppInfoItem from './AppInfoItem'
 import activitySlice from '../../../store/activity/activitySlice'
 import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
-import { SUPPORTED_LANGUAGUES } from '../../../utils/i18n'
 import { useLanguageContext } from '../../../providers/LanguageProvider'
 import { EXPLORER_BASE_URL } from '../../../utils/config'
+import { SUPPORTED_LANGUAGUES } from '../../../utils/i18n/i18nTypes'
 
 type Route = RouteProp<RootStackParamList & MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {

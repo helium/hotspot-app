@@ -28,7 +28,7 @@ import { getOnboardingRecord } from '../../../../utils/stakingClient'
 import useSubmitTxn from '../../../../hooks/useSubmitTxn'
 import { decimalSeparator, groupSeparator } from '../../../../utils/i18n'
 import { calculateAssertLocFee } from '../../../../utils/fees'
-import { Antenna } from '../../../../constants/antennas'
+import { MakerAntenna } from '../../../../makers/antennas/antennaMakerTypes'
 
 type Props = {
   onClose: () => void
@@ -43,7 +43,7 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
   const submitTxn = useSubmitTxn()
   const navigation = useNavigation()
   const [state, setState] = useState<State>('antenna')
-  const [antenna, setAntenna] = useState<Antenna>()
+  const [antenna, setAntenna] = useState<MakerAntenna>()
   const [gain, setGain] = useState<number>()
   const [elevation, setElevation] = useState<number>(0)
   const [location, setLocation] = useState<Coords>()
@@ -252,7 +252,7 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
             {t('hotspot_settings.reassert.antenna_details')}
           </Text>
           <Text variant="body1Medium" color="grayLightText" marginBottom="s">
-            {t(`antennas.${antenna?.id}`)}
+            {antenna?.name}
           </Text>
           <Text
             variant="body1Medium"

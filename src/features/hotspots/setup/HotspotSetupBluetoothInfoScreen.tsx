@@ -90,7 +90,7 @@ const HotspotSetupBluetoothInfoScreen = () => {
           textAlign="center"
           color="white"
         >
-          {t(`hotspot_setup.pair.${hotspotType.toLowerCase()}_subtitle_1`)}
+          {t(`makerHotspot.${hotspotType}.bluetooth.0`)}
         </Text>
         <Text
           maxFontSizeMultiplier={1.05}
@@ -100,7 +100,7 @@ const HotspotSetupBluetoothInfoScreen = () => {
           numberOfLines={8}
           adjustsFontSizeToFit
         >
-          {t(`hotspot_setup.pair.${hotspotType.toLowerCase()}_subtitle_2`)}
+          {t(`makerHotspot.${hotspotType}.bluetooth.1`)}
         </Text>
       </Box>
       <DebouncedButton
