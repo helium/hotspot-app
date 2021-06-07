@@ -14,7 +14,11 @@ import {
   TransferHotspotV1,
 } from '@helium/http'
 import { useTranslation } from 'react-i18next'
-import Balance, { DataCredits, NetworkTokens } from '@helium/currency'
+import Balance, {
+  CurrencyType,
+  DataCredits,
+  NetworkTokens,
+} from '@helium/currency'
 import { startCase } from 'lodash'
 import { useSelector } from 'react-redux'
 import { useColors } from '../../../theme/themeHooks'
@@ -268,7 +272,13 @@ const useActivityItem = (
 
     const pendingTxn = item as PendingTransaction
     if (pendingTxn.txn !== undefined) {
-      return formatAmount('-', pendingTxn.txn.fee)
+      if (pendingTxn.txn.fee instanceof Balance) {
+        return formatAmount('-', pendingTxn.txn.fee)
+      }
+      return formatAmount(
+        '-',
+        new Balance(pendingTxn.txn.fee, CurrencyType.dataCredit),
+      )
     }
 
     return formatAmount('-', (item as AddGatewayV1).fee)
