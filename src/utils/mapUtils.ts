@@ -1,5 +1,5 @@
 import { Hotspot } from '@helium/http'
-import { Feature } from 'geojson'
+import { Feature, Position } from 'geojson'
 import { NetworkHotspot } from '../store/networkHotspots/networkHotspotsSlice'
 
 export const hotspotsToFeatures = (
@@ -52,4 +52,25 @@ export const findBounds = (coords: number[][]): MapBounds | undefined => {
     paddingRight: 30,
     paddingTop: 30,
   }
+}
+
+export const boundsToFeature = (bounds: Position[] | undefined): Feature => {
+  if (!bounds) return { type: 'Feature' } as Feature
+  return {
+    type: 'Feature',
+    geometry: {
+      type: 'Polygon',
+      coordinates: bounds
+        ? [
+            [
+              [bounds[0][0], bounds[0][1]],
+              [bounds[0][0], bounds[1][1]],
+              [bounds[1][0], bounds[1][1]],
+              [bounds[1][0], bounds[0][1]],
+              [bounds[0][0], bounds[0][1]],
+            ],
+          ]
+        : [],
+    },
+  } as Feature
 }

@@ -5,6 +5,7 @@ import geojson2h3 from 'geojson2h3'
 import { StyleProp } from 'react-native'
 import { Colors } from '../theme/theme'
 import { useColors } from '../theme/themeHooks'
+import { boundsToFeature } from '../utils/mapUtils'
 
 type Props = {
   bounds?: Position[]
@@ -32,37 +33,17 @@ const H3Grid = ({
 
   const boundingBox = useMemo(() => {
     if (zoomLevel < 11) return { type: 'Feature' } as Feature
-    return {
-      type: 'Feature',
-      geometry: {
-        type: 'Polygon',
-        coordinates: bounds
-          ? [
-              [
-                [bounds[0][0], bounds[0][1]],
-                [bounds[0][0], bounds[1][1]],
-                [bounds[1][0], bounds[1][1]],
-                [bounds[1][0], bounds[0][1]],
-                [bounds[0][0], bounds[0][1]],
-              ],
-            ]
-          : [],
-      },
-    } as Feature
+    return boundsToFeature(bounds)
   }, [bounds, zoomLevel])
 
   const sourceSet = useMemo(() => {
-    if (zoomLevel < 11)
+    if (!bounds || !visible || zoomLevel < 11)
       return { type: 'FeatureCollection', features: [] } as FeatureCollection
     const hexagons = geojson2h3.featureToH3Set(boundingBox, res)
     return geojson2h3.h3SetToFeatureCollection(hexagons, (h3Index) => ({
       id: h3Index,
     }))
-  }, [boundingBox, res, zoomLevel])
-
-  if (!bounds || !visible) {
-    return null
-  }
+  }, [boundingBox, bounds, res, visible, zoomLevel])
 
   return (
     <MapboxGL.ShapeSource id="h3Grid" shape={sourceSet}>

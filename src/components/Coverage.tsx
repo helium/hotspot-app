@@ -9,11 +9,12 @@ import { h3ToParent } from 'h3-js'
 import React, { memo, useCallback, useMemo } from 'react'
 import { StyleProp } from 'react-native'
 import { Hotspot } from '@helium/http'
-import { Feature, Position } from 'geojson'
+import { Position } from 'geojson'
 import geojson2h3 from 'geojson2h3'
 import { DiscoveryResponse } from '../store/discovery/discoveryTypes'
 import { Colors } from '../theme/theme'
 import { useColors } from '../theme/themeHooks'
+import { boundsToFeature } from '../utils/mapUtils'
 
 export type HexProperties = {
   avg_reward_scale: number
@@ -64,23 +65,7 @@ const Coverage = ({
   witnesses,
 }: Props) => {
   const boundingBox = useMemo(() => {
-    return {
-      type: 'Feature',
-      geometry: {
-        type: 'Polygon',
-        coordinates: bounds
-          ? [
-              [
-                [bounds[0][0], bounds[0][1]],
-                [bounds[0][0], bounds[1][1]],
-                [bounds[1][0], bounds[1][1]],
-                [bounds[1][0], bounds[0][1]],
-                [bounds[0][0], bounds[0][1]],
-              ],
-            ]
-          : [],
-      },
-    } as Feature
+    return boundsToFeature(bounds)
   }, [bounds])
 
   const sourceSet = useMemo(() => {

@@ -241,7 +241,7 @@ const HotspotsView = ({
       const result = (await dispatch(fetchHotspotsForHex({ hexId }))) as {
         payload?: Hotspot[]
       }
-      if (result && result.payload && result.payload.length) {
+      if (result?.payload?.length) {
         showHotspotDetails(result.payload[0] as Hotspot)
       }
     },
