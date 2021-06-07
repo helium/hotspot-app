@@ -174,10 +174,6 @@ export default {
     },
     qrScan: {
       title: 'Scan QR Code',
-      subtitle: {
-        longappro:
-          'Visit dashboard.longap.com/onboard or the local management-console to generate a QR-code',
-      },
       wallet_address: 'Your wallet address is:',
     },
     qrConfirm: {

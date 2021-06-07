@@ -5,6 +5,7 @@ import ANTENNAS from './antennas'
 const FINESTRA_MINER = {
   name: 'Finestra Miner',
   icon: HotspotIcon,
+  onboardType: 'BLE',
   translations: {
     en: {
       diagnostic:

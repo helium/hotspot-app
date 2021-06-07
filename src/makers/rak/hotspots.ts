@@ -4,6 +4,7 @@ import ANTENNAS from './antennas'
 
 const RAK_V1 = {
   name: 'RAK Hotspot',
+  onboardType: 'QR',
   translations: {
     en: {
       diagnostic:
@@ -60,6 +61,7 @@ const RAK_V1 = {
 
 // const RAK_V2 = {
 //   name: 'RAK v2 Hotspot',
+//   onboardType:'QR',
 //   translations: {
 //     en: {
 //       diagnostic: 'Placeholder',

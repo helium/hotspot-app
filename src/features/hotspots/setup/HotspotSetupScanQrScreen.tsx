@@ -92,7 +92,7 @@ const HotspotSetupScanQrScreen = () => {
         maxFontSizeMultiplier={1}
         marginVertical={{ smallPhone: 's', phone: 'l' }}
       >
-        {t(`hotspot_setup.qrScan.subtitle.${params.hotspotType.toLowerCase()}`)}
+        {t(`makerHotspot.${params.hotspotType}.qr.0`)}
       </Text>
       <Text
         variant="subtitle"
