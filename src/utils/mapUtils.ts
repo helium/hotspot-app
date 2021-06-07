@@ -55,7 +55,6 @@ export const findBounds = (coords: number[][]): MapBounds | undefined => {
 }
 
 export const boundsToFeature = (bounds: Position[] | undefined): Feature => {
-  if (!bounds) return { type: 'Feature' } as Feature
   return {
     type: 'Feature',
     geometry: {
