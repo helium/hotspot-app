@@ -17,6 +17,7 @@ export const AntennaModels = {
   ...rak,
   ...syncrobit,
 }
+
 export type AntennaType = keyof typeof AntennaModels
 export const AntennaModelKeys = Object.keys(
   AntennaModels,
