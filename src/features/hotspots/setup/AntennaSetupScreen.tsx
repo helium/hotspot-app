@@ -15,7 +15,9 @@ import HotspotConfigurationPicker from '../../../components/HotspotConfiguration
 import hotspotOnboardingSlice from '../../../store/hotspots/hotspotOnboardingSlice'
 import { useAppDispatch } from '../../../store/store'
 import { RootState } from '../../../store/rootReducer'
-import { Antenna, Antennas } from '../../../constants/antennas'
+import { MakerAntenna } from '../../../makers/antennas/antennaMakerTypes'
+import Helium from '../../../makers/antennas/helium'
+import { HotspotMakerModels } from '../../../makers/hotspots'
 
 const AntennaSetupScreen = () => {
   const { t } = useTranslation()
@@ -29,32 +31,22 @@ const AntennaSetupScreen = () => {
   const defaultAntenna = useMemo(() => {
     const country = getCountry()
     const isUS = country === 'US'
-    switch (hotspotType) {
-      default:
-      case 'Helium':
-        return isUS ? Antennas.helium_us : Antennas.helium_eu
-      case 'NEBRAIN':
-        return Antennas.nebra_indoor
-      case 'NEBRAOUT':
-        return Antennas.nebra_outdoor
-      case 'RAK':
-        return isUS ? Antennas.rak_hotspot_us : Antennas.rak_hotspot_eu
-      case 'Bobcat':
-        return Antennas.bobcat
-      case 'SYNCROBIT':
-        return isUS ? Antennas.syncrobit_us : Antennas.syncrobit_eu
-      case 'LONGAPONE':
-        return Antennas.longapone_eu
-      case 'Finestra':
-        return Antennas.finestra_us
-    }
+    const makerAntenna = HotspotMakerModels[hotspotType || 'Helium'].antenna
+    const ant =
+      isUS && makerAntenna?.us ? makerAntenna.us : makerAntenna?.default
+
+    if (!ant) return isUS ? Helium.HELIUM_US : Helium.HELIUM_EU
+
+    return ant
   }, [hotspotType])
 
-  const [antenna, setAntenna] = useState<Antenna>(defaultAntenna)
+  const [antenna, setAntenna] = useState<MakerAntenna>(defaultAntenna)
   const [gain, setGain] = useState<number>(defaultAntenna.gain)
   const [elevation, setElevation] = useState<number>(0)
 
   const navNext = useCallback(async () => {
+    if (!antenna) return
+
     dispatch(hotspotOnboardingSlice.actions.setElevation(elevation))
     dispatch(hotspotOnboardingSlice.actions.setGain(gain))
     dispatch(hotspotOnboardingSlice.actions.setAntenna(antenna))

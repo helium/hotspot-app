@@ -136,16 +136,6 @@ export default {
     selection: {
       title: 'Hotspotを\n選択してください。',
       subtitle: 'どのような種類のHotspotを\n追加しますか？',
-      helium: 'Helium Hotspot',
-      rak: 'RAK Hotspot Miner',
-      nebrain: 'Nebra Indoor Hotspot',
-      nebraout: 'Nebra Outdoor Hotspot',
-      bobcat: 'Bobcat Miner 300',
-      syncrobit: 'SyncroB.it Hotspot',
-      third_party_header: 'その他のHotspot',
-      helium_edition: 'Helium Network向け',
-      fine_print:
-        'RAK Hotspot MinerにはRAKによって事前に読み込まれた特別なファームウェアがあります。続行する前に、ハードウェアがRAK Hotspot Minerであることを再確認してください。',
     },
     education: {
       title: 'Hotspotを\n配置しています。',
@@ -175,66 +165,13 @@ export default {
     },
     diagnostics: {
       title: '診断',
-      p_1:
-        '<b><white>診断サポートにより、HeliumはHotspotの問題を安全な方法で特定できます。</white></b>\n\nHeliumが秘密キーにアクセスすることはありません。お使いのHotspotにのみアクセスし、ネットワーク上の他のデバイスにはアクセスしません。\n\n診断サポートをオプトアウトする場合は、Hotspotの購入時に使用したメールアドレスを使用して、<purple><b>support@helium.com</b></purple>までメールでご連絡ください。',
-      nebra_p_1:
-        '<b><white>診断サポートにより、Nebra LTDはHotspotの問題を安全な方法で特定できます。</white></b>\n\nNebraが秘密キーにアクセスすることはありません。お使いのHotspotにのみアクセスし、ネットワーク上の他のデバイスにはアクセスしません。\n\n診断サポートをオプトアウトする場合は、Hotspotの購入時に使用したメールアドレスを使用して、<purple><b>support@nebra.com</b></purple>までメールでご連絡ください。',
-      bobcat_p_1:
-        '<b><white>診断サポートにより、BobcatはHotspotの問題を安全な方法で特定できます。</white></b>\n\nBobcatが秘密キーにアクセスすることはありません。お使いのHotspotにのみアクセスし、ネットワーク上の他のデバイスにはアクセスしません。\n\n診断サポートをオプトアウトする場合は、Hotspotの購入時に使用したメールアドレスを使用して、<purple><b>support@bobcatminer.com</b></purple>までメールでご連絡ください。',
-      syncrobit_p_1:
-        '<b><white>診断サポートにより、SyncroB.itはHotspotの問題を安全な方法で特定できます。</white></b>\n\nSyncroB.itが秘密キーにアクセスすることはありません。お使いのHotspotにのみアクセスし、ネットワーク上の他のデバイスにはアクセスしません。\n\n診断サポートをオプトアウトする場合は、Hotspotの購入時に使用したメールアドレスを使用して、<purple><b>support@syncrob.it</b></purple>までメールでご連絡ください。',
     },
     power: {
       title: '電源オン',
       next: '電源が入っています',
-      helium_subtitle_1:
-        'アンテナを取り付け、付属の電源アダプターに差し込みます。',
-      rak_subtitle_1:
-        '付属の電源アダプターを窓の近くにあるコンセントに差し込みます。',
-      nebrain_subtitle_1:
-        'アンテナを取り付け、窓の近くにある付属の電源アダプターに差し込みます。',
-      nebraout_subtitle_1: 'アンテナを取り付け、適切な電源に接続します。',
-      bobcat_subtitle_1:
-        '付属の電源アダプターを窓の近くにあるコンセントに差し込み、Hotspotの背面に付属のアンテナを回して取り付けます。',
-      syncrobit_subtitle_1: 'アンテナを取り付けてデバイスに差し込みます',
-      helium_subtitle_2:
-        'Hotspotが起動し、準備が完了するとライトが緑色になります。',
-      rak_subtitle_2:
-        'RAK Hotspot Minerの電源がオンになると、赤いLEDライトが点きます。',
-      nebrain_subtitle_2:
-        'Nebra Indoor Hotspotの電源を入れると、緑色のLEDが点灯します。',
-      nebraout_subtitle_2:
-        'Nebra Outdoor Hotspotの電源を入れると、複数のLEDが点灯します。',
-      bobcat_subtitle_2:
-        'Hotspotの準備が整うと、LEDの色が赤から黄色に変わります。',
-      syncrobit_subtitle_2:
-        'SyncroB.it Hotspotの電源を入れると、LEDバーが青色で点灯します。',
     },
     pair: {
       title: 'Bluetooth',
-      helium_subtitle_1:
-        'Hotspotの黒いボタンを押します。ライトが青に変わります。',
-      rak_subtitle_1: 'RAK Hotspot Minerにペアリングボタンはありません。',
-      nebrain_subtitle_1:
-        'Nebra Indoor Hotspotの背面にあるボタンを、点滅し始めるまで押し続けます。',
-      nebraout_subtitle_1:
-        'Nebra Outdoor Hotspotにペアリングボタンはありません。',
-      bobcat_subtitle_1:
-        '付属のピンを使用して、Hotspotの背面にあるBTボタンを押し、そのまま5秒間押し続けます。',
-      syncrobit_subtitle_1:
-        'SyncroB.it Hotspotにペアリングボタンはありません。',
-      helium_subtitle_2:
-        '続行する前に携帯電話のBluetoothがオンになっていることを確認します',
-      rak_subtitle_2:
-        'RAK Hotspot Minerの電源がオンになると、自動的にBluetoothが5分間有効になります。\n\nHotspotが完全に起動するまでに最大で1分かかる場合があります。',
-      nebrain_subtitle_2:
-        'ペアリングの準備が整うと、LEDがゆっくりと点滅します。\n\n「次へ」を押してスキャンします。',
-      nebraout_subtitle_2:
-        'Nebra Outdoor Hotspotの電源がオンになると、自動的にBluetoothが10分間有効になります。\n\nHotspotが完全に起動するまでに最大で1分かかる場合があります。',
-      bobcat_subtitle_2:
-        'Hotspotのペアリングの準備が整うと、LEDの色が黄色から青色に変わります。\n\n携帯電話のBluetoothがオンになっていることを確認してください。',
-      syncrobit_subtitle_2:
-        'SyncroB.it Hotspotの電源がオンになると、自動的にBluetoothが5分間有効になります。\n\nHotspotが完全に起動するまでに最大で1分かかる場合があります。',
       alert_no_permissions: {
         title: 'Bluetoothのアクセスを許可',
         body:

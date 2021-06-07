@@ -6,14 +6,15 @@ import { Edge } from 'react-native-safe-area-context'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
-import {
-  HotspotType,
-  HotspotTypeKeys,
-} from '../../../store/connectedHotspot/connectedHotspotSlice'
 import HotspotSelectionListItem from './HotspotSelectionListItem'
 import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
 import hotspotOnboardingSlice from '../../../store/hotspots/hotspotOnboardingSlice'
 import { useAppDispatch } from '../../../store/store'
+import {
+  HotspotType,
+  HotspotTypeCount,
+  HotspotModelKeys,
+} from '../../../makers/hotspots'
 
 const ItemSeparatorComponent = () => (
   <Box height={1} backgroundColor="primaryBackground" />
@@ -43,7 +44,7 @@ const HotspotSetupSelectionScreen = () => {
   const renderItem = useCallback(
     ({ item, index }) => {
       const isFirst = index === 0
-      const isLast = index === HotspotTypeKeys.length - 1
+      const isLast = index === HotspotTypeCount - 1
       return (
         <HotspotSelectionListItem
           isFirst={isFirst}
@@ -77,7 +78,7 @@ const HotspotSetupSelectionScreen = () => {
       </Text>
       <FlatList
         ItemSeparatorComponent={ItemSeparatorComponent}
-        data={HotspotTypeKeys}
+        data={HotspotModelKeys}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         ListFooterComponent={<Box height={32} />}

@@ -23,26 +23,6 @@ const HotspotSetupDiagnosticsScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
 
-  const diagnosticTextKey = () => {
-    switch (params.hotspotType) {
-      default:
-      case 'Helium':
-      case 'RAK':
-        return 'hotspot_setup.diagnostics.p_1'
-      case 'NEBRAIN':
-      case 'NEBRAOUT':
-        return 'hotspot_setup.diagnostics.nebra_p_1'
-      case 'Bobcat':
-        return 'hotspot_setup.diagnostics.bobcat_p_1'
-      case 'SYNCROBIT':
-        return 'hotspot_setup.diagnostics.syncrobit_p_1'
-      case 'LONGAPONE':
-        return 'hotspot_setup.diagnostics.longap_p_1'
-      case 'Finestra':
-        return 'hotspot_setup.diagnostics.finestra_p_1'
-    }
-  }
-
   return (
     <BackScreen backgroundColor="primaryBackground" paddingHorizontal="lx">
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -61,7 +41,7 @@ const HotspotSetupDiagnosticsScreen = () => {
             maxFontSizeMultiplier={1.1}
             variant="subtitle"
             marginTop="m"
-            i18nKey={diagnosticTextKey()}
+            i18nKey={t(`makerHotspot.${params.hotspotType}.diagnostic`)}
           />
         </Box>
       </ScrollView>
