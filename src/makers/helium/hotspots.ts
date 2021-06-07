@@ -1,6 +1,6 @@
 import HotspotIcon from '@assets/images/hotspot.svg'
-import { MakerHotspot } from './hotspotMakerTypes'
-import ANTENNAS from '../antennas/helium'
+import { MakerHotspot } from '../hotspotMakerTypes'
+import ANTENNAS from './antennas'
 
 const Helium = {
   name: 'Helium Hotspot',

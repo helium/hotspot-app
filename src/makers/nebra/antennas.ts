@@ -1,4 +1,4 @@
-import { MakerAntenna } from './antennaMakerTypes'
+import { MakerAntenna } from '../antennaMakerTypes'
 
 const NEBRA_INDOOR = {
   name: 'Nebra Indoor Hotspot',

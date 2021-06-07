@@ -1,6 +1,6 @@
 import { SvgProps } from 'react-native-svg'
-import { LangType } from '../../utils/i18n/i18nTypes'
-import { MakerAntenna } from '../antennas/antennaMakerTypes'
+import { LangType } from '../utils/i18n/i18nTypes'
+import { MakerAntenna } from './antennaMakerTypes'
 
 export type HotspotMakerLangField = 'diagnostic' | 'power' | 'bluetooth'
 

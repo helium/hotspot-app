@@ -1,4 +1,4 @@
-import { MakerAntenna } from './antennaMakerTypes'
+import { MakerAntenna } from '../antennaMakerTypes'
 
 const CUSTOM = {
   name: 'Custom Antenna',

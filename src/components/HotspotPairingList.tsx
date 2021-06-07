@@ -8,7 +8,7 @@ import Text from './Text'
 import { DebouncedTouchableHighlightBox } from './TouchableHighlightBox'
 import { useColors, useSpacing } from '../theme/themeHooks'
 import CarotRight from '../assets/images/carot-right.svg'
-import { HotspotMakerModels, HotspotModelKeys } from '../makers/hotspots'
+import { HotspotMakerModels, HotspotModelKeys } from '../makers'
 
 const HotspotPairingList = ({
   hotspots,

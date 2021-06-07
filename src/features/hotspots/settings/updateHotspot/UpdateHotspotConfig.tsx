@@ -28,7 +28,7 @@ import { getOnboardingRecord } from '../../../../utils/stakingClient'
 import useSubmitTxn from '../../../../hooks/useSubmitTxn'
 import { decimalSeparator, groupSeparator } from '../../../../utils/i18n'
 import { calculateAssertLocFee } from '../../../../utils/fees'
-import { MakerAntenna } from '../../../../makers/antennas/antennaMakerTypes'
+import { MakerAntenna } from '../../../../makers/antennaMakerTypes'
 
 type Props = {
   onClose: () => void

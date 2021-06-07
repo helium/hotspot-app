@@ -7,7 +7,7 @@ import ko from '../../locales/ko'
 import ja from '../../locales/ja'
 import zh from '../../locales/zh'
 import { getSecureItem, setSecureItem } from '../secureAccount'
-import { getTranslations } from '../../makers/hotspots'
+import { getTranslations } from '../../makers'
 
 const locales = RNLocalize.getLocales()
 

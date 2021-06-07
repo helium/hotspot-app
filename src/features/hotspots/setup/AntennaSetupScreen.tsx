@@ -15,9 +15,9 @@ import HotspotConfigurationPicker from '../../../components/HotspotConfiguration
 import hotspotOnboardingSlice from '../../../store/hotspots/hotspotOnboardingSlice'
 import { useAppDispatch } from '../../../store/store'
 import { RootState } from '../../../store/rootReducer'
-import { MakerAntenna } from '../../../makers/antennas/antennaMakerTypes'
-import Helium from '../../../makers/antennas/helium'
-import { HotspotMakerModels } from '../../../makers/hotspots'
+import { MakerAntenna } from '../../../makers/antennaMakerTypes'
+import Helium from '../../../makers/helium'
+import { HotspotMakerModels } from '../../../makers'
 
 const AntennaSetupScreen = () => {
   const { t } = useTranslation()

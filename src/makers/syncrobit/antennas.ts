@@ -1,4 +1,4 @@
-import { MakerAntenna } from './antennaMakerTypes'
+import { MakerAntenna } from '../antennaMakerTypes'
 
 const SYNCROBIT_US = {
   name: 'Syncrob.it (US 915)',
