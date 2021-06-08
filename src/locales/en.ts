@@ -94,6 +94,7 @@ export default {
   generic: {
     clear: 'Clear',
     done: 'Done',
+    readMore: 'Read More',
     understand: 'I understand',
     blocks: 'Blocks',
     active: 'Active',
@@ -789,6 +790,11 @@ export default {
       title: 'Hotspot is Relayed',
       message:
         "Hotspot's connection is being relayed through another Hotspot on the network which may affect mining. To take a Hotspot out of Relay, please visit the troubleshooting guide.",
+    },
+    reward_scale_prompt: {
+      title: 'Transmit Scale',
+      message:
+        "When this Hotspot transmits a beacon, any Hotspots that hear it will have its mining rewards scaled by this number. This Hotspot's Challengee reward will also scale by this number.",
     },
   },
   transfer: {

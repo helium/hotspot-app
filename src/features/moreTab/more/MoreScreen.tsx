@@ -32,6 +32,7 @@ import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
 import { useLanguageContext } from '../../../providers/LanguageProvider'
 import { EXPLORER_BASE_URL } from '../../../utils/config'
 import { SUPPORTED_LANGUAGUES } from '../../../utils/i18n/i18nTypes'
+import Articles from '../../../constants/articles'
 
 type Route = RouteProp<RootStackParamList & MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
@@ -215,12 +216,11 @@ const MoreScreen = () => {
         data: [
           {
             title: t('more.sections.learn.tokenEarnings'),
-            openUrl:
-              'https://docs.helium.com/blockchain/mining/#how-do-hotspots-earn-helium-tokens',
+            openUrl: Articles.Token_Earnings,
           },
           {
             title: t('more.sections.learn.heliumtoken'),
-            openUrl: 'https://docs.helium.com/blockchain/helium-token',
+            openUrl: Articles.Helium_Token,
           },
           {
             title: t('more.sections.learn.coverage'),
@@ -228,7 +228,7 @@ const MoreScreen = () => {
           },
           {
             title: t('more.sections.learn.troubleshooting'),
-            openUrl: 'https://docs.helium.com',
+            openUrl: Articles.Docs_Root,
           },
         ],
         footer: <DiscordItem />,
