@@ -43,9 +43,16 @@ const FINESTRA_MINER = {
       ],
     },
     zh: {
-      diagnostic: '',
-      power: ['', ''],
-      bluetooth: ['', ''],
+      diagnostic:
+        '<b><white>Hotspot 诊断支持帮助 Finestra 安全确认您的 Hotspot 问题。</white></b>\n\nFinestra 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@thefinestra.com</b></purple>。',
+      power: [
+        '连接天线并就近接通电源。',
+        '开机后，Finestra Miner 将亮起蓝色 LED 指示灯。',
+      ],
+      bluetooth: [
+        'Finestra Miner 开机后，蓝牙会自动启用 5 分钟。\n\nHotspot 最多需要 1 分钟即可完全启动。',
+        '经过 5 分钟后，按下 Finestra Miner 侧边按钮可启用蓝牙',
+      ],
     },
   },
   antenna: {

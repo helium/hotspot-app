@@ -43,9 +43,16 @@ const LONGAP_ONE = {
       ],
     },
     zh: {
-      diagnostic: '',
-      power: ['', ''],
-      bluetooth: ['', ''],
+      diagnostic:
+        '<b><white>Hotspot 诊断支持帮助 LongAP 安全确认您的 Hotspot 问题。</white></b>\n\nLongAP 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@longap.com</b></purple>。',
+      power: [
+        '连接天线并接通电源。',
+        '开机后，LongAP One 将亮起 LED 电源指示灯。',
+      ],
+      bluetooth: [
+        '使用回形针轻按 LED 指示灯右侧的小孔。',
+        'LED 电源指示灯变成缓慢闪烁后，\n\n按“下一步”开始扫描。',
+      ],
     },
   },
   antenna: {
