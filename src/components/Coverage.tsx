@@ -6,7 +6,7 @@ import MapboxGL, {
   SymbolLayerStyle,
 } from '@react-native-mapbox-gl/maps'
 import { h3ToParent } from 'h3-js'
-import React, { memo, useCallback, useEffect, useMemo } from 'react'
+import React, { memo, useCallback, useMemo } from 'react'
 import { StyleProp } from 'react-native'
 import { Hotspot } from '@helium/http'
 import { Position } from 'geojson'
@@ -29,6 +29,7 @@ type HexColors = {
 }
 type Props = {
   bounds?: Position[]
+  mapZoom: number
   witnessColors?: HexColors
   networkColors?: HexColors
   selectedOutlineColor?: Colors
@@ -42,6 +43,7 @@ type Props = {
 
 const Coverage = ({
   bounds,
+  mapZoom,
   networkColors = {
     fill: 'grayText',
     outline: 'offblack',
@@ -58,11 +60,9 @@ const Coverage = ({
   selectedOutlineWidth = 5,
   witnesses,
 }: Props) => {
-  useEffect(() => {}, [witnesses])
-
   const boundingBox = useMemo(() => {
-    return boundsToFeature(bounds)
-  }, [bounds])
+    return boundsToFeature(mapZoom < 11 ? undefined : bounds)
+  }, [bounds, mapZoom])
 
   const sourceSet = useMemo(() => {
     const hexagons = geojson2h3.featureToH3Set(boundingBox, 8)
@@ -88,7 +88,6 @@ const Coverage = ({
       colors.blueDarkest,
       1,
       colors[witnessColors.fill],
-      colors[witnessColors.outline],
       colors[networkColors.fill],
       colors[networkColors.outline],
       colors[selectedOutlineColor],
@@ -108,7 +107,6 @@ const Coverage = ({
     selectedOutlineColor,
     selectedOutlineWidth,
     witnessColors.fill,
-    witnessColors.outline,
     witnesses,
   ])
 
@@ -186,7 +184,6 @@ const makeStyles = (
   gridLineColor: string,
   gridLineWidth: number,
   witnessFillColor: string,
-  witnessOutlineColor: string,
   networkFillColor: string,
   networkOutlineColor: string,
   selectedOutlineColor: string,

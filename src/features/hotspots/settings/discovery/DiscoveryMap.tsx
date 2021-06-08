@@ -42,6 +42,7 @@ const DiscoveryMap = ({
   const mapRef = useRef<MapboxGL.MapView>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
   const [mapBounds, setMapBounds] = useState<Position[]>()
+  const [mapZoom, setMapZoom] = useState(0)
   const visible = useVisible({
     onDisappear: () => {
       if (!isAndroid) return
@@ -81,8 +82,10 @@ const DiscoveryMap = ({
   }, [mapLoaded, responses, visible])
 
   const onRegionDidChange = useCallback(async () => {
+    const zoom = (await mapRef.current?.getZoom()) || 0
     const currentBounds = await mapRef.current?.getVisibleBounds()
     setMapBounds(currentBounds)
+    setMapZoom(zoom)
   }, [])
 
   const defaultSettings = useMemo(
@@ -113,6 +116,7 @@ const DiscoveryMap = ({
           {showCoverage && (
             <Coverage
               bounds={mapBounds}
+              mapZoom={mapZoom}
               onHexSelected={onSelectHex}
               selectedHexId={selectedHexId}
               witnesses={responses}
