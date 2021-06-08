@@ -68,7 +68,7 @@ const NetworkCoverage = ({
           id="hexagonFill"
           sourceID="tileServerH3"
           sourceLayerID="public.h3_res8"
-          minZoomLevel={10}
+          minZoomLevel={9}
           style={showRewardScale ? styles.rewardFill : styles.hexagonFill}
         />
       </MapboxGL.VectorSource>

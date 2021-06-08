@@ -46,16 +46,8 @@ const NetworkPointCoverage = ({
 
   const commonStyles = useMemo(
     (): CircleLayerStyle => ({
-      circleRadius: ['interpolate', ['exponential', 1], ['zoom'], 10, 6, 0, 2],
-      circleOpacity: [
-        'interpolate',
-        ['exponential', 1],
-        ['zoom'],
-        10,
-        0.2,
-        0,
-        0,
-      ],
+      circleRadius: ['interpolate', ['linear'], ['zoom'], 1, 1.5, 9, 4],
+      circleOpacity: ['interpolate', ['linear'], ['zoom'], 1, 0.02, 9, 0.2],
     }),
     [],
   )
@@ -114,7 +106,7 @@ const NetworkPointCoverage = ({
         id="hotspotPoints"
         sourceID="tileServerPoints"
         sourceLayerID="public.points"
-        maxZoomLevel={10}
+        maxZoomLevel={9}
         style={showRewardScale ? rewardScaleStyle : defaultCircleStyle}
       />
     </MapboxGL.VectorSource>
