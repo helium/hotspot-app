@@ -170,6 +170,7 @@ const DiscoveryModeResultsCard = ({
       right={0}
       minHeight={410}
       justifyContent="flex-end"
+      pointerEvents="box-none"
     >
       {!!selectedHotspots?.length && (
         <ContentPill
