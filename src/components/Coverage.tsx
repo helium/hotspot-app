@@ -6,7 +6,7 @@ import MapboxGL, {
   SymbolLayerStyle,
 } from '@react-native-mapbox-gl/maps'
 import { h3ToParent } from 'h3-js'
-import React, { memo, useCallback, useMemo } from 'react'
+import React, { memo, useCallback, useEffect, useMemo } from 'react'
 import { StyleProp } from 'react-native'
 import { Hotspot } from '@helium/http'
 import { Position } from 'geojson'
@@ -33,12 +33,9 @@ type Props = {
   networkColors?: HexColors
   selectedOutlineColor?: Colors
   fillOpacity?: number
-  visible?: boolean
   selectedHexId?: string
   outlineWidth?: number
   selectedOutlineWidth?: number
-  outline?: boolean
-  showCount?: boolean
   witnesses?: CoverageItem[]
   onHexSelected?: (id: string) => void
 }
@@ -56,14 +53,13 @@ const Coverage = ({
   selectedOutlineColor = 'white',
   fillOpacity = 0.5,
   onHexSelected,
-  visible = true,
   selectedHexId,
   outlineWidth = 2,
   selectedOutlineWidth = 5,
-  outline = true,
-  showCount = false,
   witnesses,
 }: Props) => {
+  useEffect(() => {}, [witnesses])
+
   const boundingBox = useMemo(() => {
     return boundsToFeature(bounds)
   }, [bounds])
@@ -108,12 +104,12 @@ const Coverage = ({
     networkColors.fill,
     networkColors.outline,
     outlineWidth,
-    selectedOutlineWidth,
+    selectedHexId,
     selectedOutlineColor,
+    selectedOutlineWidth,
     witnessColors.fill,
     witnessColors.outline,
     witnesses,
-    selectedHexId,
   ])
 
   const onPress = useCallback(
@@ -133,9 +129,6 @@ const Coverage = ({
     [selectedHexId],
   )
 
-  if (!visible) {
-    return null
-  }
   return (
     <>
       <MapboxGL.ShapeSource id="h3Grid" shape={sourceSet}>
@@ -156,39 +149,35 @@ const Coverage = ({
           sourceLayerID="public.h3_res8"
           style={styles.fill}
         />
-        {outline && (
-          <MapboxGL.LineLayer
-            id="hexagonLine"
-            sourceID="tileServer"
-            sourceLayerID="public.h3_res8"
-            style={styles.outline}
-          />
-        )}
-        {outline && (
-          <MapboxGL.LineLayer
-            id="hexagonSelectedLine"
-            sourceID="tileServerSelectedOutline"
-            sourceLayerID="public.h3_res8"
-            style={styles.outlineSelected}
-            filter={selectedFilter}
-          />
-        )}
+        <MapboxGL.LineLayer
+          id="hexagonLine"
+          sourceID="tileServer"
+          sourceLayerID="public.h3_res8"
+          minZoomLevel={10}
+          style={styles.outline}
+        />
+        <MapboxGL.LineLayer
+          id="hexagonSelectedLine"
+          sourceID="tileServerSelectedOutline"
+          sourceLayerID="public.h3_res8"
+          style={styles.outlineSelected}
+          filter={selectedFilter}
+          minZoomLevel={10}
+        />
       </MapboxGL.VectorSource>
-      {showCount && (
-        <MapboxGL.VectorSource
-          id="tileServerPoints"
-          url="https://helium-hotspots.s3-us-west-2.amazonaws.com/public.points.json"
-          onPress={onPress}
-        >
-          <MapboxGL.SymbolLayer
-            id="hotspotCount"
-            sourceID="tileServerPoints"
-            sourceLayerID="public.points"
-            minZoomLevel={11}
-            style={styles.text}
-          />
-        </MapboxGL.VectorSource>
-      )}
+      <MapboxGL.VectorSource
+        id="tileServerPoints"
+        url="https://helium-hotspots.s3-us-west-2.amazonaws.com/public.points.json"
+        onPress={onPress}
+      >
+        <MapboxGL.SymbolLayer
+          id="hotspotCount"
+          sourceID="tileServerPoints"
+          sourceLayerID="public.points"
+          minZoomLevel={11}
+          style={styles.text}
+        />
+      </MapboxGL.VectorSource>
     </>
   )
 }

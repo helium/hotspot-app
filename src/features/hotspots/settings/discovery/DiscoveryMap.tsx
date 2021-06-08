@@ -113,7 +113,6 @@ const DiscoveryMap = ({
           {showCoverage && (
             <Coverage
               bounds={mapBounds}
-              showCount
               onHexSelected={onSelectHex}
               selectedHexId={selectedHexId}
               witnesses={responses}
