@@ -106,7 +106,7 @@ const DiscoveryMap = ({
             ref={cameraRef}
             defaultSettings={defaultSettings}
             maxZoomLevel={12}
-            minZoomLevel={10}
+            minZoomLevel={8}
             followUserLocation={responses.length === 0}
           />
 
