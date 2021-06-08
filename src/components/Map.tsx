@@ -295,7 +295,7 @@ const Map = ({
           hexes={selectedHex ? [selectedHex] : []}
           outline
           outlineColor={colors.white}
-          outlineWidth={2}
+          outlineWidth={4}
         />
         <NetworkCoverage
           onHexSelected={onHexPress}

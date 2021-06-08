@@ -251,11 +251,21 @@ const HotspotsView = ({
   const handlePresentDetails = useCallback(
     () => async (hotspot: Hotspot) => {
       if (hotspot.location) {
-        await onMapHexSelected(h3ToParent(hotspot.location, 8))
+        const mapHexId = h3ToParent(hotspot.location, 8)
+        const hotspots = (await dispatch(
+          fetchHotspotsForHex({ hexId: mapHexId }),
+        )) as {
+          payload?: Hotspot[]
+        }
+        const index = hotspots?.payload?.findIndex(
+          (h) => h?.address === hotspot.address,
+        )
+        setSelectedHexId(mapHexId)
+        setSelectedHotspotIndex(index || 0)
       }
       showHotspotDetails(hotspot)
     },
-    [onMapHexSelected, showHotspotDetails],
+    [dispatch, showHotspotDetails],
   )
 
   const handleSelectPlace = useCallback(

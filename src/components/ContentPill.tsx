@@ -7,10 +7,17 @@ import React, {
   useMemo,
   useState,
   useEffect,
+  useRef,
 } from 'react'
-import { StyleProp, ViewProps, ViewStyle } from 'react-native'
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  StyleProp,
+  ViewStyle,
+} from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
 import { SvgProps } from 'react-native-svg'
+import LinearGradient from 'react-native-linear-gradient'
 import { Colors, Theme } from '../theme/theme'
 import { useBorderRadii, useColors, useSpacing } from '../theme/themeHooks'
 import animateTransition from '../utils/animateTransition'
@@ -30,7 +37,7 @@ type Props = BoxProps<Theme> & {
   data: ContentPillItem[]
   selectedIndex: number
   onPressItem: (index: number) => void
-  contentContainerStyle?: StyleProp<ViewProps>
+  contentContainerStyle?: ViewStyle
   style?: ViewStyle
 }
 
@@ -43,6 +50,9 @@ const ContentPill = ({
   ...boxProps
 }: Props) => {
   const [viewWidth, setViewWidth] = useState(0)
+  const [showLeftGradiant, setShowLeftGradiant] = useState(false)
+  const [showRightGradiant, setShowRightGradiant] = useState(false)
+  const flatListRef = useRef(null)
 
   const colors = useColors()
   const spacing = useSpacing()
@@ -52,6 +62,20 @@ const ContentPill = ({
     (index: number) => () => onPressItem(index),
     [onPressItem],
   )
+
+  useMemo(() => {
+    setShowRightGradiant(data.length >= 6)
+  }, [data.length])
+
+  useMemo(() => {
+    if (flatListRef && flatListRef.current) {
+      const ref = flatListRef?.current as any
+      ref?.scrollToIndex({
+        animated: true,
+        index: selectedIndex,
+      })
+    }
+  }, [selectedIndex])
 
   const renderItem = useCallback(
     ({ index, item }: { index: number; item: ContentPillItem }) => {
@@ -86,16 +110,21 @@ const ContentPill = ({
       borderRadius: radii.round,
       overflow: 'hidden',
       padding: spacing.xs,
-    } as StyleProp<ViewProps>
+    } as ViewStyle
 
-    if (contentContainerStyle) return [defaultStyle, contentContainerStyle]
+    if (contentContainerStyle) {
+      return { ...defaultStyle, ...contentContainerStyle } as ViewStyle
+    }
 
     return defaultStyle
   }, [contentContainerStyle, radii.round, spacing.xs])
 
   useEffect(() => {
-    let padding = 0
-    if (listContentStyle && 'padding' in listContentStyle) {
+    let padding: string | number = 0
+    if (
+      listContentStyle?.padding &&
+      typeof listContentStyle.padding === 'number'
+    ) {
       padding = listContentStyle.padding
     }
     const nextWidth = data.length * 40 + padding * 2
@@ -104,6 +133,31 @@ const ContentPill = ({
     animateTransition('ContentPill.AnimateWidth')
     setViewWidth(nextWidth)
   }, [data.length, listContentStyle, viewWidth])
+
+  const getItemLayout = (
+    flatListData: Array<ContentPillItem> | null | undefined,
+    index: number,
+  ) => {
+    const length = flatListData?.length || 0
+    return {
+      length,
+      offset: length * index,
+      index,
+    }
+  }
+
+  const closeToEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    return (
+      event.nativeEvent.layoutMeasurement.width +
+        event.nativeEvent.contentOffset.x >=
+      event.nativeEvent.contentSize.width
+    )
+  }
+
+  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    setShowLeftGradiant(event.nativeEvent.contentOffset.x > 0)
+    setShowRightGradiant(!closeToEnd(event))
+  }
 
   return (
     <Box
@@ -117,15 +171,48 @@ const ContentPill = ({
       {...boxProps}
     >
       <FlatList
+        ref={flatListRef}
+        getItemLayout={getItemLayout}
         contentContainerStyle={listContentStyle}
         horizontal
+        onScroll={onScroll}
         showsHorizontalScrollIndicator={false}
         data={data}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
       />
+      {showLeftGradiant && (
+        <LinearGradient {...leftGradientProps} pointerEvents="none" />
+      )}
+      {showRightGradiant && (
+        <LinearGradient {...rightGradientProps} pointerEvents="none" />
+      )}
     </Box>
   )
+}
+
+const leftGradientProps = {
+  style: {
+    width: 75,
+    height: '100%',
+    position: 'absolute',
+    left: 0,
+  } as StyleProp<ViewStyle>,
+  start: { x: 0, y: 0 },
+  end: { x: 1, y: 0 },
+  colors: ['rgba(255,255,255,1)', 'rgba(255,255,255,0)'],
+}
+
+const rightGradientProps = {
+  style: {
+    width: 75,
+    height: '100%',
+    position: 'absolute',
+    right: 0,
+  } as StyleProp<ViewStyle>,
+  start: { x: 0, y: 0 },
+  end: { x: 1, y: 0 },
+  colors: ['rgba(255,255,255,0)', 'rgba(255,255,255,1)'],
 }
 
 export default memo(ContentPill)
