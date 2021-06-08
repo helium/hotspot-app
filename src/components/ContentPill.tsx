@@ -13,7 +13,6 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
   StyleProp,
-  ViewProps,
   ViewStyle,
 } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
@@ -38,7 +37,7 @@ type Props = BoxProps<Theme> & {
   data: ContentPillItem[]
   selectedIndex: number
   onPressItem: (index: number) => void
-  contentContainerStyle?: StyleProp<ViewProps>
+  contentContainerStyle?: ViewStyle
   style?: ViewStyle
 }
 
@@ -111,18 +110,22 @@ const ContentPill = ({
       borderRadius: radii.round,
       overflow: 'hidden',
       padding: spacing.xs,
-    } as StyleProp<ViewProps>
+    } as ViewStyle
 
-    if (contentContainerStyle) return [defaultStyle, contentContainerStyle]
+    if (contentContainerStyle) {
+      return { ...defaultStyle, ...contentContainerStyle } as ViewStyle
+    }
 
     return defaultStyle
   }, [contentContainerStyle, radii.round, spacing.xs])
 
   useEffect(() => {
-    let padding = 0
-    if (listContentStyle && 'padding' in listContentStyle) {
-      const style = listContentStyle as any
-      padding = style?.padding
+    let padding: string | number = 0
+    if (
+      listContentStyle?.padding &&
+      typeof listContentStyle.padding === 'number'
+    ) {
+      padding = listContentStyle.padding
     }
     const nextWidth = data.length * 40 + padding * 2
     if (nextWidth === viewWidth) return
