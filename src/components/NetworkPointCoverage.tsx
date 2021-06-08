@@ -31,6 +31,7 @@ const NetworkPointCoverage = ({
 
   const numberStyle = useMemo(
     (): StyleProp<SymbolLayerStyle> => ({
+      textFont: ['Inter Semi Bold'],
       textField: '{hotspot_count}',
       textColor: [
         'case',
