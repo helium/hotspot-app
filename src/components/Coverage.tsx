@@ -29,22 +29,21 @@ type HexColors = {
 }
 type Props = {
   bounds?: Position[]
+  mapZoom: number
   witnessColors?: HexColors
   networkColors?: HexColors
   selectedOutlineColor?: Colors
   fillOpacity?: number
-  visible?: boolean
   selectedHexId?: string
   outlineWidth?: number
   selectedOutlineWidth?: number
-  outline?: boolean
-  showCount?: boolean
   witnesses?: CoverageItem[]
   onHexSelected?: (id: string) => void
 }
 
 const Coverage = ({
   bounds,
+  mapZoom,
   networkColors = {
     fill: 'grayText',
     outline: 'offblack',
@@ -56,17 +55,14 @@ const Coverage = ({
   selectedOutlineColor = 'white',
   fillOpacity = 0.5,
   onHexSelected,
-  visible = true,
   selectedHexId,
   outlineWidth = 2,
   selectedOutlineWidth = 5,
-  outline = true,
-  showCount = false,
   witnesses,
 }: Props) => {
   const boundingBox = useMemo(() => {
-    return boundsToFeature(bounds)
-  }, [bounds])
+    return boundsToFeature(mapZoom < 11 ? undefined : bounds)
+  }, [bounds, mapZoom])
 
   const sourceSet = useMemo(() => {
     const hexagons = geojson2h3.featureToH3Set(boundingBox, 8)
@@ -92,7 +88,6 @@ const Coverage = ({
       colors.blueDarkest,
       1,
       colors[witnessColors.fill],
-      colors[witnessColors.outline],
       colors[networkColors.fill],
       colors[networkColors.outline],
       colors[selectedOutlineColor],
@@ -108,12 +103,11 @@ const Coverage = ({
     networkColors.fill,
     networkColors.outline,
     outlineWidth,
-    selectedOutlineWidth,
-    selectedOutlineColor,
-    witnessColors.fill,
-    witnessColors.outline,
-    witnesses,
     selectedHexId,
+    selectedOutlineColor,
+    selectedOutlineWidth,
+    witnessColors.fill,
+    witnesses,
   ])
 
   const onPress = useCallback(
@@ -133,9 +127,6 @@ const Coverage = ({
     [selectedHexId],
   )
 
-  if (!visible) {
-    return null
-  }
   return (
     <>
       <MapboxGL.ShapeSource id="h3Grid" shape={sourceSet}>
@@ -156,39 +147,35 @@ const Coverage = ({
           sourceLayerID="public.h3_res8"
           style={styles.fill}
         />
-        {outline && (
-          <MapboxGL.LineLayer
-            id="hexagonLine"
-            sourceID="tileServer"
-            sourceLayerID="public.h3_res8"
-            style={styles.outline}
-          />
-        )}
-        {outline && (
-          <MapboxGL.LineLayer
-            id="hexagonSelectedLine"
-            sourceID="tileServerSelectedOutline"
-            sourceLayerID="public.h3_res8"
-            style={styles.outlineSelected}
-            filter={selectedFilter}
-          />
-        )}
+        <MapboxGL.LineLayer
+          id="hexagonLine"
+          sourceID="tileServer"
+          sourceLayerID="public.h3_res8"
+          minZoomLevel={10}
+          style={styles.outline}
+        />
+        <MapboxGL.LineLayer
+          id="hexagonSelectedLine"
+          sourceID="tileServerSelectedOutline"
+          sourceLayerID="public.h3_res8"
+          style={styles.outlineSelected}
+          filter={selectedFilter}
+          minZoomLevel={10}
+        />
       </MapboxGL.VectorSource>
-      {showCount && (
-        <MapboxGL.VectorSource
-          id="tileServerPoints"
-          url="https://helium-hotspots.s3-us-west-2.amazonaws.com/public.points.json"
-          onPress={onPress}
-        >
-          <MapboxGL.SymbolLayer
-            id="hotspotCount"
-            sourceID="tileServerPoints"
-            sourceLayerID="public.points"
-            minZoomLevel={11}
-            style={styles.text}
-          />
-        </MapboxGL.VectorSource>
-      )}
+      <MapboxGL.VectorSource
+        id="tileServerPoints"
+        url="https://helium-hotspots.s3-us-west-2.amazonaws.com/public.points.json"
+        onPress={onPress}
+      >
+        <MapboxGL.SymbolLayer
+          id="hotspotCount"
+          sourceID="tileServerPoints"
+          sourceLayerID="public.points"
+          minZoomLevel={11}
+          style={styles.text}
+        />
+      </MapboxGL.VectorSource>
     </>
   )
 }
@@ -197,7 +184,6 @@ const makeStyles = (
   gridLineColor: string,
   gridLineWidth: number,
   witnessFillColor: string,
-  witnessOutlineColor: string,
   networkFillColor: string,
   networkOutlineColor: string,
   selectedOutlineColor: string,
