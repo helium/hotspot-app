@@ -30,6 +30,23 @@ const LONGAP_ONE = {
         '電源LEDがゆっくりと点滅します。\n\n「次へ」を押してスキャンします。',
       ],
     },
+    ko: {
+      diagnostic:
+        '<b><white>LongAP는 진단 지원을 통해 안전한 방법으로 Hotspot에서 발생하는 문제를 식별할 수 있습니다.</white></b>\n\n LongAP는 개인 키에 대한 액세스 권한이 없으며 네트워크 내의 다른 장치를 제외하고 Hotspot에만 액세스할 수 있습니다.\n\n진단 지원 선택을 취소하려면 Hotspot을 구매할 때 사용한 이메일을 통해<purple><b> support@longap.com</b></purple>으로 이메일을 보내주시기 바랍니다.',
+      power: [
+        '안테나를 부착하고 제공된 전원 어댑터에 연결합니다.',
+        '전원이 켜지면 LongAP One PWR LED가 켜집니다.',
+      ],
+      bluetooth: [
+        '종이 클립을 사용하여 LED 오른쪽의 작은 구멍에 있는 버튼을 짧게 누릅니다.',
+        '전원 LED가 천천히 깜박이면\n\n’다음’을 눌러 스캔합니다.',
+      ],
+    },
+    zh: {
+      diagnostic: '',
+      power: ['', ''],
+      bluetooth: ['', ''],
+    },
   },
   antenna: {
     default: ANTENNAS.LONG_AP_ONE_EU,

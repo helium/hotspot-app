@@ -30,6 +30,23 @@ const FINESTRA_MINER = {
         'Finestra Minerの側面にあるボタンを押すと、5分後にBluetoothが有効になります',
       ],
     },
+    ko: {
+      diagnostic:
+        '<b><white>Finestra는 진단 지원을 통해 안전한 방법으로 Hotspot에서 발생하는 문제를 식별할 수 있습니다.</white></b>\n\nFinestra는 개인 키에 대한 액세스 권한이 없으며 네트워크 내의 다른 장치를 제외하고 Hotspot에만 액세스할 수 있습니다.\n\n진단 지원 선택을 취소하려면 Hotspot을 구매할 때 사용한 이메일을 통해 <purple><b>support@thefinestra.com</b></purple>으로 이메일을 보내주시기 바랍니다.',
+      power: [
+        '안테나를 부착하고 창가 부근에 제공된 전원 어댑터를 연결합니다.',
+        '전원이 켜지면 Finestra Miner에 파란색 LED 표시등이 켜집니다.',
+      ],
+      bluetooth: [
+        'Finestra Miner의 전원이 켜진 후 5분 동안 Bluetooth가 자동으로 활성화됩니다.\n\nHotspot이 완전히 부팅되는 데 최대 1분이 소요될 수 있습니다.',
+        'Finestra Miner 측면에 있는 버튼을 눌러 5분 후에 Bluetooth를 활성화할 수 있습니다.',
+      ],
+    },
+    zh: {
+      diagnostic: '',
+      power: ['', ''],
+      bluetooth: ['', ''],
+    },
   },
   antenna: {
     default: ANTENNAS.FINESTRA_US,
