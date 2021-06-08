@@ -7,6 +7,7 @@ import React, {
   useMemo,
   useState,
   useEffect,
+  useRef,
 } from 'react'
 import {
   NativeScrollEvent,
@@ -52,6 +53,7 @@ const ContentPill = ({
   const [viewWidth, setViewWidth] = useState(0)
   const [showLeftGradiant, setShowLeftGradiant] = useState(false)
   const [showRightGradiant, setShowRightGradiant] = useState(false)
+  const flatListRef = useRef(null)
 
   const colors = useColors()
   const spacing = useSpacing()
@@ -65,6 +67,16 @@ const ContentPill = ({
   useMemo(() => {
     setShowRightGradiant(data.length >= 6)
   }, [data.length])
+
+  useMemo(() => {
+    if (flatListRef && flatListRef.current) {
+      const ref = flatListRef?.current as any
+      ref?.scrollToIndex({
+        animated: true,
+        index: selectedIndex,
+      })
+    }
+  }, [selectedIndex])
 
   const renderItem = useCallback(
     ({ index, item }: { index: number; item: ContentPillItem }) => {
@@ -109,7 +121,8 @@ const ContentPill = ({
   useEffect(() => {
     let padding = 0
     if (listContentStyle && 'padding' in listContentStyle) {
-      padding = listContentStyle.padding
+      const style = listContentStyle as any
+      padding = style?.padding
     }
     const nextWidth = data.length * 40 + padding * 2
     if (nextWidth === viewWidth) return
@@ -117,6 +130,18 @@ const ContentPill = ({
     animateTransition('ContentPill.AnimateWidth')
     setViewWidth(nextWidth)
   }, [data.length, listContentStyle, viewWidth])
+
+  const getItemLayout = (
+    flatListData: Array<ContentPillItem> | null | undefined,
+    index: number,
+  ) => {
+    const length = flatListData?.length || 0
+    return {
+      length,
+      offset: length * index,
+      index,
+    }
+  }
 
   const closeToEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     return (
@@ -143,12 +168,13 @@ const ContentPill = ({
       {...boxProps}
     >
       <FlatList
+        ref={flatListRef}
+        getItemLayout={getItemLayout}
         contentContainerStyle={listContentStyle}
         horizontal
         onScroll={onScroll}
         showsHorizontalScrollIndicator={false}
         data={data}
-        initialScrollIndex={selectedIndex}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
       />

@@ -107,8 +107,6 @@ const HotspotsViewHeader = ({
     [hexHotspots, onHotspotSelected],
   )
 
-  console.log(selectedHotspotIndex)
-
   return (
     <Animated.View style={style}>
       <Box padding="xs" flexDirection="row" alignItems="center">
