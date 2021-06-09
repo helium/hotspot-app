@@ -37,10 +37,12 @@ export const generateRewardScaleColor = (rewardScale: number): Colors => {
   return 'redMain'
 }
 
-export const isRelay = (listen_addrs: string[]) => {
+export const isRelay = (listenAddrs: string[]) => {
+  const IP = /ip4/g
+
   return !!(
-    listen_addrs &&
-    listen_addrs.length > 0 &&
-    listen_addrs[0].match('p2p-circuit')
+    listenAddrs &&
+    listenAddrs.length > 0 &&
+    !listenAddrs.find((a) => a.match(IP))
   )
 }
