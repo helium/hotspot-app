@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useState } from 'react'
-import { Modal } from 'react-native'
+import { Modal, ScrollView } from 'react-native'
 import { useSelector } from 'react-redux'
 import CloseModal from '@assets/images/closeModal.svg'
 import MapHex from '@assets/images/map-hex.svg'
@@ -186,7 +186,7 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
           backgroundColor="grayBox"
           visible={selected}
         >
-          <RewardScaling width={300} />
+          <RewardScaling width="90%" />
         </Box>
       </TouchableOpacityBox>
     )
@@ -203,6 +203,8 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
         return 'greenOnline'
     }
   }, [selectedFilter])
+
+  const buttonTextStyle = useMemo(() => ({ color: '#FFFFFF' }), [])
 
   return (
     <Modal
@@ -251,17 +253,20 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
             {t('map_filter.title')}
           </Text>
         </Box>
-        <Box padding="m">
-          <YourHotspots />
-          <Witnesses />
-          <Rewards />
-        </Box>
+        <ScrollView showsHorizontalScrollIndicator={false}>
+          <Box padding="m">
+            <YourHotspots />
+            <Witnesses />
+            <Rewards />
+          </Box>
+        </ScrollView>
         <Box flex={1} justifyContent="flex-end" paddingHorizontal="m">
           <Button
             onPress={onChooseFilter}
             mode="contained"
             title={t('map_filter.button')}
             backgroundColor={buttonColor}
+            textStyle={buttonTextStyle}
           />
         </Box>
       </SafeAreaBox>
