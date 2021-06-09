@@ -46,6 +46,7 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
     const selected = selectedFilter === MapFilters.owned
     return (
       <TouchableOpacityBox
+        disabled={selected}
         onPress={() => {
           animateTransition('MapFilterModal.hotspotsFilter')
           setSelectedFilter(MapFilters.owned)
@@ -56,10 +57,12 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
       >
         <Box flexDirection="row" justifyContent="space-between">
           <Box>
-            <Text variant="h5" color="black">
+            <Text variant="h5" color="black" maxFontSizeMultiplier={1.3}>
               {t('map_filter.your_hotspots.title')}
             </Text>
-            <Text color="grayText">{t('map_filter.your_hotspots.body')}</Text>
+            <Text color="grayText" maxFontSizeMultiplier={1.3}>
+              {t('map_filter.your_hotspots.body')}
+            </Text>
           </Box>
           <Box visible={selected}>
             <Checkmark color="#1D91F8" />
@@ -80,7 +83,7 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
             paddingHorizontal="m"
           >
             <MapHex color="#A667F6" />
-            <Text paddingTop="xs">
+            <Text paddingTop="xs" maxFontSizeMultiplier={1.3}>
               {t('map_filter.your_hotspots.followed')}
             </Text>
           </Box>
@@ -90,7 +93,9 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
             paddingHorizontal="m"
           >
             <MapHex color="#1D91F8" />
-            <Text paddingTop="xs">{t('map_filter.your_hotspots.owned')}</Text>
+            <Text paddingTop="xs" maxFontSizeMultiplier={1.3}>
+              {t('map_filter.your_hotspots.owned')}
+            </Text>
           </Box>
         </Box>
       </TouchableOpacityBox>
@@ -101,6 +106,7 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
     const selected = selectedFilter === MapFilters.witness
     return (
       <TouchableOpacityBox
+        disabled={selected}
         onPress={() => {
           animateTransition('MapFilterModal.witnessFilter')
           setSelectedFilter(MapFilters.witness)
@@ -112,10 +118,12 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
       >
         <Box flexDirection="row" justifyContent="space-between">
           <Box>
-            <Text variant="h5" color="black">
+            <Text variant="h5" color="black" maxFontSizeMultiplier={1.3}>
               {t('map_filter.witness.title')}
             </Text>
-            <Text color="grayText">{t('map_filter.witness.body')}</Text>
+            <Text color="grayText" maxFontSizeMultiplier={1.3}>
+              {t('map_filter.witness.body')}
+            </Text>
           </Box>
           <Box visible={selected}>
             <Checkmark color="#FCC945" />
@@ -136,16 +144,31 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
             paddingHorizontal="m"
           >
             <MapHex color="#FCC945" />
-            <Text paddingTop="xs">Witness</Text>
+            <Text paddingTop="xs" maxFontSizeMultiplier={1.3}>
+              {t('generic.witness')}
+            </Text>
           </Box>
           <Box justifyContent="center" paddingHorizontal="m" width="60%">
-            <Box flexDirection="row">
+            <Box flexDirection="row" alignItems="center">
               <Lightbulb color="black" />
-              <Text variant="bold" color="black" fontSize={13} paddingLeft="xs">
+              <Text
+                variant="bold"
+                color="black"
+                fontSize={13}
+                maxFontSizeMultiplier={1.3}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                paddingLeft="xs"
+              >
                 {t('map_filter.witness.desc_title')}
               </Text>
             </Box>
-            <Text color="grayText" fontSize={12} paddingTop="xs">
+            <Text
+              color="grayText"
+              fontSize={12}
+              maxFontSizeMultiplier={1.3}
+              paddingTop="xs"
+            >
               {t('map_filter.witness.desc_body')}
             </Text>
           </Box>
@@ -158,6 +181,7 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
     const selected = selectedFilter === MapFilters.reward
     return (
       <TouchableOpacityBox
+        disabled={selected}
         onPress={() => {
           animateTransition('MapFilterModal.rewardsFilter')
           setSelectedFilter(MapFilters.reward)
@@ -167,11 +191,13 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
         padding="m"
       >
         <Box flexDirection="row" justifyContent="space-between">
-          <Box>
-            <Text variant="h5" color="black">
+          <Box flex={1}>
+            <Text variant="h5" color="black" maxFontSizeMultiplier={1.3}>
               {t('map_filter.reward.title')}
             </Text>
-            <Text color="grayText">{t('map_filter.reward.body')}</Text>
+            <Text color="grayText" maxFontSizeMultiplier={1.3}>
+              {t('map_filter.reward.body')}
+            </Text>
           </Box>
           <Box visible={selected}>
             <Checkmark color="#2AD445" />
@@ -249,7 +275,7 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
             iconHeight={38}
             iconWidth={34}
           />
-          <Text variant="h2" paddingVertical="m">
+          <Text variant="h2" paddingVertical="m" maxFontSizeMultiplier={1.1}>
             {t('map_filter.title')}
           </Text>
         </Box>

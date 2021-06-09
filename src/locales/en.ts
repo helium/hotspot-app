@@ -95,6 +95,7 @@ export default {
     clear: 'Clear',
     done: 'Done',
     readMore: 'Read More',
+    witness: 'Witness',
     understand: 'I understand',
     blocks: 'Blocks',
     active: 'Active',
@@ -1011,8 +1012,9 @@ export default {
         'Witnesses are Hotspot that hear a Hotspots ‘Beacons’ and report Proof-of-Coverage receipts.',
     },
     reward: {
-      title: 'Reward Scaling',
-      body: 'Indicates hotspot density via reward scaling',
+      title: 'Transmit Scaling',
+      body:
+        'Indicates location density. When a Hotspot transmits a beacon, any that hear it will have its mining rewards scaled by this number.',
     },
     title: 'Map Filters',
     button: 'Choose Map Filter',
