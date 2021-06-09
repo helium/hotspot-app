@@ -4,7 +4,6 @@ import hotspots from './hotspots'
 export default {
   antennas,
   hotspots,
-  // TODO: Replace id with id from onboarding server
-  id: 99999,
+  id: 12,
   supportEmail: 'SenseCAP@seeed.cc',
 }
