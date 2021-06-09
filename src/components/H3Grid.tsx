@@ -13,7 +13,7 @@ type Props = {
   color?: Colors
   width?: number
   visible?: boolean
-  zoomLevel: number
+  zoomLevel: number | undefined
 }
 
 const H3Grid = ({
@@ -32,12 +32,12 @@ const H3Grid = ({
   ])
 
   const boundingBox = useMemo(() => {
-    if (zoomLevel < 11) return { type: 'Feature' } as Feature
+    if (!zoomLevel || zoomLevel < 11) return { type: 'Feature' } as Feature
     return boundsToFeature(bounds)
   }, [bounds, zoomLevel])
 
   const sourceSet = useMemo(() => {
-    if (!bounds || !visible || zoomLevel < 11)
+    if (!zoomLevel || !bounds || !visible || zoomLevel < 11)
       return { type: 'FeatureCollection', features: [] } as FeatureCollection
     const hexagons = geojson2h3.featureToH3Set(boundingBox, res)
     return geojson2h3.h3SetToFeatureCollection(hexagons, (h3Index) => ({

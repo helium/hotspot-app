@@ -137,11 +137,14 @@ const Map = ({
   const onDidFinishLoad = useCallback(() => {
     setLoaded(true)
 
-    const loadMapBounds = async () => {
+    const loadMapBoundsAndZoom = async () => {
       const currentBounds = await map.current?.getVisibleBounds()
       setMapBounds(currentBounds)
+
+      const currentZoomLevel = await map.current?.getZoom()
+      setMapZoomLevel(currentZoomLevel)
     }
-    loadMapBounds()
+    loadMapBoundsAndZoom()
   }, [])
 
   const selectedHex = useMemo(
@@ -272,7 +275,7 @@ const Map = ({
         <H3Grid
           bounds={mapBounds}
           visible={showH3Grid}
-          zoomLevel={mapZoomLevel || 16}
+          zoomLevel={mapZoomLevel}
         />
         <HotspotsCoverage
           id="owned"
