@@ -52,7 +52,7 @@ const ContentPill = ({
   const [viewWidth, setViewWidth] = useState(0)
   const [showLeftGradiant, setShowLeftGradiant] = useState(false)
   const [showRightGradiant, setShowRightGradiant] = useState(false)
-  const flatListRef = useRef(null)
+  const flatListRef = useRef<FlatList<ContentPillItem>>(null)
 
   const colors = useColors()
   const spacing = useSpacing()
@@ -67,14 +67,11 @@ const ContentPill = ({
     setShowRightGradiant(data.length >= 6)
   }, [data.length])
 
-  useMemo(() => {
-    if (flatListRef && flatListRef.current) {
-      const ref = flatListRef?.current as any
-      ref?.scrollToIndex({
-        animated: true,
-        index: selectedIndex,
-      })
-    }
+  useEffect(() => {
+    flatListRef?.current?.scrollToIndex({
+      animated: true,
+      index: selectedIndex,
+    })
   }, [selectedIndex])
 
   const renderItem = useCallback(
@@ -127,7 +124,7 @@ const ContentPill = ({
     ) {
       padding = listContentStyle.padding
     }
-    const nextWidth = data.length * 40 + padding * 2
+    const nextWidth = data.length * ITEM_SIZE + padding * 2
     if (nextWidth === viewWidth) return
 
     animateTransition('ContentPill.AnimateWidth')
@@ -141,7 +138,7 @@ const ContentPill = ({
     const length = flatListData?.length || 0
     return {
       length,
-      offset: length * index,
+      offset: (index - 1) * ITEM_SIZE,
       index,
     }
   }
@@ -168,9 +165,11 @@ const ContentPill = ({
       flexDirection="row"
       width={viewWidth}
       maxWidth={wp(30)}
+      marginStart={data.length > 1 ? undefined : 'n_xxl'}
       {...boxProps}
     >
       <FlatList
+        // This warning is a bug with react-native-gesture-handler
         ref={flatListRef}
         getItemLayout={getItemLayout}
         contentContainerStyle={listContentStyle}

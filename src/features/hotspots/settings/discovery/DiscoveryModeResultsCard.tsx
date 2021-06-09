@@ -176,7 +176,6 @@ const DiscoveryModeResultsCard = ({
         <ContentPill
           selectedIndex={selectedHotspotIndex}
           data={pillData}
-          marginStart={selectedHotspots.length > 1 ? undefined : 'n_xxl'}
           onPressItem={setSelectedHotspotIndex}
           marginBottom="lx"
           maxWidth={wp(90)}
