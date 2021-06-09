@@ -46,6 +46,7 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
     const selected = selectedFilter === MapFilters.owned
     return (
       <TouchableOpacityBox
+        disabled={selected}
         onPress={() => {
           animateTransition('MapFilterModal.hotspotsFilter')
           setSelectedFilter(MapFilters.owned)
@@ -105,6 +106,7 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
     const selected = selectedFilter === MapFilters.witness
     return (
       <TouchableOpacityBox
+        disabled={selected}
         onPress={() => {
           animateTransition('MapFilterModal.witnessFilter')
           setSelectedFilter(MapFilters.witness)
@@ -179,6 +181,7 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
     const selected = selectedFilter === MapFilters.reward
     return (
       <TouchableOpacityBox
+        disabled={selected}
         onPress={() => {
           animateTransition('MapFilterModal.rewardsFilter')
           setSelectedFilter(MapFilters.reward)
@@ -188,7 +191,7 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
         padding="m"
       >
         <Box flexDirection="row" justifyContent="space-between">
-          <Box>
+          <Box flex={1}>
             <Text variant="h5" color="black" maxFontSizeMultiplier={1.3}>
               {t('map_filter.reward.title')}
             </Text>
