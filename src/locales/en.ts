@@ -95,6 +95,7 @@ export default {
     clear: 'Clear',
     done: 'Done',
     readMore: 'Read More',
+    witness: 'Witness',
     understand: 'I understand',
     blocks: 'Blocks',
     active: 'Active',
