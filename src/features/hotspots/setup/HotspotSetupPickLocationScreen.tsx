@@ -17,7 +17,7 @@ import {
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet'
 import Box from '../../../components/Box'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import ImageBox from '../../../components/ImageBox'
 import Map from '../../../components/Map'
 import Text from '../../../components/Text'
@@ -165,7 +165,7 @@ const HotspotSetupPickLocationScreen = () => {
             <Info />
           </TouchableOpacityBox>
         </Box>
-        <Button
+        <DebouncedButton
           onPress={navNext}
           variant="primary"
           mode="contained"

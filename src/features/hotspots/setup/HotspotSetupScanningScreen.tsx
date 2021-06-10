@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import Box from '../../../components/Box'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import {
@@ -51,7 +51,7 @@ const HotspotSetupScanningScreen = () => {
         {t('hotspot_setup.ble_scan.title')}
       </Text>
       <Box flex={1} />
-      <Button
+      <DebouncedButton
         marginBottom="m"
         justifyContent="flex-end"
         onPress={navigation.goBack}

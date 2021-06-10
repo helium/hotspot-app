@@ -14,7 +14,7 @@ import Box from '../../../components/Box'
 import Wifi from '../../../assets/images/wifi-icon.svg'
 import CarotRight from '../../../assets/images/carot-right.svg'
 import { useColors } from '../../../theme/themeHooks'
-import { DebouncedButton as Button } from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Checkmark from '../../../assets/images/check.svg'
 import { RootState } from '../../../store/rootReducer'
@@ -131,7 +131,7 @@ const HotspotSetupPickWifiScreen = () => {
         >
           {t('hotspot_setup.wifi_scan.subtitle')}
         </Text>
-        <Button
+        <DebouncedButton
           icon={scanning ? <ActivityIndicator color="white" /> : undefined}
           onPress={scanForNetworks}
           title={t('hotspot_setup.wifi_scan.scan_networks')}
@@ -205,7 +205,7 @@ const HotspotSetupPickWifiScreen = () => {
             </Box>
           }
         />
-        <Button
+        <DebouncedButton
           variant="primary"
           title={t('hotspot_setup.wifi_scan.ethernet')}
           marginVertical="m"
