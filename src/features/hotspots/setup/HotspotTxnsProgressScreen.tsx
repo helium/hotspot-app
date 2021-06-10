@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigation } from '@react-navigation/native'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { isString } from 'lodash'
+import { AddGatewayV1 } from '@helium/transactions'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
 import RingLoader from '../../../components/Loaders/RingLoader'
@@ -17,9 +18,13 @@ import useAlert from '../../../utils/useAlert'
 import { HotspotErrorCode } from '../../../utils/useHotspot'
 import { assertLocationTxn } from '../../../utils/assertLocationUtils'
 import useSubmitTxn from '../../../hooks/useSubmitTxn'
+import { HotspotSetupStackParamList } from './hotspotSetupTypes'
+
+type Route = RouteProp<HotspotSetupStackParamList, 'HotspotTxnsProgressScreen'>
 
 const HotspotTxnsProgressScreen = () => {
   const { t } = useTranslation()
+  const { params } = useRoute<Route>()
   const navigation = useNavigation<RootNavigationProp>()
   const [finished, setFinished] = useState(false)
   const { hotspotCoords, gain, elevation } = useSelector(
@@ -36,6 +41,10 @@ const HotspotTxnsProgressScreen = () => {
     error: false | Error | string,
     source: 'assert_location' | 'add_gateway',
   ) => {
+    if (error) {
+      Logger.error(error)
+    }
+
     let titleKey = 'generic.error'
     let messageKey = 'hotspot_setup.add_hotspot.add_hotspot_error_body'
 
@@ -64,28 +73,51 @@ const HotspotTxnsProgressScreen = () => {
   }
 
   const submitOnboardingTxns = async () => {
-    if (!connectedHotspot.address) {
+    const qrAddGatewayTxn = params?.addGatewayTxn
+
+    if (!connectedHotspot.address && !qrAddGatewayTxn) {
       showOKAlert({
-        titleKey: 'generic.error',
+        titleKey: 'hotspot_setup.onboarding_error.title',
         messageKey: 'hotspot_setup.onboarding_error.disconnected',
       })
       return
     }
 
+    if (qrAddGatewayTxn && !params?.hotspotAddress) {
+      showOKAlert({
+        titleKey: 'hotspot_setup.onboarding_error.title',
+        messageKey: 'hotspot_setup.onboarding_error.subtitle',
+      })
+      return
+    }
+
+    const address = params?.hotspotAddress || connectedHotspot.address || ''
+
     // check if add gateway needed
-    const isOnChain = await hotspotOnChain(connectedHotspot.address)
+    const isOnChain = await hotspotOnChain(address)
     if (!isOnChain) {
       // if so, construct and publish add gateway
-      try {
-        const addGatewayResponse = await addGatewayTxn()
-        if (addGatewayResponse !== true) {
-          handleError(addGatewayResponse, 'add_gateway')
+
+      if (qrAddGatewayTxn) {
+        // Gateway Txn scanned from QR
+        try {
+          const addGateway = AddGatewayV1.fromString(qrAddGatewayTxn)
+          await submitTxn(addGateway)
+        } catch (error) {
+          handleError(error, 'add_gateway')
           return
         }
-      } catch (error) {
-        handleError(error, 'add_gateway')
-        Logger.error(error)
-        return
+      } else {
+        try {
+          const addGatewayResponse = await addGatewayTxn()
+          if (addGatewayResponse !== true) {
+            handleError(addGatewayResponse, 'add_gateway')
+            return
+          }
+        } catch (error) {
+          handleError(error, 'add_gateway')
+          return
+        }
       }
     }
 
@@ -93,13 +125,15 @@ const HotspotTxnsProgressScreen = () => {
     if (hotspotCoords) {
       const [lng, lat] = hotspotCoords
       try {
+        const onboardingRecord =
+          params?.onboardingRecord || connectedHotspot.onboardingRecord
         const assertLocTxnResponse = await assertLocationTxn(
-          connectedHotspot.address,
+          address,
           lat,
           lng,
           gain,
           elevation,
-          connectedHotspot.onboardingRecord,
+          onboardingRecord,
           true,
         )
         if (assertLocTxnResponse) {
@@ -107,11 +141,9 @@ const HotspotTxnsProgressScreen = () => {
           setFinished(true)
           return
         }
-
         handleError(false, 'assert_location')
       } catch (error) {
         handleError(error, 'assert_location')
-        Logger.error(error)
       }
     } else {
       setFinished(true)

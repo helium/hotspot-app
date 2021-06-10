@@ -20,4 +20,15 @@ const viewHotspot = (address: string) => {
   navigationRef.current?.navigate('HotspotsScreen', { address })
 }
 
-export default { lock, send, viewHotspot }
+const confirmAddGateway = (addGatewayTxn: string) => {
+  const params = {
+    addGatewayTxn,
+  }
+
+  navigationRef.current?.navigate('HotspotSetup', {
+    screen: 'HotspotSetupQrConfirmScreen',
+    params,
+  })
+}
+
+export default { lock, send, viewHotspot, confirmAddGateway }

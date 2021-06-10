@@ -5,6 +5,7 @@ import ANTENNAS from './antennas'
 
 const NEBRA_INDOOR = {
   name: 'Nebra Indoor Hotspot',
+  onboardType: 'BLE',
   translations: {
     en: {
       diagnostic:
@@ -61,6 +62,7 @@ const NEBRA_INDOOR = {
 
 const NEBRA_OUTDOOR = {
   name: 'Nebra Outdoor Hotspot',
+  onboardType: 'BLE',
   translations: {
     en: {
       diagnostic:

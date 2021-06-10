@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native'
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import BackScreen from '../../../components/BackScreen'
@@ -17,6 +17,10 @@ const FirmwareUpdateNeededScreen = () => {
   const { connectedHotspot } = useSelector((state: RootState) => state)
 
   const navigation = useNavigation<RootNavigationProp>()
+  const handleClose = useCallback(() => navigation.navigate('MainTabs'), [
+    navigation,
+  ])
+
   useEffect(() => {
     if (!connectedHotspot.firmware?.minVersion) {
       checkFirmwareCurrent()
@@ -24,7 +28,7 @@ const FirmwareUpdateNeededScreen = () => {
   }, [connectedHotspot.firmware, checkFirmwareCurrent])
 
   return (
-    <BackScreen>
+    <BackScreen onClose={handleClose}>
       <Box flex={1} justifyContent="center" paddingBottom="xxl">
         <Box flexDirection="row" justifyContent="center" marginBottom="m">
           <Cloud />

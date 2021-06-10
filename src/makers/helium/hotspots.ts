@@ -5,6 +5,7 @@ import ANTENNAS from './antennas'
 const Helium = {
   name: 'Helium Hotspot',
   icon: HotspotIcon,
+  onboardType: 'BLE',
   translations: {
     en: {
       diagnostic:

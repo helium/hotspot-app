@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React, {
   memo,
   useCallback,
@@ -23,7 +23,10 @@ import Map from '../../../components/Map'
 import Text from '../../../components/Text'
 import { reverseGeocode } from '../../../utils/location'
 import sleep from '../../../utils/sleep'
-import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
+import {
+  HotspotSetupNavigationProp,
+  HotspotSetupStackParamList,
+} from './hotspotSetupTypes'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Info from '../../../assets/images/info.svg'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
@@ -34,8 +37,13 @@ import { PlaceGeography } from '../../../utils/googlePlaces'
 import hotspotOnboardingSlice from '../../../store/hotspots/hotspotOnboardingSlice'
 import { useAppDispatch } from '../../../store/store'
 
+type Route = RouteProp<
+  HotspotSetupStackParamList,
+  'HotspotSetupPickLocationScreen'
+>
 const HotspotSetupPickLocationScreen = () => {
   const { t } = useTranslation()
+  const { params } = useRoute<Route>()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
   const [disabled, setDisabled] = useState(true)
   const [mapCenter, setMapCenter] = useState([-122.419, 37.775])
@@ -70,8 +78,8 @@ const HotspotSetupPickLocationScreen = () => {
   const navNext = useCallback(() => {
     dispatch(hotspotOnboardingSlice.actions.setLocationName(locationName))
     dispatch(hotspotOnboardingSlice.actions.setHotspotCoords(markerCenter))
-    navigation.navigate('AntennaSetupScreen')
-  }, [dispatch, locationName, markerCenter, navigation])
+    navigation.navigate('AntennaSetupScreen', params)
+  }, [dispatch, locationName, markerCenter, navigation, params])
 
   const onDidFinishLoadingMap = useCallback(
     (latitude: number, longitude: number) => {

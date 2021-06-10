@@ -174,6 +174,17 @@ export default {
       ],
       next: "I've read the guide",
     },
+    qrScan: {
+      title: 'Scan QR Code',
+      wallet_address: 'Your wallet address is:',
+    },
+    qrConfirm: {
+      title: 'Confirm\nInformation',
+      title_one_line: 'Confirm Information',
+      public_key: 'Public Key',
+      mac_address: 'MAC Address',
+      owner_address: 'Owner Address',
+    },
     diagnostics: {
       title: 'Diagnostics',
     },

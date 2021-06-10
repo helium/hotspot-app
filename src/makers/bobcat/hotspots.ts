@@ -4,6 +4,7 @@ import ANTENNAS from './antennas'
 
 const BOBCAT_MINER_300 = {
   name: 'Bobcat Miner 300',
+  onboardType: 'BLE',
   translations: {
     en: {
       diagnostic:

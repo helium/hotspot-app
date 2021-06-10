@@ -12,6 +12,7 @@ import {
 import usePermissionManager from '../../../utils/usePermissionManager'
 import Lightning from '../../../assets/images/lightning.svg'
 import Box from '../../../components/Box'
+import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotSetupPowerScreen'>
 
@@ -22,6 +23,9 @@ const HotspotSetupPowerScreen = () => {
     params: { hotspotType },
   } = useRoute<Route>()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
+  const rootNav = useNavigation<RootNavigationProp>()
+
+  const handleClose = useCallback(() => rootNav.navigate('MainTabs'), [rootNav])
 
   const navNext = useCallback(
     () => navigation.push('HotspotSetupBluetoothInfoScreen', { hotspotType }),
@@ -38,7 +42,7 @@ const HotspotSetupPowerScreen = () => {
   return (
     <BackScreen
       backgroundColor="primaryBackground"
-      paddingHorizontal="lx"
+      onClose={handleClose}
       alignItems="center"
       justifyContent="center"
     >

@@ -9,6 +9,14 @@ PODS:
     - UMPermissionsInterface
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
+  - EXCamera (11.0.3):
+    - UMBarCodeScannerInterface
+    - UMCameraInterface
+    - UMCore
+    - UMFaceDetectorInterface
+    - UMFileSystemInterface
+    - UMImageLoaderInterface
+    - UMPermissionsInterface
   - EXConstants (10.1.3):
     - UMConstantsInterface
     - UMCore
@@ -409,7 +417,7 @@ PODS:
   - UMFileSystemInterface (5.3.0)
   - UMFontInterface (5.3.0)
   - UMImageLoaderInterface (5.3.0)
-  - UMPermissionsInterface (5.3.0):
+  - UMPermissionsInterface (6.2.0):
     - UMCore
   - UMReactNativeAdapter (5.6.0):
     - React-Core
@@ -428,6 +436,7 @@ DEPENDENCIES:
   - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXBarCodeScanner (from `../node_modules/expo-barcode-scanner/ios`)
+  - EXCamera (from `../node_modules/expo-camera/ios`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
   - EXFileSystem (from `../node_modules/expo-file-system/ios`)
   - EXHaptics (from `../node_modules/expo-haptics/ios`)
@@ -521,6 +530,8 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXBarCodeScanner:
     :path: "../node_modules/expo-barcode-scanner/ios"
+  EXCamera:
+    :path: "../node_modules/expo-camera/ios"
   EXConstants:
     :path: "../node_modules/expo-constants/ios"
   EXFileSystem:
@@ -669,6 +680,7 @@ SPEC CHECKSUMS:
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   EXBarCodeScanner: aa1eda7595b8258471ff733acdb18f62cfd85813
+  EXCamera: 905d647cb85cf0f7f8ce34ccae3cdb94155c12ff
   EXConstants: c4dd28acc12039c999612507a5f935556f2c86ce
   EXFileSystem: afe9b1fd937d30270bf5108ba44e2f4a1d1ad694
   EXHaptics: 6d2e09387f0eb4d3c8dc97ae905cbea8afe33651
@@ -741,7 +753,7 @@ SPEC CHECKSUMS:
   UMFileSystemInterface: e7795274eee76beaadaf6015bcc7f5da3054b925
   UMFontInterface: bc5dd878b2f6fffdac80e41fd36893c619683712
   UMImageLoaderInterface: 78ab0fd45c2bcaee61957fa23858bf31f2bcb122
-  UMPermissionsInterface: 4f21b0c2aaf953cf041109ff44231b2a69e22836
+  UMPermissionsInterface: 445acbfbdc2a675cedae79bbfb93ff7d83a96ff1
   UMReactNativeAdapter: 61ae88818058b7849bbf5b79bf97872cb3c8e0eb
   UMSensorsInterface: 49bea41dcfcc041f0bbab27cfe4a6006f1dde0c0
   UMTaskManagerInterface: 6cad5929dbc0a5b986ad4d77caac497d4de730a7

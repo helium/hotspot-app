@@ -4,17 +4,23 @@ import { useTranslation } from 'react-i18next'
 import { FlatList } from 'react-native-gesture-handler'
 import { Edge } from 'react-native-safe-area-context'
 import Fuse from 'fuse.js'
+import { useSelector } from 'react-redux'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
-import HotspotSelectionListItem from './HotspotSelectionListItem'
+import HotspotSetupSelectionListItem from './HotspotSetupSelectionListItem'
 import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
 import hotspotOnboardingSlice from '../../../store/hotspots/hotspotOnboardingSlice'
 import { useAppDispatch } from '../../../store/store'
-import { HotspotType, HotspotModelKeys } from '../../../makers'
+import {
+  HotspotType,
+  HotspotModelKeys,
+  HotspotMakerModels,
+} from '../../../makers'
 import SearchInput from '../../../components/SearchInput'
 import animateTransition from '../../../utils/animateTransition'
 import { useBorderRadii } from '../../../theme/themeHooks'
+import { RootState } from '../../../store/rootReducer'
 
 const ItemSeparatorComponent = () => (
   <Box height={1} backgroundColor="primaryBackground" />
@@ -28,6 +34,9 @@ const HotspotSetupSelectionScreen = () => {
   const radii = useBorderRadii()
   const [searchTerm, setSearchTerm] = useState('')
 
+  const qrOnboardEnabled = useSelector(
+    (state: RootState) => state.features.qrOnboardEnabled,
+  )
   // clear any existing onboarding state
   useEffect(() => {
     dispatch(hotspotOnboardingSlice.actions.reset())
@@ -36,7 +45,13 @@ const HotspotSetupSelectionScreen = () => {
   const handlePress = useCallback(
     (hotspotType: HotspotType) => () => {
       dispatch(hotspotOnboardingSlice.actions.setHotspotType(hotspotType))
-      navigation.push('HotspotSetupEducationScreen', { hotspotType })
+
+      const qrScanFlow = HotspotMakerModels[hotspotType].onboardType === 'QR'
+      if (qrScanFlow) {
+        navigation.push('HotspotSetupScanQrScreen', { hotspotType })
+      } else {
+        navigation.push('HotspotSetupEducationScreen', { hotspotType })
+      }
     },
     [dispatch, navigation],
   )
@@ -44,10 +59,18 @@ const HotspotSetupSelectionScreen = () => {
   const keyExtractor = useCallback((item) => item, [])
 
   const data = useMemo(() => {
-    if (!searchTerm) return HotspotModelKeys
+    let results: HotspotType[] = HotspotModelKeys
 
-    const results = new Fuse(
-      HotspotModelKeys.map((key) => ({
+    if (!qrOnboardEnabled) {
+      results = results.flatMap((r) =>
+        HotspotMakerModels[r].onboardType === 'QR' ? [] : [r],
+      )
+    }
+
+    if (!searchTerm) return results
+
+    results = new Fuse(
+      results.map((key) => ({
         key,
         name: t(`hotspot_setup.selection.${key.toLowerCase()}`),
       })),
@@ -60,14 +83,14 @@ const HotspotSetupSelectionScreen = () => {
       .map(({ item }) => item.key)
 
     return results
-  }, [searchTerm, t])
+  }, [qrOnboardEnabled, searchTerm, t])
 
   const renderItem = useCallback(
     ({ item, index }) => {
       const isFirst = index === 0
       const isLast = index === data.length - 1
       return (
-        <HotspotSelectionListItem
+        <HotspotSetupSelectionListItem
           isFirst={isFirst}
           isLast={isLast}
           hotspotType={item}
@@ -90,8 +113,10 @@ const HotspotSetupSelectionScreen = () => {
   return (
     <BackScreen
       backgroundColor="primaryBackground"
+      paddingTop="m"
       padding="lx"
-      paddingBottom="none"
+      hideBack
+      onClose={navigation.goBack}
       edges={edges}
     >
       <Text variant="h1" numberOfLines={2} adjustsFontSizeToFit>

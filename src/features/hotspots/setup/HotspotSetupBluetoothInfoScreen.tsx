@@ -1,6 +1,6 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { Linking, Platform } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import BackScreen from '../../../components/BackScreen'
 import { DebouncedButton } from '../../../components/Button'
@@ -13,6 +13,7 @@ import Bluetooth from '../../../assets/images/bluetooth.svg'
 import useAlert from '../../../utils/useAlert'
 import { useBluetoothContext } from '../../../providers/BluetoothProvider'
 import Box from '../../../components/Box'
+import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotSetupPowerScreen'>
 
@@ -22,12 +23,16 @@ const HotspotSetupBluetoothInfoScreen = () => {
     params: { hotspotType },
   } = useRoute<Route>()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
+  const rootNav = useNavigation<RootNavigationProp>()
+
   const { enable, getState } = useBluetoothContext()
   const { showOKCancelAlert } = useAlert()
 
   useEffect(() => {
     getState()
   }, [getState])
+
+  const handleClose = useCallback(() => rootNav.navigate('MainTabs'), [rootNav])
 
   const navNext = () =>
     navigation.push('HotspotSetupScanningScreen', { hotspotType })
@@ -69,6 +74,7 @@ const HotspotSetupBluetoothInfoScreen = () => {
       paddingHorizontal="lx"
       alignItems="center"
       justifyContent="center"
+      onClose={handleClose}
     >
       <Box alignItems="center" justifyContent="center" flex={1}>
         <Bluetooth />

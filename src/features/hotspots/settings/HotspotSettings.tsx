@@ -351,11 +351,18 @@ const HotspotSettings = ({ hotspot }: Props) => {
             padding="l"
             alignItems="flex-end"
             justifyContent="center"
+            marginEnd={settingsState === 'discoveryMode' ? 'n_s' : undefined}
             onPress={handleClose}
           >
             <CloseModal color="white" />
           </TouchableOpacityBox>
-          {showBack && <BackButton alignSelf="center" onPress={goBack} />}
+          {showBack && (
+            <BackButton
+              alignSelf="center"
+              onPress={goBack}
+              marginStart={settingsState === 'discoveryMode' ? 'n_m' : 'n_s'}
+            />
+          )}
         </Box>
         <AnimatedBox
           marginTop="none"
