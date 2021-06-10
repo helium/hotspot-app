@@ -7,7 +7,7 @@ import { Camera } from 'expo-camera'
 import { useAsync } from 'react-async-hook'
 import { useDebouncedCallback } from 'use-debounce/lib'
 import Toast from 'react-native-simple-toast'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Linking } from 'react-native'
 import Clipboard from '@react-native-community/clipboard'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import BackScreen from '../../../components/BackScreen'
@@ -23,7 +23,7 @@ import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotSetupScanQrScreen'>
 
 const HotspotSetupScanQrScreen = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { params } = useRoute<Route>()
   const colors = useColors()
   const { result: address } = useAsync(getSecureItem, ['address'])
@@ -58,6 +58,40 @@ const HotspotSetupScanQrScreen = () => {
     triggerNotification('success')
     Toast.show(t('wallet.copiedToClipboard', { address }))
   }, [address, t, triggerNotification])
+
+  let linkToMaker = null
+  const url = `${t(`makerHotspot.${params.hotspotType}.qr.1`)}`.replace(
+    /WALLET/,
+    address || '',
+  )
+  const openMakerUrl = useCallback(async () => {
+    const supported = await Linking.canOpenURL(url)
+    if (supported) {
+      await Linking.openURL(url)
+    } else {
+      Toast.showWithGravity(
+        `Don't know how to open this URL: ${url}`,
+        Toast.LONG,
+        Toast.CENTER,
+      )
+    }
+  }, [url])
+
+  if (i18n.exists(`makerHotspot.${params.hotspotType}.qr.1`)) {
+    linkToMaker = (
+      <TouchableOpacity onPress={openMakerUrl}>
+        <Text
+          variant="bold"
+          fontSize={{ smallPhone: 15, phone: 19 }}
+          color="purpleMain"
+          lineHeight={{ smallPhone: 20, phone: 26 }}
+          maxFontSizeMultiplier={1}
+        >
+          {t(`makerHotspot.${params.hotspotType}.qr.1`)}
+        </Text>
+      </TouchableOpacity>
+    )
+  }
 
   return (
     <BackScreen
@@ -94,6 +128,7 @@ const HotspotSetupScanQrScreen = () => {
       >
         {t(`makerHotspot.${params.hotspotType}.qr.0`)}
       </Text>
+      {linkToMaker}
       <Text
         variant="subtitle"
         fontSize={{ smallPhone: 15, phone: 19 }}
