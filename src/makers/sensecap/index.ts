@@ -5,5 +5,5 @@ export default {
   antennas,
   hotspots,
   id: 12,
-  supportEmail: 'SenseCAP@seeed.cc',
+  supportEmail: 'support@sensecapmx.com',
 }
