@@ -104,7 +104,7 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
     const scan = async () => {
       const state = await getState()
       if (state === State.PoweredOn) {
-        await scanForHotspots(2000)
+        await scanForHotspots(6000)
       }
       animateTransition('HotspotDiagnosticsConnection.ScanComplete')
       setScanComplete(true)

@@ -14,7 +14,7 @@ import RadarLoader from '../../../components/Loaders/RadarLoader'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotSetupScanningScreen'>
 
-const SCAN_DURATION = 4000
+const SCAN_DURATION = 6000
 const HotspotSetupScanningScreen = () => {
   const { t } = useTranslation()
   const { scanForHotspots } = useConnectedHotspotContext()
