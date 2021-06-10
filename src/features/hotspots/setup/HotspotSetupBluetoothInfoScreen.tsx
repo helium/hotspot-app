@@ -97,7 +97,7 @@ const HotspotSetupBluetoothInfoScreen = () => {
           marginBottom="xl"
           variant="subtitle"
           textAlign="center"
-          numberOfLines={8}
+          numberOfLines={9}
           adjustsFontSizeToFit
         >
           {t(`makerHotspot.${hotspotType}.bluetooth.1`)}
