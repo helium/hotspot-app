@@ -1318,10 +1318,10 @@
   dependencies:
     bignumber.js "^9.0.0"
 
-"@helium/http@^3.36.0":
-  version "3.36.0"
-  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.36.0.tgz#be6c735ff8dc501022a9bf691f4a00cc048746bd"
-  integrity sha512-oAGC5BzPUmktimV/rx17gwDvXm7DsjZWePTKuAXRru6SEMtyFiBg14P1Obw36fgTomtHVy+Er4ZEtXS1VkO88w==
+"@helium/http@^3.36.2":
+  version "3.36.2"
+  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.36.2.tgz#19b385cb0b4b344500eabcb00a0995bd95ec2d1b"
+  integrity sha512-17BwcNHz2QKP7UfDuCxrbdY5ggK4UQOb8Mjll3O+RWgmwR9B6I0l26jV4vH2RQdVJn4nZiABLE5ga/RBtt7MWQ==
   dependencies:
     "@helium/currency" "^3.25.1"
     axios "^0.21.1"
