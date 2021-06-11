@@ -28,17 +28,21 @@ import { getSyncStatus, isRelay } from '../../../utils/hotspotUtils'
 import ShareHotspot from '../../../components/ShareHotspot'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Articles from '../../../constants/articles'
+import HotspotListItem from '../../../components/HotspotListItem'
+import { distance } from '../../../utils/location'
 
 type Props = {
   hotspotAddress?: string
   hotspot?: Hotspot
   onLayoutHeader?: ((event: LayoutChangeEvent) => void) | undefined
   onFailure: () => void
+  onSelectHotspot: (hotspot: Hotspot) => void
 }
 const HotspotDetails = ({
   hotspot: propsHotspot,
   hotspotAddress,
   onLayoutHeader,
+  onSelectHotspot,
   onFailure,
 }: Props) => {
   const { t } = useTranslation()
@@ -164,6 +168,11 @@ const HotspotDetails = ({
         value: 'checklist',
         color: 'purpleMain',
       } as HeliumSelectItemType,
+      {
+        label: t('map_filter.witness.title'),
+        value: 'witnesses',
+        color: 'purpleMain',
+      } as HeliumSelectItemType,
     ]
   }, [t])
 
@@ -196,6 +205,48 @@ const HotspotDetails = ({
       ],
     )
   }, [t])
+
+  const getDistance = useCallback(
+    (otherHotspot: Hotspot) => {
+      if (
+        !hotspot?.lat ||
+        !hotspot?.lng ||
+        !otherHotspot?.lat ||
+        !otherHotspot?.lng
+      )
+        return undefined
+      const distanceKM = distance(
+        {
+          latitude: hotspot?.lat,
+          longitude: hotspot?.lng,
+        },
+        { latitude: otherHotspot?.lat, longitude: otherHotspot?.lng },
+      )
+      if (distanceKM < 1) {
+        return `${(distanceKM * 1000).toFixed(0)}m`
+      }
+      return `${distanceKM.toFixed(1)}km`
+    },
+    [hotspot?.lat, hotspot?.lng],
+  )
+
+  const renderWitnessItem = useCallback(
+    (witness: Hotspot) => {
+      return (
+        <HotspotListItem
+          key={witness.address}
+          onPress={onSelectHotspot}
+          hotspot={witness}
+          showCarot
+          showAddress={false}
+          distanceAway={getDistance(witness)}
+          showRewardScale
+          showRelayStatus
+        />
+      )
+    },
+    [getDistance, onSelectHotspot],
+  )
 
   if (!hotspot) return null
 
@@ -249,7 +300,10 @@ const HotspotDetails = ({
                 onPress={toggleShowStatusBanner}
               />
             )}
-            <HexBadge rewardScale={hotspot.rewardScale} />
+            <HexBadge
+              rewardScale={hotspot.rewardScale}
+              backgroundColor="grayBox"
+            />
             {isRelayed && (
               <TouchableOpacityBox
                 backgroundColor="yellow"
@@ -315,6 +369,19 @@ const HotspotDetails = ({
               data={challengeChartData}
               loading={loading}
             />
+          </>
+        )}
+
+        {selectedOption === 'witnesses' && (
+          <>
+            <Box backgroundColor="grayBox" marginBottom="xxs" marginTop="m">
+              <Text variant="body1Medium" color="grayDarkText" padding="m">
+                {t('hotspot_details.num_witnesses', {
+                  count: witnesses?.length || 0,
+                })}
+              </Text>
+            </Box>
+            {witnesses?.map((witness) => renderWitnessItem(witness))}
           </>
         )}
       </Box>

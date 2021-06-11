@@ -407,6 +407,7 @@ const HotspotsView = ({
           hotspot={selectedHotspot}
           onLayoutHeader={handleDetailHeaderLayout}
           onFailure={handleBack}
+          onSelectHotspot={handlePresentDetails()}
         />
       )
 

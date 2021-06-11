@@ -3,6 +3,7 @@ import { Hotspot } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import CarotRight from '@assets/images/carot-right.svg'
+import LocationIcon from '@assets/images/location-icon.svg'
 import Balance, { NetworkTokens } from '@helium/currency'
 import { useSelector } from 'react-redux'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
@@ -11,22 +12,31 @@ import Box from './Box'
 import Text from './Text'
 import useCurrency from '../utils/useCurrency'
 import { RootState } from '../store/rootReducer'
-import { getSyncStatus, SyncStatus } from '../utils/hotspotUtils'
+import { getSyncStatus, isRelay, SyncStatus } from '../utils/hotspotUtils'
+import HexBadge from '../features/hotspots/details/HexBadge'
 
 type HotspotListItemProps = {
   onPress?: (hotspot: Hotspot) => void
   hotspot: Hotspot
   totalReward?: Balance<NetworkTokens>
   showCarot?: boolean
-  loading: boolean
+  loading?: boolean
+  showAddress?: boolean
+  showRewardScale?: boolean
+  distanceAway?: string
+  showRelayStatus?: boolean
 }
 
 const HotspotListItem = ({
   onPress,
   hotspot,
   totalReward,
-  loading,
+  loading = false,
   showCarot = false,
+  showAddress = true,
+  showRewardScale = false,
+  showRelayStatus = false,
+  distanceAway,
 }: HotspotListItemProps) => {
   const { t } = useTranslation()
   const { toggleConvertHntToCurrency, hntBalanceToDisplayVal } = useCurrency()
@@ -68,6 +78,10 @@ const HotspotListItem = ({
     return `${geo.longStreet}, ${geo.longCity}, ${geo.shortCountry}`
   }, [hotspot, t])
 
+  const isRelayed = useMemo(() => isRelay(hotspot?.status?.listenAddrs), [
+    hotspot?.status?.listenAddrs,
+  ])
+
   return (
     <Box marginBottom="xxs">
       <Pressable onPress={handlePress}>
@@ -103,11 +117,13 @@ const HotspotListItem = ({
                   {animalName(hotspot.address)}
                 </Text>
               </Box>
-              <Text variant="body3Light" color="blueGray" marginTop="s">
-                {locationText}
-              </Text>
+              {showAddress && (
+                <Text variant="body3Light" color="blueGray" marginTop="s">
+                  {locationText}
+                </Text>
+              )}
               <Box flexDirection="row" alignItems="center" marginTop="s">
-                {loading && !totalReward ? (
+                {loading && !totalReward && (
                   <SkeletonPlaceholder speed={3000}>
                     <SkeletonPlaceholder.Item
                       height={15}
@@ -115,7 +131,8 @@ const HotspotListItem = ({
                       borderRadius={4}
                     />
                   </SkeletonPlaceholder>
-                ) : (
+                )}
+                {totalReward !== undefined && (
                   <>
                     <Text
                       onPress={toggleConvertHntToCurrency}
@@ -129,6 +146,39 @@ const HotspotListItem = ({
                       {percentSynced}
                     </Text>
                   </>
+                )}
+                {distanceAway !== undefined && (
+                  <Box marginRight="s" flexDirection="row" alignItems="center">
+                    <LocationIcon color="#474DFF" width={10} height={10} />
+                    <Text
+                      color="grayText"
+                      variant="regular"
+                      fontSize={12}
+                      marginLeft="xs"
+                    >
+                      {t('hotspot_details.distance_away', {
+                        distance: distanceAway,
+                      })}
+                    </Text>
+                  </Box>
+                )}
+                {showRewardScale && (
+                  <HexBadge
+                    rewardScale={hotspot.rewardScale}
+                    pressable={false}
+                    badge={false}
+                    fontSize={12}
+                  />
+                )}
+                {showRelayStatus && isRelayed && (
+                  <Text
+                    color="grayText"
+                    variant="regular"
+                    fontSize={12}
+                    marginLeft="xs"
+                  >
+                    {t('hotspot_details.relayed')}
+                  </Text>
                 )}
               </Box>
             </Box>

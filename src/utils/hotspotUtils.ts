@@ -37,10 +37,11 @@ export const generateRewardScaleColor = (rewardScale: number): Colors => {
   return 'redMain'
 }
 
-export const isRelay = (listenAddrs: string[]) => {
+export const isRelay = (listenAddrs: string[] | undefined) => {
+  if (!listenAddrs) return false
   const IP = /ip4/g
 
-  return !!(
+  return (
     listenAddrs &&
     listenAddrs.length > 0 &&
     !listenAddrs.find((a) => a.match(IP))

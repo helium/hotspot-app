@@ -8,11 +8,22 @@ import { decimalSeparator, locale } from '../../../utils/i18n'
 import { useColors } from '../../../theme/themeHooks'
 import { generateRewardScaleColor } from '../../../utils/hotspotUtils'
 import Articles from '../../../constants/articles'
+import { Colors } from '../../../theme/theme'
 
 type Props = {
   rewardScale?: number
+  pressable?: boolean
+  badge?: boolean
+  backgroundColor?: Colors
+  fontSize?: number
 }
-const HexBadge = ({ rewardScale }: Props) => {
+const HexBadge = ({
+  rewardScale,
+  pressable = true,
+  backgroundColor,
+  badge = true,
+  fontSize = 13,
+}: Props) => {
   const colors = useColors()
   const { t } = useTranslation()
   const handlePress = useCallback(() => {
@@ -56,16 +67,22 @@ const HexBadge = ({ rewardScale }: Props) => {
   return (
     <TouchableOpacityBox
       onPress={handlePress}
-      backgroundColor="grayBox"
-      borderRadius="ms"
+      backgroundColor={backgroundColor}
+      borderRadius={badge ? 'ms' : undefined}
       flexDirection="row"
       justifyContent="center"
       alignItems="center"
-      width={59}
-      marginLeft="xs"
+      width={badge ? 59 : undefined}
+      marginLeft={badge ? 'xs' : undefined}
+      disabled={!pressable}
     >
       <Hex color={colors[color]} width={14} />
-      <Text color="grayText" variant="regular" fontSize={13} marginLeft="xs">
+      <Text
+        color="grayText"
+        variant="regular"
+        fontSize={fontSize}
+        marginLeft="xs"
+      >
         {scaleString}
       </Text>
     </TouchableOpacityBox>
