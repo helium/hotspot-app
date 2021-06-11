@@ -78,9 +78,13 @@ const HotspotListItem = ({
     return `${geo.longStreet}, ${geo.longCity}, ${geo.shortCountry}`
   }, [hotspot, t])
 
-  const isRelayed = useMemo(() => isRelay(hotspot?.status?.listenAddrs), [
-    hotspot?.status?.listenAddrs,
-  ])
+  const isRelayed = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    // TODO: fix listen_addrs in helium-js for witnesses
+    const listenAddrs = hotspot?.status?.listen_addrs
+    return isRelay(listenAddrs)
+  }, [hotspot?.status])
 
   return (
     <Box marginBottom="xxs">
@@ -175,7 +179,7 @@ const HotspotListItem = ({
                     color="grayText"
                     variant="regular"
                     fontSize={12}
-                    marginLeft="xs"
+                    marginLeft="s"
                   >
                     {t('hotspot_details.relayed')}
                   </Text>

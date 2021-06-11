@@ -3,7 +3,12 @@ import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import { LayoutChangeEvent, Alert, Linking } from 'react-native'
+import {
+  LayoutChangeEvent,
+  Alert,
+  Linking,
+  ActivityIndicator,
+} from 'react-native'
 import { Hotspot } from '@helium/http'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -374,14 +379,22 @@ const HotspotDetails = ({
 
         {selectedOption === 'witnesses' && (
           <>
-            <Box backgroundColor="grayBox" marginBottom="xxs" marginTop="m">
-              <Text variant="body1Medium" color="grayDarkText" padding="m">
-                {t('hotspot_details.num_witnesses', {
-                  count: witnesses?.length || 0,
-                })}
-              </Text>
-            </Box>
-            {witnesses?.map((witness) => renderWitnessItem(witness))}
+            {hotspotDetailsData.loading ? (
+              <Box marginTop="xl">
+                <ActivityIndicator color="#81909F" />
+              </Box>
+            ) : (
+              <>
+                <Box backgroundColor="grayBox" marginBottom="xxs" marginTop="m">
+                  <Text variant="body1Medium" color="grayDarkText" padding="m">
+                    {t('hotspot_details.num_witnesses', {
+                      count: witnesses?.length || 0,
+                    })}
+                  </Text>
+                </Box>
+                {witnesses?.map((witness) => renderWitnessItem(witness))}
+              </>
+            )}
           </>
         )}
       </Box>
