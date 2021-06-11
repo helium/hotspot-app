@@ -60,10 +60,8 @@ const HotspotSetupScanQrScreen = () => {
   }, [address, t, triggerNotification])
 
   let linkToMaker = null
-  const url = `${t(`makerHotspot.${params.hotspotType}.qr.1`)}`.replace(
-    /WALLET/,
-    address || '',
-  )
+  const qr1 = t(`makerHotspot.${params.hotspotType}.qr.1`).split(/\|/)
+  const url = qr1[0].replace(/WALLET/, address || '')
   const openMakerUrl = useCallback(async () => {
     const supported = await Linking.canOpenURL(url)
     if (supported) {
@@ -87,7 +85,7 @@ const HotspotSetupScanQrScreen = () => {
           lineHeight={{ smallPhone: 20, phone: 26 }}
           maxFontSizeMultiplier={1}
         >
-          {t(`makerHotspot.${params.hotspotType}.qr.1`)}
+          {qr1[1]}
         </Text>
       </TouchableOpacity>
     )
