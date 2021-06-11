@@ -92,7 +92,7 @@ const useAppLink = () => {
           const { address: txnStr } = record as AppLink
           if (!txnStr) return
 
-          navigator.confirmAddGateway(txnStr)
+          navigator.confirmAddGateway(decodeURIComponent(txnStr))
           break
         }
       }
