@@ -5,7 +5,7 @@ import MapboxGL, {
 } from '@react-native-mapbox-gl/maps'
 import React, { memo, useCallback, useMemo } from 'react'
 import { StyleProp } from 'react-native'
-import { H3Index, h3ToParent } from 'h3-js'
+import { H3Index } from 'h3-js'
 import geojson2h3 from 'geojson2h3'
 import { Hotspot } from '@helium/http'
 import { DiscoveryResponse } from '../store/discovery/discoveryTypes'
@@ -54,8 +54,8 @@ const HotspotsCoverage = ({
   const features = useMemo(() => {
     const ownedHexes = (hotspots || [])
       .map((h) => {
-        if (!h.location) return null
-        return h3ToParent(h.location, 8)
+        if (!h.locationHex) return null
+        return h.locationHex
       })
       .filter((h) => h !== null) as H3Index[]
 

@@ -17,7 +17,7 @@ import { Hotspot } from '@helium/http'
 import { BoxProps } from '@shopify/restyle'
 import { StyleProp, ViewStyle } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { h3ToGeo, h3ToParent } from 'h3-js'
+import { h3ToGeo } from 'h3-js'
 import { differenceBy } from 'lodash'
 import Box from './Box'
 import Text from './Text'
@@ -147,10 +147,9 @@ const Map = ({
     loadMapBoundsAndZoom()
   }, [])
 
-  const selectedHex = useMemo(
-    () => h3ToParent(selectedHotspot?.location || '', 8),
-    [selectedHotspot],
-  )
+  const selectedHex = useMemo(() => selectedHotspot?.locationHex, [
+    selectedHotspot?.locationHex,
+  ])
 
   const onHexPress = (id: string) => {
     onHexSelected(id)
@@ -177,8 +176,8 @@ const Map = ({
       boundsLocations.push(mapCenter)
     }
 
-    if (selectedHotspot && selectedHotspot.location) {
-      const h3Location = h3ToParent(selectedHotspot.location, 8)
+    if (selectedHotspot && selectedHotspot.locationHex) {
+      const h3Location = selectedHotspot.locationHex
       boundsLocations.push(h3ToGeo(h3Location).reverse())
     }
 
@@ -187,8 +186,8 @@ const Map = ({
     }
 
     witnesses.forEach((w) => {
-      if (w.location) {
-        const h3Location = h3ToParent(w.location, 8)
+      if (w.locationHex) {
+        const h3Location = w.locationHex
         boundsLocations.push(h3ToGeo(h3Location).reverse())
       }
     })
@@ -210,10 +209,7 @@ const Map = ({
   }, [selectedHotspot])
 
   const followedHexes = useMemo(
-    () =>
-      differenceBy(followedHotspots, ownedHotspots, (h) =>
-        h3ToParent(h.location || '', 8),
-      ),
+    () => differenceBy(followedHotspots, ownedHotspots, (h) => h.locationHex),
     [followedHotspots, ownedHotspots],
   )
 
