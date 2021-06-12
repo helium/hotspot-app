@@ -16,7 +16,6 @@ import HotspotChecklistCarousel, {
 } from './HotspotChecklistCarousel'
 import { wp } from '../../../utils/layout'
 import { Theme } from '../../../theme/theme'
-import usePrevious from '../../../utils/usePrevious'
 
 type Props = BoxProps<Theme> & {
   hotspot: Hotspot
@@ -43,17 +42,18 @@ const HotspotChecklist = ({
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
   )
-  const prevHotspot = usePrevious(hotspot)
   const [showSkeleton, setShowSkeleton] = useState(true)
+  const [lastLoadedAddress, setLastLoadedAddress] = useState<string>()
 
   useEffect(() => {
     if (!visible) return
-    if (!prevHotspot || prevHotspot.address !== hotspot.address) {
+    if (!lastLoadedAddress || lastLoadedAddress !== hotspot.address) {
       animateTransition('HotspotChecklist.HotspotChange')
       setShowSkeleton(true)
       dispatch(fetchChecklistActivity(hotspot.address))
+      setLastLoadedAddress(hotspot.address)
     }
-  }, [dispatch, hotspot.address, prevHotspot, visible])
+  }, [dispatch, hotspot.address, lastLoadedAddress, visible])
 
   useEffect(() => {
     if (!visible) return
@@ -185,7 +185,7 @@ const HotspotChecklist = ({
       background: 3,
     },
     {
-      key: 'checklist.challengee',
+      key: 'checklist.data_transfer',
       title: t('checklist.data_transfer.title'),
       description: dataTransferStatus,
       complete: dataTransferTxn !== undefined,
