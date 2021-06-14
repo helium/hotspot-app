@@ -653,7 +653,8 @@ export default {
     title: 'Hotspot Settings',
     pairing: {
       title: 'Update Wi-Fi or Run Diagnostics',
-      subtitle: 'Pairing required before proceeding.',
+      subtitle:
+        'Pairing required before proceeding.\nSome Hotspot models are not supported, check with your manufacturer.',
       scan: 'Pair',
     },
     transfer: {
