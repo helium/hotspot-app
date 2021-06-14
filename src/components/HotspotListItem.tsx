@@ -14,6 +14,7 @@ import useCurrency from '../utils/useCurrency'
 import { RootState } from '../store/rootReducer'
 import { getSyncStatus, isRelay, SyncStatus } from '../utils/hotspotUtils'
 import HexBadge from '../features/hotspots/details/HexBadge'
+import { useColors } from '../theme/themeHooks'
 
 type HotspotListItemProps = {
   onPress?: (hotspot: Hotspot) => void
@@ -39,6 +40,7 @@ const HotspotListItem = ({
   distanceAway,
 }: HotspotListItemProps) => {
   const { t } = useTranslation()
+  const colors = useColors()
   const { toggleConvertHntToCurrency, hntBalanceToDisplayVal } = useCurrency()
   const handlePress = useCallback(() => onPress?.(hotspot), [hotspot, onPress])
   const [reward, setReward] = useState('')
@@ -153,7 +155,11 @@ const HotspotListItem = ({
                 )}
                 {distanceAway !== undefined && (
                   <Box marginRight="s" flexDirection="row" alignItems="center">
-                    <LocationIcon color="#474DFF" width={10} height={10} />
+                    <LocationIcon
+                      color={colors.purpleMain}
+                      width={10}
+                      height={10}
+                    />
                     <Text
                       color="grayText"
                       variant="regular"

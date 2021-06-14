@@ -248,7 +248,7 @@ const HotspotsView = ({
   )
 
   const handlePresentDetails = useCallback(
-    () => async (hotspot: Hotspot) => {
+    async (hotspot: Hotspot) => {
       if (hotspot.locationHex) {
         const mapHexId = hotspot.locationHex
         const hotspots = (await dispatch(
@@ -406,21 +406,21 @@ const HotspotsView = ({
           hotspot={selectedHotspot}
           onLayoutHeader={handleDetailHeaderLayout}
           onFailure={handleBack}
-          onSelectHotspot={handlePresentDetails()}
+          onSelectHotspot={handlePresentDetails}
         />
       )
 
     if (isSearching) {
       return (
         <HotspotSearch
-          onSelectHotspot={handlePresentDetails()}
+          onSelectHotspot={handlePresentDetails}
           onSelectPlace={handleSelectPlace}
         />
       )
     }
 
     if (hasHotspots)
-      return <HotspotsList onSelectHotspot={handlePresentDetails()} />
+      return <HotspotsList onSelectHotspot={handlePresentDetails} />
 
     return (
       <HotspotsEmpty

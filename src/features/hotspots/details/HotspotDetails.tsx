@@ -35,6 +35,7 @@ import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Articles from '../../../constants/articles'
 import HotspotListItem from '../../../components/HotspotListItem'
 import { distance } from '../../../utils/location'
+import { useColors } from '../../../theme/themeHooks'
 
 type Props = {
   hotspotAddress?: string
@@ -52,6 +53,7 @@ const HotspotDetails = ({
 }: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
+  const colors = useColors()
   const address = hotspotAddress || propsHotspot?.address || ''
   const hotspotChatData =
     useSelector(
@@ -381,7 +383,7 @@ const HotspotDetails = ({
           <>
             {hotspotDetailsData.loading ? (
               <Box marginTop="xl">
-                <ActivityIndicator color="#81909F" />
+                <ActivityIndicator color={colors.grayMain} />
               </Box>
             ) : (
               <>
