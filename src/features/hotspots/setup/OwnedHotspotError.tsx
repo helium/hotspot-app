@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import Text from '../../../components/Text'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
@@ -38,7 +38,7 @@ const OwnedHotspotErrorScreen = () => {
           {t('hotspot_setup.owned_hotspot.subtitle_2')}
         </Text>
       </Box>
-      <Button
+      <DebouncedButton
         title={t('hotspot_setup.onboarding_error.next')}
         mode="contained"
         variant="primary"

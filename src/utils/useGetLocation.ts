@@ -2,7 +2,7 @@ import { PermissionResponse } from 'expo-permissions'
 import { useCallback, useEffect } from 'react'
 import useAppState from 'react-native-appstate-hook'
 import { useSelector } from 'react-redux'
-import locationSlice, {
+import {
   getLocation,
   getLocationPermission,
 } from '../store/location/locationSlice'
@@ -51,10 +51,6 @@ const useGetLocation = () => {
         const response = await requestLocationPermission(
           canPromptUser !== 'skip',
         )
-
-        if (response) {
-          dispatch(locationSlice.actions.updateLocationPermission(response))
-        }
 
         if (response && response.granted) {
           return dispatchGetLocation()
