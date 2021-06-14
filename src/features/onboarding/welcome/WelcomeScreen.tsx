@@ -40,6 +40,7 @@ const WelcomeScreen = () => {
           width="100%"
           marginBottom="s"
           onPress={() => navigation.push('AccountPassphraseWarning')}
+          testID="CreateAccount"
           title={t('account_setup.welcome.create_account')}
         />
         <Button

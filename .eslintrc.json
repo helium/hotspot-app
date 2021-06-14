@@ -1,5 +1,5 @@
 {
-  "plugins": ["@typescript-eslint", "jest"],
+  "plugins": ["@typescript-eslint", "jest", "detox"],
   "extends": [
     "airbnb-typescript",
     "airbnb/hooks",
@@ -54,6 +54,14 @@
       "files": ["*Slice.ts"],
       "rules": {
         "no-param-reassign": "off"
+      }
+    },
+    {
+      "files": ["*.e2e.js"],
+      "env": {
+        "detox/detox": true,
+        "jest": true,
+        "jest/globals": true
       }
     }
   ]
