@@ -1,12 +1,8 @@
 import 'react-native'
-// import React from 'react'
-// import App from '../App'
-// import { renderWithProviders } from '../utils/testUtils'
+import React from 'react'
+import App from '../App'
+import { renderWithProviders } from '../utils/testUtils'
 
-it('has a test', () => {
-  expect(1).toBe(1)
+it('renders correctly', () => {
+  expect(renderWithProviders(<App />)).toBeDefined()
 })
-
-// it.skip('renders correctly', () => {
-//   expect(renderWithProviders(<App />)).toBeDefined()
-// })
