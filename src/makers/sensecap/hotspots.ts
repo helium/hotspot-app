@@ -1,4 +1,4 @@
-import HotspotIcon from '@assets/images/sensecap-m1.svg'
+import HotspotIcon from './sensecap-m1.svg'
 import { MakerHotspot } from '../hotspotMakerTypes'
 import ANTENNAS from './antennas'
 

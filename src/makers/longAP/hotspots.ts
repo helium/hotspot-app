@@ -1,4 +1,4 @@
-import HotspotIcon from '@assets/images/longap-one.svg'
+import HotspotIcon from './longap-one.svg'
 import { MakerHotspot } from '../hotspotMakerTypes'
 import ANTENNAS from './antennas'
 
