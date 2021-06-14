@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux'
 import { isString } from 'lodash'
 import { AddGatewayV1 } from '@helium/transactions'
 import Box from '../../../components/Box'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import RingLoader from '../../../components/Loaders/RingLoader'
 import Text from '../../../components/Text'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
@@ -177,7 +177,7 @@ const HotspotTxnsProgressScreen = () => {
           )}
         </Box>
       </Box>
-      <Button
+      <DebouncedButton
         onPress={() => navigation.navigate('MainTabs')}
         variant="primary"
         width="100%"

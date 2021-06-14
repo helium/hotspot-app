@@ -17,7 +17,6 @@ import { isEqual } from 'lodash'
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import Search from '@assets/images/search.svg'
 import Close from '@assets/images/closeMenu.svg'
-import { h3ToParent } from 'h3-js'
 import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
@@ -250,8 +249,8 @@ const HotspotsView = ({
 
   const handlePresentDetails = useCallback(
     () => async (hotspot: Hotspot) => {
-      if (hotspot.location) {
-        const mapHexId = h3ToParent(hotspot.location, 8)
+      if (hotspot.locationHex) {
+        const mapHexId = hotspot.locationHex
         const hotspots = (await dispatch(
           fetchHotspotsForHex({ hexId: mapHexId }),
         )) as {

@@ -2,7 +2,7 @@ import React, { useCallback } from 'react'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import Box from '../../../components/Box'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import EmojiBlip from '../../../components/EmojiBlip'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
@@ -36,7 +36,7 @@ const OnboardingErrorScreen = () => {
         </Text>
       </Box>
       <Box>
-        <Button
+        <DebouncedButton
           mode="contained"
           variant="primary"
           title={t('hotspot_setup.onboarding_error.next')}

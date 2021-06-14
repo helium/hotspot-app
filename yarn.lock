@@ -1318,10 +1318,10 @@
   dependencies:
     bignumber.js "^9.0.0"
 
-"@helium/http@^3.36.0":
-  version "3.36.0"
-  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.36.0.tgz#be6c735ff8dc501022a9bf691f4a00cc048746bd"
-  integrity sha512-oAGC5BzPUmktimV/rx17gwDvXm7DsjZWePTKuAXRru6SEMtyFiBg14P1Obw36fgTomtHVy+Er4ZEtXS1VkO88w==
+"@helium/http@^3.36.3":
+  version "3.36.3"
+  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.36.3.tgz#1718231ec60912e04b70ccbff96e27c5f99f4a86"
+  integrity sha512-JVpJMsN3KIRpTCIWOaIXS22ZqaQgP/FaSdoQUKk8X+F1b40bLmCsKIhvDPKsQtO4C0SiT65T5MZcMPce9B2v5Q==
   dependencies:
     "@helium/currency" "^3.25.1"
     axios "^0.21.1"
@@ -10696,6 +10696,11 @@ react-native-localize@^1.4.3:
   version "1.4.3"
   resolved "https://registry.yarnpkg.com/react-native-localize/-/react-native-localize-1.4.3.tgz#6fde2fb1e73a7205910419a680cb4734187d556f"
   integrity sha512-n3pi89LBeSzB825CBagyaYRtBS93LdvNz3sI386iXwLSg1ONjEGR1Ez36JBuxZalZgORjrKzV2Pun6MO7iwD6w==
+
+react-native-mail@^6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-mail/-/react-native-mail-6.1.0.tgz#cd7fa390824f5d1182fbe0599d135d221d11d205"
+  integrity sha512-u2JqlHe19OKbXPKx3mNhBTuF7LfM4EkpVG/DkpY5i5G+dgOz8rRtBDKvcuJfUQnMBNav3kwvcwArjOG3rZhJZQ==
 
 react-native-navigation-bar-color@^2.0.1:
   version "2.0.1"

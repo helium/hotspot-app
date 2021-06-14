@@ -21,17 +21,6 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
   syncrobit,
 }
 
-export const HotspotMakerModels = {
-  ...bobcat.hotspots,
-  ...finestra.hotspots,
-  ...helium.hotspots,
-  ...longAP.hotspots,
-  ...nebra.hotspots,
-  ...rak.hotspots,
-  ...sensecap.hotspots,
-  ...syncrobit.hotspots,
-}
-
 export const AntennaModels = {
   ...bobcat.antennas,
   ...customAntennas,
@@ -42,6 +31,17 @@ export const AntennaModels = {
   ...rak.antennas,
   ...sensecap.antennas,
   ...syncrobit.antennas,
+}
+
+export const HotspotMakerModels = {
+  ...bobcat.hotspots,
+  ...finestra.hotspots,
+  ...helium.hotspots,
+  ...longAP.hotspots,
+  ...nebra.hotspots,
+  ...rak.hotspots,
+  ...sensecap.hotspots,
+  ...syncrobit.hotspots,
 }
 
 export type HotspotType = keyof typeof HotspotMakerModels
