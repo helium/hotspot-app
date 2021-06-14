@@ -9,7 +9,7 @@ import {
   HotspotSetupStackParamList,
 } from './hotspotSetupTypes'
 import TextInput from '../../../components/TextInput'
-import Button from '../../../components/Button'
+import Button, { DebouncedButton } from '../../../components/Button'
 import Password from '../../../assets/images/password.svg'
 import Box from '../../../components/Box'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
@@ -100,7 +100,7 @@ const HotspotSetupWifiScreen = () => {
         </Box>
       </KeyboardAvoidingView>
       <Box>
-        <Button
+        <DebouncedButton
           onPress={navNext}
           variant="primary"
           mode="contained"

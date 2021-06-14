@@ -1,4 +1,4 @@
-import HotspotIcon from '@assets/images/finestra.svg'
+import HotspotIcon from './finestra.svg'
 import { MakerHotspot } from '../hotspotMakerTypes'
 import ANTENNAS from './antennas'
 

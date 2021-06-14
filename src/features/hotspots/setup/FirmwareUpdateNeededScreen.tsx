@@ -3,7 +3,7 @@ import React, { useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import BackScreen from '../../../components/BackScreen'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import Text from '../../../components/Text'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
@@ -62,7 +62,7 @@ const FirmwareUpdateNeededScreen = () => {
         </Text>
       </Box>
       <Box>
-        <Button
+        <DebouncedButton
           mode="contained"
           onPress={() => navigation.navigate('MainTabs')}
           title={t('hotspot_setup.firmware_update.next')}

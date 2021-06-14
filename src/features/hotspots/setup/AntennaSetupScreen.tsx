@@ -11,7 +11,7 @@ import {
 } from './hotspotSetupTypes'
 import BackScreen from '../../../components/BackScreen'
 import Text from '../../../components/Text'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import DiscoveryModeIcon from '../../../assets/images/discovery_mode_icon.svg'
 import { useColors } from '../../../theme/themeHooks'
 import HotspotConfigurationPicker from '../../../components/HotspotConfigurationPicker'
@@ -109,7 +109,7 @@ const AntennaSetupScreen = () => {
           />
         </Box>
       </KeyboardAvoidingView>
-      <Button
+      <DebouncedButton
         title={t('generic.next')}
         mode="contained"
         variant="primary"
