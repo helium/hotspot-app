@@ -73,9 +73,6 @@ const HotspotDetails = ({
     rewardSum,
     rewardsChange,
     loading = true,
-    witnessSums,
-    witnessAverage,
-    witnessChange,
     challengeSums,
     challengeSum,
     challengeChange,
@@ -128,18 +125,6 @@ const HotspotDetails = ({
       }),
     )
   }, [dispatch, hotspot?.address, timelineValue])
-
-  const witnessChartData = useMemo(() => {
-    return (
-      witnessSums?.map((w) => ({
-        up: Math.round(w.avg),
-        down: 0,
-        label: w.timestamp,
-        showTime: timelineValue === 1,
-        id: `witness-${timelineValue}-${w.timestamp}`,
-      })) || []
-    )
-  }, [timelineValue, witnessSums])
 
   const challengeChartData = useMemo(() => {
     return (
@@ -360,13 +345,6 @@ const HotspotDetails = ({
               number={rewardSum?.total.toFixed(2)}
               change={rewardsChange}
               data={rewardChartData}
-              loading={loading}
-            />
-            <HotspotDetailChart
-              title={t('hotspot_details.witness_title')}
-              number={witnessAverage?.toFixed(0)}
-              change={witnessChange}
-              data={witnessChartData}
               loading={loading}
             />
             <HotspotDetailChart
