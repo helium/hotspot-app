@@ -102,24 +102,25 @@ const HotspotChecklistItem = ({
   const colors = useColors()
 
   const icon = useMemo(() => {
+    const color = complete ? colors.purpleMain : '#C2C5E4'
     switch (itemKey) {
       default:
       case 'checklist.blocks':
-        return <BlockIcon color={colors.purpleMain} />
+        return <BlockIcon color={color} />
       case 'checklist.status':
-        return <StatusIcon color={colors.purpleMain} />
+        return <StatusIcon color={color} />
       case 'checklist.challenger':
-        return <ChallengerIcon color={colors.purpleMain} />
+        return <ChallengerIcon color={color} />
       case 'checklist.challenge_witness':
-        return <ChallengeWitnessIcon color={colors.purpleMain} />
+        return <ChallengeWitnessIcon color={color} />
       case 'checklist.witness':
-        return <WitnessIcon color={colors.purpleMain} />
+        return <WitnessIcon color={color} />
       case 'checklist.challengee':
-        return <ChallengeeIcon color={colors.purpleMain} />
+        return <ChallengeeIcon color={color} />
       case 'checklist.data_transfer':
-        return <DataIcon color={colors.purpleMain} />
+        return <DataIcon color={color} />
     }
-  }, [colors.purpleMain, itemKey])
+  }, [colors.purpleMain, complete, itemKey])
 
   return (
     <Box
