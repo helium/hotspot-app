@@ -208,8 +208,6 @@ const HotspotChecklist = ({
     ],
   )
 
-  // .sort((a, b) => Number(b.complete) - Number(a.complete))
-
   const percentComplete = useMemo(() => {
     let count = 0
     checklistData.forEach((i) => {

@@ -1,4 +1,4 @@
-import React, { memo, ReactElement, useCallback, useState } from 'react'
+import React, { memo, useCallback, useState } from 'react'
 import { Carousel, Pagination } from 'react-native-snap-carousel'
 import { Dimensions, Platform } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
@@ -13,7 +13,6 @@ export type ChecklistItem = {
   complete?: boolean
   showAuto?: boolean
   autoText?: string
-  Icon?: ReactElement
 }
 
 type Props = {
