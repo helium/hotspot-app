@@ -154,13 +154,13 @@ const HotspotChecklistItem = ({
             {icon}
           </Box>
           <Box paddingHorizontal="l" width={220}>
-            <Box flexDirection="row" flexWrap="wrap">
-              <Text
-                variant="body2"
-                marginVertical="s"
-                color="grayText"
-                marginRight="s"
-              >
+            <Box
+              flexDirection="row"
+              flexWrap="wrap"
+              alignItems="center"
+              marginBottom="xs"
+            >
+              <Text variant="body2" color="grayText" marginRight="s">
                 {t('checklist.item_count', {
                   index: index + 1,
                   total: totalCount,
@@ -170,7 +170,6 @@ const HotspotChecklistItem = ({
                 textColor="grayBox"
                 visible={!complete}
                 backgroundColor="grayText"
-                autoText={autoText}
                 auto={t('checklist.pending')}
               />
               <CompletePill

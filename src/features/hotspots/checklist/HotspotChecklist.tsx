@@ -170,6 +170,7 @@ const HotspotChecklist = ({
         description: witnessStatus,
         complete: witnesses && witnesses.length > 0,
         showAuto: true,
+        autoText: t('checklist.auto_refresh'),
       },
       {
         key: 'checklist.challengee',
