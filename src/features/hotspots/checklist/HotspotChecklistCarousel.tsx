@@ -1,6 +1,6 @@
 import React, { memo, ReactElement, useCallback, useState } from 'react'
 import { Carousel, Pagination } from 'react-native-snap-carousel'
-import { Platform } from 'react-native'
+import { Dimensions, Platform } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
 import HotspotChecklistItem from './HotspotChecklistItem'
 import { wp } from '../../../utils/layout'
@@ -27,12 +27,29 @@ const HotspotChecklistCarousel = ({
 }: Props) => {
   const [slideIndex, setSlideIndex] = useState(0)
   const colors = useColors()
+  const isAndroid = Platform.OS === 'android'
 
   const keyExtractor = useCallback((item: ChecklistItem, index: number) => {
     return `${item.key}.${index}`
   }, [])
 
-  const isAndroid = Platform.OS === 'android'
+  const onScrollEnd = useCallback(
+    (e) => {
+      const windowWidth = Dimensions.get('window').width
+      const pageNum = Math.min(
+        Math.max(
+          Math.floor(e.nativeEvent.contentOffset.x / windowWidth + 0.5),
+          0,
+        ),
+        checklistData.length,
+      )
+      if (slideIndex !== pageNum) {
+        setSlideIndex(pageNum)
+      }
+    },
+    [checklistData.length, slideIndex],
+  )
+
   const renderItem = useCallback(
     (item: { index: number; item: ChecklistItem }) => {
       return (
@@ -52,33 +69,33 @@ const HotspotChecklistCarousel = ({
     },
     [isAndroid, percentComplete, checklistData.length],
   )
-  if (isAndroid) {
-    return (
-      <FlatList
-        data={checklistData}
-        renderItem={renderItem}
-        horizontal
-        keyExtractor={keyExtractor}
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-      />
-    )
-  }
 
   return (
     <>
-      <Carousel
-        layout="default"
-        firstItem={0}
-        activeSlideAlignment="center"
-        vertical={false}
-        data={checklistData}
-        renderItem={renderItem}
-        sliderWidth={wp(100)}
-        itemWidth={wp(90)}
-        inactiveSlideScale={1}
-        onScrollIndexChanged={(i) => setSlideIndex(i)}
-      />
+      {isAndroid ? (
+        <FlatList
+          data={checklistData}
+          renderItem={renderItem}
+          horizontal
+          keyExtractor={keyExtractor}
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          onMomentumScrollEnd={onScrollEnd}
+        />
+      ) : (
+        <Carousel
+          layout="default"
+          firstItem={0}
+          activeSlideAlignment="center"
+          vertical={false}
+          data={checklistData}
+          renderItem={renderItem}
+          sliderWidth={wp(100)}
+          itemWidth={wp(90)}
+          inactiveSlideScale={1}
+          onScrollIndexChanged={(i) => setSlideIndex(i)}
+        />
+      )}
       <Pagination
         dotsLength={checklistData.length}
         activeDotIndex={slideIndex}
