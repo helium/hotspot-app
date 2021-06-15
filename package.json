@@ -81,6 +81,7 @@
     "h3-js": "3.7.1",
     "haversine-distance": "^1.2.1",
     "i18next": "^19.8.3",
+    "jest-expo": "^41.0.0",
     "lodash": "^4.17.20",
     "lottie-ios": "3.1.8",
     "lottie-react-native": "^4.0.2",
