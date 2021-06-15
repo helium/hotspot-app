@@ -20,6 +20,7 @@ type Props = {
   numberOfLines?: number
   isLast?: boolean
   isFirst?: boolean
+  testID?: string
 }
 
 const InputField = ({
@@ -35,6 +36,7 @@ const InputField = ({
   numberOfLines,
   isLast = false,
   isFirst = false,
+  testID,
 }: Props) => {
   const inputRef = useRef<TextInput | null>(null)
 
@@ -73,6 +75,7 @@ const InputField = ({
             defaultValue={defaultValue}
             editable={!locked}
             multiline
+            testID={testID}
             blurOnSubmit
             autoCompleteType="off"
             textContentType="none"

@@ -212,6 +212,7 @@ const SendDetailsForm = ({
       />
       <InputField
         type="numeric"
+        testID="AmountInput"
         defaultValue={amount}
         onChange={setFormAmount}
         value={amount}
