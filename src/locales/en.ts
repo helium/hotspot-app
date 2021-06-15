@@ -812,6 +812,11 @@ export default {
       message:
         "When this Hotspot transmits a beacon, any Hotspots that hear it will have its mining rewards scaled by this number. This Hotspot's Challengee reward will also scale by this number.",
     },
+    witness_prompt: {
+      title: 'Witnesses',
+      message:
+        'The Hotspots in this list have witnessed a Beacon from {{hotspotName}} recently.\n\nFluctuations are normal and expected. The number of Hotspots will reset to zero if you update location, antenna, or elevation',
+    },
   },
   transfer: {
     title: 'Transfer Hotspot',

@@ -34,8 +34,10 @@ import ShareHotspot from '../../../components/ShareHotspot'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Articles from '../../../constants/articles'
 import HotspotListItem from '../../../components/HotspotListItem'
+import Info from '../../../assets/images/info-hollow.svg'
 import { distance } from '../../../utils/location'
 import { useColors } from '../../../theme/themeHooks'
+import TouchableHighlightBox from '../../../components/TouchableHighlightBox'
 
 type Props = {
   hotspotAddress?: string
@@ -240,6 +242,28 @@ const HotspotDetails = ({
     [getDistance, onSelectHotspot],
   )
 
+  const showWitnessAlert = useCallback(() => {
+    Alert.alert(
+      t('hotspot_details.witness_prompt.title'),
+      t('hotspot_details.witness_prompt.message', {
+        hotspotName: animalName(hotspot?.address || ''),
+      }),
+      [
+        {
+          text: t('generic.ok'),
+        },
+        {
+          text: t('generic.readMore'),
+          style: 'cancel',
+          onPress: () => {
+            if (Linking.canOpenURL(Articles.Witnesses))
+              Linking.openURL(Articles.Witnesses)
+          },
+        },
+      ],
+    )
+  }, [hotspot?.address, t])
+
   if (!hotspot) return null
 
   return (
@@ -365,13 +389,30 @@ const HotspotDetails = ({
               </Box>
             ) : (
               <>
-                <Box backgroundColor="grayBox" marginBottom="xxs" marginTop="m">
-                  <Text variant="body1Medium" color="grayDarkText" padding="m">
-                    {t('hotspot_details.num_witnesses', {
-                      count: witnesses?.length || 0,
-                    })}
-                  </Text>
-                </Box>
+                <TouchableHighlightBox
+                  alignItems="center"
+                  backgroundColor="grayBox"
+                  marginBottom="xxs"
+                  marginTop="m"
+                  flexDirection="row"
+                  underlayColor="#EBEDF9"
+                  onPress={showWitnessAlert}
+                >
+                  <>
+                    <Text
+                      variant="body1Medium"
+                      color="grayDarkText"
+                      paddingLeft="m"
+                      paddingRight="s"
+                      paddingVertical="m"
+                    >
+                      {t('hotspot_details.num_witnesses', {
+                        count: witnesses?.length || 0,
+                      })}
+                    </Text>
+                    <Info color={colors.blueMain} />
+                  </>
+                </TouchableHighlightBox>
                 {witnesses?.map((witness) => renderWitnessItem(witness))}
               </>
             )}
