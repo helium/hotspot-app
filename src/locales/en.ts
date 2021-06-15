@@ -885,9 +885,9 @@ export default {
         'Hotspots must be fully synced before they can mine. New Hotspots can take up to 96 hours to sync.',
       full: 'Hotspot is fully synced.',
       partial:
-        'Hotspot is {{count}} block behind the Helium blockchain and is roughly {{percent}}% synced.',
+        'Hotspot is {{count}} block behind the Helium blockchain and is roughly {{percent}}% synced. The blockchain is currently at block {{height}}.',
       partial_plural:
-        'Hotspot is {{count}} blocks behind the Helium blockchain and is roughly {{percent}}% synced.',
+        'Hotspot is {{count}} blocks behind the Helium blockchain and is roughly {{percent}}% synced. The blockchain is currently at block {{height}}.',
       title: 'Sync to Blockchain',
     },
     status: {
@@ -921,19 +921,22 @@ export default {
       success_plural:
         'Hotspot last participated in a challenge {{count}} blocks ago.',
       fail:
-        'Online Hotspots are challenged every 480 blocks (or 8 hours) and can take some time before being challenged.',
+        'Online Hotspots are challenged every 480 blocks (or 8 hours). Hotspots send a Beacon (also known as a challenge) and if other Hotspot witness, they pass.',
       title: 'Pass a Challenge',
     },
     data_transfer: {
       success: 'Hotspot has transferred data packets recently.',
       fail:
-        "Hotspots automatically transfer device data and earn HNT. This Hotspot hasn't transferred data yet.",
+        "Hotspots automatically transfer device data from nearby sensors. This Hotspot hasn't transferred data yet.",
       title: 'Transfer Data',
     },
-    auto: 'AUTO',
-    auto_hours: 'EVERY FEW HOURS',
+    auto: 'AUTOMATIC',
+    auto_hours: 'EVERY 8 HOURS',
+    auto_refresh: 'REFRESHES OFTEN',
     complete: 'COMPLETE',
     online: 'ONLINE',
+    pending: 'PENDING',
+    item_count: '{{index}} of {{total}}',
   },
   discovery: {
     troubleshooting_guide: 'Troubleshooting Guide',

@@ -23,6 +23,15 @@ const generateArc = (percentage: number, radius: number) => {
   return `A${rx} ${ry} ${xAxisRotation} ${largeArcFlag} ${sweepFlag} ${x} ${y}`
 }
 
+type Props = {
+  percentage?: number
+  blankColor?: string
+  progressColor?: string
+  centerColor?: string
+  progressWidth?: number
+  size?: number
+}
+
 const CircleProgress = ({
   percentage = 0,
   blankColor = '#E6E8FA',
@@ -30,10 +39,10 @@ const CircleProgress = ({
   centerColor = 'white',
   progressWidth = 10,
   size = 32,
-}) => {
+}: Props) => {
   const half = size / 2
   return (
-    <Box style={{ width: size, height: size }}>
+    <Box width={size} height={size}>
       <Svg width={size} height={size}>
         <Circle cx={half} cy={half} r={half} fill={blankColor} />
         <Path
