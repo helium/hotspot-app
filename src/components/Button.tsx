@@ -19,7 +19,6 @@ type Props = BoxProps<Theme> & {
   color?: Colors
   backgroundColor?: Colors
   icon?: Element
-  testID?: string
 }
 
 type ButtonVariant = 'primary' | 'secondary' | 'destructive'
@@ -41,7 +40,6 @@ const Button = ({
   height,
   icon,
   backgroundColor,
-  testID,
   ...rest
 }: Props) => {
   const getBackground = (): Colors | undefined => {
@@ -70,12 +68,7 @@ const Button = ({
   }
 
   return (
-    <Box
-      style={{ opacity: disabled ? 0.2 : 1 }}
-      {...rest}
-      height={height}
-      testID={testID}
-    >
+    <Box style={{ opacity: disabled ? 0.2 : 1 }} {...rest} height={height}>
       <TouchableOpacityBox
         height={height}
         backgroundColor={getBackground()}
