@@ -7,13 +7,15 @@ export enum SyncStatus {
   none,
 }
 
+export const SYNC_BLOCK_BUFFER = 500
+
 export const getSyncStatus = (hotspotHeight: number, blockHeight?: number) => {
   if (!blockHeight) return { status: SyncStatus.none, percent: 0 }
 
   const syncedRatio = hotspotHeight / blockHeight
   const percentSynced = round(syncedRatio * 100, 2)
   const within500Blocks = hotspotHeight
-    ? blockHeight - hotspotHeight <= 500
+    ? blockHeight - hotspotHeight <= SYNC_BLOCK_BUFFER
     : false
   if (percentSynced === 100 || within500Blocks) {
     return { status: SyncStatus.full, percent: 100 }

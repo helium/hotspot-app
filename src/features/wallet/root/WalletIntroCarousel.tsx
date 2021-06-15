@@ -111,7 +111,7 @@ const WalletIntroCarousel = () => {
           itemWidth={wp(80)}
           inactiveSlideScale={1}
           activeSlideAlignment="start"
-          onScrollIndexChanged={(i) => setSlideIndex(i)}
+          onScrollIndexChanged={setSlideIndex}
         />
         <Pagination
           dotsLength={slides.length}

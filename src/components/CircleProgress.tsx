@@ -42,7 +42,7 @@ const CircleProgress = ({
 }: Props) => {
   const half = size / 2
   return (
-    <Box style={{ width: size, height: size }}>
+    <Box width={size} height={size}>
       <Svg width={size} height={size}>
         <Circle cx={half} cy={half} r={half} fill={blankColor} />
         <Path

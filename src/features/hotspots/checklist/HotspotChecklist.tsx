@@ -16,6 +16,7 @@ import HotspotChecklistCarousel, {
 } from './HotspotChecklistCarousel'
 import { wp } from '../../../utils/layout'
 import { Theme } from '../../../theme/theme'
+import { SYNC_BLOCK_BUFFER } from '../../../utils/hotspotUtils'
 
 type Props = BoxProps<Theme> & {
   hotspot: Hotspot
@@ -68,7 +69,7 @@ const HotspotChecklist = ({
     if (!hotspot?.status?.height || !blockHeight) {
       return t('checklist.blocks.not')
     }
-    if (blockHeight - hotspot.status.height < 500) {
+    if (blockHeight - hotspot.status.height < SYNC_BLOCK_BUFFER) {
       return t('checklist.blocks.full')
     }
     return t('checklist.blocks.partial', {
@@ -139,7 +140,7 @@ const HotspotChecklist = ({
         complete:
           (blockHeight &&
             hotspot?.status?.height &&
-            blockHeight - hotspot.status.height < 500) ||
+            blockHeight - hotspot.status.height < SYNC_BLOCK_BUFFER) ||
           false,
         showAuto: true,
       },

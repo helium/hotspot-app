@@ -102,7 +102,7 @@ const HotspotChecklistItem = ({
   const colors = useColors()
 
   const icon = useMemo(() => {
-    const color = complete ? colors.purpleMain : '#C2C5E4'
+    const color = complete ? colors.purpleMain : colors.purpleGrayLight
     switch (itemKey) {
       default:
       case 'checklist.blocks':
@@ -120,7 +120,7 @@ const HotspotChecklistItem = ({
       case 'checklist.data_transfer':
         return <DataIcon color={color} />
     }
-  }, [colors.purpleMain, complete, itemKey])
+  }, [colors.purpleMain, colors.purpleGrayLight, complete, itemKey])
 
   return (
     <Box
@@ -137,7 +137,7 @@ const HotspotChecklistItem = ({
         <Box flexDirection="row">
           <CircleProgress
             size={110}
-            progressColor="#474DFF"
+            progressColor={colors.purpleMain}
             percentage={percentComplete}
             progressWidth={38}
           />

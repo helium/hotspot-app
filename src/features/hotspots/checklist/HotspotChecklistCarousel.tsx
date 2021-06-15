@@ -49,17 +49,18 @@ const HotspotChecklistCarousel = ({
     [checklistData.length, slideIndex],
   )
 
+  type ListItem = { index: number; item: ChecklistItem }
   const renderItem = useCallback(
-    (item: { index: number; item: ChecklistItem }) => {
+    ({ index, item }: ListItem) => {
       return (
         <HotspotChecklistItem
-          index={item.index}
-          title={item.item.title}
-          description={item.item.description}
-          complete={item.item.complete}
-          showAuto={item.item.showAuto}
-          autoText={item.item.autoText}
-          itemKey={item.item.key}
+          index={index}
+          title={item.title}
+          description={item.description}
+          complete={item.complete}
+          showAuto={item.showAuto}
+          autoText={item.autoText}
+          itemKey={item.key}
           percentComplete={percentComplete}
           isAndroid={isAndroid}
           totalCount={checklistData.length}
@@ -92,7 +93,7 @@ const HotspotChecklistCarousel = ({
           sliderWidth={wp(100)}
           itemWidth={wp(90)}
           inactiveSlideScale={1}
-          onScrollIndexChanged={(i) => setSlideIndex(i)}
+          onScrollIndexChanged={setSlideIndex}
         />
       )}
       <Pagination
