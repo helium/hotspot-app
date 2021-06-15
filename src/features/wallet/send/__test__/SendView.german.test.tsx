@@ -10,7 +10,29 @@ const { Screen, Navigator } = createStackNavigator()
 
 afterEach(cleanup)
 
-it('renders correct account balance', async () => {
+jest.mock('react-native-localize', () => ({
+  getCountry: () => 'DE',
+  getCurrencies: () => ['DM'],
+  findBestAvailableLanguage: () => ({
+    languageTag: 'de',
+    isRTL: false,
+  }),
+  getLocales: () => [
+    {
+      countryCode: 'DE',
+      languageTag: 'de',
+      languageCode: 'de',
+      isRTL: false,
+    },
+  ],
+  getNumberFormatSettings: () => ({
+    decimalSeparator: ',',
+    groupingSeparator: '.',
+  }),
+  usesMetricSystem: () => true,
+}))
+
+it('renders correct German account balance', async () => {
   const { findByText } = render(
     <Navigator>
       <Screen name="SendView" component={SendView} />
@@ -25,11 +47,11 @@ it('renders correct account balance', async () => {
       },
     },
   )
-  const text = await findByText('799.429 HNT Available')
+  const text = await findByText('799,429 HNT Available')
   expect(text).toBeDefined()
 })
 
-it('comma formats amount separator', async () => {
+it('formats German amount separator', async () => {
   const { findByTestId } = render(
     <Navigator>
       <Screen name="SendView" component={SendView} />
@@ -45,6 +67,6 @@ it('comma formats amount separator', async () => {
     },
   )
   const amountInput = await findByTestId('AmountInput')
-  fireEvent.changeText(amountInput, '1000.35')
-  expect(amountInput.props.value).toBe('1,000.35')
+  fireEvent.changeText(amountInput, '1000,35')
+  expect(amountInput.props.value).toBe('1.000,35')
 })
