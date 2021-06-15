@@ -766,6 +766,9 @@ export default {
     pass_rate: 'PASS RATE',
     reward_title: 'HNT Rewards',
     witness_title: 'Average Witnesses',
+    num_witnesses: '{{count}} Witness',
+    num_witnesses_plural: '{{count}} Witnesses',
+    distance_away: '{{distance}} away',
     challenge_title: 'Challenges',
     challenge_sub_title: '(witness, challenger, or challengee)',
     picker_title: 'Past',
@@ -808,6 +811,11 @@ export default {
       title: 'Transmit Scale',
       message:
         "When this Hotspot transmits a beacon, any Hotspots that hear it will have its mining rewards scaled by this number. This Hotspot's Challengee reward will also scale by this number.",
+    },
+    witness_prompt: {
+      title: 'Witnesses',
+      message:
+        'The Hotspots in this list have witnessed a Beacon from {{hotspotName}} recently.\n\nFluctuations are normal and expected. The number of Hotspots will reset to zero if you update location, antenna, or elevation',
     },
   },
   transfer: {

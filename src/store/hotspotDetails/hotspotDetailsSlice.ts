@@ -6,7 +6,6 @@ import {
   getHotspotRewards,
   getHotspotRewardsSum,
   getHotspotWitnesses,
-  getHotspotWitnessSums,
 } from '../../utils/appDataClient'
 import { calculatePercentChange } from '../../features/hotspots/details/RewardsHelper'
 import {
@@ -20,61 +19,6 @@ import {
 type FetchDetailsParams = {
   address: string
   numDays: number
-}
-
-const getMissingHourlyValue = (i: number, arr: Sum[]) => {
-  const averages = arr.map((w) => w.avg)
-  const lastNonZero = averages
-    .slice(0, i)
-    .filter((a) => a > 0)
-    .pop()
-  const nextNonZero = averages.slice(i).filter((a) => a > 0)[0]
-  return lastNonZero || nextNonZero || 0
-}
-
-const fillMissingHourlyValues = (array: Sum[]) => {
-  array.forEach((sum, i) => {
-    if (sum.avg === 0) {
-      sum.avg = getMissingHourlyValue(i, array)
-    }
-  })
-}
-
-const fetchHotspotWitnessSums = async (
-  params: FetchDetailsParams,
-  today: Date,
-  previousMaxDate: Date,
-  bucket: Bucket,
-) => {
-  previousMaxDate.setDate(previousMaxDate.getDate() - params.numDays)
-  const witnessSums = await getHotspotWitnessSums({
-    address: params.address,
-    minTime: `-${params.numDays} day`,
-    maxTime: today,
-    bucket,
-  })
-  const witnessSumsPrevious = await getHotspotWitnessSums({
-    address: params.address,
-    minTime: `-${params.numDays} day`,
-    maxTime: previousMaxDate,
-    bucket,
-  })
-  if (bucket === 'hour') {
-    fillMissingHourlyValues(witnessSums)
-    fillMissingHourlyValues(witnessSumsPrevious)
-  }
-  witnessSums.reverse()
-  const totalAvg = witnessSums.reduce((a, b) => ({ avg: a.avg + b.avg } as any))
-  const prevAvg = witnessSumsPrevious.reduce(
-    (a, b) => ({ avg: a.avg + b.avg } as any),
-  )
-  const witnessAverage = totalAvg.avg / witnessSums.length
-  const witnessAveragePrev = prevAvg.avg / witnessSumsPrevious.length
-  return {
-    witnessSums,
-    witnessAverage,
-    witnessChange: calculatePercentChange(witnessAverage, witnessAveragePrev),
-  }
 }
 
 export const fetchHotspotChallengeSums = async (
@@ -156,14 +100,12 @@ export const fetchHotspotChartData = createAsyncThunk<
       getHotspotRewardsSum(params.address, params.numDays),
       getHotspotRewardsSum(params.address, params.numDays, endDate),
       getHotspotRewards(params.address, params.numDays),
-      fetchHotspotWitnessSums(params, startDate, endDate, bucket),
       fetchHotspotChallengeSums(params, startDate, endDate, bucket),
     ])
     const rewardSum = data[0]
     const pastRewardSum = data[1]
     const rewards = data[2]
-    const witnessSumData = data[3]
-    const challengeSumData = data[4]
+    const challengeSumData = data[3]
     return {
       rewardSum,
       rewards,
@@ -171,7 +113,6 @@ export const fetchHotspotChartData = createAsyncThunk<
         rewardSum.total,
         pastRewardSum.total,
       ),
-      ...witnessSumData,
       ...challengeSumData,
     }
   },
@@ -181,9 +122,6 @@ type HotspotChartData = {
   rewardSum?: Sum
   rewards?: Reward[]
   rewardsChange?: number
-  witnessSums?: Sum[]
-  witnessAverage?: number
-  witnessChange?: number
   challengeSums?: Sum[]
   challengeSum?: number
   challengeChange?: number
