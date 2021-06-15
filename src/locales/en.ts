@@ -876,9 +876,9 @@ export default {
         'Hotspots must be fully synced before they can mine. New Hotspots can take up to 96 hours to sync.',
       full: 'Hotspot is fully synced.',
       partial:
-        'Hotspot is {{count}} block behind the Helium blockchain and is roughly {{percent}}% synced.',
+        'Hotspot is {{count}} block behind the Helium blockchain and is roughly {{percent}}% synced. The blockchain is currently at block {{height}}.',
       partial_plural:
-        'Hotspot is {{count}} blocks behind the Helium blockchain and is roughly {{percent}}% synced.',
+        'Hotspot is {{count}} blocks behind the Helium blockchain and is roughly {{percent}}% synced. The blockchain is currently at block {{height}}.',
       title: 'Sync to Blockchain',
     },
     status: {
@@ -921,10 +921,12 @@ export default {
         "Hotspots automatically transfer device data and earn HNT. This Hotspot hasn't transferred data yet.",
       title: 'Transfer Data',
     },
-    auto: 'AUTO',
+    auto: 'AUTOMATIC',
     auto_hours: 'EVERY FEW HOURS',
     complete: 'COMPLETE',
     online: 'ONLINE',
+    pending: 'PENDING',
+    item_count: '{{index}} of {{total}}',
   },
   discovery: {
     troubleshooting_guide: 'Troubleshooting Guide',

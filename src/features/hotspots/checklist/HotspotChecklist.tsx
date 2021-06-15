@@ -74,6 +74,7 @@ const HotspotChecklist = ({
     return t('checklist.blocks.partial', {
       count: blockHeight - hotspot.status.height,
       percent: ((hotspot.status.height / blockHeight) * 100).toFixed(2),
+      height: hotspot.status.height,
     })
   }, [blockHeight, hotspot?.status?.height, t])
 
@@ -129,72 +130,94 @@ const HotspotChecklist = ({
     [dataTransferTxn, t],
   )
 
-  const checklistData: ChecklistItem[] = [
-    {
-      key: 'checklist.blocks',
-      title: t('checklist.blocks.title'),
-      description: syncStatus,
-      complete:
-        (blockHeight &&
-          hotspot?.status?.height &&
-          blockHeight - hotspot.status.height < 500) ||
-        false,
-      showAuto: true,
-      background: 1,
-    },
-    {
-      key: 'checklist.status',
-      title: t('checklist.status.title'),
-      description: hotspotStatus,
-      complete: hotspot?.status?.online === 'online',
-      showAuto: false,
-      completeText: t('checklist.online'),
-      background: 1,
-    },
-    {
-      key: 'checklist.challenger',
-      title: t('checklist.challenger.title'),
-      description: challengerStatus,
-      complete: challengerTxn !== undefined,
-      showAuto: true,
-      background: 2,
-    },
-    {
-      key: 'checklist.challenge_witness',
-      title: t('checklist.challenge_witness.title'),
-      description: challengeWitnessStatus,
-      complete: witnessTxn !== undefined,
-      showAuto: true,
-      background: 4,
-    },
-    {
-      key: 'checklist.witness',
-      title: t('checklist.witness.title'),
-      description: witnessStatus,
-      complete: witnesses && witnesses.length > 0,
-      showAuto: true,
-      background: 4,
-    },
-    {
-      key: 'checklist.challengee',
-      title: t('checklist.challengee.title'),
-      description: challengeeStatus,
-      complete: challengeeTxn !== undefined,
-      showAuto: true,
-      autoText: t('checklist.auto_hours'),
-      background: 3,
-    },
-    {
-      key: 'checklist.data_transfer',
-      title: t('checklist.data_transfer.title'),
-      description: dataTransferStatus,
-      complete: dataTransferTxn !== undefined,
-      showAuto: true,
-      background: 3,
-    },
-  ]
+  const checklistData: ChecklistItem[] = useMemo(
+    () => [
+      {
+        key: 'checklist.blocks',
+        title: t('checklist.blocks.title'),
+        description: syncStatus,
+        complete:
+          (blockHeight &&
+            hotspot?.status?.height &&
+            blockHeight - hotspot.status.height < 500) ||
+          false,
+        showAuto: true,
+      },
+      {
+        key: 'checklist.status',
+        title: t('checklist.status.title'),
+        description: hotspotStatus,
+        complete: hotspot?.status?.online === 'online',
+        showAuto: false,
+      },
+      {
+        key: 'checklist.challenger',
+        title: t('checklist.challenger.title'),
+        description: challengerStatus,
+        complete: challengerTxn !== undefined,
+        showAuto: true,
+      },
+      {
+        key: 'checklist.challenge_witness',
+        title: t('checklist.challenge_witness.title'),
+        description: challengeWitnessStatus,
+        complete: witnessTxn !== undefined,
+        showAuto: true,
+      },
+      {
+        key: 'checklist.witness',
+        title: t('checklist.witness.title'),
+        description: witnessStatus,
+        complete: witnesses && witnesses.length > 0,
+        showAuto: true,
+      },
+      {
+        key: 'checklist.challengee',
+        title: t('checklist.challengee.title'),
+        description: challengeeStatus,
+        complete: challengeeTxn !== undefined,
+        showAuto: true,
+        autoText: t('checklist.auto_hours'),
+      },
+      {
+        key: 'checklist.data_transfer',
+        title: t('checklist.data_transfer.title'),
+        description: dataTransferStatus,
+        complete: dataTransferTxn !== undefined,
+        showAuto: true,
+      },
+    ],
+    [
+      blockHeight,
+      challengeWitnessStatus,
+      challengeeStatus,
+      challengeeTxn,
+      challengerStatus,
+      challengerTxn,
+      dataTransferStatus,
+      dataTransferTxn,
+      hotspot?.status?.height,
+      hotspot?.status?.online,
+      hotspotStatus,
+      syncStatus,
+      t,
+      witnessStatus,
+      witnessTxn,
+      witnesses,
+    ],
+  )
 
-  checklistData.sort((a, b) => Number(b.complete) - Number(a.complete))
+  // .sort((a, b) => Number(b.complete) - Number(a.complete))
+
+  const percentComplete = useMemo(() => {
+    let count = 0
+    checklistData.forEach((i) => {
+      if (i.complete) {
+        count += 1
+      }
+    })
+    return (count / checklistData.length) * 100
+  }, [checklistData])
 
   if (!visible) return null
 
@@ -204,22 +227,39 @@ const HotspotChecklist = ({
         <SkeletonPlaceholder>
           <SkeletonPlaceholder.Item flexDirection="row">
             <SkeletonPlaceholder.Item
-              width={wp(80)}
-              height={180}
-              marginStart={spacing.l}
-              borderRadius={8}
+              width={115}
+              height={115}
+              marginLeft={spacing.xl}
+              marginRight={spacing.m}
+              borderRadius={60}
             />
-            <SkeletonPlaceholder.Item
-              width={wp(80)}
-              height={180}
-              marginStart={spacing.s}
-              borderRadius={8}
-            />
+            <SkeletonPlaceholder.Item flexDirection="column">
+              <SkeletonPlaceholder.Item
+                width={wp(25)}
+                height={20}
+                borderRadius={8}
+              />
+              <SkeletonPlaceholder.Item
+                width={wp(45)}
+                height={20}
+                marginTop={spacing.s}
+                borderRadius={8}
+              />
+              <SkeletonPlaceholder.Item
+                width={wp(45)}
+                height={70}
+                marginTop={spacing.s}
+                borderRadius={8}
+              />
+            </SkeletonPlaceholder.Item>
           </SkeletonPlaceholder.Item>
         </SkeletonPlaceholder>
       )}
       {!loadingActivity && (
-        <HotspotChecklistCarousel checklistData={checklistData} />
+        <HotspotChecklistCarousel
+          checklistData={checklistData}
+          percentComplete={percentComplete}
+        />
       )}
     </Box>
   )
