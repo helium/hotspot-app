@@ -653,7 +653,8 @@ export default {
     title: 'Hotspot Settings',
     pairing: {
       title: 'Update Wi-Fi or Run Diagnostics',
-      subtitle: 'Pairing required before proceeding.',
+      subtitle:
+        'Pairing required before proceeding.\nSome Hotspot models are not supported, check with your manufacturer.',
       scan: 'Pair',
     },
     transfer: {
@@ -765,6 +766,9 @@ export default {
     pass_rate: 'PASS RATE',
     reward_title: 'HNT Rewards',
     witness_title: 'Average Witnesses',
+    num_witnesses: '{{count}} Witness',
+    num_witnesses_plural: '{{count}} Witnesses',
+    distance_away: '{{distance}} away',
     challenge_title: 'Challenges',
     challenge_sub_title: '(witness, challenger, or challengee)',
     picker_title: 'Past',
@@ -807,6 +811,11 @@ export default {
       title: 'Transmit Scale',
       message:
         "When this Hotspot transmits a beacon, any Hotspots that hear it will have its mining rewards scaled by this number. This Hotspot's Challengee reward will also scale by this number.",
+    },
+    witness_prompt: {
+      title: 'Witnesses',
+      message:
+        'The Hotspots in this list have witnessed a Beacon from {{hotspotName}} recently.\n\nFluctuations are normal and expected. The number of Hotspots will reset to zero if you update location, antenna, or elevation',
     },
   },
   transfer: {
