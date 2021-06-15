@@ -73,7 +73,7 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
   }
 
   return (
-    <Box padding="l" minHeight={413}>
+    <Box padding="l" minHeight={483}>
       <Text variant="h4" color="black">
         {t('hotspot_settings.pairing.title')}
       </Text>
