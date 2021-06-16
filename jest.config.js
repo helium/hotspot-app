@@ -15,4 +15,5 @@ module.exports = {
     '@react-native-mapbox-gl/maps/setup-jest',
   ],
   transformIgnorePatterns: ['node_modules/(?!@helium)/'],
+  preset: 'react-native',
 }
