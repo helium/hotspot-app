@@ -12,6 +12,7 @@ import {
   getOnboardingRecord,
   OnboardingRecord,
 } from '../../utils/stakingClient'
+import * as Logger from '../../utils/logger'
 
 export type HotspotStatus = 'owned' | 'global' | 'new' | 'error' | 'initial'
 type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
@@ -103,7 +104,7 @@ export const fetchConnectedHotspotDetails = createAsyncThunk<
     const [hotspot, onboardingRecord] = await Promise.all([
       getHotspotDetails(details.address).catch((e) => {
         // Hotspot may not yet exist on the chain, let it fail silently
-        console.log('failed to get hotspot details', e)
+        Logger.breadcrumb('failed to get hotspot details', e)
       }),
       getOnboardingRecord(details.onboardingAddress),
     ])

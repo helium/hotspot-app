@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react'
-import { Animated, Easing } from 'react-native'
+import { Animated, Easing, ImageSourcePropType } from 'react-native'
 import Box from '../Box'
 
 const RingLoader = ({
@@ -13,7 +13,7 @@ const RingLoader = ({
 }) => {
   const rotateAnim = useRef(new Animated.Value(0))
 
-  const images: Record<string, any> = {
+  const images: Record<string, ImageSourcePropType> = {
     purple: {
       outer: require('../../assets/images/ring-loader-purple.png'),
       inner: require('../../assets/images/ring-loader-inner-purple.png'),

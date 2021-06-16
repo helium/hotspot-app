@@ -41,10 +41,10 @@ export const fetchHotspotChallengeSums = async (
   })
   challengeSums.reverse()
   const totalSum = challengeSums.reduce(
-    (a, b) => ({ sum: a.sum + b.sum } as any),
+    (a, b) => ({ sum: a.sum + b.sum } as { sum: number }),
   )
   const prevSum = challengeSumsPrevious.reduce(
-    (a, b) => ({ sum: a.sum + b.sum } as any),
+    (a, b) => ({ sum: a.sum + b.sum } as { sum: number }),
   )
   return {
     challengeSums,

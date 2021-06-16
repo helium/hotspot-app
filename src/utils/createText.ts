@@ -57,7 +57,7 @@ const createText = <
   Props = React.ComponentProps<typeof Text> & { children?: React.ReactNode },
   EnableShorthand extends boolean = true
 >(
-  BaseComponent: React.ComponentType<any> = Text,
+  BaseComponent: React.ComponentType<unknown> = Text,
 ) => {
   return createRestyleComponent<
     TextProps<Theme, EnableShorthand> &

@@ -1,6 +1,6 @@
 import React, { memo } from 'react'
 import Box from '../../components/Box'
-import { Notification } from '../../store/account/accountSlice'
+import { Notification } from '../../store/notifications/notificationSlice'
 import NotificationItem from './NotificationItem'
 
 type Props = {

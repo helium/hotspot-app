@@ -26,6 +26,7 @@ const useBluetooth = () => {
     instanceRef.current = newInstance
 
     if (__DEV__) {
+      // eslint-disable-next-line no-console
       console.log('setting ble log level to verbose')
       instanceRef.current.setLogLevel(LogLevel.Verbose)
     }

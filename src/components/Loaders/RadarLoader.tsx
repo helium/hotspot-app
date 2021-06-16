@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react'
-import { Animated, Easing } from 'react-native'
+import { Animated, Easing, ImageSourcePropType } from 'react-native'
 import Box from '../Box'
 
 const RadarLoader = ({
@@ -11,7 +11,7 @@ const RadarLoader = ({
 }) => {
   const rotateAnim = useRef(new Animated.Value(0))
 
-  const images: Record<string, any> = {
+  const images: Record<string, ImageSourcePropType> = {
     purple: require('../../assets/images/radar-loader-purple.png'),
     green: require('../../assets/images/radar-loader-green.png'),
   }
