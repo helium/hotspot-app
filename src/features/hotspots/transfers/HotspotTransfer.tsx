@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, TextInput } from 'react-native'
 import { Hotspot } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
 import Text from '../../../components/Text'
+import TextInput from '../../../components/TextInput'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import CloseModal from '../../../assets/images/closeModal.svg'
 import TransferHotspotIcon from '../../../assets/images/transferHotspotIcon.svg'
@@ -98,8 +98,8 @@ const HotspotTransfer = ({
           {hotspotName.toUpperCase()}
         </Text>
         <TextInput
+          variant="medium"
           placeholder={t('transfer.input_placeholder')}
-          style={styles.input}
           onChangeText={handleTypeName}
           value={typedName}
           returnKeyType="done"
@@ -116,13 +116,5 @@ const HotspotTransfer = ({
     </>
   )
 }
-
-const styles = StyleSheet.create({
-  input: {
-    backgroundColor: '#E7EEF3',
-    padding: 16,
-    borderRadius: 8,
-  },
-})
 
 export default HotspotTransfer
