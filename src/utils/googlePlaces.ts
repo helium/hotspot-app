@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 import qs from 'qs'
 import Config from 'react-native-config'
 import * as Logger from './logger'
