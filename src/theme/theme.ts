@@ -21,8 +21,10 @@ const palette = {
   blueDark: '#232E39',
   blueDarkest: '#1C1E3B',
 
+  gray: '#687A8C',
   grayLight: '#DADADA',
   grayExtraLight: '#788AB4',
+  grayMedium: '#E7EEF3',
   grayMain: '#81909F',
   graySteel: '#74869A',
   grayDark: '#202B37',
@@ -68,7 +70,6 @@ const palette = {
   orange: '#FF852F',
   yellow: '#FCC945',
   gold: '#FFC769',
-  gray: '#687A8C',
 
   followPurple: '#BD7AFF',
 }
@@ -321,6 +322,14 @@ export const theme = createTheme({
       height: 52,
       paddingHorizontal: 'm',
       color: 'white',
+      borderRadius: 'm',
+    },
+    medium: {
+      fontFamily: Font.main.regular,
+      fontSize: 14,
+      color: 'black',
+      padding: 'm',
+      backgroundColor: 'grayMedium',
       borderRadius: 'm',
     },
     light: {

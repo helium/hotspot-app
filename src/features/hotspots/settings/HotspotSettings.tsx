@@ -468,7 +468,9 @@ const HotspotSettings = ({ hotspot }: Props) => {
           </Box>
 
           {settingsState !== 'scan' && (
-            <KeyboardAvoidingView behavior="padding">
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            >
               <Card variant="modal" backgroundColor="white" overflow="hidden">
                 {ownerSettings}
               </Card>
