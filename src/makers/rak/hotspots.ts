@@ -4,7 +4,7 @@ import ANTENNAS from './antennas'
 
 const RAK_V1 = {
   name: 'RAK Hotspot',
-  onboardType: 'QR',
+  onboardType: 'BLE',
   translations: {
     en: {
       diagnostic:

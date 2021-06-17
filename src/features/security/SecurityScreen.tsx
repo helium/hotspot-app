@@ -62,7 +62,7 @@ const SecurityScreen = ({ visible }: Props) => {
     <Box position="absolute" top={0} left={0} right={0} bottom={0}>
       <AnimatedImage
         style={style}
-        source={{ uri: '../../assets/images/SplashScreen.png' }}
+        source={require('../../assets/images/SplashScreen.png')}
       />
     </Box>
   )
