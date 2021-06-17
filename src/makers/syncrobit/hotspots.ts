@@ -5,7 +5,7 @@ import ANTENNAS from './antennas'
 const Syncrobit = {
   name: 'SyncroB.it Hotspot',
   icon: HotspotIcon,
-  onboardType: 'QR',
+  onboardType: 'BLE',
   translations: {
     en: {
       diagnostic:
