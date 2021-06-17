@@ -95,7 +95,7 @@ const parseNode = (
 
   const symbol = symbols[element.tagName] || symbols.default
   if (!symbols[element.tagName]) {
-    Logger.breadcrumb('Unknown markup symbol', `<${element.tagName}>`)
+    Logger.breadcrumb(`Unknown markup symbol <${element.tagName}>`)
   }
 
   const attrs = element.attrs.reduce(

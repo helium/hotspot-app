@@ -18,7 +18,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import animalName from 'angry-purple-tiger'
-import { Hotspot, PendingTransaction } from '@helium/http'
+import { Hotspot, PendingTransaction, Witness } from '@helium/http'
 import Toast from 'react-native-simple-toast'
 import BlurBox from '../../../components/BlurBox'
 import Card from '../../../components/Card'
@@ -58,7 +58,7 @@ import { getLocationPermission } from '../../../store/location/locationSlice'
 type State = 'init' | 'scan' | 'transfer' | 'discoveryMode' | 'updateHotspot'
 
 type Props = {
-  hotspot?: Hotspot
+  hotspot?: Hotspot | Witness
 }
 
 const HotspotSettings = ({ hotspot }: Props) => {

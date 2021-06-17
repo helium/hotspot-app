@@ -211,7 +211,7 @@ const SendView = ({
     const isAppLinkPayment = (
       scanRes: AppLink | AppLinkPayment,
     ): scanRes is AppLinkPayment => {
-      return scanRes.type === 'payment' && scanRes.payees
+      return scanRes.type === 'payment' && scanRes.payees !== undefined
     }
     if (isAppLinkPayment(scanResult)) {
       scannedSendDetails = scanResult.payees.map(

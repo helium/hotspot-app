@@ -357,6 +357,8 @@ export const darkTheme: Theme = {
     primaryMain: palette.black,
     secondaryMain: palette.blueGray,
   },
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   textVariants: {
     ...darkTextVariants,
     body2Bold: { ...darkTextVariants.body2, fontFamily: Font.main.semiBold },

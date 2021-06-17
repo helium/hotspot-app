@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { Hotspot } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
 import { useSelector } from 'react-redux'
 import Box from '../../../../components/Box'
 import DiscoveryMap from './DiscoveryMap'
@@ -17,7 +17,7 @@ import { RootState } from '../../../../store/rootReducer'
 
 type Props = {
   request?: DiscoveryRequest | null
-  hotspot: Hotspot
+  hotspot: Hotspot | Witness
   isPolling: boolean
   requestTime: number
   currentTime: number

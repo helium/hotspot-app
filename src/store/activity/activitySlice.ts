@@ -49,15 +49,20 @@ type FetchTxns = { filter: FilterType; reset?: boolean }
 export const fetchTxns = createAsyncThunk<
   AnyTransaction[] | PendingTransaction[],
   FetchTxns
->('activity/fetchAccountActivity', async ({ filter, reset }, { dispatch }) => {
-  if (reset) {
-    await initFetchers()
-    dispatch(activitySlice.actions.resetTxnStatuses(filter))
-  }
+>(
+  'activity/fetchAccountActivity',
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  async ({ filter, reset }, { dispatch }) => {
+    if (reset) {
+      await initFetchers()
+      dispatch(activitySlice.actions.resetTxnStatuses(filter))
+    }
 
-  const list = txnFetchers[filter]
-  return list.takeJSON(filter === 'pending' ? 1000 : ACTIVITY_FETCH_SIZE)
-})
+    const list = txnFetchers[filter]
+    return list.takeJSON(filter === 'pending' ? 1000 : ACTIVITY_FETCH_SIZE)
+  },
+)
 
 const activitySlice = createSlice({
   name: 'activity',

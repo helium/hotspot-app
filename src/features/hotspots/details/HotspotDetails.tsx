@@ -9,7 +9,7 @@ import {
   Linking,
   ActivityIndicator,
 } from 'react-native'
-import { Hotspot } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import StatusBadge from './StatusBadge'
@@ -41,10 +41,10 @@ import TouchableHighlightBox from '../../../components/TouchableHighlightBox'
 
 type Props = {
   hotspotAddress?: string
-  hotspot?: Hotspot
+  hotspot?: Hotspot | Witness
   onLayoutHeader?: ((event: LayoutChangeEvent) => void) | undefined
   onFailure: () => void
-  onSelectHotspot: (hotspot: Hotspot) => void
+  onSelectHotspot: (hotspot: Hotspot | Witness) => void
 }
 const HotspotDetails = ({
   hotspot: propsHotspot,
@@ -201,7 +201,7 @@ const HotspotDetails = ({
   }, [t])
 
   const getDistance = useCallback(
-    (otherHotspot: Hotspot) => {
+    (otherHotspot: Hotspot | Witness) => {
       if (
         !hotspot?.lat ||
         !hotspot?.lng ||
@@ -225,7 +225,7 @@ const HotspotDetails = ({
   )
 
   const renderWitnessItem = useCallback(
-    (witness: Hotspot) => {
+    (witness: Witness) => {
       return (
         <HotspotListItem
           key={witness.address}

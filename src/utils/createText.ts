@@ -57,7 +57,8 @@ const createText = <
   Props = React.ComponentProps<typeof Text> & { children?: React.ReactNode },
   EnableShorthand extends boolean = true
 >(
-  BaseComponent: React.ComponentType<unknown> = Text,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  BaseComponent: React.ComponentType<any> = Text,
 ) => {
   return createRestyleComponent<
     TextProps<Theme, EnableShorthand> &
@@ -65,6 +66,8 @@ const createText = <
     Theme
   >(
     textRestyleFunctions as RestyleFunctionContainer<
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       TextProps<Theme, EnableShorthand>,
       Theme
     >[],

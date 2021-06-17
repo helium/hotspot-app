@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { Bucket, Hotspot, Reward, Sum } from '@helium/http'
+import { Bucket, Hotspot, Reward, Sum, Witness } from '@helium/http'
 import {
   getHotspotChallengeSums,
   getHotspotDetails,
@@ -40,16 +40,18 @@ export const fetchHotspotChallengeSums = async (
     bucket,
   })
   challengeSums.reverse()
-  const totalSum = challengeSums.reduce(
-    (a, b) => ({ sum: a.sum + b.sum } as { sum: number }),
-  )
-  const prevSum = challengeSumsPrevious.reduce(
-    (a, b) => ({ sum: a.sum + b.sum } as { sum: number }),
-  )
+  let totalSum = 0
+  let prevSum = 0
+  challengeSums.forEach((sum) => {
+    totalSum += sum.sum
+  })
+  challengeSumsPrevious.forEach((sum) => {
+    prevSum += sum.sum
+  })
   return {
     challengeSums,
-    challengeSum: totalSum.sum,
-    challengeChange: calculatePercentChange(totalSum.sum, prevSum.sum),
+    challengeSum: totalSum,
+    challengeChange: calculatePercentChange(totalSum, prevSum),
   }
 }
 
@@ -128,7 +130,7 @@ type HotspotChartData = {
 }
 
 type HotspotData = {
-  witnesses?: Hotspot[]
+  witnesses?: Witness[]
   hotspot?: Hotspot
 }
 

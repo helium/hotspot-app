@@ -13,7 +13,10 @@ const RingLoader = ({
 }) => {
   const rotateAnim = useRef(new Animated.Value(0))
 
-  const images: Record<string, ImageSourcePropType> = {
+  const images: Record<
+    string,
+    { outer: ImageSourcePropType; inner: ImageSourcePropType }
+  > = {
     purple: {
       outer: require('../../assets/images/ring-loader-purple.png'),
       inner: require('../../assets/images/ring-loader-inner-purple.png'),

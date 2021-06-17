@@ -1,12 +1,11 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
-import React, { ReactElement } from 'react'
+import React from 'react'
 import { SafeAreaInsetsContext } from 'react-native-safe-area-context'
 import { wh, hp } from '../../../utils/layout'
 
-export const withWalletLayout = (WrappedComponent: ReactElement) => (
-  props: unknown,
-) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const withWalletLayout = (WrappedComponent: any) => (props: any) => {
   const tabBarHeight = useBottomTabBarHeight()
 
   return (
