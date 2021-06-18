@@ -92,8 +92,9 @@ const SendForm = ({
             text={isDisabled ? t('generic.disabled') : t('send.qrInfo')}
           />
         )}
-        {sendDetails.map((details) => (
+        {sendDetails.map((details, index) => (
           <SendDetailsForm
+            index={index}
             key={details.id}
             account={account}
             fee={fee}

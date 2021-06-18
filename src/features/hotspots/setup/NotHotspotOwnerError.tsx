@@ -8,7 +8,7 @@ import UpArrow from '@assets/images/upArrow.svg'
 import { Easing } from 'react-native-reanimated'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import Text from '../../../components/Text'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 import { RootState } from '../../../store/rootReducer'
@@ -188,7 +188,7 @@ const NotHotspotOwnerErrorScreen = () => {
       >
         {t('hotspot_setup.not_owner.contact_manufacturer')}
       </Text>
-      <Button
+      <DebouncedButton
         title={t('hotspot_setup.onboarding_error.next')}
         mode="contained"
         variant="primary"

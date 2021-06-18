@@ -6,30 +6,29 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import { useSelector } from 'react-redux'
-import { useAsync } from 'react-async-hook'
 import MapboxGL, {
-  CircleLayerStyle,
-  OnPressEvent,
+  FillLayerStyle,
+  LineLayerStyle,
   RegionPayload,
   SymbolLayerStyle,
 } from '@react-native-mapbox-gl/maps'
-import { Feature, GeoJsonProperties, Point, Position } from 'geojson'
+import { Feature, Point, Position } from 'geojson'
 import { Hotspot } from '@helium/http'
 import { BoxProps } from '@shopify/restyle'
 import { StyleProp, ViewStyle } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { isEqual } from 'lodash'
+import { h3ToGeo } from 'h3-js'
+import { differenceBy } from 'lodash'
 import Box from './Box'
 import Text from './Text'
 import NoLocation from '../assets/images/no-location.svg'
-import { findBounds, hotspotsToFeatures } from '../utils/mapUtils'
+import { findBounds } from '../utils/mapUtils'
 import CurrentLocationButton from './CurrentLocationButton'
 import { theme, Theme } from '../theme/theme'
 import { useColors } from '../theme/themeHooks'
-import { useAppDispatch } from '../store/store'
-import { RootState } from '../store/rootReducer'
-import { fetchNetworkHotspots } from '../store/networkHotspots/networkHotspotsSlice'
+import H3Grid from './H3Grid'
+import NetworkCoverage from './NetworkCoverage'
+import HotspotsCoverage from './HotspotsCoverage'
 
 const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
 
@@ -37,12 +36,13 @@ type Props = BoxProps<Theme> & {
   onMapMoved?: (coords?: Position) => void
   onDidFinishLoadingMap?: (latitude: number, longitude: number) => void
   onMapMoving?: (feature: Feature<Point, RegionPayload>) => void
-  onFeatureSelected?: (properties: GeoJsonProperties) => void
+  onHexSelected?: (id: string) => void
 
   currentLocationEnabled?: boolean
   zoomLevel?: number
   mapCenter?: number[]
   ownedHotspots?: Hotspot[]
+  followedHotspots?: Hotspot[]
   selectedHotspot?: Hotspot
   witnesses?: Hotspot[]
   animationMode?: 'flyTo' | 'easeTo' | 'moveTo'
@@ -53,6 +53,8 @@ type Props = BoxProps<Theme> & {
   showUserLocation?: boolean
   showNoLocation?: boolean
   showNearbyHotspots?: boolean
+  showH3Grid?: boolean
+  showRewardScale?: boolean
 }
 const Map = ({
   onMapMoved,
@@ -70,46 +72,35 @@ const Map = ({
   maxZoomLevel = 16,
   minZoomLevel = 0,
   interactive = true,
-  onFeatureSelected = () => {},
+  onHexSelected = () => {},
   showNoLocation,
   showNearbyHotspots = false,
+  showH3Grid = false,
+  followedHotspots,
+  showRewardScale,
   ...props
 }: Props) => {
-  const dispatch = useAppDispatch()
   const colors = useColors()
   const { t } = useTranslation()
   const map = useRef<MapboxGL.MapView>(null)
   const camera = useRef<MapboxGL.Camera>(null)
   const [loaded, setLoaded] = useState(false)
   const [userCoords, setUserCoords] = useState({ latitude: 0, longitude: 0 })
+  const [mapBounds, setMapBounds] = useState<Position[]>()
+  const [mapZoomLevel, setMapZoomLevel] = useState<number>()
   const styles = useMemo(() => makeStyles(colors), [colors])
-
-  const networkHotspots = useSelector(
-    (state: RootState) => state.networkHotspots.networkHotspots,
-    isEqual,
-  )
-
-  useAsync(async () => {
-    if (showNearbyHotspots && loaded) {
-      const bounds = await map.current?.getVisibleBounds()
-      if (bounds) {
-        dispatch(fetchNetworkHotspots(bounds))
-      }
-    }
-  }, [loaded, dispatch])
 
   const onRegionDidChange = useCallback(async () => {
     if (onMapMoved) {
       const center = await map.current?.getCenter()
       onMapMoved(center)
     }
-    if (showNearbyHotspots) {
-      const bounds = await map.current?.getVisibleBounds()
-      if (bounds) {
-        dispatch(fetchNetworkHotspots(bounds))
-      }
-    }
-  }, [dispatch, onMapMoved, showNearbyHotspots])
+    const currentBounds = await map.current?.getVisibleBounds()
+    setMapBounds(currentBounds)
+
+    const currentZoomLevel = await map.current?.getZoom()
+    setMapZoomLevel(currentZoomLevel)
+  }, [onMapMoved])
 
   const centerUserLocation = useCallback(() => {
     camera.current?.setCamera({
@@ -145,17 +136,24 @@ const Map = ({
 
   const onDidFinishLoad = useCallback(() => {
     setLoaded(true)
+
+    const loadMapBoundsAndZoom = async () => {
+      const currentBounds = await map.current?.getVisibleBounds()
+      setMapBounds(currentBounds)
+
+      const currentZoomLevel = await map.current?.getZoom()
+      setMapZoomLevel(currentZoomLevel)
+    }
+    loadMapBoundsAndZoom()
   }, [])
 
-  const onShapeSourcePress = useCallback(
-    (event: OnPressEvent) => {
-      const { properties } = event.features[0]
-      if (properties) {
-        onFeatureSelected(properties)
-      }
-    },
-    [onFeatureSelected],
-  )
+  const selectedHex = useMemo(() => selectedHotspot?.locationHex, [
+    selectedHotspot?.locationHex,
+  ])
+
+  const onHexPress = (id: string) => {
+    onHexSelected(id)
+  }
 
   useEffect(() => {
     if (loaded && userCoords) {
@@ -164,85 +162,56 @@ const Map = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userCoords, loaded])
 
-  const ownedHotspotFeatures = useMemo(
-    () => hotspotsToFeatures(ownedHotspots),
-    [ownedHotspots],
-  )
-
-  const selectedHotspotFeatures = useMemo(
-    () => (selectedHotspot ? hotspotsToFeatures([selectedHotspot]) : []),
-    [selectedHotspot],
-  )
-
-  const witnessFeatures = useMemo(() => hotspotsToFeatures(witnesses), [
-    witnesses,
-  ])
-
-  const networkHotspotFeatures = useMemo(
-    () =>
-      showNearbyHotspots
-        ? hotspotsToFeatures(Object.values(networkHotspots))
-        : [],
-    [networkHotspots, showNearbyHotspots],
-  )
-
   const mapImages = useMemo(
     () => ({
-      markerSelected: require('../assets/images/selected-hotspot-marker.png'),
       markerLocation: require('../assets/images/locationPurple.png'),
     }),
     [],
   )
 
-  const shapeSources = useMemo(
-    () => ({
-      ownedHotspotFeatures: {
-        type: 'FeatureCollection',
-        features: ownedHotspotFeatures,
-      } as GeoJSON.FeatureCollection,
-      witnessFeatures: {
-        type: 'FeatureCollection',
-        features: witnessFeatures,
-      } as GeoJSON.FeatureCollection,
-      selectedHotspotFeatures: {
-        type: 'FeatureCollection',
-        features: selectedHotspotFeatures,
-      } as GeoJSON.FeatureCollection,
-      networkHotspotFeatures: {
-        type: 'FeatureCollection',
-        features: networkHotspotFeatures,
-      } as GeoJSON.FeatureCollection,
-    }),
-    [
-      ownedHotspotFeatures,
-      witnessFeatures,
-      selectedHotspotFeatures,
-      networkHotspotFeatures,
-    ],
-  )
-
   const bounds = useMemo(() => {
     const boundsLocations: number[][] = []
 
-    if (mapCenter && !selectedHotspot) {
+    if (mapCenter && !selectedHotspot && !selectedHex) {
       boundsLocations.push(mapCenter)
     }
 
-    if (selectedHotspot && selectedHotspot.lat && selectedHotspot.lng) {
-      boundsLocations.push([selectedHotspot.lng, selectedHotspot.lat])
+    if (selectedHotspot && selectedHotspot.locationHex) {
+      const h3Location = selectedHotspot.locationHex
+      boundsLocations.push(h3ToGeo(h3Location).reverse())
+    }
+
+    if (selectedHex && !selectedHotspot) {
+      boundsLocations.push(h3ToGeo(selectedHex).reverse())
     }
 
     witnesses.forEach((w) => {
-      if (w.lat && w.lng) boundsLocations.push([w.lng, w.lat])
+      if (w.locationHex) {
+        const h3Location = w.locationHex
+        boundsLocations.push(h3ToGeo(h3Location).reverse())
+      }
     })
 
     return findBounds(boundsLocations)
-  }, [mapCenter, selectedHotspot, witnesses])
+  }, [mapCenter, selectedHex, selectedHotspot, witnesses])
 
-  const defaultCameraSettings = {
-    zoomLevel,
-    centerCoordinate: mapCenter,
-  }
+  const defaultCameraSettings = useMemo(
+    () => ({
+      zoomLevel,
+      centerCoordinate: mapCenter,
+    }),
+    [mapCenter, zoomLevel],
+  )
+
+  const selectedHotspots = useMemo(() => {
+    if (!selectedHotspot) return []
+    return [selectedHotspot]
+  }, [selectedHotspot])
+
+  const followedHexes = useMemo(
+    () => differenceBy(followedHotspots, ownedHotspots, (h) => h.locationHex),
+    [followedHotspots, ownedHotspots],
+  )
 
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
@@ -299,43 +268,49 @@ const Map = ({
           animationDuration={animationDuration}
         />
         <MapboxGL.Images images={mapImages} />
-        <MapboxGL.ShapeSource
-          id="networkHotspots"
-          shape={shapeSources.networkHotspotFeatures}
-          onPress={onShapeSourcePress}
-        >
-          <MapboxGL.CircleLayer
-            id="markerNetwork"
-            style={styles.markerNetwork}
-          />
-        </MapboxGL.ShapeSource>
-        <MapboxGL.ShapeSource
-          id="ownedHotspots"
-          shape={shapeSources.ownedHotspotFeatures}
-          onPress={onShapeSourcePress}
-        >
-          <MapboxGL.CircleLayer id="markerOwned" style={styles.markerOwned} />
-        </MapboxGL.ShapeSource>
-        <MapboxGL.ShapeSource
+        <H3Grid
+          bounds={mapBounds}
+          visible={showH3Grid}
+          zoomLevel={mapZoomLevel}
+        />
+        <HotspotsCoverage
+          id="owned"
+          onHexSelected={onHexPress}
+          hotspots={ownedHotspots}
+          fill
+          opacity={0.4}
+        />
+        <HotspotsCoverage
+          id="followed"
+          onHexSelected={onHexPress}
+          hotspots={followedHexes}
+          fill
+          fillColor={colors.purpleBright}
+          opacity={0.4}
+        />
+        <HotspotsCoverage
+          id="selected"
+          hotspots={selectedHotspots}
+          hexes={selectedHex ? [selectedHex] : []}
+          outline
+          outlineColor={colors.white}
+          outlineWidth={4}
+        />
+        <NetworkCoverage
+          onHexSelected={onHexPress}
+          visible={showNearbyHotspots}
+          selectedHexId={selectedHex}
+          showRewardScale={showRewardScale}
+          showCount
+        />
+        <HotspotsCoverage
           id="witnesses"
-          shape={shapeSources.witnessFeatures}
-          onPress={onShapeSourcePress}
-        >
-          <MapboxGL.CircleLayer
-            id="markerWitness"
-            style={styles.markerWitness}
-          />
-        </MapboxGL.ShapeSource>
-        <MapboxGL.ShapeSource
-          id="selectedHotspots"
-          shape={shapeSources.selectedHotspotFeatures}
-          onPress={onShapeSourcePress}
-        >
-          <MapboxGL.SymbolLayer
-            id="markerSelected"
-            style={styles.markerSelected}
-          />
-        </MapboxGL.ShapeSource>
+          onHexSelected={onHexPress}
+          hotspots={witnesses}
+          fill
+          opacity={0.6}
+          fillColor={colors.yellow}
+        />
       </MapboxGL.MapView>
       {currentLocationEnabled && (
         <CurrentLocationButton onPress={centerUserLocation} />
@@ -354,23 +329,20 @@ const makeStyles = (colors: typeof theme.colors) => ({
     iconImage: 'markerLocation',
     iconOffset: [0, -25 / 2],
   } as StyleProp<SymbolLayerStyle>,
-  markerWitness: {
-    circleColor: colors.gold,
-    circleRadius: 6,
-  } as StyleProp<CircleLayerStyle>,
-  markerOwned: {
-    circleColor: colors.purpleMain,
-    circleRadius: 6,
-  } as StyleProp<CircleLayerStyle>,
-  markerSelected: {
-    iconImage: 'markerSelected',
-    iconAllowOverlap: true,
-    iconSize: 1,
-  } as StyleProp<SymbolLayerStyle>,
-  markerNetwork: {
-    circleColor: colors.purpleMuted,
-    circleRadius: 6,
-  } as StyleProp<CircleLayerStyle>,
+  selectedHexagon: {
+    lineWidth: 2,
+    lineColor: colors.white,
+  } as StyleProp<LineLayerStyle>,
+  ownedFill: {
+    fillOpacity: 0.4,
+    fillColor: colors.blueBright,
+    fillOutlineColor: '#1C1E3B',
+  } as StyleProp<FillLayerStyle>,
+  witnessFill: {
+    fillOpacity: 0.4,
+    fillColor: colors.yellow,
+    fillOutlineColor: '#1C1E3B',
+  } as StyleProp<FillLayerStyle>,
 })
 
 const hotspotsEqual = (prev: Hotspot[], next: Hotspot[]) => {

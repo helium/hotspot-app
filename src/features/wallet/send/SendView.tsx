@@ -34,7 +34,7 @@ import {
   makeBuyerTransferHotspotTxn,
   makePaymentTxn,
   makeSellerTransferHotspotTxn,
-  formatAmountInput,
+  getMemoBytesLeft,
 } from '../../../utils/transactions'
 import {
   getAccount,
@@ -200,11 +200,16 @@ const SendView = ({
       let amount = ''
       let balanceAmount = new Balance(0, CurrencyType.networkToken)
       if (scanAmount) {
+        const floatAmount = parseFloat(scanAmount.replace(/,/g, ''))
         balanceAmount = Balance.fromFloat(
-          parseFloat(scanAmount),
+          floatAmount,
           CurrencyType.networkToken,
         )
-        amount = formatAmountInput(String(scanAmount))
+        amount = balanceAmount.toString(8, {
+          showTicker: false,
+          decimalSeparator,
+          groupSeparator,
+        })
       }
       return { amount, balanceAmount }
     }
@@ -289,13 +294,15 @@ const SendView = ({
     } else {
       let isValidSend = true
       let totalSendAmount = new Balance(0, CurrencyType.networkToken)
-      sendDetails.forEach(({ address, balanceAmount }) => {
+      sendDetails.forEach(({ address, balanceAmount, memo }) => {
         const isValidTransferAddress =
           Address.isValid(address) && address !== account?.address
         if (!isValidTransferAddress) isValidSend = false
         const isValidTransferAmount = balanceAmount.integerBalance > 0
         if (!isValidTransferAmount) isValidSend = false
         totalSendAmount = totalSendAmount.plus(balanceAmount)
+        const memoLength = getMemoBytesLeft(memo)
+        if (!memoLength.valid) isValidSend = false
       })
       totalSendAmount = totalSendAmount.plus(fee)
       // TODO balance compare/greater than/less than

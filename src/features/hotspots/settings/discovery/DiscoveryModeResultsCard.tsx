@@ -1,23 +1,26 @@
-import React, { memo, useCallback, useMemo, useState } from 'react'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Platform } from 'react-native'
 import { addSeconds } from 'date-fns'
+import { Hotspot } from '@helium/http'
+import HexPill from '@assets/images/hexPill.svg'
 import Box from '../../../../components/Box'
 import Button from '../../../../components/Button'
 import Card from '../../../../components/Card'
-import { MapSelectDetail } from './DiscoveryMap'
 import Text from '../../../../components/Text'
-import { DiscoveryRequest } from '../../../../store/discovery/discoveryTypes'
+import {
+  DiscoveryRequest,
+  DiscoveryResponse,
+} from '../../../../store/discovery/discoveryTypes'
 import animateTransition from '../../../../utils/animateTransition'
 import DiscoveryModeSearching from './DiscoveryModeSearching'
-import BlurBox from '../../../../components/BlurBox'
-import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
-import Close from '../../../../assets/images/closeModal.svg'
-import DistancePinIco from '../../../../assets/images/distancePin.svg'
-import RewardScaleIco from '../../../../assets/images/rewardsScale.svg'
 import useShareDiscovery from './useShareDiscovery'
 import DateModule from '../../../../utils/DateModule'
-import FollowButton from '../../../../components/FollowButton'
+import { wp } from '../../../../utils/layout'
+import DiscoveryModeResultsCardItem from './DiscoveryModeResultsCardItem'
+import ContentPill, {
+  ContentPillItem,
+} from '../../../../components/ContentPill'
+import usePrevious from '../../../../utils/usePrevious'
 
 type LineItemType = { label: string; value: string }
 const LineItem = ({ label, value }: LineItemType) => (
@@ -34,12 +37,9 @@ const LineItem = ({ label, value }: LineItemType) => (
 type Props = {
   request?: DiscoveryRequest | null
   isPolling: boolean
-  overlayDetails?: {
-    distance: string
-    rewardScale: string
-  } & MapSelectDetail
+  selectedHotspots?: Hotspot[]
   hideOverlay: () => void
-  numResponses: number
+  responses: DiscoveryResponse[]
   requestTime: number
   currentTime: number
   requestLength: number
@@ -47,8 +47,8 @@ type Props = {
 const DiscoveryModeResultsCard = ({
   request,
   isPolling,
-  overlayDetails,
-  numResponses,
+  selectedHotspots,
+  responses,
   hideOverlay,
   requestTime,
   currentTime,
@@ -57,7 +57,12 @@ const DiscoveryModeResultsCard = ({
   const { t } = useTranslation()
   const { shareResults } = useShareDiscovery(request)
   const [resultDateStr, setResultDateStr] = useState('')
-  const [newlyAdded, setNewlyAdded] = useState(false)
+  const prevSelectedHotspots = usePrevious(selectedHotspots)
+  const [selectedHotspotIndex, setSelectedHotspotIndex] = useState(0)
+  useEffect(() => {
+    if (prevSelectedHotspots === selectedHotspots) return
+    setSelectedHotspotIndex(0)
+  }, [prevSelectedHotspots, selectedHotspots])
 
   useMemo(async () => {
     if (isPolling || !request) return
@@ -76,7 +81,7 @@ const DiscoveryModeResultsCard = ({
     const items: LineItemType[] = [
       {
         label: t('discovery.results.responded'),
-        value: `${numResponses}`,
+        value: `${responses.length}`,
       },
     ]
     if (request) {
@@ -115,10 +120,10 @@ const DiscoveryModeResultsCard = ({
   }, [
     currentTime,
     isPolling,
-    numResponses,
     request,
     requestLength,
     requestTime,
+    responses.length,
     resultDateStr,
     t,
   ])
@@ -131,17 +136,31 @@ const DiscoveryModeResultsCard = ({
     }
   }, [isPolling])
 
-  const handleFollowChange = useCallback((following) => {
-    if (!following) return
+  const pillData = useMemo(() => {
+    if (!selectedHotspots?.length) return [] as ContentPillItem[]
 
-    animateTransition('DiscoveryModeResultsCard.HandleFollowChange')
-    setNewlyAdded(true)
+    return selectedHotspots.map((h) => {
+      const isResponder = responses.find((r) => r.hotspotAddress === h.address)
+      return {
+        selectedBackgroundColor: isResponder ? 'yellow' : 'blueGrayLight',
+        selectedIconColor: 'white',
+        iconColor: isResponder ? 'yellow' : 'blueGrayLight',
+        icon: HexPill,
+        id: h.address,
+      } as ContentPillItem
+    })
+  }, [responses, selectedHotspots])
 
-    setTimeout(() => {
-      animateTransition('DiscoveryModeResultsCard.HandleFollowChange.Timeout')
-      setNewlyAdded(false)
-    }, 3000)
-  }, [])
+  const currentHotspot = useMemo(() => {
+    if (
+      !selectedHotspots ||
+      selectedHotspots.length === 0 ||
+      selectedHotspotIndex >= selectedHotspots.length
+    )
+      return
+
+    return selectedHotspots[selectedHotspotIndex]
+  }, [selectedHotspotIndex, selectedHotspots])
 
   return (
     <Box
@@ -149,98 +168,30 @@ const DiscoveryModeResultsCard = ({
       bottom={0}
       left={0}
       right={0}
-      minHeight={210}
-      marginHorizontal="ms"
+      minHeight={410}
+      justifyContent="flex-end"
+      pointerEvents="box-none"
     >
-      {overlayDetails && (
-        <Box alignItems="center">
-          {newlyAdded && (
-            <Box
-              justifyContent="center"
-              backgroundColor="black"
-              borderRadius="round"
-              height={32}
-              marginBottom="ms"
-            >
-              <Text
-                variant="medium"
-                paddingHorizontal="ms"
-                fontSize={14}
-                color="white"
-                textAlign="center"
-              >
-                {t('discovery.results.added_to_followed')}
-              </Text>
-            </Box>
-          )}
-          <Box
-            marginBottom="s"
-            borderRadius="l"
-            overflow="hidden"
-            alignItems="center"
-            flexDirection="row"
-          >
-            <BlurBox
-              top={0}
-              left={0}
-              bottom={0}
-              right={0}
-              blurType={Platform.OS === 'android' ? 'dark' : 'light'}
-              opacity={0.6}
-              position="absolute"
-            />
-            <Box flex={1} marginBottom="m">
-              <Box
-                flex={1}
-                flexDirection="row"
-                alignItems="center"
-                marginBottom="n_m"
-              >
-                <FollowButton
-                  address={overlayDetails.address}
-                  padding="m"
-                  handleChange={handleFollowChange}
-                />
-                <Text variant="medium" fontSize={16} color="white">
-                  {overlayDetails.name}
-                </Text>
-              </Box>
-              <Box
-                flex={1}
-                flexDirection="row"
-                alignItems="center"
-                paddingTop="s"
-                paddingLeft="m"
-              >
-                <RewardScaleIco />
-                <Text
-                  variant="regular"
-                  fontSize={11}
-                  width={48}
-                  color="white"
-                  marginLeft="xs"
-                >
-                  {overlayDetails.rewardScale}
-                </Text>
-                <DistancePinIco />
-                <Text
-                  variant="regular"
-                  fontSize={11}
-                  color="white"
-                  marginLeft="xs"
-                >
-                  {overlayDetails.distance}
-                </Text>
-              </Box>
-            </Box>
-            <TouchableOpacityBox padding="m" onPress={hideOverlay}>
-              <Close height={22} width={22} color="white" opacity={0.6} />
-            </TouchableOpacityBox>
-          </Box>
-        </Box>
+      {!!selectedHotspots?.length && (
+        <ContentPill
+          selectedIndex={selectedHotspotIndex}
+          data={pillData}
+          onPressItem={setSelectedHotspotIndex}
+          marginBottom="lx"
+          maxWidth={wp(90)}
+        />
       )}
+
+      <DiscoveryModeResultsCardItem
+        address={currentHotspot?.address}
+        rewardScale={currentHotspot?.rewardScale}
+        name={currentHotspot?.name}
+        hideOverlay={hideOverlay}
+      />
+
       {isPolling && <DiscoveryModeSearching />}
       <Card
+        marginHorizontal="ms"
         style={styles.card}
         variant="modal"
         backgroundColor="white"

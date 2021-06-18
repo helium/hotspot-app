@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
-import HotspotSetupSelectionScreen from './HotspotSelectionScreen'
+import HotspotSetupSelectionScreen from './HotspotSetupSelectionScreen'
 import HotspotSetupEducationScreen from './HotspotSetupEducationScreen'
 import HotspotSetupDiagnosticsScreen from './HotspotSetupDiagnosticsScreen'
 import HotspotSetupPowerScreen from './HotspotSetupPowerScreen'
@@ -22,6 +22,8 @@ import HotspotSetupSkipLocationScreen from './HotspotSetupSkipLocationScreen'
 import NotHotspotOwnerError from './NotHotspotOwnerError'
 import OwnedHotspotError from './OwnedHotspotError'
 import AntennaSetupScreen from './AntennaSetupScreen'
+import HotspotSetupScanQrScreen from './HotspotSetupScanQrScreen'
+import HotspotSetupQrConfirmScreen from './HotspotSetupQrConfirmScreen'
 
 const HotspotSetupStack = createStackNavigator()
 
@@ -29,7 +31,7 @@ const HotspotSetup = () => {
   return (
     <HotspotSetupStack.Navigator
       headerMode="none"
-      screenOptions={{ ...defaultScreenOptions, gestureEnabled: false }}
+      screenOptions={{ ...defaultScreenOptions }}
     >
       <HotspotSetupStack.Screen
         name="HotspotSetupSelectionScreen"
@@ -38,6 +40,14 @@ const HotspotSetup = () => {
       <HotspotSetupStack.Screen
         name="HotspotSetupEducationScreen"
         component={HotspotSetupEducationScreen}
+      />
+      <HotspotSetupStack.Screen
+        name="HotspotSetupScanQrScreen"
+        component={HotspotSetupScanQrScreen}
+      />
+      <HotspotSetupStack.Screen
+        name="HotspotSetupQrConfirmScreen"
+        component={HotspotSetupQrConfirmScreen}
       />
       <HotspotSetupStack.Screen
         name="HotspotSetupDiagnosticsScreen"

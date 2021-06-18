@@ -7,11 +7,26 @@ import {
   TokenBurnV1,
   TransferHotspotV1,
 } from '@helium/transactions'
+import Balance, { CurrencyType } from '@helium/currency'
 import { getKeypair } from './secureAccount'
 import { getAccount } from './appDataClient'
-import { decimalSeparator, groupSeparator, locale } from './i18n'
+import { decimalSeparator, groupSeparator } from './i18n'
 import * as Logger from './logger'
 import { SendDetails } from '../features/wallet/send/sendTypes'
+
+export const DEFAULT_MEMO = 'AAAAAAAAAAA='
+
+export const encodeMemoString = (utf8Input: string | undefined) => {
+  if (!utf8Input) return undefined
+  const buff = Buffer.from(utf8Input, 'utf8')
+  return buff.toString('base64')
+}
+
+export const decodeMemoString = (base64String: string | undefined) => {
+  if (!base64String) return ''
+  const buff = Buffer.from(base64String, 'base64')
+  return buff.toString('utf8')
+}
 
 export const makePaymentTxn = async (
   paymentDetails: Array<SendDetails>,
@@ -21,13 +36,13 @@ export const makePaymentTxn = async (
   if (!keypair) throw new Error('missing keypair')
   const paymentTxn = new PaymentV2({
     payer: keypair.address,
-    payments: paymentDetails.map(({ address, balanceAmount }) => ({
+    payments: paymentDetails.map(({ address, balanceAmount, memo }) => ({
       payee: Address.fromB58(address),
       amount: balanceAmount.integerBalance,
+      memo: encodeMemoString(memo),
     })),
     nonce,
   })
-
   return paymentTxn.sign({ payer: keypair })
 }
 
@@ -161,31 +176,33 @@ export const isPayer = (
 export const isPendingTransaction = (item: unknown) =>
   !!(item as PendingTransaction).createdAt
 
-export const formatAmountInput = (formAmount: string) => {
-  if (formAmount === decimalSeparator || formAmount.includes('NaN')) {
-    return `0${decimalSeparator}`
-  }
-  const amount = parseAmount(formAmount)
-  if (amount.integer === 'NaN') {
-    return ''
-  }
-  return formAmount.includes(decimalSeparator)
-    ? `${amount.integer}${decimalSeparator}${amount.decimal}`
-    : amount.integer
-}
-
-export const parseAmount = (formAmount: string) => {
-  if (formAmount === decimalSeparator || formAmount.includes('NaN')) {
-    return { rawInteger: 0, decimal: 0, integer: '0' }
-  }
-  const rawInteger = (formAmount.split(decimalSeparator)[0] || formAmount)
+export const getInteger = (stringAmount: string) => {
+  return (stringAmount.split(decimalSeparator)[0] || '0')
     .split(groupSeparator)
     .join('')
-  const integer = parseInt(rawInteger, 10).toLocaleString(locale)
-  let decimal = formAmount.split(decimalSeparator)[1]
-  if (integer === 'NaN') {
-    return { rawInteger: 0, decimal: 0, integer }
-  }
+}
+
+export const getDecimal = (stringAmount: string) => {
+  let decimal = stringAmount.split(decimalSeparator)[1]
   if (decimal && decimal.length >= 9) decimal = decimal.slice(0, 8)
-  return { rawInteger, decimal, integer }
+  return decimal
+}
+
+export const stringAmountToBalance = (formAmount: string) => {
+  if (!formAmount || formAmount === decimalSeparator) {
+    return new Balance(0, CurrencyType.networkToken)
+  }
+  const integer = getInteger(formAmount)
+  const decimal = getDecimal(formAmount)
+  const floatAmount = parseFloat(`${integer}.${decimal}`)
+  return Balance.fromFloat(floatAmount, CurrencyType.networkToken)
+}
+
+export const getMemoBytesLeft = (
+  memo: string,
+): { numBytes: number; valid: boolean } => {
+  if (!memo) return { numBytes: 8, valid: true }
+  const buff = Buffer.from(memo)
+  const size = buff.byteLength
+  return { numBytes: size < 8 ? 8 - size : 0, valid: size <= 8 }
 }

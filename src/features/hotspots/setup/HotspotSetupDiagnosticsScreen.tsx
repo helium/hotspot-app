@@ -1,5 +1,5 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
-import React from 'react'
+import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ScrollView, StyleSheet } from 'react-native'
 import BackScreen from '../../../components/BackScreen'
@@ -12,6 +12,7 @@ import {
 } from './hotspotSetupTypes'
 import Clipboard from '../../../assets/images/clipboard.svg'
 import Box from '../../../components/Box'
+import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
 type Route = RouteProp<
   HotspotSetupStackParamList,
@@ -22,29 +23,12 @@ const HotspotSetupDiagnosticsScreen = () => {
   const { params } = useRoute<Route>()
   const { t } = useTranslation()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
+  const rootNav = useNavigation<RootNavigationProp>()
 
-  const diagnosticTextKey = () => {
-    switch (params.hotspotType) {
-      default:
-      case 'Helium':
-      case 'RAK':
-        return 'hotspot_setup.diagnostics.p_1'
-      case 'NEBRAIN':
-      case 'NEBRAOUT':
-        return 'hotspot_setup.diagnostics.nebra_p_1'
-      case 'Bobcat':
-        return 'hotspot_setup.diagnostics.bobcat_p_1'
-      case 'SYNCROBIT':
-        return 'hotspot_setup.diagnostics.syncrobit_p_1'
-      case 'LONGAPONE':
-        return 'hotspot_setup.diagnostics.longap_p_1'
-      case 'Finestra':
-        return 'hotspot_setup.diagnostics.finestra_p_1'
-    }
-  }
+  const handleClose = useCallback(() => rootNav.navigate('MainTabs'), [rootNav])
 
   return (
-    <BackScreen backgroundColor="primaryBackground" paddingHorizontal="lx">
+    <BackScreen backgroundColor="primaryBackground" onClose={handleClose}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Box alignItems="center">
           <Clipboard />
@@ -61,7 +45,7 @@ const HotspotSetupDiagnosticsScreen = () => {
             maxFontSizeMultiplier={1.1}
             variant="subtitle"
             marginTop="m"
-            i18nKey={diagnosticTextKey()}
+            i18nKey={t(`makerHotspot.${params.hotspotType}.diagnostic`)}
           />
         </Box>
       </ScrollView>

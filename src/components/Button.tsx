@@ -17,6 +17,7 @@ type Props = BoxProps<Theme> & {
   title?: string
   textStyle?: TextStyle
   color?: Colors
+  backgroundColor?: Colors
   icon?: Element
 }
 
@@ -38,9 +39,11 @@ const Button = ({
   disabled,
   height,
   icon,
+  backgroundColor,
   ...rest
 }: Props) => {
   const getBackground = (): Colors | undefined => {
+    if (backgroundColor) return backgroundColor
     if (mode !== 'contained') return undefined
     return containedBackground[variant]
   }

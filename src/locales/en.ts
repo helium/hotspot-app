@@ -95,6 +95,8 @@ export default {
     clear: 'Clear',
     done: 'Done',
     disabled: 'Disabled',
+    readMore: 'Read More',
+    witness: 'Witness',
     understand: 'I understand',
     blocks: 'Blocks',
     active: 'Active',
@@ -146,18 +148,6 @@ export default {
     selection: {
       title: 'Choose\nyour Hotspot.',
       subtitle: 'What kind of Hotspot do you\nwish to add?',
-      helium: 'Helium Hotspot',
-      rak: 'RAK Hotspot Miner',
-      nebrain: 'Nebra Indoor Hotspot',
-      nebraout: 'Nebra Outdoor Hotspot',
-      bobcat: 'Bobcat Miner 300',
-      syncrobit: 'SyncroB.it Hotspot',
-      finestra: 'Finestra Miner',
-      longapone: 'LongAP One Hotspot',
-      third_party_header: 'Other Hotspots',
-      helium_edition: 'For the Helium Network',
-      fine_print:
-        'RAK Hotspot Miners have special firmware preloaded by RAK. Double check your hardware is a RAK Hotspot Miner before proceeding.',
     },
     education: {
       title: 'Placing\nyour Hotspot.',
@@ -185,89 +175,26 @@ export default {
       ],
       next: "I've read the guide",
     },
+    qrScan: {
+      title: 'Scan QR Code',
+      wallet_address: 'Your wallet address is:',
+    },
+    qrConfirm: {
+      title: 'Confirm\nInformation',
+      title_one_line: 'Confirm Information',
+      public_key: 'Public Key',
+      mac_address: 'MAC Address',
+      owner_address: 'Owner Address',
+    },
     diagnostics: {
       title: 'Diagnostics',
-      p_1:
-        '<b><white>Diagnostic support allows Helium to identify issues with your Hotspot in a secure way.</white></b>\n\nHelium will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@helium.com</b></purple> from the email used to purchase the Hotspot.',
-      nebra_p_1:
-        '<b><white>Diagnostic support allows Nebra LTD to identify issues with your Hotspot in a secure way.</white></b>\n\nNebra will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@nebra.com</b></purple> from the email used to purchase the Hotspot.',
-      bobcat_p_1:
-        '<b><white>Diagnostic support allows Bobcat to identify issues with your Hotspot in a secure way.</white></b>\n\nBobcat will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@bobcatminer.com</b></purple> from the email used to purchase the Hotspot.',
-      syncrobit_p_1:
-        '<b><white>Diagnostic support allows SyncroB.it to identify issues with your Hotspot in a secure way.</white></b>\n\nSyncroB.it will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@syncrob.it</b></purple> from the email used to purchase the Hotspot.',
-      finestra_p_1:
-        '<b><white>Diagnostic support allows Finestra to identify issues with your Hotspot in a secure way.</white></b>\n\nFinestra will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@thefinestra.com</b></purple> from the email used to purchase the Hotspot.',
-      longap_p_1:
-        '<b><white>Diagnostic support allows LongAP to identify issues with your Hotspot in a secure way.</white></b>\n\nLongAP will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@longap.com</b></purple> from the email used to purchase the Hotspot.',
     },
     power: {
       title: 'Power Up',
       next: "I'm powered up",
-      helium_subtitle_1:
-        'Attach the antenna and plug in the provided power adapter.',
-      rak_subtitle_1:
-        'Plug in the provided power adapter into an outlet near a window.',
-      nebrain_subtitle_1:
-        'Attach the antenna and plug in the provided power adapter near a window.',
-      nebraout_subtitle_1:
-        'Attach the antenna and connect to an appropriate power source.',
-      bobcat_subtitle_1:
-        'Plug in the provided power adapter into an outlet near a window and screw in the provided antenna on the back of the Hotspot.',
-      syncrobit_subtitle_1: 'Attach the antenna and plug in the device',
-      longapone_subtitle_1:
-        "Attach the antenna's and plug in the provided power adapter.",
-      helium_subtitle_2:
-        'Your Hotspot will boot up, and its light will become Green when ready.',
-      rak_subtitle_2:
-        'The RAK Hotspot Miner will show a red LED light once it’s powered on.',
-      nebrain_subtitle_2:
-        'The Nebra Indoor Hotspot will have a green LED light up once it’s powered on.',
-      nebraout_subtitle_2:
-        'The Nebra Outdoor Hotspot will have multiple lights come on once it’s powered on.',
-      bobcat_subtitle_2:
-        'The Hotspot is ready when the light goes from red to yellow.',
-      syncrobit_subtitle_2:
-        'The SyncroB.it Hotspot LED bar will light up blue once it’s powered on.',
-      finestra_subtitle_1:
-        'Attach the antenna and plug in the provided power adapter near a window.',
-      finestra_subtitle_2:
-        'The Finestra Miner will show a blue LED light once it’s powered on.',
-      longapone_subtitle_2:
-        'The LongAP One PWR LED will light up once it’s powered on.',
     },
     pair: {
       title: 'Bluetooth',
-      helium_subtitle_1:
-        'Press the black button on your Hotspot. Its light should turn blue.',
-      rak_subtitle_1: 'There is no pairing button on the RAK Hotspot Miner.',
-      nebrain_subtitle_1:
-        'Hold down the button on the back of the Nebra Indoor Hotspot until it starts flashing.',
-      nebraout_subtitle_1:
-        'There is no pairing button on the Nebra Outdoor Hotspot.',
-      bobcat_subtitle_1:
-        'Use the provided pin to press the BT Button on the back of the Hotspot and hold for 5 seconds.',
-      syncrobit_subtitle_1:
-        'There is no pairing button on the SyncroB.it Hotspot.',
-      longapone_subtitle_1:
-        'Use a paperclip to shortly press the button in the little hole right of the LEDs.',
-      helium_subtitle_2:
-        "Ensure your phone's bluetooth is on before proceeding",
-      rak_subtitle_2:
-        'Bluetooth is automatically enabled for 5 minutes after the RAK Hotspot Miner is powered on.\n\nHotspot can take up to 1 minute to fully boot up.',
-      nebrain_subtitle_2:
-        'Once the LED is slowly blinking and is ready to pair.\n\nPress Next to scan.',
-      nebraout_subtitle_2:
-        'Bluetooth is automatically enabled for 10 minutes after the Nebra Outdoor Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.',
-      bobcat_subtitle_2:
-        'The hotspot is ready to pair when the light goes from yellow to blue.\n\nMake sure your phone’s Bluetooth is turned on!',
-      syncrobit_subtitle_2:
-        'Bluetooth is automatically enabled for 5 minutes after the SyncroB.it Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.',
-      finestra_subtitle_1:
-        'Bluetooth is automatically enabled for 5 minutes after the Finestra Miner is powered on.\n\nHotspot can take up to 1 minute to fully boot up.',
-      finestra_subtitle_2:
-        'You can enable Bluetooth after 5 minutes by pressing the button on the side of the Finestra Miner',
-      longapone_subtitle_2:
-        'Once the PWR LED is slowly blinking\n\nPress Next to scan.',
       alert_no_permissions: {
         title: 'Authorize Bluetooth',
         body:
@@ -543,6 +470,10 @@ export default {
     memo: {
       label: 'Memo',
       placeholder: 'Enter Memo... (optional)',
+      bytes_left: '{{count}} byte left',
+      bytes_left_plural: '{{count}} bytes left',
+      length_error:
+        'Memo is too long. Please edit the memo to 8 bytes or less.',
     },
     sendMax: 'Send Max',
     button: {
@@ -732,7 +663,8 @@ export default {
     title: 'Hotspot Settings',
     pairing: {
       title: 'Update Wi-Fi or Run Diagnostics',
-      subtitle: 'Pairing required before proceeding.',
+      subtitle:
+        'Pairing required before proceeding.\nSome Hotspot models are not supported, check with your manufacturer.',
       scan: 'Pair',
     },
     transfer: {
@@ -844,6 +776,9 @@ export default {
     pass_rate: 'PASS RATE',
     reward_title: 'HNT Rewards',
     witness_title: 'Average Witnesses',
+    num_witnesses: '{{count}} Witness',
+    num_witnesses_plural: '{{count}} Witnesses',
+    distance_away: '{{distance}} away',
     challenge_title: 'Challenges',
     challenge_sub_title: '(witness, challenger, or challengee)',
     picker_title: 'Past',
@@ -881,6 +816,16 @@ export default {
       title: 'Hotspot is Relayed',
       message:
         "Hotspot's connection is being relayed through another Hotspot on the network which may affect mining. To take a Hotspot out of Relay, please visit the troubleshooting guide.",
+    },
+    reward_scale_prompt: {
+      title: 'Transmit Scale',
+      message:
+        "When this Hotspot transmits a beacon, any Hotspots that hear it will have its mining rewards scaled by this number. This Hotspot's Challengee reward will also scale by this number.",
+    },
+    witness_prompt: {
+      title: 'Witnesses',
+      message:
+        'The Hotspots in this list have witnessed a Beacon from {{hotspotName}} recently.\n\nFluctuations are normal and expected. The number of Hotspots will reset to zero if you update location, antenna, or elevation',
     },
   },
   transfer: {
@@ -947,12 +892,12 @@ export default {
     title: 'Checklist',
     blocks: {
       not:
-        'Hotspots must be fully synced before they can mine. New Hotspots can take up to 48 hours to sync.',
+        'Hotspots must be fully synced before they can mine. New Hotspots can take up to 96 hours to sync.',
       full: 'Hotspot is fully synced.',
       partial:
-        'Hotspot is {{count}} block behind the Helium blockchain and is roughly {{percent}}% synced.',
+        'Hotspot is {{count}} block behind the Helium blockchain and is roughly {{percent}}% synced. The blockchain is currently at block {{height}}.',
       partial_plural:
-        'Hotspot is {{count}} blocks behind the Helium blockchain and is roughly {{percent}}% synced.',
+        'Hotspot is {{count}} blocks behind the Helium blockchain and is roughly {{percent}}% synced. The blockchain is currently at block {{height}}.',
       title: 'Sync to Blockchain',
     },
     status: {
@@ -965,7 +910,7 @@ export default {
       success: 'Hotspot issued a challenge {{count}} block ago.',
       success_plural: 'Hotspot issued a challenge {{count}} blocks ago.',
       fail:
-        "Hotspot hasn't issued a challenge yet. Hotspots create challenges automatically.",
+        "Hotspot hasn't issued a challenge yet. Hotspots create challenges automatically every 480 blocks, or approximately 8 hours.",
       title: 'Create a Challenge',
     },
     challenge_witness: {
@@ -978,7 +923,7 @@ export default {
       success_plural:
         'This Hotspot has {{count}} Hotspots in its witness list.',
       fail:
-        'No witnesses yet. Newly added Hotspots may take a few days to populate their witnesses.',
+        'No witnesses yet. New Hotspots, Hotspots with recently updated location or antenna settings will have zero witnesses.',
       title: 'Witness List',
     },
     challengee: {
@@ -986,19 +931,22 @@ export default {
       success_plural:
         'Hotspot last participated in a challenge {{count}} blocks ago.',
       fail:
-        'It can take a few hours to pass a challenge once a witness list is created.',
+        'Online Hotspots are challenged every 480 blocks (or 8 hours). Hotspots send a Beacon (also known as a challenge) and if other Hotspot witness, they pass.',
       title: 'Pass a Challenge',
     },
     data_transfer: {
       success: 'Hotspot has transferred data packets recently.',
       fail:
-        "Hotspots automatically transfer device data and earn HNT. This Hotspot hasn't transferred data yet.",
+        "Hotspots automatically transfer device data from nearby sensors. This Hotspot hasn't transferred data yet.",
       title: 'Transfer Data',
     },
-    auto: 'AUTO',
-    auto_hours: 'EVERY FEW HOURS',
+    auto: 'AUTOMATIC',
+    auto_hours: 'EVERY 8 HOURS',
+    auto_refresh: 'REFRESHES OFTEN',
     complete: 'COMPLETE',
     online: 'ONLINE',
+    pending: 'PENDING',
+    item_count: '{{index}} of {{total}}',
   },
   discovery: {
     troubleshooting_guide: 'Troubleshooting Guide',
@@ -1054,6 +1002,7 @@ export default {
       searching: 'Searching',
       distance: '{{distance}} {{unit}} away',
       added_to_followed: 'Added to Followed Hotspots',
+      removed_from_followed: 'Removed from Followed Hotspots',
     },
     share: {
       subject: 'Discovery Results',
@@ -1062,19 +1011,6 @@ export default {
     },
   },
   antennas: {
-    helium_us: 'Helium Hotspot (US 915)',
-    helium_eu: 'Helium Hotspot (EU 868)',
-    rak_hotspot_us: 'RAK Hotspot Miner (US 915)',
-    rak_hotspot_eu: 'RAK Hotspot Miner (EU 868)',
-    nebra_outdoor: 'Nebra Outdoor Hotspot',
-    nebra_indoor: 'Nebra Indoor Hotspot',
-    bobcat: 'Bobcat Miner 300 (All)',
-    syncrobit_us: 'Syncrob.it (US 915)',
-    syncrobit_eu: 'Syncrob.it (EU 868)',
-    longapone_eu: 'LongAP One (EU 868)',
-    finestra_us: 'Finestra Miner (US 915)',
-    rak_custom: 'RAK Antenna',
-    custom: 'Custom Antenna',
     onboarding: {
       title: 'Antenna Setup',
       subtitle: 'Submit antenna and height details for your Hotspot.',
@@ -1093,5 +1029,27 @@ export default {
       desc:
         'A value between 1 and 15 to one decimal point. This is provided by your hotspot or antenna manufacturer.',
     },
+  },
+  map_filter: {
+    your_hotspots: {
+      title: 'Your Hotspots',
+      body: 'Shows followed and owned Hotspots',
+      followed: 'Followed',
+      owned: 'Owned',
+    },
+    witness: {
+      title: 'Witnesses',
+      body: 'Highlights witnesses for chosen Hotspot',
+      desc_title: 'What are Witnesses?',
+      desc_body:
+        'Witnesses are Hotspot that hear a Hotspots ‘Beacons’ and report Proof-of-Coverage receipts.',
+    },
+    reward: {
+      title: 'Transmit Scaling',
+      body:
+        'Indicates location density. When a Hotspot transmits a beacon, any that hear it will have its mining rewards scaled by this number.',
+    },
+    title: 'Map Filters',
+    button: 'Choose Map Filter',
   },
 }

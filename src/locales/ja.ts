@@ -50,7 +50,7 @@ export default {
     },
     create_pin: {
       title: 'PINコードを設定',
-      subtitle: '最後にPINコードを設定して、アカウントの保護を強化します。',
+      subtitle: 'PINコードを設定して、アカウントを保護します。',
     },
     confirm_pin: {
       title: 'PINを再入力してください',
@@ -92,6 +92,7 @@ export default {
     next: 'ガイドを読みました',
   },
   generic: {
+    clear: 'クリア',
     done: '完了',
     disabled: '無効',
     understand: '理解しました',
@@ -109,6 +110,9 @@ export default {
     go_to_settings: '「設定」に移動',
     hotspot: 'Hotspot',
     location: '位置情報',
+    unable_to_get_location: '位置情報を取得できませんでした',
+    location_blocked:
+      '位置情報がオフになっています。位置情報サービスを許可するには、携帯電話の設定に移動します。',
     challenger: 'Challenger',
     learn_more: '詳細',
     cancel: 'キャンセル',
@@ -132,21 +136,16 @@ export default {
     something_went_wrong: '何らかの問題が発生しました',
     hnt_to_currency: '{{currencyType}}。CoinGeckoのデータ',
     search_location: 'アドレスや場所を検索する',
+    unavailable: '利用不可',
+    minutes: '{{count}}分',
+    minutes_plural: '{{count}}分',
+    seconds: '{{count}}秒',
+    seconds_plural: '{{count}}秒',
   },
   hotspot_setup: {
     selection: {
       title: 'Hotspotを\n選択してください。',
       subtitle: 'どのような種類のHotspotを\n追加しますか？',
-      helium: 'Helium Hotspot',
-      rak: 'RAK Hotspot Miner',
-      nebrain: 'Nebra Indoor Hotspot',
-      nebraout: 'Nebra Outdoor Hotspot',
-      bobcat: 'Bobcat Miner 300',
-      syncrobit: 'SyncroB.it Hotspot',
-      third_party_header: 'その他のHotspot',
-      helium_edition: 'Helium Network向け',
-      fine_print:
-        'RAK Hotspot MinerにはRAKによって事前に読み込まれた特別なファームウェアがあります。続行する前に、ハードウェアがRAK Hotspot Minerであることを再確認してください。',
     },
     education: {
       title: 'Hotspotを\n配置しています。',
@@ -176,66 +175,13 @@ export default {
     },
     diagnostics: {
       title: '診断',
-      p_1:
-        '<b><white>診断サポートにより、HeliumはHotspotの問題を安全な方法で特定できます。</white></b>\n\nHeliumが秘密キーにアクセスすることはありません。お使いのHotspotにのみアクセスし、ネットワーク上の他のデバイスにはアクセスしません。\n\n診断サポートをオプトアウトする場合は、Hotspotの購入時に使用したメールアドレスを使用して、<purple><b>support@helium.com</b></purple>までメールでご連絡ください。',
-      nebra_p_1:
-        '<b><white>診断サポートにより、Nebra LTDはHotspotの問題を安全な方法で特定できます。</white></b>\n\nNebraが秘密キーにアクセスすることはありません。お使いのHotspotにのみアクセスし、ネットワーク上の他のデバイスにはアクセスしません。\n\n診断サポートをオプトアウトする場合は、Hotspotの購入時に使用したメールアドレスを使用して、<purple><b>support@nebra.com</b></purple>までメールでご連絡ください。',
-      bobcat_p_1:
-        '<b><white>診断サポートにより、BobcatはHotspotの問題を安全な方法で特定できます。</white></b>\n\nBobcatが秘密キーにアクセスすることはありません。お使いのHotspotにのみアクセスし、ネットワーク上の他のデバイスにはアクセスしません。\n\n診断サポートをオプトアウトする場合は、Hotspotの購入時に使用したメールアドレスを使用して、<purple><b>support@bobcatminer.com</b></purple>までメールでご連絡ください。',
-      syncrobit_p_1:
-        '<b><white>診断サポートにより、SyncroB.itはHotspotの問題を安全な方法で特定できます。</white></b>\n\nSyncroB.itが秘密キーにアクセスすることはありません。お使いのHotspotにのみアクセスし、ネットワーク上の他のデバイスにはアクセスしません。\n\n診断サポートをオプトアウトする場合は、Hotspotの購入時に使用したメールアドレスを使用して、<purple><b>support@syncrob.it</b></purple>までメールでご連絡ください。',
     },
     power: {
       title: '電源オン',
       next: '電源が入っています',
-      helium_subtitle_1:
-        'アンテナを取り付け、付属の電源アダプターに差し込みます。',
-      rak_subtitle_1:
-        '付属の電源アダプターを窓の近くにあるコンセントに差し込みます。',
-      nebrain_subtitle_1:
-        'アンテナを取り付け、窓の近くにある付属の電源アダプターに差し込みます。',
-      nebraout_subtitle_1: 'アンテナを取り付け、適切な電源に接続します。',
-      bobcat_subtitle_1:
-        '付属の電源アダプターを窓の近くにあるコンセントに差し込み、Hotspotの背面に付属のアンテナを回して取り付けます。',
-      syncrobit_subtitle_1: 'アンテナを取り付けてデバイスに差し込みます',
-      helium_subtitle_2:
-        'Hotspotが起動し、準備が完了するとライトが緑色になります。',
-      rak_subtitle_2:
-        'RAK Hotspot Minerの電源がオンになると、赤いLEDライトが点きます。',
-      nebrain_subtitle_2:
-        'Nebra Indoor Hotspotの電源を入れると、緑色のLEDが点灯します。',
-      nebraout_subtitle_2:
-        'Nebra Outdoor Hotspotの電源を入れると、複数のLEDが点灯します。',
-      bobcat_subtitle_2:
-        'Hotspotの準備が整うと、LEDの色が赤から黄色に変わります。',
-      syncrobit_subtitle_2:
-        'SyncroB.it Hotspotの電源を入れると、LEDバーが青色で点灯します。',
     },
     pair: {
       title: 'Bluetooth',
-      helium_subtitle_1:
-        'Hotspotの黒いボタンを押します。ライトが青に変わります。',
-      rak_subtitle_1: 'RAK Hotspot Minerにペアリングボタンはありません。',
-      nebrain_subtitle_1:
-        'Nebra Indoor Hotspotの背面にあるボタンを、点滅し始めるまで押し続けます。',
-      nebraout_subtitle_1:
-        'Nebra Outdoor Hotspotにペアリングボタンはありません。',
-      bobcat_subtitle_1:
-        '付属のピンを使用して、Hotspotの背面にあるBTボタンを押し、そのまま5秒間押し続けます。',
-      syncrobit_subtitle_1:
-        'SyncroB.it Hotspotにペアリングボタンはありません。',
-      helium_subtitle_2:
-        '続行する前に携帯電話のBluetoothがオンになっていることを確認します',
-      rak_subtitle_2:
-        'RAK Hotspot Minerの電源がオンになると、自動的にBluetoothが5分間有効になります。\n\nHotspotが完全に起動するまでに最大で1分かかる場合があります。',
-      nebrain_subtitle_2:
-        'ペアリングの準備が整うと、LEDがゆっくりと点滅します。\n\n「次へ」を押してスキャンします。',
-      nebraout_subtitle_2:
-        'Nebra Outdoor Hotspotの電源がオンになると、自動的にBluetoothが10分間有効になります。\n\nHotspotが完全に起動するまでに最大で1分かかる場合があります。',
-      bobcat_subtitle_2:
-        'Hotspotのペアリングの準備が整うと、LEDの色が黄色から青色に変わります。\n\n携帯電話のBluetoothがオンになっていることを確認してください。',
-      syncrobit_subtitle_2:
-        'SyncroB.it Hotspotの電源がオンになると、自動的にBluetoothが5分間有効になります。\n\nHotspotが完全に起動するまでに最大で1分かかる場合があります。',
       alert_no_permissions: {
         title: 'Bluetoothのアクセスを許可',
         body:
@@ -333,6 +279,9 @@ export default {
       next: 'セットアップを終了',
       disconnected:
         'Hotspotへの接続中にエラーが発生しました。もう一度実行してください。',
+      title_connect_failed: 'Hotspotのペアリングに失敗しました',
+      body_connect_failed:
+        'Hotspot Minerがリクエストに応答できません。Hotspotを再起動して、後でもう一度実行してください。',
     },
     add_hotspot: {
       title: 'Hotspotを追加',
@@ -358,6 +307,10 @@ export default {
         'Add Hotspotトランザクションの構築中にエラーが発生しました。もう一度実行してください。',
       assert_loc_error_body:
         'Assert Locationトランザクションの構築中にエラーが発生しました。もう一度実行してください。',
+      assert_loc_error_no_loc:
+        '選択した位置情報が無効です。もう一度実行してください。',
+      no_onboarding_key_title: 'オンボーディングキーが見つかりません',
+      no_onboarding_key_message: 'もう一度実行しますか？',
     },
     enable_location: {
       title: 'Hotspotの\n位置情報を設定',
@@ -392,6 +345,11 @@ export default {
         '料金データの読み込み中にエラーが発生しました。もう一度実行してください。',
       next: 'Hotspotを登録',
       fee_next: '料金の支払いとHotspotの登録',
+      gain_label: 'TX/RXゲイン：',
+      elevation_label: '高さ：',
+      gain: '{{gain}} dBi',
+      elevation: '{{count}}メートル',
+      elevation_plural: '{{count}}メートル',
     },
     location: {
       title: 'Hotspotの位置情報',
@@ -414,10 +372,15 @@ export default {
       subtitle_2: '後で設定から位置情報を更新します。',
     },
     not_owner: {
-      title: 'セットアップを続行できません',
-      subtitle_1: 'Hotspotは別のアカウントに属しています。',
-      subtitle_2:
+      title: 'このHotspotにはすでに所有者が存在します。',
+      subtitle_1:
+        'あなたは他のユーザーのためにこのHotspotを\nホストしてますか？',
+      subtitle_1_no_follow:
         'Wi-Fiを更新しているホストの場合、今すぐセットアップを終了できます。',
+      subtitle_2:
+        'Hotspotをフォローすると、所有していないHotspotをアプリ内で監視できます。',
+      contact_manufacturer:
+        'あなたがホットスポットの所有者（購入者）であると思われる場合は、Hotspotの製造元に問い合わせてください。',
     },
     owned_hotspot: {
       title: 'このHotspotをすでに所有しています',
@@ -474,6 +437,11 @@ export default {
           '青色はHNTがアカウントから<blue>引き出されている</blue>ことを示します。',
       },
     ],
+    chartRanges: {
+      days: { label: '14D', accessibilityLabel: '14 Days' },
+      weeks: { label: '12W', accessibilityLabel: '12 Weeks' },
+      months: { label: '12M', accessibilityLabel: '12 Months' },
+    },
   },
   send: {
     title: {
@@ -530,6 +498,11 @@ export default {
         'QRコードを共有して、他のユーザーからHNTを入金するか受け取ります。',
       learn_more: '詳細',
     },
+    send_max_fee: {
+      error_title: '最大送信エラー',
+      error_description:
+        '残りの最大送信にかかる手数料を計算できません。\n\n「最大送信」をタップしてもう一度実行してください。',
+    },
   },
   more: {
     title: '設定',
@@ -577,7 +550,7 @@ export default {
         signOutAlert: {
           title: '警告！',
           body:
-            'これにより、このデバイスからすべてのアカウント情報が削除されます。アカウントとHotspotへのアクセスを復元するには、12個の単語で作成された回復シードフレーズを使用する必要があります。',
+            'アカウントからサインアウトしています。回復用の12個の単語をお持ちですか？お持ちでない場合、以下にアクセスできなくなります。\n\n - Hotspot\n- HNT\n - ウォレット',
         },
       },
     },
@@ -599,25 +572,42 @@ export default {
     owned: {
       title: 'Hotspot',
       title_no_hotspots: 'Hotspot',
-      reward_summary:
-        'Hotspotは過去24時間で{{hntAmount}}HNTをマイニングしました。',
+      reward_summary: 'Hotspotは過去24時間で\n{{hntAmount}}を獲得しました。',
       reward_summary_plural:
-        '{{count}}個のHotspotは過去24時間で{{hntAmount}}HNTをマイニングしました。',
+        '{{count}}個のHotspotは過去24時間で\n{{hntAmount}}を獲得しました。',
       your_hotspots: 'Hotspot',
       filter: {
         new: '最新のHotspot',
         near: '最も近いHotspot',
         earn: '獲得数上位のHotspot',
         offline: 'オフラインHotspot',
+        followed: 'フォローしたHotspot',
       },
+    },
+    search: {
+      title: 'Hotspot検索',
+      my_hotspots: 'Hotspot',
+      all_hotspots: 'すべてのHotspot',
+      placeholder: '検索...',
+      recent_searches: '最近の検索',
+      tips: '検索のヒント',
+      tips_body:
+        'Hotspot名（愉快な動物の名前など）または地名（ニューヨーク市など）を入力してみてください。\n\n注：過去10分以内に追加されたHotspotは表示されない場合があります。',
     },
     empty: {
       body: 'まだHotspotを追加もフォローもしていません。',
+      failed:
+        'APIまたはネットワークの停止により、Hotspotのアクセスに問題が発生しています。後でもう一度実行してください。',
     },
     list: {
       no_offline: 'オフラインHotspotはありません',
       online: 'オンラインHotspot',
+      no_results: '結果はありません',
     },
+    ticker:
+      '{{formattedHotspotCount}}個のHotspot • Oracleの価格：{{oraclePrice}} • ブロック時間：{{formattedBlockTime}}秒 • ',
+    ticker_no_block:
+      '{{formattedHotspotCount}}個のHotspot • Oracleの価格：{{oraclePrice}} • ',
   },
   permissions: {
     location: {
@@ -649,6 +639,7 @@ export default {
     received: '受信済みHNT',
     added: 'Hotspotがブロックチェーンに追加されました',
     location: '位置情報を確認',
+    location_v2: 'Hotspotを更新',
     transfer: 'Hotspotのデータ転送',
     transferSell: 'Hotspotでデータを転送（販売）',
     transferBuy: 'Hotspotでデータを転送（購入）',
@@ -682,6 +673,16 @@ export default {
     discovery: {
       title: '検出モード',
       subtitle: '理想的なHotspotの配置を特定します。',
+      no_location_error: {
+        title: '検出モードを開始できません',
+        message:
+          '検出モードを開始する前に、Hotspotの位置情報を設定してください。',
+      },
+      unasserted_hotspot_warning: {
+        title: 'Hotspotの位置情報がありません',
+        message:
+          '応答するHotspotを視覚化するため、携帯電話の位置情報がHotspotのプレースホルダーとして使用されます。',
+      },
     },
     diagnostics: {
       title: '診断レポート',
@@ -717,6 +718,8 @@ export default {
       email_client_missing:
         '互換性のあるインストール済みのメールクライアントが見つかりませんでした',
       other_info: 'その他の情報',
+      unavailable_warning:
+        '*Hotspotが完全に起動するまで、診断を利用できない場合があります。データが欠落している場合は、前に戻って、診断レポートをもう一度生成してください。',
     },
     wifi: {
       title: 'Wi-Fiネットワーク',
@@ -750,9 +753,18 @@ export default {
       assert_pending: 'アサートを保留しています...',
       failTitle: 'Hotspotの再アサートに失敗しました',
       failSubtitle: '後でもう一度実行してください',
+      current_location: '現在の位置情報',
+      new_location: '新しい位置情報',
+      antenna_details: 'アンテナ/高さの詳細',
+      update_antenna: 'アンテナを更新',
+      submit:
+        '申請を行い、現在保留になっているHotspotのトランザクションを更新します。',
+      already_pending:
+        'トランザクションが保留になっている間、Hotspotを更新することはできません。後でもう一度実行してください。',
     },
   },
   hotspot_details: {
+    checklist: 'チェックリスト',
     title: 'Hotspotの詳細',
     owner: '所有者：{{address}}',
     owner_you: 'あなたが所有しています',
@@ -762,10 +774,22 @@ export default {
     challenge_title: 'Challenges',
     challenge_sub_title: '（ウィットネス、Challenger、またはChallengee）',
     picker_title: '過去',
-    picker_options: ['24時間', '7日間', '14日間', '30日間'],
+    overview: '概要',
+    no_location: '位置情報がありません',
+    picker_options: ['過去24時間', '過去7日間', '過去14日間', '過去30日間'],
     picker_prompt: '範囲を選択',
     status_online: 'オンライン',
     status_offline: '注意が必要',
+    status_syncing: '同期中',
+    relayed: 'リレー済み',
+    status_prompt_online: {
+      title: 'Hotspotはオンラインになっており、同期されています。',
+      subtitle_active: 'ステータス：{{hotspotBlock}}/{{currentBlock}}ブロック',
+      subtitle_starting: '同期を開始しています...',
+    },
+    status_prompt_offline: {
+      title: 'Hotspotはオフラインになっており、同期されていません。',
+    },
     options: {
       settings: '設定',
       viewExplorer: 'エクスプローラーで表示',
@@ -775,6 +799,11 @@ export default {
     no_location_body: 'Hotspotとペアリングをして開始します。',
     percent_synced: '{{percent}}%同期されました',
     starting_sync: '同期を開始しています...',
+    relay_prompt: {
+      title: 'Hotspotはリレーされています',
+      message:
+        'Hotspotの接続はネットワーク上の別のHotspotを介してリレーされており、マイニングに影響する可能性があります。Hotspotがリレーされないようにするには、トラブルシューティングガイドにアクセスしてください。',
+    },
   },
   transfer: {
     title: 'Hotspotでデータを転送',
@@ -825,6 +854,8 @@ export default {
     owner: '所有者',
     my_account: 'アカウント',
     view_block: 'ブロックを表示',
+    elevation: '高さ',
+    antenna: 'アンテナ',
     rewardTypes: {
       poc_challengees: 'PoC',
       poc_challengers: 'Challenger',
@@ -839,7 +870,7 @@ export default {
     title: 'チェックリスト',
     blocks: {
       not:
-        'Hotspotはマイニングする前に完全に同期する必要があります。新しいHotspotの同期には最大48時間かかる場合があります。',
+        'Hotspotはマイニングする前に完全に同期する必要があります。新しいHotspotの同期には最大96時間かかる場合があります。',
       full: 'Hotspotが完全に同期されました。',
       partial:
         'HotspotはHeliumブロックチェーンの{{count}}ブロック手前で、約{{percent}}%同期されました。',
@@ -857,7 +888,7 @@ export default {
       success: 'Hotspotが{{count}}ブロック前にChallengeを発行しました。',
       success_plural: 'Hotspotが{{count}}ブロック前にChallengeを発行しました。',
       fail:
-        'HotspotはまだChallengeを発行していません。Hotspotは自動的にChallengeを作成します。',
+        'HotspotはまだChallengeを発行していません。Hotspotは480ブロックごと（約8時間ごと）にChallengeを自動的に作成します。',
       title: 'Challengeを作成',
     },
     challenge_witness: {
@@ -871,7 +902,7 @@ export default {
       success_plural:
         'このHotspotはウィットネスリストに{{count}}個のHotspotがあります。',
       fail:
-        'ウィットネスはまだありません。新しく追加されたHotspotにウィットネスが追加されるまでには数日かかる場合があります。',
+        'ウィットネスはまだありません。新しいHotspot、および位置情報やアンテナの設定が最近更新されたHotspotのウィットネスはゼロになります。',
       title: 'ウィットネスリスト',
     },
     challengee: {
@@ -880,7 +911,7 @@ export default {
       success_plural:
         'Hotspotは{{count}}ブロック前のChallengeに最後に追加されました。',
       fail:
-        'ウィットネスリストが作成されてからChallengeに渡されるまで数時間かかる場合があります。',
+        'オンラインHotspotは480ブロック（8時間）ごとにChallengeが作成され、次にChallengeが作成されるまでに時間がかかる場合があります。',
       title: 'Challengeを渡す',
     },
     data_transfer: {
@@ -895,12 +926,33 @@ export default {
     online: 'オンライン',
   },
   discovery: {
+    troubleshooting_guide: 'トラブルシューティングガイド',
+    syncing_prompt: {
+      title: '検出モードを開始できません',
+      message:
+        'Hotspotは完全に同期する必要があります。後でもう一度実行してください。',
+    },
+    offline_prompt: {
+      title: '検出モードを開始できません',
+      message:
+        'Hotspotはオフラインになっています。インターネットに接続して、もう一度実行してください。',
+    },
+    relay_prompt: {
+      title: 'Hotspotはリレーされています',
+      message:
+        '検出モードで実行されているHotspotがリレーされている場合、隣接するHotspotからの応答を受信しない可能性があります。Hotspotがリレーされないようにするには、トラブルシューティングガイドにアクセスしてください。',
+    },
+    session_error_prompt: {
+      title: '検出モードを開始できません',
+      message:
+        'Hotspotのリレーが遅れており、応答していない可能性があります。ルーターの設定を確認し、もう一度実行してください。',
+    },
     begin: {
       title: '検出モード',
       subtitle:
-        '無線パケットを短時間送信して、どのHotspotがあなたを検知するかを調べます。',
+        '無線パケットを{{duration}}送信して、どのHotspotがあなたを検知するかを調べます。',
       body:
-        '検出モードは1日あたり最大5セッションで、現時点では無料で使用できます。',
+        '検出モードは1日あたり最大{{requestsPerDay}}セッションで、現時点では無料で使用できます。',
       previous_sessions: '前回のセッション',
       last_30_days: '(過去30日間)',
       start_session: '新しいセッションを開始する',
@@ -908,10 +960,17 @@ export default {
         '本日分のセッションはすべてなくなりました。\n明日もう一度やり直してください。',
       responses: '{{count}}件の応答',
       responses_plural: '{{count}}件の応答',
+      initiation_error: 'セッションを開始できません',
       error: {
         title: 'エラー',
         subtitle:
           '検出モードの読み込み中に問題が発生しました。後でもう一度実行してください',
+      },
+      location_opts: {
+        hotspot: '一時的な位置情報を使用*',
+        asserted: 'アサート済みの位置情報を使用',
+        info:
+          '*位置情報を設定する前にHotspotのカバレッジをテストしたい場合に便利です',
       },
     },
     results: {
@@ -922,11 +981,32 @@ export default {
       result_time: '結果の時間',
       searching: '検索中',
       distance: '{{distance}} {{unit}}離れています',
+      added_to_followed: 'フォローしたHotspotに追加しました',
     },
     share: {
       subject: '検出結果',
       hotspot_name: 'Hotspot名',
       packets_heard: '検知されたパケット',
+    },
+  },
+  antennas: {
+    onboarding: {
+      title: 'アンテナのセットアップ',
+      subtitle: 'Hotspotのアンテナと高さの詳細を申請します。',
+      gain: 'TX/RXゲイン',
+      dbi: 'dBi',
+      elevation: '高さ（メートル）',
+      select: 'アンテナを選択',
+    },
+    elevation_info: {
+      title: 'Hotspotの高さ',
+      desc:
+        'アンテナを地面からどのくらいの高さに配置するかを見積もります。平屋家屋の屋根にアンテナを配置する場合、高さは通常、5メートルになります。',
+    },
+    gain_info: {
+      title: 'アンテナのTX/RXゲイン',
+      desc:
+        '1から15までの小数点以下1桁の値。これはHotspotまたはアンテナの製造元で確認できます。',
     },
   },
 }

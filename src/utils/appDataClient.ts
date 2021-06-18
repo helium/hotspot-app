@@ -51,6 +51,11 @@ export const getHotspots = async () => {
   return newHotspotList.takeJSON(1000)
 }
 
+export const getHotspotsForHexId = async (hexId: string) => {
+  const hotspotsList = await client.hotspots.hex(hexId)
+  return hotspotsList.takeJSON(1000)
+}
+
 export const searchHotspots = async (searchTerm: string) => {
   Logger.breadcrumb('searchHotspots', breadcrumbOpts)
   const address = await getAddress()

@@ -17,6 +17,7 @@ import { useCallback } from 'react'
 import { getKeypair } from './secureAccount'
 import { RootState } from '../store/rootReducer'
 import { SendDetails } from '../features/wallet/send/sendTypes'
+import { encodeMemoString } from './transactions'
 
 export const useFees = () => {
   const { currentOraclePrice, predictedOraclePrices } = useSelector(
@@ -56,13 +57,14 @@ export const calculatePaymentTxnFee = async (
 
   const paymentTxn = new PaymentV2({
     payer: keypair.address,
-    payments: paymentDetails.map(({ address, balanceAmount }) => ({
+    payments: paymentDetails.map(({ address, balanceAmount, memo }) => ({
       // if a payee address isn't supplied, we use a dummy address
       payee:
         address && Address.isValid(address)
           ? Address.fromB58(address)
           : emptyB58Address(),
       amount: balanceAmount.integerBalance,
+      memo: encodeMemoString(memo),
     })),
     nonce,
   })

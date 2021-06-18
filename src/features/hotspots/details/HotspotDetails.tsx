@@ -3,7 +3,12 @@ import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import { LayoutChangeEvent, Alert, Linking } from 'react-native'
+import {
+  LayoutChangeEvent,
+  Alert,
+  Linking,
+  ActivityIndicator,
+} from 'react-native'
 import { Hotspot } from '@helium/http'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -28,21 +33,29 @@ import { getSyncStatus, isRelay } from '../../../utils/hotspotUtils'
 import ShareHotspot from '../../../components/ShareHotspot'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Articles from '../../../constants/articles'
+import HotspotListItem from '../../../components/HotspotListItem'
+import Info from '../../../assets/images/info-hollow.svg'
+import { distance } from '../../../utils/location'
+import { useColors } from '../../../theme/themeHooks'
+import TouchableHighlightBox from '../../../components/TouchableHighlightBox'
 
 type Props = {
   hotspotAddress?: string
   hotspot?: Hotspot
   onLayoutHeader?: ((event: LayoutChangeEvent) => void) | undefined
   onFailure: () => void
+  onSelectHotspot: (hotspot: Hotspot) => void
 }
 const HotspotDetails = ({
   hotspot: propsHotspot,
   hotspotAddress,
   onLayoutHeader,
+  onSelectHotspot,
   onFailure,
 }: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
+  const colors = useColors()
   const address = hotspotAddress || propsHotspot?.address || ''
   const hotspotChatData =
     useSelector(
@@ -62,9 +75,6 @@ const HotspotDetails = ({
     rewardSum,
     rewardsChange,
     loading = true,
-    witnessSums,
-    witnessAverage,
-    witnessChange,
     challengeSums,
     challengeSum,
     challengeChange,
@@ -118,18 +128,6 @@ const HotspotDetails = ({
     )
   }, [dispatch, hotspot?.address, timelineValue])
 
-  const witnessChartData = useMemo(() => {
-    return (
-      witnessSums?.map((w) => ({
-        up: Math.round(w.avg),
-        down: 0,
-        label: w.timestamp,
-        showTime: timelineValue === 1,
-        id: `witness-${timelineValue}-${w.timestamp}`,
-      })) || []
-    )
-  }, [timelineValue, witnessSums])
-
   const challengeChartData = useMemo(() => {
     return (
       challengeSums?.map((w) => ({
@@ -164,6 +162,11 @@ const HotspotDetails = ({
         value: 'checklist',
         color: 'purpleMain',
       } as HeliumSelectItemType,
+      {
+        label: t('map_filter.witness.title'),
+        value: 'witnesses',
+        color: 'purpleMain',
+      } as HeliumSelectItemType,
     ]
   }, [t])
 
@@ -196,6 +199,70 @@ const HotspotDetails = ({
       ],
     )
   }, [t])
+
+  const getDistance = useCallback(
+    (otherHotspot: Hotspot) => {
+      if (
+        !hotspot?.lat ||
+        !hotspot?.lng ||
+        !otherHotspot?.lat ||
+        !otherHotspot?.lng
+      )
+        return undefined
+      const distanceKM = distance(
+        {
+          latitude: hotspot?.lat,
+          longitude: hotspot?.lng,
+        },
+        { latitude: otherHotspot?.lat, longitude: otherHotspot?.lng },
+      )
+      if (distanceKM < 1) {
+        return `${(distanceKM * 1000).toFixed(0)}m`
+      }
+      return `${distanceKM.toFixed(1)}km`
+    },
+    [hotspot?.lat, hotspot?.lng],
+  )
+
+  const renderWitnessItem = useCallback(
+    (witness: Hotspot) => {
+      return (
+        <HotspotListItem
+          key={witness.address}
+          onPress={onSelectHotspot}
+          hotspot={witness}
+          showCarot
+          showAddress={false}
+          distanceAway={getDistance(witness)}
+          showRewardScale
+          showRelayStatus
+        />
+      )
+    },
+    [getDistance, onSelectHotspot],
+  )
+
+  const showWitnessAlert = useCallback(() => {
+    Alert.alert(
+      t('hotspot_details.witness_prompt.title'),
+      t('hotspot_details.witness_prompt.message', {
+        hotspotName: animalName(hotspot?.address || ''),
+      }),
+      [
+        {
+          text: t('generic.ok'),
+        },
+        {
+          text: t('generic.readMore'),
+          style: 'cancel',
+          onPress: () => {
+            if (Linking.canOpenURL(Articles.Witnesses))
+              Linking.openURL(Articles.Witnesses)
+          },
+        },
+      ],
+    )
+  }, [hotspot?.address, t])
 
   if (!hotspot) return null
 
@@ -249,7 +316,10 @@ const HotspotDetails = ({
                 onPress={toggleShowStatusBanner}
               />
             )}
-            <HexBadge rewardScale={hotspot.rewardScale} />
+            <HexBadge
+              rewardScale={hotspot.rewardScale}
+              backgroundColor="grayBox"
+            />
             {isRelayed && (
               <TouchableOpacityBox
                 backgroundColor="yellow"
@@ -302,19 +372,50 @@ const HotspotDetails = ({
               loading={loading}
             />
             <HotspotDetailChart
-              title={t('hotspot_details.witness_title')}
-              number={witnessAverage?.toFixed(0)}
-              change={witnessChange}
-              data={witnessChartData}
-              loading={loading}
-            />
-            <HotspotDetailChart
               title={t('hotspot_details.challenge_title')}
               number={challengeSum?.toFixed(0)}
               change={challengeChange}
               data={challengeChartData}
               loading={loading}
             />
+          </>
+        )}
+
+        {selectedOption === 'witnesses' && (
+          <>
+            {hotspotDetailsData.loading ? (
+              <Box marginTop="xl">
+                <ActivityIndicator color={colors.grayMain} />
+              </Box>
+            ) : (
+              <>
+                <TouchableHighlightBox
+                  alignItems="center"
+                  backgroundColor="grayBox"
+                  marginBottom="xxs"
+                  marginTop="m"
+                  flexDirection="row"
+                  underlayColor="#EBEDF9"
+                  onPress={showWitnessAlert}
+                >
+                  <>
+                    <Text
+                      variant="body1Medium"
+                      color="grayDarkText"
+                      paddingLeft="m"
+                      paddingRight="s"
+                      paddingVertical="m"
+                    >
+                      {t('hotspot_details.num_witnesses', {
+                        count: witnesses?.length || 0,
+                      })}
+                    </Text>
+                    <Info color={colors.blueMain} />
+                  </>
+                </TouchableHighlightBox>
+                {witnesses?.map((witness) => renderWitnessItem(witness))}
+              </>
+            )}
           </>
         )}
       </Box>

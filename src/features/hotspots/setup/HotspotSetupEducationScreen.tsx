@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useCallback } from 'react'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import Carousel, { Pagination } from 'react-native-snap-carousel'
@@ -16,6 +16,7 @@ import {
   HotspotSetupStackParamList,
 } from './hotspotSetupTypes'
 import { useColors, useSpacing } from '../../../theme/themeHooks'
+import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
 type Route = RouteProp<
   HotspotSetupStackParamList,
@@ -25,6 +26,7 @@ type Route = RouteProp<
 const HotspotEducationScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
+  const rootNav = useNavigation<RootNavigationProp>()
   const carouselRef = useRef<Carousel<CarouselItemData>>(null)
   const [slideIndex, setSlideIndex] = useState(0)
   const [viewedSlides, setViewedSlides] = useState(false)
@@ -33,6 +35,8 @@ const HotspotEducationScreen = () => {
   const colors = useColors()
 
   const navNext = () => navigation.push('HotspotSetupDiagnosticsScreen', params)
+
+  const handleClose = useCallback(() => rootNav.navigate('MainTabs'), [rootNav])
 
   const renderButton = () => {
     if (viewedSlides) {
@@ -70,6 +74,7 @@ const HotspotEducationScreen = () => {
       backgroundColor="primaryBackground"
       padding="none"
       justifyContent="center"
+      onClose={handleClose}
     >
       <Text
         variant="h1"

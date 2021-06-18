@@ -28,7 +28,7 @@ const UpdateHotspotHeader = ({ onClose, isLocationChange }: Props) => {
         alignItems="center"
       >
         {isLocationChange ? (
-          <LocationIcon />
+          <LocationIcon color="white" />
         ) : (
           <DiscoveryIcon color="white" width={35} height={25} />
         )}

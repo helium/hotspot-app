@@ -15,8 +15,15 @@ type Props = BoxProps<Theme> & {
   address: string
   colors?: { following: string; notFollowing: string }
   handleChange?: (following: boolean) => void
+  duration?: number
 }
-const FollowButton = ({ address, colors, handleChange, ...props }: Props) => {
+const FollowButton = ({
+  address,
+  colors,
+  duration = 1000,
+  handleChange,
+  ...props
+}: Props) => {
   const { grayPurple, followPurple } = useColors()
   const dispatch = useAppDispatch()
   const [following, setFollowing] = useState(false)
@@ -53,8 +60,9 @@ const FollowButton = ({ address, colors, handleChange, ...props }: Props) => {
 
   return (
     <DebouncedTouchableOpacityBox
-      duration={1000}
+      duration={duration}
       onPress={toggleFollowing}
+      hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
       {...props}
     >
       <Follow color={color} />

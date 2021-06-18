@@ -3,7 +3,7 @@ import { ActivityIndicator, Alert } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Address } from '@helium/crypto-react-native'
 import { Account } from '@helium/http'
-import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
+import Balance, { NetworkTokens } from '@helium/currency'
 import { useAsync } from 'react-async-hook'
 import animalName from 'angry-purple-tiger'
 import InputField from '../../../components/InputField'
@@ -18,7 +18,12 @@ import { SendDetails, SendDetailsUpdate } from './sendTypes'
 import { Transfer } from '../../hotspots/transfers/TransferRequests'
 import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
 import { ensLookup } from '../../../utils/explorerClient'
-import { formatAmountInput, parseAmount } from '../../../utils/transactions'
+import {
+  getDecimal,
+  getInteger,
+  stringAmountToBalance,
+  getMemoBytesLeft,
+} from '../../../utils/transactions'
 import * as Logger from '../../../utils/logger'
 import useHaptic from '../../../utils/useHaptic'
 import { AppLinkCategoryType } from '../../../providers/appLinkTypes'
@@ -29,6 +34,7 @@ type Props = {
   isLocked: boolean
   isLockedAddress: boolean
   isSeller?: boolean
+  index: number
   lastReportedActivity?: string
   onScanPress: () => void
   sendDetails: SendDetails
@@ -38,6 +44,7 @@ type Props = {
 }
 
 const SendDetailsForm = ({
+  index,
   account,
   fee,
   isLocked,
@@ -97,18 +104,32 @@ const SendDetailsForm = ({
 
   // Update the internal HNT amount based on form input
   useEffect(() => {
-    const parsedAmount = parseAmount(amount)
-    const hntBalance = Balance.fromFloat(
-      parseFloat(`${parsedAmount?.rawInteger}.${parsedAmount?.decimal}`),
-      CurrencyType.networkToken,
-    )
-    setBalanceAmount(hntBalance)
+    setBalanceAmount(stringAmountToBalance(amount))
   }, [amount])
 
   // Helper to normalize direct "amount" input value
-  const setFormAmount = (formAmount: string) => {
-    const formattedAmount = formatAmountInput(formAmount)
-    setAmount(formattedAmount)
+  const setFormAmount = (stringAmount: string) => {
+    if (!stringAmount) {
+      setAmount('')
+      return
+    }
+    if (stringAmount === decimalSeparator) {
+      setAmount(`0${decimalSeparator}`)
+      return
+    }
+    const integerValue = getInteger(stringAmount)
+    const integerValueAsBalance = stringAmountToBalance(integerValue)
+    const formattedInteger = integerValueAsBalance.toString(undefined, {
+      decimalSeparator,
+      groupSeparator,
+      showTicker: false,
+    })
+    const decimal = getDecimal(stringAmount)
+    setAmount(
+      stringAmount.includes(decimalSeparator)
+        ? `${formattedInteger}${decimalSeparator}${decimal}`
+        : formattedInteger,
+    )
   }
 
   const setMaxAmount = async () => {
@@ -146,17 +167,31 @@ const SendDetailsForm = ({
 
   const renderLockedPaymentForm = () => (
     <>
-      <LockedField label={t('send.address.label')} value={address} />
-      <LockedField label={t('send.amount.label')} value={amount} bottom />
+      <LockedField
+        label={t('send.address.label')}
+        value={address}
+        isFirst={index !== 0}
+      />
+      <LockedField label={t('send.amount.label')} value={amount} />
+      <LockedField
+        label={t('send.memo.label')}
+        value={memo}
+        isLast
+        footer={<MemoLengthCounter />}
+      />
     </>
   )
 
   const renderLockedBurnForm = () => (
     <>
-      <LockedField label={t('send.address.label')} value={address} />
+      <LockedField
+        label={t('send.address.label')}
+        value={address}
+        isFirst={index !== 0}
+      />
       <LockedField label={t('send.amount.label')} value={amount} />
       <LockedField label={t('send.dcAmount.label')} value={dcAmount} />
-      <LockedField label={t('send.memo.label')} value={memo} bottom />
+      <LockedField label={t('send.memo.label')} value={memo} isLast />
     </>
   )
 
@@ -166,6 +201,7 @@ const SendDetailsForm = ({
         <LockedField label={t('send.address.label')} value={address} />
       ) : (
         <InputField
+          isFirst
           defaultValue={address}
           onChange={setAddress}
           label={t('send.address.label')}
@@ -182,6 +218,7 @@ const SendDetailsForm = ({
       )}
       <InputField
         type="numeric"
+        testID="AmountInput"
         defaultValue={amount}
         onChange={setFormAmount}
         value={amount}
@@ -195,8 +232,33 @@ const SendDetailsForm = ({
           </TouchableOpacityBox>
         }
       />
+      <InputField
+        defaultValue={memo}
+        onChange={setMemo}
+        label={t('send.memo.label')}
+        placeholder={t('send.memo.placeholder')}
+        footer={<MemoLengthCounter />}
+        isLast
+      />
     </>
   )
+
+  const MemoLengthCounter = () => {
+    if (!memo) return null
+    const bytesLeft = getMemoBytesLeft(memo)
+    return (
+      <Text
+        variant="mono"
+        color={bytesLeft.valid ? 'grayText' : 'redMedium'}
+        fontSize={11}
+        paddingTop="xs"
+      >
+        {bytesLeft.valid
+          ? t('send.memo.bytes_left', { count: bytesLeft.numBytes })
+          : t('send.memo.length_error')}
+      </Text>
+    )
+  }
 
   const renderBurnForm = () => (
     <>

@@ -1,24 +1,36 @@
 import React, { useCallback, useEffect } from 'react'
 import { ActivityIndicator, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { useNavigation } from '@react-navigation/native'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useAsync } from 'react-async-hook'
 import { useSelector } from 'react-redux'
-import { HotspotSetupNavigationProp } from './hotspotSetupTypes'
+import {
+  HotspotSetupNavigationProp,
+  HotspotSetupStackParamList,
+} from './hotspotSetupTypes'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
 import ImageBox from '../../../components/ImageBox'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import Map from '../../../components/Map'
 import Text from '../../../components/Text'
 import { RootState } from '../../../store/rootReducer'
 import * as Logger from '../../../utils/logger'
 import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
 import { loadLocationFeeData } from '../../../utils/assertLocationUtils'
+import { RootNavigationProp } from '../../../navigation/main/tabTypes'
+
+type Route = RouteProp<
+  HotspotSetupStackParamList,
+  'HotspotSetupConfirmLocationScreen'
+>
 
 const HotspotSetupConfirmLocationScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
+  const rootNav = useNavigation<RootNavigationProp>()
+
+  const { params } = useRoute<Route>()
   const account = useSelector((state: RootState) => state.account.account)
   const onboardingRecord = useSelector(
     (state: RootState) => state.connectedHotspot.onboardingRecord,
@@ -49,12 +61,14 @@ const HotspotSetupConfirmLocationScreen = () => {
   }, [error, navigation])
 
   const navNext = useCallback(async () => {
-    navigation.replace('HotspotTxnsProgressScreen')
-  }, [navigation])
+    navigation.replace('HotspotTxnsProgressScreen', params)
+  }, [navigation, params])
+
+  const handleClose = useCallback(() => rootNav.navigate('MainTabs'), [rootNav])
 
   if (loading || !result) {
     return (
-      <BackScreen>
+      <BackScreen onClose={handleClose}>
         <Box flex={1} justifyContent="center" paddingBottom="xxl">
           <ActivityIndicator color="gray" />
         </Box>
@@ -65,7 +79,7 @@ const HotspotSetupConfirmLocationScreen = () => {
   const { isFree, hasSufficientBalance, totalStakingAmount } = result
 
   return (
-    <BackScreen>
+    <BackScreen onClose={handleClose}>
       <ScrollView>
         <Box flex={1} justifyContent="center" paddingBottom="xxl">
           <Text variant="h1" marginBottom="l" maxFontSizeMultiplier={1}>
@@ -213,7 +227,7 @@ const HotspotSetupConfirmLocationScreen = () => {
         </Box>
       </ScrollView>
       <Box>
-        <Button
+        <DebouncedButton
           title={
             isFree
               ? t('hotspot_setup.location_fee.next')

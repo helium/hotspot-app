@@ -1,9 +1,9 @@
 import { useNavigation } from '@react-navigation/native'
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import BackScreen from '../../../components/BackScreen'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import Text from '../../../components/Text'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
@@ -17,6 +17,10 @@ const FirmwareUpdateNeededScreen = () => {
   const { connectedHotspot } = useSelector((state: RootState) => state)
 
   const navigation = useNavigation<RootNavigationProp>()
+  const handleClose = useCallback(() => navigation.navigate('MainTabs'), [
+    navigation,
+  ])
+
   useEffect(() => {
     if (!connectedHotspot.firmware?.minVersion) {
       checkFirmwareCurrent()
@@ -24,7 +28,7 @@ const FirmwareUpdateNeededScreen = () => {
   }, [connectedHotspot.firmware, checkFirmwareCurrent])
 
   return (
-    <BackScreen>
+    <BackScreen onClose={handleClose}>
       <Box flex={1} justifyContent="center" paddingBottom="xxl">
         <Box flexDirection="row" justifyContent="center" marginBottom="m">
           <Cloud />
@@ -58,7 +62,7 @@ const FirmwareUpdateNeededScreen = () => {
         </Text>
       </Box>
       <Box>
-        <Button
+        <DebouncedButton
           mode="contained"
           onPress={() => navigation.navigate('MainTabs')}
           title={t('hotspot_setup.firmware_update.next')}

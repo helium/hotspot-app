@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect } from 'react'
-import { Platform } from 'react-native'
+import React, { useCallback } from 'react'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import BackScreen from '../../../components/BackScreen'
@@ -9,36 +8,31 @@ import {
   HotspotSetupNavigationProp,
   HotspotSetupStackParamList,
 } from './hotspotSetupTypes'
-import usePermissionManager from '../../../utils/usePermissionManager'
 import Lightning from '../../../assets/images/lightning.svg'
 import Box from '../../../components/Box'
+import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotSetupPowerScreen'>
 
 const HotspotSetupPowerScreen = () => {
   const { t } = useTranslation()
-  const { requestLocationPermission } = usePermissionManager()
   const {
     params: { hotspotType },
   } = useRoute<Route>()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
+  const rootNav = useNavigation<RootNavigationProp>()
+
+  const handleClose = useCallback(() => rootNav.navigate('MainTabs'), [rootNav])
 
   const navNext = useCallback(
     () => navigation.push('HotspotSetupBluetoothInfoScreen', { hotspotType }),
     [navigation, hotspotType],
   )
 
-  useEffect(() => {
-    if (Platform.OS === 'android') {
-      requestLocationPermission()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   return (
     <BackScreen
       backgroundColor="primaryBackground"
-      paddingHorizontal="lx"
+      onClose={handleClose}
       alignItems="center"
       justifyContent="center"
     >
@@ -62,7 +56,7 @@ const HotspotSetupPowerScreen = () => {
           textAlign="center"
           color="white"
         >
-          {t(`hotspot_setup.power.${hotspotType.toLowerCase()}_subtitle_1`)}
+          {t(`makerHotspot.${hotspotType}.power.0`)}
         </Text>
         <Text
           marginBottom="xl"
@@ -70,7 +64,7 @@ const HotspotSetupPowerScreen = () => {
           variant="subtitle"
           textAlign="center"
         >
-          {t(`hotspot_setup.power.${hotspotType.toLowerCase()}_subtitle_2`)}
+          {t(`makerHotspot.${hotspotType}.power.1`)}
         </Text>
       </Box>
       <DebouncedButton
