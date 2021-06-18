@@ -94,6 +94,7 @@ export default {
   generic: {
     clear: 'クリア',
     done: '完了',
+    disabled: '無効',
     understand: '理解しました',
     blocks: 'ブロック',
     active: 'アクティブ',
@@ -479,6 +480,7 @@ export default {
     qrInfo: 'QR情報',
     error:
       'このトランザクションの申請中にエラーが発生しました。もう一度実行してください。',
+    secureModePaymentsDisabled: 'セキュアモードでは支払いが無効になります',
     hotspot_label: 'Hotspot',
     last_activity: '最後に報告されたアクティビティ：{{activity}}',
     label_error: 'アカウントに十分なHNTがありません。',
@@ -524,9 +526,9 @@ export default {
           title: 'セキュアモード',
           enableButton: 'セキュアモードを有効にする',
           description:
-            'セキュアモードでは、秘密の言葉を表示するオプションが無効になります。',
-          warning:
-            'これは、ログアウトしてアカウントを再インポートすることによってのみ無効にできます。',
+            'セキュアモードをアクティブにすると、このアカウントの12語を表示する機能が削除されます。 ホットスポットを追加してその場所を更新し、提供されている場合は、ホワイトリストに登録された1つのアドレスに資金を送ることができます。',
+          warning: 'この機能を無効にするには、ログアウトする必要があります。',
+          addressLabel: '永久受信者アドレス',
         },
       },
       learn: {

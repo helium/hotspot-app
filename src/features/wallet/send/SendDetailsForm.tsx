@@ -32,6 +32,7 @@ type Props = {
   account?: Account
   fee: Balance<NetworkTokens>
   isLocked: boolean
+  isLockedAddress: boolean
   isSeller?: boolean
   index: number
   lastReportedActivity?: string
@@ -47,6 +48,7 @@ const SendDetailsForm = ({
   account,
   fee,
   isLocked,
+  isLockedAddress,
   isSeller,
   lastReportedActivity,
   onScanPress,
@@ -195,21 +197,25 @@ const SendDetailsForm = ({
 
   const renderPaymentForm = () => (
     <>
-      <InputField
-        isFirst
-        defaultValue={address}
-        onChange={setAddress}
-        label={t('send.address.label')}
-        placeholder={t('send.address.placeholder')}
-        extra={
-          <AddressExtra
-            addressLoading={addressLoading}
-            isValidAddress={Address.isValid(address)}
-            onScanPress={onScanPress}
-          />
-        }
-        footer={<AddressAliasFooter addressAlias={addressAlias} />}
-      />
+      {isLockedAddress ? (
+        <LockedField label={t('send.address.label')} value={address} />
+      ) : (
+        <InputField
+          isFirst
+          defaultValue={address}
+          onChange={setAddress}
+          label={t('send.address.label')}
+          placeholder={t('send.address.placeholder')}
+          extra={
+            <AddressExtra
+              addressLoading={addressLoading}
+              isValidAddress={Address.isValid(address)}
+              onScanPress={onScanPress}
+            />
+          }
+          footer={<AddressAliasFooter addressAlias={addressAlias} />}
+        />
+      )}
       <InputField
         type="numeric"
         testID="AmountInput"
@@ -256,28 +262,32 @@ const SendDetailsForm = ({
 
   const renderBurnForm = () => (
     <>
-      <InputField
-        defaultValue={address}
-        onChange={setAddress}
-        label={t('send.address.label')}
-        placeholder={t('send.address.placeholder')}
-        extra={
-          Address.isValid(address) ? (
-            <Box padding="s" position="absolute" right={0}>
-              <Check />
-            </Box>
-          ) : (
-            <TouchableOpacityBox
-              onPress={onScanPress}
-              padding="s"
-              position="absolute"
-              right={0}
-            >
-              <QrCode width={16} color={primaryMain} />
-            </TouchableOpacityBox>
-          )
-        }
-      />
+      {isLockedAddress ? (
+        <LockedField label={t('send.address.label')} value={address} />
+      ) : (
+        <InputField
+          defaultValue={address}
+          onChange={setAddress}
+          label={t('send.address.label')}
+          placeholder={t('send.address.placeholder')}
+          extra={
+            Address.isValid(address) ? (
+              <Box padding="s" position="absolute" right={0}>
+                <Check />
+              </Box>
+            ) : (
+              <TouchableOpacityBox
+                onPress={onScanPress}
+                padding="s"
+                position="absolute"
+                right={0}
+              >
+                <QrCode width={16} color={primaryMain} />
+              </TouchableOpacityBox>
+            )
+          }
+        />
+      )}
       <InputField
         type="numeric"
         defaultValue={amount}

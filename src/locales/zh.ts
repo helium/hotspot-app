@@ -92,6 +92,7 @@ export default {
   generic: {
     clear: '清除',
     done: '已完成',
+    disabled: '残障人士',
     understand: '我知道了',
     blocks: '区块',
     active: '活跃',
@@ -435,6 +436,7 @@ export default {
     },
     qrInfo: 'QR 信息',
     error: '提交此交易时出错。请重试。',
+    secureModePaymentsDisabled: '在安全模式下付款被禁用',
     hotspot_label: 'Hotspot',
     last_activity: '上次报告的活动: {{activity}}',
     label_error: '您的帐户 HNT 余额不足。',
@@ -477,8 +479,10 @@ export default {
         secureMode: {
           title: '安全模式',
           enableButton: '启用安全模式',
-          description: '安全模式将禁用查看您的秘密单词的选项。',
-          warning: '只能通过注销并重新导入您的帐户来禁用此功能。',
+          description:
+            '激活安全模式将删除该帐户显示12个单词的功能。 您仍然可以添加热点并更新其位置，并将资金发送到一个列入白名单的地址（如果提供）。',
+          warning: '您必须注销才能禁用此功能。',
+          addressLabel: '永久收件人地址',
         },
       },
       learn: {
