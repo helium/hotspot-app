@@ -7,10 +7,10 @@ import React, { memo, useCallback, useMemo } from 'react'
 import { StyleProp } from 'react-native'
 import { H3Index } from 'h3-js'
 import geojson2h3 from 'geojson2h3'
-import { Hotspot } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
 import { DiscoveryResponse } from '../store/discovery/discoveryTypes'
 
-type CoverageItem = DiscoveryResponse | Hotspot
+type CoverageItem = DiscoveryResponse | Hotspot | Witness
 type Props = {
   id: string
   hotspots?: CoverageItem[]

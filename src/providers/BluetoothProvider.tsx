@@ -1,10 +1,10 @@
 import React, { createContext, ReactNode, useContext } from 'react'
-import { Characteristic, State } from 'react-native-ble-plx'
+import { BleManager, Characteristic, State } from 'react-native-ble-plx'
 import useBluetooth from '../utils/bluetooth/useBluetooth'
 
 const initialState = {
   getState: async () => State.Unknown,
-  enable: async () => {},
+  enable: async () => new Promise<BleManager>((resolve) => resolve()),
   scan: async () => {},
   connect: async () => undefined,
   discoverAllServicesAndCharacteristics: async () => undefined,

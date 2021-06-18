@@ -105,7 +105,7 @@ export const getHotspotWitnessSums = async (params: {
   address: string
   bucket: Bucket
   minTime: Date | NaturalDate
-  maxTime?: Date | NaturalDate
+  maxTime?: Date
 }) => {
   Logger.breadcrumb('getHotspotWitnessSums', breadcrumbOpts)
   const list = await client.hotspot(params.address).witnesses.sum.list({
@@ -120,7 +120,7 @@ export const getHotspotChallengeSums = async (params: {
   address: string
   bucket: Bucket
   minTime: Date | NaturalDate
-  maxTime?: Date | NaturalDate
+  maxTime?: Date
 }) => {
   Logger.breadcrumb('getHotspotChallengeSums', breadcrumbOpts)
   const list = await client.hotspot(params.address).challenges.sum.list({

@@ -3,7 +3,7 @@ import { formatDistance, fromUnixTime } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
-import { Notification } from '../../store/account/accountSlice'
+import { Notification } from '../../store/notifications/notificationSlice'
 import TouchableOpacityBox from '../../components/TouchableOpacityBox'
 import ImageBox from '../../components/ImageBox'
 

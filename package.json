@@ -5,7 +5,7 @@
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx && tsc",
     "prettier": "prettier --write *.ts*",
     "start": "react-native start",
     "test": "jest",
@@ -41,7 +41,7 @@
     "@gorhom/bottom-sheet": "^3.4.1",
     "@helium/crypto-react-native": "^3.9.0",
     "@helium/currency": "^3.25.1",
-    "@helium/http": "^3.36.3",
+    "@helium/http": "^3.36.4",
     "@helium/proto-ble": "3.10.0",
     "@helium/transactions": "^3.34.0",
     "@react-native-community/art": "^1.2.0",

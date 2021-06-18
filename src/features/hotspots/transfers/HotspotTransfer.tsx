@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Hotspot } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
@@ -17,7 +17,7 @@ import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 type Props = {
   onCloseTransfer: () => void
   onCloseSettings: () => void
-  hotspot: Hotspot
+  hotspot: Hotspot | Witness
 }
 
 const HotspotTransfer = ({

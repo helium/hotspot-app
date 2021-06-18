@@ -21,6 +21,7 @@ import { RootState } from '../../../store/rootReducer'
 import { MakerAntenna } from '../../../makers/antennaMakerTypes'
 import Helium from '../../../makers/helium'
 import { HotspotMakerModels } from '../../../makers'
+import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'AntennaSetupScreen'>
 
@@ -44,7 +45,8 @@ const AntennaSetupScreen = () => {
     const ant =
       isUS && makerAntenna?.us ? makerAntenna.us : makerAntenna?.default
 
-    if (!ant) return isUS ? Helium.HELIUM_US : Helium.HELIUM_EU
+    if (!ant)
+      return isUS ? Helium.antennas.HELIUM_US : Helium.antennas.HELIUM_EU
 
     return ant
   }, [hotspotType])

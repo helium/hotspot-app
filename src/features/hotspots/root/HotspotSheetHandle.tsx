@@ -1,4 +1,4 @@
-import { Hotspot } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
 import React, { memo } from 'react'
 import Box from '../../../components/Box'
 import CardHandle from '../../../components/CardHandle'
@@ -9,7 +9,7 @@ import { useColors } from '../../../theme/themeHooks'
 
 export const HOTSPOT_SHEET_HANDLE_HEIGHT = 52
 
-type Props = { hotspot?: Hotspot; toggleSettings?: () => void }
+type Props = { hotspot?: Hotspot | Witness; toggleSettings?: () => void }
 const HotspotDetailsHandle = ({ hotspot, toggleSettings }: Props) => {
   const colors = useColors()
   const showHotspotOptions = hotspot && hotspot.address

@@ -1,7 +1,8 @@
+/* eslint-disable no-console */
 import * as Sentry from '@sentry/react-native'
 import Config from 'react-native-config'
 
-export const prettyPrintToConsole = (whatever: any, prefix = '') => {
+export const prettyPrintToConsole = (whatever: unknown, prefix = '') => {
   console.log(`${prefix}\n${JSON.stringify(whatever, null, 2)}`)
 }
 

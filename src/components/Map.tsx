@@ -13,7 +13,7 @@ import MapboxGL, {
   SymbolLayerStyle,
 } from '@react-native-mapbox-gl/maps'
 import { Feature, Point, Position } from 'geojson'
-import { Hotspot } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
 import { BoxProps } from '@shopify/restyle'
 import { StyleProp, ViewStyle } from 'react-native'
 import { useTranslation } from 'react-i18next'
@@ -43,8 +43,8 @@ type Props = BoxProps<Theme> & {
   mapCenter?: number[]
   ownedHotspots?: Hotspot[]
   followedHotspots?: Hotspot[]
-  selectedHotspot?: Hotspot
-  witnesses?: Hotspot[]
+  selectedHotspot?: Hotspot | Witness
+  witnesses?: Witness[]
   animationMode?: 'flyTo' | 'easeTo' | 'moveTo'
   animationDuration?: number
   maxZoomLevel?: number
@@ -345,12 +345,15 @@ const makeStyles = (colors: typeof theme.colors) => ({
   } as StyleProp<FillLayerStyle>,
 })
 
-const hotspotsEqual = (prev: Hotspot[], next: Hotspot[]) => {
+const hotspotsEqual = (
+  prev: Hotspot[] | Witness[],
+  next: Hotspot[] | Witness[],
+) => {
   if (prev.length !== next.length) return false
 
   const ownedHotspotsEqual = next === prev
   if (!ownedHotspotsEqual) {
-    next.forEach((hotspot, index) => {
+    next.forEach((hotspot: Hotspot | Witness, index: number) => {
       const addressesEqual = hotspot.address === prev[index].address
       if (!addressesEqual) return false
     })
@@ -374,9 +377,11 @@ export default memo(Map, (prevProps, nextProps) => {
     ...nextRest
   } = nextProps
 
-  const primitivesEqual = Object.keys(prevRest).every(
-    (key) => nextRest.hasOwnProperty(key) && nextRest[key] === prevRest[key],
-  )
+  const primitivesEqual = Object.keys(prevRest).every((key) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return nextRest.hasOwnProperty(key) && nextRest[key] === prevRest[key]
+  })
   let mapCenterEqual = mapCenter === prevMapCenter
   if (!mapCenterEqual && mapCenter && prevMapCenter) {
     mapCenterEqual =

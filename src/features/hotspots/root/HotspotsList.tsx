@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo } from 'react'
 import { BottomSheetSectionList } from '@gorhom/bottom-sheet'
-import { Hotspot } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import Box from '../../../components/Box'
@@ -14,7 +14,7 @@ import { HotspotSort } from '../../../store/hotspots/hotspotsSlice'
 const HotspotsList = ({
   onSelectHotspot,
 }: {
-  onSelectHotspot: (hotspot: Hotspot, showNav: boolean) => void
+  onSelectHotspot: (hotspot: Hotspot | Witness, showNav: boolean) => void
 }) => {
   const loadingRewards = useSelector(
     (state: RootState) => state.hotspots.loadingRewards,
@@ -30,7 +30,7 @@ const HotspotsList = ({
   const { t } = useTranslation()
 
   const handlePress = useCallback(
-    (hotspot: Hotspot) => {
+    (hotspot: Hotspot | Witness) => {
       onSelectHotspot(hotspot, orderedHotspots.length > 1)
     },
     [onSelectHotspot, orderedHotspots.length],

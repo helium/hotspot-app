@@ -2,7 +2,7 @@ import React, { memo, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import animalName from 'angry-purple-tiger'
 import Balance, { DataCredits, USDollars } from '@helium/currency'
-import { Hotspot } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import TextTransform from '../../../components/TextTransform'
@@ -19,7 +19,7 @@ type Props = {
   totalStakingAmountDC: Balance<DataCredits>
   totalStakingAmountUsd: Balance<USDollars>
   isPending?: boolean
-  hotspot: Hotspot
+  hotspot: Hotspot | Witness
 }
 
 const ReassertLocationFee = ({

@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { Hotspot } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import CarotRight from '@assets/images/carot-right.svg'
@@ -17,8 +17,8 @@ import HexBadge from '../features/hotspots/details/HexBadge'
 import { useColors } from '../theme/themeHooks'
 
 type HotspotListItemProps = {
-  onPress?: (hotspot: Hotspot) => void
-  hotspot: Hotspot
+  onPress?: (hotspot: Hotspot | Witness) => void
+  hotspot: Hotspot | Witness
   totalReward?: Balance<NetworkTokens>
   showCarot?: boolean
   loading?: boolean
@@ -80,13 +80,9 @@ const HotspotListItem = ({
     return `${geo.longStreet}, ${geo.longCity}, ${geo.shortCountry}`
   }, [hotspot, t])
 
-  const isRelayed = useMemo(() => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    // TODO: fix listen_addrs in helium-js for witnesses
-    const listenAddrs = hotspot?.status?.listen_addrs
-    return isRelay(listenAddrs)
-  }, [hotspot?.status])
+  const isRelayed = useMemo(() => isRelay(hotspot?.status?.listenAddrs), [
+    hotspot?.status,
+  ])
 
   return (
     <Box marginBottom="xxs">

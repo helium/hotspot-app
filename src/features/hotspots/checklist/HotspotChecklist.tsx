@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { memo, useEffect, useMemo, useState } from 'react'
-import { Hotspot } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
@@ -19,8 +19,8 @@ import { Theme } from '../../../theme/theme'
 import { SYNC_BLOCK_BUFFER } from '../../../utils/hotspotUtils'
 
 type Props = BoxProps<Theme> & {
-  hotspot: Hotspot
-  witnesses?: Hotspot[]
+  hotspot: Hotspot | Witness
+  witnesses?: Witness[]
   visible: boolean
 }
 

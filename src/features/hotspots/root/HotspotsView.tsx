@@ -9,7 +9,7 @@ import React, {
 import { LayoutChangeEvent } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
-import { Hotspot } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
 import BottomSheet, { BottomSheetModal } from '@gorhom/bottom-sheet'
 import { useSharedValue } from 'react-native-reanimated'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
@@ -166,7 +166,7 @@ const HotspotsView = ({
   const { witnesses } = hotspotDetailsData || {}
 
   const showHotspotDetails = useCallback(
-    (hotspot?: Hotspot) => {
+    (hotspot?: Hotspot | Witness) => {
       dispatch(hotspotsSlice.actions.selectHotspot(hotspot))
     },
     [dispatch],
@@ -248,7 +248,7 @@ const HotspotsView = ({
   )
 
   const handlePresentDetails = useCallback(
-    async (hotspot: Hotspot) => {
+    async (hotspot: Hotspot | Witness) => {
       if (hotspot.locationHex) {
         const mapHexId = hotspot.locationHex
         const hotspots = (await dispatch(
