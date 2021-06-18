@@ -83,8 +83,9 @@ const SendForm = ({
             allowClose={type !== 'dc_burn'}
           />
         )}
-        {sendDetails.map((details) => (
+        {sendDetails.map((details, index) => (
           <SendDetailsForm
+            index={index}
             key={details.id}
             account={account}
             fee={fee}

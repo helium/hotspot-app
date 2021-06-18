@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux'
 import { Hotspot } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { FlatList } from 'react-native-gesture-handler'
+import { Keyboard } from 'react-native'
 import Box from '../../../components/Box'
 import SearchInput from '../../../components/SearchInput'
 import hotspotSearchSlice, {
@@ -86,6 +87,7 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace }: Props) => {
         onSelectPlace(item)
       }
       dispatch(hotspotSearchSlice.actions.addRecentSearchTerm(searchTerm))
+      Keyboard.dismiss()
     },
     [dispatch, searchTerm, onSelectHotspot, onSelectPlace],
   )

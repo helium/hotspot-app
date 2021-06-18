@@ -1,30 +1,23 @@
 import { useCallback } from 'react'
-import { Linking, Platform } from 'react-native'
-import qs from 'qs'
+import { Platform } from 'react-native'
 import { groupBy } from 'lodash'
 import { useTranslation } from 'react-i18next'
+import Mailer from 'react-native-mail'
 import {
   DiscoveryRequest,
   DiscoveryResponse,
 } from '../../../../store/discovery/discoveryTypes'
+import { error } from '../../../../utils/logger'
 
-export async function sendEmail(to: string, subject: string, body: string) {
-  let url = `mailto:${to}`
-
-  const query = qs.stringify({
-    subject,
-    body,
-  })
-
-  if (query.length) {
-    url += `?${query}`
-  }
-
-  const canOpen = await Linking.canOpenURL(url)
-
-  if (!canOpen) return
-
-  Linking.openURL(url)
+export async function sendEmail(subject: string, body: string) {
+  Mailer.mail(
+    {
+      subject,
+      body,
+      isHTML: true,
+    },
+    error,
+  )
 }
 
 const useShareDiscovery = (request?: DiscoveryRequest | null) => {
@@ -88,7 +81,7 @@ const useShareDiscovery = (request?: DiscoveryRequest | null) => {
       Platform.OS === 'ios'
         ? createIOSEmail(grouped)
         : createAndroidEmail(grouped)
-    sendEmail('', t('discovery.share.subject'), body)
+    sendEmail(t('discovery.share.subject'), body)
   }, [createAndroidEmail, createIOSEmail, request?.responses, t])
   return { shareResults }
 }

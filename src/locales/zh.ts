@@ -18,7 +18,7 @@ export default {
     welcome: {
       title: '欢迎使用 Helium\n',
       subtitle:
-        '玩转 Hotspot，赚取 <b><purple>Helium 币</purple></b>（一种新型加密货币），参与搭建 People‘s Network。\n\n',
+        '玩转 Hotspot，赚取 <b><purple>Helium 币</purple></b>（一种新型加密货币），参与搭建 People’s Network。\n\n',
       create_account: '新建帐户',
       import_account: '导入现有帐户',
     },
@@ -49,7 +49,7 @@ export default {
     },
     create_pin: {
       title: '设置 Pin 码',
-      subtitle: '作为最后的安全步骤，我们使用 PIN 码安全保护您的帐户。',
+      subtitle: '我们使用 PIN 码安全保护您的帐户。',
     },
     confirm_pin: {
       title: '重复 PIN',
@@ -90,6 +90,7 @@ export default {
     next: '我已阅读过指南',
   },
   generic: {
+    clear: '清除',
     done: '已完成',
     understand: '我知道了',
     blocks: '区块',
@@ -106,6 +107,8 @@ export default {
     go_to_settings: '前往“设置”',
     hotspot: 'Hotspot',
     location: '位置',
+    unable_to_get_location: '我们无法获取您的位置',
+    location_blocked: '位置功能已关闭。前往手机设置打开位置服务。',
     challenger: 'Challenger',
     learn_more: '了解更多',
     cancel: '取消',
@@ -129,21 +132,16 @@ export default {
     something_went_wrong: '出现错误',
     hnt_to_currency: '{{currencyType}}。来自 CoinGecko 的数据',
     search_location: '搜索地址或位置',
+    unavailable: '不可用',
+    minutes: '{{count}} 分钟',
+    minutes_plural: '{{count}} 分钟',
+    seconds: '{{count}} 秒',
+    seconds_plural: '{{count}} 秒',
   },
   hotspot_setup: {
     selection: {
       title: '选择您的 Hotspot。\n',
       subtitle: '您想要添加什么样的 Hotspot?\n',
-      helium: 'Helium Hotspot',
-      rak: 'RAK Hotspot Miner',
-      nebrain: 'Nebra Indoor Hotspot',
-      nebraout: 'Nebra Outdoor Hotspot',
-      bobcat: 'Bobcat Miner 300',
-      syncrobit: 'SyncroB.it Hotspot',
-      third_party_header: '其他 Hotspot',
-      helium_edition: '关于 Helium Network',
-      fine_print:
-        'RAK Hotspot Miner 具有 RAK 预加载的专用固件。继续操作之前，请仔细检查所用的硬件是否为 RAK Hotspot Miner。',
     },
     education: {
       title: '放置\n您的 Hotspot。',
@@ -171,56 +169,13 @@ export default {
     },
     diagnostics: {
       title: '诊断',
-      p_1:
-        '<b><white>Hotspot 诊断支持帮助 Helium 安全确认您的 Hotspot 问题。</white></b>\n\nHelium 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@helium.com</b></purple>。',
-      nebra_p_1:
-        '<b><white>诊断支持帮助 Nebra LTD 安全确认您的 Hotspot 问题。</white></b>\n\nNebra 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@nebra.com</b></purple>。',
-      bobcat_p_1:
-        '<b><white>诊断支持帮助 Bobcat 安全确认您的 Hotspot 问题。</white></b>\n\nBobcat 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@bobcatminer.com</b></purple>。',
-      syncrobit_p_1:
-        '<b><white>诊断支持帮助 SyncroB.it 安全确认您的 Hotspot 问题。</white></b>\n\nSyncroB.it 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@syncrob.it</b></purple>。',
     },
     power: {
       title: '开机',
       next: '我已开机',
-      helium_subtitle_1: '连接天线，插接随附的电源适配器。',
-      rak_subtitle_1: '将电源适配器插入靠窗的插座。',
-      nebrain_subtitle_1: '连接天线，将随附的电源适配器插入靠窗的插座。',
-      nebraout_subtitle_1: '连接天线并正确连接电源。',
-      bobcat_subtitle_1:
-        '将电源适配器插入靠窗的插座，并将天线插入 Hotspot 背面并旋紧。',
-      syncrobit_subtitle_1: '连接天线并插接设备',
-      helium_subtitle_2: '您的 Hotspot 将随即启动，就绪后会亮起绿色指示灯。',
-      rak_subtitle_2: '开机后，RAK Hotspot Miner 将亮起红色 LED 指示灯。',
-      nebrain_subtitle_2:
-        '开机后，Nebra Indoor Hotspot 将亮起绿色 LED 指示灯。',
-      nebraout_subtitle_2:
-        '开机后，Nebra Outdoor Hotspot 将陆续亮起多个指示灯。',
-      bobcat_subtitle_2: '当指示灯由红色变为黄色，即表示 Hotspot 准备就绪。',
-      syncrobit_subtitle_2:
-        '开机后，SyncroB.it Hotspot 将亮起蓝色 LED 指示灯。',
     },
     pair: {
       title: '蓝牙',
-      helium_subtitle_1: '按下 Hotspot 上的黑色按钮。指示灯应变成蓝色。',
-      rak_subtitle_1: 'RAK Hotspot Miner 上没有配对按钮。',
-      nebrain_subtitle_1:
-        '长按 Nebra Indoor Hotspot 背面的按钮，直到它的指示灯开始闪烁。',
-      nebraout_subtitle_1: 'Nebra Outdoor Hotspot 上没有配对按钮。',
-      bobcat_subtitle_1:
-        '使用随附的大头针按下 Hotspot 背面的 BT 按钮，长按 5 秒钟。',
-      syncrobit_subtitle_1: 'SyncroB.it Hotspot 上没有配对按钮。',
-      helium_subtitle_2: '继续操作之前，请确保您手机上的蓝牙已开启',
-      rak_subtitle_2:
-        'RAK Hotspot Miner 开机后，蓝牙会自动启用 5 分钟。\n\nHotspot 最多需要 1 分钟即可完全启动。',
-      nebrain_subtitle_2:
-        'LED 指示灯变成缓慢闪烁后，即表示准备进行配对。\n\n按“下一步”开始扫描。',
-      nebraout_subtitle_2:
-        'Nebra Outdoor Hotspot 开机后，蓝牙会自动启用 10 分钟。\n\nHotspot 最多需要 1 分钟即可完全启动。',
-      bobcat_subtitle_2:
-        '当指示灯由黄色变为蓝色，即表示 Hotspot 准备进行配对。\n\n请务必打开您手机的蓝牙功能！',
-      syncrobit_subtitle_2:
-        'SyncroB.it Hotspot 开机后，蓝牙会自动启用 5 分钟。\n\nHotspot 最多需要 1 分钟即可完全启动。',
       alert_no_permissions: {
         title: '授权蓝牙',
         body: 'Helium 需要蓝牙使用权限。您可以在“设置”中启用蓝牙权限。',
@@ -305,6 +260,9 @@ export default {
       subtitle: '无法在登录服务器上找到 Hotspot。请联系 Hotspot 制造商以继续。',
       next: '退出设置',
       disconnected: 'Hotspot 连接出错。请重试。',
+      title_connect_failed: 'Hotspot 配对失败',
+      body_connect_failed:
+        'Hotspot Miner 无法响应请求。请重新启动 Hotspot 并重试。',
     },
     add_hotspot: {
       title: '添加 Hotspot',
@@ -325,6 +283,9 @@ export default {
       wait_error_body: 'Hotspot Miner 即将启动。请稍后重试。',
       add_hotspot_error_body: '构建“添加 Hotspot”事务时出错。请重试。',
       assert_loc_error_body: '构建“声明位置”事务时出错。请重试。',
+      assert_loc_error_no_loc: '所选位置无效。请重试。',
+      no_onboarding_key_title: '未找到登录密钥',
+      no_onboarding_key_message: '是否重试?',
     },
     enable_location: {
       title: '设定 Hotspot\n位置',
@@ -352,6 +313,11 @@ export default {
       error_body: '加载费用数据时出错。请重试。',
       next: '注册 Hotspot',
       fee_next: '支付费用并注册 Hotspot',
+      gain_label: 'TX/RX 增益:',
+      elevation_label: '高度:',
+      gain: '{{gain}} dBi',
+      elevation: '{{count}} 米',
+      elevation_plural: '{{count}} 米',
     },
     location: {
       title: 'Hotspot 位置',
@@ -373,9 +339,14 @@ export default {
       subtitle_2: '稍后在设置中更新您的位置。',
     },
     not_owner: {
-      title: '无法继续设置',
-      subtitle_1: 'Hotspot 属于另一个帐户。',
-      subtitle_2: '如果您是更新 Wi-Fi 的 Hotspot 分享者，现在可以退出设置。',
+      title: '此 Hotspot 已有归属。',
+      subtitle_1: '或许您是以他人名义托管?\n',
+      subtitle_1_no_follow:
+        '如果您是更新 Wi-Fi 的 Hotspot 分享者，现在可以退出设置。',
+      subtitle_2:
+        '关注 Hotspot，您即可在应用程序内监控当前不为您所有的 Hotspot。',
+      contact_manufacturer:
+        '如果您认为自己确实是 Hotspot 拥有者（即您购买了此 Hotspot），请联系 Hotspot 制造商。',
     },
     owned_hotspot: {
       title: '您已经拥有此 Hotspot',
@@ -422,6 +393,11 @@ export default {
         body: '蓝色表示您的帐户正在<blue>减少</blue>的 HNT。',
       },
     ],
+    chartRanges: {
+      days: { label: '14D', accessibilityLabel: '14 Days' },
+      weeks: { label: '12W', accessibilityLabel: '12 Weeks' },
+      months: { label: '12M', accessibilityLabel: '12 Months' },
+    },
   },
   send: {
     title: {
@@ -474,6 +450,11 @@ export default {
       view_description: '分享您的二维码以存入或收取他人的 HNT。',
       learn_more: '了解更多',
     },
+    send_max_fee: {
+      error_title: '发送最大值出错',
+      error_description:
+        '无法计算发送最大余额的费用。\n\n轻触“发送最大值”，再试一次。',
+    },
   },
   more: {
     title: '设置',
@@ -519,7 +500,7 @@ export default {
         signOutAlert: {
           title: '警告!',
           body:
-            '此操作将从这台设备中移除所有帐户信息。恢复访问帐户和 Hotspot 的唯一方式是使用您的 12 个恢复助记词。',
+            '您正在注销帐户。您是否记得 12 个助记词?如果忘记了，您将无法再登录:\n\n- 您的 Hotspot\n- 您的 HNT\n- 您的钱包',
         },
       },
     },
@@ -541,24 +522,41 @@ export default {
     owned: {
       title: '我的 Hotspot',
       title_no_hotspots: 'Hotspot',
-      reward_summary: '您的 Hotspot 过去 24 小时共挖币 {{hntAmount}}。',
+      reward_summary: '您的 Hotspot 过去 24 小时共赚取\n{{hntAmount}}。',
       reward_summary_plural:
-        '您的 {{count}} 个 Hotspot 过去 24 小时共挖币 {{hntAmount}}。',
+        '您的 {{count}} 个 Hotspot 过去 24 小时共赚取\n{{hntAmount}}。',
       your_hotspots: '您的 Hotspot',
       filter: {
         new: '最新的 Hotspot',
         near: '最近的 Hotspot',
         earn: '收益最高的 Hotspot',
         offline: '离线 Hotspot',
+        followed: '已关注的 Hotspot',
       },
+    },
+    search: {
+      title: 'Hotspot 搜索',
+      my_hotspots: '我的 Hotspot',
+      all_hotspots: '全部 Hotspot',
+      placeholder: '搜索...',
+      recent_searches: '近期搜索',
+      tips: '搜索技巧',
+      tips_body:
+        '尝试输入 Hotspot 名称（例如张三）或地名（例如上海市）。\n\n注意:10 分钟内添加的 Hotspot 可能无法显示。',
     },
     empty: {
       body: '您尚未添加或关注任何 Hotspot。',
+      failed: '由于 API 或网络中断，我们无法获取您的 Hotspot。请稍后重试。',
     },
     list: {
       no_offline: '没有离线 Hotspot',
       online: '在线 Hotspot',
+      no_results: '无结果',
     },
+    ticker:
+      '{{formattedHotspotCount}} Hotspot • Oracle 价格: {{oraclePrice}} • 区块时间: {{formattedBlockTime}} 秒 • ',
+    ticker_no_block:
+      '{{formattedHotspotCount}} Hotspot • Oracle 价格: {{oraclePrice}} • ',
   },
   permissions: {
     location: {
@@ -590,6 +588,7 @@ export default {
     received: '收取的 HNT',
     added: '添加到区块链的 Hotspot',
     location: '确认位置',
+    location_v2: '更新 Hotspot',
     transfer: 'Hotspot 转让',
     transferSell: '转让 Hotspot（出售）',
     transferBuy: '转让 Hotspot（购买）',
@@ -623,6 +622,15 @@ export default {
     discovery: {
       title: '发现模式',
       subtitle: '确定最佳 Hotspot 位置。',
+      no_location_error: {
+        title: '无法开启发现模式',
+        message: '请先设置 Hotspot 位置再开启发现模式。',
+      },
+      unasserted_hotspot_warning: {
+        title: 'Hotspot 未设定位置',
+        message:
+          '为实现 Hotspot 响应的可视化，我们将使用您的电话位置作为 Hotspot 占位符。',
+      },
     },
     diagnostics: {
       title: '诊断报告',
@@ -657,6 +665,8 @@ export default {
       help_link: '阅读更多寻求其他可行解决方案',
       email_client_missing: '找不到已安装的兼容电子邮件客户端',
       other_info: '其他信息',
+      unavailable_warning:
+        '* Hotspot 必须完全启动才能使用诊断功能。若发现数据有丢失，请返回并重新生成诊断报告。',
     },
     wifi: {
       title: 'Wi-Fi 网络',
@@ -689,9 +699,16 @@ export default {
       assert_pending: '声明待处理...',
       failTitle: '重新声明 Hotspot 失败',
       failSubtitle: '请稍后重试',
+      current_location: '当前位置',
+      new_location: '新位置',
+      antenna_details: '天线/高度详细信息',
+      update_antenna: '更新天线',
+      submit: '更新已提交且待处理的 Hotspot 交易。',
+      already_pending: '无法更新 Hotspot，存在待处理交易。请稍后重试。',
     },
   },
   hotspot_details: {
+    checklist: '检查清单',
     title: 'Hotspot 详细信息',
     owner: '拥有者: {{address}}',
     owner_you: '你拥有',
@@ -701,10 +718,22 @@ export default {
     challenge_title: 'Challenges',
     challenge_sub_title: '（见证人、challenger 或 challengee）',
     picker_title: '过去',
-    picker_options: ['24 小时', '7 天', '14 天', '30 天'],
+    overview: '概览',
+    no_location: '无位置',
+    picker_options: ['过去 24 小时', '过去 7 天', '过去 14 天', '过去 30 天'],
     picker_prompt: '选择范围',
     status_online: '在线',
     status_offline: '请注意',
+    status_syncing: '正在同步',
+    relayed: '已中转',
+    status_prompt_online: {
+      title: 'Hotspot 处于在线同步状态。',
+      subtitle_active: '状态:区块 {{hotspotBlock}} ({{currentBlock}})',
+      subtitle_starting: '开始同步...',
+    },
+    status_prompt_offline: {
+      title: 'Hotspot 离线且未同步。',
+    },
     options: {
       settings: '设置',
       viewExplorer: '通过浏览器查看',
@@ -714,6 +743,11 @@ export default {
     no_location_body: 'Hotspot 配对开始。',
     percent_synced: '{{percent}}% 已同步',
     starting_sync: '开始同步...',
+    relay_prompt: {
+      title: 'Hotspot 已中转',
+      message:
+        'Hotspot 连接正通过网络中另一个 Hotspot 进行中转，可能会影响挖矿。要解除 Hotspot 中转，请访问故障排除指南。',
+    },
   },
   transfer: {
     title: '转让 Hotspot',
@@ -761,6 +795,8 @@ export default {
     owner: '拥有者',
     my_account: '我的帐户',
     view_block: '查看区块',
+    elevation: '高度',
+    antenna: '天线',
     rewardTypes: {
       poc_challengees: 'PoC',
       poc_challengers: 'Challenger',
@@ -775,7 +811,7 @@ export default {
     title: '检查清单',
     blocks: {
       not:
-        'Hotspot 必须完全同步后才能挖矿。新 Hotspot 同步最多需要 48 个小时。',
+        'Hotspot 必须完全同步后才能挖矿。新 Hotspot 同步最多需要 96 个小时。',
       full: 'Hotspot 已完全同步。',
       partial:
         'Hotspot 在 Helium 区块链中共有 {{count}} 个区块，现已同步约 {{percent}}%。',
@@ -791,7 +827,8 @@ export default {
     challenger: {
       success: 'Hotspot 在 {{count}} 个区块前曾发出 Challenge。',
       success_plural: 'Hotspot 在 {{count}} 个区块前曾发出 Challenge。',
-      fail: 'Hotspot 尚未发出 Challenge。Hotspot 会自动创建 Challenge。',
+      fail:
+        'Hotspot 尚未发出 Challenge。Hotspot 每 480 个区块或大约每 8 小时会自动创建 Challenge。',
       title: '创建 Challenge',
     },
     challenge_witness: {
@@ -802,13 +839,15 @@ export default {
     witness: {
       success: '此 Hotspot 的见证人列表中有 {{count}} 个 Hotspot。',
       success_plural: '此 Hotspot 的见证人列表中有 {{count}} 个 Hotspot。',
-      fail: '尚无见证人。新添加的 Hotspot 可能需要几天时间来填充见证人。',
+      fail:
+        '尚无见证人。新 Hotspot 及近期更新位置或天线设置的 Hotspot 为零见证人。',
       title: '见证人列表',
     },
     challengee: {
       success: 'Hotspot 在 {{count}} 个区块前曾参与过一项 Challenge。',
       success_plural: 'Hotspot 在 {{count}} 个区块前曾参与过一项 Challenge。',
-      fail: '创建见证人列表后，可能需要几个小时才能通过一项 Challenge。',
+      fail:
+        '在线 Hotspot 每 480 个区块会创建 Challenge，创建过程可能会需要一段时间。',
       title: '通过 Challenge',
     },
     data_transfer: {
@@ -822,19 +861,44 @@ export default {
     online: '在线',
   },
   discovery: {
+    troubleshooting_guide: '故障排除指南',
+    syncing_prompt: {
+      title: '无法开启发现模式',
+      message: 'Hotspot 必须完全同步，请稍后重试。',
+    },
+    offline_prompt: {
+      title: '无法开启发现模式',
+      message: 'Hotspot 离线，请联网并重试。',
+    },
+    relay_prompt: {
+      title: 'Hotspot 已中转',
+      message:
+        '处于发现模式下的中转 Hotspot 可能无法收到邻近 Hotspot 的响应。要解除 Hotspot 中转，请访问故障排除指南。',
+    },
+    session_error_prompt: {
+      title: '无法开启发现模式',
+      message: 'Hotspot 可能处于中转状态，无法响应。检查路由器设置，然后重试。',
+    },
     begin: {
       title: '发现模式',
-      subtitle: '短时间内发送无线电数据包，找出哪些 Hotspot 可以监听到您。',
-      body: '现在即可免费使用发现模式，每天最多 5 个会话。',
+      subtitle:
+        '可通过 {{duration}} 内发送无线电数据包，找出哪些 Hotspot 可以监听到您。',
+      body: '发现模式现可免费使用，每天最多 {{requestsPerDay}} 个会话。',
       previous_sessions: '历史会话',
-      last_30_days: '(过去 30 天)',
+      last_30_days: '（过去 30 天）',
       start_session: '开启新会话',
       no_sessions: '您今天的会话次数已用完。\n请明天再试。',
       responses: '{{count}} 次响应',
       responses_plural: '{{count}} 次响应',
+      initiation_error: '无法开启会话',
       error: {
         title: '出错',
         subtitle: '加载发现模式时出现问题。请稍后重试',
+      },
+      location_opts: {
+        hotspot: '使用临时位置*',
+        asserted: '使用声明位置',
+        info: '*如需在设定位置前测试 Hotspot 的覆盖范围，此功能会很实用',
       },
     },
     results: {
@@ -845,11 +909,31 @@ export default {
       result_time: '结果时间',
       searching: '正在搜索',
       distance: '附近 {{distance}} {{unit}} 范围内',
+      added_to_followed: '添加至已关注的 Hotspot',
     },
     share: {
       subject: '发现结果',
       hotspot_name: 'Hotspot 名称',
       packets_heard: '监听到的数据包',
+    },
+  },
+  antennas: {
+    onboarding: {
+      title: '天线设置',
+      subtitle: '提交 Hotspot 的天线和高度详细信息。',
+      gain: 'TX/RX 增益',
+      dbi: 'dBi',
+      elevation: '高度（米）',
+      select: '选择天线',
+    },
+    elevation_info: {
+      title: 'Hotspot 高度',
+      desc: '估算天线位置的离地高度。平房屋顶天线的离地高度约为 5 米。',
+    },
+    gain_info: {
+      title: '天线 TX/RX 增益',
+      desc:
+        '此值介于 1 - 15 之间，精确到小数点后一位。由 Hotspot 或天线制造商提供。',
     },
   },
 }

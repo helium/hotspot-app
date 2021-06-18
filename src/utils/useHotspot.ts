@@ -218,11 +218,10 @@ const useHotspot = () => {
       encoded,
     )
 
+    dispatch(connectedHotspotSlice.actions.setConnectedHotspotWifi(undefined))
+
     if (!characteristic?.value) return
     const response = parseChar(characteristic.value, uuid)
-    if (response) {
-      dispatch(connectedHotspotSlice.actions.setConnectedHotspotWifi(undefined))
-    }
     return response
   }
 

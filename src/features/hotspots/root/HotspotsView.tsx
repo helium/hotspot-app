@@ -13,7 +13,6 @@ import { Hotspot } from '@helium/http'
 import BottomSheet, { BottomSheetModal } from '@gorhom/bottom-sheet'
 import { useSharedValue } from 'react-native-reanimated'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
-import { GeoJsonProperties } from 'geojson'
 import { isEqual } from 'lodash'
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import Search from '@assets/images/search.svg'
@@ -22,12 +21,10 @@ import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Add from '../../../assets/images/add.svg'
-import Settings from '../../../assets/images/settings.svg'
 import Map from '../../../components/Map'
 import { RootState } from '../../../store/rootReducer'
 import hotspotDetailsSlice from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import HotspotsViewHeader from './HotspotsViewHeader'
-import useToggle from '../../../utils/useToggle'
 import HotspotsList from './HotspotsList'
 import HotspotDetails from '../details/HotspotDetails'
 import BackButton from '../../../components/BackButton'
@@ -41,11 +38,10 @@ import HotspotSheetHandle, {
 import HotspotSearch from './HotspotSearch'
 import { getPlaceGeography, PlacePrediction } from '../../../utils/googlePlaces'
 import hotspotSearchSlice from '../../../store/hotspotSearch/hotspotSearchSlice'
-import FollowButton from '../../../components/FollowButton'
 import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
 import {
-  locationIsValid,
   hotspotHasValidLocation,
+  locationIsValid,
 } from '../../../utils/location'
 import { HotspotStackParamList } from './hotspotTypes'
 import animateTransition from '../../../utils/animateTransition'
@@ -53,6 +49,9 @@ import usePrevious from '../../../utils/usePrevious'
 import useVisible from '../../../utils/useVisible'
 import { hp } from '../../../utils/layout'
 import useMount from '../../../utils/useMount'
+import { fetchHotspotsForHex } from '../../../store/discovery/discoverySlice'
+import { MapFilters } from '../../map/MapFiltersButton'
+import MapFilterModal from '../../map/MapFilterModal'
 
 type Props = {
   ownedHotspots?: Hotspot[]
@@ -83,7 +82,6 @@ const HotspotsView = ({
   const dispatch = useDispatch()
   const [linkedHotspotAddress, setLinkedHotspotAddress] = useState('')
   const [location, setLocation] = useState(propsLocation)
-  const [showDetailsNav, setShowDetailsNav] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
   const [showMap, setShowMap] = useState(false)
@@ -94,11 +92,13 @@ const HotspotsView = ({
   const prevBottomSheetIndex = usePrevious(bottomSheetIndex)
   const visible = useVisible()
   const prevVisible = usePrevious(visible)
-  const prevShowDetails = usePrevious(showDetails)
-
+  const hotspotsForHexId = useSelector(
+    (state: RootState) => state.discovery.hotspotsForHexId,
+  )
+  const [selectedHexId, setSelectedHexId] = useState<string>()
+  const [selectedHotspotIndex, setSelectedHotspotIndex] = useState(0)
   const animatedIndex = useSharedValue<number>(0)
-
-  const [showWitnesses, toggleShowWitnesses] = useToggle(false)
+  const [mapFilter, setMapFilter] = useState(MapFilters.owned)
 
   const selectedHotspot = useSelector(
     (state: RootState) => state.hotspots.selectedHotspot,
@@ -113,10 +113,19 @@ const HotspotsView = ({
     [selectedHotspot, linkedHotspotAddress],
   )
 
+  const showWitnesses = useMemo(() => mapFilter === MapFilters.witness, [
+    mapFilter,
+  ])
+
+  const showOwned = useMemo(() => mapFilter === MapFilters.owned, [mapFilter])
+
+  const showRewardScale = useMemo(() => mapFilter === MapFilters.reward, [
+    mapFilter,
+  ])
+
   useEffect(() => {
     const shouldShowDetails = !!hotspotAddress
     if (shouldShowDetails === showDetails) {
-      setShowDetailsNav(shouldShowDetails && !linkedHotspotAddress)
       return
     }
     if (visible && prevVisible) {
@@ -154,11 +163,10 @@ const HotspotsView = ({
     useSelector(
       (state: RootState) => state.hotspotDetails.hotspotData[hotspotAddress],
     ) || {}
-  const { witnesses, loading } = hotspotDetailsData || {}
+  const { witnesses } = hotspotDetailsData || {}
 
   const showHotspotDetails = useCallback(
-    (hotspot?: Hotspot, showNav = false) => {
-      setShowDetailsNav(showNav)
+    (hotspot?: Hotspot) => {
       dispatch(hotspotsSlice.actions.selectHotspot(hotspot))
     },
     [dispatch],
@@ -225,11 +233,38 @@ const HotspotsView = ({
     setDetailHeaderHeight(event.nativeEvent.layout.height)
   }, [])
 
-  const handlePresentDetails = useCallback(
-    () => (hotspot: Hotspot, showNav = false) => {
-      showHotspotDetails(hotspot, showNav)
+  const onMapHexSelected = useCallback(
+    async (hexId: string) => {
+      setSelectedHexId(hexId)
+      setSelectedHotspotIndex(0)
+      const result = (await dispatch(fetchHotspotsForHex({ hexId }))) as {
+        payload?: Hotspot[]
+      }
+      if (result?.payload?.length) {
+        showHotspotDetails(result.payload[0] as Hotspot)
+      }
     },
-    [showHotspotDetails],
+    [dispatch, showHotspotDetails],
+  )
+
+  const handlePresentDetails = useCallback(
+    async (hotspot: Hotspot) => {
+      if (hotspot.locationHex) {
+        const mapHexId = hotspot.locationHex
+        const hotspots = (await dispatch(
+          fetchHotspotsForHex({ hexId: mapHexId }),
+        )) as {
+          payload?: Hotspot[]
+        }
+        const index = hotspots?.payload?.findIndex(
+          (h) => h?.address === hotspot.address,
+        )
+        setSelectedHexId(mapHexId)
+        setSelectedHotspotIndex(index || 0)
+      }
+      showHotspotDetails(hotspot)
+    },
+    [dispatch, showHotspotDetails],
   )
 
   const handleSelectPlace = useCallback(
@@ -286,11 +321,14 @@ const HotspotsView = ({
     })
   }, [handleBack, navigation])
 
-  const onMapHotspotSelected = useCallback(
-    (properties: GeoJsonProperties) => {
-      const hotspot = {
-        ...properties,
-      } as Hotspot
+  const hexHotspots = useMemo(() => {
+    if (!selectedHexId) return []
+    return hotspotsForHexId[selectedHexId]
+  }, [hotspotsForHexId, selectedHexId])
+
+  const onHotspotSelected = useCallback(
+    (index, hotspot) => {
+      setSelectedHotspotIndex(index)
       showHotspotDetails(hotspot)
     },
     [showHotspotDetails],
@@ -320,9 +358,18 @@ const HotspotsView = ({
     [navigation],
   )
 
+  const onPressMapFilter = useCallback(() => {
+    dispatch(hotspotDetailsSlice.actions.toggleShowMapFilter())
+  }, [dispatch])
+
   const cardHandle = useCallback(
-    () => <HotspotSheetHandle showNav={showDetails && showDetailsNav} />,
-    [showDetails, showDetailsNav],
+    () => (
+      <HotspotSheetHandle
+        hotspot={selectedHotspot}
+        toggleSettings={toggleSettings}
+      />
+    ),
+    [selectedHotspot, toggleSettings],
   )
 
   const updateBackStack = useCallback(
@@ -359,20 +406,21 @@ const HotspotsView = ({
           hotspot={selectedHotspot}
           onLayoutHeader={handleDetailHeaderLayout}
           onFailure={handleBack}
+          onSelectHotspot={handlePresentDetails}
         />
       )
 
     if (isSearching) {
       return (
         <HotspotSearch
-          onSelectHotspot={handlePresentDetails()}
+          onSelectHotspot={handlePresentDetails}
           onSelectPlace={handleSelectPlace}
         />
       )
     }
 
     if (hasHotspots)
-      return <HotspotsList onSelectHotspot={handlePresentDetails()} />
+      return <HotspotsList onSelectHotspot={handlePresentDetails} />
 
     return (
       <HotspotsEmpty
@@ -403,6 +451,10 @@ const HotspotsView = ({
     [dispatch],
   )
 
+  const onChangeMapFilter = useCallback((filter: MapFilters) => {
+    setMapFilter(filter)
+  }, [])
+
   const title = useMemo(() => {
     if (isSearching) return t('hotspots.search.title')
     if (hasHotspots) return t('hotspots.owned.title')
@@ -431,18 +483,7 @@ const HotspotsView = ({
         </TouchableOpacityBox>
       )
     }
-    if (showDetails) {
-      return (
-        <>
-          <TouchableOpacityBox onPress={toggleSettings} padding="s">
-            <Settings width={22} height={22} color="white" />
-          </TouchableOpacityBox>
-
-          <FollowButton padding="s" address={hotspotAddress} />
-        </>
-      )
-    }
-    if (bottomSheetIndex === 1)
+    if (bottomSheetIndex === 1 && !showDetails)
       return (
         <>
           <TouchableOpacityBox onPress={handleSearching(true)} padding="s">
@@ -460,8 +501,6 @@ const HotspotsView = ({
     bottomSheetIndex,
     handleSearching,
     handleHotspotSetup,
-    toggleSettings,
-    hotspotAddress,
   ])
 
   return (
@@ -477,32 +516,35 @@ const HotspotsView = ({
       >
         {showMap && (
           <Map
-            ownedHotspots={ownedHotspots}
+            ownedHotspots={showOwned ? ownedHotspots : []}
             selectedHotspot={selectedHotspot}
-            maxZoomLevel={14}
-            zoomLevel={14}
+            maxZoomLevel={13}
+            zoomLevel={13}
             witnesses={showWitnesses ? witnesses : []}
+            followedHotspots={showOwned ? followedHotspots : []}
             mapCenter={location}
             animationMode="easeTo"
             animationDuration={800}
-            onFeatureSelected={onMapHotspotSelected}
+            onHexSelected={onMapHexSelected}
             interactive={hotspotHasLocation}
             showNoLocation={!hotspotHasLocation}
             showNearbyHotspots
+            showH3Grid
+            showRewardScale={showRewardScale}
           />
         )}
         <HotspotsViewHeader
           animatedPosition={animatedIndex}
-          showWitnesses={showWitnesses}
-          toggleShowWitnesses={toggleShowWitnesses}
-          loading={loading}
+          hexHotspots={hexHotspots}
+          ownedHotspots={ownedHotspots}
           detailHeaderHeight={detailHeaderHeight}
-          buttonsVisible={
-            !!hotspotAddress &&
-            hotspotHasLocation &&
-            showDetails &&
-            prevShowDetails
-          }
+          onHotspotSelected={onHotspotSelected}
+          followedHotspots={followedHotspots}
+          selectedHotspotIndex={selectedHotspotIndex}
+          mapFilter={mapFilter}
+          onPressMapFilter={onPressMapFilter}
+          showDetails={showDetails}
+          buttonsVisible
           showNoLocation={!locationIsValid(propsLocation) && !showDetails}
         />
       </Box>
@@ -515,7 +557,7 @@ const HotspotsView = ({
       >
         {leftMenuOptions}
 
-        <Box flexDirection="row" justifyContent="space-between">
+        <Box flexDirection="row" justifyContent="space-between" height={40}>
           {rightMenuOptions}
         </Box>
       </Box>
@@ -542,6 +584,10 @@ const HotspotsView = ({
       <HotspotSettingsProvider>
         <HotspotSettings hotspot={selectedHotspot} />
       </HotspotSettingsProvider>
+      <MapFilterModal
+        mapFilter={mapFilter}
+        onChangeMapFilter={onChangeMapFilter}
+      />
     </Box>
   )
 }

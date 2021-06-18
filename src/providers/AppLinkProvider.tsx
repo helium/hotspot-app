@@ -9,8 +9,8 @@ import React, {
 import { Linking } from 'react-native'
 import queryString from 'query-string'
 import { BarCodeScannerResult } from 'expo-barcode-scanner'
-import { Address } from '@helium/crypto-react-native'
 import { useSelector } from 'react-redux'
+import { Address } from '@helium/crypto-react-native'
 import useMount from '../utils/useMount'
 import { RootState } from '../store/rootReducer'
 import navigator from '../navigation/navigator'
@@ -34,6 +34,10 @@ const useAppLink = () => {
   const [unhandledAppLink, setUnhandledLink] = useState<
     AppLink | AppLinkPayment | null
   >(null)
+
+  const qrOnboardEnabled = useSelector(
+    (state: RootState) => state.features.qrOnboardEnabled,
+  )
 
   const {
     app: { isLocked, isBackedUp },
@@ -76,18 +80,40 @@ const useAppLink = () => {
         case 'transfer':
           navigator.send({ scanResult: record })
           break
+
+        case 'add_gateway': {
+          if (!qrOnboardEnabled) {
+            if (qrOnboardEnabled === undefined) {
+              setUnhandledLink(record)
+            }
+            return
+          }
+
+          const { address: txnStr } = record as AppLink
+          if (!txnStr) return
+
+          navigator.confirmAddGateway(txnStr)
+          break
+        }
       }
     },
-    [isLocked, isBackedUp],
+    [isLocked, isBackedUp, qrOnboardEnabled],
   )
 
   useEffect(() => {
     // Links will be handled once the app is unlocked
-    if (!unhandledAppLink || isLocked || !isBackedUp) return
+    if (
+      !unhandledAppLink ||
+      isLocked ||
+      !isBackedUp ||
+      (unhandledAppLink?.type === 'add_gateway' &&
+        qrOnboardEnabled === undefined)
+    )
+      return
 
     navToAppLink(unhandledAppLink)
     setUnhandledLink(null)
-  }, [isLocked, navToAppLink, unhandledAppLink, isBackedUp])
+  }, [isLocked, navToAppLink, unhandledAppLink, isBackedUp, qrOnboardEnabled])
 
   const parseUrl = useCallback((url: string) => {
     if (!url) return
@@ -95,9 +121,10 @@ const useAppLink = () => {
     const parsed = queryString.parseUrl(url)
     if (!parsed.url.includes(APP_LINK_PROTOCOL)) return
 
+    const params = queryString.parse(queryString.extract(url))
     const record = AppLinkFields.reduce(
       (obj, k) => ({ ...obj, [k]: parsed.query[k] }),
-      {},
+      params,
     ) as AppLink
 
     const path = parsed.url.replace(APP_LINK_PROTOCOL, '')
@@ -184,7 +211,7 @@ const useAppLink = () => {
             scanResult = {
               type,
               payees: Object.entries(rawScanResult.payees).map((entries) => {
-                const scanData = entries[1] as { amount: string; memo: string }
+                const scanData = entries[1] as { amount: string; memo?: string }
                 return {
                   address: entries[0],
                   amount: scanData.amount,
@@ -210,9 +237,14 @@ const useAppLink = () => {
   )
 
   const handleBarCode = useCallback(
-    async ({ data }: BarCodeScannerResult, scanType: AppLinkCategoryType) => {
+    (
+      { data }: BarCodeScannerResult,
+      scanType: AppLinkCategoryType,
+      opts?: Record<string, string>,
+    ) => {
       const scanResult = parseBarCodeData(data, scanType)
-      navToAppLink(scanResult)
+
+      navToAppLink({ ...scanResult, ...opts })
     },
     [navToAppLink, parseBarCodeData],
   )

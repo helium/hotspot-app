@@ -18,7 +18,12 @@ type Props = BoxProps<Theme> & {
   onSearch: (searchTerm: string) => void
   initialValue?: string
 }
-const HotspotSearch = ({ onSearch, initialValue = '', ...boxProps }: Props) => {
+const HotspotSearch = ({
+  onSearch,
+  backgroundColor = 'grayBox',
+  initialValue = '',
+  ...boxProps
+}: Props) => {
   const { t } = useTranslation()
   const [searchTerm, setSearchTerm] = useState(initialValue)
 
@@ -41,7 +46,7 @@ const HotspotSearch = ({ onSearch, initialValue = '', ...boxProps }: Props) => {
   return (
     <Box
       flexDirection="row"
-      backgroundColor="grayBox"
+      backgroundColor={backgroundColor}
       alignItems="center"
       borderRadius="m"
       height={56}
@@ -54,6 +59,7 @@ const HotspotSearch = ({ onSearch, initialValue = '', ...boxProps }: Props) => {
         height={56}
         flex={1}
         variant="light"
+        backgroundColor={backgroundColor}
         placeholder={t('hotspots.search.placeholder')}
         onChangeText={setSearchTerm}
         value={searchTerm}

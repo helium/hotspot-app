@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { FlatList } from 'react-native'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import Text from '../../../components/Text'
 import useAlert from '../../../utils/useAlert'
 
@@ -52,7 +52,7 @@ const HotspotSetupScanWifiSuccess = ({
       {configuredNetwork && (
         <>
           <Text variant="subtitleBold">{configuredNetwork}</Text>
-          <Button
+          <DebouncedButton
             disabled={disabled}
             marginTop="l"
             mode="contained"
@@ -67,7 +67,7 @@ const HotspotSetupScanWifiSuccess = ({
           data={networks}
           keyExtractor={(item) => item}
           renderItem={({ item }) => (
-            <Button
+            <DebouncedButton
               disabled={disabled}
               key={item}
               variant="secondary"
@@ -80,7 +80,7 @@ const HotspotSetupScanWifiSuccess = ({
         />
       )}
       {configuredNetwork && (
-        <Button
+        <DebouncedButton
           disabled={disabled}
           mode="contained"
           marginTop="l"

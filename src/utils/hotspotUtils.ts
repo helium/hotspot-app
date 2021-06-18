@@ -7,13 +7,15 @@ export enum SyncStatus {
   none,
 }
 
+export const SYNC_BLOCK_BUFFER = 500
+
 export const getSyncStatus = (hotspotHeight: number, blockHeight?: number) => {
   if (!blockHeight) return { status: SyncStatus.none, percent: 0 }
 
   const syncedRatio = hotspotHeight / blockHeight
   const percentSynced = round(syncedRatio * 100, 2)
   const within500Blocks = hotspotHeight
-    ? blockHeight - hotspotHeight <= 500
+    ? blockHeight - hotspotHeight <= SYNC_BLOCK_BUFFER
     : false
   if (percentSynced === 100 || within500Blocks) {
     return { status: SyncStatus.full, percent: 100 }
@@ -37,10 +39,8 @@ export const generateRewardScaleColor = (rewardScale: number): Colors => {
   return 'redMain'
 }
 
-export const isRelay = (listen_addrs: string[]) => {
-  return !!(
-    listen_addrs &&
-    listen_addrs.length > 0 &&
-    listen_addrs[0].match('p2p-circuit')
-  )
+export const isRelay = (listenAddrs: string[] | undefined) => {
+  if (!listenAddrs) return false
+  const IP = /ip4/g
+  return listenAddrs.length > 0 && !listenAddrs.find((a) => a.match(IP))
 }

@@ -7,6 +7,7 @@ import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { isEqual } from 'lodash'
 import discoverySlice, {
+  fetchDiscoveryById,
   fetchRecentDiscoveries,
   startDiscovery,
 } from '../../../../store/discovery/discoverySlice'
@@ -165,11 +166,15 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
     }
   }, [hotspot, blockHeight, dispatchDiscovery, showOKAlert, t, userAddress])
 
-  const handleRequestSelected = (request: DiscoveryRequest) => {
-    dispatch(discoverySlice.actions.setSelectedRequest(request))
-    animateTransition('DiscoveryModeRoot.HandleRequestSelected')
-    setViewState('results')
-  }
+  const handleRequestSelected = useCallback(
+    (request: DiscoveryRequest) => {
+      dispatch(discoverySlice.actions.setSelectedRequest(request))
+      dispatch(fetchDiscoveryById({ requestId: request.id }))
+      animateTransition('DiscoveryModeRoot.HandleRequestSelected')
+      setViewState('results')
+    },
+    [dispatch],
+  )
 
   useEffect(() => {
     enableBack(handleBack)

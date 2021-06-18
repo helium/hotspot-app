@@ -6,7 +6,9 @@ import { TextProps } from 'react-native'
 const palette = {
   black: '#000000',
   white: '#FFFFFF',
+  transparent: '#00000000',
   whiteTransparent: '#FFFFFF66',
+  whiteTransparent75: '#FFFFFFBF',
   blackTransparent: '#00000033',
   offwhite: '#F9FAFC',
   offblack: '#1E2051',
@@ -17,9 +19,12 @@ const palette = {
   blueLight: '#51AEFF',
   blueMain: '#4BABFF',
   blueDark: '#232E39',
+  blueDarkest: '#1C1E3B',
 
+  gray: '#687A8C',
   grayLight: '#DADADA',
   grayExtraLight: '#788AB4',
+  grayMedium: '#E7EEF3',
   grayMain: '#81909F',
   graySteel: '#74869A',
   grayDark: '#202B37',
@@ -40,6 +45,7 @@ const palette = {
   whitePurple: '#FAF6FE',
   purpleLight: '#A0A5DA',
   purpleGray: '#BBBDD8',
+  purpleGrayLight: '#C2C5E4',
   purpleMain: '#474DFF',
   purple500: '#232749',
   purple400: '#292E56',
@@ -62,9 +68,8 @@ const palette = {
   orangeExtraDark: '#C97C09',
   orangeDark: '#FCB345',
   orange: '#FF852F',
-  yellow: '#FFCB46',
+  yellow: '#FCC945',
   gold: '#FFC769',
-  gray: '#687A8C',
 
   followPurple: '#BD7AFF',
 }
@@ -86,7 +91,7 @@ const textVariants = {
   h1: {
     fontFamily: Font.main.semiBold,
     fontSize: 40,
-    lineHeight: 45.5,
+    lineHeight: 39,
     color: 'primaryText',
   },
   h1s: {
@@ -206,6 +211,8 @@ export const theme = createTheme({
     inputPlaceholderText: palette.grayExtraLight,
   },
   spacing: {
+    n_xxxxl: -240,
+    n_xxxl: -120,
     n_xxl: -60,
     n_xl: -40,
     n_lx: -32,
@@ -317,8 +324,15 @@ export const theme = createTheme({
       color: 'white',
       borderRadius: 'm',
     },
+    medium: {
+      fontFamily: Font.main.regular,
+      fontSize: 14,
+      color: 'black',
+      padding: 'm',
+      backgroundColor: 'grayMedium',
+      borderRadius: 'm',
+    },
     light: {
-      backgroundColor: 'grayBox',
       fontFamily: Font.main.regular,
       fontSize: 18,
       color: 'black',

@@ -3,6 +3,7 @@ export const AppLinkCategories = [
   'dc_burn',
   'transfer',
   'hotspot',
+  'add_gateway',
 ] as const
 export type AppLinkCategoryType = typeof AppLinkCategories[number]
 
@@ -13,6 +14,7 @@ export type AppLink = {
   address: string
   amount?: string
   memo?: string
+  [key: string]: string | undefined
 }
 
 export type AppLinkPayment = {

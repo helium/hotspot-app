@@ -30,6 +30,8 @@ export type DiscoveryResponse = {
   status: string
   lat: number
   long: number
+  location: string
+  locationHex: string
 }
 
 export type ViewState = 'begin' | 'results'

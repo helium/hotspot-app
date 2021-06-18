@@ -13,13 +13,14 @@ import TouchableOpacityBox from './TouchableOpacityBox'
 import InfoIcon from '../assets/images/info-hollow.svg'
 import { decimalSeparator, groupSeparator, locale } from '../utils/i18n'
 import { useColors } from '../theme/themeHooks'
-import { Antenna, Antennas } from '../constants/antennas'
+import { AntennaModelKeys, AntennaModels } from '../makers'
+import { MakerAntenna } from '../makers/antennaMakerTypes'
 
 type Props = {
-  onAntennaUpdated: (antenna: Antenna) => void
+  onAntennaUpdated: (antenna: MakerAntenna) => void
   onGainUpdated: (gain: number) => void
   onElevationUpdated: (elevation: number) => void
-  selectedAntenna?: Antenna
+  selectedAntenna?: MakerAntenna
   outline?: boolean
 }
 const HotspotConfigurationPicker = ({
@@ -44,8 +45,18 @@ const HotspotConfigurationPicker = ({
       : undefined,
   )
 
+  const antennas = useMemo(
+    () =>
+      AntennaModelKeys.map((k) => ({
+        ...AntennaModels[k],
+        label: AntennaModels[k].name,
+        value: AntennaModels[k].name,
+      })),
+    [],
+  )
+
   const onSelectAntenna = (_value: string | number, index: number) => {
-    const antenna = Object.values(Antennas)[index]
+    const antenna = antennas[index]
     onAntennaUpdated(antenna)
     onGainUpdated(antenna.gain)
     setGain(
@@ -119,15 +130,6 @@ const HotspotConfigurationPicker = ({
     }
   }, [selectedAntenna])
 
-  const antennaData = useMemo(
-    () =>
-      Object.values(Antennas).map((a) => ({
-        label: t(`antennas.${a.id}`),
-        value: a.id,
-      })),
-    [t],
-  )
-
   return (
     <Box
       backgroundColor="white"
@@ -140,9 +142,9 @@ const HotspotConfigurationPicker = ({
         title={t('antennas.onboarding.select')}
         textProps={{ variant: 'medium', fontSize: 16, color: 'black' }}
         initialValue={t('antennas.onboarding.select')}
-        data={antennaData}
+        data={antennas}
         iconColor="black"
-        selectedValue={selectedAntenna?.id}
+        selectedValue={selectedAntenna?.name}
         onValueSelected={onSelectAntenna}
         buttonProps={{ justifyContent: 'space-between' }}
         padding="m"
@@ -178,7 +180,7 @@ const HotspotConfigurationPicker = ({
               returnKeyType="done"
               onChangeText={onChangeGain}
               onEndEditing={onDoneEditingGain}
-              editable={selectedAntenna?.id === 'custom'}
+              editable={selectedAntenna?.name === 'Custom Antenna'}
             />
             <Text marginLeft="xxs">{t('antennas.onboarding.dbi')}</Text>
           </Box>

@@ -1,39 +1,52 @@
-import React, { useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import Animated, {
   Extrapolate,
   interpolate,
   useAnimatedStyle,
 } from 'react-native-reanimated'
-import EyeCircleButton from '@assets/images/eye-circle-button.svg'
-import EyeCircleButtonYellow from '@assets/images/eye-circle-button-yellow.svg'
-import { ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import { Hotspot } from '@helium/http'
+import HexPill from '@assets/images/hexPill.svg'
 import Box from '../../../components/Box'
-import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Text from '../../../components/Text'
+import { wp } from '../../../utils/layout'
+import ContentPill, { ContentPillItem } from '../../../components/ContentPill'
+import { Colors } from '../../../theme/theme'
+import MapFiltersButton, { MapFilters } from '../../map/MapFiltersButton'
 
 const HotspotsViewHeader = ({
   animatedPosition,
-  showWitnesses,
-  toggleShowWitnesses,
   buttonsVisible = true,
-  loading,
   detailHeaderHeight,
   showNoLocation,
+  hexHotspots,
+  ownedHotspots,
+  followedHotspots,
+  onHotspotSelected = () => {},
+  selectedHotspotIndex = 0,
+  onPressMapFilter = () => {},
+  mapFilter,
+  showDetails,
 }: {
   animatedPosition: Animated.SharedValue<number>
-  showWitnesses: boolean
-  toggleShowWitnesses: () => void
   buttonsVisible?: boolean
-  loading: boolean
   detailHeaderHeight: number
   showNoLocation: boolean
+  showDetails: boolean
+  hexHotspots: Hotspot[]
+  ownedHotspots?: Hotspot[]
+  followedHotspots?: Hotspot[]
+  onHotspotSelected?: (index: number, hotspot: Hotspot) => void
+  selectedHotspotIndex: number
+  onPressMapFilter: () => void
+  mapFilter: MapFilters
 }) => {
   const { t } = useTranslation()
+
   const style = useAnimatedStyle(
     () => ({
       position: 'absolute',
-      bottom: -100,
+      bottom: showDetails ? -100 : -240,
       left: 0,
       right: 0,
       opacity: buttonsVisible || showNoLocation ? 1 : 0,
@@ -48,44 +61,73 @@ const HotspotsViewHeader = ({
         },
       ],
     }),
-    [animatedPosition, buttonsVisible, detailHeaderHeight],
+    [showDetails, animatedPosition, buttonsVisible, detailHeaderHeight],
   )
 
-  const loadingStyle = useMemo(
-    () => ({
-      backgroundColor: showWitnesses ? '#FCC945' : '#555A82',
-      borderRadius: 22,
-    }),
-    [showWitnesses],
+  const getContentColor = useCallback((isFollowed, isOwned): Colors => {
+    if (isFollowed) return 'purpleBright'
+    if (isOwned) return 'blueBright'
+    return 'blueGrayLight'
+  }, [])
+
+  const pillData = useMemo(() => {
+    if (!hexHotspots?.length)
+      return [
+        {
+          selectedBackgroundColor: 'blueGrayLight',
+          selectedIconColor: 'white',
+          iconColor: 'blueGrayLight',
+          icon: HexPill,
+          id: 'default',
+        },
+      ] as ContentPillItem[]
+    return hexHotspots.map((h) => {
+      const isOwned = ownedHotspots
+        ? ownedHotspots.find((owned) => owned.address === h.address)
+        : false
+      const isFollowed = followedHotspots
+        ? followedHotspots.find((followed) => followed.address === h.address)
+        : false
+      const color = getContentColor(isFollowed, isOwned)
+      return {
+        selectedBackgroundColor: color,
+        selectedIconColor: 'white',
+        iconColor: color,
+        icon: HexPill,
+        id: h.address,
+      } as ContentPillItem
+    })
+  }, [hexHotspots, ownedHotspots, followedHotspots, getContentColor])
+
+  const onPressContentPill = useCallback(
+    (index: number) => {
+      const hotspot = hexHotspots[index]
+      onHotspotSelected(index, hotspot)
+    },
+    [hexHotspots, onHotspotSelected],
   )
 
   return (
     <Animated.View style={style}>
-      <Box padding="m" flexDirection="row" alignItems="center">
-        {!loading && buttonsVisible && (
-          <TouchableOpacityBox onPress={toggleShowWitnesses} width={44}>
-            {showWitnesses ? <EyeCircleButtonYellow /> : <EyeCircleButton />}
-          </TouchableOpacityBox>
-        )}
-        {loading && buttonsVisible && (
-          <Box
-            height={44}
-            width={44}
-            alignItems="center"
-            justifyContent="center"
-            style={loadingStyle}
-          >
-            <ActivityIndicator
-              size="small"
-              color={showWitnesses ? 'white' : 'black'}
-            />
-          </Box>
-        )}
-
-        {/* TODO: hex grid button */}
-        {/* <TouchableOpacityBox marginStart="s"> */}
-        {/*  <HexCircleButton /> */}
-        {/* </TouchableOpacityBox> */}
+      <Box padding="xs" flexDirection="row" alignItems="center">
+        <Box
+          flex={1}
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+          marginRight="ms"
+        >
+          <ContentPill
+            selectedIndex={selectedHotspotIndex}
+            data={pillData}
+            onPressItem={onPressContentPill}
+            maxWidth={wp(75)}
+          />
+          <MapFiltersButton
+            onPressMapFilter={onPressMapFilter}
+            mapFilter={mapFilter}
+          />
+        </Box>
         {showNoLocation && (
           <Text
             variant="medium"
@@ -98,7 +140,6 @@ const HotspotsViewHeader = ({
             {t('hotspot_details.no_location')}
           </Text>
         )}
-        <Box height={44} width={44} />
       </Box>
     </Animated.View>
   )
