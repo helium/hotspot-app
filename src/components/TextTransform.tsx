@@ -15,8 +15,7 @@ const components = {
 
 type Props = TextProps<Theme> & {
   i18nKey: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  values?: Record<string, any>
+  values?: Record<string, unknown>
   numberOfLines?: number
   adjustsFontSizeToFit?: boolean
   maxFontSizeMultiplier?: number

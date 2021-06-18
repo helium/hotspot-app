@@ -40,14 +40,11 @@ export const fetchHotspotChallengeSums = async (
     bucket,
   })
   challengeSums.reverse()
-  let totalSum = 0
-  let prevSum = 0
-  challengeSums.forEach((sum) => {
-    totalSum += sum.sum
-  })
-  challengeSumsPrevious.forEach((sum) => {
-    prevSum += sum.sum
-  })
+  const totalSum = challengeSums.reduce((total, { sum }) => total + sum, 0)
+  const prevSum = challengeSumsPrevious.reduce(
+    (total, { sum }) => total + sum,
+    0,
+  )
   return {
     challengeSums,
     challengeSum: totalSum,
