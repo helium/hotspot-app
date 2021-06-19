@@ -13,6 +13,7 @@ const stringKeys = [
   'authInterval',
   'walletApiToken',
   'language',
+  'permanentPaymentAddress',
 ] as const
 type StringKey = typeof stringKeys[number]
 

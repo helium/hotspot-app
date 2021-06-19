@@ -94,6 +94,7 @@ export default {
   generic: {
     clear: '지우기',
     done: '완료',
+    disabled: '장애인',
     understand: '내용을 이해함',
     blocks: '블록',
     active: '활성화',
@@ -463,6 +464,7 @@ export default {
     },
     qrInfo: 'QR 정보',
     error: '이 트랜잭션을 제출하는 중에 오류가 발생했습니다. 다시 시도하세요.',
+    secureModePaymentsDisabled: '보안 모드에서는 결제가 비활성화됩니다.',
     hotspot_label: 'Hotspot',
     last_activity: '마지막으로 보고된 활동: {{activity}}',
     label_error: '계정에 충분한 HNT가 없습니다.',
@@ -507,9 +509,10 @@ export default {
         secureMode: {
           title: '보안 모드',
           enableButton: '보안 모드 활성화',
-          description: '보안 모드는 비밀 단어를 보는 옵션을 비활성화합니다.',
-          warning:
-            '로그 아웃하고 계정을 다시 가져와야 비활성화 할 수 있습니다.',
+          description:
+            '보안 모드를 활성화하면이 계정의 12 개 단어를 표시하는 기능이 제거됩니다. 여전히 핫스팟을 추가하고 해당 위치를 업데이트 할 수 있으며 제공된 경우 하나의 허용 된 주소로 자금을 보낼 수 있습니다.',
+          warning: '이 기능을 비활성화하려면 로그 아웃해야합니다.',
+          addressLabel: '영구 수신자 주소',
         },
       },
       learn: {
