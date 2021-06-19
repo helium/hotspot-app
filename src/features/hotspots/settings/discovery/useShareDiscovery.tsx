@@ -9,12 +9,16 @@ import {
 } from '../../../../store/discovery/discoveryTypes'
 import { error } from '../../../../utils/logger'
 
-export async function sendEmail(subject: string, body: string) {
+export async function sendEmail(
+  subject: string,
+  body: string,
+  isHTML: boolean,
+) {
   Mailer.mail(
     {
       subject,
       body,
-      isHTML: true,
+      isHTML,
     },
     error,
   )
@@ -24,8 +28,8 @@ const useShareDiscovery = (request?: DiscoveryRequest | null) => {
   const { t } = useTranslation()
 
   const createAndroidEmail = useCallback(
-    (grouped: Record<string, DiscoveryResponse[]>) =>
-      Object.keys(grouped)
+    (grouped: Record<string, DiscoveryResponse[]>) => {
+      const body = Object.keys(grouped)
         .map((key) => {
           const group = grouped[key]
           const response = group[0]
@@ -36,7 +40,10 @@ const useShareDiscovery = (request?: DiscoveryRequest | null) => {
           SNR: ${response.snr}
           `
         })
-        .join('\n'),
+        .join('\n')
+
+      sendEmail(t('discovery.share.subject'), body, false)
+    },
     [t],
   )
 
@@ -56,7 +63,7 @@ const useShareDiscovery = (request?: DiscoveryRequest | null) => {
       `
         })
         .join('\n')
-      return `
+      const body = `
     <html>
       <table border=1>
         <tr>
@@ -68,6 +75,8 @@ const useShareDiscovery = (request?: DiscoveryRequest | null) => {
       ${tableRows}
       </table>
     </html>`
+
+      sendEmail(t('discovery.share.subject'), body, true)
     },
     [t],
   )
@@ -77,12 +86,12 @@ const useShareDiscovery = (request?: DiscoveryRequest | null) => {
       request?.responses,
       (response) => response.hotspotAddress,
     )
-    const body =
-      Platform.OS === 'ios'
-        ? createIOSEmail(grouped)
-        : createAndroidEmail(grouped)
-    sendEmail(t('discovery.share.subject'), body)
-  }, [createAndroidEmail, createIOSEmail, request?.responses, t])
+    if (Platform.OS === 'ios') {
+      createIOSEmail(grouped)
+    } else {
+      createAndroidEmail(grouped)
+    }
+  }, [createAndroidEmail, createIOSEmail, request?.responses])
   return { shareResults }
 }
 
