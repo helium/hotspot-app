@@ -341,29 +341,6 @@ export const theme = createTheme({
   },
 })
 
-const darkTextVariants = {
-  h1: { ...textVariants.h1, color: 'black' },
-  body2: { ...textVariants.body2, color: 'black' },
-  input: { ...textVariants.input },
-  button: { ...textVariants.button, color: 'black' },
-}
-
-export const darkTheme: Theme = {
-  ...theme,
-  colors: {
-    ...theme.colors,
-    primaryBackground: palette.white,
-    cardBackground: palette.black,
-    primaryMain: palette.black,
-    secondaryMain: palette.blueGray,
-  },
-  textVariants: {
-    ...darkTextVariants,
-    body2Bold: { ...darkTextVariants.body2, fontFamily: Font.main.semiBold },
-    body2Mono: { ...darkTextVariants.body2, fontFamily: Font.mono.regular },
-  },
-}
-
 export type Theme = typeof theme
 export type TextVariant = keyof Theme['textVariants']
 export type Spacing = keyof Theme['spacing']

@@ -208,8 +208,10 @@ const SendView = ({
       return { amount, balanceAmount }
     }
     let scannedSendDetails: Array<SendDetails>
-    const isAppLinkPayment = (scanRes: any): scanRes is AppLinkPayment => {
-      return scanRes.type === 'payment' && scanRes.payees
+    const isAppLinkPayment = (
+      scanRes: AppLink | AppLinkPayment,
+    ): scanRes is AppLinkPayment => {
+      return scanRes.type === 'payment' && scanRes.payees !== undefined
     }
     if (isAppLinkPayment(scanResult)) {
       scannedSendDetails = scanResult.payees.map(

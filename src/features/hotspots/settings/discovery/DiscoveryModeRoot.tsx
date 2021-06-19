@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useState } from 'react'
-import { Hotspot } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
 import { useAsync } from 'react-async-hook'
 import { Alert, Linking } from 'react-native'
 import { useSelector } from 'react-redux'
@@ -32,7 +32,7 @@ import {
 import Articles from '../../../../constants/articles'
 import useDiscoveryPoll from './useDiscoveryPoll'
 
-type Props = { onClose: () => void; hotspot: Hotspot }
+type Props = { onClose: () => void; hotspot: Hotspot | Witness }
 const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
   const [viewState, setViewState] = useState<ViewState>('begin')
   const [errorShownForRequestId, setErrorShownForRequestId] = useState<

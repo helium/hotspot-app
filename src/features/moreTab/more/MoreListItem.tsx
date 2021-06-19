@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react'
+import React, { memo, ReactText, useMemo } from 'react'
 import { Linking, Switch } from 'react-native'
 import Text, { TextProps } from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
@@ -10,7 +10,7 @@ import { HeliumActionSheetItemType } from '../../../components/HeliumActionSheet
 
 export type SelectProps = {
   onDonePress?: () => void
-  onValueSelect: (value: string, index: number) => void
+  onValueSelect: (value: ReactText, index: number) => void
   items: HeliumActionSheetItemType[]
 }
 
@@ -115,7 +115,6 @@ const MoreListItem = ({
           data={select.items}
           selectedValue={value as string}
           onValueSelected={select.onValueSelect}
-          listFormat
           title={title}
           textProps={actionSheetTextProps}
           iconVariant="none"

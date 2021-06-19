@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { Hotspot } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
 import { useTranslation } from 'react-i18next'
 import { ActivityIndicator, Alert } from 'react-native'
 import { useAsync } from 'react-async-hook'
@@ -33,7 +33,7 @@ import { MakerAntenna } from '../../../../makers/antennaMakerTypes'
 type Props = {
   onClose: () => void
   onCloseSettings: () => void
-  hotspot: Hotspot
+  hotspot: Hotspot | Witness
 }
 
 type State = 'antenna' | 'location' | 'confirm'

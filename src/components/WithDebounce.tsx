@@ -21,6 +21,8 @@ export default function WithDebounce<T>(Component: React.FC<T>) {
     )
 
     // TODO: Someday when time is aplenty, fix the TS warning.
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line react/jsx-props-no-spreading
     return <Component {...props} onPress={debouncedHandler.callback} />
   }

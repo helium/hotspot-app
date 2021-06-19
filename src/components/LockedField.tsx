@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import Box from './Box'
 import Text from './Text'
 import InputLock from '../assets/images/input-lock.svg'
@@ -6,7 +6,7 @@ import InputLock from '../assets/images/input-lock.svg'
 type Props = {
   label: string
   value: string
-  footer?: any
+  footer?: ReactElement
   isLast?: boolean
   isFirst?: boolean
 }
