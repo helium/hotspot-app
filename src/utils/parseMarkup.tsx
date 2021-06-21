@@ -55,7 +55,9 @@ const parseMarkup = (
     return rawText
   }
 
-  const doc = parse5.parse(rawText.replace('“', '"')) as DefaultTreeParentNode
+  const doc = parse5.parse(
+    rawText.replace(/[“]+/g, '"'),
+  ) as DefaultTreeParentNode
   const body = (doc.childNodes[0] as DefaultTreeParentNode)
     .childNodes[1] as DefaultTreeParentNode
   const values = body.childNodes.map(parseNode).flat(Infinity)
