@@ -68,6 +68,7 @@ const palette = {
   orangeExtraDark: '#C97C09',
   orangeDark: '#FCB345',
   orange: '#FF852F',
+  orangeMedium: '#FF9417',
   yellow: '#FCC945',
   gold: '#FFC769',
 

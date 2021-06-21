@@ -48,6 +48,8 @@ const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
       <HeliumSelect
         data={data}
         variant="flat"
+        marginHorizontal="s"
+        backgroundColor="grayBox"
         selectedValue={selectedOption.value}
         onValueChanged={handleValueChanged}
       />

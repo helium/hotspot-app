@@ -28,7 +28,7 @@ export const getSyncStatus = (hotspotHeight: number, blockHeight?: number) => {
 
 export const generateRewardScaleColor = (rewardScale: number): Colors => {
   if (rewardScale >= 0.75) {
-    return 'greenMain'
+    return 'greenOnline'
   }
   if (rewardScale >= 0.5) {
     return 'yellow'

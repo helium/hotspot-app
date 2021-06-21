@@ -30,7 +30,6 @@ import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
 import HotspotStatusBanner from './HotspotStatusBanner'
 import useToggle from '../../../utils/useToggle'
 import { getSyncStatus, isRelay } from '../../../utils/hotspotUtils'
-import ShareHotspot from '../../../components/ShareHotspot'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Articles from '../../../constants/articles'
 import HotspotListItem from '../../../components/HotspotListItem'
@@ -270,13 +269,9 @@ const HotspotDetails = ({
     <BottomSheetScrollView keyboardShouldPersistTaps="always">
       <Box paddingBottom="l">
         <Box onLayout={onLayoutHeader}>
-          <Box
-            marginBottom="lm"
-            justifyContent="space-between"
-            alignItems="center"
-          >
+          <Box marginBottom="lm" alignItems="flex-start" marginHorizontal="m">
             <Text
-              variant="regular"
+              variant="light"
               fontSize={29}
               lineHeight={31}
               color="black"
@@ -286,8 +281,7 @@ const HotspotDetails = ({
             >
               {formattedHotspotName[0]}
             </Text>
-            <Box flexDirection="row" alignItems="center">
-              <Box width={40} />
+            <Box flexDirection="row" alignItems="flex-start">
               <Text
                 variant="regular"
                 fontSize={29}
@@ -299,15 +293,14 @@ const HotspotDetails = ({
               >
                 {formattedHotspotName[1]}
               </Text>
-
-              <ShareHotspot hotspot={hotspot} />
             </Box>
           </Box>
           <Box
             flexDirection="row"
-            justifyContent="center"
+            justifyContent="flex-start"
             marginBottom="lx"
-            height={30}
+            marginLeft="m"
+            height={24}
           >
             {hotspot?.status && (
               <StatusBadge
@@ -316,25 +309,26 @@ const HotspotDetails = ({
                 onPress={toggleShowStatusBanner}
               />
             )}
-            <HexBadge
-              rewardScale={hotspot.rewardScale}
-              backgroundColor="grayBox"
-            />
             {isRelayed && (
               <TouchableOpacityBox
-                backgroundColor="yellow"
+                borderColor="orangeMedium"
+                borderWidth={1}
                 paddingHorizontal="s"
-                borderRadius="ms"
+                borderRadius="l"
                 alignItems="center"
                 justifyContent="center"
                 marginLeft="xs"
                 onPress={handleRelayedPress}
               >
-                <Text color="white" variant="regular" fontSize={13}>
+                <Text color="orangeMedium" variant="medium" fontSize={13}>
                   {t('hotspot_details.relayed')}
                 </Text>
               </TouchableOpacityBox>
             )}
+            <HexBadge
+              rewardScale={hotspot.rewardScale}
+              backgroundColor="grayBox"
+            />
           </Box>
         </Box>
 
@@ -345,24 +339,31 @@ const HotspotDetails = ({
           onDismiss={toggleShowStatusBanner}
         />
 
-        <Box width="100%" justifyContent="center" flexDirection="row">
+        <Box
+          justifyContent="flex-start"
+          flexDirection="row"
+          backgroundColor="grayBox"
+        >
           <HeliumSelect
             showGradient={false}
             marginTop="m"
+            marginLeft="m"
             data={selectData}
+            backgroundColor="grayBox"
             selectedValue={selectedOption}
             onValueChanged={handleSelectValueChanged}
           />
         </Box>
         <HotspotChecklist
-          marginTop="lx"
+          paddingTop="lx"
+          backgroundColor="grayBox"
           visible={selectedOption === 'checklist'}
           hotspot={hotspot}
           witnesses={witnesses}
         />
 
         {selectedOption === 'overview' && (
-          <>
+          <Box backgroundColor="grayBox">
             <TimelinePicker index={2} onTimelineChanged={setTimelineValue} />
             <HotspotDetailChart
               title={t('hotspot_details.reward_title')}
@@ -378,13 +379,13 @@ const HotspotDetails = ({
               data={challengeChartData}
               loading={loading}
             />
-          </>
+          </Box>
         )}
 
         {selectedOption === 'witnesses' && (
           <>
             {hotspotDetailsData.loading ? (
-              <Box marginTop="xl">
+              <Box paddingTop="xl" backgroundColor="grayBox" height="100%">
                 <ActivityIndicator color={colors.grayMain} />
               </Box>
             ) : (
@@ -393,7 +394,7 @@ const HotspotDetails = ({
                   alignItems="center"
                   backgroundColor="grayBox"
                   marginBottom="xxs"
-                  marginTop="m"
+                  paddingTop="m"
                   flexDirection="row"
                   underlayColor="#EBEDF9"
                   onPress={showWitnessAlert}

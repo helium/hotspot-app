@@ -68,7 +68,7 @@ const HexBadge = ({
     <TouchableOpacityBox
       onPress={handlePress}
       backgroundColor={backgroundColor}
-      borderRadius={badge ? 'ms' : undefined}
+      borderRadius={badge ? 'l' : undefined}
       flexDirection="row"
       justifyContent="center"
       alignItems="center"
