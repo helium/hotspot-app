@@ -142,6 +142,8 @@ export default {
     minutes_plural: '{{count}} minutes',
     seconds: '{{count}} second',
     seconds_plural: '{{count}} seconds',
+    meters: '{{distance}}m',
+    kilometers: '{{distance}}km',
   },
   hotspot_setup: {
     selection: {

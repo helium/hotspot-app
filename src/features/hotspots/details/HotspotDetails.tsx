@@ -34,6 +34,8 @@ import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Articles from '../../../constants/articles'
 import HotspotListItem from '../../../components/HotspotListItem'
 import Info from '../../../assets/images/info-hollow.svg'
+import Location from '../../../assets/images/location.svg'
+import Signal from '../../../assets/images/signal.svg'
 import { distance } from '../../../utils/location'
 import { useColors } from '../../../theme/themeHooks'
 import TouchableHighlightBox from '../../../components/TouchableHighlightBox'
@@ -216,11 +218,11 @@ const HotspotDetails = ({
         { latitude: otherHotspot?.lat, longitude: otherHotspot?.lng },
       )
       if (distanceKM < 1) {
-        return `${(distanceKM * 1000).toFixed(0)}m`
+        return t('generic.meters', { distance: (distanceKM * 1000).toFixed(0) })
       }
-      return `${distanceKM.toFixed(1)}km`
+      return t('generic.kilometers', { distance: distanceKM.toFixed(1) })
     },
-    [hotspot?.lat, hotspot?.lng],
+    [hotspot?.lat, hotspot?.lng, t],
   )
 
   const renderWitnessItem = useCallback(
@@ -294,6 +296,32 @@ const HotspotDetails = ({
                 {formattedHotspotName[1]}
               </Text>
             </Box>
+          </Box>
+          <Box
+            flexDirection="row"
+            justifyContent="flex-start"
+            alignItems="center"
+            marginBottom="m"
+            marginLeft="m"
+          >
+            <Location width={10} height={10} color={colors.grayText} />
+            <Text
+              variant="body2"
+              color="grayText"
+              marginLeft="xs"
+              marginRight="m"
+            >
+              {`${hotspot?.geocode?.longCity}, ${hotspot?.geocode?.shortCountry}`}
+            </Text>
+            <Signal width={10} height={10} color={colors.grayText} />
+            <Text variant="body2" color="grayText" marginLeft="xs">
+              {t('generic.meters', { distance: hotspot?.elevation || 0 })}
+            </Text>
+            {hotspot?.gain !== undefined && (
+              <Text variant="body2" color="grayText" marginLeft="xs">
+                {(hotspot.gain / 10).toFixed(1) + t('antennas.onboarding.dbi')}
+              </Text>
+            )}
           </Box>
           <Box
             flexDirection="row"
