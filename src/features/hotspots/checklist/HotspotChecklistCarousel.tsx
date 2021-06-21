@@ -5,7 +5,6 @@ import { FlatList } from 'react-native-gesture-handler'
 import HotspotChecklistItem from './HotspotChecklistItem'
 import { wp } from '../../../utils/layout'
 import { useColors } from '../../../theme/themeHooks'
-import Box from '../../../components/Box'
 
 export type ChecklistItem = {
   key: string
@@ -72,7 +71,7 @@ const HotspotChecklistCarousel = ({
   )
 
   return (
-    <Box height="75%">
+    <>
       {isAndroid ? (
         <FlatList
           data={checklistData}
@@ -97,17 +96,15 @@ const HotspotChecklistCarousel = ({
           onScrollIndexChanged={setSlideIndex}
         />
       )}
-      <Box height="25%">
-        <Pagination
-          dotsLength={checklistData.length}
-          activeDotIndex={slideIndex}
-          inactiveDotOpacity={0.2}
-          inactiveDotScale={1}
-          dotColor={colors.purpleMain}
-          inactiveDotColor={colors.grayText}
-        />
-      </Box>
-    </Box>
+      <Pagination
+        dotsLength={checklistData.length}
+        activeDotIndex={slideIndex}
+        inactiveDotOpacity={0.2}
+        inactiveDotScale={1}
+        dotColor={colors.purpleMain}
+        inactiveDotColor={colors.grayText}
+      />
+    </>
   )
 }
 
