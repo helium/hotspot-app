@@ -1,4 +1,4 @@
-import React, { useEffect, memo } from 'react'
+import React, { useEffect, memo, useMemo, useCallback } from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { useNavigation } from '@react-navigation/native'
 import { useSelector } from 'react-redux'
@@ -24,7 +24,7 @@ import notificationSlice from '../../store/notifications/notificationSlice'
 const MainTab = createBottomTabNavigator()
 
 const MainTabs = () => {
-  const { white, grayLight } = useColors()
+  const { grayLight, primaryBackground } = useColors()
   const navigation = useNavigation<RootNavigationProp>()
   const tabNavigation = useNavigation<MainTabNavigationProp>()
   const {
@@ -55,34 +55,49 @@ const MainTabs = () => {
     }
   }, [tabNavigation, isLocked, pushNotification, dispatch])
 
+  const sceneContainerStyle = useMemo(
+    () => ({
+      opacity: isLocked ? 0 : 1,
+    }),
+    [isLocked],
+  )
+
+  const tabBarOptions = useMemo(
+    () => ({
+      showLabel: false,
+      style: {
+        backgroundColor: primaryBackground,
+        borderTopWidth: StyleSheet.hairlineWidth,
+        borderTopColor: grayLight,
+        paddingHorizontal: wp(12),
+      },
+    }),
+    [grayLight, primaryBackground],
+  )
+
+  const screenOptions = useCallback(
+    ({ route }) => ({
+      tabBarIcon: ({ focused, color, size }: TabBarIconType) => {
+        return (
+          <TabBarIcon
+            name={route.name as MainTabType}
+            focused={focused}
+            color={color}
+            size={Math.min(size, 22)}
+          />
+        )
+      },
+    }),
+    [],
+  )
+
   return (
     <MainTab.Navigator
-      sceneContainerStyle={{
-        opacity: isLocked ? 0 : 1,
-      }}
+      sceneContainerStyle={sceneContainerStyle}
       initialRouteName="Hotspots"
       lazy={false}
-      tabBarOptions={{
-        showLabel: false,
-        style: {
-          backgroundColor: white,
-          borderTopWidth: StyleSheet.hairlineWidth,
-          borderTopColor: grayLight,
-          paddingHorizontal: wp(12),
-        },
-      }}
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }: TabBarIconType) => {
-          return (
-            <TabBarIcon
-              name={route.name as MainTabType}
-              focused={focused}
-              color={color}
-              size={size}
-            />
-          )
-        },
-      })}
+      tabBarOptions={tabBarOptions}
+      screenOptions={screenOptions}
     >
       <MainTab.Screen name="Hotspots" component={Hotspots} />
       <MainTab.Screen name="Wallet" component={WalletNavigator} />
