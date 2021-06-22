@@ -34,6 +34,7 @@ const palette = {
   grayText: '#667394',
   grayDarkText: '#515686',
   grayLightText: '#A7AACD',
+  grayMid: '#A5AEBD',
   grayPurple: '#E3E5F8',
   grayHighlight: '#EBEDF9',
 
@@ -52,7 +53,7 @@ const palette = {
   purple300: '#343964',
   purple200: '#23264b',
   purple100: '#383A6F',
-  purpleDark: '#13162E',
+  purpleDark: '#161B3D',
   purpleMuted: '#666995',
   purpleBrightMuted: '#7788D4',
   purpleDull: '#474973',
