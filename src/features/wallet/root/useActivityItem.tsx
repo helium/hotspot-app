@@ -162,7 +162,7 @@ const useActivityItem = (
         )
       case 'assert_location_v1':
       case 'assert_location_v2':
-        return <Location width={20} height={23} />
+        return <Location width={20} height={23} color="white" />
       case 'rewards_v1':
       case 'rewards_v2':
         return <Rewards width={26} height={26} />
@@ -185,7 +185,7 @@ const useActivityItem = (
         )
       case 'assert_location_v1':
       case 'assert_location_v2':
-        return <Location width={20} height={23} />
+        return <Location width={20} height={23} color="white" />
       case 'rewards_v1':
       case 'rewards_v2':
         return <Rewards width={26} height={26} />

@@ -250,6 +250,7 @@ const HotspotChecklist = ({
                 height={70}
                 marginTop={spacing.s}
                 borderRadius={8}
+                marginBottom={spacing.xxl}
               />
             </SkeletonPlaceholder.Item>
           </SkeletonPlaceholder.Item>

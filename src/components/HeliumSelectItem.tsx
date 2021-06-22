@@ -17,6 +17,7 @@ type Props = {
   item: HeliumSelectItemType
   onPress: () => void
   variant: HeliumSelectVariant
+  backgroundColor?: Colors
 }
 
 const HeliumSelectItem = ({
@@ -24,6 +25,7 @@ const HeliumSelectItem = ({
   item: { label, color, Icon },
   onPress,
   variant,
+  backgroundColor = 'white',
 }: Props) => {
   const textColor = useMemo(() => {
     if (variant === 'flat') {
@@ -35,12 +37,12 @@ const HeliumSelectItem = ({
     return 'purpleText'
   }, [color, selected, variant])
 
-  const backgroundColor = useMemo(() => {
+  const background = useMemo(() => {
     if (variant === 'flat') return undefined
 
     if (selected) return color
-    return 'white'
-  }, [color, selected, variant])
+    return backgroundColor
+  }, [backgroundColor, color, selected, variant])
 
   const text = useMemo(() => {
     if (variant === 'flat') return label.toUpperCase()
@@ -49,7 +51,7 @@ const HeliumSelectItem = ({
 
   return (
     <TouchableOpacityBox
-      backgroundColor={backgroundColor}
+      backgroundColor={background}
       minWidth={80}
       height="100%"
       flexDirection="row"

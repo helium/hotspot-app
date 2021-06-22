@@ -26,7 +26,7 @@ const StatusBadge = ({ online = 'offline', onPress, syncStatus }: Props) => {
     <TouchableOpacityBox
       backgroundColor={online === 'online' ? 'greenOnline' : 'orangeDark'}
       paddingHorizontal="s"
-      borderRadius="ms"
+      borderRadius="l"
       alignItems="center"
       justifyContent="center"
       onPress={onPress}
