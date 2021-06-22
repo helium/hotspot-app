@@ -2,7 +2,6 @@ import React, { useEffect, useState, useMemo, useCallback } from 'react'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { useSelector } from 'react-redux'
 import { ActivityIndicator } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { RootState } from '../../../store/rootReducer'
 import HotspotsView from './HotspotsView'
 import HotspotsEmpty from './HotspotsEmpty'
@@ -19,7 +18,6 @@ import useGetLocation from '../../../utils/useGetLocation'
 const HotspotsScreen = () => {
   const maybeGetLocation = useGetLocation()
   const hotspots = useSelector((state: RootState) => state.hotspots.hotspots)
-  const insets = useSafeAreaInsets()
   const followedHotspots = useSelector(
     (state: RootState) => state.hotspots.followedHotspots,
   )
@@ -63,12 +61,8 @@ const HotspotsScreen = () => {
     return 'view'
   }, [followedHotspots.length, hotspots.length, hotspotsLoaded, location])
 
-  const containerStyle = useMemo(() => ({ paddingTop: insets.top }), [
-    insets.top,
-  ])
-
   return (
-    <Box backgroundColor="primaryBackground" flex={1} style={containerStyle}>
+    <Box backgroundColor="primaryBackground" flex={1}>
       <BottomSheetModalProvider>
         {viewState === 'empty' && (
           <Box flex={1} justifyContent="center">
@@ -79,13 +73,15 @@ const HotspotsScreen = () => {
           </Box>
         )}
         {viewState === 'view' && (
-          <HotspotsView
-            ownedHotspots={hotspots}
-            followedHotspots={followedHotspots}
-            startOnMap={startOnMap}
-            location={coords}
-            onViewMap={maybeGetLocation}
-          />
+          <>
+            <HotspotsView
+              ownedHotspots={hotspots}
+              followedHotspots={followedHotspots}
+              startOnMap={startOnMap}
+              location={coords}
+              onViewMap={maybeGetLocation}
+            />
+          </>
         )}
         {viewState === 'loading' && (
           <Box justifyContent="center" flex={1}>

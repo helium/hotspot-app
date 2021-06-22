@@ -295,7 +295,7 @@ const MoreScreen = () => {
   )
 
   return (
-    <SafeAreaBox backgroundColor="primaryBackground">
+    <SafeAreaBox backgroundColor="primaryBackground" flex={1}>
       <Text variant="h3" marginVertical="m" paddingHorizontal="l">
         {t('more.title')}
       </Text>

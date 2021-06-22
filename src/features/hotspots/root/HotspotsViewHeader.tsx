@@ -46,6 +46,7 @@ const HotspotsViewHeader = ({
   const style = useAnimatedStyle(
     () => ({
       position: 'absolute',
+      pointerEvents: 'box-none',
       bottom: showDetails ? -100 : -240,
       left: 0,
       right: 0,
@@ -55,7 +56,7 @@ const HotspotsViewHeader = ({
           translateY: interpolate(
             animatedPosition.value,
             [-1, 0],
-            [0, -1 * (detailHeaderHeight + (showNoLocation ? 80 : 220))],
+            [0, -1 * (detailHeaderHeight + (showNoLocation ? 40 : 180))],
             Extrapolate.CLAMP,
           ),
         },
@@ -109,12 +110,18 @@ const HotspotsViewHeader = ({
 
   return (
     <Animated.View style={style}>
-      <Box padding="xs" flexDirection="row" alignItems="center">
+      <Box
+        padding="xs"
+        flexDirection="row"
+        alignItems="center"
+        pointerEvents="box-none"
+      >
         <Box
           flex={1}
           flexDirection="row"
           justifyContent="space-between"
           alignItems="center"
+          pointerEvents="box-none"
           marginRight="ms"
         >
           <ContentPill
