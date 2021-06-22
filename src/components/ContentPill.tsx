@@ -128,7 +128,7 @@ const ContentPill = ({
     const nextWidth = data.length * ITEM_SIZE + padding * 2
     if (nextWidth === viewWidth) return
 
-    animateTransition('ContentPill.AnimateWidth')
+    animateTransition('ContentPill.AnimateWidth', false)
     setViewWidth(nextWidth)
   }, [data.length, listContentStyle, viewWidth])
 
