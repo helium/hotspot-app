@@ -38,7 +38,9 @@ import notificationSlice, {
 import AppLinkProvider from './providers/AppLinkProvider'
 import { navigationRef } from './navigation/navigator'
 
-SplashScreen.preventAutoHideAsync()
+SplashScreen.preventAutoHideAsync().catch(() => {
+  /* reloading the app might trigger some race conditions, ignore them */
+})
 
 const App = () => {
   if (Platform.OS === 'android') {

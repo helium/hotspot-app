@@ -5,6 +5,7 @@ export default (id: string, enabledOnAndroid = true) => {
   if (Platform.OS === 'android' && !enabledOnAndroid) return
 
   if (__DEV__ && Config.LOG_ANIMATIONS === 'true') {
+    // eslint-disable-next-line no-console
     console.log('animateTransition:', { id, enabledOnAndroid })
   }
 

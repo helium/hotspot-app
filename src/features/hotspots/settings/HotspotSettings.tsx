@@ -11,12 +11,14 @@ import {
   Animated,
   Easing,
   KeyboardAvoidingView,
+  Linking,
   Modal,
+  Platform,
 } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import animalName from 'angry-purple-tiger'
-import { Hotspot, PendingTransaction } from '@helium/http'
+import { Hotspot, PendingTransaction, Witness } from '@helium/http'
 import Toast from 'react-native-simple-toast'
 import BlurBox from '../../../components/BlurBox'
 import Card from '../../../components/Card'
@@ -49,11 +51,14 @@ import DiscoveryModeRoot from './discovery/DiscoveryModeRoot'
 import UpdateIcon from '../../../assets/images/update_hotspot_icon.svg'
 import UpdateHotspotConfig from './updateHotspot/UpdateHotspotConfig'
 import { getAccountTxnsList } from '../../../utils/appDataClient'
+import usePermissionManager from '../../../utils/usePermissionManager'
+import useAlert from '../../../utils/useAlert'
+import { getLocationPermission } from '../../../store/location/locationSlice'
 
 type State = 'init' | 'scan' | 'transfer' | 'discoveryMode' | 'updateHotspot'
 
 type Props = {
-  hotspot?: Hotspot
+  hotspot?: Hotspot | Witness
 }
 
 const HotspotSettings = ({ hotspot }: Props) => {
@@ -62,7 +67,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
   const [title, setTitle] = useState<string>(t('hotspot_settings.title'))
   const { m } = useSpacing()
   const slideUpAnimRef = useRef(new Animated.Value(1000))
-  const { getState } = useBluetoothContext()
+  const { getState, enable } = useBluetoothContext()
   const dispatch = useAppDispatch()
   const {
     showBack,
@@ -78,6 +83,16 @@ const HotspotSettings = ({ hotspot }: Props) => {
   const { showSettings } = useSelector(
     (state: RootState) => state.hotspotDetails,
   )
+  const { requestLocationPermission } = usePermissionManager()
+  const { permissionResponse, locationBlocked } = useSelector(
+    (state: RootState) => state.location,
+  )
+  const { showOKCancelAlert } = useAlert()
+
+  useEffect(() => {
+    getState()
+    dispatch(getLocationPermission())
+  }, [dispatch, getState])
 
   useEffect(() => {
     Animated.timing(slideUpAnimRef.current, {
@@ -94,14 +109,10 @@ const HotspotSettings = ({ hotspot }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showSettings])
 
-  const setNextState = useCallback(
-    (s: State) => {
-      if (s === settingsState) return
-      animateTransition('HotspotSettings.SetNextState')
-      setSettingsState(s)
-    },
-    [settingsState],
-  )
+  const setNextState = useCallback((s: State) => {
+    animateTransition('HotspotSettings.SetNextState')
+    setSettingsState(s)
+  }, [])
 
   const handleClose = useCallback(() => {
     disableBack()
@@ -212,10 +223,6 @@ const HotspotSettings = ({ hotspot }: Props) => {
     }
   }, [setNextState, showSettings])
 
-  useEffect(() => {
-    getState()
-  }, [getState])
-
   const updateTitle = useCallback(
     (nextTitle: string) => setTitle(nextTitle),
     [],
@@ -228,6 +235,73 @@ const HotspotSettings = ({ hotspot }: Props) => {
     setNextState('scan')
   }, [enableBack, onCloseOwnerSettings, setNextState])
 
+  const checkBluetooth = useCallback(async () => {
+    const state = await getState()
+
+    if (state === 'PoweredOn') {
+      return true
+    }
+
+    if (Platform.OS === 'ios') {
+      if (state === 'PoweredOff') {
+        const decision = await showOKCancelAlert({
+          titleKey: 'hotspot_setup.pair.alert_ble_off.title',
+          messageKey: 'hotspot_setup.pair.alert_ble_off.body',
+          okKey: 'generic.go_to_settings',
+        })
+        if (decision) Linking.openURL('App-Prefs:Bluetooth')
+      } else {
+        const decision = await showOKCancelAlert({
+          titleKey: 'hotspot_setup.pair.alert_ble_off.title',
+          messageKey: 'hotspot_setup.pair.alert_ble_off.body',
+          okKey: 'generic.go_to_settings',
+        })
+        if (decision) Linking.openURL('app-settings:')
+      }
+    }
+    if (Platform.OS === 'android') {
+      await enable()
+      return true
+    }
+  }, [enable, getState, showOKCancelAlert])
+
+  const checkLocation = useCallback(async () => {
+    if (Platform.OS === 'ios') return true
+
+    if (permissionResponse?.granted) {
+      return true
+    }
+
+    if (!locationBlocked) {
+      const response = await requestLocationPermission()
+      if (response && response.granted) {
+        return true
+      }
+    } else {
+      const decision = await showOKCancelAlert({
+        titleKey: 'permissions.location.title',
+        messageKey: 'permissions.location.message',
+        okKey: 'generic.go_to_settings',
+      })
+      if (decision) Linking.openSettings()
+    }
+  }, [
+    locationBlocked,
+    permissionResponse?.granted,
+    requestLocationPermission,
+    showOKCancelAlert,
+  ])
+
+  const handleScanRequest = useCallback(async () => {
+    const bluetoothReady = await checkBluetooth()
+    if (!bluetoothReady) return
+
+    const locationReady = await checkLocation()
+    if (!locationReady) return
+
+    startScan()
+  }, [checkBluetooth, checkLocation, startScan])
+
   const pairingCard = useMemo(() => {
     if (settingsState === 'scan') {
       return <HotspotDiagnostics updateTitle={updateTitle} />
@@ -238,11 +312,11 @@ const HotspotSettings = ({ hotspot }: Props) => {
         subtitle={t('hotspot_settings.pairing.subtitle')}
         buttonLabel={t('hotspot_settings.pairing.scan')}
         variant="primary"
-        onPress={startScan}
+        onPress={handleScanRequest}
         buttonIcon={<BluetoothIcon color="white" height={18} width={18} />}
       />
     )
-  }, [settingsState, startScan, t, updateTitle])
+  }, [handleScanRequest, settingsState, t, updateTitle])
 
   const ownerSettings = useMemo(() => {
     const isOwned = hotspot && hotspot.owner === account?.address
@@ -394,7 +468,9 @@ const HotspotSettings = ({ hotspot }: Props) => {
           </Box>
 
           {settingsState !== 'scan' && (
-            <KeyboardAvoidingView behavior="padding">
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            >
               <Card variant="modal" backgroundColor="white" overflow="hidden">
                 {ownerSettings}
               </Card>

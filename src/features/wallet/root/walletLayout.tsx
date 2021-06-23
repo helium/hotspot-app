@@ -4,6 +4,7 @@ import React from 'react'
 import { SafeAreaInsetsContext } from 'react-native-safe-area-context'
 import { wh, hp } from '../../../utils/layout'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const withWalletLayout = (WrappedComponent: any) => (props: any) => {
   const tabBarHeight = useBottomTabBarHeight()
 

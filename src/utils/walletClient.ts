@@ -36,6 +36,8 @@ const makeRequest = async (url: string, opts: RequestInit) => {
     try {
       const json = JSON.parse(text)
       const data = json.data || json
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       data.serverDate = response.headers.map?.date
       return data
     } catch (err) {

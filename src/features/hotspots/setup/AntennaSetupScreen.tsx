@@ -11,7 +11,7 @@ import {
 } from './hotspotSetupTypes'
 import BackScreen from '../../../components/BackScreen'
 import Text from '../../../components/Text'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import DiscoveryModeIcon from '../../../assets/images/discovery_mode_icon.svg'
 import { useColors } from '../../../theme/themeHooks'
 import HotspotConfigurationPicker from '../../../components/HotspotConfigurationPicker'
@@ -21,6 +21,7 @@ import { RootState } from '../../../store/rootReducer'
 import { MakerAntenna } from '../../../makers/antennaMakerTypes'
 import Helium from '../../../makers/helium'
 import { HotspotMakerModels } from '../../../makers'
+import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'AntennaSetupScreen'>
 
@@ -44,7 +45,8 @@ const AntennaSetupScreen = () => {
     const ant =
       isUS && makerAntenna?.us ? makerAntenna.us : makerAntenna?.default
 
-    if (!ant) return isUS ? Helium.HELIUM_US : Helium.HELIUM_EU
+    if (!ant)
+      return isUS ? Helium.antennas.HELIUM_US : Helium.antennas.HELIUM_EU
 
     return ant
   }, [hotspotType])
@@ -109,7 +111,7 @@ const AntennaSetupScreen = () => {
           />
         </Box>
       </KeyboardAvoidingView>
-      <Button
+      <DebouncedButton
         title={t('generic.next')}
         mode="contained"
         variant="primary"

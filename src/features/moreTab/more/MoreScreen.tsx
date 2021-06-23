@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo } from 'react'
+import React, { memo, ReactText, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, SectionList } from 'react-native'
 import { useSelector } from 'react-redux'
@@ -151,8 +151,9 @@ const MoreScreen = () => {
   )
 
   const handleIntervalSelected = useCallback(
-    (value: string) => {
-      dispatch(appSlice.actions.updateAuthInterval(parseInt(value, 10)))
+    (value: ReactText) => {
+      const number = typeof value === 'number' ? value : parseInt(value, 10)
+      dispatch(appSlice.actions.updateAuthInterval(number))
     },
     [dispatch],
   )
@@ -298,6 +299,8 @@ const MoreScreen = () => {
       <Text variant="h3" marginVertical="m" paddingHorizontal="l">
         {t('more.title')}
       </Text>
+      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+      {/* @ts-ignore */}
       <SectionList
         contentContainerStyle={contentContainer}
         sections={SectionData}

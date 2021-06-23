@@ -1,11 +1,11 @@
-import HotspotIcon from '@assets/images/syncrobit.svg'
+import HotspotIcon from './syncrobit.svg'
 import { MakerHotspot } from '../hotspotMakerTypes'
 import ANTENNAS from './antennas'
 
 const Syncrobit = {
   name: 'SyncroB.it Hotspot',
   icon: HotspotIcon,
-  onboardType: 'QR',
+  onboardType: 'BLE',
   translations: {
     en: {
       diagnostic:

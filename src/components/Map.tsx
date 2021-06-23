@@ -13,11 +13,11 @@ import MapboxGL, {
   SymbolLayerStyle,
 } from '@react-native-mapbox-gl/maps'
 import { Feature, Point, Position } from 'geojson'
-import { Hotspot } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
 import { BoxProps } from '@shopify/restyle'
 import { StyleProp, ViewStyle } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { h3ToGeo, h3ToParent } from 'h3-js'
+import { h3ToGeo } from 'h3-js'
 import { differenceBy } from 'lodash'
 import Box from './Box'
 import Text from './Text'
@@ -43,8 +43,8 @@ type Props = BoxProps<Theme> & {
   mapCenter?: number[]
   ownedHotspots?: Hotspot[]
   followedHotspots?: Hotspot[]
-  selectedHotspot?: Hotspot
-  witnesses?: Hotspot[]
+  selectedHotspot?: Hotspot | Witness
+  witnesses?: Witness[]
   animationMode?: 'flyTo' | 'easeTo' | 'moveTo'
   animationDuration?: number
   maxZoomLevel?: number
@@ -147,10 +147,9 @@ const Map = ({
     loadMapBoundsAndZoom()
   }, [])
 
-  const selectedHex = useMemo(
-    () => h3ToParent(selectedHotspot?.location || '', 8),
-    [selectedHotspot],
-  )
+  const selectedHex = useMemo(() => selectedHotspot?.locationHex, [
+    selectedHotspot?.locationHex,
+  ])
 
   const onHexPress = (id: string) => {
     onHexSelected(id)
@@ -177,8 +176,8 @@ const Map = ({
       boundsLocations.push(mapCenter)
     }
 
-    if (selectedHotspot && selectedHotspot.location) {
-      const h3Location = h3ToParent(selectedHotspot.location, 8)
+    if (selectedHotspot && selectedHotspot.locationHex) {
+      const h3Location = selectedHotspot.locationHex
       boundsLocations.push(h3ToGeo(h3Location).reverse())
     }
 
@@ -187,8 +186,8 @@ const Map = ({
     }
 
     witnesses.forEach((w) => {
-      if (w.location) {
-        const h3Location = h3ToParent(w.location, 8)
+      if (w.locationHex) {
+        const h3Location = w.locationHex
         boundsLocations.push(h3ToGeo(h3Location).reverse())
       }
     })
@@ -210,10 +209,7 @@ const Map = ({
   }, [selectedHotspot])
 
   const followedHexes = useMemo(
-    () =>
-      differenceBy(followedHotspots, ownedHotspots, (h) =>
-        h3ToParent(h.location || '', 8),
-      ),
+    () => differenceBy(followedHotspots, ownedHotspots, (h) => h.locationHex),
     [followedHotspots, ownedHotspots],
   )
 
@@ -349,12 +345,15 @@ const makeStyles = (colors: typeof theme.colors) => ({
   } as StyleProp<FillLayerStyle>,
 })
 
-const hotspotsEqual = (prev: Hotspot[], next: Hotspot[]) => {
+const hotspotsEqual = (
+  prev: Hotspot[] | Witness[],
+  next: Hotspot[] | Witness[],
+) => {
   if (prev.length !== next.length) return false
 
   const ownedHotspotsEqual = next === prev
   if (!ownedHotspotsEqual) {
-    next.forEach((hotspot, index) => {
+    next.forEach((hotspot: Hotspot | Witness, index: number) => {
       const addressesEqual = hotspot.address === prev[index].address
       if (!addressesEqual) return false
     })
@@ -378,9 +377,11 @@ export default memo(Map, (prevProps, nextProps) => {
     ...nextRest
   } = nextProps
 
-  const primitivesEqual = Object.keys(prevRest).every(
-    (key) => nextRest.hasOwnProperty(key) && nextRest[key] === prevRest[key],
-  )
+  const primitivesEqual = Object.keys(prevRest).every((key) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return nextRest.hasOwnProperty(key) && nextRest[key] === prevRest[key]
+  })
   let mapCenterEqual = mapCenter === prevMapCenter
   if (!mapCenterEqual && mapCenter && prevMapCenter) {
     mapCenterEqual =

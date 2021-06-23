@@ -15,7 +15,7 @@ type Props = {
   subtitle: string
   pinSuccess: (pin: string) => void
   onCancel?: () => void
-  clearable: boolean
+  clearable?: boolean
 }
 const ConfirmPinView = ({
   title,

@@ -26,6 +26,7 @@ const useBluetooth = () => {
     instanceRef.current = newInstance
 
     if (__DEV__) {
+      // eslint-disable-next-line no-console
       console.log('setting ble log level to verbose')
       instanceRef.current.setLogLevel(LogLevel.Verbose)
     }
@@ -54,24 +55,28 @@ const useBluetooth = () => {
 
   const scan = async (ms: number, callback: (device: Device) => void) => {
     Logger.breadcrumb('Scan for hotspots')
-    getBleManager().startDeviceScan(
-      [Service.MAIN_UUID],
-      { allowDuplicates: false },
-      (error, device) => {
-        if (error) {
-          Logger.error(error)
-          throw error
-        }
+    try {
+      getBleManager().startDeviceScan(
+        [Service.MAIN_UUID],
+        { allowDuplicates: false },
+        (error, device) => {
+          if (error) {
+            Logger.error(error)
+            throw error
+          }
 
-        if (device?.localName) {
-          callback(device)
-        }
-      },
-    )
+          if (device?.localName) {
+            callback(device)
+          }
+        },
+      )
 
-    await sleep(ms)
+      await sleep(ms)
 
-    getBleManager().stopDeviceScan()
+      getBleManager().stopDeviceScan()
+    } catch (e) {
+      Logger.error(e)
+    }
   }
 
   const discoverAllServicesAndCharacteristics = async (

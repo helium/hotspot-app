@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react'
-import { Hotspot } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
 import { useTranslation } from 'react-i18next'
 import { startCase } from 'lodash'
 import CopyIco from '@assets/images/copy.svg'
@@ -15,7 +15,7 @@ import useHaptic from '../utils/useHaptic'
 import { EXPLORER_BASE_URL } from '../utils/config'
 import { createAppLink } from '../providers/AppLinkProvider'
 
-type Props = { hotspot: Hotspot }
+type Props = { hotspot: Hotspot | Witness }
 const ShareHotspot = ({ hotspot }: Props) => {
   const { t } = useTranslation()
   const { triggerNotification } = useHaptic()
@@ -70,7 +70,7 @@ const ShareHotspot = ({ hotspot }: Props) => {
     <HeliumActionSheet
       buttonProps={buttonProps}
       iconVariant="kabob"
-      iconColor="grayMain"
+      iconColor="grayPurple"
       title={startCase(hotspot.name)}
       data={actionSheetData}
       closeOnSelect={false}

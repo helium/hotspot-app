@@ -1,4 +1,4 @@
-import { Hotspot } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
 import { getUnixTime } from 'date-fns'
 import { isEqual } from 'lodash'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -8,7 +8,7 @@ import { ViewState } from '../../../../store/discovery/discoveryTypes'
 import { RootState } from '../../../../store/rootReducer'
 import { useAppDispatch } from '../../../../store/store'
 
-type Props = { viewState: ViewState; hotspot: Hotspot }
+type Props = { viewState: ViewState; hotspot: Hotspot | Witness }
 
 const unixTime = (dateStr?: string) => {
   const insertDate = dateStr ? new Date(dateStr) : null

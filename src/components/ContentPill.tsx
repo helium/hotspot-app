@@ -68,6 +68,7 @@ const ContentPill = ({
   }, [data.length])
 
   useEffect(() => {
+    if (selectedIndex < 0) return
     flatListRef?.current?.scrollToIndex({
       animated: true,
       index: selectedIndex,
@@ -127,7 +128,7 @@ const ContentPill = ({
     const nextWidth = data.length * ITEM_SIZE + padding * 2
     if (nextWidth === viewWidth) return
 
-    animateTransition('ContentPill.AnimateWidth')
+    animateTransition('ContentPill.AnimateWidth', false)
     setViewWidth(nextWidth)
   }, [data.length, listContentStyle, viewWidth])
 
@@ -169,7 +170,8 @@ const ContentPill = ({
       {...boxProps}
     >
       <FlatList
-        // This warning is a bug with react-native-gesture-handler
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore This warning is a bug with react-native-gesture-handler
         ref={flatListRef}
         getItemLayout={getItemLayout}
         contentContainerStyle={listContentStyle}

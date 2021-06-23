@@ -21,8 +21,10 @@ const palette = {
   blueDark: '#232E39',
   blueDarkest: '#1C1E3B',
 
+  gray: '#687A8C',
   grayLight: '#DADADA',
   grayExtraLight: '#788AB4',
+  grayMedium: '#E7EEF3',
   grayMain: '#81909F',
   graySteel: '#74869A',
   grayDark: '#202B37',
@@ -43,6 +45,7 @@ const palette = {
   whitePurple: '#FAF6FE',
   purpleLight: '#A0A5DA',
   purpleGray: '#BBBDD8',
+  purpleGrayLight: '#C2C5E4',
   purpleMain: '#474DFF',
   purple500: '#232749',
   purple400: '#292E56',
@@ -65,9 +68,9 @@ const palette = {
   orangeExtraDark: '#C97C09',
   orangeDark: '#FCB345',
   orange: '#FF852F',
+  orangeMedium: '#FF9417',
   yellow: '#FCC945',
   gold: '#FFC769',
-  gray: '#687A8C',
 
   followPurple: '#BD7AFF',
 }
@@ -322,6 +325,14 @@ export const theme = createTheme({
       color: 'white',
       borderRadius: 'm',
     },
+    medium: {
+      fontFamily: Font.main.regular,
+      fontSize: 14,
+      color: 'black',
+      padding: 'm',
+      backgroundColor: 'grayMedium',
+      borderRadius: 'm',
+    },
     light: {
       fontFamily: Font.main.regular,
       fontSize: 18,
@@ -330,29 +341,6 @@ export const theme = createTheme({
     },
   },
 })
-
-const darkTextVariants = {
-  h1: { ...textVariants.h1, color: 'black' },
-  body2: { ...textVariants.body2, color: 'black' },
-  input: { ...textVariants.input },
-  button: { ...textVariants.button, color: 'black' },
-}
-
-export const darkTheme: Theme = {
-  ...theme,
-  colors: {
-    ...theme.colors,
-    primaryBackground: palette.white,
-    cardBackground: palette.black,
-    primaryMain: palette.black,
-    secondaryMain: palette.blueGray,
-  },
-  textVariants: {
-    ...darkTextVariants,
-    body2Bold: { ...darkTextVariants.body2, fontFamily: Font.main.semiBold },
-    body2Mono: { ...darkTextVariants.body2, fontFamily: Font.mono.regular },
-  },
-}
 
 export type Theme = typeof theme
 export type TextVariant = keyof Theme['textVariants']

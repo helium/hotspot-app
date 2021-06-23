@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { Hotspot, Sum } from '@helium/http'
+import { Hotspot, Sum, Witness } from '@helium/http'
 import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
 import { orderBy, sortBy } from 'lodash'
 import {
@@ -35,7 +35,7 @@ export type HotspotsSliceState = {
   loadingRewards: boolean
   hotspotsLoaded: boolean
   failure: boolean
-  selectedHotspot?: Hotspot
+  selectedHotspot?: Hotspot | Witness
 }
 
 const initialState: HotspotsSliceState = {
@@ -312,7 +312,10 @@ const hotspotsSlice = createSlice({
         }),
       }
     },
-    selectHotspot: (state, { payload }: { payload: Hotspot | undefined }) => {
+    selectHotspot: (
+      state,
+      { payload }: { payload: Hotspot | Witness | undefined },
+    ) => {
       state.selectedHotspot = payload
     },
     selectNextHotspot: (state) => {

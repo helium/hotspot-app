@@ -2,7 +2,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ScrollView } from 'react-native'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import {
@@ -90,13 +90,13 @@ const HotspotSetupLocationInfoScreen = () => {
             </Text>
           </Box>
         </ScrollView>
-        <Button
+        <DebouncedButton
           onPress={checkLocationPermissions}
           variant="primary"
           mode="contained"
           title={t('hotspot_setup.enable_location.next')}
         />
-        <Button
+        <DebouncedButton
           onPress={skipLocationAssert}
           variant="primary"
           mode="text"

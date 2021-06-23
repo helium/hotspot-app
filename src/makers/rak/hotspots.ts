@@ -1,10 +1,10 @@
-import HotspotIcon from '@assets/images/rak.svg'
+import HotspotIcon from './rak.svg'
 import { MakerHotspot } from '../hotspotMakerTypes'
 import ANTENNAS from './antennas'
 
 const RAK_V1 = {
   name: 'RAK Hotspot',
-  onboardType: 'QR',
+  onboardType: 'BLE',
   translations: {
     en: {
       diagnostic:

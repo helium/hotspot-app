@@ -3,8 +3,13 @@ import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import { LayoutChangeEvent, Alert, Linking } from 'react-native'
-import { Hotspot } from '@helium/http'
+import {
+  LayoutChangeEvent,
+  Alert,
+  Linking,
+  ActivityIndicator,
+} from 'react-native'
+import { Hotspot, Witness } from '@helium/http'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import StatusBadge from './StatusBadge'
@@ -25,24 +30,33 @@ import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
 import HotspotStatusBanner from './HotspotStatusBanner'
 import useToggle from '../../../utils/useToggle'
 import { getSyncStatus, isRelay } from '../../../utils/hotspotUtils'
-import ShareHotspot from '../../../components/ShareHotspot'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Articles from '../../../constants/articles'
+import HotspotListItem from '../../../components/HotspotListItem'
+import Info from '../../../assets/images/info-hollow.svg'
+import Location from '../../../assets/images/location.svg'
+import Signal from '../../../assets/images/signal.svg'
+import { distance } from '../../../utils/location'
+import { useColors } from '../../../theme/themeHooks'
+import TouchableHighlightBox from '../../../components/TouchableHighlightBox'
 
 type Props = {
   hotspotAddress?: string
-  hotspot?: Hotspot
+  hotspot?: Hotspot | Witness
   onLayoutHeader?: ((event: LayoutChangeEvent) => void) | undefined
   onFailure: () => void
+  onSelectHotspot: (hotspot: Hotspot | Witness) => void
 }
 const HotspotDetails = ({
   hotspot: propsHotspot,
   hotspotAddress,
   onLayoutHeader,
+  onSelectHotspot,
   onFailure,
 }: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
+  const colors = useColors()
   const address = hotspotAddress || propsHotspot?.address || ''
   const hotspotChatData =
     useSelector(
@@ -62,9 +76,6 @@ const HotspotDetails = ({
     rewardSum,
     rewardsChange,
     loading = true,
-    witnessSums,
-    witnessAverage,
-    witnessChange,
     challengeSums,
     challengeSum,
     challengeChange,
@@ -118,18 +129,6 @@ const HotspotDetails = ({
     )
   }, [dispatch, hotspot?.address, timelineValue])
 
-  const witnessChartData = useMemo(() => {
-    return (
-      witnessSums?.map((w) => ({
-        up: Math.round(w.avg),
-        down: 0,
-        label: w.timestamp,
-        showTime: timelineValue === 1,
-        id: `witness-${timelineValue}-${w.timestamp}`,
-      })) || []
-    )
-  }, [timelineValue, witnessSums])
-
   const challengeChartData = useMemo(() => {
     return (
       challengeSums?.map((w) => ({
@@ -164,6 +163,11 @@ const HotspotDetails = ({
         value: 'checklist',
         color: 'purpleMain',
       } as HeliumSelectItemType,
+      {
+        label: t('map_filter.witness.title'),
+        value: 'witnesses',
+        color: 'purpleMain',
+      } as HeliumSelectItemType,
     ]
   }, [t])
 
@@ -171,7 +175,7 @@ const HotspotDetails = ({
 
   const handleSelectValueChanged = useCallback(
     (value: string | number, _index: number) => {
-      animateTransition('HotspotDetails.HandleSelectValueChanged')
+      animateTransition('HotspotDetails.HandleSelectValueChanged', false)
       setSelectedOption(value)
     },
     [],
@@ -197,19 +201,79 @@ const HotspotDetails = ({
     )
   }, [t])
 
+  const getDistance = useCallback(
+    (otherHotspot: Hotspot | Witness) => {
+      if (
+        !hotspot?.lat ||
+        !hotspot?.lng ||
+        !otherHotspot?.lat ||
+        !otherHotspot?.lng
+      )
+        return undefined
+      const distanceKM = distance(
+        {
+          latitude: hotspot?.lat,
+          longitude: hotspot?.lng,
+        },
+        { latitude: otherHotspot?.lat, longitude: otherHotspot?.lng },
+      )
+      if (distanceKM < 1) {
+        return t('generic.meters', { distance: (distanceKM * 1000).toFixed(0) })
+      }
+      return t('generic.kilometers', { distance: distanceKM.toFixed(1) })
+    },
+    [hotspot?.lat, hotspot?.lng, t],
+  )
+
+  const renderWitnessItem = useCallback(
+    (witness: Witness) => {
+      return (
+        <HotspotListItem
+          key={witness.address}
+          onPress={onSelectHotspot}
+          hotspot={witness}
+          showCarot
+          showAddress={false}
+          distanceAway={getDistance(witness)}
+          showRewardScale
+          showRelayStatus
+        />
+      )
+    },
+    [getDistance, onSelectHotspot],
+  )
+
+  const showWitnessAlert = useCallback(() => {
+    Alert.alert(
+      t('hotspot_details.witness_prompt.title'),
+      t('hotspot_details.witness_prompt.message', {
+        hotspotName: animalName(hotspot?.address || ''),
+      }),
+      [
+        {
+          text: t('generic.ok'),
+        },
+        {
+          text: t('generic.readMore'),
+          style: 'cancel',
+          onPress: () => {
+            if (Linking.canOpenURL(Articles.Witnesses))
+              Linking.openURL(Articles.Witnesses)
+          },
+        },
+      ],
+    )
+  }, [hotspot?.address, t])
+
   if (!hotspot) return null
 
   return (
     <BottomSheetScrollView keyboardShouldPersistTaps="always">
       <Box paddingBottom="l">
         <Box onLayout={onLayoutHeader}>
-          <Box
-            marginBottom="lm"
-            justifyContent="space-between"
-            alignItems="center"
-          >
+          <Box marginBottom="lm" alignItems="flex-start" marginHorizontal="m">
             <Text
-              variant="regular"
+              variant="light"
               fontSize={29}
               lineHeight={31}
               color="black"
@@ -219,8 +283,7 @@ const HotspotDetails = ({
             >
               {formattedHotspotName[0]}
             </Text>
-            <Box flexDirection="row" alignItems="center">
-              <Box width={40} />
+            <Box flexDirection="row" alignItems="flex-start">
               <Text
                 variant="regular"
                 fontSize={29}
@@ -232,15 +295,40 @@ const HotspotDetails = ({
               >
                 {formattedHotspotName[1]}
               </Text>
-
-              <ShareHotspot hotspot={hotspot} />
             </Box>
           </Box>
           <Box
             flexDirection="row"
-            justifyContent="center"
+            justifyContent="flex-start"
+            alignItems="center"
+            marginBottom="m"
+            marginLeft="m"
+          >
+            <Location width={10} height={10} color={colors.grayText} />
+            <Text
+              variant="body2"
+              color="grayText"
+              marginLeft="xs"
+              marginRight="m"
+            >
+              {`${hotspot?.geocode?.longCity}, ${hotspot?.geocode?.shortCountry}`}
+            </Text>
+            <Signal width={10} height={10} color={colors.grayText} />
+            <Text variant="body2" color="grayText" marginLeft="xs">
+              {t('generic.meters', { distance: hotspot?.elevation || 0 })}
+            </Text>
+            {hotspot?.gain !== undefined && (
+              <Text variant="body2" color="grayText" marginLeft="xs">
+                {(hotspot.gain / 10).toFixed(1) + t('antennas.onboarding.dbi')}
+              </Text>
+            )}
+          </Box>
+          <Box
+            flexDirection="row"
+            justifyContent="flex-start"
             marginBottom="lx"
-            height={30}
+            marginLeft="m"
+            height={24}
           >
             {hotspot?.status && (
               <StatusBadge
@@ -249,22 +337,26 @@ const HotspotDetails = ({
                 onPress={toggleShowStatusBanner}
               />
             )}
-            <HexBadge rewardScale={hotspot.rewardScale} />
             {isRelayed && (
               <TouchableOpacityBox
-                backgroundColor="yellow"
+                borderColor="orangeMedium"
+                borderWidth={1}
                 paddingHorizontal="s"
-                borderRadius="ms"
+                borderRadius="l"
                 alignItems="center"
                 justifyContent="center"
                 marginLeft="xs"
                 onPress={handleRelayedPress}
               >
-                <Text color="white" variant="regular" fontSize={13}>
+                <Text color="orangeMedium" variant="medium" fontSize={13}>
                   {t('hotspot_details.relayed')}
                 </Text>
               </TouchableOpacityBox>
             )}
+            <HexBadge
+              rewardScale={hotspot.rewardScale}
+              backgroundColor="grayBox"
+            />
           </Box>
         </Box>
 
@@ -275,24 +367,31 @@ const HotspotDetails = ({
           onDismiss={toggleShowStatusBanner}
         />
 
-        <Box width="100%" justifyContent="center" flexDirection="row">
+        <Box
+          justifyContent="flex-start"
+          flexDirection="row"
+          backgroundColor="grayBox"
+        >
           <HeliumSelect
             showGradient={false}
             marginTop="m"
+            marginLeft="m"
             data={selectData}
+            backgroundColor="grayBox"
             selectedValue={selectedOption}
             onValueChanged={handleSelectValueChanged}
           />
         </Box>
         <HotspotChecklist
-          marginTop="lx"
+          paddingTop="lx"
+          backgroundColor="grayBox"
           visible={selectedOption === 'checklist'}
           hotspot={hotspot}
           witnesses={witnesses}
         />
 
         {selectedOption === 'overview' && (
-          <>
+          <Box backgroundColor="grayBox">
             <TimelinePicker index={2} onTimelineChanged={setTimelineValue} />
             <HotspotDetailChart
               title={t('hotspot_details.reward_title')}
@@ -302,19 +401,50 @@ const HotspotDetails = ({
               loading={loading}
             />
             <HotspotDetailChart
-              title={t('hotspot_details.witness_title')}
-              number={witnessAverage?.toFixed(0)}
-              change={witnessChange}
-              data={witnessChartData}
-              loading={loading}
-            />
-            <HotspotDetailChart
               title={t('hotspot_details.challenge_title')}
               number={challengeSum?.toFixed(0)}
               change={challengeChange}
               data={challengeChartData}
               loading={loading}
             />
+          </Box>
+        )}
+
+        {selectedOption === 'witnesses' && (
+          <>
+            {hotspotDetailsData.loading ? (
+              <Box paddingTop="xl" backgroundColor="grayBox" height="100%">
+                <ActivityIndicator color={colors.grayMain} />
+              </Box>
+            ) : (
+              <>
+                <TouchableHighlightBox
+                  alignItems="center"
+                  backgroundColor="grayBox"
+                  marginBottom="xxs"
+                  paddingTop="m"
+                  flexDirection="row"
+                  underlayColor="#EBEDF9"
+                  onPress={showWitnessAlert}
+                >
+                  <>
+                    <Text
+                      variant="body1Medium"
+                      color="grayDarkText"
+                      paddingLeft="m"
+                      paddingRight="s"
+                      paddingVertical="m"
+                    >
+                      {t('hotspot_details.num_witnesses', {
+                        count: witnesses?.length || 0,
+                      })}
+                    </Text>
+                    <Info color={colors.blueMain} />
+                  </>
+                </TouchableHighlightBox>
+                {witnesses?.map((witness) => renderWitnessItem(witness))}
+              </>
+            )}
           </>
         )}
       </Box>

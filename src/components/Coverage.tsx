@@ -5,7 +5,6 @@ import MapboxGL, {
   OnPressEvent,
   SymbolLayerStyle,
 } from '@react-native-mapbox-gl/maps'
-import { h3ToParent } from 'h3-js'
 import React, { memo, useCallback, useMemo } from 'react'
 import { StyleProp } from 'react-native'
 import { Hotspot } from '@helium/http'
@@ -77,8 +76,8 @@ const Coverage = ({
       ...new Set( // Need to filter duplicates or mapbox gets angry
         (witnesses || [])
           .map((w) => {
-            if (!w.location) return
-            return h3ToParent(w.location, 8)
+            if (!w.locationHex) return
+            return w.locationHex
           })
           .filter((w) => !!w) as string[],
       ),

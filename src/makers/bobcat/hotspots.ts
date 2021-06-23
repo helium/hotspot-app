@@ -1,4 +1,4 @@
-import HotspotIcon from '@assets/images/bobcat.svg'
+import HotspotIcon from './bobcat.svg'
 import { MakerHotspot } from '../hotspotMakerTypes'
 import ANTENNAS from './antennas'
 

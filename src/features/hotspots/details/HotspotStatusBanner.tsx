@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { Hotspot } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
 import { BoxProps } from '@shopify/restyle'
 import React, { useState, useEffect, memo, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -15,7 +15,7 @@ import animateTransition from '../../../utils/animateTransition'
 import usePrevious from '../../../utils/usePrevious'
 
 type Props = BoxProps<Theme> & {
-  hotspot: Hotspot
+  hotspot: Hotspot | Witness
   visible: boolean
   onDismiss: () => void
 }

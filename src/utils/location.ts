@@ -1,4 +1,4 @@
-import { Hotspot } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
 import * as Location from 'expo-location'
 
 export type LocationCoords = { latitude: number; longitude: number }
@@ -34,12 +34,10 @@ export const distance = (coords1: LocationCoords, coords2: LocationCoords) => {
       Math.sin(dLon / 2) *
       Math.sin(dLon / 2)
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-  const d = R * c
-
-  return d
+  return R * c
 }
 
-export const hotspotHasValidLocation = (hotspot?: Hotspot) =>
+export const hotspotHasValidLocation = (hotspot?: Hotspot | Witness) =>
   !!hotspot && hotspot.lat !== 0 && hotspot.lng !== 0
 
 export const locationIsValid = (location?: number[]) =>

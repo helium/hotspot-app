@@ -2,7 +2,7 @@
 import Balance, { CurrencyType } from '@helium/currency'
 import React, { memo, useCallback, useEffect, useState } from 'react'
 import { useAsync } from 'react-async-hook'
-import { Hotspot } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../../store/rootReducer'
 import animateTransition from '../../../utils/animateTransition'
@@ -26,7 +26,7 @@ const DEFAULT_FEE_DATA = {
   isFree: false,
 }
 type Props = {
-  hotspot: Hotspot
+  hotspot: Hotspot | Witness
   onFinished: (
     updatedLocation: Coords | undefined,
     locationName: string,

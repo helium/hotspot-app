@@ -56,7 +56,7 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
         padding="m"
       >
         <Box flexDirection="row" justifyContent="space-between">
-          <Box>
+          <Box flex={1}>
             <Text variant="h5" color="black" maxFontSizeMultiplier={1.3}>
               {t('map_filter.your_hotspots.title')}
             </Text>
@@ -286,15 +286,16 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
             <Rewards />
           </Box>
         </ScrollView>
-        <Box flex={1} justifyContent="flex-end" paddingHorizontal="m">
-          <Button
-            onPress={onChooseFilter}
-            mode="contained"
-            title={t('map_filter.button')}
-            backgroundColor={buttonColor}
-            textStyle={buttonTextStyle}
-          />
-        </Box>
+        <Button
+          marginTop="m"
+          marginHorizontal="m"
+          onPress={onChooseFilter}
+          mode="contained"
+          height={67}
+          title={t('map_filter.button')}
+          backgroundColor={buttonColor}
+          textStyle={buttonTextStyle}
+        />
       </SafeAreaBox>
     </Modal>
   )

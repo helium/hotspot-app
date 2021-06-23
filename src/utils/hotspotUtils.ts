@@ -7,13 +7,15 @@ export enum SyncStatus {
   none,
 }
 
+export const SYNC_BLOCK_BUFFER = 500
+
 export const getSyncStatus = (hotspotHeight: number, blockHeight?: number) => {
   if (!blockHeight) return { status: SyncStatus.none, percent: 0 }
 
   const syncedRatio = hotspotHeight / blockHeight
   const percentSynced = round(syncedRatio * 100, 2)
   const within500Blocks = hotspotHeight
-    ? blockHeight - hotspotHeight <= 500
+    ? blockHeight - hotspotHeight <= SYNC_BLOCK_BUFFER
     : false
   if (percentSynced === 100 || within500Blocks) {
     return { status: SyncStatus.full, percent: 100 }
@@ -26,7 +28,7 @@ export const getSyncStatus = (hotspotHeight: number, blockHeight?: number) => {
 
 export const generateRewardScaleColor = (rewardScale: number): Colors => {
   if (rewardScale >= 0.75) {
-    return 'greenMain'
+    return 'greenOnline'
   }
   if (rewardScale >= 0.5) {
     return 'yellow'
@@ -37,12 +39,8 @@ export const generateRewardScaleColor = (rewardScale: number): Colors => {
   return 'redMain'
 }
 
-export const isRelay = (listenAddrs: string[]) => {
+export const isRelay = (listenAddrs: string[] | undefined) => {
+  if (!listenAddrs) return false
   const IP = /ip4/g
-
-  return !!(
-    listenAddrs &&
-    listenAddrs.length > 0 &&
-    !listenAddrs.find((a) => a.match(IP))
-  )
+  return listenAddrs.length > 0 && !listenAddrs.find((a) => a.match(IP))
 }

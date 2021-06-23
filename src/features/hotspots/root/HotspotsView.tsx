@@ -9,7 +9,7 @@ import React, {
 import { LayoutChangeEvent } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
-import { Hotspot } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
 import BottomSheet, { BottomSheetModal } from '@gorhom/bottom-sheet'
 import { useSharedValue } from 'react-native-reanimated'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
@@ -17,7 +17,6 @@ import { isEqual } from 'lodash'
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import Search from '@assets/images/search.svg'
 import Close from '@assets/images/closeMenu.svg'
-import { h3ToParent } from 'h3-js'
 import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
@@ -167,7 +166,7 @@ const HotspotsView = ({
   const { witnesses } = hotspotDetailsData || {}
 
   const showHotspotDetails = useCallback(
-    (hotspot?: Hotspot) => {
+    (hotspot?: Hotspot | Witness) => {
       dispatch(hotspotsSlice.actions.selectHotspot(hotspot))
     },
     [dispatch],
@@ -249,9 +248,9 @@ const HotspotsView = ({
   )
 
   const handlePresentDetails = useCallback(
-    () => async (hotspot: Hotspot) => {
-      if (hotspot.location) {
-        const mapHexId = h3ToParent(hotspot.location, 8)
+    async (hotspot: Hotspot | Witness) => {
+      if (hotspot.locationHex) {
+        const mapHexId = hotspot.locationHex
         const hotspots = (await dispatch(
           fetchHotspotsForHex({ hexId: mapHexId }),
         )) as {
@@ -407,20 +406,21 @@ const HotspotsView = ({
           hotspot={selectedHotspot}
           onLayoutHeader={handleDetailHeaderLayout}
           onFailure={handleBack}
+          onSelectHotspot={handlePresentDetails}
         />
       )
 
     if (isSearching) {
       return (
         <HotspotSearch
-          onSelectHotspot={handlePresentDetails()}
+          onSelectHotspot={handlePresentDetails}
           onSelectPlace={handleSelectPlace}
         />
       )
     }
 
     if (hasHotspots)
-      return <HotspotsList onSelectHotspot={handlePresentDetails()} />
+      return <HotspotsList onSelectHotspot={handlePresentDetails} />
 
     return (
       <HotspotsEmpty
