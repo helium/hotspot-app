@@ -1,7 +1,7 @@
 import { MakerAntenna } from '../antennaMakerTypes'
 
 const KERLINK_IFEMTO = {
-  name: 'iFemtoCell Evolution',
+  name: 'iFemtoCell',
   gain: 3,
 } as MakerAntenna
 const KERLINK_IFEMTO_EVO = {
