@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native'
 import { Hotspot, Witness } from '@helium/http'
+import Animated from 'react-native-reanimated'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import StatusBadge from './StatusBadge'
@@ -48,6 +49,7 @@ type Props = {
   onSelectHotspot: (hotspot: Hotspot | Witness) => void
   visible: boolean
   toggleSettings: () => void
+  animatedPosition: Animated.SharedValue<number>
 }
 const HotspotDetails = ({
   hotspot: propsHotspot,
@@ -56,6 +58,7 @@ const HotspotDetails = ({
   onFailure,
   visible,
   toggleSettings,
+  animatedPosition,
 }: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
@@ -300,7 +303,12 @@ const HotspotDetails = ({
   if (!hotspot) return null
 
   return (
-    <BottomSheet snapPoints={snapPoints} index={0} handleComponent={cardHandle}>
+    <BottomSheet
+      snapPoints={snapPoints}
+      index={0}
+      handleComponent={cardHandle}
+      animatedIndex={animatedPosition}
+    >
       <BottomSheetScrollView keyboardShouldPersistTaps="always">
         <Box paddingBottom="l">
           <Box onLayout={handleHeaderLayout}>

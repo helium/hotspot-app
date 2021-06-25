@@ -318,6 +318,7 @@ const HotspotsView = ({
             onFailure={handleItemSelected}
             onSelectHotspot={handlePresentDetails}
             toggleSettings={toggleSettings}
+            animatedPosition={animatedIndex}
           />
 
           <HotspotsList
@@ -338,6 +339,7 @@ const HotspotsView = ({
       />
     )
   }, [
+    animatedIndex,
     dismissList,
     handleDetailHeaderLayout,
     handleHotspotSetup,
