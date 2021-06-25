@@ -8,19 +8,22 @@ import Settings from '../../../assets/images/settings.svg'
 import { useColors } from '../../../theme/themeHooks'
 import ShareHotspot from '../../../components/ShareHotspot'
 
-export const HOTSPOT_SHEET_HANDLE_HEIGHT = 52
-
-type Props = { hotspot?: Hotspot | Witness; toggleSettings?: () => void }
-const HotspotDetailsHandle = ({ hotspot, toggleSettings }: Props) => {
+type Props = {
+  hotspot?: Hotspot | Witness
+  toggleSettings?: () => void
+}
+const HotspotSheetHandle = ({ hotspot, toggleSettings }: Props) => {
   const colors = useColors()
   const showHotspotOptions = hotspot && hotspot.address
+
+  if (!showHotspotOptions) return null
   return (
     <Box
       flexDirection="row"
       flex={1}
       justifyContent="flex-end"
       alignItems="center"
-      height={HOTSPOT_SHEET_HANDLE_HEIGHT}
+      paddingTop="l"
     >
       <Box
         position="absolute"
@@ -52,4 +55,4 @@ const HotspotDetailsHandle = ({ hotspot, toggleSettings }: Props) => {
   )
 }
 
-export default memo(HotspotDetailsHandle)
+export default memo(HotspotSheetHandle)

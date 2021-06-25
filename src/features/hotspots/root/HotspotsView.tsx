@@ -1,44 +1,26 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { LayoutChangeEvent } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
-import { useTranslation } from 'react-i18next'
 import { Hotspot, Witness } from '@helium/http'
-import BottomSheet, { BottomSheetModal } from '@gorhom/bottom-sheet'
 import { useSharedValue } from 'react-native-reanimated'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
-import { isEqual } from 'lodash'
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
-import Search from '@assets/images/search.svg'
-import Close from '@assets/images/closeMenu.svg'
-import Text from '../../../components/Text'
+import { RootStackParamList } from '../../../navigation/main/tabTypes'
 import Box from '../../../components/Box'
-import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import Add from '../../../assets/images/add.svg'
 import Map from '../../../components/Map'
 import { RootState } from '../../../store/rootReducer'
-import hotspotDetailsSlice from '../../../store/hotspotDetails/hotspotDetailsSlice'
+import hotspotDetailsSlice, {
+  fetchHotspotData,
+} from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import HotspotsViewHeader from './HotspotsViewHeader'
 import HotspotsList from './HotspotsList'
 import HotspotDetails from '../details/HotspotDetails'
-import BackButton from '../../../components/BackButton'
 import HotspotsEmpty from './HotspotsEmpty'
 import HotspotSettingsProvider from '../settings/HotspotSettingsProvider'
 import HotspotSettings from '../settings/HotspotSettings'
-import { RootStackParamList } from '../../../navigation/main/tabTypes'
-import HotspotSheetHandle, {
-  HOTSPOT_SHEET_HANDLE_HEIGHT,
-} from './HotspotSheetHandle'
 import HotspotSearch from './HotspotSearch'
 import { getPlaceGeography, PlacePrediction } from '../../../utils/googlePlaces'
 import hotspotSearchSlice from '../../../store/hotspotSearch/hotspotSearchSlice'
-import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
 import {
   hotspotHasValidLocation,
   locationIsValid,
@@ -47,11 +29,11 @@ import { HotspotStackParamList } from './hotspotTypes'
 import animateTransition from '../../../utils/animateTransition'
 import usePrevious from '../../../utils/usePrevious'
 import useVisible from '../../../utils/useVisible'
-import { hp } from '../../../utils/layout'
 import useMount from '../../../utils/useMount'
 import { fetchHotspotsForHex } from '../../../store/discovery/discoverySlice'
 import { MapFilters } from '../../map/MapFiltersButton'
 import MapFilterModal from '../../map/MapFilterModal'
+import ShortcutNav, { GlobalOpt, IS_GLOBAL_OPT } from './ShortcutNav'
 
 type Props = {
   ownedHotspots?: Hotspot[]
@@ -71,25 +53,12 @@ const HotspotsView = ({
   onViewMap,
   location: propsLocation,
 }: Props) => {
-  type BackStackEntry = {
-    viewState: 'details' | 'search' | 'list'
-    bottomSheetIndex: number
-  }
-  const [backStack, setBackStack] = useState<BackStackEntry[]>([])
   const navigation = useNavigation()
   const { params } = useRoute<Route>()
-  const { t } = useTranslation()
   const dispatch = useDispatch()
-  const [linkedHotspotAddress, setLinkedHotspotAddress] = useState('')
   const [location, setLocation] = useState(propsLocation)
-  const [showDetails, setShowDetails] = useState(false)
-  const [isSearching, setIsSearching] = useState(false)
   const [showMap, setShowMap] = useState(false)
-  const listRef = useRef<BottomSheetModal>(null)
-  const listHeight = useRef(hp(66))
   const [detailHeaderHeight, setDetailHeaderHeight] = useState(144)
-  const [bottomSheetIndex, setBottomSheetIndex] = useState(startOnMap ? 0 : 1)
-  const prevBottomSheetIndex = usePrevious(bottomSheetIndex)
   const visible = useVisible()
   const prevVisible = usePrevious(visible)
   const hotspotsForHexId = useSelector(
@@ -97,21 +66,30 @@ const HotspotsView = ({
   )
   const [selectedHexId, setSelectedHexId] = useState<string>()
   const [selectedHotspotIndex, setSelectedHotspotIndex] = useState(0)
+  // TODO: Fix hotspot detail header animated position
   const animatedIndex = useSharedValue<number>(0)
   const [mapFilter, setMapFilter] = useState(MapFilters.owned)
+  const [shortcutItem, setShortcutItem] = useState<
+    GlobalOpt | Hotspot | Witness
+  >(startOnMap ? 'explore' : 'home')
+  const prevShorcutItem = usePrevious(shortcutItem)
 
-  const selectedHotspot = useSelector(
-    (state: RootState) => state.hotspots.selectedHotspot,
-    isEqual,
-  )
   const locationBlocked = useSelector(
     (state: RootState) => state.location.locationBlocked,
   )
 
-  const hotspotAddress = useMemo(
-    () => selectedHotspot?.address || linkedHotspotAddress || '',
-    [selectedHotspot, linkedHotspotAddress],
-  )
+  const hotspotAddress = useMemo(() => {
+    if (shortcutItem && typeof shortcutItem !== 'string') {
+      return shortcutItem.address
+    }
+    return ''
+  }, [shortcutItem])
+
+  const selectedHotspot = useMemo(() => {
+    if (!shortcutItem || IS_GLOBAL_OPT(shortcutItem)) return
+
+    return shortcutItem
+  }, [shortcutItem])
 
   const showWitnesses = useMemo(() => mapFilter === MapFilters.witness, [
     mapFilter,
@@ -124,19 +102,33 @@ const HotspotsView = ({
   ])
 
   useEffect(() => {
-    const shouldShowDetails = !!hotspotAddress
-    if (shouldShowDetails === showDetails) {
-      return
+    if (shortcutItem === 'explore' && prevShorcutItem !== 'explore') {
+      onViewMap(true)
     }
-    if (visible && prevVisible) {
-      animateTransition('HotspotsView.DetailsChange', false)
-    }
-    setShowDetails(shouldShowDetails)
-  }, [hotspotAddress, linkedHotspotAddress, prevVisible, showDetails, visible])
+  }, [onViewMap, prevShorcutItem, shortcutItem])
 
   useEffect(() => {
-    setLinkedHotspotAddress(params?.address || '')
-  }, [params])
+    if (prevShorcutItem !== shortcutItem && visible && prevVisible) {
+      animateTransition('HotspotsView.DetailsChange', false)
+    }
+  }, [prevShorcutItem, prevVisible, shortcutItem, visible])
+
+  const setGlobalOption = useCallback((opt: GlobalOpt) => {
+    setShortcutItem(opt)
+    setSelectedHexId(undefined)
+    setSelectedHotspotIndex(0)
+  }, [])
+
+  useEffect(() => {
+    const navParent = navigation.dangerouslyGetParent() as BottomTabNavigationProp<RootStackParamList>
+    if (!navParent) return
+
+    return navParent.addListener('tabPress', () => {
+      if (navigation.isFocused()) {
+        setGlobalOption('home')
+      }
+    })
+  }, [navigation, setGlobalOption])
 
   useMount(() => {
     if (startOnMap) {
@@ -149,11 +141,6 @@ const HotspotsView = ({
     }, SHEET_ANIM_DURATION)
   })
 
-  const snapPoints = useMemo(() => {
-    if (showDetails) return [detailHeaderHeight, listHeight.current]
-    return [1, listHeight.current]
-  }, [detailHeaderHeight, listHeight, showDetails])
-
   const hasHotspots = useMemo(
     () => ownedHotspots?.length || followedHotspots?.length,
     [followedHotspots?.length, ownedHotspots?.length],
@@ -164,35 +151,6 @@ const HotspotsView = ({
       (state: RootState) => state.hotspotDetails.hotspotData[hotspotAddress],
     ) || {}
   const { witnesses } = hotspotDetailsData || {}
-
-  const showHotspotDetails = useCallback(
-    (hotspot?: Hotspot | Witness) => {
-      dispatch(hotspotsSlice.actions.selectHotspot(hotspot))
-    },
-    [dispatch],
-  )
-
-  useEffect(() => {
-    setLocation(propsLocation)
-  }, [propsLocation])
-
-  useEffect(() => {
-    if (
-      isSearching ||
-      showDetails ||
-      bottomSheetIndex !== 0 ||
-      bottomSheetIndex === prevBottomSheetIndex
-    )
-      return
-
-    onViewMap(true)
-  }, [
-    bottomSheetIndex,
-    isSearching,
-    onViewMap,
-    prevBottomSheetIndex,
-    showDetails,
-  ])
 
   const hasUserLocation = useMemo(
     () =>
@@ -221,125 +179,99 @@ const HotspotsView = ({
     } else {
       setLocation([122.4194, 37.7749]) // SF - This shouldn't actually be possible
     }
-  }, [
-    bottomSheetIndex,
-    followedHotspots,
-    hasUserLocation,
-    hotspotAddress,
-    ownedHotspots,
-  ])
+  }, [followedHotspots, hasUserLocation, hotspotAddress, ownedHotspots])
 
   const handleDetailHeaderLayout = useCallback((event: LayoutChangeEvent) => {
     setDetailHeaderHeight(event.nativeEvent.layout.height)
   }, [])
 
   const onMapHexSelected = useCallback(
-    async (hexId: string) => {
-      setSelectedHexId(hexId)
-      setSelectedHotspotIndex(0)
-      const result = (await dispatch(fetchHotspotsForHex({ hexId }))) as {
+    async (hexId: string, address?: string) => {
+      const hotspots = (await dispatch(fetchHotspotsForHex({ hexId }))) as {
         payload?: Hotspot[]
       }
-      if (result?.payload?.length) {
-        showHotspotDetails(result.payload[0] as Hotspot)
+
+      let index = 0
+      if (address && hotspots?.payload) {
+        const foundIndex = hotspots.payload.findIndex(
+          (h) => h?.address === address,
+        )
+        if (foundIndex >= 0) {
+          index = foundIndex
+        }
+      }
+      setSelectedHexId(hexId)
+      setSelectedHotspotIndex(index)
+      if (hotspots?.payload?.length) {
+        setShortcutItem(hotspots.payload[index] as Hotspot)
       }
     },
-    [dispatch, showHotspotDetails],
+    [dispatch],
   )
 
   const handlePresentDetails = useCallback(
     async (hotspot: Hotspot | Witness) => {
-      if (hotspot.locationHex) {
-        const mapHexId = hotspot.locationHex
-        const hotspots = (await dispatch(
-          fetchHotspotsForHex({ hexId: mapHexId }),
-        )) as {
-          payload?: Hotspot[]
-        }
-        const index = hotspots?.payload?.findIndex(
-          (h) => h?.address === hotspot.address,
-        )
-        setSelectedHexId(mapHexId)
-        setSelectedHotspotIndex(index || 0)
-      }
-      showHotspotDetails(hotspot)
+      setShortcutItem(hotspot)
+
+      if (!hotspot.locationHex) return
+
+      onMapHexSelected(hotspot.locationHex, hotspot.address)
     },
-    [dispatch, showHotspotDetails],
+    [onMapHexSelected],
   )
+
+  const handleItemSelected = useCallback(
+    (item?: GlobalOpt | Hotspot) => {
+      if (!item) {
+        setGlobalOption('home')
+        return
+      }
+      if (IS_GLOBAL_OPT(item)) {
+        setGlobalOption(item)
+      } else if (item) {
+        handlePresentDetails(item)
+      }
+    },
+    [handlePresentDetails, setGlobalOption],
+  )
+
+  useEffect(() => {
+    if (!params?.address) return
+
+    const fetchHotspot = async () => {
+      const hotspot = (await dispatch(fetchHotspotData(params.address))) as {
+        payload?: { hotspot: Hotspot }
+      }
+      if (!hotspot.payload?.hotspot) return
+
+      handlePresentDetails(hotspot.payload.hotspot)
+    }
+
+    fetchHotspot()
+  }, [dispatch, handlePresentDetails, params])
 
   const handleSelectPlace = useCallback(
     async (place: PlacePrediction) => {
-      showHotspotDetails(undefined)
       const placeLocation = await getPlaceGeography(place.placeId)
+      setGlobalOption('explore')
       setLocation([placeLocation.lng, placeLocation.lat])
-      listRef.current?.snapTo(0)
     },
-    [showHotspotDetails],
+    [setGlobalOption],
   )
 
-  const handleBack = useCallback(async () => {
-    if (
-      backStack.find(
-        (entry, idx) =>
-          idx !== backStack.length - 1 &&
-          entry.bottomSheetIndex === 0 &&
-          entry.viewState === 'list',
-      )
-    ) {
-      setBackStack([])
-      animateTransition('HotspotsView.HandleBack', false)
-      showHotspotDetails(undefined)
-      setLinkedHotspotAddress('')
-      return
-    }
-
-    if (bottomSheetIndex === 0) {
-      listRef.current?.snapTo(1)
-      return
-    }
-
-    const last = backStack[backStack.length - 1]
-    if (last.viewState === 'details') {
-      animateTransition('HotspotsView.HandleBack', false)
-      showHotspotDetails(undefined)
-      setLinkedHotspotAddress('')
-    }
-  }, [backStack, bottomSheetIndex, showHotspotDetails])
-
   const dismissList = useCallback(() => {
-    listRef.current?.snapTo(0)
-  }, [])
-
-  useEffect(() => {
-    const navParent = navigation.dangerouslyGetParent() as BottomTabNavigationProp<RootStackParamList>
-    if (!navParent) return
-
-    return navParent.addListener('tabPress', () => {
-      if (navigation.isFocused()) {
-        handleBack()
-      }
-    })
-  }, [handleBack, navigation])
+    setGlobalOption('explore')
+  }, [setGlobalOption])
 
   const hexHotspots = useMemo(() => {
     if (!selectedHexId) return []
     return hotspotsForHexId[selectedHexId]
   }, [hotspotsForHexId, selectedHexId])
 
-  const onHotspotSelected = useCallback(
-    (index, hotspot) => {
-      setSelectedHotspotIndex(index)
-      showHotspotDetails(hotspot)
-    },
-    [showHotspotDetails],
-  )
-
-  const containerStyles = useMemo(
-    () => ({
-      marginTop: 70,
-    }),
-    [],
-  )
+  const onHotspotSelected = useCallback((index, hotspot) => {
+    setSelectedHotspotIndex(index)
+    setShortcutItem(hotspot)
+  }, [])
 
   const hotspotHasLocation = useMemo(() => {
     if (!hotspotAddress || !selectedHotspot) return true
@@ -362,65 +294,42 @@ const HotspotsView = ({
     dispatch(hotspotDetailsSlice.actions.toggleShowMapFilter())
   }, [dispatch])
 
-  const cardHandle = useCallback(
-    () => (
-      <HotspotSheetHandle
-        hotspot={selectedHotspot}
-        toggleSettings={toggleSettings}
-      />
-    ),
-    [selectedHotspot, toggleSettings],
-  )
-
-  const updateBackStack = useCallback(
-    (viewState: 'list' | 'details' | 'search') => {
-      if (viewState === 'list' && bottomSheetIndex === 1) {
-        setBackStack([{ viewState, bottomSheetIndex }])
-        return
-      }
-
-      setBackStack((stack) => [...stack, { viewState, bottomSheetIndex }])
+  const handleSearching = useCallback(
+    (searching: boolean) => () => {
+      setGlobalOption(searching ? 'search' : 'home')
+      dispatch(hotspotSearchSlice.actions.clear())
     },
-    [bottomSheetIndex],
+    [dispatch, setGlobalOption],
   )
-
-  useEffect(() => {
-    if (showDetails) {
-      updateBackStack('details')
-      return
-    }
-
-    if (isSearching) {
-      updateBackStack('search')
-      return
-    }
-
-    updateBackStack('list')
-  }, [isSearching, showDetails, updateBackStack])
 
   const body = useMemo(() => {
-    if (showDetails)
+    if (hasHotspots) {
       return (
-        <HotspotDetails
-          hotspotAddress={linkedHotspotAddress}
-          hotspot={selectedHotspot}
-          onLayoutHeader={handleDetailHeaderLayout}
-          onFailure={handleBack}
-          onSelectHotspot={handlePresentDetails}
-        />
-      )
+        <>
+          <HotspotSearch
+            onSelectHotspot={handlePresentDetails}
+            onSelectPlace={handleSelectPlace}
+            visible={shortcutItem === 'search'}
+          />
+          <HotspotDetails
+            visible={typeof shortcutItem !== 'string'}
+            hotspot={selectedHotspot}
+            onLayoutHeader={handleDetailHeaderLayout}
+            onFailure={handleItemSelected}
+            onSelectHotspot={handlePresentDetails}
+            toggleSettings={toggleSettings}
+            animatedPosition={animatedIndex}
+          />
 
-    if (isSearching) {
-      return (
-        <HotspotSearch
-          onSelectHotspot={handlePresentDetails}
-          onSelectPlace={handleSelectPlace}
-        />
+          <HotspotsList
+            onSelectHotspot={handlePresentDetails}
+            visible={shortcutItem === 'home'}
+            searchPressed={handleSearching(true)}
+            addHotspotPressed={handleHotspotSetup}
+          />
+        </>
       )
     }
-
-    if (hasHotspots)
-      return <HotspotsList onSelectHotspot={handlePresentDetails} />
 
     return (
       <HotspotsEmpty
@@ -430,165 +339,83 @@ const HotspotsView = ({
       />
     )
   }, [
+    animatedIndex,
     dismissList,
-    handleBack,
     handleDetailHeaderLayout,
+    handleHotspotSetup,
+    handleItemSelected,
     handlePresentDetails,
+    handleSearching,
     handleSelectPlace,
     hasHotspots,
-    isSearching,
-    linkedHotspotAddress,
     locationBlocked,
     selectedHotspot,
-    showDetails,
+    shortcutItem,
+    toggleSettings,
   ])
-
-  const handleSearching = useCallback(
-    (searching: boolean) => () => {
-      setIsSearching(searching)
-      dispatch(hotspotSearchSlice.actions.clear())
-    },
-    [dispatch],
-  )
 
   const onChangeMapFilter = useCallback((filter: MapFilters) => {
     setMapFilter(filter)
   }, [])
 
-  const title = useMemo(() => {
-    if (isSearching) return t('hotspots.search.title')
-    if (hasHotspots) return t('hotspots.owned.title')
-    return t('hotspots.owned.title_no_hotspots')
-  }, [hasHotspots, isSearching, t])
-
-  const leftMenuOptions = useMemo(() => {
-    if (showDetails || bottomSheetIndex === 0) {
-      return (
-        <BackButton
-          alignSelf="center"
-          paddingHorizontal="none"
-          paddingVertical="m"
-          onPress={handleBack}
-        />
-      )
-    }
-    return <Text variant="h3">{title}</Text>
-  }, [showDetails, bottomSheetIndex, title, handleBack])
-
-  const rightMenuOptions = useMemo(() => {
-    if (isSearching && !showDetails && bottomSheetIndex === 1) {
-      return (
-        <TouchableOpacityBox onPress={handleSearching(false)} padding="s">
-          <Close width={22} height={22} color="white" />
-        </TouchableOpacityBox>
-      )
-    }
-    if (bottomSheetIndex === 1 && !showDetails)
-      return (
-        <>
-          <TouchableOpacityBox onPress={handleSearching(true)} padding="s">
-            <Search width={22} height={22} color="white" />
-          </TouchableOpacityBox>
-          <TouchableOpacityBox onPress={handleHotspotSetup} padding="s">
-            <Add width={22} height={22} />
-          </TouchableOpacityBox>
-        </>
-      )
-    return null
-  }, [
-    isSearching,
-    showDetails,
-    bottomSheetIndex,
-    handleSearching,
-    handleHotspotSetup,
-  ])
-
   return (
-    <Box flex={1} flexDirection="column" justifyContent="space-between">
-      <Box
-        position="absolute"
-        height="100%"
-        width="100%"
-        borderTopLeftRadius="xl"
-        borderTopRightRadius="xl"
-        style={containerStyles}
-        overflow="hidden"
-      >
-        {showMap && (
-          <Map
-            ownedHotspots={showOwned ? ownedHotspots : []}
-            selectedHotspot={selectedHotspot}
-            maxZoomLevel={13}
-            zoomLevel={13}
-            witnesses={showWitnesses ? witnesses : []}
-            followedHotspots={showOwned ? followedHotspots : []}
-            mapCenter={location}
-            animationMode="easeTo"
-            animationDuration={800}
-            onHexSelected={onMapHexSelected}
-            interactive={hotspotHasLocation}
-            showNoLocation={!hotspotHasLocation}
-            showNearbyHotspots
-            showH3Grid
-            showRewardScale={showRewardScale}
+    <>
+      <Box flex={1} flexDirection="column" justifyContent="space-between">
+        <Box position="absolute" height="100%" width="100%">
+          {showMap && (
+            <Map
+              ownedHotspots={showOwned ? ownedHotspots : []}
+              selectedHotspot={selectedHotspot}
+              maxZoomLevel={13}
+              zoomLevel={13}
+              witnesses={showWitnesses ? witnesses : []}
+              followedHotspots={showOwned ? followedHotspots : []}
+              mapCenter={location}
+              animationMode="easeTo"
+              animationDuration={800}
+              onHexSelected={onMapHexSelected}
+              interactive={hotspotHasLocation}
+              showNoLocation={!hotspotHasLocation}
+              showNearbyHotspots
+              showH3Grid
+              showRewardScale={showRewardScale}
+            />
+          )}
+          <HotspotsViewHeader
+            animatedPosition={animatedIndex}
+            hexHotspots={hexHotspots}
+            ownedHotspots={ownedHotspots}
+            detailHeaderHeight={detailHeaderHeight}
+            onHotspotSelected={onHotspotSelected}
+            followedHotspots={followedHotspots}
+            selectedHotspotIndex={selectedHotspotIndex}
+            mapFilter={mapFilter}
+            onPressMapFilter={onPressMapFilter}
+            showDetails={typeof shortcutItem !== 'string'}
+            buttonsVisible
+            showNoLocation={
+              !locationIsValid(propsLocation) && shortcutItem === 'explore'
+            }
           />
-        )}
-        <HotspotsViewHeader
-          animatedPosition={animatedIndex}
-          hexHotspots={hexHotspots}
-          ownedHotspots={ownedHotspots}
-          detailHeaderHeight={detailHeaderHeight}
-          onHotspotSelected={onHotspotSelected}
-          followedHotspots={followedHotspots}
-          selectedHotspotIndex={selectedHotspotIndex}
+        </Box>
+        {body}
+
+        <HotspotSettingsProvider>
+          {selectedHotspot && <HotspotSettings hotspot={selectedHotspot} />}
+        </HotspotSettingsProvider>
+        <MapFilterModal
           mapFilter={mapFilter}
-          onPressMapFilter={onPressMapFilter}
-          showDetails={showDetails}
-          buttonsVisible
-          showNoLocation={!locationIsValid(propsLocation) && !showDetails}
+          onChangeMapFilter={onChangeMapFilter}
         />
       </Box>
-      <Box
-        flexDirection="row"
-        justifyContent="space-between"
-        alignItems="center"
-        paddingHorizontal="m"
-        height={75}
-      >
-        {leftMenuOptions}
 
-        <Box flexDirection="row" justifyContent="space-between" height={40}>
-          {rightMenuOptions}
-        </Box>
-      </Box>
-
-      <BottomSheet
-        ref={listRef}
-        snapPoints={snapPoints}
-        index={bottomSheetIndex}
-        handleComponent={cardHandle}
-        animatedIndex={animatedIndex}
-        onChange={setBottomSheetIndex}
-        handleHeight={HOTSPOT_SHEET_HANDLE_HEIGHT}
-        animationDuration={SHEET_ANIM_DURATION}
-        enableContentPanningGesture={
-          !isSearching || (isSearching && showDetails)
-        }
-        enableHandlePanningGesture={
-          !isSearching || (isSearching && showDetails)
-        }
-      >
-        {body}
-      </BottomSheet>
-
-      <HotspotSettingsProvider>
-        <HotspotSettings hotspot={selectedHotspot} />
-      </HotspotSettingsProvider>
-      <MapFilterModal
-        mapFilter={mapFilter}
-        onChangeMapFilter={onChangeMapFilter}
+      <ShortcutNav
+        ownedHotspots={ownedHotspots || []}
+        followedHotspots={followedHotspots || []}
+        selectedItem={shortcutItem}
+        onItemSelected={handleItemSelected}
       />
-    </Box>
+    </>
   )
 }
 

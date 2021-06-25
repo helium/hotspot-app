@@ -2,7 +2,6 @@ import React, { useEffect, memo, useMemo, useCallback } from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { useNavigation } from '@react-navigation/native'
 import { useSelector } from 'react-redux'
-import { StyleSheet } from 'react-native'
 import Hotspots from '../../features/hotspots/root/HotspotsNavigator'
 import {
   TabBarIconType,
@@ -24,7 +23,7 @@ import notificationSlice from '../../store/notifications/notificationSlice'
 const MainTab = createBottomTabNavigator()
 
 const MainTabs = () => {
-  const { grayLight, primaryBackground } = useColors()
+  const { primaryBackground } = useColors()
   const navigation = useNavigation<RootNavigationProp>()
   const tabNavigation = useNavigation<MainTabNavigationProp>()
   const {
@@ -67,12 +66,11 @@ const MainTabs = () => {
       showLabel: false,
       style: {
         backgroundColor: primaryBackground,
-        borderTopWidth: StyleSheet.hairlineWidth,
-        borderTopColor: grayLight,
+        borderTopWidth: 0,
         paddingHorizontal: wp(12),
       },
     }),
-    [grayLight, primaryBackground],
+    [primaryBackground],
   )
 
   const screenOptions = useCallback(
@@ -95,7 +93,7 @@ const MainTabs = () => {
     <MainTab.Navigator
       sceneContainerStyle={sceneContainerStyle}
       initialRouteName="Hotspots"
-      lazy={false}
+      // lazy={false}
       tabBarOptions={tabBarOptions}
       screenOptions={screenOptions}
     >

@@ -64,7 +64,7 @@ const WelcomeOverview = () => {
   }, [hotspots.length, loadingRewards, rewards])
 
   useEffect(() => {
-    if (!loading) animateTransition('WelcomeOverview.LoadingChange')
+    if (!loading) animateTransition('WelcomeOverview.LoadingChange', false)
   }, [loading])
 
   const updateBodyText = useCallback(async () => {
