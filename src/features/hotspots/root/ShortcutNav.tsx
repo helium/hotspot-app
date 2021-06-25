@@ -70,17 +70,23 @@ const ShortcutNav = ({
   )
 
   const hotspots = useMemo(() => {
+    // sort order
+    // 1. Owned and Followed
+    // 2. Followed
+    // 3. Owned
+
+    const ownerAddress = ownedHotspots.length ? ownedHotspots[0].owner : ''
+
+    const sortedFollowed = followedHotspots.sort((h) =>
+      h.owner === ownerAddress ? -1 : 1,
+    )
     const unique = uniqBy(
       [
-        ...followedHotspots.map((h) => ({ ...h, followed: true })),
+        ...sortedFollowed.map((h) => ({ ...h, followed: true })),
         ...ownedHotspots,
       ],
       (h) => h.address,
     )
-    // TODO: sort these in the right order
-    // 1. Owned and Followed
-    // 2. Followed
-    // 3. Owned
     return unique as FollowedHotspot[]
   }, [followedHotspots, ownedHotspots])
 
