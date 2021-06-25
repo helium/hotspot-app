@@ -1,5 +1,5 @@
 import { AnyTransaction, PaymentV1, PendingTransaction } from '@helium/http'
-import React, { memo, useCallback, useEffect, useRef } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react'
 import { Linking } from 'react-native'
 import {
   BottomSheetBackdrop,
@@ -14,6 +14,7 @@ import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
 import ActivityDetailsHeader from './ActivityDetailsHeader'
 import Rewards from './Rewards'
+import StakeValidator from './StakeValidator'
 import HotspotTransaction from './HotspotTransaction'
 import Payment from './Payment'
 import Burn from './Burn'
@@ -26,6 +27,8 @@ import { locale } from '../../../../utils/i18n'
 import { EXPLORER_BASE_URL } from '../../../../utils/config'
 import useCurrency from '../../../../utils/useCurrency'
 import useActivityItem from '../useActivityItem'
+import UnstakeValidator from './UnstakeValidator'
+import TransferValidator from './TransferStake'
 
 const DF = 'MM/dd/yyyy hh:mm a'
 type Props = { detailTxn: AnyTransaction | PendingTransaction }
@@ -76,13 +79,17 @@ const ActivityDetails = ({ detailTxn }: Props) => {
     [block],
   )
 
+  const snapPoints = useMemo(() => {
+    return ['50%', '75%']
+  }, [])
+
   if (!detailTxn) return null
 
   return (
     <BottomSheetModalProvider>
       <BottomSheetModal
         ref={sheet}
-        snapPoints={['50%', '75%']}
+        snapPoints={snapPoints}
         handleComponent={renderHandle}
         backdropComponent={BottomSheetBackdrop}
         onDismiss={onClose}
@@ -129,6 +136,9 @@ const ActivityDetails = ({ detailTxn }: Props) => {
               </Text>
             )}
 
+            <StakeValidator item={detailTxn} />
+            <UnstakeValidator item={detailTxn} />
+            <TransferValidator item={detailTxn} address={address || ''} />
             <Rewards item={detailTxn} />
             <Payment item={detailTxn} address={address || ''} />
             <Burn item={detailTxn} address={address || ''} />
