@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native'
 import { Hotspot, Witness } from '@helium/http'
+import Animated from 'react-native-reanimated'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import StatusBadge from './StatusBadge'
@@ -39,25 +40,30 @@ import Signal from '../../../assets/images/signal.svg'
 import { distance } from '../../../utils/location'
 import { useColors } from '../../../theme/themeHooks'
 import TouchableHighlightBox from '../../../components/TouchableHighlightBox'
+import HotspotSheetHandle from '../root/HotspotSheetHandle'
 
 type Props = {
-  hotspotAddress?: string
   hotspot?: Hotspot | Witness
   onLayoutHeader?: ((event: LayoutChangeEvent) => void) | undefined
   onFailure: () => void
   onSelectHotspot: (hotspot: Hotspot | Witness) => void
+  visible: boolean
+  toggleSettings: () => void
+  animatedPosition: Animated.SharedValue<number>
 }
 const HotspotDetails = ({
   hotspot: propsHotspot,
-  hotspotAddress,
   onLayoutHeader,
   onSelectHotspot,
   onFailure,
+  visible,
+  toggleSettings,
+  animatedPosition,
 }: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const colors = useColors()
-  const address = hotspotAddress || propsHotspot?.address || ''
+  const address = propsHotspot?.address || ''
   const hotspotChatData =
     useSelector(
       (state: RootState) => state.hotspotDetails.chartData[address],
@@ -69,8 +75,10 @@ const HotspotDetails = ({
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
   )
+  const listRef = useRef<BottomSheet>(null)
   const [isRelayed, setIsRelayed] = useState(false)
   const [timelineValue, setTimelineValue] = useState(14)
+  const [headerHeight, setHeaderHeight] = useState(171)
   const {
     rewards,
     rewardSum,
@@ -89,13 +97,21 @@ const HotspotDetails = ({
   ])
 
   useEffect(() => {
+    if (!visible) return
+
     setIsRelayed(isRelay(hotspot?.status?.listenAddrs || []))
-  }, [hotspot])
+  }, [hotspot, visible])
+
+  useEffect(() => {
+    listRef.current?.snapTo(visible ? 1 : -1)
+  }, [visible])
 
   const rewardChartData = useMemo(() => {
+    if (!visible) return []
+
     const data = getRewardChartData(rewards, timelineValue)
     return data || []
-  }, [timelineValue, rewards])
+  }, [timelineValue, rewards, visible])
 
   const syncStatus = useMemo(() => {
     if (!hotspot?.status) return
@@ -104,11 +120,17 @@ const HotspotDetails = ({
   }, [blockHeight, hotspot])
 
   useEffect(() => {
+    if (!visible) return
     if (hotspotDetailsData.loading === false && !hotspotDetailsData.hotspot) {
       // hotspot couldn't be found - likely a bad app link or qr scan
       onFailure()
     }
-  }, [hotspotDetailsData.hotspot, hotspotDetailsData.loading, onFailure])
+  }, [
+    visible,
+    hotspotDetailsData.hotspot,
+    hotspotDetailsData.loading,
+    onFailure,
+  ])
 
   // load hotspot & witness details
   useEffect(() => {
@@ -265,27 +287,34 @@ const HotspotDetails = ({
     )
   }, [hotspot?.address, t])
 
+  const cardHandle = useCallback(() => {
+    return (
+      <HotspotSheetHandle hotspot={hotspot} toggleSettings={toggleSettings} />
+    )
+  }, [hotspot, toggleSettings])
+
+  const handleHeaderLayout = (event: LayoutChangeEvent) => {
+    setHeaderHeight(event.nativeEvent.layout.height)
+    onLayoutHeader?.(event)
+  }
+
+  const snapPoints = useMemo(() => [headerHeight, '75%'], [headerHeight])
+
   if (!hotspot) return null
 
   return (
-    <BottomSheetScrollView keyboardShouldPersistTaps="always">
-      <Box paddingBottom="l">
-        <Box onLayout={onLayoutHeader}>
-          <Box marginBottom="lm" alignItems="flex-start" marginHorizontal="m">
-            <Text
-              variant="light"
-              fontSize={29}
-              lineHeight={31}
-              color="black"
-              textAlign="center"
-              numberOfLines={1}
-              adjustsFontSizeToFit
-            >
-              {formattedHotspotName[0]}
-            </Text>
-            <Box flexDirection="row" alignItems="flex-start">
+    <BottomSheet
+      snapPoints={snapPoints}
+      index={0}
+      handleComponent={cardHandle}
+      animatedIndex={animatedPosition}
+    >
+      <BottomSheetScrollView keyboardShouldPersistTaps="always">
+        <Box paddingBottom="l">
+          <Box onLayout={handleHeaderLayout}>
+            <Box marginBottom="lm" alignItems="flex-start" marginHorizontal="m">
               <Text
-                variant="regular"
+                variant="light"
                 fontSize={29}
                 lineHeight={31}
                 color="black"
@@ -293,162 +322,176 @@ const HotspotDetails = ({
                 numberOfLines={1}
                 adjustsFontSizeToFit
               >
-                {formattedHotspotName[1]}
+                {formattedHotspotName[0]}
               </Text>
+              <Box flexDirection="row" alignItems="flex-start">
+                <Text
+                  variant="regular"
+                  fontSize={29}
+                  lineHeight={31}
+                  color="black"
+                  textAlign="center"
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                >
+                  {formattedHotspotName[1]}
+                </Text>
+              </Box>
+            </Box>
+            <Box
+              flexDirection="row"
+              justifyContent="flex-start"
+              alignItems="center"
+              marginBottom="m"
+              marginLeft="m"
+            >
+              <Location width={10} height={10} color={colors.grayText} />
+              <Text
+                variant="body2"
+                color="grayText"
+                marginLeft="xs"
+                marginRight="m"
+              >
+                {`${hotspot?.geocode?.longCity}, ${hotspot?.geocode?.shortCountry}`}
+              </Text>
+              <Signal width={10} height={10} color={colors.grayText} />
+              <Text variant="body2" color="grayText" marginLeft="xs">
+                {t('generic.meters', { distance: hotspot?.elevation || 0 })}
+              </Text>
+              {hotspot?.gain !== undefined && (
+                <Text variant="body2" color="grayText" marginLeft="xs">
+                  {(hotspot.gain / 10).toFixed(1) +
+                    t('antennas.onboarding.dbi')}
+                </Text>
+              )}
+            </Box>
+            <Box
+              flexDirection="row"
+              justifyContent="flex-start"
+              marginBottom="lx"
+              marginLeft="m"
+              height={24}
+            >
+              {hotspot?.status && (
+                <StatusBadge
+                  online={hotspot?.status?.online}
+                  syncStatus={syncStatus?.status}
+                  onPress={toggleShowStatusBanner}
+                />
+              )}
+              {isRelayed && (
+                <TouchableOpacityBox
+                  borderColor="orangeMedium"
+                  borderWidth={1}
+                  paddingHorizontal="s"
+                  borderRadius="l"
+                  alignItems="center"
+                  justifyContent="center"
+                  marginLeft="xs"
+                  onPress={handleRelayedPress}
+                >
+                  <Text color="orangeMedium" variant="medium" fontSize={13}>
+                    {t('hotspot_details.relayed')}
+                  </Text>
+                </TouchableOpacityBox>
+              )}
+              <HexBadge
+                rewardScale={hotspot.rewardScale}
+                backgroundColor="grayBox"
+              />
             </Box>
           </Box>
-          <Box
-            flexDirection="row"
-            justifyContent="flex-start"
-            alignItems="center"
-            marginBottom="m"
-            marginLeft="m"
-          >
-            <Location width={10} height={10} color={colors.grayText} />
-            <Text
-              variant="body2"
-              color="grayText"
-              marginLeft="xs"
-              marginRight="m"
-            >
-              {`${hotspot?.geocode?.longCity}, ${hotspot?.geocode?.shortCountry}`}
-            </Text>
-            <Signal width={10} height={10} color={colors.grayText} />
-            <Text variant="body2" color="grayText" marginLeft="xs">
-              {t('generic.meters', { distance: hotspot?.elevation || 0 })}
-            </Text>
-            {hotspot?.gain !== undefined && (
-              <Text variant="body2" color="grayText" marginLeft="xs">
-                {(hotspot.gain / 10).toFixed(1) + t('antennas.onboarding.dbi')}
-              </Text>
-            )}
-          </Box>
-          <Box
-            flexDirection="row"
-            justifyContent="flex-start"
-            marginBottom="lx"
-            marginLeft="m"
-            height={24}
-          >
-            {hotspot?.status && (
-              <StatusBadge
-                online={hotspot?.status?.online}
-                syncStatus={syncStatus?.status}
-                onPress={toggleShowStatusBanner}
-              />
-            )}
-            {isRelayed && (
-              <TouchableOpacityBox
-                borderColor="orangeMedium"
-                borderWidth={1}
-                paddingHorizontal="s"
-                borderRadius="l"
-                alignItems="center"
-                justifyContent="center"
-                marginLeft="xs"
-                onPress={handleRelayedPress}
-              >
-                <Text color="orangeMedium" variant="medium" fontSize={13}>
-                  {t('hotspot_details.relayed')}
-                </Text>
-              </TouchableOpacityBox>
-            )}
-            <HexBadge
-              rewardScale={hotspot.rewardScale}
-              backgroundColor="grayBox"
-            />
-          </Box>
-        </Box>
 
-        <HotspotStatusBanner
-          hotspot={hotspot}
-          marginBottom="l"
-          visible={showStatusBanner}
-          onDismiss={toggleShowStatusBanner}
-        />
-
-        <Box
-          justifyContent="flex-start"
-          flexDirection="row"
-          backgroundColor="grayBox"
-        >
-          <HeliumSelect
-            showGradient={false}
-            marginTop="m"
-            marginLeft="m"
-            data={selectData}
-            backgroundColor="grayBox"
-            selectedValue={selectedOption}
-            onValueChanged={handleSelectValueChanged}
+          <HotspotStatusBanner
+            hotspot={hotspot}
+            marginBottom="l"
+            visible={showStatusBanner}
+            onDismiss={toggleShowStatusBanner}
           />
-        </Box>
-        <HotspotChecklist
-          paddingTop="lx"
-          backgroundColor="grayBox"
-          visible={selectedOption === 'checklist'}
-          hotspot={hotspot}
-          witnesses={witnesses}
-        />
 
-        {selectedOption === 'overview' && (
-          <Box backgroundColor="grayBox">
-            <TimelinePicker index={2} onTimelineChanged={setTimelineValue} />
-            <HotspotDetailChart
-              title={t('hotspot_details.reward_title')}
-              number={rewardSum?.total.toFixed(2)}
-              change={rewardsChange}
-              data={rewardChartData}
-              loading={loading}
-            />
-            <HotspotDetailChart
-              title={t('hotspot_details.challenge_title')}
-              number={challengeSum?.toFixed(0)}
-              change={challengeChange}
-              data={challengeChartData}
-              loading={loading}
+          <Box
+            justifyContent="flex-start"
+            flexDirection="row"
+            backgroundColor="grayBox"
+          >
+            <HeliumSelect
+              showGradient={false}
+              marginTop="m"
+              marginLeft="m"
+              data={selectData}
+              backgroundColor="grayBox"
+              selectedValue={selectedOption}
+              onValueChanged={handleSelectValueChanged}
             />
           </Box>
-        )}
+          <HotspotChecklist
+            paddingTop="lx"
+            backgroundColor="grayBox"
+            visible={selectedOption === 'checklist'}
+            hotspot={hotspot}
+            witnesses={witnesses}
+          />
 
-        {selectedOption === 'witnesses' && (
-          <>
-            {hotspotDetailsData.loading ? (
-              <Box paddingTop="xl" backgroundColor="grayBox" height="100%">
-                <ActivityIndicator color={colors.grayMain} />
-              </Box>
-            ) : (
-              <>
-                <TouchableHighlightBox
-                  alignItems="center"
-                  backgroundColor="grayBox"
-                  marginBottom="xxs"
-                  paddingTop="m"
-                  flexDirection="row"
-                  underlayColor="#EBEDF9"
-                  onPress={showWitnessAlert}
-                >
-                  <>
-                    <Text
-                      variant="body1Medium"
-                      color="grayDarkText"
-                      paddingLeft="m"
-                      paddingRight="s"
-                      paddingVertical="m"
-                    >
-                      {t('hotspot_details.num_witnesses', {
-                        count: witnesses?.length || 0,
-                      })}
-                    </Text>
-                    <Info color={colors.blueMain} />
-                  </>
-                </TouchableHighlightBox>
-                {witnesses?.map((witness) => renderWitnessItem(witness))}
-              </>
-            )}
-          </>
-        )}
-      </Box>
-    </BottomSheetScrollView>
+          {selectedOption === 'overview' && (
+            <Box backgroundColor="grayBox">
+              <TimelinePicker index={2} onTimelineChanged={setTimelineValue} />
+              <HotspotDetailChart
+                title={t('hotspot_details.reward_title')}
+                number={rewardSum?.total.toFixed(2)}
+                change={rewardsChange}
+                data={rewardChartData}
+                loading={loading}
+              />
+              <HotspotDetailChart
+                title={t('hotspot_details.challenge_title')}
+                number={challengeSum?.toFixed(0)}
+                change={challengeChange}
+                data={challengeChartData}
+                loading={loading}
+              />
+            </Box>
+          )}
+
+          {selectedOption === 'witnesses' && (
+            <>
+              {hotspotDetailsData.loading ? (
+                <Box paddingTop="xl" backgroundColor="grayBox" height="100%">
+                  <ActivityIndicator color={colors.grayMain} />
+                </Box>
+              ) : (
+                <>
+                  <TouchableHighlightBox
+                    alignItems="center"
+                    backgroundColor="grayBox"
+                    marginBottom="xxs"
+                    paddingTop="m"
+                    flexDirection="row"
+                    underlayColor="#EBEDF9"
+                    onPress={showWitnessAlert}
+                  >
+                    <>
+                      <Text
+                        variant="body1Medium"
+                        color="grayDarkText"
+                        paddingLeft="m"
+                        paddingRight="s"
+                        paddingVertical="m"
+                      >
+                        {t('hotspot_details.num_witnesses', {
+                          count: witnesses?.length || 0,
+                        })}
+                      </Text>
+                      <Info color={colors.blueMain} />
+                    </>
+                  </TouchableHighlightBox>
+                  {witnesses?.map((witness) => renderWitnessItem(witness))}
+                </>
+              )}
+            </>
+          )}
+        </Box>
+      </BottomSheetScrollView>
+    </BottomSheet>
   )
 }
 

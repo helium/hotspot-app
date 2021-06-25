@@ -1,6 +1,6 @@
 {
   "name": "Helium",
-  "version": "3.3.2",
+  "version": "3.4.0",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@expo/react-native-action-sheet": "^3.8.0",
-    "@gorhom/bottom-sheet": "^3.4.1",
+    "@gorhom/bottom-sheet": "^3.6.5",
     "@helium/crypto-react-native": "^3.9.0",
     "@helium/currency": "^3.25.1",
     "@helium/http": "^3.36.4",

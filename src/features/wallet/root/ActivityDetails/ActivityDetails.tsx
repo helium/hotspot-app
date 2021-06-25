@@ -1,5 +1,5 @@
 import { AnyTransaction, PaymentV1, PendingTransaction } from '@helium/http'
-import React, { memo, useCallback, useEffect, useRef } from 'react'
+import React, { memo, useCallback, useEffect, useRef, useMemo } from 'react'
 import { Linking } from 'react-native'
 import {
   BottomSheetBackdrop,
@@ -76,13 +76,15 @@ const ActivityDetails = ({ detailTxn }: Props) => {
     [block],
   )
 
+  const snapPoints = useMemo(() => ['50%', '75%'], [])
+
   if (!detailTxn) return null
 
   return (
     <BottomSheetModalProvider>
       <BottomSheetModal
         ref={sheet}
-        snapPoints={['50%', '75%']}
+        snapPoints={snapPoints}
         handleComponent={renderHandle}
         backdropComponent={BottomSheetBackdrop}
         onDismiss={onClose}
