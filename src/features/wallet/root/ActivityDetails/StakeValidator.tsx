@@ -11,7 +11,15 @@ const StakeValidator = ({ item }: Props) => {
   if (item.type !== 'stake_validator_v1') return null
 
   const rewards = item as StakeValidatorV1
-  return <PaymentItem text={rewards.address} mode="from" isMyAccount />
+  return (
+    <PaymentItem
+      text={rewards.address}
+      mode="from"
+      isMyAccount
+      isLast
+      isFirst
+    />
+  )
 }
 
 export default StakeValidator

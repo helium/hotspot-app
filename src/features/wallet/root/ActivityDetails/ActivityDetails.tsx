@@ -138,7 +138,7 @@ const ActivityDetails = ({ detailTxn }: Props) => {
 
             <StakeValidator item={detailTxn} />
             <UnstakeValidator item={detailTxn} />
-            <TransferValidator item={detailTxn} />
+            <TransferValidator item={detailTxn} address={address || ''} />
             <Rewards item={detailTxn} />
             <Payment item={detailTxn} address={address || ''} />
             <Burn item={detailTxn} address={address || ''} />
