@@ -46,7 +46,6 @@ const HotspotsViewHeader = ({
   const style = useAnimatedStyle(
     () => ({
       position: 'absolute',
-      pointerEvents: 'box-none',
       bottom: showDetails ? -100 : -240,
       left: 0,
       right: 0,
@@ -109,7 +108,7 @@ const HotspotsViewHeader = ({
   )
 
   return (
-    <Animated.View style={style}>
+    <Animated.View style={style} pointerEvents="box-none">
       <Box
         padding="xs"
         flexDirection="row"
