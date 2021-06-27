@@ -2,6 +2,7 @@ import React, { memo, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Position } from 'geojson'
 import Search from '@assets/images/search.svg'
+import QrCode from '@assets/images/qr.svg'
 import { Platform } from 'react-native'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -22,6 +23,7 @@ type Props = {
   onCancel: () => void
   onConfirm: () => void
   onSearch?: () => void
+  onScan?: () => void
 }
 const ReassertLocationUpdate = ({
   confirming,
@@ -31,6 +33,7 @@ const ReassertLocationUpdate = ({
   onConfirm,
   onCancel,
   onSearch,
+  onScan = () => {},
 }: Props) => {
   const { t } = useTranslation()
   const [markerCenter, setMarkerCenter] = useState([0, 0])
@@ -100,8 +103,15 @@ const ReassertLocationUpdate = ({
         >
           {locationName}
         </Text>
-        <TouchableOpacityBox onPress={handleSearchPress} padding="lm">
-          <Search width={30} height={30} color="white" />
+        <TouchableOpacityBox onPress={onScan} paddingTop="lm">
+          <QrCode width={30} height={30} color="purple" />
+        </TouchableOpacityBox>
+        <TouchableOpacityBox
+          onPress={handleSearchPress}
+          paddingTop="lm"
+          paddingRight="lm"
+        >
+          <Search width={30} height={30} color="purple" />
         </TouchableOpacityBox>
       </Box>
 
