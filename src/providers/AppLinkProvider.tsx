@@ -21,6 +21,7 @@ import {
   AppLinkCategoryType,
   AppLinkPayment,
   Payee,
+  AppLinkLocation,
 } from './appLinkTypes'
 
 const APP_LINK_PROTOCOL = 'helium://'
@@ -64,9 +65,9 @@ const useAppLink = () => {
   })
 
   const navToAppLink = useCallback(
-    (record: AppLink | AppLinkPayment) => {
+    (record: AppLink | AppLinkPayment | AppLinkLocation) => {
       if (isLocked || !isBackedUp) {
-        setUnhandledLink(record)
+        setUnhandledLink(record as AppLink)
         return
       }
 
@@ -78,13 +79,13 @@ const useAppLink = () => {
         case 'dc_burn':
         case 'payment':
         case 'transfer':
-          navigator.send({ scanResult: record })
+          navigator.send({ scanResult: record as AppLink | AppLinkPayment })
           break
 
         case 'add_gateway': {
           if (!qrOnboardEnabled) {
             if (qrOnboardEnabled === undefined) {
-              setUnhandledLink(record)
+              setUnhandledLink(record as AppLink)
             }
             return
           }
@@ -95,6 +96,12 @@ const useAppLink = () => {
           navigator.confirmAddGateway(txnStr)
           break
         }
+
+        case 'hotspot_location':
+          navigator.updateHotspotLocation({
+            location: record as AppLinkLocation,
+          })
+          break
       }
     },
     [isLocked, isBackedUp, qrOnboardEnabled],
@@ -142,15 +149,32 @@ const useAppLink = () => {
     return record
   }, [])
 
+  const parseLocation = (data: string): AppLinkLocation | undefined => {
+    try {
+      const dataObj = JSON.parse(data)
+      if (dataObj.lat && dataObj.lng) {
+        return {
+          type: 'hotspot_location',
+          latitude: dataObj.lat,
+          longitude: dataObj.lng,
+        }
+      }
+    } catch (err) {}
+  }
+
   /**
    * The data scanned from the QR code is expected to be one of these possibilities:
    * (1) A helium deeplink URL
-   * (2) address string
-   * (3) stringified JSON object { type, address, amount?, memo? }
-   * (4) stringified JSON object { type, payees: {[payeeAddress]: { amount, memo? }} }
+   * (2) A lat/lng pair for hotspot location updates
+   * (3) address string
+   * (4) stringified JSON object { type, address, amount?, memo? }
+   * (5) stringified JSON object { type, payees: {[payeeAddress]: { amount, memo? }} }
    */
   const parseBarCodeData = useCallback(
-    (data: string, scanType: AppLinkCategoryType): AppLink | AppLinkPayment => {
+    (
+      data: string,
+      scanType: AppLinkCategoryType,
+    ): AppLink | AppLinkPayment | AppLinkLocation => {
       const assertValidAddress = (address: string) => {
         if (!address || !Address.isValid(address)) {
           throw new Error('Invalid transaction encoding')
@@ -163,7 +187,13 @@ const useAppLink = () => {
         return urlParams
       }
 
-      // Case (2) address string
+      // Case (2) lat/lng pair
+      const location = parseLocation(data)
+      if (location) {
+        return location
+      }
+
+      // Case (3) address string
       if (Address.isValid(data)) {
         if (scanType === 'transfer') {
           return {
@@ -182,7 +212,7 @@ const useAppLink = () => {
         const type = rawScanResult.type || scanType
 
         if (type === 'dc_burn') {
-          // Case (3) stringified JSON { type, address, amount?, memo? }
+          // Case (4) stringified JSON { type, address, amount?, memo? }
           const scanResult: AppLink = {
             type,
             address: rawScanResult.address,
@@ -196,7 +226,7 @@ const useAppLink = () => {
         if (type === 'payment') {
           let scanResult: AppLinkPayment
           if (rawScanResult.address) {
-            // Case (3) stringified JSON { type, address, amount?, memo? }
+            // Case (4) stringified JSON { type, address, amount?, memo? }
             scanResult = {
               type,
               payees: [
