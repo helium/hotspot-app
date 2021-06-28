@@ -38,6 +38,7 @@ export type HotspotConnectStatus =
   | 'no_services_found'
   | 'invalid_onboarding_address'
   | 'no_onboarding_key'
+  | 'service_unavailable'
   | 'details_fetch_failure'
 
 export enum HotspotErrorCode {
@@ -186,8 +187,16 @@ const useHotspot = () => {
     await updateHotspotStatus(payload?.hotspot)
 
     if (!payload?.onboardingRecord?.onboardingKey) {
-      Logger.error(new Error('Hotspot connect failed: no onboardingKey'))
-      return handleConnectStatus('no_onboarding_key')
+      let err: HotspotConnectStatus = 'service_unavailable'
+      if (payload?.onboardingRecord?.code === 404) {
+        err = 'invalid_onboarding_address'
+      }
+      Logger.error(
+        new Error(
+          `Hotspot connect failed: ${err} - error code: ${payload?.onboardingRecord?.code}`,
+        ),
+      )
+      return handleConnectStatus(err)
     }
     return handleConnectStatus(payload ? 'success' : 'details_fetch_failure')
   }

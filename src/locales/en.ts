@@ -287,8 +287,12 @@ export default {
     },
     onboarding_error: {
       title: 'Onboarding Error',
-      subtitle:
-        'Unable to find Hotspot in the Onboarding Server. Please contact the Hotspot manufacturer for next steps.',
+      subtitle: {
+        no_onboarding_key:
+          'Unable to find Hotspot in the Onboarding Server. Please contact the Hotspot manufacturer for next steps.',
+        service_unavailable:
+          "The Onboarding Server is temporarily unavailable and users won't be able to add Hotspots at this time.  Check for updates on status.helium.com and try again later.",
+      },
       next: 'Exit Setup',
       disconnected:
         'There was an error connecting to the Hotspot. Please try again.',

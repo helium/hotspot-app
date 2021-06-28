@@ -29,7 +29,7 @@ const OnboardingErrorScreen = () => {
 
         <Text variant="h1">{t('hotspot_setup.onboarding_error.title')}</Text>
         <Text variant="body1" marginVertical="l">
-          {t('hotspot_setup.onboarding_error.subtitle')}
+          {t(`hotspot_setup.onboarding_error.subtitle.${connectStatus}`)}
         </Text>
         <Text variant="body2" marginVertical="l">
           {connectStatus}
