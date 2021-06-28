@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import QrIcon from '@assets/images/qr.svg'
@@ -19,11 +19,12 @@ import { getSecureItem } from '../../../utils/secureAccount'
 import { useAppLinkContext } from '../../../providers/AppLinkProvider'
 import useHaptic from '../../../utils/useHaptic'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
+import { HotspotMakerModels } from '../../../makers'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotSetupScanQrScreen'>
 
 const HotspotSetupScanQrScreen = () => {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const { params } = useRoute<Route>()
   const colors = useColors()
   const { result: address } = useAsync(getSecureItem, ['address'])
@@ -59,37 +60,43 @@ const HotspotSetupScanQrScreen = () => {
     Toast.show(t('wallet.copiedToClipboard', { address }))
   }, [address, t, triggerNotification])
 
-  let linkToMaker = null
-  const qr1 = t(`makerHotspot.${params.hotspotType}.qr.1`).split(/\|/)
-  const url = qr1[0].replace(/WALLET/, address || '')
-  const openMakerUrl = useCallback(async () => {
-    const supported = await Linking.canOpenURL(url)
-    if (supported) {
-      await Linking.openURL(url)
-    } else {
-      Toast.showWithGravity(
-        `Don't know how to open this URL: ${url}`,
-        Toast.LONG,
-        Toast.CENTER,
-      )
-    }
-  }, [url])
+  const openMakerUrl = useCallback(
+    (url: string) => async () => {
+      const supported = await Linking.canOpenURL(url)
+      if (supported) {
+        await Linking.openURL(url)
+      } else {
+        Toast.showWithGravity(
+          `Don't know how to open this URL: ${url}`,
+          Toast.LONG,
+          Toast.CENTER,
+        )
+      }
+    },
+    [],
+  )
 
-  if (i18n.exists(`makerHotspot.${params.hotspotType}.qr.1`)) {
-    linkToMaker = (
-      <TouchableOpacity onPress={openMakerUrl}>
+  const linkToMaker = useMemo(() => {
+    const { qrLink } = HotspotMakerModels[params.hotspotType]
+
+    if (!qrLink) return null
+    const url = qrLink.replace(/WALLET/, address || '')
+    return (
+      <TouchableOpacity onPress={openMakerUrl(url)}>
         <Text
           variant="bold"
           fontSize={{ smallPhone: 15, phone: 19 }}
           color="purpleMain"
           lineHeight={{ smallPhone: 20, phone: 26 }}
           maxFontSizeMultiplier={1}
+          numberOfLines={1}
+          marginVertical="s"
         >
-          {qr1[1]}
+          {url}
         </Text>
       </TouchableOpacity>
     )
-  }
+  }, [address, openMakerUrl, params.hotspotType])
 
   return (
     <BackScreen
@@ -122,9 +129,10 @@ const HotspotSetupScanQrScreen = () => {
         fontSize={{ smallPhone: 15, phone: 19 }}
         lineHeight={{ smallPhone: 20, phone: 26 }}
         maxFontSizeMultiplier={1}
-        marginVertical={{ smallPhone: 's', phone: 'l' }}
+        marginTop={{ smallPhone: 's', phone: 'l' }}
+        marginBottom={linkToMaker ? undefined : { smallPhone: 's', phone: 'l' }}
       >
-        {t(`makerHotspot.${params.hotspotType}.qr.0`)}
+        {t(`makerHotspot.${params.hotspotType}.qr`)}
       </Text>
       {linkToMaker}
       <Text
