@@ -1047,4 +1047,7 @@ export default {
     title: 'Map Filters',
     button: 'Choose Map Filter',
   },
+  statusBanner: {
+    description: 'Last updated {{date}}. Tap for info.',
+  },
 }
