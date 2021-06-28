@@ -9,7 +9,6 @@ import hotspotsSlice from './hotspots/hotspotsSlice'
 import hotspotSearchSlice from './hotspotSearch/hotspotSearchSlice'
 import activitySlice from './activity/activitySlice'
 import hotspotChecklistSlice from './hotspotDetails/hotspotChecklistSlice'
-import networkHotspotsSlice from './networkHotspots/networkHotspotsSlice'
 import discoverySlice from './discovery/discoverySlice'
 import featuresSlice from './features/featuresSlice'
 import locationSlice from './location/locationSlice'
@@ -26,7 +25,6 @@ const rootReducer = combineReducers({
   hotspots: hotspotsSlice.reducer,
   hotspotSearch: hotspotSearchSlice.reducer,
   hotspotChecklist: hotspotChecklistSlice.reducer,
-  networkHotspots: networkHotspotsSlice.reducer,
   discovery: discoverySlice.reducer,
   features: featuresSlice.reducer,
   location: locationSlice.reducer,
