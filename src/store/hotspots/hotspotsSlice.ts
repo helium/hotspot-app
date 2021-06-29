@@ -206,7 +206,9 @@ export const fetchHotspotsData = createAsyncThunk(
 
     const hotspotPromises = [getHotspots()]
     if (followEnabled) {
-      hotspotPromises.push(getWallet('hotspots/follow', null, true))
+      hotspotPromises.push(
+        getWallet('hotspots/follow', null, { camelCase: true }),
+      )
     }
     const allHotspots = await Promise.all(
       hotspotPromises.map((p) =>
@@ -237,11 +239,9 @@ export const followHotspot = createAsyncThunk<
   },
   string
 >('hotspots/followHotspot', async (hotspotAddress) => {
-  const followed = await postWallet(
-    `hotspots/follow/${hotspotAddress}`,
-    null,
-    true,
-  )
+  const followed = await postWallet(`hotspots/follow/${hotspotAddress}`, null, {
+    camelCase: true,
+  })
   let blockHotspot: Hotspot | null = null
   try {
     blockHotspot = await getHotspotDetails(hotspotAddress)
@@ -270,7 +270,7 @@ export const unfollowHotspot = createAsyncThunk<Hotspot[], string>(
     const followed = await deleteWallet(
       `hotspots/follow/${hotspot_address}`,
       null,
-      true,
+      { camelCase: true },
     )
     return sanitizeWalletHotspots(followed)
   },
