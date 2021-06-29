@@ -20,6 +20,7 @@ import HotspotSearchListItem from './HotspotSearchListItem'
 import animateTransition from '../../../utils/animateTransition'
 import HotspotSearchEmpty from './HotspotSearchEmpty'
 import SegmentedControl from '../../../components/SegmentedControl'
+import CardHandle from '../../../components/CardHandle'
 
 const ItemSeparatorComponent = () => <Box height={1} backgroundColor="white" />
 
@@ -133,16 +134,40 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace, visible }: Props) => {
   )
 
   const snapPoints = useMemo(() => [95, '75%'], [])
+  const handle = useCallback(
+    () => (
+      <Box
+        backgroundColor="white"
+        borderTopLeftRadius="none"
+        borderRadius="none"
+        flexDirection="row"
+        height={22}
+        paddingTop="s"
+        alignItems="center"
+        justifyContent="center"
+        flex={1}
+      >
+        <CardHandle />
+      </Box>
+    ),
+    [],
+  )
   if (!visible) return null
 
   return (
     <BottomSheet
       ref={listRef}
       snapPoints={snapPoints}
+      handleComponent={handle}
       index={1}
       animateOnMount={false}
     >
-      <Box paddingHorizontal="l" paddingVertical="l" flex={1}>
+      <Box
+        paddingHorizontal="l"
+        paddingVertical="l"
+        flex={1}
+        backgroundColor="white"
+      >
         <SegmentedControl
           values={filterNames}
           selectedIndex={selectedFilterIndex}

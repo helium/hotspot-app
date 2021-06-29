@@ -24,6 +24,7 @@ const HotspotSheetHandle = ({ hotspot, toggleSettings }: Props) => {
       justifyContent="flex-end"
       alignItems="center"
       paddingTop="l"
+      backgroundColor="white"
     >
       <Box
         position="absolute"
