@@ -69,13 +69,16 @@ const ShortcutNav = ({
     ),
   )
 
+  const ownerAddress = useMemo(
+    () => (ownedHotspots.length ? ownedHotspots[0].owner : ''),
+    [ownedHotspots],
+  )
+
   const hotspots = useMemo(() => {
     // sort order
     // 1. Owned and Followed
     // 2. Followed
     // 3. Owned
-
-    const ownerAddress = ownedHotspots.length ? ownedHotspots[0].owner : ''
 
     const sortedFollowed = followedHotspots.sort((h) =>
       h.owner === ownerAddress ? -1 : 1,
@@ -88,7 +91,7 @@ const ShortcutNav = ({
       (h) => h.address,
     )
     return unique as FollowedHotspot[]
-  }, [followedHotspots, ownedHotspots])
+  }, [followedHotspots, ownedHotspots, ownerAddress])
 
   const isSelected = useCallback(
     (
@@ -192,6 +195,16 @@ const ShortcutNav = ({
     [data, isSelected, onItemSelected, scroll],
   )
 
+  const backgroundColor = useCallback(
+    (item: FollowedHotspot, selected: boolean) => {
+      if (item.owner === ownerAddress) {
+        return selected ? 'blueBright' : 'blueBright60'
+      }
+      return selected ? 'purpleBright' : 'purpleBright60'
+    },
+    [ownerAddress],
+  )
+
   const renderHotspot = useCallback(
     (item: FollowedHotspot, index: number) => {
       if (!item.name) return null
@@ -202,7 +215,7 @@ const ShortcutNav = ({
       return (
         <TouchableOpacityBox
           hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
-          backgroundColor={selected ? 'purpleBright' : 'purpleBright60'}
+          backgroundColor={backgroundColor(item, selected)}
           onLayout={handleLayout(index)}
           onPress={handlePress(item)}
           borderRadius="round"
@@ -229,6 +242,7 @@ const ShortcutNav = ({
       )
     },
     [
+      backgroundColor,
       colors.primaryBackground,
       handleLayout,
       handlePress,
