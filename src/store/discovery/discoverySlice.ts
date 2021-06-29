@@ -31,7 +31,7 @@ export const fetchRecentDiscoveries = createAsyncThunk<
   RecentDiscoveryInfo,
   { hotspotAddress: string }
 >('discovery/recent', async ({ hotspotAddress }) =>
-  getWallet(`discoveries/${hotspotAddress}`, null, true),
+  getWallet(`discoveries/${hotspotAddress}`, null, { camelCase: true }),
 )
 
 export const startDiscovery = createAsyncThunk<
@@ -46,7 +46,7 @@ export const startDiscovery = createAsyncThunk<
       hotspot_name: hotspotName,
       signature,
     },
-    true,
+    { camelCase: true },
   )
 })
 
@@ -54,7 +54,9 @@ export const fetchDiscoveryById = createAsyncThunk<
   DiscoveryRequest | null,
   { requestId: number }
 >('discovery/fetch', async ({ requestId }) => {
-  return getWallet(`discoveries/responses/${requestId}`, null, true)
+  return getWallet(`discoveries/responses/${requestId}`, null, {
+    camelCase: true,
+  })
 })
 
 // This slice contains data related to discovery mode
