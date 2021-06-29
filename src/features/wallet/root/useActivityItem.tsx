@@ -120,12 +120,11 @@ const useActivityItem = (
         return 'purpleMuted'
       case 'rewards_v1':
       case 'rewards_v2':
+      case 'stake_validator_v1':
       case 'transfer_validator_stake_v1':
         return 'purpleBright'
       case 'token_burn_v1':
         return 'orange'
-      case 'stake_validator_v1':
-        return 'blueBright'
       case 'unstake_validator_v1':
         return 'greenBright'
       default:
