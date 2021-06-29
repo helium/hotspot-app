@@ -27,7 +27,7 @@ const makeRequest = async (url: string, opts: RequestInit) => {
     })
 
     if (!response.ok) {
-      const errorMessage = `Bad response, status:${response.status} message:${response.statusText}`
+      const errorMessage = `Bad response, status:${response.status} message:${response.statusText} ${opts.method} url:${route}`
       Logger.breadcrumb(errorMessage, breadcrumbOpts)
       throw new Error(errorMessage)
     }
