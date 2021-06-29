@@ -191,6 +191,16 @@ const ShortcutNav = ({
       }
 
       scroll(data.findIndex((d) => isSelected(d, item)))
+
+      if (
+        // they're viewing a hotspot they don't own or follow
+        // need to select it on ios because the scroll won't trigger selection
+        Platform.OS === 'ios' &&
+        item === 'explore' &&
+        scrollOffset.current === 0
+      ) {
+        onItemSelected(item)
+      }
     },
     [data, isSelected, onItemSelected, scroll],
   )
