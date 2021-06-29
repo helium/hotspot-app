@@ -12,4 +12,5 @@ export type MakerHotspot = {
   name: string
   antenna?: { us?: MakerAntenna; default: MakerAntenna }
   onboardType: 'BLE' | 'QR'
+  qrLink?: string
 }
