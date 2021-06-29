@@ -189,7 +189,7 @@ const useHotspot = () => {
     if (!payload?.onboardingRecord?.onboardingKey) {
       let err: HotspotConnectStatus = 'service_unavailable'
       if (payload?.onboardingRecord?.code === 404) {
-        err = 'invalid_onboarding_address'
+        err = 'no_onboarding_key'
       }
       Logger.error(
         new Error(

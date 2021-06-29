@@ -288,6 +288,10 @@ export default {
     onboarding_error: {
       title: 'Onboarding Error',
       subtitle: {
+        something_went_wrong:
+          'Something went wrong. Please contact the Hotspot manufacturer for next steps.',
+        invalid_onboarding_address:
+          'Your onboarding address is invalid. Please contact the Hotspot manufacturer for next steps.',
         no_onboarding_key:
           'Unable to find Hotspot in the Onboarding Server. Please contact the Hotspot manufacturer for next steps.',
         service_unavailable:
