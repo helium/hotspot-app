@@ -1,10 +1,7 @@
 import { Hotspot } from '@helium/http'
 import { Feature, Position } from 'geojson'
-import { NetworkHotspot } from '../store/networkHotspots/networkHotspotsSlice'
 
-export const hotspotsToFeatures = (
-  hotspots: (NetworkHotspot | Hotspot)[],
-): Feature[] =>
+export const hotspotsToFeatures = (hotspots: Hotspot[]): Feature[] =>
   hotspots
     .filter((h) => h.lat && h.lng)
     .map(
