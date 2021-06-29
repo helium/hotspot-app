@@ -16,6 +16,7 @@ const palette = {
   blueGrayLight: '#CDD7E5',
   blueGray: '#33414E',
   blueBright: '#1D91F8',
+  blueBright60: '#1a61ad',
   blueLight: '#51AEFF',
   blueMain: '#4BABFF',
   blueDark: '#232E39',

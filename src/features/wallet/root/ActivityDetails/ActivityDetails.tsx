@@ -1,9 +1,5 @@
 import { AnyTransaction, PaymentV1, PendingTransaction } from '@helium/http'
-<<<<<<< HEAD
 import React, { memo, useCallback, useEffect, useRef, useMemo } from 'react'
-=======
-import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react'
->>>>>>> 5913718 (Add support for stake activity (#589))
 import { Linking } from 'react-native'
 import {
   BottomSheetBackdrop,
