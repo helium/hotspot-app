@@ -23,6 +23,7 @@ import {
   getInteger,
   stringAmountToBalance,
   getMemoBytesLeft,
+  encodeMemoString,
 } from '../../../utils/transactions'
 import * as Logger from '../../../utils/logger'
 import useHaptic from '../../../utils/useHaptic'
@@ -239,7 +240,8 @@ const SendDetailsForm = ({
 
   const MemoLengthCounter = () => {
     if (!memo) return null
-    const bytesLeft = getMemoBytesLeft(memo)
+    const base64Memo = encodeMemoString(memo)
+    const bytesLeft = getMemoBytesLeft(base64Memo)
     return (
       <Text
         variant="mono"
