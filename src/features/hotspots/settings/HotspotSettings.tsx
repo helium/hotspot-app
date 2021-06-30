@@ -110,12 +110,15 @@ const HotspotSettings = ({ hotspot }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showSettings])
 
-  const setNextState = useCallback((s: State) => {
-    if (!visible) return
+  const setNextState = useCallback(
+    (s: State) => {
+      if (!visible || s === settingsState) return
 
-    animateTransition('HotspotSettings.SetNextState')
-    setSettingsState(s)
-  }, [])
+      animateTransition('HotspotSettings.SetNextState')
+      setSettingsState(s)
+    },
+    [settingsState],
+  )
 
   const handleClose = useCallback(() => {
     disableBack()

@@ -28,7 +28,7 @@ const HotspotDetailChart = ({
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
 
   const onFocus = useCallback(async (chartData: ChartData | null) => {
-    animateTransition('HotspotDetailChart.OnFocus', false)
+    animateTransition('HotspotDetailChart.OnFocus', { enabledOnAndroid: false })
 
     if (!chartData) {
       setFocusedData(null)

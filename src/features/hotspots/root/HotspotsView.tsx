@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { LayoutChangeEvent } from 'react-native'
+import { LayoutAnimation, LayoutChangeEvent } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { Hotspot, Witness } from '@helium/http'
 import { useSharedValue } from 'react-native-reanimated'
@@ -106,8 +106,18 @@ const HotspotsView = ({
 
   const handleShortcutItemSelected = useCallback(
     (item: GlobalOpt | Hotspot | Witness) => {
-      // TODO: Maybe look at making this match the bottom sheet anim config?
-      animateTransition('HotspotsView.ShortcutChanged')
+      let animConfig = LayoutAnimation.Presets.spring
+
+      animConfig = {
+        ...animConfig,
+        create: { ...animConfig.create, springDamping: 0.9 },
+        update: { ...animConfig.update, springDamping: 0.9 },
+        delete: { ...animConfig.delete, springDamping: 0.9 },
+      }
+      animateTransition('HotspotsView.ShortcutChanged', {
+        enabledOnAndroid: true,
+        config: animConfig,
+      })
       setShortcutItem(item)
     },
     [],

@@ -193,7 +193,9 @@ const HotspotDetails = ({
 
   const handleSelectValueChanged = useCallback(
     (value: string | number, _index: number) => {
-      animateTransition('HotspotDetails.HandleSelectValueChanged', false)
+      animateTransition('HotspotDetails.HandleSelectValueChanged', {
+        enabledOnAndroid: false,
+      })
       setSelectedOption(value)
     },
     [],

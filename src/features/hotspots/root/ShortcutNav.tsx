@@ -113,7 +113,9 @@ const ShortcutNav = ({
   useEffect(() => {
     if (prevFollowed && followedHotspots.length !== prevFollowed.length) {
       followChanged.current = true
-      animateTransition('ShortcutNav.FollowChanged', false)
+      animateTransition('ShortcutNav.FollowChanged', {
+        enabledOnAndroid: false,
+      })
     }
   }, [followedHotspots, prevFollowed])
 
