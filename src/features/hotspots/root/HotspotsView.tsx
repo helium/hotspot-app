@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { LayoutAnimation } from 'react-native'
+import { LayoutAnimation, Platform } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { Hotspot, Witness } from '@helium/http'
 import { useSharedValue } from 'react-native-reanimated'
@@ -111,11 +111,12 @@ const HotspotsView = ({
     (item: GlobalOpt | Hotspot | Witness) => {
       let animConfig = LayoutAnimation.Presets.spring
 
+      const springDamping = Platform.select({ ios: 0.9, android: 2 })
       animConfig = {
         ...animConfig,
-        create: { ...animConfig.create, springDamping: 0.9 },
-        update: { ...animConfig.update, springDamping: 0.9 },
-        delete: { ...animConfig.delete, springDamping: 0.9 },
+        create: { ...animConfig.create, springDamping },
+        update: { ...animConfig.update, springDamping },
+        delete: { ...animConfig.delete, springDamping },
       }
       animateTransition('HotspotsView.ShortcutChanged', {
         enabledOnAndroid: true,

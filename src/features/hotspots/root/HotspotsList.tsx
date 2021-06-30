@@ -127,7 +127,7 @@ const HotspotsList = ({
   )
 
   return (
-    <Box backgroundColor="white" flex={1} top={visible ? 0 : wh - 100}>
+    <Box backgroundColor="white" flex={1} top={visible ? 0 : wh}>
       <Box
         flexDirection="row"
         justifyContent="space-between"

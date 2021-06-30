@@ -351,8 +351,8 @@ const HotspotDetails = ({
                 fontSize={29}
                 lineHeight={31}
                 color="black"
-                textAlign="center"
                 numberOfLines={1}
+                width="100%"
                 adjustsFontSizeToFit
               >
                 {formattedHotspotName[0]}
@@ -362,8 +362,8 @@ const HotspotDetails = ({
                   variant="regular"
                   fontSize={29}
                   lineHeight={31}
+                  width="100%"
                   color="black"
-                  textAlign="center"
                   numberOfLines={1}
                   adjustsFontSizeToFit
                 >
@@ -502,7 +502,7 @@ const HotspotDetails = ({
                     marginBottom="xxs"
                     paddingTop="m"
                     flexDirection="row"
-                    underlayColor="#EBEDF9"
+                    underlayColor={colors.grayHighlight}
                     onPress={showWitnessAlert}
                   >
                     <>
