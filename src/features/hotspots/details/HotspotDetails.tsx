@@ -403,7 +403,7 @@ const HotspotDetails = ({
                   marginLeft="xs"
                   onPress={handleRelayedPress}
                 >
-                  <Text color="orangeMedium" variant="medium" fontSize={13}>
+                  <Text color="orangeMedium" variant="medium" fontSize={14}>
                     {t('hotspot_details.relayed')}
                   </Text>
                 </TouchableOpacityBox>

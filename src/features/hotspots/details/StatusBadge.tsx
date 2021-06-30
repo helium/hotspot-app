@@ -32,7 +32,7 @@ const StatusBadge = ({ online = 'offline', onPress, syncStatus }: Props) => {
       onPress={onPress}
       disabled={syncStatus === SyncStatus.full && online === 'online'}
     >
-      <Text color="white" variant="regular" fontSize={13}>
+      <Text color="white" variant="regular" fontSize={14}>
         {title}
       </Text>
     </TouchableOpacityBox>
