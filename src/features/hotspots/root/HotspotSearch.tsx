@@ -17,7 +17,6 @@ import { useAppDispatch } from '../../../store/store'
 import { RootState } from '../../../store/rootReducer'
 import { PlacePrediction } from '../../../utils/googlePlaces'
 import HotspotSearchListItem from './HotspotSearchListItem'
-import animateTransition from '../../../utils/animateTransition'
 import HotspotSearchEmpty from './HotspotSearchEmpty'
 import SegmentedControl from '../../../components/SegmentedControl'
 import CardHandle from '../../../components/CardHandle'
@@ -69,12 +68,6 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace, visible }: Props) => {
     dispatch(restoreRecentSearches())
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible])
-
-  useEffect(() => {
-    if (!visible) return
-
-    animateTransition('HotspotSearch.Hotspots.Locations.Change')
-  }, [hotspots, locations, visible])
 
   const listData = useMemo(() => [...hotspots, ...locations], [
     hotspots,
@@ -152,21 +145,27 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace, visible }: Props) => {
     ),
     [],
   )
-  if (!visible) return null
+
+  useEffect(() => {
+    if (!visible) {
+      listRef.current?.close()
+    } else {
+      listRef.current?.expand()
+    }
+  }, [visible])
 
   return (
     <BottomSheet
       ref={listRef}
       snapPoints={snapPoints}
       handleComponent={handle}
-      index={1}
       animateOnMount={false}
     >
       <Box
+        backgroundColor="white"
+        flex={1}
         paddingHorizontal="l"
         paddingVertical="l"
-        flex={1}
-        backgroundColor="white"
       >
         <SegmentedControl
           values={filterNames}

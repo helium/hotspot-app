@@ -102,10 +102,6 @@ const HotspotDetails = ({
     setIsRelayed(isRelay(hotspot?.status?.listenAddrs || []))
   }, [hotspot, visible])
 
-  useEffect(() => {
-    listRef.current?.snapTo(visible ? 1 : -1)
-  }, [visible])
-
   const rewardChartData = useMemo(() => {
     if (!visible) return []
 
@@ -305,6 +301,7 @@ const HotspotDetails = ({
   return (
     <BottomSheet
       snapPoints={snapPoints}
+      ref={listRef}
       index={0}
       handleComponent={cardHandle}
       animatedIndex={animatedPosition}
