@@ -29,7 +29,7 @@ import usePrevious from '../../../utils/usePrevious'
 import animateTransition from '../../../utils/animateTransition'
 import TouchableOpacityBox from '../../../components/BSTouchableOpacityBox'
 
-export const SHORTCUT_NAV_HEIGHT = 54
+export const SHORTCUT_NAV_HEIGHT = 44
 const ITEM_SIZE = 35
 const ITEM_MARGIN = 's'
 
