@@ -41,24 +41,28 @@ import { distance } from '../../../utils/location'
 import { useColors } from '../../../theme/themeHooks'
 import TouchableHighlightBox from '../../../components/TouchableHighlightBox'
 import HotspotSheetHandle from '../root/HotspotSheetHandle'
+import { hp } from '../../../utils/layout'
 
+export type HotspotSnapPoints = { collapsed: number; expanded: number }
 type Props = {
   hotspot?: Hotspot | Witness
-  onLayoutHeader?: ((event: LayoutChangeEvent) => void) | undefined
+  onLayoutSnapPoints?: ((snapPoints: HotspotSnapPoints) => void) | undefined
   onFailure: () => void
   onSelectHotspot: (hotspot: Hotspot | Witness) => void
+  onChangeHeight: (height: number) => void
   visible: boolean
   toggleSettings: () => void
   animatedPosition: Animated.SharedValue<number>
 }
 const HotspotDetails = ({
   hotspot: propsHotspot,
-  onLayoutHeader,
+  onLayoutSnapPoints,
   onSelectHotspot,
   onFailure,
   visible,
   toggleSettings,
   animatedPosition,
+  onChangeHeight,
 }: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
@@ -78,7 +82,7 @@ const HotspotDetails = ({
   const listRef = useRef<BottomSheet>(null)
   const [isRelayed, setIsRelayed] = useState(false)
   const [timelineValue, setTimelineValue] = useState(14)
-  const [headerHeight, setHeaderHeight] = useState(171)
+  const [snapPoints, setSnapPoints] = useState([0, 0])
   const {
     rewards,
     rewardSum,
@@ -292,11 +296,20 @@ const HotspotDetails = ({
   }, [hotspot, toggleSettings])
 
   const handleHeaderLayout = (event: LayoutChangeEvent) => {
-    setHeaderHeight(event.nativeEvent.layout.height)
-    onLayoutHeader?.(event)
+    const nextSnapPoints = [event.nativeEvent.layout.height, hp(55)]
+    onLayoutSnapPoints?.({
+      collapsed: nextSnapPoints[0],
+      expanded: nextSnapPoints[1],
+    })
+    setSnapPoints(nextSnapPoints)
   }
 
-  const snapPoints = useMemo(() => [headerHeight, '75%'], [headerHeight])
+  const handleChange = useCallback(
+    (index: number) => {
+      onChangeHeight(snapPoints[index])
+    },
+    [onChangeHeight, snapPoints],
+  )
 
   if (!hotspot) return null
 
@@ -305,6 +318,7 @@ const HotspotDetails = ({
       snapPoints={snapPoints}
       ref={listRef}
       index={0}
+      onChange={handleChange}
       handleComponent={cardHandle}
       animatedIndex={animatedPosition}
     >

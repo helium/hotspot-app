@@ -37,7 +37,7 @@ type Props = BoxProps<Theme> & {
   onDidFinishLoadingMap?: (latitude: number, longitude: number) => void
   onMapMoving?: (feature: Feature<Point, RegionPayload>) => void
   onHexSelected?: (id: string) => void
-
+  cameraBottomOffset?: number
   currentLocationEnabled?: boolean
   zoomLevel?: number
   mapCenter?: number[]
@@ -78,6 +78,7 @@ const Map = ({
   showH3Grid = false,
   followedHotspots,
   showRewardScale,
+  cameraBottomOffset,
   ...props
 }: Props) => {
   const colors = useColors()
@@ -192,8 +193,8 @@ const Map = ({
       }
     })
 
-    return findBounds(boundsLocations)
-  }, [mapCenter, selectedHex, selectedHotspot, witnesses])
+    return findBounds(boundsLocations, cameraBottomOffset)
+  }, [mapCenter, cameraBottomOffset, selectedHex, selectedHotspot, witnesses])
 
   const defaultCameraSettings = useMemo(
     () => ({

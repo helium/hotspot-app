@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { LayoutAnimation, LayoutChangeEvent } from 'react-native'
+import { LayoutAnimation } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { Hotspot, Witness } from '@helium/http'
 import { useSharedValue } from 'react-native-reanimated'
@@ -14,7 +14,7 @@ import hotspotDetailsSlice, {
 } from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import HotspotsViewHeader from './HotspotsViewHeader'
 import HotspotsList from './HotspotsList'
-import HotspotDetails from '../details/HotspotDetails'
+import HotspotDetails, { HotspotSnapPoints } from '../details/HotspotDetails'
 import HotspotsEmpty from './HotspotsEmpty'
 import HotspotSettingsProvider from '../settings/HotspotSettingsProvider'
 import HotspotSettings from '../settings/HotspotSettings'
@@ -57,13 +57,16 @@ const HotspotsView = ({
   const dispatch = useDispatch()
   const [location, setLocation] = useState(propsLocation)
   const [showMap, setShowMap] = useState(false)
-  const [detailHeaderHeight, setDetailHeaderHeight] = useState(144)
+  const [detailSnapPoints, setDetailSnapPoints] = useState<HotspotSnapPoints>({
+    collapsed: 0,
+    expanded: 0,
+  })
+  const [detailHeight, setDetailHeight] = useState(0)
   const hotspotsForHexId = useSelector(
     (state: RootState) => state.discovery.hotspotsForHexId,
   )
   const [selectedHexId, setSelectedHexId] = useState<string>()
   const [selectedHotspotIndex, setSelectedHotspotIndex] = useState(0)
-  // TODO: Fix hotspot detail header animated position
   const animatedIndex = useSharedValue<number>(0)
   const [mapFilter, setMapFilter] = useState(MapFilters.owned)
   const [shortcutItem, setShortcutItem] = useState<
@@ -193,10 +196,6 @@ const HotspotsView = ({
       setLocation([122.4194, 37.7749]) // SF - This shouldn't actually be possible
     }
   }, [followedHotspots, hasUserLocation, hotspotAddress, ownedHotspots])
-
-  const handleDetailHeaderLayout = useCallback((event: LayoutChangeEvent) => {
-    setDetailHeaderHeight(event.nativeEvent.layout.height)
-  }, [])
 
   const onMapHexSelected = useCallback(
     async (hexId: string, address?: string) => {
@@ -330,7 +329,8 @@ const HotspotsView = ({
           <HotspotDetails
             visible={typeof shortcutItem !== 'string'}
             hotspot={selectedHotspot}
-            onLayoutHeader={handleDetailHeaderLayout}
+            onLayoutSnapPoints={setDetailSnapPoints}
+            onChangeHeight={setDetailHeight}
             onFailure={handleItemSelected}
             onSelectHotspot={handlePresentDetails}
             toggleSettings={toggleSettings}
@@ -355,19 +355,18 @@ const HotspotsView = ({
       />
     )
   }, [
-    animatedIndex,
-    dismissList,
-    handleDetailHeaderLayout,
-    handleHotspotSetup,
-    handleItemSelected,
-    handlePresentDetails,
-    handleSearching,
-    handleSelectPlace,
     hasHotspots,
+    dismissList,
     locationBlocked,
-    selectedHotspot,
+    handlePresentDetails,
+    handleSelectPlace,
     shortcutItem,
+    selectedHotspot,
+    handleItemSelected,
     toggleSettings,
+    animatedIndex,
+    handleSearching,
+    handleHotspotSetup,
   ])
 
   const onChangeMapFilter = useCallback((filter: MapFilters) => {
@@ -380,10 +379,11 @@ const HotspotsView = ({
         <Box position="absolute" height="100%" width="100%">
           {showMap && (
             <Map
+              cameraBottomOffset={detailHeight}
               ownedHotspots={showOwned ? ownedHotspots : []}
               selectedHotspot={selectedHotspot}
-              maxZoomLevel={13}
-              zoomLevel={13}
+              maxZoomLevel={12}
+              zoomLevel={12}
               witnesses={showWitnesses ? witnesses : []}
               followedHotspots={showOwned ? followedHotspots : []}
               mapCenter={location}
@@ -401,7 +401,7 @@ const HotspotsView = ({
             animatedPosition={animatedIndex}
             hexHotspots={hexHotspots}
             ownedHotspots={ownedHotspots}
-            detailHeaderHeight={detailHeaderHeight}
+            detailHeaderHeight={detailSnapPoints.collapsed}
             onHotspotSelected={onHotspotSelected}
             followedHotspots={followedHotspots}
             selectedHotspotIndex={selectedHotspotIndex}
