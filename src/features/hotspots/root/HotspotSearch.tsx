@@ -17,9 +17,9 @@ import { useAppDispatch } from '../../../store/store'
 import { RootState } from '../../../store/rootReducer'
 import { PlacePrediction } from '../../../utils/googlePlaces'
 import HotspotSearchListItem from './HotspotSearchListItem'
-import animateTransition from '../../../utils/animateTransition'
 import HotspotSearchEmpty from './HotspotSearchEmpty'
 import SegmentedControl from '../../../components/SegmentedControl'
+import CardHandle from '../../../components/CardHandle'
 
 const ItemSeparatorComponent = () => <Box height={1} backgroundColor="white" />
 
@@ -68,12 +68,6 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace, visible }: Props) => {
     dispatch(restoreRecentSearches())
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible])
-
-  useEffect(() => {
-    if (!visible) return
-
-    animateTransition('HotspotSearch.Hotspots.Locations.Change')
-  }, [hotspots, locations, visible])
 
   const listData = useMemo(() => [...hotspots, ...locations], [
     hotspots,
@@ -133,16 +127,46 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace, visible }: Props) => {
   )
 
   const snapPoints = useMemo(() => [95, '75%'], [])
-  if (!visible) return null
+  const handle = useCallback(
+    () => (
+      <Box
+        backgroundColor="white"
+        borderTopLeftRadius="none"
+        borderRadius="none"
+        flexDirection="row"
+        height={22}
+        paddingTop="s"
+        alignItems="center"
+        justifyContent="center"
+        flex={1}
+      >
+        <CardHandle />
+      </Box>
+    ),
+    [],
+  )
+
+  useEffect(() => {
+    if (!visible) {
+      listRef.current?.close()
+    } else {
+      listRef.current?.expand()
+    }
+  }, [visible])
 
   return (
     <BottomSheet
       ref={listRef}
       snapPoints={snapPoints}
-      index={1}
+      handleComponent={handle}
       animateOnMount={false}
     >
-      <Box paddingHorizontal="l" paddingVertical="l" flex={1}>
+      <Box
+        backgroundColor="white"
+        flex={1}
+        paddingHorizontal="l"
+        paddingVertical="l"
+      >
         <SegmentedControl
           values={filterNames}
           selectedIndex={selectedFilterIndex}

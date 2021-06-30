@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { LayoutChangeEvent } from 'react-native'
+import { LayoutAnimation } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { Hotspot, Witness } from '@helium/http'
 import { useSharedValue } from 'react-native-reanimated'
@@ -14,7 +14,7 @@ import hotspotDetailsSlice, {
 } from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import HotspotsViewHeader from './HotspotsViewHeader'
 import HotspotsList from './HotspotsList'
-import HotspotDetails from '../details/HotspotDetails'
+import HotspotDetails, { HotspotSnapPoints } from '../details/HotspotDetails'
 import HotspotsEmpty from './HotspotsEmpty'
 import HotspotSettingsProvider from '../settings/HotspotSettingsProvider'
 import HotspotSettings from '../settings/HotspotSettings'
@@ -28,7 +28,6 @@ import {
 import { HotspotStackParamList } from './hotspotTypes'
 import animateTransition from '../../../utils/animateTransition'
 import usePrevious from '../../../utils/usePrevious'
-import useVisible from '../../../utils/useVisible'
 import useMount from '../../../utils/useMount'
 import { fetchHotspotsForHex } from '../../../store/discovery/discoverySlice'
 import { MapFilters } from '../../map/MapFiltersButton'
@@ -58,15 +57,16 @@ const HotspotsView = ({
   const dispatch = useDispatch()
   const [location, setLocation] = useState(propsLocation)
   const [showMap, setShowMap] = useState(false)
-  const [detailHeaderHeight, setDetailHeaderHeight] = useState(144)
-  const visible = useVisible()
-  const prevVisible = usePrevious(visible)
+  const [detailSnapPoints, setDetailSnapPoints] = useState<HotspotSnapPoints>({
+    collapsed: 0,
+    expanded: 0,
+  })
+  const [detailHeight, setDetailHeight] = useState(0)
   const hotspotsForHexId = useSelector(
     (state: RootState) => state.discovery.hotspotsForHexId,
   )
   const [selectedHexId, setSelectedHexId] = useState<string>()
   const [selectedHotspotIndex, setSelectedHotspotIndex] = useState(0)
-  // TODO: Fix hotspot detail header animated position
   const animatedIndex = useSharedValue<number>(0)
   const [mapFilter, setMapFilter] = useState(MapFilters.owned)
   const [shortcutItem, setShortcutItem] = useState<
@@ -107,17 +107,33 @@ const HotspotsView = ({
     }
   }, [onViewMap, prevShorcutItem, shortcutItem])
 
-  useEffect(() => {
-    if (prevShorcutItem !== shortcutItem && visible && prevVisible) {
-      animateTransition('HotspotsView.DetailsChange', false)
-    }
-  }, [prevShorcutItem, prevVisible, shortcutItem, visible])
+  const handleShortcutItemSelected = useCallback(
+    (item: GlobalOpt | Hotspot | Witness) => {
+      let animConfig = LayoutAnimation.Presets.spring
 
-  const setGlobalOption = useCallback((opt: GlobalOpt) => {
-    setShortcutItem(opt)
-    setSelectedHexId(undefined)
-    setSelectedHotspotIndex(0)
-  }, [])
+      animConfig = {
+        ...animConfig,
+        create: { ...animConfig.create, springDamping: 0.9 },
+        update: { ...animConfig.update, springDamping: 0.9 },
+        delete: { ...animConfig.delete, springDamping: 0.9 },
+      }
+      animateTransition('HotspotsView.ShortcutChanged', {
+        enabledOnAndroid: true,
+        config: animConfig,
+      })
+      setShortcutItem(item)
+    },
+    [],
+  )
+
+  const setGlobalOption = useCallback(
+    (opt: GlobalOpt) => {
+      handleShortcutItemSelected(opt)
+      setSelectedHexId(undefined)
+      setSelectedHotspotIndex(0)
+    },
+    [handleShortcutItemSelected],
+  )
 
   useEffect(() => {
     const navParent = navigation.dangerouslyGetParent() as BottomTabNavigationProp<RootStackParamList>
@@ -181,10 +197,6 @@ const HotspotsView = ({
     }
   }, [followedHotspots, hasUserLocation, hotspotAddress, ownedHotspots])
 
-  const handleDetailHeaderLayout = useCallback((event: LayoutChangeEvent) => {
-    setDetailHeaderHeight(event.nativeEvent.layout.height)
-  }, [])
-
   const onMapHexSelected = useCallback(
     async (hexId: string, address?: string) => {
       const hotspots = (await dispatch(fetchHotspotsForHex({ hexId }))) as {
@@ -203,21 +215,29 @@ const HotspotsView = ({
       setSelectedHexId(hexId)
       setSelectedHotspotIndex(index)
       if (hotspots?.payload?.length) {
-        setShortcutItem(hotspots.payload[index] as Hotspot)
+        handleShortcutItemSelected(hotspots.payload[index] as Hotspot)
       }
     },
-    [dispatch],
+    [dispatch, handleShortcutItemSelected],
   )
 
   const handlePresentDetails = useCallback(
     async (hotspot: Hotspot | Witness) => {
-      setShortcutItem(hotspot)
+      if (IS_GLOBAL_OPT(shortcutItem)) {
+        setDetailHeight(detailSnapPoints.collapsed)
+      }
+      handleShortcutItemSelected(hotspot)
 
       if (!hotspot.locationHex) return
 
       onMapHexSelected(hotspot.locationHex, hotspot.address)
     },
-    [onMapHexSelected],
+    [
+      detailSnapPoints.collapsed,
+      handleShortcutItemSelected,
+      onMapHexSelected,
+      shortcutItem,
+    ],
   )
 
   const handleItemSelected = useCallback(
@@ -268,10 +288,13 @@ const HotspotsView = ({
     return hotspotsForHexId[selectedHexId]
   }, [hotspotsForHexId, selectedHexId])
 
-  const onHotspotSelected = useCallback((index, hotspot) => {
-    setSelectedHotspotIndex(index)
-    setShortcutItem(hotspot)
-  }, [])
+  const onHotspotSelected = useCallback(
+    (index, hotspot) => {
+      setSelectedHotspotIndex(index)
+      handleShortcutItemSelected(hotspot)
+    },
+    [handleShortcutItemSelected],
+  )
 
   const hotspotHasLocation = useMemo(() => {
     if (!hotspotAddress || !selectedHotspot) return true
@@ -314,7 +337,8 @@ const HotspotsView = ({
           <HotspotDetails
             visible={typeof shortcutItem !== 'string'}
             hotspot={selectedHotspot}
-            onLayoutHeader={handleDetailHeaderLayout}
+            onLayoutSnapPoints={setDetailSnapPoints}
+            onChangeHeight={setDetailHeight}
             onFailure={handleItemSelected}
             onSelectHotspot={handlePresentDetails}
             toggleSettings={toggleSettings}
@@ -339,24 +363,28 @@ const HotspotsView = ({
       />
     )
   }, [
-    animatedIndex,
-    dismissList,
-    handleDetailHeaderLayout,
-    handleHotspotSetup,
-    handleItemSelected,
-    handlePresentDetails,
-    handleSearching,
-    handleSelectPlace,
     hasHotspots,
+    dismissList,
     locationBlocked,
-    selectedHotspot,
+    handlePresentDetails,
+    handleSelectPlace,
     shortcutItem,
+    selectedHotspot,
+    handleItemSelected,
     toggleSettings,
+    animatedIndex,
+    handleSearching,
+    handleHotspotSetup,
   ])
 
   const onChangeMapFilter = useCallback((filter: MapFilters) => {
     setMapFilter(filter)
   }, [])
+
+  const cameraBottomOffset = useMemo(() => {
+    if (IS_GLOBAL_OPT(shortcutItem)) return
+    return detailHeight
+  }, [detailHeight, shortcutItem])
 
   return (
     <>
@@ -364,10 +392,11 @@ const HotspotsView = ({
         <Box position="absolute" height="100%" width="100%">
           {showMap && (
             <Map
+              cameraBottomOffset={cameraBottomOffset}
               ownedHotspots={showOwned ? ownedHotspots : []}
               selectedHotspot={selectedHotspot}
-              maxZoomLevel={13}
-              zoomLevel={13}
+              maxZoomLevel={12}
+              zoomLevel={12}
               witnesses={showWitnesses ? witnesses : []}
               followedHotspots={showOwned ? followedHotspots : []}
               mapCenter={location}
@@ -385,7 +414,7 @@ const HotspotsView = ({
             animatedPosition={animatedIndex}
             hexHotspots={hexHotspots}
             ownedHotspots={ownedHotspots}
-            detailHeaderHeight={detailHeaderHeight}
+            detailHeaderHeight={detailSnapPoints.collapsed}
             onHotspotSelected={onHotspotSelected}
             followedHotspots={followedHotspots}
             selectedHotspotIndex={selectedHotspotIndex}

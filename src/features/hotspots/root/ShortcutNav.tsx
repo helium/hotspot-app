@@ -29,7 +29,7 @@ import usePrevious from '../../../utils/usePrevious'
 import animateTransition from '../../../utils/animateTransition'
 import TouchableOpacityBox from '../../../components/BSTouchableOpacityBox'
 
-export const SHORTCUT_NAV_HEIGHT = 54
+export const SHORTCUT_NAV_HEIGHT = 44
 const ITEM_SIZE = 35
 const ITEM_MARGIN = 's'
 
@@ -69,13 +69,16 @@ const ShortcutNav = ({
     ),
   )
 
+  const ownerAddress = useMemo(
+    () => (ownedHotspots.length ? ownedHotspots[0].owner : ''),
+    [ownedHotspots],
+  )
+
   const hotspots = useMemo(() => {
     // sort order
     // 1. Owned and Followed
     // 2. Followed
     // 3. Owned
-
-    const ownerAddress = ownedHotspots.length ? ownedHotspots[0].owner : ''
 
     const sortedFollowed = followedHotspots.sort((h) =>
       h.owner === ownerAddress ? -1 : 1,
@@ -88,7 +91,7 @@ const ShortcutNav = ({
       (h) => h.address,
     )
     return unique as FollowedHotspot[]
-  }, [followedHotspots, ownedHotspots])
+  }, [followedHotspots, ownedHotspots, ownerAddress])
 
   const isSelected = useCallback(
     (
@@ -110,7 +113,9 @@ const ShortcutNav = ({
   useEffect(() => {
     if (prevFollowed && followedHotspots.length !== prevFollowed.length) {
       followChanged.current = true
-      animateTransition('ShortcutNav.FollowChanged', false)
+      animateTransition('ShortcutNav.FollowChanged', {
+        enabledOnAndroid: false,
+      })
     }
   }, [followedHotspots, prevFollowed])
 
@@ -188,8 +193,28 @@ const ShortcutNav = ({
       }
 
       scroll(data.findIndex((d) => isSelected(d, item)))
+
+      if (
+        // they're viewing a hotspot they don't own or follow
+        // need to select it on ios because the scroll won't trigger selection
+        Platform.OS === 'ios' &&
+        item === 'explore' &&
+        scrollOffset.current === 0
+      ) {
+        onItemSelected(item)
+      }
     },
     [data, isSelected, onItemSelected, scroll],
+  )
+
+  const backgroundColor = useCallback(
+    (item: FollowedHotspot, selected: boolean) => {
+      if (item.owner === ownerAddress) {
+        return selected ? 'blueBright' : 'blueBright60'
+      }
+      return selected ? 'purpleBright' : 'purpleBright60'
+    },
+    [ownerAddress],
   )
 
   const renderHotspot = useCallback(
@@ -202,7 +227,7 @@ const ShortcutNav = ({
       return (
         <TouchableOpacityBox
           hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
-          backgroundColor={selected ? 'purpleBright' : 'purpleBright60'}
+          backgroundColor={backgroundColor(item, selected)}
           onLayout={handleLayout(index)}
           onPress={handlePress(item)}
           borderRadius="round"
@@ -229,6 +254,7 @@ const ShortcutNav = ({
       )
     },
     [
+      backgroundColor,
       colors.primaryBackground,
       handleLayout,
       handlePress,

@@ -15,6 +15,7 @@ import WelcomeOverview from './WelcomeOverview'
 import HotspotsPicker from './HotspotsPicker'
 import { HotspotSort } from '../../../store/hotspots/hotspotsSlice'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import { wh } from '../../../utils/layout'
 
 const HotspotsList = ({
   onSelectHotspot,
@@ -125,10 +126,8 @@ const HotspotsList = ({
     [],
   )
 
-  if (!visible) return null
-
   return (
-    <Box backgroundColor="white" flex={1}>
+    <Box backgroundColor="white" flex={1} top={visible ? 0 : wh - 100}>
       <Box
         flexDirection="row"
         justifyContent="space-between"

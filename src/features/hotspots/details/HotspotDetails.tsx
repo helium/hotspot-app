@@ -8,6 +8,7 @@ import {
   Alert,
   Linking,
   ActivityIndicator,
+  Insets,
 } from 'react-native'
 import { Hotspot, Witness } from '@helium/http'
 import Animated from 'react-native-reanimated'
@@ -41,24 +42,31 @@ import { distance } from '../../../utils/location'
 import { useColors } from '../../../theme/themeHooks'
 import TouchableHighlightBox from '../../../components/TouchableHighlightBox'
 import HotspotSheetHandle from '../root/HotspotSheetHandle'
+import { hp } from '../../../utils/layout'
+import sleep from '../../../utils/sleep'
 
+const hitSlop = { top: 24, bottom: 24 } as Insets
+
+export type HotspotSnapPoints = { collapsed: number; expanded: number }
 type Props = {
   hotspot?: Hotspot | Witness
-  onLayoutHeader?: ((event: LayoutChangeEvent) => void) | undefined
+  onLayoutSnapPoints?: ((snapPoints: HotspotSnapPoints) => void) | undefined
   onFailure: () => void
   onSelectHotspot: (hotspot: Hotspot | Witness) => void
+  onChangeHeight: (height: number) => void
   visible: boolean
   toggleSettings: () => void
   animatedPosition: Animated.SharedValue<number>
 }
 const HotspotDetails = ({
   hotspot: propsHotspot,
-  onLayoutHeader,
+  onLayoutSnapPoints,
   onSelectHotspot,
   onFailure,
   visible,
   toggleSettings,
   animatedPosition,
+  onChangeHeight,
 }: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
@@ -78,7 +86,9 @@ const HotspotDetails = ({
   const listRef = useRef<BottomSheet>(null)
   const [isRelayed, setIsRelayed] = useState(false)
   const [timelineValue, setTimelineValue] = useState(14)
-  const [headerHeight, setHeaderHeight] = useState(171)
+  const [snapPoints, setSnapPoints] = useState([0, 0])
+  const [listIndex, setListIndex] = useState(0)
+
   const {
     rewards,
     rewardSum,
@@ -101,10 +111,6 @@ const HotspotDetails = ({
 
     setIsRelayed(isRelay(hotspot?.status?.listenAddrs || []))
   }, [hotspot, visible])
-
-  useEffect(() => {
-    listRef.current?.snapTo(visible ? 1 : -1)
-  }, [visible])
 
   const rewardChartData = useMemo(() => {
     if (!visible) return []
@@ -197,7 +203,9 @@ const HotspotDetails = ({
 
   const handleSelectValueChanged = useCallback(
     (value: string | number, _index: number) => {
-      animateTransition('HotspotDetails.HandleSelectValueChanged', false)
+      animateTransition('HotspotDetails.HandleSelectValueChanged', {
+        enabledOnAndroid: false,
+      })
       setSelectedOption(value)
     },
     [],
@@ -294,18 +302,43 @@ const HotspotDetails = ({
   }, [hotspot, toggleSettings])
 
   const handleHeaderLayout = (event: LayoutChangeEvent) => {
-    setHeaderHeight(event.nativeEvent.layout.height)
-    onLayoutHeader?.(event)
+    const nextSnapPoints = [event.nativeEvent.layout.height, hp(55)]
+    onLayoutSnapPoints?.({
+      collapsed: nextSnapPoints[0],
+      expanded: nextSnapPoints[1],
+    })
+    setSnapPoints(nextSnapPoints)
   }
 
-  const snapPoints = useMemo(() => [headerHeight, '75%'], [headerHeight])
+  const handleChange = useCallback(
+    (index: number) => {
+      setListIndex(index)
+      onChangeHeight(snapPoints[index])
+    },
+    [onChangeHeight, snapPoints],
+  )
+
+  const handleToggleStatus = useCallback(async () => {
+    if (listIndex === 0) {
+      listRef.current?.snapTo(1)
+      if (showStatusBanner) {
+        return // banner is already showing, but was out of sight
+      }
+    }
+    if (listIndex === 0) {
+      await sleep(300) // Add a little delay to avoid animation jank
+    }
+    toggleShowStatusBanner()
+  }, [listIndex, showStatusBanner, toggleShowStatusBanner])
 
   if (!hotspot) return null
 
   return (
     <BottomSheet
       snapPoints={snapPoints}
+      ref={listRef}
       index={0}
+      onChange={handleChange}
       handleComponent={cardHandle}
       animatedIndex={animatedPosition}
     >
@@ -374,13 +407,15 @@ const HotspotDetails = ({
             >
               {hotspot?.status && (
                 <StatusBadge
+                  hitSlop={hitSlop}
                   online={hotspot?.status?.online}
                   syncStatus={syncStatus?.status}
-                  onPress={toggleShowStatusBanner}
+                  onPress={handleToggleStatus}
                 />
               )}
               {isRelayed && (
                 <TouchableOpacityBox
+                  hitSlop={hitSlop}
                   borderColor="orangeMedium"
                   borderWidth={1}
                   paddingHorizontal="s"
@@ -390,12 +425,13 @@ const HotspotDetails = ({
                   marginLeft="xs"
                   onPress={handleRelayedPress}
                 >
-                  <Text color="orangeMedium" variant="medium" fontSize={13}>
+                  <Text color="orangeMedium" variant="medium" fontSize={14}>
                     {t('hotspot_details.relayed')}
                   </Text>
                 </TouchableOpacityBox>
               )}
               <HexBadge
+                hitSlop={hitSlop}
                 rewardScale={hotspot.rewardScale}
                 backgroundColor="grayBox"
               />

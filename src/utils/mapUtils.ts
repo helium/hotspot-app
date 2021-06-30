@@ -23,7 +23,10 @@ export type MapBounds = {
   paddingBottom?: number
 }
 
-export const findBounds = (coords: number[][]): MapBounds | undefined => {
+export const findBounds = (
+  coords: number[][],
+  paddingBottom = 250,
+): MapBounds | undefined => {
   if (coords.length === 0) {
     return
   }
@@ -44,7 +47,7 @@ export const findBounds = (coords: number[][]): MapBounds | undefined => {
   return {
     ne: [maxLng, maxLat],
     sw: [minLng, minLat],
-    paddingBottom: 250,
+    paddingBottom,
     paddingLeft: 30,
     paddingRight: 30,
     paddingTop: 30,

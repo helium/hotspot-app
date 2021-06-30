@@ -1,7 +1,17 @@
-import { LayoutAnimation, Platform } from 'react-native'
+import { LayoutAnimation, LayoutAnimationConfig, Platform } from 'react-native'
 import Config from 'react-native-config'
 
-export default (id: string, enabledOnAndroid = true) => {
+type AnimationOptions = {
+  enabledOnAndroid: boolean
+  config?: LayoutAnimationConfig
+}
+export default (
+  id: string,
+  { enabledOnAndroid, config }: AnimationOptions = {
+    enabledOnAndroid: true,
+    config: LayoutAnimation.Presets.easeInEaseOut,
+  },
+) => {
   if (Platform.OS === 'android' && !enabledOnAndroid) return
 
   if (__DEV__ && Config.LOG_ANIMATIONS === 'true') {
@@ -9,5 +19,5 @@ export default (id: string, enabledOnAndroid = true) => {
     console.log('animateTransition:', { id, enabledOnAndroid })
   }
 
-  LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+  LayoutAnimation.configureNext(config || LayoutAnimation.Presets.easeInEaseOut)
 }
