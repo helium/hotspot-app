@@ -223,13 +223,21 @@ const HotspotsView = ({
 
   const handlePresentDetails = useCallback(
     async (hotspot: Hotspot | Witness) => {
+      if (IS_GLOBAL_OPT(shortcutItem)) {
+        setDetailHeight(detailSnapPoints.collapsed)
+      }
       handleShortcutItemSelected(hotspot)
 
       if (!hotspot.locationHex) return
 
       onMapHexSelected(hotspot.locationHex, hotspot.address)
     },
-    [handleShortcutItemSelected, onMapHexSelected],
+    [
+      detailSnapPoints.collapsed,
+      handleShortcutItemSelected,
+      onMapHexSelected,
+      shortcutItem,
+    ],
   )
 
   const handleItemSelected = useCallback(
@@ -373,13 +381,18 @@ const HotspotsView = ({
     setMapFilter(filter)
   }, [])
 
+  const cameraBottomOffset = useMemo(() => {
+    if (IS_GLOBAL_OPT(shortcutItem)) return
+    return detailHeight
+  }, [detailHeight, shortcutItem])
+
   return (
     <>
       <Box flex={1} flexDirection="column" justifyContent="space-between">
         <Box position="absolute" height="100%" width="100%">
           {showMap && (
             <Map
-              cameraBottomOffset={detailHeight}
+              cameraBottomOffset={cameraBottomOffset}
               ownedHotspots={showOwned ? ownedHotspots : []}
               selectedHotspot={selectedHotspot}
               maxZoomLevel={12}
