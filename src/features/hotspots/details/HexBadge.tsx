@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react'
-import { Alert, Linking } from 'react-native'
+import { Alert, Linking, Insets } from 'react-native'
 import Hex from '@assets/images/hex.svg'
 import { useTranslation } from 'react-i18next'
 import Text from '../../../components/Text'
@@ -16,6 +16,7 @@ type Props = {
   badge?: boolean
   backgroundColor?: Colors
   fontSize?: number
+  hitSlop?: Insets
 }
 const HexBadge = ({
   rewardScale,
@@ -23,6 +24,7 @@ const HexBadge = ({
   backgroundColor,
   badge = true,
   fontSize = 13,
+  hitSlop,
 }: Props) => {
   const colors = useColors()
   const { t } = useTranslation()
@@ -70,6 +72,7 @@ const HexBadge = ({
       backgroundColor={backgroundColor}
       borderRadius={badge ? 'l' : undefined}
       flexDirection="row"
+      hitSlop={hitSlop}
       justifyContent="center"
       alignItems="center"
       width={badge ? 59 : undefined}
