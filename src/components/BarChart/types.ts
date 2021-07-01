@@ -7,4 +7,5 @@ export type ChartData = {
   showTime?: boolean
 }
 
-export type ChartRange = 'daily' | 'weekly' | 'monthly'
+export const ChartRangeKeys = ['daily', 'weekly', 'monthly'] as const
+export type ChartRange = typeof ChartRangeKeys[number]

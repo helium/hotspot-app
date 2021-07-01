@@ -1,8 +1,6 @@
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { AnyTransaction, PendingTransaction, PaymentV1 } from '@helium/http'
-import WalletViewContainer from './WalletViewContainer'
-import Box from '../../../components/Box'
 import ActivityDetails from './ActivityDetails/ActivityDetails'
 import useVisible from '../../../utils/useVisible'
 import usePrevious from '../../../utils/usePrevious'
@@ -11,6 +9,9 @@ import { useAppDispatch } from '../../../store/store'
 import { fetchTxns } from '../../../store/activity/activitySlice'
 import animateTransition from '../../../utils/animateTransition'
 import { ActivityViewState } from './walletTypes'
+import SafeAreaBox from '../../../components/SafeAreaBox'
+import WalletView from './WalletView'
+import Text from '../../../components/Text'
 
 const WalletScreen = () => {
   const dispatch = useAppDispatch()
@@ -32,7 +33,7 @@ const WalletScreen = () => {
   const prevBlockHeight = usePrevious(blockHeight)
 
   const updateTxnData = useCallback((data: AnyTransaction[]) => {
-    animateTransition('WalletScreen.UpdateTxnData')
+    animateTransition('WalletScreen.UpdateTxnData', { enabledOnAndroid: false })
     setTransactionData(data)
   }, [])
 
@@ -56,17 +57,16 @@ const WalletScreen = () => {
     if (data.length !== transactionData.length) {
       updateTxnData(data)
     } else if (data.length) {
-      data.some((txn, index) => {
+      const needsUpdate = data.find((txn, index) => {
         const prevTxn = txn as PaymentV1
         const nextTxn = transactionData[index] as PaymentV1
 
-        const hashEqual = nextTxn.hash === prevTxn.hash
-        if (!hashEqual) {
-          // data has changed update
-          updateTxnData(data)
-        }
-        return hashEqual
+        return nextTxn.hash !== prevTxn.hash
       })
+
+      if (!needsUpdate) return
+
+      updateTxnData(data)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txns[filter]])
@@ -162,16 +162,24 @@ const WalletScreen = () => {
 
   return (
     <>
-      <Box flex={1} backgroundColor="primaryBackground">
-        <WalletViewContainer
-          txns={transactionData}
-          pendingTxns={pendingTxns}
-          filter={filter}
-          activityViewState={activityViewState}
-          showSkeleton={showSkeleton}
-        />
-      </Box>
-
+      <SafeAreaBox flex={1} backgroundColor="primaryBackground">
+        {(activityViewState === 'activity' ||
+          activityViewState === 'undetermined') && (
+          <WalletView
+            activityViewState={activityViewState}
+            showSkeleton={showSkeleton}
+            txns={transactionData}
+            pendingTxns={pendingTxns}
+          />
+        )}
+        {/* TODO: Handle state where user has no activity and no balance */}
+        {activityViewState === 'no_activity' && (
+          // && user has no balance
+          <Text variant="bold" fontSize={43} lineHeight={43} color="white">
+            {'Welcome to\nyour Wallet'}
+          </Text>
+        )}
+      </SafeAreaBox>
       {detailTxn && <ActivityDetails detailTxn={detailTxn} />}
     </>
   )

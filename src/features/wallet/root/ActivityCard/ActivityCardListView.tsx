@@ -9,16 +9,29 @@ import activitySlice from '../../../../store/activity/activitySlice'
 import { useAppDispatch } from '../../../../store/store'
 import { useSpacing } from '../../../../theme/themeHooks'
 import ActivityCardLoading from './ActivityCardLoading'
+import WalletChart from '../../../../components/BarChart/WalletChart'
+import SkeletonActivityItem from './SkeletonActivityItem'
 
 type Props = {
   hasNoResults: boolean
   data: (AnyTransaction | PendingTransaction)[]
+  showSkeleton: boolean
 }
 
-const ActivityCardListView = ({ data, hasNoResults }: Props) => {
+const ActivityCardListView = ({
+  data: propsData,
+  hasNoResults,
+  showSkeleton,
+}: Props) => {
   const { m } = useSpacing()
   const dispatch = useAppDispatch()
   const { result: address, loading } = useAsync(getSecureItem, ['address'])
+
+  const data = useMemo((): (AnyTransaction | PendingTransaction | false)[] => {
+    if (showSkeleton) return new Array(10).map(() => false)
+
+    return propsData
+  }, [propsData, showSkeleton])
 
   const handleActivityItemPressed = useCallback(
     (item: AnyTransaction | PendingTransaction) => () => {
@@ -32,7 +45,7 @@ const ActivityCardListView = ({ data, hasNoResults }: Props) => {
   }, [dispatch])
 
   type Item = {
-    item: AnyTransaction | PendingTransaction
+    item: AnyTransaction | PendingTransaction | false
     index: number
   }
 
@@ -40,6 +53,10 @@ const ActivityCardListView = ({ data, hasNoResults }: Props) => {
     ({ item, index }: Item) => {
       const isLast = () => {
         return !!data && index === data?.length - 1
+      }
+
+      if (!item) {
+        return <SkeletonActivityItem isFirst={index === 0} isLast={isLast()} />
       }
 
       return (
@@ -56,7 +73,8 @@ const ActivityCardListView = ({ data, hasNoResults }: Props) => {
   )
 
   const keyExtractor = useCallback(
-    (item: AnyTransaction | PendingTransaction) => {
+    (item: AnyTransaction | PendingTransaction | false, index: number) => {
+      if (!item) return `${index}`
       const txn = item as PendingTransaction
       return `${txn.hash}${txn.status}`
     },
@@ -73,7 +91,10 @@ const ActivityCardListView = ({ data, hasNoResults }: Props) => {
   )
 
   const contentContainerStyle = useMemo(() => {
-    return { paddingHorizontal: m, paddingBottom: 100 }
+    return {
+      paddingHorizontal: m,
+      paddingBottom: 100,
+    }
   }, [m])
 
   const footer = useMemo(
@@ -81,10 +102,22 @@ const ActivityCardListView = ({ data, hasNoResults }: Props) => {
     [hasNoResults],
   )
 
+  const header = useMemo(() => {
+    return (
+      <WalletChart
+        showSkeleton={showSkeleton}
+        height={222}
+        marginHorizontal="l"
+        marginBottom="s"
+      />
+    )
+  }, [showSkeleton])
+
   if (loading) return null
 
   return (
     <BottomSheetFlatList
+      ListHeaderComponent={header}
       data={data}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
