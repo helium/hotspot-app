@@ -4,6 +4,7 @@ import { Alert, SectionList } from 'react-native'
 import { useSelector } from 'react-redux'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { isEqual } from 'lodash'
+import { Edge } from 'react-native-safe-area-context'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { RootState } from '../../../store/rootReducer'
@@ -231,7 +232,7 @@ const MoreScreen = () => {
             title: t('more.sections.learn.troubleshooting'),
             openUrl: Articles.Docs_Root,
           },
-        ],
+        ] as MoreListItemType[],
         footer: <DiscordItem />,
       },
       {
@@ -261,7 +262,7 @@ const MoreScreen = () => {
             onPress: handleSignOut,
             destructive: true,
           },
-        ],
+        ] as MoreListItemType[],
         footer: <AppInfoItem version={version} />,
       },
     ]
@@ -294,40 +295,59 @@ const MoreScreen = () => {
     [spacing.m, spacing.xxxl],
   )
 
+  const renderItem = useCallback(
+    ({ item, index, section }) => (
+      <MoreListItem
+        item={item}
+        isTop={index === 0}
+        isBottom={index === section.data.length - 1}
+      />
+    ),
+    [],
+  )
+
+  const renderSectionHeader = useCallback(
+    ({ section: { title, icon } }) => (
+      <Box
+        flexDirection="row"
+        alignItems="center"
+        paddingTop="l"
+        paddingBottom="s"
+        paddingHorizontal="xs"
+        backgroundColor="primaryBackground"
+      >
+        {icon !== undefined && icon}
+        <Text variant="body1Bold" marginLeft="s">
+          {title}
+        </Text>
+      </Box>
+    ),
+    [],
+  )
+
+  const renderSectionFooter = useCallback(
+    ({ section: { footer } }) => footer,
+    [],
+  )
+
+  const keyExtractor = useCallback((item, index) => item.title + index, [])
+
+  const edges = useMemo(() => ['left', 'right', 'top'] as Edge[], [])
   return (
-    <SafeAreaBox backgroundColor="primaryBackground" flex={1}>
+    <SafeAreaBox backgroundColor="primaryBackground" flex={1} edges={edges}>
       <Text variant="h3" marginVertical="m" paddingHorizontal="l">
         {t('more.title')}
       </Text>
-      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-      {/* @ts-ignore */}
       <SectionList
         contentContainerStyle={contentContainer}
         sections={SectionData}
-        keyExtractor={(item, index) => item.title + index}
-        renderItem={({ item, index, section }) => (
-          <MoreListItem
-            item={item}
-            isTop={index === 0}
-            isBottom={index === section.data.length - 1}
-          />
-        )}
-        renderSectionHeader={({ section: { title, icon } }) => (
-          <Box
-            flexDirection="row"
-            alignItems="center"
-            paddingTop="l"
-            paddingBottom="s"
-            paddingHorizontal="xs"
-            backgroundColor="primaryBackground"
-          >
-            {icon !== undefined && icon}
-            <Text variant="body1Bold" marginLeft="s">
-              {title}
-            </Text>
-          </Box>
-        )}
-        renderSectionFooter={({ section: { footer } }) => footer}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        renderSectionHeader={renderSectionHeader}
+        renderSectionFooter={renderSectionFooter}
+        initialNumToRender={100}
+        // ^ Sometimes on initial page load there is a bug with SectionList
+        // where it won't render all items right away. This seems to fix it.
       />
     </SafeAreaBox>
   )
