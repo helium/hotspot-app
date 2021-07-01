@@ -16,6 +16,7 @@ import HotspotsPicker from './HotspotsPicker'
 import { HotspotSort } from '../../../store/hotspots/hotspotsSlice'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { wh } from '../../../utils/layout'
+import FocusAwareStatusBar from '../../../components/FocusAwareStatusBar'
 
 const HotspotsList = ({
   onSelectHotspot,
@@ -128,6 +129,7 @@ const HotspotsList = ({
 
   return (
     <Box backgroundColor="white" flex={1} top={visible ? 0 : wh}>
+      {visible && <FocusAwareStatusBar barStyle="dark-content" />}
       <Box
         flexDirection="row"
         justifyContent="space-between"
