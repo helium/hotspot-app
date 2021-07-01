@@ -46,7 +46,7 @@ const HotspotsViewHeader = ({
   const style = useAnimatedStyle(
     () => ({
       position: 'absolute',
-      bottom: showDetails ? -100 : -320,
+      bottom: showDetails ? -120 : -330,
       left: 0,
       right: 0,
       opacity: buttonsVisible || showNoLocation ? 1 : 0,
