@@ -16,6 +16,7 @@ const palette = {
   blueGrayLight: '#CDD7E5',
   blueGray: '#33414E',
   blueBright: '#1D91F8',
+  blueBright60: '#1a61ad',
   blueLight: '#51AEFF',
   blueMain: '#4BABFF',
   blueDark: '#232E39',
@@ -34,6 +35,7 @@ const palette = {
   grayText: '#667394',
   grayDarkText: '#515686',
   grayLightText: '#A7AACD',
+  grayMid: '#A5AEBD',
   grayPurple: '#E3E5F8',
   grayHighlight: '#EBEDF9',
 
@@ -42,6 +44,7 @@ const palette = {
 
   purple: '#B377FF',
   purpleBright: '#A667F6',
+  purpleBright60: '#6d48ac',
   whitePurple: '#FAF6FE',
   purpleLight: '#A0A5DA',
   purpleGray: '#BBBDD8',
@@ -52,7 +55,7 @@ const palette = {
   purple300: '#343964',
   purple200: '#23264b',
   purple100: '#383A6F',
-  purpleDark: '#13162E',
+  purpleDark: '#161B3D',
   purpleMuted: '#666995',
   purpleBrightMuted: '#7788D4',
   purpleDull: '#474973',

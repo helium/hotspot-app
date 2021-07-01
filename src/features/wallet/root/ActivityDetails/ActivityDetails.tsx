@@ -1,5 +1,5 @@
 import { AnyTransaction, PaymentV1, PendingTransaction } from '@helium/http'
-import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react'
+import React, { memo, useCallback, useEffect, useRef, useMemo } from 'react'
 import { Linking } from 'react-native'
 import {
   BottomSheetBackdrop,
@@ -79,10 +79,7 @@ const ActivityDetails = ({ detailTxn }: Props) => {
     [block],
   )
 
-  const snapPoints = useMemo(() => {
-    return ['50%', '75%']
-  }, [])
-
+  const snapPoints = useMemo(() => ['50%', '75%'], [])
   if (!detailTxn) return null
 
   return (

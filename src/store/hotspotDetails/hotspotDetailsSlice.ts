@@ -62,7 +62,7 @@ export const fetchHotspotData = createAsyncThunk<HotspotData, string>(
     }).hotspotDetails
     const hotspotData = currentState.hotspotData[address] || {}
     if (hasValidCache(hotspotData)) {
-      throw new Error('Data already fetched')
+      return hotspotData
     }
     const data = await Promise.all([
       getHotspotDetails(address),

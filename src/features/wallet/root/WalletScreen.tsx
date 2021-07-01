@@ -105,7 +105,9 @@ const WalletScreen = () => {
 
     if (nextShowSkeleton !== showSkeleton) {
       if (visible) {
-        animateTransition('WalletScreen.ShowSkeleton', false)
+        animateTransition('WalletScreen.ShowSkeleton', {
+          enabledOnAndroid: false,
+        })
       }
       setShowSkeleton(nextShowSkeleton)
     }

@@ -20,6 +20,7 @@ import { useSelector } from 'react-redux'
 import animalName from 'angry-purple-tiger'
 import { Hotspot, PendingTransaction, Witness } from '@helium/http'
 import Toast from 'react-native-simple-toast'
+import { visible } from '@shopify/restyle'
 import BlurBox from '../../../components/BlurBox'
 import Card from '../../../components/Card'
 import Text from '../../../components/Text'
@@ -109,10 +110,15 @@ const HotspotSettings = ({ hotspot }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showSettings])
 
-  const setNextState = useCallback((s: State) => {
-    animateTransition('HotspotSettings.SetNextState')
-    setSettingsState(s)
-  }, [])
+  const setNextState = useCallback(
+    (s: State) => {
+      if (!visible || s === settingsState) return
+
+      animateTransition('HotspotSettings.SetNextState')
+      setSettingsState(s)
+    },
+    [settingsState],
+  )
 
   const handleClose = useCallback(() => {
     disableBack()

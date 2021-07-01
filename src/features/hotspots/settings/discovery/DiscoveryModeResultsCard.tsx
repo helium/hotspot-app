@@ -105,7 +105,9 @@ const DiscoveryModeResultsCard = ({
       }
     }
 
-    animateTransition('DiscoveryModeResultsCard.Results', false)
+    animateTransition('DiscoveryModeResultsCard.Results', {
+      enabledOnAndroid: false,
+    })
     return (
       <Box justifyContent="space-between">
         {items.map((i) => (
