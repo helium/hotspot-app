@@ -38,6 +38,7 @@ const palette = {
   grayMid: '#A5AEBD',
   grayPurple: '#E3E5F8',
   grayHighlight: '#EBEDF9',
+  grayAccent: '#B3C2E8',
 
   redMain: '#F97570',
   redMedium: '#FF6666',

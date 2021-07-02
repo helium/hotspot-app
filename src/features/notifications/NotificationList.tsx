@@ -9,6 +9,7 @@ import NotificationGroup from './NotificationGroup'
 import NotificationShow from './NotificationShow'
 import animateTransition from '../../utils/animateTransition'
 import { Notification } from '../../store/notifications/notificationSlice'
+import { useColors } from '../../theme/themeHooks'
 
 type Props = {
   notifications: Notification[]
@@ -17,6 +18,7 @@ type Props = {
 }
 const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
   const { t } = useTranslation()
+  const colors = useColors()
   const [allNotifications, setAllNotifications] = useState<Array<Notification>>(
     [],
   )
@@ -49,14 +51,16 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
   useEffect(() => {
     const now = new Date()
 
-    const grouped = groupBy(allNotifications, (notification) =>
-      formatDistance(fromUnixTime(notification.time), now, {
-        addSuffix: true,
-      }),
+    const grouped = groupBy(
+      allNotifications,
+      (notification) =>
+        formatDistance(fromUnixTime(notification.time), now, {
+          addSuffix: true,
+        }) + notification.icon,
     )
 
     const arr = Object.keys(grouped)
-      .map((k) => grouped[k].sort((a, b) => a.time - b.time))
+      .map((k) => grouped[k].sort((a, b) => b.time - a.time))
       .sort((a, b) => b[0].time - a[0].time)
 
     animateTransition('NotificationList.SortedAndGrouped')
@@ -64,35 +68,42 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
   }, [allNotifications])
 
   return (
-    <Box flex={1} alignContent="space-between">
+    <Box flex={1} marginBottom="m">
       <Text variant="h3" marginVertical="m" flexGrow={1} paddingHorizontal="l">
         {t('notifications.list.title')}
       </Text>
 
-      <FlatList
-        inverted
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor="white"
-          />
-        }
-        refreshing={refreshing}
-        style={{ flexGrow: 0 }}
-        data={groupedNotifications}
-        keyExtractor={(item) => item[0].id.toString()}
-        renderItem={({ item }) => (
-          <NotificationGroup
-            notifications={item}
-            onNotificationSelected={setSelectedNotification}
-          />
-        )}
-      />
-      <NotificationShow
-        notification={selectedNotification}
-        onClose={() => setSelectedNotification(null)}
-      />
+      <Box
+        backgroundColor="white"
+        borderRadius="xl"
+        marginBottom="xl"
+        overflow="hidden"
+      >
+        <FlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={colors.grayLight}
+            />
+          }
+          refreshing={refreshing}
+          style={{ flexGrow: 0 }}
+          data={groupedNotifications}
+          keyExtractor={(item) => item[0].id.toString()}
+          renderItem={({ item, index }) => (
+            <NotificationGroup
+              isFirst={index === 0}
+              notifications={item}
+              onNotificationSelected={setSelectedNotification}
+            />
+          )}
+        />
+        <NotificationShow
+          notification={selectedNotification}
+          onClose={() => setSelectedNotification(null)}
+        />
+      </Box>
     </Box>
   )
 }

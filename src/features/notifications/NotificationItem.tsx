@@ -1,11 +1,11 @@
 import React, { memo } from 'react'
-import { formatDistance, fromUnixTime } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
 import { Notification } from '../../store/notifications/notificationSlice'
-import TouchableOpacityBox from '../../components/TouchableOpacityBox'
-import ImageBox from '../../components/ImageBox'
+import parseMarkup from '../../utils/parseMarkup'
+import TouchableHighlightBox from '../../components/TouchableHighlightBox'
+import { useColors } from '../../theme/themeHooks'
 
 type Props = {
   notification: Notification
@@ -21,72 +21,59 @@ const NotificationItem = ({
 }: Props) => {
   const viewed = !!notification.viewed_at
   const { t } = useTranslation()
+  const colors = useColors()
 
   const isSingleItem = isFirst && isLast
 
   return (
     <Box>
-      <Box
-        flexDirection="row"
-        alignItems="flex-end"
-        marginBottom={isLast ? 's' : 'none'}
-      >
-        <ImageBox
-          source={{
-            uri: notification.icon,
-            method: 'GET',
-          }}
-          resizeMode="contain"
-          width={46}
-          height={46}
+      <Box flexDirection="row">
+        <Box
+          width={14}
+          height="100%"
+          borderRightWidth={2}
+          borderRightColor="grayAccent"
         />
-        <TouchableOpacityBox
+        <TouchableHighlightBox
           activeOpacity={0.9}
-          marginLeft="s"
+          underlayColor={colors.grayHighlight}
           flex={1}
-          backgroundColor={viewed ? 'purple100' : 'greenBright'}
-          padding="lm"
+          backgroundColor={viewed ? 'grayBox' : 'greenBright'}
+          padding="m"
+          marginBottom={isLast ? 'l' : 'none'}
+          marginLeft="lm"
+          marginTop="s"
           onPress={() => onNotificationSelected(notification)}
-          borderBottomRightRadius={isLast ? 'm' : 'none'}
-          borderTopLeftRadius={isFirst ? 'm' : 'none'}
-          borderTopRightRadius={isFirst ? 'm' : 'none'}
-          borderBottomWidth={!isLast ? 1 : 0}
-          borderBottomColor="primaryBackground"
+          borderRadius="m"
         >
-          <Text
-            variant="body1Medium"
-            color={viewed ? 'grayExtraLight' : 'whitePurple'}
-          >
-            {notification.title}
-          </Text>
-          {!viewed && isSingleItem && (
-            <Text
-              variant="body1Light"
-              fontSize={16}
-              color="black"
-              marginTop="s"
-              numberOfLines={1}
-            >
-              {t('notifications.tapToReadMore')}
-            </Text>
-          )}
-        </TouchableOpacityBox>
-      </Box>
-      <Box flexDirection="row" alignItems="center" marginLeft="xxl">
-        {isLast && (
           <>
-            {!viewed && (
-              <Text variant="h7" marginRight="xs" textTransform="uppercase">
-                {t('generic.new')}
+            <Text
+              variant="body2Medium"
+              color={viewed ? 'grayText' : 'whitePurple'}
+              marginBottom="xs"
+            >
+              {notification.title}
+            </Text>
+            <Text
+              variant="body3"
+              color={viewed ? 'grayExtraLight' : 'whitePurple'}
+              numberOfLines={2}
+            >
+              {parseMarkup(notification.body)}
+            </Text>
+            {!viewed && isSingleItem && (
+              <Text
+                variant="body1Light"
+                fontSize={16}
+                color="black"
+                marginTop="s"
+                numberOfLines={1}
+              >
+                {t('notifications.tapToReadMore')}
               </Text>
             )}
-            <Text variant="body3" fontSize={12} color="grayExtraLight">
-              {formatDistance(fromUnixTime(notification.time), new Date(), {
-                addSuffix: true,
-              })}
-            </Text>
           </>
-        )}
+        </TouchableHighlightBox>
       </Box>
     </Box>
   )
