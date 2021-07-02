@@ -141,7 +141,6 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
             <NotificationItem
               onNotificationSelected={setSelectedNotification}
               notification={item}
-              isFirst={index === 0}
               isLast={index === section.data.length - 1}
             />
           )}
