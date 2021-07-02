@@ -635,6 +635,10 @@ export default {
       subtitle:
         'Here you’ll get news, updates and alerts about your Hotspots and The People’s Network.',
     },
+    hotspot_updates: 'Hotspot Updates',
+    helium_updates: 'Helium Updates',
+    weekly_earnings: 'Weekly Earnings',
+    failure_notifications: 'Failure Notifications',
   },
   transactions: {
     pending: 'Pending',

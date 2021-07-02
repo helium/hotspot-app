@@ -1,23 +1,27 @@
 import React, { memo } from 'react'
 import { formatDistance, fromUnixTime } from 'date-fns'
+import { useTranslation } from 'react-i18next'
+import { TFunction } from 'i18next'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
 import { Notification } from '../../store/notifications/notificationSlice'
 import NotificationItem from './NotificationItem'
 import ImageBox from '../../components/ImageBox'
 
-const getNotificationGroupTitle = (iconUrl: string) => {
-  // TODO localize & failed notifications
+const getNotificationGroupTitle = (iconUrl: string, t: TFunction) => {
   if (iconUrl.includes('hotspot-update')) {
-    return 'Hotspot Updates'
+    return t('notifications.hotspot_updates')
   }
   if (iconUrl.includes('helium-update')) {
-    return 'Helium Updates'
+    return t('notifications.helium_updates')
   }
   if (iconUrl.includes('earnings')) {
-    return 'Weekly Earnings'
+    return t('notifications.weekly_earnings')
   }
-  return ''
+  if (iconUrl.includes('failed-txn')) {
+    return t('notifications.failure_notifications')
+  }
+  return t('notifications.helium_updates')
 }
 
 type Props = {
@@ -31,6 +35,7 @@ const NotificationGroup = ({
   onNotificationSelected,
 }: Props) => {
   const lastIndex = notifications.length - 1
+  const { t } = useTranslation()
   return (
     <Box paddingHorizontal="l">
       <Box
@@ -53,7 +58,7 @@ const NotificationGroup = ({
             marginRight="s"
           />
           <Text variant="h5" color="grayBlack">
-            {getNotificationGroupTitle(notifications[0].icon)}
+            {getNotificationGroupTitle(notifications[0].icon, t)}
           </Text>
         </Box>
         <Text variant="body3" fontSize={12} color="grayExtraLight">
