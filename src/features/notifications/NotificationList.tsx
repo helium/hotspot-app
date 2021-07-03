@@ -41,7 +41,7 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
 
   const getNotificationGroupTitle = useCallback(
     (iconUrl: string) => {
-      if (iconUrl.includes('hotspot-update')) {
+      if (iconUrl.includes('hotspot-update') || iconUrl.includes('transfer')) {
         return t('notifications.hotspot_updates')
       }
       if (iconUrl.includes('helium-update')) {
