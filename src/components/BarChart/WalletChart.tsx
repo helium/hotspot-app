@@ -59,13 +59,13 @@ const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
   }, [focusedData?.down, focusedData?.up, hntToDisplayVal])
   const [dataRange, setDataRange] = useState('')
 
-  // TODO: Figure out why re-loading the same chart takes so long
-  // Does it refetch the same data?
-  // Payments also seem to be loading the same chart data as All
-  const data = useMemo(() => activityChart[activityChartRange].data, [
-    activityChart,
-    activityChartRange,
-  ])
+  const data = useMemo(() => {
+    const chartsByFilter = activityChart[filter]
+
+    if (!chartsByFilter || !chartsByFilter[activityChartRange]) return null
+
+    return chartsByFilter[activityChartRange]
+  }, [filter, activityChart, activityChartRange])
 
   useEffect(() => {
     dispatch(
@@ -96,8 +96,10 @@ const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
   )
 
   const showDataRange = useMemo(
-    () => activityChartRange === 'monthly' && !!focusedData,
-    [activityChartRange, focusedData],
+    () =>
+      (activityChartRange === 'monthly' && !!focusedData) ||
+      filter === 'pending',
+    [activityChartRange, focusedData, filter],
   )
 
   const chartRangeData = useMemo(
@@ -127,10 +129,6 @@ const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
   )
 
   const { greenBright, blueBright } = useColors()
-
-  // TODO: Create a skeleton loader
-  if (showSkeleton || data.length === 0)
-    return <Box {...boxProps} height={height} />
 
   return (
     <Box {...boxProps} height={height}>
@@ -198,13 +196,20 @@ const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
           </Text>
         )}
       </Box>
-      <ChartContainer
-        height={chartHeight}
-        data={data}
-        onFocus={handleFocusData}
-        showXAxisLabel={activityChartRange !== 'monthly'}
-        labelColor={colors.grayDark}
-      />
+      {filter !== 'pending' && (
+        <ChartContainer
+          loading={
+            showSkeleton ||
+            !data ||
+            (data.loading === 'pending' && (data.data || []).length === 0)
+          }
+          height={chartHeight}
+          data={data?.data}
+          onFocus={handleFocusData}
+          showXAxisLabel={activityChartRange !== 'monthly'}
+          labelColor={colors.grayDark}
+        />
+      )}
     </Box>
   )
 }
