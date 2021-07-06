@@ -11,7 +11,6 @@ import animateTransition from '../../../utils/animateTransition'
 import { ActivityViewState } from './walletTypes'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import WalletView from './WalletView'
-import Text from '../../../components/Text'
 
 const WalletScreen = () => {
   const dispatch = useAppDispatch()
@@ -95,6 +94,7 @@ const WalletScreen = () => {
       !allData.length &&
       activityViewState !== 'no_activity'
     ) {
+      animateTransition('WalletScreen.NoActivity')
       setActivityViewState('no_activity')
     }
   }, [filter, activityViewState, txns, visible])
@@ -104,14 +104,14 @@ const WalletScreen = () => {
       !txns[filter].hasInitialLoad || !txns.pending.hasInitialLoad
 
     if (nextShowSkeleton !== showSkeleton) {
-      if (visible) {
+      if (visible && activityViewState !== 'no_activity') {
         animateTransition('WalletScreen.ShowSkeleton', {
           enabledOnAndroid: false,
         })
       }
       setShowSkeleton(nextShowSkeleton)
     }
-  }, [filter, showSkeleton, txns, visible])
+  }, [activityViewState, filter, showSkeleton, txns, visible])
 
   useEffect(() => {
     // Fetch pending txns on an interval of 5s
@@ -163,22 +163,12 @@ const WalletScreen = () => {
   return (
     <>
       <SafeAreaBox flex={1} backgroundColor="primaryBackground">
-        {(activityViewState === 'activity' ||
-          activityViewState === 'undetermined') && (
-          <WalletView
-            activityViewState={activityViewState}
-            showSkeleton={showSkeleton}
-            txns={transactionData}
-            pendingTxns={pendingTxns}
-          />
-        )}
-        {/* TODO: Handle state where user has no activity and no balance */}
-        {activityViewState === 'no_activity' && (
-          // && user has no balance
-          <Text variant="bold" fontSize={43} lineHeight={43} color="white">
-            {'Welcome to\nyour Wallet'}
-          </Text>
-        )}
+        <WalletView
+          activityViewState={activityViewState}
+          showSkeleton={showSkeleton}
+          txns={transactionData}
+          pendingTxns={pendingTxns}
+        />
       </SafeAreaBox>
       {detailTxn && <ActivityDetails detailTxn={detailTxn} />}
     </>

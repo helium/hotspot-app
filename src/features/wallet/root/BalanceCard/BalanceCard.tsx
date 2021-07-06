@@ -1,15 +1,18 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { memo } from 'react'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import SendCircle from '@assets/images/sendCircle.svg'
 import ReceiveCircle from '@assets/images/receiveCircle.svg'
 import { Account } from '@helium/http'
+import { BoxProps } from '@shopify/restyle'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
 import CurrencyBadge from './CurrencyBadge'
 import { hp } from '../../../../utils/layout'
 import { DebouncedTouchableOpacityBox } from '../../../../components/TouchableOpacityBox'
+import { Theme } from '../../../../theme/theme'
 
-type Props = {
+type Props = BoxProps<Theme> & {
   onReceivePress: () => void
   onSendPress: () => void
   balanceInfo: {
@@ -29,9 +32,15 @@ const BalanceCard = ({
   account,
   accountLoading,
   toggleConvertHntToCurrency,
+  ...boxProps
 }: Props) => {
   return (
-    <Box justifyContent="center" paddingVertical="xs" paddingHorizontal="l">
+    <Box
+      justifyContent="center"
+      paddingVertical="xs"
+      paddingHorizontal="l"
+      {...boxProps}
+    >
       <Box
         flexDirection="row"
         justifyContent="space-between"
