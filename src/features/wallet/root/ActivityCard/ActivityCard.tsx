@@ -1,4 +1,4 @@
-import React, { useRef, memo, useMemo } from 'react'
+import React, { memo, useMemo, forwardRef, Ref } from 'react'
 import BottomSheet from '@gorhom/bottom-sheet'
 import Animated from 'react-native-reanimated'
 import { AnyTransaction, PendingTransaction } from '@helium/http'
@@ -19,53 +19,59 @@ type Props = {
   paddingVertical: Spacing
 }
 
-const ActivityCard = ({
-  animatedIndex,
-  onChange,
-  txns,
-  pendingTxns,
-  filter,
-  hasNoResults,
-  showSkeleton,
-  snapPoints,
-  paddingVertical,
-}: Props) => {
-  const sheet = useRef<BottomSheet>(null)
+const ActivityCard = forwardRef(
+  (
+    {
+      animatedIndex,
+      onChange,
+      txns,
+      pendingTxns,
+      filter,
+      hasNoResults,
+      showSkeleton,
+      snapPoints,
+      paddingVertical,
+    }: Props,
+    ref: Ref<BottomSheet>,
+  ) => {
+    const getData = useMemo(() => {
+      let data: (AnyTransaction | PendingTransaction)[] = txns
+      if (filter === 'pending') {
+        data = pendingTxns
+      }
 
-  const getData = useMemo(() => {
-    let data: (AnyTransaction | PendingTransaction)[] = txns
-    if (filter === 'pending') {
-      data = pendingTxns
-    }
+      if (filter === 'all') {
+        data = [...pendingTxns, ...txns]
+      }
 
-    if (filter === 'all') {
-      data = [...pendingTxns, ...txns]
-    }
+      return data
+    }, [filter, pendingTxns, txns])
 
-    return data
-  }, [filter, pendingTxns, txns])
-
-  return (
-    <BottomSheet
-      handleComponent={null}
-      snapPoints={snapPoints}
-      index={1}
-      animateOnMount={false}
-      ref={sheet}
-      onChange={onChange}
-      animatedIndex={animatedIndex}
-    >
-      <>
-        <ActivityCardHeader filter={filter} paddingVertical={paddingVertical} />
-        <ActivityCardListView
-          data={getData}
-          hasNoResults={hasNoResults}
-          showSkeleton={showSkeleton}
-        />
-      </>
-    </BottomSheet>
-  )
-}
+    return (
+      <BottomSheet
+        handleComponent={null}
+        snapPoints={snapPoints}
+        index={1}
+        animateOnMount={false}
+        ref={ref}
+        onChange={onChange}
+        animatedIndex={animatedIndex}
+      >
+        <>
+          <ActivityCardHeader
+            filter={filter}
+            paddingVertical={paddingVertical}
+          />
+          <ActivityCardListView
+            data={getData}
+            hasNoResults={hasNoResults}
+            showSkeleton={showSkeleton}
+          />
+        </>
+      </BottomSheet>
+    )
+  },
+)
 
 export default memo(ActivityCard, (prev, next) => {
   return (

@@ -236,6 +236,7 @@ const WalletView = ({
 
       {activityViewState === 'activity' && (
         <ActivityCard
+          ref={activityCardRef}
           showSkeleton={showSkeleton}
           filter={filter}
           txns={txns}
