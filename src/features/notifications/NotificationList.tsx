@@ -7,10 +7,14 @@ import Box from '../../components/Box'
 import Text from '../../components/Text'
 import NotificationShow from './NotificationShow'
 import animateTransition from '../../utils/animateTransition'
-import { Notification } from '../../store/notifications/notificationSlice'
+import {
+  fetchMoreNotifications,
+  Notification,
+} from '../../store/notifications/notificationSlice'
 import { useColors, useSpacing } from '../../theme/themeHooks'
 import NotificationItem from './NotificationItem'
 import NotificationGroupHeader from './NotificationGroupHeader'
+import { useAppDispatch } from '../../store/store'
 
 export type NotificationGroupData = {
   title: string
@@ -28,6 +32,7 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
   const { t } = useTranslation()
   const colors = useColors()
   const spacing = useSpacing()
+  const dispatch = useAppDispatch()
   const [allNotifications, setAllNotifications] = useState<Array<Notification>>(
     [],
   )
@@ -102,6 +107,10 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
     setGroupedNotifications(arr)
   }, [allNotifications, getNotificationGroupTitle, t])
 
+  const loadMoreNotifications = useCallback(() => {
+    dispatch(fetchMoreNotifications(notifications[notifications.length - 1].id))
+  }, [dispatch, notifications])
+
   return (
     <Box flex={1} marginBottom="m">
       <Text variant="h3" marginVertical="m" flexGrow={1} paddingHorizontal="l">
@@ -147,6 +156,8 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
           renderSectionHeader={({ section: { title, icon, time } }) => (
             <NotificationGroupHeader title={title} icon={icon} time={time} />
           )}
+          onEndReached={loadMoreNotifications}
+          onEndReachedThreshold={0.2}
         />
         <NotificationShow
           notification={selectedNotification}
