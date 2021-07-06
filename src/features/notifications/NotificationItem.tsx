@@ -1,92 +1,82 @@
-import React, { memo } from 'react'
-import { formatDistance, fromUnixTime } from 'date-fns'
-import { useTranslation } from 'react-i18next'
+import React, { memo, useCallback, useMemo } from 'react'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
 import { Notification } from '../../store/notifications/notificationSlice'
-import TouchableOpacityBox from '../../components/TouchableOpacityBox'
-import ImageBox from '../../components/ImageBox'
+import parseMarkup from '../../utils/parseMarkup'
+import TouchableHighlightBox from '../../components/TouchableHighlightBox'
+import { useColors } from '../../theme/themeHooks'
+import CarotRight from '../../assets/images/carot-right.svg'
 
 type Props = {
   notification: Notification
-  isFirst: boolean
   isLast: boolean
   onNotificationSelected: (notification: Notification) => void
 }
 const NotificationItem = ({
   notification,
-  isFirst,
   isLast,
   onNotificationSelected,
 }: Props) => {
   const viewed = !!notification.viewed_at
-  const { t } = useTranslation()
+  const colors = useColors()
 
-  const isSingleItem = isFirst && isLast
+  const onNotificationPress = useCallback(
+    () => onNotificationSelected(notification),
+    [notification, onNotificationSelected],
+  )
+
+  const body = useMemo(() => parseMarkup(notification.body), [
+    notification.body,
+  ])
 
   return (
     <Box>
-      <Box
-        flexDirection="row"
-        alignItems="flex-end"
-        marginBottom={isLast ? 's' : 'none'}
-      >
-        <ImageBox
-          source={{
-            uri: notification.icon,
-            method: 'GET',
-          }}
-          resizeMode="contain"
-          width={46}
-          height={46}
+      <Box flexDirection="row">
+        <Box
+          width={14}
+          height="100%"
+          borderRightWidth={2}
+          borderRightColor="grayAccent"
         />
-        <TouchableOpacityBox
+        <TouchableHighlightBox
           activeOpacity={0.9}
-          marginLeft="s"
+          underlayColor={colors.grayHighlight}
           flex={1}
-          backgroundColor={viewed ? 'purple100' : 'greenBright'}
-          padding="lm"
-          onPress={() => onNotificationSelected(notification)}
-          borderBottomRightRadius={isLast ? 'm' : 'none'}
-          borderTopLeftRadius={isFirst ? 'm' : 'none'}
-          borderTopRightRadius={isFirst ? 'm' : 'none'}
-          borderBottomWidth={!isLast ? 1 : 0}
-          borderBottomColor="primaryBackground"
+          backgroundColor="grayBox"
+          marginBottom={isLast ? 'l' : 'none'}
+          marginLeft="lm"
+          marginTop="s"
+          onPress={onNotificationPress}
+          borderRadius="m"
         >
-          <Text
-            variant="body1Medium"
-            color={viewed ? 'grayExtraLight' : 'whitePurple'}
-          >
-            {notification.title}
-          </Text>
-          {!viewed && isSingleItem && (
-            <Text
-              variant="body1Light"
-              fontSize={16}
-              color="black"
-              marginTop="s"
-              numberOfLines={1}
-            >
-              {t('notifications.tapToReadMore')}
-            </Text>
-          )}
-        </TouchableOpacityBox>
-      </Box>
-      <Box flexDirection="row" alignItems="center" marginLeft="xxl">
-        {isLast && (
-          <>
-            {!viewed && (
-              <Text variant="h7" marginRight="xs" textTransform="uppercase">
-                {t('generic.new')}
+          <Box flexDirection="row" justifyContent="space-between" padding="m">
+            <Box width="95%">
+              <Box flexDirection="row" alignItems="center" marginBottom="xs">
+                {!viewed && (
+                  <Box
+                    borderRadius="round"
+                    backgroundColor="purpleMain"
+                    width={8}
+                    height={8}
+                    marginRight="xs"
+                  />
+                )}
+                <Text
+                  variant="body2Medium"
+                  color={viewed ? 'grayText' : 'black'}
+                >
+                  {notification.title}
+                </Text>
+              </Box>
+              <Text variant="body3" color="grayExtraLight" numberOfLines={2}>
+                {body}
               </Text>
-            )}
-            <Text variant="body3" fontSize={12} color="grayExtraLight">
-              {formatDistance(fromUnixTime(notification.time), new Date(), {
-                addSuffix: true,
-              })}
-            </Text>
-          </>
-        )}
+            </Box>
+            <Box alignItems="center" justifyContent="center">
+              <CarotRight color={colors.grayLight} />
+            </Box>
+          </Box>
+        </TouchableHighlightBox>
       </Box>
     </Box>
   )

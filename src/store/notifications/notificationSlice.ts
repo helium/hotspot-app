@@ -31,6 +31,14 @@ export const fetchNotifications = createAsyncThunk<Notification[]>(
   async () => getWallet('notifications'),
 )
 
+export const fetchMoreNotifications = createAsyncThunk<Notification[], number>(
+  'account/fetchMoreNotifications',
+  async (lastId: number) =>
+    getWallet('notifications', {
+      before: lastId,
+    }),
+)
+
 export const markNotificationsViewed = createAsyncThunk<Notification[]>(
   'account/markNotificationsViewed',
   async () => {
@@ -78,6 +86,16 @@ const notificationSlice = createSlice({
       state.loadingNotification = false
     })
     builder.addCase(fetchNotifications.rejected, (state, _action) => {
+      state.loadingNotification = false
+    })
+    builder.addCase(fetchMoreNotifications.pending, (state, _action) => {
+      state.loadingNotification = true
+    })
+    builder.addCase(fetchMoreNotifications.fulfilled, (state, { payload }) => {
+      state.notifications = [...state.notifications, ...payload]
+      state.loadingNotification = false
+    })
+    builder.addCase(fetchMoreNotifications.rejected, (state, _action) => {
       state.loadingNotification = false
     })
   },
