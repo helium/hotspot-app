@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux'
 import { ActivityIndicator } from 'react-native'
 import { RootState } from '../../../store/rootReducer'
 import HotspotsView from './HotspotsView'
-import HotspotsEmpty from './HotspotsEmpty'
 import Box from '../../../components/Box'
 import {
   fetchFollowedHotspotsFromBlock,
@@ -26,7 +25,7 @@ const HotspotsScreen = () => {
   )
   const [startOnMap, setStartOnMap] = useState(false)
   const dispatch = useAppDispatch()
-  const { currentLocation: location, locationBlocked } = useSelector(
+  const { currentLocation: location } = useSelector(
     (state: RootState) => state.location,
   )
 
@@ -64,24 +63,14 @@ const HotspotsScreen = () => {
   return (
     <Box backgroundColor="primaryBackground" flex={1}>
       <BottomSheetModalProvider>
-        {viewState === 'empty' && (
-          <Box flex={1} justifyContent="center">
-            <HotspotsEmpty
-              onOpenExplorer={browseMap}
-              locationBlocked={locationBlocked}
-            />
-          </Box>
-        )}
-        {viewState === 'view' && (
-          <>
-            <HotspotsView
-              ownedHotspots={hotspots}
-              followedHotspots={followedHotspots}
-              startOnMap={startOnMap}
-              location={coords}
-              onViewMap={maybeGetLocation}
-            />
-          </>
+        {viewState !== 'loading' && (
+          <HotspotsView
+            ownedHotspots={hotspots}
+            followedHotspots={followedHotspots}
+            startOnMap={startOnMap}
+            location={coords}
+            onRequestShowMap={browseMap}
+          />
         )}
         {viewState === 'loading' && (
           <Box justifyContent="center" flex={1}>

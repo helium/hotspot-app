@@ -15,7 +15,6 @@ import hotspotDetailsSlice, {
 import HotspotsViewHeader from './HotspotsViewHeader'
 import HotspotsList from './HotspotsList'
 import HotspotDetails, { HotspotSnapPoints } from '../details/HotspotDetails'
-import HotspotsEmpty from './HotspotsEmpty'
 import HotspotSettingsProvider from '../settings/HotspotSettingsProvider'
 import HotspotSettings from '../settings/HotspotSettings'
 import HotspotSearch from './HotspotSearch'
@@ -39,7 +38,7 @@ type Props = {
   followedHotspots?: Hotspot[]
   startOnMap?: boolean
   location?: number[]
-  onViewMap: (prompt: boolean) => void
+  onRequestShowMap: (prompt: boolean) => void
 }
 
 type Route = RouteProp<HotspotStackParamList, 'HotspotsScreen'>
@@ -49,7 +48,7 @@ const HotspotsView = ({
   ownedHotspots,
   followedHotspots,
   startOnMap,
-  onViewMap,
+  onRequestShowMap,
   location: propsLocation,
 }: Props) => {
   const navigation = useNavigation()
@@ -73,10 +72,6 @@ const HotspotsView = ({
     GlobalOpt | Hotspot | Witness
   >(startOnMap ? 'explore' : 'home')
   const prevShorcutItem = usePrevious(shortcutItem)
-
-  const locationBlocked = useSelector(
-    (state: RootState) => state.location.locationBlocked,
-  )
 
   const hotspotAddress = useMemo(() => {
     if (shortcutItem && typeof shortcutItem !== 'string') {
@@ -103,9 +98,9 @@ const HotspotsView = ({
 
   useEffect(() => {
     if (shortcutItem === 'explore' && prevShorcutItem !== 'explore') {
-      onViewMap(true)
+      onRequestShowMap(true)
     }
-  }, [onViewMap, prevShorcutItem, shortcutItem])
+  }, [onRequestShowMap, prevShorcutItem, shortcutItem])
 
   const handleShortcutItemSelected = useCallback(
     (item: GlobalOpt | Hotspot | Witness) => {
@@ -159,7 +154,7 @@ const HotspotsView = ({
   })
 
   const hasHotspots = useMemo(
-    () => ownedHotspots?.length || followedHotspots?.length,
+    () => !!(ownedHotspots?.length || followedHotspots?.length),
     [followedHotspots?.length, ownedHotspots?.length],
   )
 
@@ -194,7 +189,7 @@ const HotspotsView = ({
     ) {
       setLocation([followedHotspots[0].lng || 0, followedHotspots[0].lat || 0]) // Set map loc to one of their followed hotspots
     } else {
-      setLocation([122.4194, 37.7749]) // SF - This shouldn't actually be possible
+      setLocation([-122.4194, 37.7749]) // SF - Browsing map without location permission and hotspots
     }
   }, [followedHotspots, hasUserLocation, hotspotAddress, ownedHotspots])
 
@@ -327,46 +322,35 @@ const HotspotsView = ({
   )
 
   const body = useMemo(() => {
-    if (hasHotspots) {
-      return (
-        <>
-          <HotspotSearch
-            onSelectHotspot={handlePresentDetails}
-            onSelectPlace={handleSelectPlace}
-            visible={shortcutItem === 'search'}
-          />
-          <HotspotDetails
-            visible={typeof shortcutItem !== 'string'}
-            hotspot={selectedHotspot}
-            onLayoutSnapPoints={setDetailSnapPoints}
-            onChangeHeight={setDetailHeight}
-            onFailure={handleItemSelected}
-            onSelectHotspot={handlePresentDetails}
-            toggleSettings={toggleSettings}
-            animatedPosition={animatedIndex}
-          />
-
-          <HotspotsList
-            onSelectHotspot={handlePresentDetails}
-            visible={shortcutItem === 'home'}
-            searchPressed={handleSearching(true)}
-            addHotspotPressed={handleHotspotSetup}
-          />
-        </>
-      )
-    }
-
     return (
-      <HotspotsEmpty
-        onOpenExplorer={dismissList}
-        locationBlocked={locationBlocked}
-        lightTheme
-      />
+      <>
+        <HotspotSearch
+          onSelectHotspot={handlePresentDetails}
+          onSelectPlace={handleSelectPlace}
+          visible={shortcutItem === 'search'}
+        />
+        <HotspotDetails
+          visible={typeof shortcutItem !== 'string'}
+          hotspot={selectedHotspot}
+          onLayoutSnapPoints={setDetailSnapPoints}
+          onChangeHeight={setDetailHeight}
+          onFailure={handleItemSelected}
+          onSelectHotspot={handlePresentDetails}
+          toggleSettings={toggleSettings}
+          animatedPosition={animatedIndex}
+        />
+
+        <HotspotsList
+          onRequestShowMap={dismissList}
+          onSelectHotspot={handlePresentDetails}
+          visible={shortcutItem === 'home'}
+          searchPressed={handleSearching(true)}
+          addHotspotPressed={handleHotspotSetup}
+          hasHotspots={hasHotspots}
+        />
+      </>
     )
   }, [
-    hasHotspots,
-    dismissList,
-    locationBlocked,
     handlePresentDetails,
     handleSelectPlace,
     shortcutItem,
@@ -374,8 +358,10 @@ const HotspotsView = ({
     handleItemSelected,
     toggleSettings,
     animatedIndex,
+    dismissList,
     handleSearching,
     handleHotspotSetup,
+    hasHotspots,
   ])
 
   const onChangeMapFilter = useCallback((filter: MapFilters) => {
