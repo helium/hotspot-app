@@ -39,7 +39,7 @@ import Info from '../../../assets/images/info-hollow.svg'
 import Location from '../../../assets/images/location.svg'
 import Signal from '../../../assets/images/signal.svg'
 import { distance } from '../../../utils/location'
-import { useColors } from '../../../theme/themeHooks'
+import { useColors, useSpacing } from '../../../theme/themeHooks'
 import TouchableHighlightBox from '../../../components/TouchableHighlightBox'
 import HotspotSheetHandle from '../root/HotspotSheetHandle'
 import { hp } from '../../../utils/layout'
@@ -71,6 +71,7 @@ const HotspotDetails = ({
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const colors = useColors()
+  const spacing = useSpacing()
   const address = propsHotspot?.address || ''
   const hotspotChatData =
     useSelector(
@@ -331,6 +332,10 @@ const HotspotDetails = ({
     toggleShowStatusBanner()
   }, [listIndex, showStatusBanner, toggleShowStatusBanner])
 
+  const contentContainerStyle = useMemo(() => ({ paddingLeft: spacing.m }), [
+    spacing.m,
+  ])
+
   if (!hotspot) return null
 
   return (
@@ -453,7 +458,7 @@ const HotspotDetails = ({
             <HeliumSelect
               showGradient={false}
               marginTop="m"
-              marginLeft="m"
+              contentContainerStyle={contentContainerStyle}
               data={selectData}
               backgroundColor="grayBox"
               selectedValue={selectedOption}

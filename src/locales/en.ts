@@ -133,6 +133,8 @@ export default {
     loading: 'Loading...',
     copy: 'Copy',
     address: 'Address',
+    copy_address: 'Copy Address',
+    share: 'Share',
     invalid_password: 'You password is incorrect',
     something_went_wrong: 'Something went wrong',
     hnt_to_currency: '{{currencyType}}. Data from CoinGecko',
@@ -430,6 +432,12 @@ export default {
     },
   },
   wallet: {
+    empty: {
+      title: 'Welcome to\nyour wallet',
+      subtitle: 'Your balance is zero.',
+      description:
+        'You can send HNT to the below address/QR or deploy a Hotspot to start learning.',
+    },
     title: 'My Wallet',
     copiedToClipboard: 'Copied {{address}} to clipboard',
     share: 'Share',
@@ -448,9 +456,9 @@ export default {
       },
     ],
     chartRanges: {
-      days: { label: '14D', accessibilityLabel: '14 Days' },
-      weeks: { label: '12W', accessibilityLabel: '12 Weeks' },
-      months: { label: '12M', accessibilityLabel: '12 Months' },
+      daily: { label: '14D', accessibilityLabel: '14 Days' },
+      weekly: { label: '12W', accessibilityLabel: '12 Weeks' },
+      monthly: { label: '12M', accessibilityLabel: '12 Months' },
     },
   },
   send: {

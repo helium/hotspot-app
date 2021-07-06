@@ -6,27 +6,19 @@ import { ChartData, ChartRange } from '../../components/BarChart/types'
 import { FilterType } from '../../features/wallet/root/walletTypes'
 import { Loading } from '../activity/activitySlice'
 
-type ChartRangeData = { data: ChartData[]; loading: Loading }
-type ActivityChart = {
-  daily: ChartRangeData
-  weekly: ChartRangeData
-  monthly: ChartRangeData
-}
+export type ChartRangeData = { data: ChartData[]; loading: Loading }
+type ActivityChart = Record<ChartRange, ChartRangeData>
 
 export type AccountState = {
   account?: Account
   fetchDataStatus: Loading
-  activityChart: ActivityChart
+  activityChart: Record<FilterType, ActivityChart>
   activityChartRange: ChartRange
 }
 
 const initialState: AccountState = {
   fetchDataStatus: 'idle',
-  activityChart: {
-    daily: { data: [], loading: 'idle' },
-    weekly: { data: [], loading: 'idle' },
-    monthly: { data: [], loading: 'idle' },
-  },
+  activityChart: {} as Record<FilterType, ActivityChart>,
   activityChartRange: 'daily',
 }
 
@@ -79,17 +71,44 @@ const accountSlice = createSlice({
       state.fetchDataStatus = 'rejected'
     })
     builder.addCase(fetchActivityChart.pending, (state, { meta }) => {
-      state.activityChart[meta.arg.range].loading = 'pending'
+      const currentChart =
+        state.activityChart[meta.arg.filterType]?.[meta.arg.range] || {}
+
+      if (!state.activityChart[meta.arg.filterType]) {
+        state.activityChart[meta.arg.filterType] = {} as ActivityChart
+      }
+
+      if (!state.activityChart[meta.arg.filterType][meta.arg.range]) {
+        state.activityChart[meta.arg.filterType][meta.arg.range] = {
+          ...currentChart,
+          data: [] as ChartData[],
+        }
+      }
+
+      state.activityChart[meta.arg.filterType][meta.arg.range].loading =
+        'pending'
     })
     builder.addCase(
       fetchActivityChart.fulfilled,
       (state, { meta, payload }) => {
-        state.activityChart[meta.arg.range].loading = 'fulfilled'
-        state.activityChart[meta.arg.range].data = payload
+        const currentChart =
+          state.activityChart[meta.arg.filterType]?.[meta.arg.range] || {}
+
+        state.activityChart[meta.arg.filterType][meta.arg.range] = {
+          ...currentChart,
+          data: payload,
+          loading: 'fulfilled',
+        }
       },
     )
     builder.addCase(fetchActivityChart.rejected, (state, { meta }) => {
-      state.activityChart[meta.arg.range].loading = 'rejected'
+      const currentChart =
+        state.activityChart[meta.arg.filterType]?.[meta.arg.range] || {}
+
+      state.activityChart[meta.arg.filterType][meta.arg.range] = {
+        ...currentChart,
+        loading: 'rejected',
+      }
     })
   },
 })
