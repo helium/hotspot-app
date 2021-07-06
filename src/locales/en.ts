@@ -637,6 +637,7 @@ export default {
     },
     hotspot_updates: 'Hotspot Updates',
     helium_updates: 'Helium Updates',
+    helium_update: 'Helium Update',
     weekly_earnings: 'Weekly Earnings',
     failure_notifications: 'Failure Notifications',
   },

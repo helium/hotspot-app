@@ -129,7 +129,7 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
     [spacing.m],
   )
 
-  const listKeyExtractor = useCallback((item) => item.id.toString(), [])
+  const listKeyExtractor = useCallback((item) => item.time.toString(), [])
 
   const renderListItem = useCallback(
     ({ item, index, section }) => (
@@ -154,8 +154,10 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
     [],
   )
 
+  const containerStyle = useMemo(() => ({ marginBottom: 46 }), [])
+
   return (
-    <Box flex={1} marginBottom="m">
+    <Box flex={1} style={containerStyle}>
       <Text variant="h3" flexGrow={1} padding="l" paddingBottom="xl">
         {t('notifications.list.title')}
       </Text>
