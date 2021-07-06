@@ -62,11 +62,17 @@ const WalletView = ({
   const insets = useSafeAreaInsets()
   const { height } = useSafeAreaFrame()
   const spacing = useSpacing()
-  const [balanceInfo, setBalanceInfo] = useState<{
+  const [balanceInfoSplit, setBalanceInfoSplit] = useState<{
     hasBalance: boolean
     integerPart: string
     decimalPart: string
-  }>({ hasBalance: false, integerPart: '0', decimalPart: '00000000' })
+    phrase: string
+  }>({
+    hasBalance: false,
+    integerPart: '0',
+    decimalPart: '00000000',
+    phrase: '',
+  })
   const navigation = useNavigation<RootNavigationProp>()
   const { triggerNavHaptic } = useHaptic()
   const activityCardRef = useRef<BottomSheet>(null)
@@ -103,20 +109,26 @@ const WalletView = ({
     const updateBalanceInfo = async () => {
       const hasBalance = account?.balance?.integerBalance !== 0
       if (account?.balance && hasBalance) {
-        const balInfo = await hntBalanceToDisplayVal(account.balance, true)
-        const nextBalanceInfo = {
+        const balInfoSplit = await hntBalanceToDisplayVal(account.balance, true)
+        const balInfoPhrase = await hntBalanceToDisplayVal(
+          account.balance,
+          false,
+        )
+        const nextBalanceInfoSplit = {
           hasBalance,
-          ...balInfo,
+          phrase: balInfoPhrase,
+          ...balInfoSplit,
         }
-        if (isEqual(balanceInfo, nextBalanceInfo)) return
+
+        if (isEqual(balanceInfoSplit, nextBalanceInfoSplit)) return
         animateTransition('WalletView.BalanceInfoUpdated', {
           enabledOnAndroid: false,
         })
-        setBalanceInfo(nextBalanceInfo)
+        setBalanceInfoSplit(nextBalanceInfoSplit)
       }
     }
     updateBalanceInfo()
-  }, [account, balanceInfo, hntBalanceToDisplayVal])
+  }, [account, balanceInfoSplit, hntBalanceToDisplayVal])
 
   useEffect(() => {
     const noResults =
@@ -201,7 +213,7 @@ const WalletView = ({
           onReceivePress={toggleShowReceive}
           onSendPress={handleSendPress}
           onLayout={handleLayout('condensedHeader')}
-          balance={balanceInfo}
+          balance={balanceInfoSplit}
         />
       </Animated.View>
       <Box flex={1}>
@@ -215,7 +227,7 @@ const WalletView = ({
               opacity={loading ? 0 : 1}
               onReceivePress={toggleShowReceive}
               onSendPress={handleSendPress}
-              balanceInfo={balanceInfo}
+              balanceInfo={balanceInfoSplit}
               account={account}
               accountLoading={
                 fetchAccountState === 'idle' || fetchAccountState === 'rejected'

@@ -8,6 +8,7 @@ import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import { DebouncedTouchableOpacityBox } from '../../../components/TouchableOpacityBox'
 import { Theme } from '../../../theme/theme'
+import useCurrency from '../../../utils/useCurrency'
 
 type Props = BoxProps<Theme> & {
   onLayout: (event: LayoutChangeEvent) => void
@@ -17,6 +18,7 @@ type Props = BoxProps<Theme> & {
     hasBalance: boolean
     integerPart: string
     decimalPart: string
+    phrase: string
   }
 }
 const WalletHeaderCondensed = ({
@@ -25,6 +27,7 @@ const WalletHeaderCondensed = ({
   balance,
   ...boxProps
 }: Props) => {
+  const { toggleConvertHntToCurrency } = useCurrency()
   return (
     <Box
       flexDirection="row"
@@ -40,8 +43,9 @@ const WalletHeaderCondensed = ({
         color="white"
         fontSize={22}
         maxFontSizeMultiplier={1.2}
+        onPress={toggleConvertHntToCurrency}
       >
-        {`${balance.integerPart} HNT`}
+        {`${balance.phrase}`}
       </Text>
 
       <DebouncedTouchableOpacityBox onPress={onReceivePress} marginRight="s">
