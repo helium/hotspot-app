@@ -17,17 +17,22 @@ import { HotspotSort } from '../../../store/hotspots/hotspotsSlice'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { wh } from '../../../utils/layout'
 import FocusAwareStatusBar from '../../../components/FocusAwareStatusBar'
+import HotspotsEmpty from './HotspotsEmpty'
 
 const HotspotsList = ({
   onSelectHotspot,
   visible,
   searchPressed,
   addHotspotPressed,
+  hasHotspots,
+  onRequestShowMap,
 }: {
   onSelectHotspot: (hotspot: Hotspot | Witness, showNav: boolean) => void
   visible: boolean
   searchPressed?: () => void
   addHotspotPressed?: () => void
+  hasHotspots: boolean
+  onRequestShowMap?: () => void
 }) => {
   const colors = useColors()
   const { top } = useSafeAreaInsets()
@@ -69,7 +74,7 @@ const HotspotsList = ({
   }, [hasOfflineHotspot, order, orderedHotspots])
 
   const renderHeader = useCallback(() => {
-    const hasHotspots = orderedHotspots && orderedHotspots.length > 0
+    const filterHasHotspots = orderedHotspots && orderedHotspots.length > 0
     return (
       <Box
         paddingVertical="s"
@@ -78,23 +83,25 @@ const HotspotsList = ({
         backgroundColor="white"
       >
         <HotspotsPicker />
-        {order === HotspotSort.Offline && !hasOfflineHotspot && hasHotspots && (
-          <Box paddingHorizontal="l">
-            <Text
-              variant="body3Medium"
-              color="grayDark"
-              marginTop="xs"
-              marginBottom="xl"
-              letterSpacing={1}
-            >
-              {t('hotspots.list.no_offline')}
-            </Text>
-            <Text variant="body3Medium" color="grayDark" letterSpacing={1}>
-              {t('hotspots.list.online')}
-            </Text>
-          </Box>
-        )}
-        {!hasHotspots && (
+        {order === HotspotSort.Offline &&
+          !hasOfflineHotspot &&
+          filterHasHotspots && (
+            <Box paddingHorizontal="l">
+              <Text
+                variant="body3Medium"
+                color="grayDark"
+                marginTop="xs"
+                marginBottom="xl"
+                letterSpacing={1}
+              >
+                {t('hotspots.list.no_offline')}
+              </Text>
+              <Text variant="body3Medium" color="grayDark" letterSpacing={1}>
+                {t('hotspots.list.online')}
+              </Text>
+            </Box>
+          )}
+        {!filterHasHotspots && (
           <Box paddingHorizontal="l">
             <Text variant="body1" color="grayDark" padding="m">
               {t('hotspots.list.no_results')}
@@ -144,15 +151,19 @@ const HotspotsList = ({
         </TouchableOpacityBox>
       </Box>
 
-      <SectionList
-        sections={sections}
-        keyExtractor={(item: Hotspot) => item.address}
-        ListHeaderComponent={<WelcomeOverview />}
-        renderSectionHeader={renderHeader}
-        renderItem={renderItem}
-        contentContainerStyle={contentContainerStyle}
-        showsVerticalScrollIndicator={false}
-      />
+      {hasHotspots ? (
+        <SectionList
+          sections={sections}
+          keyExtractor={(item: Hotspot) => item.address}
+          ListHeaderComponent={<WelcomeOverview />}
+          renderSectionHeader={renderHeader}
+          renderItem={renderItem}
+          contentContainerStyle={contentContainerStyle}
+          showsVerticalScrollIndicator={false}
+        />
+      ) : (
+        <HotspotsEmpty onRequestShowMap={onRequestShowMap} />
+      )}
     </Box>
   )
 }

@@ -578,8 +578,8 @@ export default {
       title: 'Add a New Hotspot',
       subtitle:
         'If you just added a Hotspot, hang tight. It takes a few moments for the Network to propagate the Hotspot.',
-      setup: 'Set up Hotspot',
-      explorer: 'View Hotspots Around Me',
+      setup: '+ Add a Hotspot',
+      explorer: 'Browse Network Map',
     },
     owned: {
       title: 'My Hotspots',
