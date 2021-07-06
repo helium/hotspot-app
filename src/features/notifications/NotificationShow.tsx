@@ -53,7 +53,7 @@ const NotificationShow = ({ notification, onClose }: Props) => {
       onRequestClose={onClose}
       animationType="fade"
     >
-      <Box flex={1} justifyContent="flex-end" flexDirection="column">
+      <Box flex={1} justifyContent="flex-start" flexDirection="column">
         <BlurBox
           top={0}
           left={0}
@@ -120,6 +120,7 @@ const NotificationShow = ({ notification, onClose }: Props) => {
             </TouchableOpacityBox>
           )}
         </Card>
+        <TouchableOpacityBox flex={1} onPress={onClose} />
       </Box>
     </Modal>
   )

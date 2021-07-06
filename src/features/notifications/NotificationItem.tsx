@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import React, { memo, useCallback, useMemo } from 'react'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
 import { Notification } from '../../store/notifications/notificationSlice'
@@ -19,6 +19,16 @@ const NotificationItem = ({
 }: Props) => {
   const viewed = !!notification.viewed_at
   const colors = useColors()
+
+  const onNotificationPress = useCallback(
+    () => onNotificationSelected(notification),
+    [notification, onNotificationSelected],
+  )
+
+  const body = useMemo(() => parseMarkup(notification.body), [
+    notification.body,
+  ])
+
   return (
     <Box>
       <Box flexDirection="row">
@@ -36,7 +46,7 @@ const NotificationItem = ({
           marginBottom={isLast ? 'l' : 'none'}
           marginLeft="lm"
           marginTop="s"
-          onPress={() => onNotificationSelected(notification)}
+          onPress={onNotificationPress}
           borderRadius="m"
         >
           <Box flexDirection="row" justifyContent="space-between" padding="m">
@@ -59,7 +69,7 @@ const NotificationItem = ({
                 </Text>
               </Box>
               <Text variant="body3" color="grayExtraLight" numberOfLines={2}>
-                {parseMarkup(notification.body)}
+                {body}
               </Text>
             </Box>
             <Box alignItems="center" justifyContent="center">

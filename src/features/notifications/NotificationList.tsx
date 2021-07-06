@@ -1,5 +1,5 @@
 import { groupBy } from 'lodash'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RefreshControl, SectionList } from 'react-native'
 import { formatDistance, fromUnixTime } from 'date-fns'
@@ -111,9 +111,52 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
     dispatch(fetchMoreNotifications(notifications[notifications.length - 1].id))
   }, [dispatch, notifications])
 
+  const listContainerStyle = useMemo(
+    () => ({
+      paddingHorizontal: spacing.l,
+      paddingTop: spacing.l,
+    }),
+    [spacing.l],
+  )
+
+  const listIndicatorInsets = useMemo(
+    () => ({
+      top: spacing.m,
+      bottom: spacing.m,
+      left: 0,
+      right: 0,
+    }),
+    [spacing.m],
+  )
+
+  const listKeyExtractor = useCallback((item) => item.id.toString(), [])
+
+  const renderListItem = useCallback(
+    ({ item, index, section }) => (
+      <NotificationItem
+        onNotificationSelected={setSelectedNotification}
+        notification={item}
+        isLast={index === section.data.length - 1}
+      />
+    ),
+    [],
+  )
+
+  const renderListHeader = useCallback(
+    ({ section: { title, icon, time } }) => (
+      <NotificationGroupHeader title={title} icon={icon} time={time} />
+    ),
+    [],
+  )
+
+  const onCloseNotification = useCallback(
+    () => setSelectedNotification(null),
+    [],
+  )
+
   return (
     <Box flex={1} marginBottom="m">
-      <Text variant="h3" marginVertical="m" flexGrow={1} paddingHorizontal="l">
+      <Text variant="h3" flexGrow={1} padding="l" paddingBottom="xl">
         {t('notifications.list.title')}
       </Text>
 
@@ -125,16 +168,8 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
       >
         <SectionList
           stickySectionHeadersEnabled={false}
-          contentContainerStyle={{
-            paddingHorizontal: spacing.l,
-            paddingTop: spacing.l,
-          }}
-          scrollIndicatorInsets={{
-            top: spacing.m,
-            bottom: spacing.m,
-            left: 0,
-            right: 0,
-          }}
+          contentContainerStyle={listContainerStyle}
+          scrollIndicatorInsets={listIndicatorInsets}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -143,25 +178,16 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
             />
           }
           refreshing={refreshing}
-          style={{ flexGrow: 0 }}
           sections={groupedNotifications}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item, index, section }) => (
-            <NotificationItem
-              onNotificationSelected={setSelectedNotification}
-              notification={item}
-              isLast={index === section.data.length - 1}
-            />
-          )}
-          renderSectionHeader={({ section: { title, icon, time } }) => (
-            <NotificationGroupHeader title={title} icon={icon} time={time} />
-          )}
+          keyExtractor={listKeyExtractor}
+          renderItem={renderListItem}
+          renderSectionHeader={renderListHeader}
           onEndReached={loadMoreNotifications}
           onEndReachedThreshold={0.2}
         />
         <NotificationShow
           notification={selectedNotification}
-          onClose={() => setSelectedNotification(null)}
+          onClose={onCloseNotification}
         />
       </Box>
     </Box>
