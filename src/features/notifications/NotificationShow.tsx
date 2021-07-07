@@ -51,7 +51,7 @@ const NotificationShow = ({ notification, onClose }: Props) => {
   )
 
   const bodyStyle = useMemo(
-    () => ({ maxHeight: Platform.OS === 'ios' ? 420 : 320 }),
+    () => ({ maxHeight: Platform.OS === 'ios' ? 450 : 350 }),
     [],
   )
 
@@ -63,7 +63,7 @@ const NotificationShow = ({ notification, onClose }: Props) => {
       onRequestClose={onClose}
       animationType="fade"
     >
-      <Box flex={1} justifyContent="flex-start" flexDirection="column">
+      <Box flex={1} justifyContent="flex-end" flexDirection="column">
         <BlurBox
           top={0}
           left={0}
@@ -73,7 +73,7 @@ const NotificationShow = ({ notification, onClose }: Props) => {
           blurType="dark"
           position="absolute"
         />
-
+        <TouchableOpacityBox flex={1} onPress={onClose} />
         <Card variant="modal" padding="l" margin="m" style={containerStyle}>
           <Box flexDirection="row" alignItems="center">
             <HeliumNotification />
