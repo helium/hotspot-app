@@ -2,7 +2,8 @@ import React, { memo, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Position } from 'geojson'
 import Search from '@assets/images/search.svg'
-import { Platform } from 'react-native'
+import { Alert, Platform } from 'react-native'
+import { Hotspot, Witness } from '@helium/http'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import Map from '../../../components/Map'
@@ -13,6 +14,7 @@ import { useSpacing } from '../../../theme/themeHooks'
 import animateTransition from '../../../utils/animateTransition'
 import sleep from '../../../utils/sleep'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import { getH3Location } from '../../../utils/h3Utils'
 
 type Props = {
   confirming?: boolean
@@ -22,9 +24,11 @@ type Props = {
   onCancel: () => void
   onConfirm: () => void
   onSearch?: () => void
+  hotspot?: Hotspot | Witness
 }
 const ReassertLocationUpdate = ({
   confirming,
+  hotspot,
   coords,
   amount,
   locationSelected,
@@ -53,6 +57,14 @@ const ReassertLocationUpdate = ({
 
   const handleNextButton = () => {
     if (!confirming) {
+      const h3Location = getH3Location(markerCenter[1], markerCenter[0])
+      if (h3Location === hotspot?.location) {
+        Alert.alert(
+          t('hotspot_setup.add_hotspot.assert_loc_error_no_change_title'),
+          t('hotspot_setup.add_hotspot.assert_loc_error_no_change_body'),
+        )
+        return
+      }
       locationSelected?.(markerCenter[1], markerCenter[0], locationName)
     } else {
       onConfirm()
