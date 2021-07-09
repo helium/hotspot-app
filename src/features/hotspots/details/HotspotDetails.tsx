@@ -38,6 +38,9 @@ import HotspotListItem from '../../../components/HotspotListItem'
 import Info from '../../../assets/images/info-hollow.svg'
 import Location from '../../../assets/images/location.svg'
 import Signal from '../../../assets/images/signal.svg'
+import EarningsIcon from '../../../assets/images/earnings_icon.svg'
+import WitnessIcon from '../../../assets/images/checklist_challenge_witness.svg'
+import CheckCircle from '../../../assets/images/check-circle.svg'
 import { distance } from '../../../utils/location'
 import { useColors, useSpacing } from '../../../theme/themeHooks'
 import TouchableHighlightBox from '../../../components/TouchableHighlightBox'
@@ -90,15 +93,8 @@ const HotspotDetails = ({
   const [snapPoints, setSnapPoints] = useState([0, 0])
   const [listIndex, setListIndex] = useState(0)
 
-  const {
-    rewards,
-    rewardSum,
-    rewardsChange,
-    loading = true,
-    challengeSums,
-    challengeSum,
-    challengeChange,
-  } = hotspotChatData[timelineValue] || {}
+  const { rewards, rewardSum, rewardsChange, loading = true } =
+    hotspotChatData[timelineValue] || {}
   const { hotspot: hotspotDetailsHotspot, witnesses } = hotspotDetailsData || {}
   const [showStatusBanner, toggleShowStatusBanner] = useToggle(false)
 
@@ -158,18 +154,6 @@ const HotspotDetails = ({
     )
   }, [dispatch, hotspot?.address, timelineValue])
 
-  const challengeChartData = useMemo(() => {
-    return (
-      challengeSums?.map((w) => ({
-        up: Math.round(w.sum),
-        down: 0,
-        label: w.timestamp,
-        showTime: timelineValue === 1,
-        id: `challenge-${timelineValue}-${w.timestamp}`,
-      })) || []
-    )
-  }, [timelineValue, challengeSums])
-
   const formattedHotspotName = useMemo(() => {
     if (!hotspot) return ''
 
@@ -186,16 +170,19 @@ const HotspotDetails = ({
         label: t('hotspot_details.overview'),
         value: 'overview',
         color: 'purpleMain',
+        Icon: EarningsIcon,
       } as HeliumSelectItemType,
       {
         label: t('hotspot_details.checklist'),
         value: 'checklist',
         color: 'purpleMain',
+        Icon: WitnessIcon,
       } as HeliumSelectItemType,
       {
         label: t('map_filter.witness.title'),
         value: 'witnesses',
         color: 'purpleMain',
+        Icon: CheckCircle,
       } as HeliumSelectItemType,
     ]
   }, [t])
@@ -438,7 +425,7 @@ const HotspotDetails = ({
               <HexBadge
                 hitSlop={hitSlop}
                 rewardScale={hotspot.rewardScale}
-                backgroundColor="grayBox"
+                backgroundColor="grayBoxLight"
               />
             </Box>
           </Box>
@@ -453,41 +440,34 @@ const HotspotDetails = ({
           <Box
             justifyContent="flex-start"
             flexDirection="row"
-            backgroundColor="grayBox"
+            backgroundColor="grayBoxLight"
           >
             <HeliumSelect
               showGradient={false}
               marginTop="m"
               contentContainerStyle={contentContainerStyle}
               data={selectData}
-              backgroundColor="grayBox"
+              backgroundColor="grayBoxLight"
               selectedValue={selectedOption}
               onValueChanged={handleSelectValueChanged}
             />
           </Box>
           <HotspotChecklist
             paddingTop="lx"
-            backgroundColor="grayBox"
+            backgroundColor="grayBoxLight"
             visible={selectedOption === 'checklist'}
             hotspot={hotspot}
             witnesses={witnesses}
           />
 
           {selectedOption === 'overview' && (
-            <Box backgroundColor="grayBox">
-              <TimelinePicker index={2} onTimelineChanged={setTimelineValue} />
+            <Box backgroundColor="grayBoxLight" height="100%" paddingTop="xl">
+              <TimelinePicker index={1} onTimelineChanged={setTimelineValue} />
               <HotspotDetailChart
                 title={t('hotspot_details.reward_title')}
                 number={rewardSum?.total.toFixed(2)}
                 change={rewardsChange}
                 data={rewardChartData}
-                loading={loading}
-              />
-              <HotspotDetailChart
-                title={t('hotspot_details.challenge_title')}
-                number={challengeSum?.toFixed(0)}
-                change={challengeChange}
-                data={challengeChartData}
                 loading={loading}
               />
             </Box>
@@ -496,14 +476,18 @@ const HotspotDetails = ({
           {selectedOption === 'witnesses' && (
             <>
               {hotspotDetailsData.loading ? (
-                <Box paddingTop="xl" backgroundColor="grayBox" height="100%">
+                <Box
+                  paddingTop="xl"
+                  backgroundColor="grayBoxLight"
+                  height="100%"
+                >
                   <ActivityIndicator color={colors.grayMain} />
                 </Box>
               ) : (
                 <>
                   <TouchableHighlightBox
                     alignItems="center"
-                    backgroundColor="grayBox"
+                    backgroundColor="grayBoxLight"
                     marginBottom="xxs"
                     paddingTop="m"
                     flexDirection="row"

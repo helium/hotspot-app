@@ -15,19 +15,21 @@ const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
   const spacing = useSpacing()
 
   const data = useMemo(() => {
-    const values = [1, 7, 14, 30]
+    const values = [1, 14, 30]
     const labels: string[] = t('hotspot_details.picker_options', {
       returnObjects: true,
     })
 
-    return labels.map(
-      (label, i) =>
-        ({
-          label,
-          value: values[i],
-          color: 'purpleMain',
-        } as HeliumSelectItemType),
-    )
+    return labels
+      .map(
+        (label, i) =>
+          ({
+            label,
+            value: values[i],
+            color: 'purpleMain',
+          } as HeliumSelectItemType),
+      )
+      .reverse()
   }, [t])
 
   const [selectedOption, setSelectedOption] = useState(data[index])
@@ -40,24 +42,23 @@ const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
     [data, onTimelineChanged],
   )
 
-  const contentContainerStyle = useMemo(() => ({ paddingLeft: spacing.m }), [
-    spacing.m,
+  const contentContainerStyle = useMemo(() => ({ paddingLeft: spacing.s }), [
+    spacing.s,
   ])
 
   return (
-    <Box
-      flexDirection="row"
-      alignItems="center"
-      marginVertical="m"
-      width="100%"
-    >
+    <Box zIndex={1000} marginRight="m">
       <HeliumSelect
+        inverted
         data={data}
         variant="flat"
+        showGradient={false}
         contentContainerStyle={contentContainerStyle}
         backgroundColor="grayBox"
         selectedValue={selectedOption.value}
         onValueChanged={handleValueChanged}
+        itemPadding="xs"
+        justifyContent="flex-end"
       />
     </Box>
   )

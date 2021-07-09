@@ -46,78 +46,84 @@ const HotspotDetailChart = ({
     if (loading) return <ActivityIndicator size="small" color={grayMain} />
 
     return (
-      <>
+      <Box width="100%" height={250}>
         <Box
-          height="100%"
-          flex={3}
-          paddingRight="s"
+          flexDirection="row"
           justifyContent="space-between"
+          alignItems="flex-end"
+          marginBottom="l"
         >
-          <Text
-            variant="light"
-            color="grayDarkText"
-            fontSize={16}
-            maxFontSizeMultiplier={1.2}
-          >
-            {title}
-          </Text>
-          <Text
-            variant="light"
-            color="grayDarkText"
-            fontSize={37}
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            maxFontSizeMultiplier={1}
-          >
-            {focusedData ? focusedData.up.toLocaleString(locale) : number}
-          </Text>
-          {change !== undefined && !focusedData ? (
-            <Box
-              paddingHorizontal="xs"
-              height={24}
-              backgroundColor={change < 0 ? 'purpleMain' : 'greenOnline'}
-              justifyContent="center"
-              alignItems="center"
-              borderRadius="s"
-              alignSelf="baseline"
-            >
-              <Text
-                color="white"
-                variant="bold"
-                fontSize={13}
-                maxFontSizeMultiplier={1.1}
-              >
-                {`${change < 0 ? '' : '+'}${change.toLocaleString(locale, {
-                  maximumFractionDigits: 2,
-                  minimumFractionDigits: 2,
-                })}%`}
-              </Text>
-            </Box>
-          ) : (
+          <Box>
             <Text
-              variant="body3"
-              color="grayDarkText"
-              padding="xs"
-              adjustsFontSizeToFit
-              maxFontSizeMultiplier={1.1}
+              color="grayLightText"
+              fontSize={16}
+              maxFontSizeMultiplier={1.2}
             >
-              {focusedData ? focusedData.label : ''}
+              {title}
             </Text>
-          )}
+            <Text
+              variant="light"
+              color="grayDarkText"
+              fontSize={37}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              maxFontSizeMultiplier={1}
+            >
+              {focusedData ? focusedData.up.toLocaleString(locale) : number}
+            </Text>
+          </Box>
+          <Box
+            height={26}
+            flex={1}
+            flexDirection="row"
+            justifyContent="flex-end"
+          >
+            {change !== undefined && !focusedData ? (
+              <Box
+                paddingHorizontal="xs"
+                height={24}
+                justifyContent="center"
+                alignItems="center"
+                borderRadius="s"
+                alignSelf="baseline"
+                paddingTop="s"
+              >
+                <Text
+                  color={change < 0 ? 'purpleMain' : 'greenOnline'}
+                  variant="bold"
+                  fontSize={13}
+                  maxFontSizeMultiplier={1.1}
+                >
+                  {`${change < 0 ? '' : '+'}${change.toLocaleString(locale, {
+                    maximumFractionDigits: 2,
+                    minimumFractionDigits: 2,
+                  })}%`}
+                </Text>
+              </Box>
+            ) : (
+              <Text
+                variant="body3"
+                color="grayDarkText"
+                padding="xs"
+                adjustsFontSizeToFit
+                maxFontSizeMultiplier={1.1}
+                paddingTop="s"
+              >
+                {focusedData ? focusedData.label : ''}
+              </Text>
+            )}
+          </Box>
         </Box>
-
-        <Box flex={5} alignSelf="flex-end">
-          <ChartContainer
-            height={68}
-            data={data}
-            onFocus={onFocus}
-            showXAxisLabel={false}
-            upColor={change >= 0 ? greenOnline : purpleMain}
-            downColor={grayLight}
-            labelColor={black}
-          />
-        </Box>
-      </>
+        <ChartContainer
+          height={100}
+          data={data}
+          onFocus={onFocus}
+          showXAxisLabel={false}
+          upColor={change >= 0 ? greenOnline : purpleMain}
+          downColor={grayLight}
+          labelColor={black}
+        />
+      </Box>
     )
   }, [
     black,
@@ -137,7 +143,7 @@ const HotspotDetailChart = ({
   return (
     <Box
       backgroundColor="grayBox"
-      paddingHorizontal="lx"
+      paddingHorizontal="l"
       paddingVertical="m"
       flexDirection="row"
       justifyContent={loading ? 'center' : 'space-between'}
