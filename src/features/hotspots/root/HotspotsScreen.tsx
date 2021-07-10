@@ -2,10 +2,8 @@ import React, { useEffect, useState, useMemo, useCallback } from 'react'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { useSelector } from 'react-redux'
 import { ActivityIndicator } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { RootState } from '../../../store/rootReducer'
 import HotspotsView from './HotspotsView'
-import HotspotsEmpty from './HotspotsEmpty'
 import Box from '../../../components/Box'
 import {
   fetchFollowedHotspotsFromBlock,
@@ -19,7 +17,6 @@ import useGetLocation from '../../../utils/useGetLocation'
 const HotspotsScreen = () => {
   const maybeGetLocation = useGetLocation()
   const hotspots = useSelector((state: RootState) => state.hotspots.hotspots)
-  const insets = useSafeAreaInsets()
   const followedHotspots = useSelector(
     (state: RootState) => state.hotspots.followedHotspots,
   )
@@ -28,7 +25,7 @@ const HotspotsScreen = () => {
   )
   const [startOnMap, setStartOnMap] = useState(false)
   const dispatch = useAppDispatch()
-  const { currentLocation: location, locationBlocked } = useSelector(
+  const { currentLocation: location } = useSelector(
     (state: RootState) => state.location,
   )
 
@@ -63,28 +60,16 @@ const HotspotsScreen = () => {
     return 'view'
   }, [followedHotspots.length, hotspots.length, hotspotsLoaded, location])
 
-  const containerStyle = useMemo(() => ({ paddingTop: insets.top }), [
-    insets.top,
-  ])
-
   return (
-    <Box backgroundColor="primaryBackground" flex={1} style={containerStyle}>
+    <Box backgroundColor="primaryBackground" flex={1}>
       <BottomSheetModalProvider>
-        {viewState === 'empty' && (
-          <Box flex={1} justifyContent="center">
-            <HotspotsEmpty
-              onOpenExplorer={browseMap}
-              locationBlocked={locationBlocked}
-            />
-          </Box>
-        )}
-        {viewState === 'view' && (
+        {viewState !== 'loading' && (
           <HotspotsView
             ownedHotspots={hotspots}
             followedHotspots={followedHotspots}
             startOnMap={startOnMap}
             location={coords}
-            onViewMap={maybeGetLocation}
+            onRequestShowMap={browseMap}
           />
         )}
         {viewState === 'loading' && (

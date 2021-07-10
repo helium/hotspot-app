@@ -36,6 +36,4 @@ const makeRequest = async (url: string, opts: RequestInit = {}) => {
   }
 }
 
-export const getStatus = async () => makeRequest('status.json')
-
 export const getIncidents = async () => makeRequest('incidents/unresolved.json')

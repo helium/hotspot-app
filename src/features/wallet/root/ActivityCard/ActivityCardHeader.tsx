@@ -1,16 +1,19 @@
 import React, { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import CardHandle from '../../../../components/CardHandle'
 import Box from '../../../../components/Box'
 import { FilterKeys, FilterType } from '../walletTypes'
 import { useAppDispatch } from '../../../../store/store'
 import activitySlice from '../../../../store/activity/activitySlice'
 import accountSlice from '../../../../store/account/accountSlice'
-import HeliumActionSheet from '../../../../components/HeliumActionSheet'
+import HeliumSelect from '../../../../components/HeliumSelect'
+import { HeliumSelectItemType } from '../../../../components/HeliumSelectItem'
+import { useSpacing } from '../../../../theme/themeHooks'
+import { Spacing } from '../../../../theme/theme'
 
-type Props = { filter: FilterType }
-const ActivityCardHeader = ({ filter }: Props) => {
+type Props = { filter: FilterType; paddingVertical: Spacing }
+const ActivityCardHeader = ({ filter, paddingVertical }: Props) => {
   const { t } = useTranslation()
+  const spacing = useSpacing()
   const filters = useMemo(
     () =>
       t('transactions.filter', { returnObjects: true }) as Record<
@@ -26,7 +29,8 @@ const ActivityCardHeader = ({ filter }: Props) => {
         label: filters[value],
         value,
         Icon: undefined,
-      })),
+        color: 'purpleMain',
+      })) as HeliumSelectItemType[],
     [filters],
   )
 
@@ -41,21 +45,19 @@ const ActivityCardHeader = ({ filter }: Props) => {
     [filter, dispatch],
   )
 
+  const contentContainerStyle = useMemo(() => ({ paddingLeft: spacing.m }), [
+    spacing.m,
+  ])
+
   return (
-    <Box padding="m">
-      <Box alignItems="center" padding="s">
-        <CardHandle />
-      </Box>
-      <Box flexDirection="row" paddingRight="m" paddingVertical="xs">
-        <HeliumActionSheet
-          marginLeft="ms"
-          prefix={t('transactions.view')}
-          title={t('transactions.view_transactions')}
-          data={data}
-          selectedValue={filter}
-          onValueSelected={onFilterChanged}
-        />
-      </Box>
+    <Box paddingHorizontal="xs" height={80} paddingVertical={paddingVertical}>
+      <HeliumSelect
+        contentContainerStyle={contentContainerStyle}
+        showGradient={false}
+        data={data}
+        selectedValue={filter}
+        onValueChanged={onFilterChanged}
+      />
     </Box>
   )
 }

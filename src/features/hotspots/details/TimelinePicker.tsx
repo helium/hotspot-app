@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import Box from '../../../components/Box'
 import HeliumSelect from '../../../components/HeliumSelect'
 import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
+import { useSpacing } from '../../../theme/themeHooks'
 
 type Props = {
   index?: number
@@ -11,6 +12,7 @@ type Props = {
 
 const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
   const { t } = useTranslation()
+  const spacing = useSpacing()
 
   const data = useMemo(() => {
     const values = [1, 7, 14, 30]
@@ -38,6 +40,10 @@ const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
     [data, onTimelineChanged],
   )
 
+  const contentContainerStyle = useMemo(() => ({ paddingLeft: spacing.m }), [
+    spacing.m,
+  ])
+
   return (
     <Box
       flexDirection="row"
@@ -48,6 +54,8 @@ const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
       <HeliumSelect
         data={data}
         variant="flat"
+        contentContainerStyle={contentContainerStyle}
+        backgroundColor="grayBox"
         selectedValue={selectedOption.value}
         onValueChanged={handleValueChanged}
       />

@@ -1,14 +1,27 @@
 import { groupBy } from 'lodash'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FlatList, RefreshControl } from 'react-native'
+import { RefreshControl, SectionList } from 'react-native'
 import { formatDistance, fromUnixTime } from 'date-fns'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
-import NotificationGroup from './NotificationGroup'
 import NotificationShow from './NotificationShow'
 import animateTransition from '../../utils/animateTransition'
-import { Notification } from '../../store/notifications/notificationSlice'
+import {
+  fetchMoreNotifications,
+  Notification,
+} from '../../store/notifications/notificationSlice'
+import { useColors, useSpacing } from '../../theme/themeHooks'
+import NotificationItem from './NotificationItem'
+import NotificationGroupHeader from './NotificationGroupHeader'
+import { useAppDispatch } from '../../store/store'
+
+export type NotificationGroupData = {
+  title: string
+  data: Notification[]
+  icon: string
+  time: string
+}
 
 type Props = {
   notifications: Notification[]
@@ -17,16 +30,38 @@ type Props = {
 }
 const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
   const { t } = useTranslation()
+  const colors = useColors()
+  const spacing = useSpacing()
+  const dispatch = useAppDispatch()
   const [allNotifications, setAllNotifications] = useState<Array<Notification>>(
     [],
   )
   const [groupedNotifications, setGroupedNotifications] = useState<
-    Array<Array<Notification>>
+    Array<NotificationGroupData>
   >([])
   const [
     selectedNotification,
     setSelectedNotification,
   ] = useState<Notification | null>(null)
+
+  const getNotificationGroupTitle = useCallback(
+    (iconUrl: string) => {
+      if (iconUrl.includes('hotspot-update') || iconUrl.includes('transfer')) {
+        return t('notifications.hotspot_updates')
+      }
+      if (iconUrl.includes('helium-update')) {
+        return t('notifications.helium_updates')
+      }
+      if (iconUrl.includes('earnings')) {
+        return t('notifications.weekly_earnings')
+      }
+      if (iconUrl.includes('failed-txn')) {
+        return t('notifications.failure_notifications')
+      }
+      return t('notifications.helium_updates')
+    },
+    [t],
+  )
 
   useEffect(() => {
     if (notifications.length !== allNotifications.length) {
@@ -49,50 +84,114 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
   useEffect(() => {
     const now = new Date()
 
-    const grouped = groupBy(allNotifications, (notification) =>
-      formatDistance(fromUnixTime(notification.time), now, {
-        addSuffix: true,
-      }),
+    const grouped = groupBy(
+      allNotifications,
+      (notification) =>
+        formatDistance(fromUnixTime(notification.time), now, {
+          addSuffix: true,
+        }) + notification.icon,
     )
 
     const arr = Object.keys(grouped)
-      .map((k) => grouped[k].sort((a, b) => a.time - b.time))
-      .sort((a, b) => b[0].time - a[0].time)
+      .map((k) => ({
+        title: getNotificationGroupTitle(grouped[k][0].icon),
+        icon: grouped[k][0].icon,
+        time: formatDistance(fromUnixTime(grouped[k][0].time), new Date(), {
+          addSuffix: true,
+        }),
+        data: grouped[k].sort((a, b) => b.time - a.time),
+      }))
+      .sort((a, b) => b.data[0].time - a.data[0].time)
 
     animateTransition('NotificationList.SortedAndGrouped')
     setGroupedNotifications(arr)
-  }, [allNotifications])
+  }, [allNotifications, getNotificationGroupTitle, t])
+
+  const loadMoreNotifications = useCallback(() => {
+    dispatch(fetchMoreNotifications(notifications[notifications.length - 1].id))
+  }, [dispatch, notifications])
+
+  const listContainerStyle = useMemo(
+    () => ({
+      paddingHorizontal: spacing.l,
+      paddingTop: spacing.l,
+    }),
+    [spacing.l],
+  )
+
+  const listIndicatorInsets = useMemo(
+    () => ({
+      top: spacing.m,
+      bottom: spacing.m,
+      left: 0,
+      right: 0,
+    }),
+    [spacing.m],
+  )
+
+  const listKeyExtractor = useCallback((item) => item.time.toString(), [])
+
+  const renderListItem = useCallback(
+    ({ item, index, section }) => (
+      <NotificationItem
+        onNotificationSelected={setSelectedNotification}
+        notification={item}
+        isLast={index === section.data.length - 1}
+      />
+    ),
+    [],
+  )
+
+  const renderListHeader = useCallback(
+    ({ section: { title, icon, time } }) => (
+      <NotificationGroupHeader title={title} icon={icon} time={time} />
+    ),
+    [],
+  )
+
+  const onCloseNotification = useCallback(
+    () => setSelectedNotification(null),
+    [],
+  )
+
+  const containerStyle = useMemo(() => ({ marginBottom: 46 }), [])
 
   return (
-    <Box flex={1} alignContent="space-between">
-      <Text variant="h3" marginVertical="m" flexGrow={1} paddingHorizontal="l">
+    <Box flex={1} style={containerStyle}>
+      <Text variant="h3" flexGrow={1} padding="l" paddingBottom="xl">
         {t('notifications.list.title')}
       </Text>
 
-      <FlatList
-        inverted
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor="white"
-          />
-        }
-        refreshing={refreshing}
-        style={{ flexGrow: 0 }}
-        data={groupedNotifications}
-        keyExtractor={(item) => item[0].id.toString()}
-        renderItem={({ item }) => (
-          <NotificationGroup
-            notifications={item}
-            onNotificationSelected={setSelectedNotification}
-          />
-        )}
-      />
-      <NotificationShow
-        notification={selectedNotification}
-        onClose={() => setSelectedNotification(null)}
-      />
+      <Box
+        backgroundColor="white"
+        borderRadius="xl"
+        marginBottom="xl"
+        overflow="hidden"
+      >
+        <SectionList
+          stickySectionHeadersEnabled={false}
+          contentContainerStyle={listContainerStyle}
+          scrollIndicatorInsets={listIndicatorInsets}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={colors.grayLight}
+            />
+          }
+          refreshing={refreshing}
+          sections={groupedNotifications}
+          keyExtractor={listKeyExtractor}
+          renderItem={renderListItem}
+          renderSectionHeader={renderListHeader}
+          onEndReached={loadMoreNotifications}
+          onEndReachedThreshold={0.2}
+        />
+        <NotificationShow
+          notification={selectedNotification}
+          onClose={onCloseNotification}
+        />
+      </Box>
     </Box>
   )
 }

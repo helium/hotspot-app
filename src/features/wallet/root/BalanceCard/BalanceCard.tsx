@@ -1,168 +1,121 @@
-import React, { memo, useCallback, useEffect, useState } from 'react'
-import { useAsync } from 'react-async-hook'
-import QRCode from 'react-qr-code'
-import { useSelector } from 'react-redux'
-import { isEqual } from 'lodash'
+/* eslint-disable react/jsx-props-no-spreading */
+import React, { memo } from 'react'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
-import { RootState } from '../../../../store/rootReducer'
+import SendCircle from '@assets/images/sendCircle.svg'
+import ReceiveCircle from '@assets/images/receiveCircle.svg'
+import { Account } from '@helium/http'
+import { BoxProps } from '@shopify/restyle'
 import Box from '../../../../components/Box'
-import AnimatedBox from '../../../../components/AnimatedBox'
 import Text from '../../../../components/Text'
 import CurrencyBadge from './CurrencyBadge'
-import WalletButton from './WalletButton'
-import { getAddress } from '../../../../utils/secureAccount'
-import { hp, wp } from '../../../../utils/layout'
-import ShareButton from './ShareButton'
-import { WalletLayout } from '../walletLayout'
-import Address from '../../../../components/Address'
-import useCurrency from '../../../../utils/useCurrency'
+import { hp } from '../../../../utils/layout'
+import { DebouncedTouchableOpacityBox } from '../../../../components/TouchableOpacityBox'
+import { Theme } from '../../../../theme/theme'
 
-type Props = {
+type Props = BoxProps<Theme> & {
   onReceivePress: () => void
   onSendPress: () => void
-  layout: WalletLayout
-}
-
-const BalanceCard = ({ onReceivePress, onSendPress, layout }: Props) => {
-  const { result: address, loading: loadingAddress } = useAsync(getAddress, [])
-  const [balanceInfo, setBalanceInfo] = useState<{
+  balanceInfo: {
     hasBalance: boolean
     integerPart: string
     decimalPart: string
-  }>({ hasBalance: false, integerPart: '0', decimalPart: '00000000' })
-  const { hntBalanceToDisplayVal, toggleConvertHntToCurrency } = useCurrency()
-  const account = useSelector(
-    (state: RootState) => state.account.account,
-    isEqual,
-  )
-  const fetchAccountState = useSelector(
-    (state: RootState) => state.account.fetchDataStatus,
-    isEqual,
-  )
+  }
+  account?: Account
+  accountLoading: boolean
+  toggleConvertHntToCurrency: () => void
+}
 
-  const updateBalanceInfo = useCallback(async () => {
-    const hasBalance = account?.balance?.integerBalance !== 0
-    if (account?.balance && hasBalance) {
-      const balInfo = await hntBalanceToDisplayVal(account.balance, true)
-      setBalanceInfo({
-        hasBalance,
-        ...balInfo,
-      })
-    }
-  }, [account?.balance, hntBalanceToDisplayVal])
-
-  useEffect(() => {
-    updateBalanceInfo()
-  }, [updateBalanceInfo])
-
+const BalanceCard = ({
+  onReceivePress,
+  onSendPress,
+  balanceInfo,
+  account,
+  accountLoading,
+  toggleConvertHntToCurrency,
+  ...boxProps
+}: Props) => {
   return (
     <Box
-      backgroundColor="purple200"
+      justifyContent="center"
       paddingVertical="xs"
       paddingHorizontal="l"
-      borderTopRightRadius="l"
-      borderTopLeftRadius="l"
-      flex={1}
+      {...boxProps}
     >
-      <Box height={layout.balanceHeight} justifyContent="center">
-        <AnimatedBox
-          flexDirection="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          {fetchAccountState === 'idle' || fetchAccountState === 'rejected' ? (
-            <SkeletonPlaceholder
-              backgroundColor="#343964"
-              highlightColor="#292E56"
-            >
-              <SkeletonPlaceholder.Item
-                width={80}
-                height={40}
-                marginTop={8}
-                borderRadius={8}
-              />
-              <SkeletonPlaceholder.Item
-                width={150}
-                height={16}
-                marginTop={8}
-                borderRadius={8}
-              />
-            </SkeletonPlaceholder>
-          ) : (
-            <Box onTouchStart={toggleConvertHntToCurrency}>
-              <Text
-                adjustsFontSizeToFit
-                maxFontSizeMultiplier={1.2}
-                color="white"
-                fontSize={hp(4.5)}
-                fontWeight="300"
-              >
-                {balanceInfo.integerPart}
-              </Text>
-              <Text
-                color="white"
-                fontSize={hp(1.8)}
-                fontWeight="300"
-                opacity={0.4}
-                lineHeight={25}
-              >
-                {balanceInfo.decimalPart}
-              </Text>
-            </Box>
-          )}
-
-          <Box
-            flexDirection="row"
-            justifyContent="space-between"
-            width={wp(30)}
+      <Box
+        flexDirection="row"
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        {accountLoading ? (
+          <SkeletonPlaceholder
+            backgroundColor="#343964"
+            highlightColor="#292E56"
           >
-            <WalletButton variant="receive" onPress={onReceivePress} />
-            <WalletButton
-              variant="send"
-              onPress={onSendPress}
-              disabled={!balanceInfo.hasBalance}
+            <SkeletonPlaceholder.Item
+              width={80}
+              height={40}
+              marginTop={8}
+              borderRadius={8}
             />
+            <SkeletonPlaceholder.Item
+              width={150}
+              height={16}
+              marginTop={8}
+              borderRadius={8}
+            />
+          </SkeletonPlaceholder>
+        ) : (
+          <Box onTouchStart={toggleConvertHntToCurrency}>
+            <Text
+              adjustsFontSizeToFit
+              maxFontSizeMultiplier={1.2}
+              color="white"
+              fontSize={hp(4.5)}
+              fontWeight="300"
+            >
+              {balanceInfo.integerPart}
+            </Text>
+            <Text
+              color="white"
+              fontSize={hp(1.8)}
+              fontWeight="300"
+              opacity={0.4}
+              lineHeight={25}
+            >
+              {balanceInfo.decimalPart}
+            </Text>
           </Box>
-        </AnimatedBox>
+        )}
 
-        <Box
-          flexDirection="row"
-          paddingTop="m"
-          height={layout.altCurrencyHeight}
-        >
-          <CurrencyBadge
-            variant="dc"
-            amount={account?.dcBalance?.integerBalance || 0}
-          />
-          <CurrencyBadge
-            variant="hst"
-            amount={account?.secBalance?.floatBalance || 0}
-          />
+        <Box flexDirection="row" alignSelf="flex-start">
+          <DebouncedTouchableOpacityBox
+            onPress={onReceivePress}
+            marginRight="s"
+          >
+            <ReceiveCircle />
+          </DebouncedTouchableOpacityBox>
+          <DebouncedTouchableOpacityBox
+            onPress={onSendPress}
+            disabled={!balanceInfo.hasBalance}
+          >
+            <SendCircle />
+          </DebouncedTouchableOpacityBox>
         </Box>
       </Box>
 
-      <Box
-        justifyContent="flex-start"
-        alignItems="center"
-        marginVertical="m"
-        minHeight={layout.qrSendHeight + layout.sendShareArea}
-      >
-        <Box backgroundColor="white" padding="s" borderRadius="m">
-          {!loadingAddress && (
-            <QRCode value={address?.b58 || ''} size={layout.qrSendHeight} />
-          )}
-        </Box>
-        <Box width="100%" marginTop="m" alignItems="center">
-          <Address
-            address={address?.b58}
-            maxWidth={200}
-            color="white"
-            variant="body1Mono"
-            padding="s"
-            clickToCopy
-          />
-          <ShareButton address={address?.b58 || ''} />
-        </Box>
+      <Box flexDirection="row" paddingVertical="m">
+        <CurrencyBadge
+          variant="dc"
+          amount={account?.dcBalance?.integerBalance || 0}
+        />
+        <CurrencyBadge
+          variant="hst"
+          amount={account?.secBalance?.floatBalance || 0}
+        />
+        <CurrencyBadge
+          variant="stake"
+          amount={account?.stakedBalance?.floatBalance || 0}
+        />
       </Box>
     </Box>
   )

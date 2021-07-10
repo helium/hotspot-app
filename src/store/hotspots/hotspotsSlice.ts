@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { Hotspot, Sum, Witness } from '@helium/http'
+import { Hotspot, Sum } from '@helium/http'
 import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
 import { orderBy, sortBy } from 'lodash'
 import {
@@ -35,7 +35,6 @@ export type HotspotsSliceState = {
   loadingRewards: boolean
   hotspotsLoaded: boolean
   failure: boolean
-  selectedHotspot?: Hotspot | Witness
 }
 
 const initialState: HotspotsSliceState = {
@@ -206,7 +205,9 @@ export const fetchHotspotsData = createAsyncThunk(
 
     const hotspotPromises = [getHotspots()]
     if (followEnabled) {
-      hotspotPromises.push(getWallet('hotspots/follow', null, true))
+      hotspotPromises.push(
+        getWallet('hotspots/follow', null, { camelCase: true }),
+      )
     }
     const allHotspots = await Promise.all(
       hotspotPromises.map((p) =>
@@ -237,11 +238,9 @@ export const followHotspot = createAsyncThunk<
   },
   string
 >('hotspots/followHotspot', async (hotspotAddress) => {
-  const followed = await postWallet(
-    `hotspots/follow/${hotspotAddress}`,
-    null,
-    true,
-  )
+  const followed = await postWallet(`hotspots/follow/${hotspotAddress}`, null, {
+    camelCase: true,
+  })
   let blockHotspot: Hotspot | null = null
   try {
     blockHotspot = await getHotspotDetails(hotspotAddress)
@@ -270,7 +269,7 @@ export const unfollowHotspot = createAsyncThunk<Hotspot[], string>(
     const followed = await deleteWallet(
       `hotspots/follow/${hotspot_address}`,
       null,
-      true,
+      { camelCase: true },
     )
     return sanitizeWalletHotspots(followed)
   },
@@ -311,37 +310,6 @@ const hotspotsSlice = createSlice({
           location: payload,
         }),
       }
-    },
-    selectHotspot: (
-      state,
-      { payload }: { payload: Hotspot | Witness | undefined },
-    ) => {
-      state.selectedHotspot = payload
-    },
-    selectNextHotspot: (state) => {
-      if (!state.selectedHotspot || state.orderedHotspots.length === 0) {
-        state.selectedHotspot = undefined
-        return
-      }
-
-      const index = state.orderedHotspots.findIndex(
-        ({ address }) => address === state.selectedHotspot?.address,
-      )
-      const nextIndex = (index + 1) % state.orderedHotspots.length
-      state.selectedHotspot = state.orderedHotspots[nextIndex]
-    },
-    selectPrevHotspot: (state) => {
-      if (!state.selectedHotspot || state.orderedHotspots.length === 0) {
-        state.selectedHotspot = undefined
-        return
-      }
-
-      const index = state.orderedHotspots.findIndex(
-        ({ address }) => address === state.selectedHotspot?.address,
-      )
-      const nextIndex =
-        index === 0 ? state.orderedHotspots.length - 1 : index - 1
-      state.selectedHotspot = state.orderedHotspots[nextIndex]
     },
   },
   extraReducers: (builder) => {

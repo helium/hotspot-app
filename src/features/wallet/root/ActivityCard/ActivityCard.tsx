@@ -1,23 +1,13 @@
-import React, {
-  useRef,
-  forwardRef,
-  useImperativeHandle,
-  Ref,
-  useCallback,
-  memo,
-  useMemo,
-} from 'react'
+import React, { memo, useMemo, forwardRef, Ref } from 'react'
 import BottomSheet from '@gorhom/bottom-sheet'
 import Animated from 'react-native-reanimated'
 import { AnyTransaction, PendingTransaction } from '@helium/http'
-import { WalletAnimationPoints } from '../walletLayout'
 import ActivityCardHeader from './ActivityCardHeader'
 import { FilterType } from '../walletTypes'
 import ActivityCardListView from './ActivityCardListView'
-import ActivityListSkeletonView from './ActivityListSkeletonView'
+import { Spacing } from '../../../../theme/theme'
 
 type Props = {
-  animationPoints: WalletAnimationPoints
   animatedIndex?: Animated.SharedValue<number>
   onChange?: (index: number) => void
   txns: AnyTransaction[]
@@ -25,79 +15,63 @@ type Props = {
   filter: FilterType
   hasNoResults: boolean
   showSkeleton: boolean
+  snapPoints: (string | number)[]
+  paddingVertical: Spacing
 }
 
-const ActivityCard = forwardRef((props: Props, ref: Ref<BottomSheet>) => {
-  const {
-    animationPoints,
-    animatedIndex,
-    onChange,
-    txns,
-    pendingTxns,
-    filter,
-    hasNoResults,
-    showSkeleton,
-  } = props
-  const { dragMax, dragMid, dragMin } = animationPoints
-  const sheet = useRef<BottomSheet>(null)
+const ActivityCard = forwardRef(
+  (
+    {
+      animatedIndex,
+      onChange,
+      txns,
+      pendingTxns,
+      filter,
+      hasNoResults,
+      showSkeleton,
+      snapPoints,
+      paddingVertical,
+    }: Props,
+    ref: Ref<BottomSheet>,
+  ) => {
+    const getData = useMemo(() => {
+      let data: (AnyTransaction | PendingTransaction)[] = txns
+      if (filter === 'pending') {
+        data = pendingTxns
+      }
 
-  // TODO is there an easier way to copy/forward these methods?
-  useImperativeHandle(ref, () => ({
-    snapTo(index: number): void {
-      sheet.current?.snapTo(index)
-    },
-    expand() {
-      sheet.current?.expand()
-    },
-    collapse() {
-      sheet.current?.collapse()
-    },
-    close() {
-      sheet.current?.close()
-    },
-  }))
+      if (filter === 'all') {
+        data = [...pendingTxns, ...txns]
+      }
 
-  const getData = useMemo(() => {
-    let data: (AnyTransaction | PendingTransaction)[] = txns
-    if (filter === 'pending') {
-      data = pendingTxns
-    }
+      return data
+    }, [filter, pendingTxns, txns])
 
-    if (filter === 'all') {
-      data = [...pendingTxns, ...txns]
-    }
-
-    return data
-  }, [filter, pendingTxns, txns])
-
-  const header = useCallback(() => <ActivityCardHeader filter={filter} />, [
-    filter,
-  ])
-
-  const getSnapPoints = useMemo(() => [dragMin, dragMid, dragMax], [
-    dragMax,
-    dragMid,
-    dragMin,
-  ])
-
-  return (
-    <BottomSheet
-      handleComponent={header}
-      snapPoints={getSnapPoints}
-      index={1}
-      animateOnMount={false}
-      ref={sheet}
-      onChange={onChange}
-      animatedIndex={animatedIndex}
-    >
-      {showSkeleton ? (
-        <ActivityListSkeletonView />
-      ) : (
-        <ActivityCardListView data={getData} hasNoResults={hasNoResults} />
-      )}
-    </BottomSheet>
-  )
-})
+    return (
+      <BottomSheet
+        handleComponent={null}
+        snapPoints={snapPoints}
+        index={1}
+        animateOnMount={false}
+        ref={ref}
+        onChange={onChange}
+        animatedIndex={animatedIndex}
+      >
+        <>
+          <ActivityCardHeader
+            filter={filter}
+            paddingVertical={paddingVertical}
+          />
+          <ActivityCardListView
+            data={getData}
+            hasNoResults={hasNoResults}
+            showSkeleton={showSkeleton}
+          />
+        </>
+      </BottomSheet>
+    )
+  },
+)
 
 export default memo(ActivityCard, (prev, next) => {
   return (

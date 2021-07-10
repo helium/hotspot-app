@@ -28,7 +28,7 @@ const CompletePill = ({
   text,
 }: CompleteProps) => (
   <Box
-    backgroundColor="white"
+    backgroundColor="grayBox"
     borderRadius="s"
     padding="xs"
     flexDirection="row"

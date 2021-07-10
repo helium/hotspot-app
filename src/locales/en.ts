@@ -133,6 +133,8 @@ export default {
     loading: 'Loading...',
     copy: 'Copy',
     address: 'Address',
+    copy_address: 'Copy Address',
+    share: 'Share',
     invalid_password: 'You password is incorrect',
     something_went_wrong: 'Something went wrong',
     hnt_to_currency: '{{currencyType}}. Data from CoinGecko',
@@ -142,6 +144,8 @@ export default {
     minutes_plural: '{{count}} minutes',
     seconds: '{{count}} second',
     seconds_plural: '{{count}} seconds',
+    meters: '{{distance}}m',
+    kilometers: '{{distance}}km',
   },
   hotspot_setup: {
     selection: {
@@ -285,8 +289,16 @@ export default {
     },
     onboarding_error: {
       title: 'Onboarding Error',
-      subtitle:
-        'Unable to find Hotspot in the Onboarding Server. Please contact the Hotspot manufacturer for next steps.',
+      subtitle: {
+        something_went_wrong:
+          'Something went wrong. Please contact the Hotspot manufacturer for next steps.',
+        invalid_onboarding_address:
+          'Your onboarding address is invalid. Please contact the Hotspot manufacturer for next steps.',
+        no_onboarding_key:
+          'Unable to find Hotspot in the Onboarding Server. Please contact the Hotspot manufacturer for next steps.',
+        service_unavailable:
+          "The Onboarding Server is temporarily unavailable and users won't be able to add Hotspots at this time.  Check for updates on status.helium.com and try again later.",
+      },
       next: 'Exit Setup',
       disconnected:
         'There was an error connecting to the Hotspot. Please try again.',
@@ -420,6 +432,12 @@ export default {
     },
   },
   wallet: {
+    empty: {
+      title: 'Welcome to\nyour wallet',
+      subtitle: 'Your balance is zero.',
+      description:
+        'You can send HNT to the below address/QR or deploy a Hotspot to start learning.',
+    },
     title: 'My Wallet',
     copiedToClipboard: 'Copied {{address}} to clipboard',
     share: 'Share',
@@ -438,9 +456,9 @@ export default {
       },
     ],
     chartRanges: {
-      days: { label: '14D', accessibilityLabel: '14 Days' },
-      weeks: { label: '12W', accessibilityLabel: '12 Weeks' },
-      months: { label: '12M', accessibilityLabel: '12 Months' },
+      daily: { label: '14D', accessibilityLabel: '14 Days' },
+      weekly: { label: '12W', accessibilityLabel: '12 Weeks' },
+      monthly: { label: '12M', accessibilityLabel: '12 Months' },
     },
   },
   send: {
@@ -560,8 +578,8 @@ export default {
       title: 'Add a New Hotspot',
       subtitle:
         'If you just added a Hotspot, hang tight. It takes a few moments for the Network to propagate the Hotspot.',
-      setup: 'Set up Hotspot',
-      explorer: 'View Hotspots Around Me',
+      setup: '+ Add a Hotspot',
+      explorer: 'Browse Network Map',
     },
     owned: {
       title: 'My Hotspots',
@@ -625,11 +643,19 @@ export default {
       subtitle:
         'Here you’ll get news, updates and alerts about your Hotspots and The People’s Network.',
     },
+    hotspot_updates: 'Hotspot Updates',
+    helium_updates: 'Helium Updates',
+    helium_update: 'Helium Update',
+    weekly_earnings: 'Weekly Earnings',
+    failure_notifications: 'Failure Notifications',
   },
   transactions: {
     pending: 'Pending',
     mining: 'Mining Rewards',
     sent: 'Sent HNT',
+    stakeValidator: 'Stake HNT',
+    unstakeValidator: 'Unstake HNT',
+    transferValidator: 'Transfer Stake',
     burnHNT: 'Burn HNT',
     received: 'Received HNT',
     added: 'Hotspot Added to Blockchain',
@@ -1041,5 +1067,8 @@ export default {
     },
     title: 'Map Filters',
     button: 'Choose Map Filter',
+  },
+  statusBanner: {
+    description: 'Last updated {{date}}. Tap for info.',
   },
 }

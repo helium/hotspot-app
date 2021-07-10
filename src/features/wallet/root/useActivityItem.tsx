@@ -10,6 +10,9 @@ import {
   PendingTransaction,
   RewardsV1,
   RewardsV2,
+  StakeValidatorV1,
+  UnstakeValidatorV1,
+  TransferValidatorStakeV1,
   TokenBurnV1,
   TransferHotspotV1,
 } from '@helium/http'
@@ -30,6 +33,9 @@ import HotspotTransfer from '../../../assets/images/hotspotTransfer.svg'
 import ReceivedHnt from '../../../assets/images/receivedHNT.svg'
 import Location from '../../../assets/images/location.svg'
 import Burn from '../../../assets/images/burn.svg'
+import StakeValidator from '../../../assets/images/stake_validator.svg'
+import UnstakeValidator from '../../../assets/images/unstake_validator.svg'
+import TransferStakeValidator from '../../../assets/images/transfer_validator_stake.svg'
 import shortLocale from '../../../utils/formatDistance'
 import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
 import useCurrency from '../../../utils/useCurrency'
@@ -47,6 +53,9 @@ export const TxnTypeKeys = [
   'assert_location_v2',
   'transfer_hotspot_v1',
   'token_burn_v1',
+  'unstake_validator_v1',
+  'stake_validator_v1',
+  'transfer_validator_stake_v1',
 ] as const
 type TxnType = typeof TxnTypeKeys[number]
 
@@ -111,9 +120,15 @@ const useActivityItem = (
         return 'purpleMuted'
       case 'rewards_v1':
       case 'rewards_v2':
+      case 'stake_validator_v1':
+      case 'transfer_validator_stake_v1':
         return 'purpleBright'
       case 'token_burn_v1':
         return 'orange'
+      case 'unstake_validator_v1':
+        return 'greenBright'
+      default:
+        return 'black'
     }
   }, [isSending, item])
 
@@ -146,11 +161,23 @@ const useActivityItem = (
         return t('transactions.mining')
       case 'token_burn_v1':
         return t('transactions.burnHNT')
+      case 'stake_validator_v1':
+        return t('transactions.stakeValidator')
+      case 'unstake_validator_v1':
+        return t('transactions.unstakeValidator')
+      case 'transfer_validator_stake_v1':
+        return t('transactions.transferValidator')
     }
   }, [isSending, isSelling, t, item])
 
   const detailIcon = useMemo(() => {
     switch (item.type as TxnType) {
+      case 'stake_validator_v1':
+        return <StakeValidator width={40} />
+      case 'unstake_validator_v1':
+        return <UnstakeValidator width={40} />
+      case 'transfer_validator_stake_v1':
+        return <TransferStakeValidator width={40} />
       case 'transfer_hotspot_v1':
         return <HotspotTransfer height={20} width={50} />
       case 'payment_v1':
@@ -162,7 +189,7 @@ const useActivityItem = (
         )
       case 'assert_location_v1':
       case 'assert_location_v2':
-        return <Location width={20} height={23} />
+        return <Location width={20} height={23} color="white" />
       case 'rewards_v1':
       case 'rewards_v2':
         return <Rewards width={26} height={26} />
@@ -176,6 +203,12 @@ const useActivityItem = (
 
   const listIcon = useMemo(() => {
     switch (item.type as TxnType) {
+      case 'stake_validator_v1':
+        return <StakeValidator width={32} />
+      case 'unstake_validator_v1':
+        return <UnstakeValidator width={32} />
+      case 'transfer_validator_stake_v1':
+        return <TransferStakeValidator width={32} />
       case 'payment_v1':
       case 'payment_v2':
         return isSending ? (
@@ -185,7 +218,7 @@ const useActivityItem = (
         )
       case 'assert_location_v1':
       case 'assert_location_v2':
-        return <Location width={20} height={23} />
+        return <Location width={20} height={23} color="white" />
       case 'rewards_v1':
       case 'rewards_v2':
         return <Rewards width={26} height={26} />
@@ -199,11 +232,16 @@ const useActivityItem = (
   }, [isSending, item.type])
 
   const isFee = useMemo(() => {
+    // TODO: Determine if TransferStakeV1 is a fee
     if (item instanceof PaymentV1 || item instanceof PaymentV2) {
       return isSending
     }
 
-    if (item instanceof RewardsV1 || item instanceof RewardsV2) {
+    if (
+      item instanceof RewardsV1 ||
+      item instanceof RewardsV2 ||
+      item instanceof UnstakeValidatorV1
+    ) {
       return false
     }
 
@@ -306,6 +344,16 @@ const useActivityItem = (
     ) {
       return formatAmount('-', item.stakingFee)
     }
+    if (item instanceof StakeValidatorV1) {
+      return formatAmount('-', item.stake)
+    }
+    if (item instanceof UnstakeValidatorV1) {
+      return formatAmount('+', item.stakeAmount)
+    }
+    if (item instanceof TransferValidatorStakeV1) {
+      // TODO: Should this be stake amount, payment amount, both?
+      return '+0 HNT'
+    }
     if (item instanceof TokenBurnV1) {
       return formatAmount('-', item.amount)
     }
@@ -353,6 +401,21 @@ const useActivityItem = (
 
       return formatAmount(isFee ? '-' : '+', pendingTxn.txn.fee)
     }
+
+    if (pendingTxn.type === 'stake_validator_v1') {
+      return formatAmount('-', (pendingTxn.txn as StakeValidatorV1).stake)
+    }
+    if (pendingTxn.type === 'unstake_validator_v1') {
+      return formatAmount(
+        '+',
+        (pendingTxn.txn as UnstakeValidatorV1).stakeAmount,
+      )
+    }
+    if (pendingTxn.type === 'transfer_validator_stake_v1') {
+      // TODO: Should this be stake amount, payment amount, both?
+      return '+0 HNT'
+    }
+
     return ''
   }, [address, formatAmount, isFee, isSelling, item])
 

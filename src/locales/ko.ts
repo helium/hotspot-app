@@ -422,9 +422,9 @@ export default {
       },
     ],
     chartRanges: {
-      days: { label: '14D', accessibilityLabel: '14 Days' },
-      weeks: { label: '12W', accessibilityLabel: '12 Weeks' },
-      months: { label: '12M', accessibilityLabel: '12 Months' },
+      daily: { label: '14D', accessibilityLabel: '14 Days' },
+      weekly: { label: '12W', accessibilityLabel: '12 Weeks' },
+      monthly: { label: '12M', accessibilityLabel: '12 Months' },
     },
   },
   send: {

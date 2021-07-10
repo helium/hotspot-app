@@ -168,7 +168,8 @@ const useAppLink = () => {
    * (2) A lat/lng pair for hotspot location updates
    * (3) address string
    * (4) stringified JSON object { type, address, amount?, memo? }
-   * (5) stringified JSON object { type, payees: {[payeeAddress]: { amount, memo? }} }
+   * (5) stringified JSON object { type, payees: {[payeeAddress]: amount} }
+   * (6) stringified JSON object { type, payees: {[payeeAddress]: { amount, memo? }} }
    */
   const parseBarCodeData = useCallback(
     (
@@ -241,11 +242,26 @@ const useAppLink = () => {
             scanResult = {
               type,
               payees: Object.entries(rawScanResult.payees).map((entries) => {
-                const scanData = entries[1] as { amount: string; memo?: string }
+                let amount
+                let memo
+                if (entries[1]) {
+                  if (typeof entries[1] === 'number') {
+                    // Case (4) stringified JSON object { type, payees: {[payeeAddress]: amount} }
+                    amount = entries[1] as number
+                  } else if (typeof entries[1] === 'object') {
+                    // Case (5) stringified JSON object { type, payees: {[payeeAddress]: { amount, memo? }} }
+                    const scanData = entries[1] as {
+                      amount: string
+                      memo?: string
+                    }
+                    amount = scanData.amount
+                    memo = scanData.memo
+                  }
+                }
                 return {
                   address: entries[0],
-                  amount: scanData.amount,
-                  memo: scanData.memo,
+                  amount: `${amount}`,
+                  memo,
                 } as Payee
               }),
             }

@@ -1491,10 +1491,10 @@
   dependencies:
     cross-spawn "^6.0.5"
 
-"@gorhom/bottom-sheet@^3.4.1":
-  version "3.6.4"
-  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-3.6.4.tgz#9f8c590493e1067dd638b69d7d7f1e86089844fc"
-  integrity sha512-jWZH64tur/PdwCdv6Ojt3Q85f/Q2LuyHV7gYjrN/30INnQw8ArRTOLUmLoLnwWFxeh561JdQ+XTvE53Hjo9wOw==
+"@gorhom/bottom-sheet@^3.6.5":
+  version "3.6.5"
+  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-3.6.5.tgz#e871f14bcd687e584769d0d582d8d6b80ab984c1"
+  integrity sha512-YgpXA5zYkOnTlFpofaaqt5BEeYfm0g1NNivmE63HWU/cn7zY1A1Mmm9G6MgCDlWVjZQgXTo5SdvAbcfUfTN9PA==
   dependencies:
     "@gorhom/portal" "^1.0.4"
     invariant "^2.2.4"
@@ -1549,10 +1549,10 @@
   dependencies:
     bignumber.js "^9.0.0"
 
-"@helium/http@^3.36.4":
-  version "3.36.4"
-  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.36.4.tgz#7bcd27cf6de8fb7099276201dc807ff41f981fd9"
-  integrity sha512-3/XP1hLoC/feJ43mDVk6OL9A2cM8F3BmViDui55GJ28knBUK4GHCfBbNcsTv9wm1jXqUVvTXdYYOWcw8JeNwOw==
+"@helium/http@^3.36.5":
+  version "3.36.5"
+  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.36.5.tgz#ec86be2625ada7c2977c86d86726fc621207c6be"
+  integrity sha512-wL+8DfZzdon3oozi1zlxq3GRn0lmtlmSXxI4khrvNxLg8LJpidMJ24DeVZWvZ088i5pqwCQJ0l8bpJ/liBiU9Q==
   dependencies:
     "@helium/currency" "^3.25.1"
     axios "^0.21.1"
@@ -2565,11 +2565,6 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/eslint-plugin/-/eslint-plugin-1.1.0.tgz#e42b1bef12d2415411519fd528e64b593b1363dc"
   integrity sha512-W/J0fNYVO01tioHjvYWQ9m6RgndVtbElzYozBq1ZPrHO/iCzlqoySHl4gO/fpCl9QEFjvJfjPgtPMTMlsoq5DQ==
 
-"@react-native-community/masked-view@^0.1.10":
-  version "0.1.11"
-  resolved "https://registry.yarnpkg.com/@react-native-community/masked-view/-/masked-view-0.1.11.tgz#2f4c6e10bee0786abff4604e39a37ded6f3980ce"
-  integrity sha512-rQfMIGSR/1r/SyN87+VD8xHHzDYeHaJq6elOSCAD+0iLagXkSI2pfA0LmSXP21uw5i3em7GkkRjfJ8wpqWXZNw==
-
 "@react-native-mapbox-gl/maps@^8.2.0-beta2":
   version "8.2.0-beta2"
   resolved "https://registry.yarnpkg.com/@react-native-mapbox-gl/maps/-/maps-8.2.0-beta2.tgz#9b7377603e22a3296b7d9ec3435d30ff23d8022e"
@@ -2583,6 +2578,11 @@
     "@turf/nearest-point-on-line" ">= 4.0.0 <7.0.0"
     "@types/geojson" "^7946.0.7"
     debounce "^1.2.0"
+
+"@react-native-masked-view/masked-view@^0.2.4":
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/@react-native-masked-view/masked-view/-/masked-view-0.2.4.tgz#305a548abd47dee494a38f90016432d3a6e4164c"
+  integrity sha512-2Y9OXWHRutYmdyW+bNMaFTW8uTBpaaK20xdIFoVtqahEOO9++B+ut3CAWKPZcdRtb9ikG0LUKChGqMeocg0PGA==
 
 "@react-native/assets@1.0.0":
   version "1.0.0"
@@ -6423,11 +6423,12 @@ expo-linking@^2.2.3:
     qs "^6.5.0"
     url-parse "^1.4.4"
 
-expo-local-authentication@^9.3.0:
-  version "9.5.0"
-  resolved "https://registry.yarnpkg.com/expo-local-authentication/-/expo-local-authentication-9.5.0.tgz#541167186539cb4af288cdeaf8460053922b42eb"
-  integrity sha512-d7T8cfXNig8rpyiw4u/2vHj2zhtThOTxrLUwx4GqFxDYqFyOJ5q5Q3lXFd10Tr5paMQvnskS0fAj70aG7Eb76g==
+expo-local-authentication@^11.0.2:
+  version "11.0.2"
+  resolved "https://registry.yarnpkg.com/expo-local-authentication/-/expo-local-authentication-11.0.2.tgz#6762611988ce07b05f11dda906505745c4f76dc0"
+  integrity sha512-uvDBsyyETxRWLK/nJaS1cET/6u1UVYp2GhqIYSOhR4n2hoKvakOum7EG8BUi7D6jqzRBbpBGIP5ysfOWBNk53Q==
   dependencies:
+    "@expo/config-plugins" "^1.0.18"
     invariant "^2.2.4"
 
 expo-location@^9.0.1:

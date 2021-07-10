@@ -31,7 +31,6 @@ import SecurityScreen from './features/security/SecurityScreen'
 import { fetchFeatures } from './store/features/featuresSlice'
 import usePrevious from './utils/usePrevious'
 import StatusBanner from './components/StatusBanner'
-import { fetchStatus } from './store/helium/heliumStatusSlice'
 import notificationSlice, {
   fetchNotifications,
 } from './store/notifications/notificationSlice'
@@ -83,7 +82,6 @@ const App = () => {
   const loadInitialData = useCallback(() => {
     dispatch(fetchBlockHeight())
     dispatch(fetchInitialData())
-    dispatch(fetchStatus())
     dispatch(fetchNotifications())
   }, [dispatch])
 

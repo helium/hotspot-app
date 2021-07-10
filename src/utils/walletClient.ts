@@ -27,7 +27,7 @@ const makeRequest = async (url: string, opts: RequestInit) => {
     })
 
     if (!response.ok) {
-      const errorMessage = `Bad response, status:${response.status} message:${response.statusText}`
+      const errorMessage = `Bad response, status:${response.status} message:${response.statusText} ${opts.method} url:${route}`
       Logger.breadcrumb(errorMessage, breadcrumbOpts)
       throw new Error(errorMessage)
     }
@@ -52,7 +52,7 @@ const makeRequest = async (url: string, opts: RequestInit) => {
 export const getWallet = async (
   url: string,
   params?: unknown,
-  camelCase = false,
+  { camelCase } = { camelCase: false },
 ) => {
   let fullUrl = url
   if (params) {
@@ -71,7 +71,7 @@ export const getWallet = async (
 export const postWallet = async (
   url: string,
   data?: unknown,
-  camelCase = false,
+  { camelCase } = { camelCase: false },
 ) => {
   const opts = {
     method: 'POST',
@@ -87,7 +87,7 @@ export const postWallet = async (
 export const deleteWallet = async (
   url: string,
   data?: unknown,
-  camelCase = false,
+  { camelCase } = { camelCase: false },
 ) => {
   const opts = {
     method: 'DELETE',

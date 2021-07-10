@@ -20,7 +20,6 @@ import { SvgProps } from 'react-native-svg'
 import LinearGradient from 'react-native-linear-gradient'
 import { Colors, Theme } from '../theme/theme'
 import { useBorderRadii, useColors, useSpacing } from '../theme/themeHooks'
-import animateTransition from '../utils/animateTransition'
 import { wp } from '../utils/layout'
 import Box from './Box'
 import TouchableOpacityBox from './TouchableOpacityBox'
@@ -128,7 +127,6 @@ const ContentPill = ({
     const nextWidth = data.length * ITEM_SIZE + padding * 2
     if (nextWidth === viewWidth) return
 
-    animateTransition('ContentPill.AnimateWidth')
     setViewWidth(nextWidth)
   }, [data.length, listContentStyle, viewWidth])
 
