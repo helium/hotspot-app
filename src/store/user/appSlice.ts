@@ -11,6 +11,8 @@ import { Intervals } from '../../features/moreTab/more/useAuthIntervals'
 export type AppState = {
   isBackedUp: boolean
   isHapticDisabled: boolean
+  isSecureModeEnabled: boolean
+  permanentPaymentAddress: string
   convertHntToCurrency: boolean
   isSettingUpHotspot: boolean
   isRestored: boolean
@@ -24,6 +26,8 @@ export type AppState = {
 const initialState: AppState = {
   isBackedUp: false,
   isHapticDisabled: false,
+  isSecureModeEnabled: false,
+  permanentPaymentAddress: '',
   convertHntToCurrency: false,
   isSettingUpHotspot: false,
   isRestored: false,
@@ -39,6 +43,8 @@ type Restore = {
   isBackedUp: boolean
   isPinRequired: boolean
   isPinRequiredForPayment: boolean
+  isSecureModeEnabled: boolean
+  permanentPaymentAddress: string
   authInterval: number
   isLocked: boolean
   isHapticDisabled: boolean
@@ -48,7 +54,17 @@ type Restore = {
 export const restoreUser = createAsyncThunk<Restore>(
   'app/restoreUser',
   async () => {
-    const vals = await Promise.all([
+    const [
+      isBackedUp,
+      isPinRequired,
+      isPinRequiredForPayment,
+      authInterval,
+      isHapticDisabled,
+      convertHntToCurrency,
+      address,
+      isSecureModeEnabled,
+      permanentPaymentAddress,
+    ] = await Promise.all([
       getSecureItem('accountBackedUp'),
       getSecureItem('requirePin'),
       getSecureItem('requirePinForPayment'),
@@ -56,20 +72,24 @@ export const restoreUser = createAsyncThunk<Restore>(
       getSecureItem('hapticDisabled'),
       getSecureItem('convertHntToCurrency'),
       getSecureItem('address'),
+      getSecureItem('secureModeEnabled'),
+      getSecureItem('permanentPaymentAddress'),
     ])
-    const isBackedUp = vals[0]
-    const address = vals[6]
     if (isBackedUp && address) {
       OneSignal.sendTags({ address })
     }
     return {
       isBackedUp,
-      isPinRequired: vals[1],
-      isPinRequiredForPayment: vals[2],
-      authInterval: vals[3] ? parseInt(vals[3], 10) : Intervals.IMMEDIATELY,
-      isLocked: vals[1],
-      isHapticDisabled: vals[4],
-      convertHntToCurrency: vals[5],
+      isPinRequired,
+      isPinRequiredForPayment,
+      authInterval: authInterval
+        ? parseInt(authInterval, 10)
+        : Intervals.IMMEDIATELY,
+      isLocked: isPinRequired,
+      isHapticDisabled,
+      convertHntToCurrency,
+      isSecureModeEnabled,
+      permanentPaymentAddress,
     }
   },
 )
@@ -96,6 +116,14 @@ const appSlice = createSlice({
     requirePinForPayment: (state, action: PayloadAction<boolean>) => {
       state.isPinRequiredForPayment = action.payload
       setSecureItem('requirePinForPayment', action.payload)
+    },
+    enableSecureMode: (state, action: PayloadAction<boolean>) => {
+      state.isSecureModeEnabled = action.payload
+      setSecureItem('secureModeEnabled', action.payload)
+    },
+    setPermanentPaymentAddress: (state, action: PayloadAction<string>) => {
+      state.permanentPaymentAddress = action.payload
+      setSecureItem('permanentPaymentAddress', action.payload)
     },
     updateHapticEnabled: (state, action: PayloadAction<boolean>) => {
       state.isHapticDisabled = action.payload

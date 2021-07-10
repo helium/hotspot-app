@@ -94,6 +94,7 @@ export default {
   generic: {
     clear: 'Clear',
     done: 'Done',
+    disabled: 'Disabled',
     readMore: 'Read More',
     witness: 'Witness',
     understand: 'I understand',
@@ -501,6 +502,7 @@ export default {
     },
     qrInfo: 'QR INFO',
     error: 'There was an error submitting this transaction. Please try again.',
+    secureModePaymentsDisabled: 'Payments are disabled in Secure Mode',
     hotspot_label: 'Hotspot',
     last_activity: 'LAST REPORTED ACTIVITY: {{activity}}',
     label_error: 'You do not have enough HNT in your account.',
@@ -542,6 +544,14 @@ export default {
           after_4_hr: 'After 4 hours',
         },
         revealWords: 'Reveal Words',
+        secureMode: {
+          title: 'Secure Mode',
+          enableButton: 'Enable Secure Mode',
+          description:
+            'Activating secure mode will remove the ability to reveal the 12 words for this account. You will still be able to add hotspots and update their locations, and send funds to one whitelisted address if provided.',
+          warning: 'You must log out to disable this feature.',
+          addressLabel: 'Permanent recipient address',
+        },
       },
       learn: {
         title: 'Learn',

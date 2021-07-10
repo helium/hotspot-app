@@ -1,4 +1,11 @@
-import React, { memo, ReactText, useCallback, useEffect, useMemo } from 'react'
+import React, {
+  memo,
+  ReactText,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, SectionList } from 'react-native'
 import { useSelector } from 'react-redux'
@@ -28,6 +35,7 @@ import Account from '../../../assets/images/account.svg'
 import Box from '../../../components/Box'
 import DiscordItem from './DiscordItem'
 import AppInfoItem from './AppInfoItem'
+import SecureModeModal from './SecureModeModal'
 import activitySlice from '../../../store/activity/activitySlice'
 import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
 import { useLanguageContext } from '../../../providers/LanguageProvider'
@@ -46,6 +54,10 @@ const MoreScreen = () => {
   const { changeLanguage, language } = useLanguageContext()
   const navigation = useNavigation<MoreNavigationProp & RootNavigationProp>()
   const spacing = useSpacing()
+  const [
+    showingSecureModeConfirmation,
+    setShowingSecureModeConfirmation,
+  ] = useState(false)
 
   useEffect(() => {
     if (!params?.pinVerifiedFor) return
@@ -204,6 +216,21 @@ const MoreScreen = () => {
       {
         title: t('more.sections.security.revealWords'),
         onPress: handleRevealWords,
+        disabled: app.isSecureModeEnabled,
+      },
+      {
+        title: t('more.sections.security.secureMode.enableButton'),
+        value: app.isSecureModeEnabled,
+        onToggle: () => {
+          setShowingSecureModeConfirmation(true)
+        },
+        renderModal: () => (
+          <SecureModeModal
+            isVisible={showingSecureModeConfirmation}
+            onClose={() => setShowingSecureModeConfirmation(false)}
+          />
+        ),
+        disabled: app.isSecureModeEnabled,
       },
     ]
     return [
@@ -274,6 +301,9 @@ const MoreScreen = () => {
     app.convertHntToCurrency,
     app.authInterval,
     app.isPinRequiredForPayment,
+    app.isSecureModeEnabled,
+    showingSecureModeConfirmation,
+    setShowingSecureModeConfirmation,
     handleRevealWords,
     language,
     handleLanguageChange,
