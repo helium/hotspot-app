@@ -142,7 +142,7 @@ const HotspotDetailChart = ({
 
   return (
     <Box
-      backgroundColor="grayBox"
+      backgroundColor="grayBoxLight"
       paddingHorizontal="l"
       paddingVertical="m"
       flexDirection="row"

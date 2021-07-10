@@ -7,7 +7,7 @@ import { useSpacing } from '../../../theme/themeHooks'
 
 type Props = {
   index?: number
-  onTimelineChanged?: (value: number) => void
+  onTimelineChanged?: (value: number, index: number) => void
 }
 
 const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
@@ -37,7 +37,7 @@ const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
   const handleValueChanged = useCallback(
     (_value, i) => {
       setSelectedOption(data[i])
-      onTimelineChanged?.(data[i].value as number)
+      onTimelineChanged?.(data[i].value as number, i)
     },
     [data, onTimelineChanged],
   )
@@ -54,7 +54,7 @@ const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
         variant="flat"
         showGradient={false}
         contentContainerStyle={contentContainerStyle}
-        backgroundColor="grayBox"
+        backgroundColor="grayBoxLight"
         selectedValue={selectedOption.value}
         onValueChanged={handleValueChanged}
         itemPadding="xs"
