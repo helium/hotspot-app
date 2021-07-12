@@ -247,10 +247,10 @@ const HotspotDetails = ({
     (witness: Witness) => {
       return (
         <HotspotListItem
+          pressable={false}
           key={witness.address}
           onPress={onSelectHotspot}
           hotspot={witness}
-          showCarot
           showAddress={false}
           distanceAway={getDistance(witness)}
           showRewardScale

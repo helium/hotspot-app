@@ -28,6 +28,7 @@ type HotspotListItemProps = {
   distanceAway?: string
   showRelayStatus?: boolean
   showAntennaDetails?: boolean
+  pressable?: boolean
 }
 
 const HotspotListItem = ({
@@ -40,6 +41,7 @@ const HotspotListItem = ({
   showRewardScale = false,
   showRelayStatus = false,
   showAntennaDetails = false,
+  pressable = true,
   distanceAway,
 }: HotspotListItemProps) => {
   const { t } = useTranslation()
@@ -89,7 +91,7 @@ const HotspotListItem = ({
 
   return (
     <Box marginBottom="xxs">
-      <Pressable onPress={handlePress}>
+      <Pressable onPress={handlePress} disabled={!pressable}>
         {({ pressed }) => (
           <Box
             backgroundColor={pressed ? 'grayHighlight' : 'grayBoxLight'}
