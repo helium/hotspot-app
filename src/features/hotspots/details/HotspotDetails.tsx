@@ -508,6 +508,7 @@ const HotspotDetails = ({
                       <Text
                         variant="body1Medium"
                         color="grayDarkText"
+                        fontSize={22}
                         paddingLeft="m"
                         paddingRight="s"
                       >
@@ -550,7 +551,7 @@ const HotspotDetails = ({
                         >
                           {t('hotspot_details.get_witnessed')}
                         </Text>
-                        <Text color="purpleText" variant="light">
+                        <Text color="purpleText" variant="light" fontSize={15}>
                           {t('hotspot_details.get_witnessed_desc')}
                         </Text>
                       </Box>

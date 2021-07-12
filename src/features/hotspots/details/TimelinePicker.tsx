@@ -50,6 +50,7 @@ const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
     <Box zIndex={1000} marginRight="m">
       <HeliumSelect
         inverted
+        scrollEnabled={false}
         data={data}
         variant="flat"
         showGradient={false}
