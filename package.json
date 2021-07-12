@@ -65,6 +65,7 @@
     "angry-purple-tiger": "^1.0.5",
     "babel-plugin-module-resolver": "^3.2.0",
     "base-64": "^1.0.0",
+    "buffer": "^6.0.3",
     "compare-versions": "^3.6.0",
     "date-fns": "^2.16.1",
     "expo-barcode-scanner": "^9.1.0",
