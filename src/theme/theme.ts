@@ -11,7 +11,7 @@ const palette = {
   whiteTransparent75: '#FFFFFFBF',
   blackTransparent: '#00000033',
   offwhite: '#F9FAFC',
-  offblack: '#1E2051',
+  offblack: '#1C1E3B',
 
   blueGrayLight: '#CDD7E5',
   blueGray: '#33414E',
@@ -33,6 +33,7 @@ const palette = {
   grayBox: '#F6F7FE',
   grayBlack: '#1C1C1C',
   grayText: '#667394',
+  grayHex: '#4F5293',
   grayDarkText: '#515686',
   grayLightText: '#A7AACD',
   grayMid: '#A5AEBD',
