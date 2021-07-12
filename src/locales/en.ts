@@ -332,6 +332,9 @@ export default {
         'There was an error constructing the Assert Location transaction. Please try again.',
       assert_loc_error_no_loc:
         'The selected location is invalid. Please try again.',
+      assert_loc_error_no_change_title: 'Location Unchanged',
+      assert_loc_error_no_change_body:
+        'The Hotspot location has not changed. Drag the pin to a different location and try again.',
       no_onboarding_key_title: 'No onboarding key found',
       no_onboarding_key_message: 'Would you like to try again?',
     },
