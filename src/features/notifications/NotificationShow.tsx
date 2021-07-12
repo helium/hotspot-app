@@ -51,7 +51,7 @@ const NotificationShow = ({ notification, onClose }: Props) => {
   )
 
   const bodyStyle = useMemo(
-    () => ({ maxHeight: Platform.OS === 'ios' ? 450 : 350 }),
+    () => ({ maxHeight: Platform.select({ ios: 450, android: 350 }) }),
     [],
   )
 
