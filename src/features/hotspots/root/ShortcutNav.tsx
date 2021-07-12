@@ -20,6 +20,7 @@ import Globe from '@assets/images/globeShortcut.svg'
 import Search from '@assets/images/searchShortcut.svg'
 import Home from '@assets/images/homeShortcut.svg'
 import Follow from '@assets/images/follow.svg'
+import animalName from 'angry-purple-tiger'
 import sleep from '../../../utils/sleep'
 import { wp } from '../../../utils/layout'
 import Text from '../../../components/Text'
@@ -47,6 +48,14 @@ export const IS_GLOBAL_OPT = (
 ): item is GlobalOpt => typeof item === 'string'
 
 type FollowedHotspot = Hotspot & { followed?: boolean }
+
+const getAnimalName = (hotspot: Hotspot) => {
+  const pieces = (hotspot.name || animalName(hotspot.address)).split('-')
+  return pieces[pieces.length - 1]
+}
+
+const sortByName = (hotspots: Hotspot[]) =>
+  hotspots.sort((l, r) => (getAnimalName(l) > getAnimalName(r) ? 1 : -1))
 
 const ShortcutNav = ({
   ownedHotspots,
@@ -80,17 +89,39 @@ const ShortcutNav = ({
     // 2. Followed
     // 3. Owned
 
-    const sortedFollowed = followedHotspots.sort((h) =>
-      h.owner === ownerAddress ? -1 : 1,
-    )
-    const unique = uniqBy(
+    const uniqueHotspots = uniqBy(
       [
-        ...sortedFollowed.map((h) => ({ ...h, followed: true })),
+        ...followedHotspots.map((h) => ({ ...h, followed: true })),
         ...ownedHotspots,
       ],
       (h) => h.address,
+    ) as FollowedHotspot[]
+
+    const groupedHotspots = uniqueHotspots.reduce(
+      (val, hotspot) => {
+        if (!hotspot.followed) {
+          return { ...val, owned: [...val.owned, hotspot] }
+        }
+        if (hotspot.owner === ownerAddress) {
+          return {
+            ...val,
+            ownedAndFollowed: [...val.ownedAndFollowed, hotspot],
+          }
+        }
+        return { ...val, followed: [...val.followed, hotspot] }
+      },
+      {
+        ownedAndFollowed: [] as FollowedHotspot[],
+        followed: [] as FollowedHotspot[],
+        owned: [] as FollowedHotspot[],
+      } as Record<'ownedAndFollowed' | 'followed' | 'owned', FollowedHotspot[]>,
     )
-    return unique as FollowedHotspot[]
+
+    return [
+      ...sortByName(groupedHotspots.ownedAndFollowed),
+      ...sortByName(groupedHotspots.followed),
+      ...sortByName(groupedHotspots.owned),
+    ]
   }, [followedHotspots, ownedHotspots, ownerAddress])
 
   const isSelected = useCallback(
@@ -293,7 +324,7 @@ const ShortcutNav = ({
           width={ITEM_SIZE}
           height={ITEM_SIZE}
           marginRight={ITEM_MARGIN}
-          backgroundColor={selected ? 'white' : 'purpleMuted'}
+          backgroundColor={selected ? 'white' : 'purpleDarkMuted'}
         >
           {getIcon()}
         </TouchableOpacityBox>

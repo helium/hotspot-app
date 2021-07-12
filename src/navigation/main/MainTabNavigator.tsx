@@ -93,7 +93,6 @@ const MainTabs = () => {
     <MainTab.Navigator
       sceneContainerStyle={sceneContainerStyle}
       initialRouteName="Hotspots"
-      // lazy={false}
       tabBarOptions={tabBarOptions}
       screenOptions={screenOptions}
     >
