@@ -2,12 +2,23 @@ import React, { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
+import WalletHeader from './WalletHeader'
 
-const WalletEmpty = () => {
+type Props = {
+  handleScanPressed: () => void
+}
+
+const WalletEmpty = ({ handleScanPressed }: Props) => {
   const { t } = useTranslation()
 
   return (
-    <Box alignContent="center" justifyContent="flex-end" flex={1} padding="xl">
+    <Box alignContent="center" padding="xl" paddingTop="none" flex={1}>
+      <WalletHeader
+        handleScanPressed={handleScanPressed}
+        hideTitle
+        flex={1}
+        marginRight="n_xl"
+      />
       <Text
         variant="h1"
         fontSize={43}
