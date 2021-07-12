@@ -236,7 +236,9 @@ const WalletView = ({
             />
           </Box>
         )}
-        {activityViewState === 'no_activity' && <WalletEmpty />}
+        {activityViewState === 'no_activity' && (
+          <WalletEmpty handleScanPressed={navScan} />
+        )}
         <WalletAddress
           flex={1}
           loading={activityViewState === 'undetermined'}

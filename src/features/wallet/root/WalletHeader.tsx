@@ -11,10 +11,11 @@ import { Theme } from '../../../theme/theme'
 
 type Props = BoxProps<Theme> & {
   handleScanPressed: () => void
+  hideTitle?: boolean
 }
 
 const hitSlop = { top: 12, bottom: 12, left: 24, right: 24 } as Insets
-const WalletHeader = ({ handleScanPressed, ...boxProps }: Props) => {
+const WalletHeader = ({ handleScanPressed, hideTitle, ...boxProps }: Props) => {
   const { t } = useTranslation()
 
   return (
@@ -27,11 +28,13 @@ const WalletHeader = ({ handleScanPressed, ...boxProps }: Props) => {
       zIndex={1}
       {...boxProps}
     >
-      <Text variant="h1" fontSize={22} maxFontSizeMultiplier={1.2}>
-        {t('wallet.title')}
-      </Text>
+      {!hideTitle && (
+        <Text variant="h1" fontSize={22} maxFontSizeMultiplier={1.2}>
+          {t('wallet.title')}
+        </Text>
+      )}
 
-      <Box flexDirection="row" justifyContent="flex-end">
+      <Box flex={1} flexDirection="row" justifyContent="flex-end">
         <TouchableOpacityBox
           onPress={handleScanPressed}
           padding="s"
