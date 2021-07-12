@@ -129,6 +129,7 @@ const ReassertLocation = ({
       return (
         <ReassertLocationUpdate
           amount={amount}
+          hotspot={hotspot}
           key={state}
           coords={
             hotspot.lat && hotspot.lng
@@ -155,6 +156,7 @@ const ReassertLocation = ({
       return (
         <ReassertLocationUpdate
           amount={amount}
+          hotspot={hotspot}
           key={state}
           onCancel={handleBack}
           confirming

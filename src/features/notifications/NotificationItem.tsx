@@ -68,7 +68,7 @@ const NotificationItem = ({
                   {notification.title}
                 </Text>
               </Box>
-              <Text variant="body3" color="grayExtraLight" numberOfLines={2}>
+              <Text variant="body2" color="grayExtraLight" numberOfLines={2}>
                 {body}
               </Text>
             </Box>
