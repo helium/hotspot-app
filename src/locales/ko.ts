@@ -749,7 +749,7 @@ export default {
     picker_title: '이전',
     overview: '개요',
     no_location: '위치 없음',
-    picker_options: ['지난 24시간', '지난 7일', '지난 14일', '지난 30일'],
+    picker_options: ['지난 24시간', '지난 14일', '지난 30일'],
     picker_prompt: '범위 선택',
     status_online: '온라인',
     status_offline: '주의 필요',

@@ -11,7 +11,7 @@ import React, {
 } from 'react'
 import { LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
-import { Colors, Theme } from '../theme/theme'
+import { Colors, Spacing, Theme } from '../theme/theme'
 import Box from './Box'
 import HeliumSelectItem, {
   HeliumSelectItemType,
@@ -29,6 +29,8 @@ type Props = Omit<BoxProps<Theme>, 'backgroundColor'> & {
   contentContainerStyle?: StyleProp<ViewStyle>
   scrollEnabled?: boolean
   backgroundColor?: Colors
+  itemPadding?: Spacing
+  inverted?: boolean
 }
 
 const HeliumSelect = ({
@@ -40,6 +42,8 @@ const HeliumSelect = ({
   backgroundColor = 'white',
   contentContainerStyle,
   scrollEnabled = true,
+  itemPadding,
+  inverted,
   ...boxProps
 }: Props) => {
   const colors = useColors()
@@ -126,10 +130,18 @@ const HeliumSelect = ({
           backgroundColor={backgroundColor}
           selected={item.value === selectedValue}
           onPress={handleItemSelected(item.value, index)}
+          itemPadding={itemPadding}
         />
       )
     },
-    [backgroundColor, handleItemSelected, handleLayout, selectedValue, variant],
+    [
+      backgroundColor,
+      handleItemSelected,
+      handleLayout,
+      itemPadding,
+      selectedValue,
+      variant,
+    ],
   )
 
   const keyExtractor = useCallback(
@@ -140,6 +152,7 @@ const HeliumSelect = ({
   return (
     <Box width="100%" flexDirection="row" flex={1} height={33} {...boxProps}>
       <FlatList
+        inverted={inverted}
         contentContainerStyle={contentContainerStyle}
         horizontal
         showsHorizontalScrollIndicator={false}

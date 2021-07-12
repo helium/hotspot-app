@@ -788,7 +788,7 @@ export default {
     },
   },
   hotspot_details: {
-    checklist: 'Checklist',
+    checklist: 'Progress',
     title: 'Hotspot Details',
     owner: 'Owned by {{address}}',
     owner_you: 'Owned by you',
@@ -801,14 +801,9 @@ export default {
     challenge_title: 'Challenges',
     challenge_sub_title: '(witness, challenger, or challengee)',
     picker_title: 'Past',
-    overview: 'Overview',
+    overview: 'Earnings',
     no_location: 'No Location',
-    picker_options: [
-      'Past 24 Hours',
-      'Past 7 Days',
-      'Past 14 Days',
-      'Past 30 Days',
-    ],
+    picker_options: ['24H', '14D', '30D'],
     picker_prompt: 'Select Range',
     status_online: 'Online',
     status_offline: 'Needs Attention',
@@ -846,6 +841,13 @@ export default {
       message:
         'The Hotspots in this list have witnessed a Beacon from {{hotspotName}} recently.\n\nFluctuations are normal and expected. The number of Hotspots will reset to zero if you update location, antenna, or elevation',
     },
+    witness_desc:
+      'These Hotspots witnessed {{hotspotAnimal}}’s\nbeacons over the last 5 days.',
+    witness_desc_none:
+      'No Hotspots have heard and responded to\n{{hotspotAnimal}}’s beacons over the last 5 days.',
+    get_witnessed: 'GET WITNESSED',
+    get_witnessed_desc:
+      'Position your Hotspot so that it can be heard by others. Often this means moving it higher in order to increase its range.',
   },
   transfer: {
     title: 'Transfer Hotspot',

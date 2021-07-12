@@ -7,7 +7,7 @@ import { useSpacing } from '../../../theme/themeHooks'
 
 type Props = {
   index?: number
-  onTimelineChanged?: (value: number) => void
+  onTimelineChanged?: (value: number, index: number) => void
 }
 
 const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
@@ -15,19 +15,21 @@ const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
   const spacing = useSpacing()
 
   const data = useMemo(() => {
-    const values = [1, 7, 14, 30]
+    const values = [1, 14, 30]
     const labels: string[] = t('hotspot_details.picker_options', {
       returnObjects: true,
     })
 
-    return labels.map(
-      (label, i) =>
-        ({
-          label,
-          value: values[i],
-          color: 'purpleMain',
-        } as HeliumSelectItemType),
-    )
+    return labels
+      .map(
+        (label, i) =>
+          ({
+            label,
+            value: values[i],
+            color: 'purpleMain',
+          } as HeliumSelectItemType),
+      )
+      .reverse()
   }, [t])
 
   const [selectedOption, setSelectedOption] = useState(data[index])
@@ -35,29 +37,29 @@ const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
   const handleValueChanged = useCallback(
     (_value, i) => {
       setSelectedOption(data[i])
-      onTimelineChanged?.(data[i].value as number)
+      onTimelineChanged?.(data[i].value as number, i)
     },
     [data, onTimelineChanged],
   )
 
-  const contentContainerStyle = useMemo(() => ({ paddingLeft: spacing.m }), [
-    spacing.m,
+  const contentContainerStyle = useMemo(() => ({ paddingLeft: spacing.s }), [
+    spacing.s,
   ])
 
   return (
-    <Box
-      flexDirection="row"
-      alignItems="center"
-      marginVertical="m"
-      width="100%"
-    >
+    <Box zIndex={1000} marginRight="m">
       <HeliumSelect
+        inverted
+        scrollEnabled={false}
         data={data}
         variant="flat"
+        showGradient={false}
         contentContainerStyle={contentContainerStyle}
-        backgroundColor="grayBox"
+        backgroundColor="grayBoxLight"
         selectedValue={selectedOption.value}
         onValueChanged={handleValueChanged}
+        itemPadding="xs"
+        justifyContent="flex-end"
       />
     </Box>
   )

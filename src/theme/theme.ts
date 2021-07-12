@@ -31,6 +31,7 @@ const palette = {
   grayDark: '#202B37',
   grayBlue: '#3D5A73',
   grayBox: '#F6F7FE',
+  grayBoxLight: '#F9FAFE',
   grayBlack: '#1C1C1C',
   grayText: '#667394',
   grayHex: '#4F5293',
@@ -63,6 +64,7 @@ const palette = {
   purpleDarkMuted: '#4C5280',
   purpleDull: '#474973',
   purpleText: '#5C5EA0',
+  purpleLightText: '#979CC8',
 
   greenBright: '#29D391',
   greenMain: '#32C48D',

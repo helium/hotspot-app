@@ -15,6 +15,7 @@ import { RootState } from '../store/rootReducer'
 import { getSyncStatus, isRelay, SyncStatus } from '../utils/hotspotUtils'
 import HexBadge from '../features/hotspots/details/HexBadge'
 import { useColors } from '../theme/themeHooks'
+import Signal from '../assets/images/signal.svg'
 
 type HotspotListItemProps = {
   onPress?: (hotspot: Hotspot | Witness) => void
@@ -26,6 +27,8 @@ type HotspotListItemProps = {
   showRewardScale?: boolean
   distanceAway?: string
   showRelayStatus?: boolean
+  showAntennaDetails?: boolean
+  pressable?: boolean
 }
 
 const HotspotListItem = ({
@@ -37,6 +40,8 @@ const HotspotListItem = ({
   showAddress = true,
   showRewardScale = false,
   showRelayStatus = false,
+  showAntennaDetails = false,
+  pressable = true,
   distanceAway,
 }: HotspotListItemProps) => {
   const { t } = useTranslation()
@@ -86,10 +91,10 @@ const HotspotListItem = ({
 
   return (
     <Box marginBottom="xxs">
-      <Pressable onPress={handlePress}>
+      <Pressable onPress={handlePress} disabled={!pressable}>
         {({ pressed }) => (
           <Box
-            backgroundColor={pressed ? 'grayHighlight' : 'grayBox'}
+            backgroundColor={pressed ? 'grayHighlight' : 'grayBoxLight'}
             flexDirection="row"
             justifyContent="space-between"
             alignItems="center"
@@ -175,6 +180,32 @@ const HotspotListItem = ({
                     badge={false}
                     fontSize={12}
                   />
+                )}
+                {showAntennaDetails && (
+                  <Box marginLeft="s" flexDirection="row" alignItems="center">
+                    <Signal width={10} height={10} color={colors.grayText} />
+                    <Text
+                      color="grayText"
+                      variant="regular"
+                      fontSize={12}
+                      marginLeft="xs"
+                    >
+                      {t('generic.meters', {
+                        distance: hotspot?.elevation || 0,
+                      })}
+                    </Text>
+                    {hotspot?.gain !== undefined && (
+                      <Text
+                        color="grayText"
+                        variant="regular"
+                        fontSize={12}
+                        marginLeft="xs"
+                      >
+                        {(hotspot.gain / 10).toFixed(1) +
+                          t('antennas.onboarding.dbi')}
+                      </Text>
+                    )}
+                  </Box>
                 )}
                 {showRelayStatus && isRelayed && (
                   <Text

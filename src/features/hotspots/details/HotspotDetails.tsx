@@ -38,9 +38,11 @@ import HotspotListItem from '../../../components/HotspotListItem'
 import Info from '../../../assets/images/info-hollow.svg'
 import Location from '../../../assets/images/location.svg'
 import Signal from '../../../assets/images/signal.svg'
+import EarningsIcon from '../../../assets/images/earnings_icon.svg'
+import WitnessIcon from '../../../assets/images/checklist_challenge_witness.svg'
+import CheckCircle from '../../../assets/images/check-circle.svg'
 import { distance } from '../../../utils/location'
 import { useColors, useSpacing } from '../../../theme/themeHooks'
-import TouchableHighlightBox from '../../../components/TouchableHighlightBox'
 import HotspotSheetHandle from '../root/HotspotSheetHandle'
 import { hp } from '../../../utils/layout'
 import sleep from '../../../utils/sleep'
@@ -87,18 +89,12 @@ const HotspotDetails = ({
   const listRef = useRef<BottomSheet>(null)
   const [isRelayed, setIsRelayed] = useState(false)
   const [timelineValue, setTimelineValue] = useState(14)
+  const [timelineIndex, setTimelineIndex] = useState(1)
   const [snapPoints, setSnapPoints] = useState([0, 0])
   const [listIndex, setListIndex] = useState(0)
 
-  const {
-    rewards,
-    rewardSum,
-    rewardsChange,
-    loading = true,
-    challengeSums,
-    challengeSum,
-    challengeChange,
-  } = hotspotChatData[timelineValue] || {}
+  const { rewards, rewardSum, rewardsChange, loading = true } =
+    hotspotChatData[timelineValue] || {}
   const { hotspot: hotspotDetailsHotspot, witnesses } = hotspotDetailsData || {}
   const [showStatusBanner, toggleShowStatusBanner] = useToggle(false)
 
@@ -158,18 +154,6 @@ const HotspotDetails = ({
     )
   }, [dispatch, hotspot?.address, timelineValue])
 
-  const challengeChartData = useMemo(() => {
-    return (
-      challengeSums?.map((w) => ({
-        up: Math.round(w.sum),
-        down: 0,
-        label: w.timestamp,
-        showTime: timelineValue === 1,
-        id: `challenge-${timelineValue}-${w.timestamp}`,
-      })) || []
-    )
-  }, [timelineValue, challengeSums])
-
   const formattedHotspotName = useMemo(() => {
     if (!hotspot) return ''
 
@@ -186,16 +170,19 @@ const HotspotDetails = ({
         label: t('hotspot_details.overview'),
         value: 'overview',
         color: 'purpleMain',
+        Icon: EarningsIcon,
       } as HeliumSelectItemType,
       {
         label: t('hotspot_details.checklist'),
         value: 'checklist',
         color: 'purpleMain',
+        Icon: WitnessIcon,
       } as HeliumSelectItemType,
       {
         label: t('map_filter.witness.title'),
         value: 'witnesses',
         color: 'purpleMain',
+        Icon: CheckCircle,
       } as HeliumSelectItemType,
     ]
   }, [t])
@@ -260,14 +247,15 @@ const HotspotDetails = ({
     (witness: Witness) => {
       return (
         <HotspotListItem
+          pressable={false}
           key={witness.address}
           onPress={onSelectHotspot}
           hotspot={witness}
-          showCarot
           showAddress={false}
           distanceAway={getDistance(witness)}
           showRewardScale
           showRelayStatus
+          showAntennaDetails
         />
       )
     },
@@ -335,6 +323,11 @@ const HotspotDetails = ({
   const contentContainerStyle = useMemo(() => ({ paddingLeft: spacing.m }), [
     spacing.m,
   ])
+
+  const onTimelineChanged = useCallback((value, index) => {
+    setTimelineValue(value)
+    setTimelineIndex(index)
+  }, [])
 
   if (!hotspot) return null
 
@@ -438,7 +431,7 @@ const HotspotDetails = ({
               <HexBadge
                 hitSlop={hitSlop}
                 rewardScale={hotspot.rewardScale}
-                backgroundColor="grayBox"
+                backgroundColor="grayBoxLight"
               />
             </Box>
           </Box>
@@ -453,41 +446,37 @@ const HotspotDetails = ({
           <Box
             justifyContent="flex-start"
             flexDirection="row"
-            backgroundColor="grayBox"
+            backgroundColor="grayBoxLight"
           >
             <HeliumSelect
               showGradient={false}
               marginTop="m"
               contentContainerStyle={contentContainerStyle}
               data={selectData}
-              backgroundColor="grayBox"
+              backgroundColor="grayBoxLight"
               selectedValue={selectedOption}
               onValueChanged={handleSelectValueChanged}
             />
           </Box>
           <HotspotChecklist
             paddingTop="lx"
-            backgroundColor="grayBox"
+            backgroundColor="grayBoxLight"
             visible={selectedOption === 'checklist'}
             hotspot={hotspot}
             witnesses={witnesses}
           />
 
           {selectedOption === 'overview' && (
-            <Box backgroundColor="grayBox">
-              <TimelinePicker index={2} onTimelineChanged={setTimelineValue} />
+            <Box backgroundColor="grayBoxLight" paddingTop="xl">
+              <TimelinePicker
+                index={timelineIndex}
+                onTimelineChanged={onTimelineChanged}
+              />
               <HotspotDetailChart
                 title={t('hotspot_details.reward_title')}
                 number={rewardSum?.total.toFixed(2)}
                 change={rewardsChange}
                 data={rewardChartData}
-                loading={loading}
-              />
-              <HotspotDetailChart
-                title={t('hotspot_details.challenge_title')}
-                number={challengeSum?.toFixed(0)}
-                change={challengeChange}
-                data={challengeChartData}
                 loading={loading}
               />
             </Box>
@@ -496,35 +485,78 @@ const HotspotDetails = ({
           {selectedOption === 'witnesses' && (
             <>
               {hotspotDetailsData.loading ? (
-                <Box paddingTop="xl" backgroundColor="grayBox" height="100%">
+                <Box
+                  paddingTop="xl"
+                  backgroundColor="grayBoxLight"
+                  height="100%"
+                >
                   <ActivityIndicator color={colors.grayMain} />
                 </Box>
               ) : (
                 <>
-                  <TouchableHighlightBox
-                    alignItems="center"
-                    backgroundColor="grayBox"
+                  <Box
+                    backgroundColor="grayBoxLight"
                     marginBottom="xxs"
                     paddingTop="m"
-                    flexDirection="row"
-                    underlayColor={colors.grayHighlight}
-                    onPress={showWitnessAlert}
                   >
-                    <>
+                    <Box
+                      alignItems="center"
+                      flexDirection="row"
+                      paddingTop="m"
+                      paddingBottom="s"
+                    >
                       <Text
                         variant="body1Medium"
                         color="grayDarkText"
+                        fontSize={22}
                         paddingLeft="m"
                         paddingRight="s"
-                        paddingVertical="m"
                       >
                         {t('hotspot_details.num_witnesses', {
                           count: witnesses?.length || 0,
                         })}
                       </Text>
-                      <Info color={colors.blueMain} />
-                    </>
-                  </TouchableHighlightBox>
+                      <TouchableOpacityBox
+                        onPress={showWitnessAlert}
+                        hitSlop={{ top: 8, left: 8, bottom: 8, right: 8 }}
+                      >
+                        <Info color={colors.blueMain} />
+                      </TouchableOpacityBox>
+                    </Box>
+                    <Text
+                      paddingHorizontal="m"
+                      paddingBottom="m"
+                      color="grayDarkText"
+                    >
+                      {t(
+                        witnesses?.length === 0
+                          ? 'hotspot_details.witness_desc_none'
+                          : 'hotspot_details.witness_desc',
+                        {
+                          hotspotAnimal: formattedHotspotName[1],
+                        },
+                      )}
+                    </Text>
+                    {witnesses?.length === 0 && (
+                      <Box
+                        borderRadius="m"
+                        backgroundColor="grayHighlight"
+                        margin="m"
+                        padding="m"
+                      >
+                        <Text
+                          marginBottom="xs"
+                          color="purpleLightText"
+                          variant="medium"
+                        >
+                          {t('hotspot_details.get_witnessed')}
+                        </Text>
+                        <Text color="purpleText" variant="light" fontSize={15}>
+                          {t('hotspot_details.get_witnessed_desc')}
+                        </Text>
+                      </Box>
+                    )}
+                  </Box>
                   {witnesses?.map((witness) => renderWitnessItem(witness))}
                 </>
               )}
