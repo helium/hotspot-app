@@ -239,6 +239,7 @@ const WalletView = ({
         {activityViewState === 'no_activity' && <WalletEmpty />}
         <WalletAddress
           flex={1}
+          loading={activityViewState === 'undetermined'}
           alignItems="center"
           justifyContent={
             activityViewState === 'no_activity' ? 'flex-start' : 'center'
