@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect } from 'react'
 import { BoxProps } from '@shopify/restyle'
 import { Address } from '@helium/crypto-react-native'
-import { StyleSheet, StyleProp, ViewStyle } from 'react-native'
+import { StyleSheet, StyleProp, View, ViewStyle } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Font, Theme } from '../../../theme/theme'
@@ -13,6 +13,7 @@ import HeliumBottomSheet from '../../../components/HeliumBottomSheet'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import InputField from '../../../components/InputField'
 import Check from '../../../assets/images/check.svg'
+import useKeyboardHeight from '../../../utils/useKeyboardHeight'
 
 type ActionButtonProps = {
   children: React.ReactNode
@@ -52,9 +53,10 @@ const SecureModeModal = ({ isVisible, onClose = () => {} }: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const insets = useSafeAreaInsets()
+  const keyboardHeight = useKeyboardHeight()
   const [sendAddress, setSendAddress] = useState('')
 
-  const sheetHeight = 400 + (insets?.bottom || 0)
+  const sheetHeight = 400 + (insets?.bottom || 0) + keyboardHeight
   const enableSecureMode = useCallback(() => {
     dispatch(appSlice.actions.enableSecureMode(true))
     if (sendAddress) {
@@ -92,7 +94,7 @@ const SecureModeModal = ({ isVisible, onClose = () => {} }: Props) => {
             <Box padding="s" position="absolute" right={0}>
               <Check />
             </Box>
-          ) : null
+          ) : undefined
         }
       />
       <Box marginBottom="xl" style={styles.footerContainer}>
@@ -107,6 +109,7 @@ const SecureModeModal = ({ isVisible, onClose = () => {} }: Props) => {
           </Text>
         </ActionButton>
       </Box>
+      <View style={{ height: keyboardHeight }} />
     </HeliumBottomSheet>
   )
 }
