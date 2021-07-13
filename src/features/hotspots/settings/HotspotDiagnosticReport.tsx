@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useAsync } from 'react-async-hook'
 import { useTranslation } from 'react-i18next'
 import { capitalize, times } from 'lodash'
@@ -195,25 +195,15 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
     }
   }, [diagnostics])
 
-  if (loading) {
-    return (
-      <CircleLoader
-        minHeight={363}
-        justifyContent="center"
-        alignItems="center"
-        text={t('hotspot_settings.diagnostics.generating_report')}
-      />
-    )
-  }
-
-  const getLastChallengeDate = () => {
+  const getLastChallengeDate = useCallback(() => {
     if (info?.lastChallengeTime === undefined) return 'Unknown'
     return info?.lastChallengeTime === 0
       ? 'never'
       : format(fromUnixTime(info?.lastChallengeTime), DF)
-  }
+  }, [info?.lastChallengeTime])
 
-  const handleSendReport = () => {
+  const handleSendReport = useCallback(() => {
+    const supportEmail = getMakerSupportEmail(onboardingRecord?.maker?.id)
     sendReport({
       eth: diagnostics?.eth ? formatMac(diagnostics.eth) : '',
       wifi: diagnostics?.wifi ? formatMac(diagnostics.wifi) : '',
@@ -230,8 +220,27 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
       gateway: address || '',
       hotspotMaker: onboardingRecord?.maker?.name || 'Unknown',
       appVersion: version,
-      supportEmail: getMakerSupportEmail(onboardingRecord?.maker?.id),
+      supportEmail,
     })
+  }, [
+    address,
+    firmware?.version,
+    diagnostics,
+    getLastChallengeDate,
+    info,
+    onboardingRecord,
+    version,
+  ])
+
+  if (loading) {
+    return (
+      <CircleLoader
+        minHeight={363}
+        justifyContent="center"
+        alignItems="center"
+        text={t('hotspot_settings.diagnostics.generating_report')}
+      />
+    )
   }
 
   return (
