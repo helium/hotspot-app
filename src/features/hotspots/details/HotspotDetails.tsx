@@ -153,6 +153,8 @@ const HotspotDetails = ({
   }, [dispatch, hotspot?.address, timelineValue])
 
   useEffect(() => {
+    if (!address) return
+
     dispatch(
       fetchSyncStatus({
         address,
@@ -161,18 +163,6 @@ const HotspotDetails = ({
       }),
     )
   }, [address, blockHeight, dispatch, hotspot?.status?.timestamp])
-
-  useEffect(() => {
-    witnesses?.forEach(({ address: witnessAddress, status }) => {
-      dispatch(
-        fetchSyncStatus({
-          address: witnessAddress,
-          statusTime: status?.timestamp,
-          blockHeight,
-        }),
-      )
-    })
-  }, [blockHeight, dispatch, witnesses])
 
   const formattedHotspotName = useMemo(() => {
     if (!hotspot) return ''

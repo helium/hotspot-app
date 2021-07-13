@@ -14,6 +14,8 @@ import { FeaturesState } from '../features/featuresSlice'
 import {
   CacheRecord,
   handleCacheFulfilled,
+  handleCachePending,
+  handleCacheRejected,
   hasValidCache,
 } from '../../utils/cacheUtils'
 import { getSyncStatus } from '../../utils/hotspotUtils'
@@ -304,6 +306,10 @@ export type HotspotSyncCache = CacheRecord<HotspotStatus>
 export const fetchSyncStatus = createAsyncThunk(
   'hotspotDetails/fetchHotspotData',
   async ({ address, statusTime, blockHeight }: StatusAttrs, { getState }) => {
+    if (!address) {
+      throw new Error('fetchSyncStatus - address is empty')
+    }
+
     const {
       hotspots: { syncStatuses },
     } = getState() as {
@@ -435,18 +441,24 @@ const hotspotsSlice = createSlice({
         }
       },
     )
+    builder.addCase(fetchSyncStatus.rejected, (state, { meta: { arg } }) => {
+      if (arg.address) {
+        const prevState = state.syncStatuses[arg.address] || {}
+        state.syncStatuses[arg.address] = handleCacheRejected(prevState)
+      }
+    })
+    builder.addCase(fetchSyncStatus.pending, (state, { meta: { arg } }) => {
+      if (arg.address) {
+        const prevState = state.syncStatuses[arg.address] || {}
+        state.syncStatuses[arg.address] = handleCachePending(prevState)
+      }
+    })
     builder.addCase(
       fetchSyncStatus.fulfilled,
-      (
-        state,
-        {
-          payload,
-          meta: {
-            arg: { address },
-          },
-        },
-      ) => {
-        state.syncStatuses[address] = handleCacheFulfilled(payload)
+      (state, { meta: { arg }, payload }) => {
+        if (arg.address) {
+          state.syncStatuses[arg.address] = handleCacheFulfilled(payload)
+        }
       },
     )
   },

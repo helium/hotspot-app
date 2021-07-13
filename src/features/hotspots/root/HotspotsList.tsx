@@ -62,6 +62,8 @@ const HotspotsList = ({
 
   useEffect(() => {
     orderedHotspots.forEach(({ address, status }) => {
+      if (!address) return
+
       dispatch(
         fetchSyncStatus({
           address,
