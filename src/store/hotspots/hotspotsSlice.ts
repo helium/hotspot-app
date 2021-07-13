@@ -11,6 +11,12 @@ import { distance, LocationCoords } from '../../utils/location'
 import { getWallet, deleteWallet, postWallet } from '../../utils/walletClient'
 import * as Logger from '../../utils/logger'
 import { FeaturesState } from '../features/featuresSlice'
+import {
+  CacheRecord,
+  handleCacheFulfilled,
+  hasValidCache,
+} from '../../utils/cacheUtils'
+import { getSyncStatus } from '../../utils/hotspotUtils'
 
 export enum HotspotSort {
   New = 'new',
@@ -35,6 +41,7 @@ export type HotspotsSliceState = {
   loadingRewards: boolean
   hotspotsLoaded: boolean
   failure: boolean
+  syncStatuses: Record<string, CacheRecord<HotspotStatus>>
 }
 
 const initialState: HotspotsSliceState = {
@@ -47,6 +54,7 @@ const initialState: HotspotsSliceState = {
   loadingOrderedHotspots: false,
   hotspotsLoaded: false,
   failure: false,
+  syncStatuses: {},
 }
 
 type SorterContext = {
@@ -275,6 +283,53 @@ export const unfollowHotspot = createAsyncThunk<Hotspot[], string>(
   },
 )
 
+export enum SyncStatus {
+  full,
+  partial,
+  none,
+}
+
+type HotspotStatus = {
+  status: SyncStatus
+  percent: number
+}
+
+type StatusAttrs = {
+  address: string
+  statusTime?: string
+  blockHeight?: number
+}
+
+export type HotspotSyncCache = CacheRecord<HotspotStatus>
+export const fetchSyncStatus = createAsyncThunk(
+  'hotspotDetails/fetchHotspotData',
+  async ({ address, statusTime, blockHeight }: StatusAttrs, { getState }) => {
+    const {
+      hotspots: { syncStatuses },
+    } = getState() as {
+      hotspots: {
+        syncStatuses: Record<string, CacheRecord<HotspotStatus>>
+      }
+    }
+
+    if (syncStatuses[address] && hasValidCache(syncStatuses[address])) {
+      throw new Error(`sync status for hotspot ${address} is already valid`)
+    }
+
+    if (!statusTime) {
+      throw new Error(`status.timestamp for hotspot ${address} not found`)
+    }
+
+    // TODO: This is just temporary while we figure out a long-term solution
+    const response = await fetch(
+      `https://api.helium.io/v1/blocks/height/?max_time=${statusTime}`,
+    )
+    const body = await response.json()
+
+    return getSyncStatus(body.data.height, blockHeight)
+  },
+)
+
 const hotspotsToObj = (hotspots: Hotspot[]) =>
   hotspots.reduce((obj, hotspot) => {
     return {
@@ -378,6 +433,20 @@ const hotspotsSlice = createSlice({
           rewards[hotspotAddress] = hotspotRewards
           state.rewards = rewards
         }
+      },
+    )
+    builder.addCase(
+      fetchSyncStatus.fulfilled,
+      (
+        state,
+        {
+          payload,
+          meta: {
+            arg: { address },
+          },
+        },
+      ) => {
+        state.syncStatuses[address] = handleCacheFulfilled(payload)
       },
     )
   },

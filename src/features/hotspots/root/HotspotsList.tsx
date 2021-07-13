@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo } from 'react'
+import React, { memo, useCallback, useEffect, useMemo } from 'react'
 import { SectionList } from 'react-native'
 import { Hotspot, Witness } from '@helium/http'
 import { useSelector } from 'react-redux'
@@ -13,11 +13,15 @@ import HotspotListItem from '../../../components/HotspotListItem'
 import { RootState } from '../../../store/rootReducer'
 import WelcomeOverview from './WelcomeOverview'
 import HotspotsPicker from './HotspotsPicker'
-import { HotspotSort } from '../../../store/hotspots/hotspotsSlice'
+import {
+  fetchSyncStatus,
+  HotspotSort,
+} from '../../../store/hotspots/hotspotsSlice'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { wh } from '../../../utils/layout'
 import FocusAwareStatusBar from '../../../components/FocusAwareStatusBar'
 import HotspotsEmpty from './HotspotsEmpty'
+import { useAppDispatch } from '../../../store/store'
 
 const HotspotsList = ({
   onSelectHotspot,
@@ -35,6 +39,7 @@ const HotspotsList = ({
   onRequestShowMap?: () => void
 }) => {
   const colors = useColors()
+  const dispatch = useAppDispatch()
   const { top } = useSafeAreaInsets()
   const loadingRewards = useSelector(
     (state: RootState) => state.hotspots.loadingRewards,
@@ -46,8 +51,26 @@ const HotspotsList = ({
     (state: RootState) => state.hotspots.rewards || {},
   )
   const order = useSelector((state: RootState) => state.hotspots.order)
+  const blockHeight = useSelector(
+    (state: RootState) => state.heliumData.blockHeight,
+  )
+  const syncStatuses = useSelector(
+    (state: RootState) => state.hotspots.syncStatuses,
+  )
 
   const { t } = useTranslation()
+
+  useEffect(() => {
+    orderedHotspots.forEach(({ address, status }) => {
+      dispatch(
+        fetchSyncStatus({
+          address,
+          statusTime: status?.timestamp,
+          blockHeight,
+        }),
+      )
+    })
+  }, [blockHeight, dispatch, orderedHotspots])
 
   const handlePress = useCallback(
     (hotspot: Hotspot | Witness) => {
@@ -121,10 +144,12 @@ const HotspotsList = ({
           showCarot
           loading={loadingRewards}
           totalReward={rewards[item.address]?.balanceTotal}
+          percentSynced={syncStatuses[item.address]?.percent || 0}
+          syncStatus={syncStatuses[item.address]?.status}
         />
       )
     },
-    [handlePress, loadingRewards, rewards],
+    [handlePress, loadingRewards, rewards, syncStatuses],
   )
 
   const contentContainerStyle = useMemo(
@@ -134,6 +159,10 @@ const HotspotsList = ({
     [],
   )
 
+  const topStyle = useMemo(() => ({ paddingTop: top }), [top])
+
+  const keyExtractor = useCallback((item: Hotspot) => item.address, [])
+
   return (
     <Box backgroundColor="white" flex={1} top={visible ? 0 : wh}>
       {visible && <FocusAwareStatusBar barStyle="dark-content" />}
@@ -141,7 +170,7 @@ const HotspotsList = ({
         flexDirection="row"
         justifyContent="space-between"
         alignItems="center"
-        style={{ paddingTop: top }}
+        style={topStyle}
       >
         <TouchableOpacityBox onPress={searchPressed} padding="l">
           <Search width={22} height={22} color={colors.purpleGrayLight} />
@@ -154,7 +183,7 @@ const HotspotsList = ({
       {hasHotspots ? (
         <SectionList
           sections={sections}
-          keyExtractor={(item: Hotspot) => item.address}
+          keyExtractor={keyExtractor}
           ListHeaderComponent={<WelcomeOverview />}
           renderSectionHeader={renderHeader}
           renderItem={renderItem}
