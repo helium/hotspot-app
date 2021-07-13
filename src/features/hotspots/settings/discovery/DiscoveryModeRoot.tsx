@@ -222,7 +222,6 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
           onClose={onClose}
           recentDiscoveryInfo={recentDiscoveryInfo}
           error={infoLoading === 'rejected'}
-          hotspot={hotspot}
         />
       )
     case 'results':
