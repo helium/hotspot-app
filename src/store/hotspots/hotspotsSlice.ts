@@ -317,7 +317,7 @@ export const fetchSyncStatus = createAsyncThunk(
     }
 
     if (!statusTime) {
-      throw new Error(`status.timestamp for hotspot ${address} not found`)
+      return { status: SyncStatus.none, percent: 0 }
     }
 
     // TODO: This is just temporary while we figure out a long-term solution
