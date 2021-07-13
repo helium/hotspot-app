@@ -31,7 +31,7 @@ import HeliumSelect from '../../../components/HeliumSelect'
 import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
 import HotspotStatusBanner from './HotspotStatusBanner'
 import useToggle from '../../../utils/useToggle'
-import { getSyncStatus, isRelay } from '../../../utils/hotspotUtils'
+import { isRelay } from '../../../utils/hotspotUtils'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Articles from '../../../constants/articles'
 import HotspotListItem from '../../../components/HotspotListItem'
@@ -46,6 +46,7 @@ import { useColors, useSpacing } from '../../../theme/themeHooks'
 import HotspotSheetHandle from '../root/HotspotSheetHandle'
 import { hp } from '../../../utils/layout'
 import sleep from '../../../utils/sleep'
+import { fetchSyncStatus } from '../../../store/hotspots/hotspotsSlice'
 
 const hitSlop = { top: 24, bottom: 24 } as Insets
 
@@ -86,6 +87,9 @@ const HotspotDetails = ({
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
   )
+  const syncStatuses = useSelector(
+    (state: RootState) => state.hotspots.syncStatuses,
+  )
   const listRef = useRef<BottomSheet>(null)
   const [isRelayed, setIsRelayed] = useState(false)
   const [timelineValue, setTimelineValue] = useState(14)
@@ -115,12 +119,6 @@ const HotspotDetails = ({
     const data = getRewardChartData(rewards, timelineValue)
     return data || []
   }, [timelineValue, rewards, visible])
-
-  const syncStatus = useMemo(() => {
-    if (!hotspot?.status) return
-
-    return getSyncStatus(hotspot.status?.height, blockHeight)
-  }, [blockHeight, hotspot])
 
   useEffect(() => {
     if (!visible) return
@@ -153,6 +151,18 @@ const HotspotDetails = ({
       }),
     )
   }, [dispatch, hotspot?.address, timelineValue])
+
+  useEffect(() => {
+    if (!address) return
+
+    dispatch(
+      fetchSyncStatus({
+        address,
+        statusTime: hotspot?.status?.timestamp,
+        blockHeight,
+      }),
+    )
+  }, [address, blockHeight, dispatch, hotspot?.status?.timestamp])
 
   const formattedHotspotName = useMemo(() => {
     if (!hotspot) return ''
@@ -256,10 +266,12 @@ const HotspotDetails = ({
           showRewardScale
           showRelayStatus
           showAntennaDetails
+          percentSynced={syncStatuses[witness?.address]?.percent || 0}
+          syncStatus={syncStatuses[witness?.address]?.status}
         />
       )
     },
-    [getDistance, onSelectHotspot],
+    [getDistance, onSelectHotspot, syncStatuses],
   )
 
   const showWitnessAlert = useCallback(() => {
@@ -407,7 +419,7 @@ const HotspotDetails = ({
                 <StatusBadge
                   hitSlop={hitSlop}
                   online={hotspot?.status?.online}
-                  syncStatus={syncStatus?.status}
+                  syncStatus={syncStatuses[hotspot?.address]?.status}
                   onPress={handleToggleStatus}
                 />
               )}

@@ -5,14 +5,12 @@ import { useTranslation } from 'react-i18next'
 import CarotRight from '@assets/images/carot-right.svg'
 import LocationIcon from '@assets/images/location-icon.svg'
 import Balance, { NetworkTokens } from '@helium/currency'
-import { useSelector } from 'react-redux'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import { Pressable } from 'react-native'
 import Box from './Box'
 import Text from './Text'
 import useCurrency from '../utils/useCurrency'
-import { RootState } from '../store/rootReducer'
-import { getSyncStatus, isRelay, SyncStatus } from '../utils/hotspotUtils'
+import { isRelay, SyncStatus } from '../utils/hotspotUtils'
 import HexBadge from '../features/hotspots/details/HexBadge'
 import { useColors } from '../theme/themeHooks'
 import Signal from '../assets/images/signal.svg'
@@ -29,6 +27,8 @@ type HotspotListItemProps = {
   showRelayStatus?: boolean
   showAntennaDetails?: boolean
   pressable?: boolean
+  percentSynced: number
+  syncStatus?: SyncStatus
 }
 
 const HotspotListItem = ({
@@ -43,6 +43,8 @@ const HotspotListItem = ({
   showAntennaDetails = false,
   pressable = true,
   distanceAway,
+  percentSynced,
+  syncStatus,
 }: HotspotListItemProps) => {
   const { t } = useTranslation()
   const colors = useColors()
@@ -56,26 +58,21 @@ const HotspotListItem = ({
     const nextReward = await hntBalanceToDisplayVal(totalReward, false)
     setReward(`+${nextReward}`)
   }, [hntBalanceToDisplayVal, totalReward])
-  const blockHeight = useSelector(
-    (state: RootState) => state.heliumData.blockHeight,
-  )
 
   useEffect(() => {
     updateReward()
   }, [updateReward])
 
-  const percentSynced = useMemo(() => {
-    const hotspotHeight = hotspot.status?.height || 0
-    const { status, percent } = getSyncStatus(hotspotHeight, blockHeight)
-    switch (status) {
+  const syncedMessage = useMemo(() => {
+    switch (syncStatus) {
       case SyncStatus.full:
         return ''
       case SyncStatus.partial:
-        return t('hotspot_details.percent_synced', { percent })
+        return t('hotspot_details.percent_synced', { percent: percentSynced })
       case SyncStatus.none:
         return t('hotspot_details.starting_sync')
     }
-  }, [t, blockHeight, hotspot.status?.height])
+  }, [syncStatus, t, percentSynced])
 
   const locationText = useMemo(() => {
     const { geocode: geo } = hotspot
@@ -150,7 +147,7 @@ const HotspotListItem = ({
                       {reward}
                     </Text>
                     <Text variant="body2Light" color="blueGray">
-                      {percentSynced}
+                      {syncedMessage}
                     </Text>
                   </>
                 )}
