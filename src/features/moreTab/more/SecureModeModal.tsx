@@ -1,47 +1,20 @@
-import React, { useCallback, useState, useEffect } from 'react'
+import React, { useCallback, useState, useEffect, useMemo } from 'react'
 import { BoxProps } from '@shopify/restyle'
 import { Address } from '@helium/crypto-react-native'
-import { StyleSheet, StyleProp, ViewStyle } from 'react-native'
+import { Modal, KeyboardAvoidingView } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Font, Theme } from '../../../theme/theme'
+import { Theme } from '../../../theme/theme'
 import appSlice from '../../../store/user/appSlice'
 import { useAppDispatch } from '../../../store/store'
 import Text from '../../../components/Text'
+import CloseModal from '../../../assets/images/closeModal.svg'
 import Box from '../../../components/Box'
-import HeliumBottomSheet from '../../../components/HeliumBottomSheet'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import InputField from '../../../components/InputField'
-import Check from '../../../assets/images/check.svg'
-
-type ActionButtonProps = {
-  children: React.ReactNode
-  disabled?: boolean
-  onPress: () => void
-  style?: StyleProp<ViewStyle>
-}
-const ActionButton = ({
-  children,
-  disabled,
-  onPress,
-  style = {},
-}: ActionButtonProps) => {
-  return (
-    <TouchableOpacityBox
-      height={49}
-      marginVertical="m"
-      alignItems="center"
-      justifyContent="center"
-      borderRadius="ms"
-      width="48%"
-      onPress={onPress}
-      style={style}
-      disabled={disabled}
-    >
-      {children}
-    </TouchableOpacityBox>
-  )
-}
+import Lock from '../../../assets/images/helium-hotspot.svg'
+import Button from '../../../components/Button'
+import TextInput from '../../../components/TextInput'
+import { useColors } from '../../../theme/themeHooks'
+import BlurBox from '../../../components/BlurBox'
 
 type Props = BoxProps<Theme> & {
   isVisible: boolean
@@ -51,10 +24,9 @@ type Props = BoxProps<Theme> & {
 const SecureModeModal = ({ isVisible, onClose = () => {} }: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const insets = useSafeAreaInsets()
+  const colors = useColors()
   const [sendAddress, setSendAddress] = useState('')
 
-  const sheetHeight = 400 + (insets?.bottom || 0)
   const enableSecureMode = useCallback(() => {
     dispatch(appSlice.actions.enableSecureMode(true))
     if (sendAddress) {
@@ -68,59 +40,86 @@ const SecureModeModal = ({ isVisible, onClose = () => {} }: Props) => {
   }, [isVisible])
 
   // Only disable "Submit" if an address is provided but is invalid
-  const isValid = sendAddress ? Address.isValid(sendAddress) : true
-  const confirmationStyle = isValid
-    ? styles.confirmContainer
-    : styles.confirmContainerDisabled
+  // TODO: Disable for self
+  const isValid = useMemo(
+    () => (sendAddress ? Address.isValid(sendAddress) : true),
+    [sendAddress],
+  )
+
+  const handleSendAddressChanged = useCallback(
+    (text: string) => setSendAddress(text),
+    [],
+  )
+
   return (
-    <HeliumBottomSheet
-      isVisible={isVisible}
-      onClose={onClose}
-      sheetHeight={sheetHeight}
-      title={t('more.sections.security.secureMode.title')}
+    <Modal
+      presentationStyle="overFullScreen"
+      transparent
+      visible={isVisible}
+      onRequestClose={onClose}
+      animationType="fade"
     >
-      <Text>{t('more.sections.security.secureMode.description')}</Text>
-      <Text marginVertical="m" fontFamily={Font.main.semiBold}>
-        {t('more.sections.security.secureMode.warning')}
-      </Text>
-      <InputField
-        onChange={setSendAddress}
-        label={t('more.sections.security.secureMode.addressLabel')}
-        placeholder={t('send.address.placeholder')}
-        extra={
-          sendAddress && isValid ? (
-            <Box padding="s" position="absolute" right={0}>
-              <Check />
-            </Box>
-          ) : null
-        }
+      <BlurBox
+        top={0}
+        left={0}
+        bottom={0}
+        right={0}
+        blurAmount={70}
+        blurType="dark"
+        position="absolute"
       />
-      <Box marginBottom="xl" style={styles.footerContainer}>
-        <ActionButton onPress={onClose} style={styles.cancelContainer}>
-          <Text variant="medium" fontSize={18} style={styles.cancelText}>
-            {t('generic.cancel')}
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+        <TouchableOpacityBox flex={1} onPress={onClose} />
+        <Box
+          backgroundColor="greenMain"
+          borderTopRightRadius="l"
+          borderTopLeftRadius="l"
+          padding="l"
+          alignItems="center"
+          flexDirection="row"
+        >
+          {/* TODO: Get the real icon */}
+          <Lock />
+          <Text variant="bold" fontSize={27} maxFontSizeMultiplier={1}>
+            {t('more.sections.security.secureMode.title')}
           </Text>
-        </ActionButton>
-        <ActionButton onPress={enableSecureMode} style={confirmationStyle}>
-          <Text variant="medium" fontSize={18} style={styles.confirmText}>
-            {t('generic.submit')}
+          <Box flex={1} />
+          <TouchableOpacityBox onPress={onClose}>
+            <CloseModal color={colors.blackTransparent} />
+          </TouchableOpacityBox>
+        </Box>
+        <Box padding="l" backgroundColor="white">
+          <Text
+            variant="body2"
+            color="black"
+            marginBottom="l"
+            maxFontSizeMultiplier={1.2}
+          >
+            {t('more.sections.security.secureMode.description')}
           </Text>
-        </ActionButton>
-      </Box>
-    </HeliumBottomSheet>
+          <TextInput
+            variant="medium"
+            placeholder={t('more.sections.security.secureMode.addressLabel')}
+            onChangeText={handleSendAddressChanged}
+            value={sendAddress}
+            returnKeyType="done"
+            autoCapitalize="none"
+            autoFocus
+            autoCorrect={false}
+            autoCompleteType="off"
+          />
+          <Button
+            title={t('generic.submit')}
+            mode="contained"
+            variant="secondary"
+            paddingTop="m"
+            onPress={enableSecureMode}
+            disabled={!isValid}
+          />
+        </Box>
+      </KeyboardAvoidingView>
+    </Modal>
   )
 }
-
-const styles = StyleSheet.create({
-  cancelContainer: { backgroundColor: '#F0F0F5' },
-  cancelText: { color: '#B3B4D6' },
-  confirmContainer: { backgroundColor: '#F97570' },
-  confirmContainerDisabled: { backgroundColor: 'rgba(249, 117, 112, 0.5)' },
-  confirmText: { color: '#FFFFFF' },
-  footerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-})
 
 export default SecureModeModal

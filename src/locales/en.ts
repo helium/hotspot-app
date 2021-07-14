@@ -530,9 +530,9 @@ export default {
           title: 'Secure Mode',
           enableButton: 'Enable Secure Mode',
           description:
-            'Activating secure mode will remove the ability to reveal the 12 words for this account. You will still be able to add hotspots and update their locations, and send funds to one whitelisted address if provided.',
+            'Activating Secure Mode will remove the ability to reveal the 12 words for this account.\n\nYou can still add Hotspots and update their location, but transferring Hotspots is not allowed.\n\nYou can send funds to one wallet address if provided.\n\n You must log out to disable this feature.',
           warning: 'You must log out to disable this feature.',
-          addressLabel: 'Permanent recipient address',
+          addressLabel: 'Permanent recipient',
         },
       },
       learn: {
