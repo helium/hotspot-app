@@ -5,7 +5,6 @@ export type FeaturesState = {
   discoveryEnabled: boolean
   checklistEnabled: boolean
   followHotspotEnabled: boolean
-  qrOnboardEnabled?: boolean
 }
 
 const initialState: FeaturesState = {
@@ -29,7 +28,6 @@ const featuresSlice = createSlice({
       state.discoveryEnabled = payload.discoveryEnabled
       state.checklistEnabled = payload.checklistEnabled
       state.followHotspotEnabled = payload.followHotspotEnabled
-      state.qrOnboardEnabled = payload.qrOnboardEnabled
     })
   },
 })

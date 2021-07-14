@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 import { FlatList } from 'react-native-gesture-handler'
 import { Edge } from 'react-native-safe-area-context'
 import Fuse from 'fuse.js'
-import { useSelector } from 'react-redux'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -20,7 +19,6 @@ import {
 import SearchInput from '../../../components/SearchInput'
 import animateTransition from '../../../utils/animateTransition'
 import { useBorderRadii } from '../../../theme/themeHooks'
-import { RootState } from '../../../store/rootReducer'
 
 const ItemSeparatorComponent = () => (
   <Box height={1} backgroundColor="primaryBackground" />
@@ -34,9 +32,6 @@ const HotspotSetupSelectionScreen = () => {
   const radii = useBorderRadii()
   const [searchTerm, setSearchTerm] = useState('')
 
-  const qrOnboardEnabled = useSelector(
-    (state: RootState) => state.features.qrOnboardEnabled,
-  )
   // clear any existing onboarding state
   useEffect(() => {
     dispatch(hotspotOnboardingSlice.actions.reset())
@@ -46,11 +41,13 @@ const HotspotSetupSelectionScreen = () => {
     (hotspotType: HotspotType) => () => {
       dispatch(hotspotOnboardingSlice.actions.setHotspotType(hotspotType))
 
-      const qrScanFlow = HotspotMakerModels[hotspotType].onboardType === 'QR'
-      if (qrScanFlow) {
-        navigation.push('HotspotSetupScanQrScreen', { hotspotType })
-      } else {
+      const { onboardType } = HotspotMakerModels[hotspotType]
+      if (onboardType === 'BLE') {
         navigation.push('HotspotSetupEducationScreen', { hotspotType })
+      } else {
+        navigation.push('HotspotSetupExternalScreen', {
+          hotspotType,
+        })
       }
     },
     [dispatch, navigation],
@@ -60,12 +57,6 @@ const HotspotSetupSelectionScreen = () => {
 
   const data = useMemo(() => {
     let results: HotspotType[] = HotspotModelKeys
-
-    if (!qrOnboardEnabled) {
-      results = results.flatMap((r) =>
-        HotspotMakerModels[r].onboardType === 'QR' ? [] : [r],
-      )
-    }
 
     if (!searchTerm) return results
 
@@ -83,7 +74,7 @@ const HotspotSetupSelectionScreen = () => {
       .map(({ item }) => item.key)
 
     return results
-  }, [qrOnboardEnabled, searchTerm, t])
+  }, [searchTerm, t])
 
   const renderItem = useCallback(
     ({ item, index }) => {
