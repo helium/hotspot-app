@@ -89,7 +89,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       isHapticDisabled,
       convertHntToCurrency,
       isSecureModeEnabled,
-      permanentPaymentAddress,
+      permanentPaymentAddress: permanentPaymentAddress || '',
     }
   },
 )
