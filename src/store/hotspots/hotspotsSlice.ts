@@ -294,6 +294,7 @@ export enum SyncStatus {
 type HotspotStatus = {
   status: SyncStatus
   percent: number
+  hotspotBlockHeight: number
 }
 
 type StatusAttrs = {
@@ -302,7 +303,6 @@ type StatusAttrs = {
   blockHeight?: number
 }
 
-export type HotspotSyncCache = CacheRecord<HotspotStatus>
 export const fetchSyncStatus = createAsyncThunk(
   'hotspotDetails/fetchHotspotData',
   async ({ address, statusTime, blockHeight }: StatusAttrs, { getState }) => {
@@ -323,7 +323,11 @@ export const fetchSyncStatus = createAsyncThunk(
     }
 
     if (!statusTime) {
-      return { status: SyncStatus.none, percent: 0 }
+      return {
+        status: SyncStatus.none,
+        percent: 0,
+        hotspotBlockHeight: 0,
+      }
     }
 
     // TODO: This is just temporary while we figure out a long-term solution
