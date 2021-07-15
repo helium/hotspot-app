@@ -5,13 +5,13 @@ import { MakerHotspot } from '../hotspotMakerTypes'
 import ANTENNAS from './antennas'
 
 const externalOnboard =
-  'Please visit the following URL from your computer or directly on your phone by selecting the link below:'
+  'Please onboard your Kerlink gateway by tapping the link below:'
 
 const onboardUrl = 'https://helium-onboarding.kerlink.com/?wallet=WALLET'
 
 const KERLINK_IFEMTO = {
   name: 'Kerlink iFemtoCell',
-  onboardType: 'QR',
+  onboardType: 'WEB',
   icon: HotspotIcon_iFemto,
   onboardUrl,
   translations: {
@@ -32,7 +32,7 @@ const KERLINK_IFEMTO = {
 
 const KERLINK_IFEMTO_EVO = {
   name: 'Kerlink iFemtoCell Evolution',
-  onboardType: 'QR',
+  onboardType: 'WEB',
   onboardUrl,
   icon: HotspotIcon_iFemtoEvo,
   translations: {
@@ -54,7 +54,7 @@ const KERLINK_IFEMTO_EVO = {
 const KERLINK_ISTATION = {
   name: 'Kerlink iStation',
   onboardUrl,
-  onboardType: 'QR',
+  onboardType: 'WEB',
   icon: HotspotIcon_iStation,
   translations: {
     en: {
