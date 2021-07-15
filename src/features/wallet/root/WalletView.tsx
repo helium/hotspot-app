@@ -202,10 +202,6 @@ const WalletView = ({
     viewHeights.header.value,
   ])
 
-  const loading = useMemo(() => activityViewState === 'undetermined', [
-    activityViewState,
-  ])
-
   return (
     <>
       <Animated.View style={condensedHeaderStyle}>
@@ -217,14 +213,10 @@ const WalletView = ({
         />
       </Animated.View>
       <Box flex={1}>
-        {activityViewState === 'activity' && (
+        {(activityViewState === 'activity' || balanceInfoSplit.hasBalance) && (
           <Box onLayout={handleLayout('header')}>
-            <WalletHeader
-              handleScanPressed={navScan}
-              opacity={loading ? 0 : 1}
-            />
+            <WalletHeader handleScanPressed={navScan} />
             <BalanceCard
-              opacity={loading ? 0 : 1}
               onReceivePress={toggleShowReceive}
               onSendPress={handleSendPress}
               balanceInfo={balanceInfoSplit}
@@ -236,9 +228,12 @@ const WalletView = ({
             />
           </Box>
         )}
-        {activityViewState === 'no_activity' && (
-          <WalletEmpty handleScanPressed={navScan} />
-        )}
+
+        {activityViewState === 'no_activity' &&
+          !balanceInfoSplit.hasBalance && (
+            <WalletEmpty handleScanPressed={navScan} />
+          )}
+
         <WalletAddress
           flex={1}
           loading={activityViewState === 'undetermined'}
