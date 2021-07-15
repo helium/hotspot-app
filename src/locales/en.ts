@@ -178,11 +178,12 @@ export default {
       ],
       next: "I've read the guide",
     },
-    qrScan: {
-      title: 'Scan QR Code',
+    external: {
+      qrTitle: 'Scan QR Code',
+      webTitle: 'Web Onboarding',
       wallet_address: 'Your wallet address is:',
     },
-    qrConfirm: {
+    confirm: {
       title: 'Confirm\nInformation',
       title_one_line: 'Confirm Information',
       public_key: 'Public Key',

@@ -26,7 +26,7 @@ const confirmAddGateway = (addGatewayTxn: string) => {
   }
 
   navigationRef.current?.navigate('HotspotSetup', {
-    screen: 'HotspotSetupQrConfirmScreen',
+    screen: 'HotspotSetupExternalConfirmScreen',
     params,
   })
 }
