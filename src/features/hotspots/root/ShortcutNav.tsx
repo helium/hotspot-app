@@ -68,6 +68,7 @@ const ShortcutNav = ({
   const listRef = useRef<FlatList<Hotspot | Witness | GlobalOpt>>(null)
   const snapPos = useRef<number>(0)
   const scrollOffset = useRef(0)
+  const hasScrolledToHome = useRef(false)
   const followChanged = useRef(false)
   const optSize = ITEM_SIZE + spacing[ITEM_MARGIN]
   const prevFollowed = usePrevious(followedHotspots)
@@ -215,6 +216,15 @@ const ShortcutNav = ({
     },
     [scrollOffsets],
   )
+
+  useEffect(() => {
+    // Scroll to home when component first mounts
+    if (hasScrolledToHome.current || Object.keys(sizes).length < data.length)
+      return
+
+    hasScrolledToHome.current = true
+    scroll(2, true)
+  }, [data.length, scroll, sizes])
 
   const handlePress = useCallback(
     (item: GlobalOpt | Hotspot) => async () => {
