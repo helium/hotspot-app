@@ -351,15 +351,16 @@ const ShortcutNav = ({
     return item.address
   }, [])
 
-  useEffect(() => {
-    const index = data.findIndex((d) => isSelected(d, selectedItem))
-    scroll(index, Platform.OS === 'android')
-  }, [selectedItem, data, scroll, isSelected, scrollOffsets])
-
-  const contentContainerStyle = useMemo(
-    () => ({ paddingHorizontal: wp(50) - ITEM_SIZE / 2 }),
-    [],
-  )
+  const contentContainerStyle = useMemo(() => {
+    const paddingStart = wp(50) - ITEM_SIZE / 2
+    const lastItem = data[data.length - 1]
+    let lastItemWidth = ITEM_SIZE
+    if (!IS_GLOBAL_OPT(lastItem) && sizes[lastItem.address]) {
+      lastItemWidth = sizes[lastItem.address]
+    }
+    const paddingEnd = wp(50) - lastItemWidth / 2
+    return { paddingStart, paddingEnd }
+  }, [data, sizes])
 
   const handleScroll = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -411,6 +412,7 @@ const ShortcutNav = ({
         horizontal
         data={data}
         contentContainerStyle={contentContainerStyle}
+        initialNumToRender={10000} // Need all pills to render in order to avoid snap jank
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         onScroll={handleScroll}
