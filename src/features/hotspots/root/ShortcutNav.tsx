@@ -68,6 +68,7 @@ const ShortcutNav = ({
   const listRef = useRef<FlatList<Hotspot | Witness | GlobalOpt>>(null)
   const snapPos = useRef<number>(0)
   const scrollOffset = useRef(0)
+  const [selectedIndex, setSelectedIndex] = useState(2) // Home
   const hasScrolledToHome = useRef(false)
   const followChanged = useRef(false)
   const optSize = ITEM_SIZE + spacing[ITEM_MARGIN]
@@ -141,15 +142,6 @@ const ShortcutNav = ({
     },
     [],
   )
-
-  useEffect(() => {
-    if (prevFollowed && followedHotspots.length !== prevFollowed.length) {
-      followChanged.current = true
-      animateTransition('ShortcutNav.FollowChanged', {
-        enabledOnAndroid: false,
-      })
-    }
-  }, [followedHotspots, prevFollowed])
 
   const data = useMemo(() => {
     return [...GLOBAL_OPTS, ...hotspots]
@@ -226,10 +218,39 @@ const ShortcutNav = ({
     scroll(2, true)
   }, [data.length, scroll, sizes])
 
+  const handleItemSelected = useCallback(
+    (item: GlobalOpt | Hotspot) => {
+      setSelectedIndex(data.indexOf(item))
+      onItemSelected(item)
+    },
+    [data, onItemSelected],
+  )
+
+  useEffect(() => {
+    if (prevFollowed && followedHotspots.length !== prevFollowed.length) {
+      followChanged.current = true
+      animateTransition('ShortcutNav.FollowChanged', {
+        enabledOnAndroid: false,
+      })
+
+      const maxIndex = data.length - 1
+      const nextIndex = Math.min(maxIndex, selectedIndex)
+      handleItemSelected(data[nextIndex])
+    }
+  }, [
+    data,
+    followedHotspots,
+    handleItemSelected,
+    isSelected,
+    prevFollowed,
+    selectedIndex,
+    selectedItem,
+  ])
+
   const handlePress = useCallback(
     (item: GlobalOpt | Hotspot) => async () => {
       if (Platform.OS === 'android') {
-        onItemSelected(item)
+        handleItemSelected(item)
         await sleep(100) // let the ui update, then scroll over
       }
 
@@ -242,10 +263,10 @@ const ShortcutNav = ({
         item === 'explore' &&
         scrollOffset.current === 0
       ) {
-        onItemSelected(item)
+        handleItemSelected(item)
       }
     },
-    [data, isSelected, onItemSelected, scroll],
+    [data, handleItemSelected, isSelected, scroll],
   )
 
   const backgroundColor = useCallback(
@@ -405,10 +426,11 @@ const ShortcutNav = ({
       if (nextItem === selectedItem) return
 
       snapPos.current = nextPos
-      onItemSelected(nextItem)
+      handleItemSelected(nextItem)
     },
-    [data, onItemSelected, scrollOffsets, selectedItem],
+    [data, handleItemSelected, scrollOffsets, selectedItem],
   )
+
   return (
     <Box height={SHORTCUT_NAV_HEIGHT} backgroundColor="primaryBackground">
       <Box top={-43} left={0} right={0} height={43} position="absolute">
