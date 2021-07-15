@@ -1,16 +1,22 @@
+/* eslint-disable react/jsx-props-no-spreading */
+import { BoxProps } from '@shopify/restyle'
 import React, { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import Box from '../../../components/Box'
 import HeliumSelect from '../../../components/HeliumSelect'
 import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
+import { Theme } from '../../../theme/theme'
 import { useSpacing } from '../../../theme/themeHooks'
 
-type Props = {
+type Props = Omit<BoxProps<Theme>, 'backgroundColor'> & {
   index?: number
   onTimelineChanged?: (value: number, index: number) => void
 }
 
-const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
+const TimelinePicker = ({
+  index = 0,
+  onTimelineChanged,
+  ...boxProps
+}: Props) => {
   const { t } = useTranslation()
   const spacing = useSpacing()
 
@@ -47,21 +53,19 @@ const TimelinePicker = ({ index = 0, onTimelineChanged }: Props) => {
   ])
 
   return (
-    <Box zIndex={1000} marginRight="m">
-      <HeliumSelect
-        inverted
-        scrollEnabled={false}
-        data={data}
-        variant="flat"
-        showGradient={false}
-        contentContainerStyle={contentContainerStyle}
-        backgroundColor="grayBoxLight"
-        selectedValue={selectedOption.value}
-        onValueChanged={handleValueChanged}
-        itemPadding="xs"
-        justifyContent="flex-end"
-      />
-    </Box>
+    <HeliumSelect
+      inverted
+      scrollEnabled={false}
+      data={data}
+      variant="flat"
+      showGradient={false}
+      contentContainerStyle={contentContainerStyle}
+      selectedValue={selectedOption.value}
+      onValueChanged={handleValueChanged}
+      itemPadding="xs"
+      justifyContent="flex-end"
+      {...boxProps}
+    />
   )
 }
 

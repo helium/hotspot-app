@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
@@ -12,10 +11,11 @@ import {
 } from 'react-native'
 import { Hotspot, Witness } from '@helium/http'
 import Animated from 'react-native-reanimated'
+import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
+import { BottomSheetScrollViewType } from '@gorhom/bottom-sheet/lib/typescript/components/scrollView/types'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import StatusBadge from './StatusBadge'
-import TimelinePicker from './TimelinePicker'
 import HotspotDetailChart from './HotspotDetailChart'
 import { RootState } from '../../../store/rootReducer'
 import { getRewardChartData } from './RewardsHelper'
@@ -47,6 +47,7 @@ import HotspotSheetHandle from '../root/HotspotSheetHandle'
 import { hp } from '../../../utils/layout'
 import sleep from '../../../utils/sleep'
 import { fetchSyncStatus } from '../../../store/hotspots/hotspotsSlice'
+import usePrevious from '../../../utils/usePrevious'
 
 const hitSlop = { top: 24, bottom: 24 } as Insets
 
@@ -91,11 +92,14 @@ const HotspotDetails = ({
     (state: RootState) => state.hotspots.syncStatuses,
   )
   const listRef = useRef<BottomSheet>(null)
+  const scrollViewRef = useRef<BottomSheetScrollViewType>(null)
   const [isRelayed, setIsRelayed] = useState(false)
   const [timelineValue, setTimelineValue] = useState(14)
   const [timelineIndex, setTimelineIndex] = useState(1)
   const [snapPoints, setSnapPoints] = useState([0, 0])
   const [listIndex, setListIndex] = useState(0)
+  const prevListIndex = usePrevious(listIndex)
+  const prevHotspotAddress = usePrevious(propsHotspot?.address)
 
   const { rewards, rewardSum, rewardsChange, loading = true } =
     hotspotChatData[timelineValue] || {}
@@ -133,24 +137,26 @@ const HotspotDetails = ({
     onFailure,
   ])
 
-  // load hotspot & witness details
+  // load hotspot data
   useEffect(() => {
-    if (!address) return
+    if (!address || listIndex === 0 || (listIndex === 1 && prevListIndex === 1))
+      return
 
     dispatch(fetchHotspotData(address))
-  }, [address, dispatch])
+  }, [address, dispatch, hotspot, listIndex, prevListIndex, timelineValue])
 
-  // load chart data
+  // initial load of chart data
   useEffect(() => {
-    if (!hotspot?.address) return
+    if (!address || listIndex === 0 || (listIndex === 1 && prevListIndex === 1))
+      return
 
     dispatch(
       fetchHotspotChartData({
-        address: hotspot?.address,
+        address,
         numDays: timelineValue,
       }),
     )
-  }, [dispatch, hotspot?.address, timelineValue])
+  }, [address, dispatch, hotspot, listIndex, prevListIndex, timelineValue])
 
   useEffect(() => {
     if (!address) return
@@ -266,12 +272,10 @@ const HotspotDetails = ({
           showRewardScale
           showRelayStatus
           showAntennaDetails
-          percentSynced={syncStatuses[witness?.address]?.percent || 0}
-          syncStatus={syncStatuses[witness?.address]?.status}
         />
       )
     },
-    [getDistance, onSelectHotspot, syncStatuses],
+    [getDistance, onSelectHotspot],
   )
 
   const showWitnessAlert = useCallback(() => {
@@ -336,10 +340,29 @@ const HotspotDetails = ({
     spacing.m,
   ])
 
-  const onTimelineChanged = useCallback((value, index) => {
-    setTimelineValue(value)
-    setTimelineIndex(index)
-  }, [])
+  const onTimelineChanged = useCallback(
+    (value, index) => {
+      setTimelineValue(value)
+      setTimelineIndex(index)
+
+      dispatch(
+        fetchHotspotChartData({
+          address,
+          numDays: value,
+        }),
+      )
+    },
+    [address, dispatch],
+  )
+
+  useEffect(() => {
+    // contract the bottom sheet when a new hotspot is selected
+    if (prevHotspotAddress && prevHotspotAddress !== propsHotspot?.address) {
+      listRef.current?.snapTo(0)
+      setSelectedOption(selectData[0].value)
+      scrollViewRef.current?.scrollTo({ y: 0, x: 0, animated: false })
+    }
+  }, [prevHotspotAddress, propsHotspot, selectData])
 
   if (!hotspot) return null
 
@@ -352,7 +375,10 @@ const HotspotDetails = ({
       handleComponent={cardHandle}
       animatedIndex={animatedPosition}
     >
-      <BottomSheetScrollView keyboardShouldPersistTaps="always">
+      <BottomSheetScrollView
+        keyboardShouldPersistTaps="always"
+        ref={scrollViewRef}
+      >
         <Box paddingBottom="l">
           <Box onLayout={handleHeaderLayout}>
             <Box marginBottom="lm" alignItems="flex-start" marginHorizontal="m">
@@ -479,19 +505,15 @@ const HotspotDetails = ({
           />
 
           {selectedOption === 'overview' && (
-            <Box backgroundColor="grayBoxLight" paddingTop="xl">
-              <TimelinePicker
-                index={timelineIndex}
-                onTimelineChanged={onTimelineChanged}
-              />
-              <HotspotDetailChart
-                title={t('hotspot_details.reward_title')}
-                number={rewardSum?.total.toFixed(2)}
-                change={rewardsChange}
-                data={rewardChartData}
-                loading={loading}
-              />
-            </Box>
+            <HotspotDetailChart
+              title={t('hotspot_details.reward_title')}
+              number={rewardSum?.total.toFixed(2)}
+              change={rewardsChange}
+              data={rewardChartData}
+              loading={loading}
+              onTimelineChanged={onTimelineChanged}
+              timelineIndex={timelineIndex}
+            />
           )}
 
           {selectedOption === 'witnesses' && (

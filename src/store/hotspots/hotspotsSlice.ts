@@ -14,8 +14,6 @@ import { FeaturesState } from '../features/featuresSlice'
 import {
   CacheRecord,
   handleCacheFulfilled,
-  handleCachePending,
-  handleCacheRejected,
   hasValidCache,
 } from '../../utils/cacheUtils'
 import { getSyncStatus } from '../../utils/hotspotUtils'
@@ -441,18 +439,6 @@ const hotspotsSlice = createSlice({
         }
       },
     )
-    builder.addCase(fetchSyncStatus.rejected, (state, { meta: { arg } }) => {
-      if (arg.address) {
-        const prevState = state.syncStatuses[arg.address] || {}
-        state.syncStatuses[arg.address] = handleCacheRejected(prevState)
-      }
-    })
-    builder.addCase(fetchSyncStatus.pending, (state, { meta: { arg } }) => {
-      if (arg.address) {
-        const prevState = state.syncStatuses[arg.address] || {}
-        state.syncStatuses[arg.address] = handleCachePending(prevState)
-      }
-    })
     builder.addCase(
       fetchSyncStatus.fulfilled,
       (state, { meta: { arg }, payload }) => {

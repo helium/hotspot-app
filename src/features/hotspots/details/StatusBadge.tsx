@@ -22,6 +22,9 @@ const StatusBadge = ({
 
   const title = useMemo(() => {
     if (online === 'online') {
+      if (syncStatus === undefined) {
+        return ''
+      }
       if (syncStatus === SyncStatus.full) {
         return t('hotspot_details.status_online')
       }
@@ -39,6 +42,7 @@ const StatusBadge = ({
       alignItems="center"
       justifyContent="center"
       onPress={onPress}
+      minWidth={60}
     >
       <Text color="white" variant="regular" fontSize={14}>
         {title}

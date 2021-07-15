@@ -114,7 +114,7 @@ const HotspotsView = ({
         delete: { ...animConfig.delete, springDamping },
       }
       animateTransition('HotspotsView.ShortcutChanged', {
-        enabledOnAndroid: true,
+        enabledOnAndroid: false,
         config: animConfig,
       })
       setShortcutItem(item)
@@ -254,6 +254,7 @@ const HotspotsView = ({
   useEffect(() => {
     if (!params?.address) return
 
+    // Fetch the hotspot for deep links
     const fetchHotspot = async () => {
       const hotspot = (await dispatch(fetchHotspotData(params.address))) as {
         payload?: { hotspot: Hotspot }
