@@ -127,8 +127,7 @@ const HotspotSetupExternalScreen = () => {
 
     const isArray = Array.isArray(onboard)
     if (isArray && onboard.length > 1) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const [first, ...rest] = onboard
+      const [, ...rest] = onboard
       return rest
     }
   }, [params.hotspotType, t])
