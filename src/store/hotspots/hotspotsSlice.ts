@@ -323,11 +323,7 @@ export const fetchSyncStatus = createAsyncThunk(
     }
 
     if (!statusTime) {
-      return {
-        status: SyncStatus.none,
-        percent: 0,
-        hotspotBlockHeight: 0,
-      }
+      return getSyncStatus(1, blockHeight) // Start from genesis block
     }
 
     // TODO: This is just temporary while we figure out a long-term solution
