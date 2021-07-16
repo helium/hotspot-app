@@ -104,6 +104,8 @@ const HotspotsView = ({
 
   const handleShortcutItemSelected = useCallback(
     (item: GlobalOpt | Hotspot | Witness) => {
+      if (shortcutItem === item) return
+
       let animConfig = LayoutAnimation.Presets.spring
 
       const springDamping = Platform.select({ ios: 0.9, android: 2 })
@@ -119,7 +121,7 @@ const HotspotsView = ({
       })
       setShortcutItem(item)
     },
-    [],
+    [shortcutItem],
   )
 
   const setGlobalOption = useCallback(
