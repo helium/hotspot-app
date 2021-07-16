@@ -14,14 +14,12 @@ import {
   LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
-  Platform,
 } from 'react-native'
 import Globe from '@assets/images/globeShortcut.svg'
 import Search from '@assets/images/searchShortcut.svg'
 import Home from '@assets/images/homeShortcut.svg'
 import Follow from '@assets/images/follow.svg'
 import animalName from 'angry-purple-tiger'
-import sleep from '../../../utils/sleep'
 import { wp } from '../../../utils/layout'
 import Text from '../../../components/Text'
 import { useColors, useSpacing } from '../../../theme/themeHooks'
@@ -48,6 +46,9 @@ export const IS_GLOBAL_OPT = (
 
 type FollowedHotspot = Hotspot & { followed?: boolean }
 
+const getItemId = (item: GlobalOpt | FollowedHotspot | Witness | Hotspot) =>
+  IS_GLOBAL_OPT(item) ? item : item.address
+
 const getAnimalName = (hotspot: Hotspot) => {
   const pieces = (hotspot.name || animalName(hotspot.address)).split('-')
   return pieces[pieces.length - 1]
@@ -59,22 +60,24 @@ const sortByName = (hotspots: Hotspot[]) =>
 const ShortcutNav = ({
   ownedHotspots,
   followedHotspots,
-  selectedItem,
+  selectedItem: propsItem,
   onItemSelected,
 }: Props) => {
   const colors = useColors()
   const spacing = useSpacing()
   const listRef = useRef<FlatList<Hotspot | Witness | GlobalOpt>>(null)
   const snapPos = useRef<number>(0)
+  const hasFollowHotspotChange = useRef(false)
+  const disableMomentumSnap = useRef(false)
   const scrollOffset = useRef(0)
-  const [selectedIndex, setSelectedIndex] = useState(2) // Home
+  const [internalItem, setInternalItem] = useState({ index: 2, id: 'home' }) // start user at home
   const hasScrolledToHome = useRef(false)
   const optSize = ITEM_SIZE + spacing[ITEM_MARGIN]
   const prevFollowed = usePrevious(followedHotspots)
   const [sizes, setSizes] = useState(
     GLOBAL_OPTS.reduce(
       (obj, item) => ({ ...obj, [item]: optSize }),
-      {} as Record<string, number>,
+      {} as Record<string, number | null>,
     ),
   )
 
@@ -169,7 +172,7 @@ const ShortcutNav = ({
             offset =
               2.5 * ITEM_SIZE +
               3 * spacing[ITEM_MARGIN] +
-              sizes[item.address] / 2
+              (sizes[item.address] || 0) / 2
           } else {
             let sizeKey = ''
             const prevItem = data[index - 1]
@@ -180,8 +183,8 @@ const ShortcutNav = ({
             }
             offset =
               total[index - 1] +
-              sizes[item.address] / 2 +
-              sizes[sizeKey] / 2 +
+              (sizes[item.address] || 0) / 2 +
+              (sizes[sizeKey] || 0) / 2 +
               spacing[ITEM_MARGIN]
           }
         }
@@ -193,6 +196,7 @@ const ShortcutNav = ({
 
   const scroll = useCallback(
     (index: number, animated = true) => {
+      disableMomentumSnap.current = true
       let offset = 0
       if (index >= 0) {
         offset = scrollOffsets[index]
@@ -216,28 +220,70 @@ const ShortcutNav = ({
     scroll(2, true)
   }, [data.length, scroll, sizes])
 
+  useEffect(() => {
+    if (getItemId(propsItem) === internalItem.id) {
+      return
+    }
+
+    const index = data.findIndex(
+      (item) => getItemId(item) === getItemId(propsItem),
+    )
+
+    if (index === -1) return
+
+    // The selected item was changed from the outside world
+    // Track it and scroll to it
+    setInternalItem({
+      index,
+      id: getItemId(propsItem),
+    })
+
+    scroll(index)
+  }, [data, scroll, propsItem, internalItem.id])
+
   const handleItemSelected = useCallback(
     (item: GlobalOpt | Hotspot) => {
-      setSelectedIndex(data.indexOf(item))
+      if (getItemId(item) === getItemId(propsItem)) {
+        return
+      }
+      setInternalItem({
+        index: data.indexOf(item),
+        id: getItemId(item),
+      })
       onItemSelected(item)
     },
-    [data, onItemSelected],
+    [data, onItemSelected, propsItem],
   )
 
   useEffect(() => {
-    // TODO: There are some alignment issues when follow/unfollow
-    // Need to rethink how to handle this for a future release
+    // if there's a newly followed hotspot, wait for sizes to update then scroll to it
+    if (!hasFollowHotspotChange.current) return
+
+    const allSizesFound = data.every((d) => !!sizes[getItemId(d)])
+    if (!allSizesFound) return
+
+    const nextIndex = data.findIndex((d) => isSelected(d, propsItem))
+    if (nextIndex === -1) return
+
+    hasFollowHotspotChange.current = false
+    scroll(nextIndex)
+  }, [data, isSelected, scroll, propsItem, sizes])
+
+  useEffect(() => {
     if (prevFollowed && followedHotspots.length !== prevFollowed.length) {
+      // remove this item from the size list
+      if (internalItem.index >= GLOBAL_OPTS.length && propsItem) {
+        sizes[getItemId(propsItem)] = null
+      }
+
       if (followedHotspots.length < prevFollowed.length) {
         // a hotspot has been unfollowed, snap to nearest pill
-        // TODO: Is this the right behavior?
         const maxIndex = data.length - 1
-        const nextIndex = Math.min(maxIndex, selectedIndex)
+        const nextIndex = Math.min(maxIndex, internalItem.index)
         handleItemSelected(data[nextIndex])
-      } else {
-        // TODO: Alignment gets off a little here. Need to find a better solution
-        scroll(data.findIndex((d) => isSelected(d, selectedItem)))
       }
+
+      hasFollowHotspotChange.current = true
     }
   }, [
     data,
@@ -245,29 +291,15 @@ const ShortcutNav = ({
     handleItemSelected,
     isSelected,
     prevFollowed,
-    scroll,
-    selectedIndex,
-    selectedItem,
+    propsItem,
+    internalItem,
+    sizes,
   ])
 
   const handlePress = useCallback(
     (item: GlobalOpt | Hotspot) => async () => {
-      if (Platform.OS === 'android') {
-        handleItemSelected(item)
-        await sleep(100) // let the ui update, then scroll over
-      }
-
+      handleItemSelected(item)
       scroll(data.findIndex((d) => isSelected(d, item)))
-
-      if (
-        // they're viewing a hotspot they don't own or follow
-        // need to select it on ios because the scroll won't trigger selection
-        Platform.OS === 'ios' &&
-        item === 'explore' &&
-        scrollOffset.current === 0
-      ) {
-        handleItemSelected(item)
-      }
     },
     [data, handleItemSelected, isSelected, scroll],
   )
@@ -286,7 +318,7 @@ const ShortcutNav = ({
     (item: FollowedHotspot, index: number) => {
       if (!item.name) return null
 
-      const selected = isSelected(item, selectedItem)
+      const selected = isSelected(item, propsItem)
       const [, , animal] = item.name.split('-')
 
       return (
@@ -324,13 +356,13 @@ const ShortcutNav = ({
       handleLayout,
       handlePress,
       isSelected,
-      selectedItem,
+      propsItem,
     ],
   )
 
   const renderGlobalOpt = useCallback(
     (item: GlobalOpt) => {
-      const selected = isSelected(item, selectedItem)
+      const selected = isSelected(item, propsItem)
 
       const getIcon = () => {
         const color = () => {
@@ -364,7 +396,7 @@ const ShortcutNav = ({
         </TouchableOpacityBox>
       )
     },
-    [colors, handlePress, isSelected, selectedItem],
+    [colors, handlePress, isSelected, propsItem],
   )
 
   type ListItem = { item: Hotspot | GlobalOpt; index: number }
@@ -390,7 +422,7 @@ const ShortcutNav = ({
     const lastItem = data[data.length - 1]
     let lastItemWidth = ITEM_SIZE
     if (!IS_GLOBAL_OPT(lastItem) && sizes[lastItem.address]) {
-      lastItemWidth = sizes[lastItem.address]
+      lastItemWidth = sizes[lastItem.address] || 0
     }
     const paddingEnd = wp(50) - lastItemWidth / 2
     return { paddingStart, paddingEnd }
@@ -405,6 +437,8 @@ const ShortcutNav = ({
 
   const handleScrollMomentum = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      if (disableMomentumSnap.current) return
+
       let snapIndex = 0
       const scrolledOffset = event.nativeEvent.contentOffset.x
 
@@ -426,13 +460,17 @@ const ShortcutNav = ({
       const nextItem = data[snapIndex]
       const nextPos = scrollOffsets[snapIndex]
 
-      if (nextItem === selectedItem) return
+      if (nextItem === propsItem) return
 
       snapPos.current = nextPos
       handleItemSelected(nextItem)
     },
-    [data, handleItemSelected, scrollOffsets, selectedItem],
+    [data, handleItemSelected, scrollOffsets, propsItem],
   )
+
+  const handleBeginDrag = useCallback(() => {
+    disableMomentumSnap.current = false
+  }, [])
 
   return (
     <Box height={SHORTCUT_NAV_HEIGHT} backgroundColor="primaryBackground">
@@ -451,6 +489,7 @@ const ShortcutNav = ({
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         onScroll={handleScroll}
+        onScrollBeginDrag={handleBeginDrag}
         onMomentumScrollEnd={handleScrollMomentum}
         snapToOffsets={scrollOffsets}
         decelerationRate="fast"
