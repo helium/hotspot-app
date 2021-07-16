@@ -27,7 +27,6 @@ import Text from '../../../components/Text'
 import { useColors, useSpacing } from '../../../theme/themeHooks'
 import Box from '../../../components/Box'
 import usePrevious from '../../../utils/usePrevious'
-import animateTransition from '../../../utils/animateTransition'
 import TouchableOpacityBox from '../../../components/BSTouchableOpacityBox'
 
 export const SHORTCUT_NAV_HEIGHT = 44
@@ -70,7 +69,6 @@ const ShortcutNav = ({
   const scrollOffset = useRef(0)
   const [selectedIndex, setSelectedIndex] = useState(2) // Home
   const hasScrolledToHome = useRef(false)
-  const followChanged = useRef(false)
   const optSize = ITEM_SIZE + spacing[ITEM_MARGIN]
   const prevFollowed = usePrevious(followedHotspots)
   const [sizes, setSizes] = useState(
@@ -227,22 +225,27 @@ const ShortcutNav = ({
   )
 
   useEffect(() => {
+    // TODO: There are some alignment issues when follow/unfollow
+    // Need to rethink how to handle this for a future release
     if (prevFollowed && followedHotspots.length !== prevFollowed.length) {
-      followChanged.current = true
-      animateTransition('ShortcutNav.FollowChanged', {
-        enabledOnAndroid: false,
-      })
-
-      const maxIndex = data.length - 1
-      const nextIndex = Math.min(maxIndex, selectedIndex)
-      handleItemSelected(data[nextIndex])
+      if (followedHotspots.length < prevFollowed.length) {
+        // a hotspot has been unfollowed, snap to nearest pill
+        // TODO: Is this the right behavior?
+        const maxIndex = data.length - 1
+        const nextIndex = Math.min(maxIndex, selectedIndex)
+        handleItemSelected(data[nextIndex])
+      } else {
+        // TODO: Alignment gets off a little here. Need to find a better solution
+        scroll(data.findIndex((d) => isSelected(d, selectedItem)))
+      }
     }
   }, [
     data,
-    followedHotspots,
+    followedHotspots.length,
     handleItemSelected,
     isSelected,
     prevFollowed,
+    scroll,
     selectedIndex,
     selectedItem,
   ])
