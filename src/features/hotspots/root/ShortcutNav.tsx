@@ -27,7 +27,6 @@ import Text from '../../../components/Text'
 import { useColors, useSpacing } from '../../../theme/themeHooks'
 import Box from '../../../components/Box'
 import usePrevious from '../../../utils/usePrevious'
-import animateTransition from '../../../utils/animateTransition'
 import TouchableOpacityBox from '../../../components/BSTouchableOpacityBox'
 
 export const SHORTCUT_NAV_HEIGHT = 44
@@ -68,7 +67,8 @@ const ShortcutNav = ({
   const listRef = useRef<FlatList<Hotspot | Witness | GlobalOpt>>(null)
   const snapPos = useRef<number>(0)
   const scrollOffset = useRef(0)
-  const followChanged = useRef(false)
+  const [selectedIndex, setSelectedIndex] = useState(2) // Home
+  const hasScrolledToHome = useRef(false)
   const optSize = ITEM_SIZE + spacing[ITEM_MARGIN]
   const prevFollowed = usePrevious(followedHotspots)
   const [sizes, setSizes] = useState(
@@ -141,15 +141,6 @@ const ShortcutNav = ({
     [],
   )
 
-  useEffect(() => {
-    if (prevFollowed && followedHotspots.length !== prevFollowed.length) {
-      followChanged.current = true
-      animateTransition('ShortcutNav.FollowChanged', {
-        enabledOnAndroid: false,
-      })
-    }
-  }, [followedHotspots, prevFollowed])
-
   const data = useMemo(() => {
     return [...GLOBAL_OPTS, ...hotspots]
   }, [hotspots])
@@ -216,10 +207,53 @@ const ShortcutNav = ({
     [scrollOffsets],
   )
 
+  useEffect(() => {
+    // Scroll to home when component first mounts
+    if (hasScrolledToHome.current || Object.keys(sizes).length < data.length)
+      return
+
+    hasScrolledToHome.current = true
+    scroll(2, true)
+  }, [data.length, scroll, sizes])
+
+  const handleItemSelected = useCallback(
+    (item: GlobalOpt | Hotspot) => {
+      setSelectedIndex(data.indexOf(item))
+      onItemSelected(item)
+    },
+    [data, onItemSelected],
+  )
+
+  useEffect(() => {
+    // TODO: There are some alignment issues when follow/unfollow
+    // Need to rethink how to handle this for a future release
+    if (prevFollowed && followedHotspots.length !== prevFollowed.length) {
+      if (followedHotspots.length < prevFollowed.length) {
+        // a hotspot has been unfollowed, snap to nearest pill
+        // TODO: Is this the right behavior?
+        const maxIndex = data.length - 1
+        const nextIndex = Math.min(maxIndex, selectedIndex)
+        handleItemSelected(data[nextIndex])
+      } else {
+        // TODO: Alignment gets off a little here. Need to find a better solution
+        scroll(data.findIndex((d) => isSelected(d, selectedItem)))
+      }
+    }
+  }, [
+    data,
+    followedHotspots.length,
+    handleItemSelected,
+    isSelected,
+    prevFollowed,
+    scroll,
+    selectedIndex,
+    selectedItem,
+  ])
+
   const handlePress = useCallback(
     (item: GlobalOpt | Hotspot) => async () => {
       if (Platform.OS === 'android') {
-        onItemSelected(item)
+        handleItemSelected(item)
         await sleep(100) // let the ui update, then scroll over
       }
 
@@ -232,10 +266,10 @@ const ShortcutNav = ({
         item === 'explore' &&
         scrollOffset.current === 0
       ) {
-        onItemSelected(item)
+        handleItemSelected(item)
       }
     },
-    [data, isSelected, onItemSelected, scroll],
+    [data, handleItemSelected, isSelected, scroll],
   )
 
   const backgroundColor = useCallback(
@@ -395,10 +429,11 @@ const ShortcutNav = ({
       if (nextItem === selectedItem) return
 
       snapPos.current = nextPos
-      onItemSelected(nextItem)
+      handleItemSelected(nextItem)
     },
-    [data, onItemSelected, scrollOffsets, selectedItem],
+    [data, handleItemSelected, scrollOffsets, selectedItem],
   )
+
   return (
     <Box height={SHORTCUT_NAV_HEIGHT} backgroundColor="primaryBackground">
       <Box top={-43} left={0} right={0} height={43} position="absolute">
