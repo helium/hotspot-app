@@ -4,6 +4,7 @@ import ANTENNAS from './antennas'
 
 const SenseCAP = {
   name: 'SenseCAP M1',
+  onboardType: 'BLE',
   icon: HotspotIcon,
   translations: {
     en: {
