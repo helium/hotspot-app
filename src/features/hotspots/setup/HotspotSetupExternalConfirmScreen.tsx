@@ -189,7 +189,7 @@ const HotspotSetupExternalConfirmScreen = () => {
         mode="contained"
         variant="primary"
         onPress={navNext}
-        disabled={publicKey !== address}
+        disabled={ownerAddress !== address}
       />
     </BackScreen>
   )
