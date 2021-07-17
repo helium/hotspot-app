@@ -1,4 +1,5 @@
 import React, { memo, useMemo } from 'react'
+import { ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import animalName from 'angry-purple-tiger'
 import Balance, { DataCredits, USDollars } from '@helium/currency'
@@ -20,6 +21,16 @@ type Props = {
   totalStakingAmountUsd: Balance<USDollars>
   isPending?: boolean
   hotspot: Hotspot | Witness
+  // Parents can optionally pass a new location directly to ReassertLocationFee which will show
+  // the new location and expose a direct "Confirmation" state, rather than showing the hotspot's
+  // current location and the ability to find a new location.
+  newLocation?: { latitude: number; longitude: number; name?: string }
+  // If rendering the "Confirmation" state mentioned above, a secondary "cancel" CTA is displayed
+  // alongside the "I Confirm" primary CTA, triggering this callback
+  onCancel?: () => void
+  // Parents can pass "isLoading" to indicate whether they're processing an async action, which
+  // will be manifested by a loading indicator inside the primary confirmation CTA
+  isLoading?: boolean
 }
 
 const ReassertLocationFee = ({
@@ -31,6 +42,9 @@ const ReassertLocationFee = ({
   totalStakingAmountUsd,
   isPending,
   hotspot,
+  newLocation,
+  onCancel,
+  isLoading,
 }: Props) => {
   const { t } = useTranslation()
 
@@ -40,10 +54,11 @@ const ReassertLocationFee = ({
   )
 
   const mapCenter = useMemo(() => {
+    if (newLocation) return [newLocation.longitude, newLocation.latitude]
     return hotspot.lng !== undefined && hotspot.lat !== undefined
       ? [hotspot.lng, hotspot.lat]
       : undefined
-  }, [hotspot.lng, hotspot.lat])
+  }, [newLocation, hotspot.lng, hotspot.lat])
 
   return (
     <Box>
@@ -112,26 +127,62 @@ const ReassertLocationFee = ({
             marginTop="m"
             marginBottom="s"
           >
-            {t('hotspot_settings.reassert.current_location')}
+            {newLocation
+              ? t('hotspot_settings.reassert.new_location')
+              : t('hotspot_settings.reassert.current_location')}
           </Text>
-          <HotspotLocationPreview
-            mapCenter={mapCenter}
-            geocode={hotspot.geocode}
-          />
+          {newLocation ? (
+            <HotspotLocationPreview
+              mapCenter={mapCenter}
+              locationName={newLocation.name}
+            />
+          ) : (
+            <HotspotLocationPreview
+              mapCenter={mapCenter}
+              geocode={hotspot.geocode}
+            />
+          )}
         </>
       )}
-      <Button
-        disabled={disableButton || isPending}
-        onPress={onChangeLocation}
-        marginTop="m"
-        variant="primary"
-        mode="contained"
-        title={
-          isPending
-            ? t('hotspot_settings.reassert.assert_pending')
-            : t('hotspot_settings.reassert.change_location')
-        }
-      />
+      {newLocation ? (
+        <Box flexDirection="row" marginTop="m">
+          <Button
+            flex={132}
+            height={56}
+            variant="destructive"
+            mode="contained"
+            title={t('generic.cancel')}
+            marginRight="s"
+            onPress={onCancel}
+          />
+          <Button
+            disabled={false}
+            color="black"
+            height={56}
+            flex={198}
+            variant="secondary"
+            mode="contained"
+            onPress={onChangeLocation}
+            title={
+              isLoading ? undefined : t('hotspot_settings.reassert.confirm')
+            }
+            icon={isLoading ? <ActivityIndicator color="white" /> : undefined}
+          />
+        </Box>
+      ) : (
+        <Button
+          disabled={disableButton || isPending}
+          onPress={onChangeLocation}
+          marginTop="m"
+          variant="primary"
+          mode="contained"
+          title={
+            isPending
+              ? t('hotspot_settings.reassert.assert_pending')
+              : t('hotspot_settings.reassert.change_location')
+          }
+        />
+      )}
     </Box>
   )
 }
