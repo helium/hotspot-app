@@ -32,6 +32,13 @@ type Props = {
   route: Route
 }
 
+/**
+ * HotspotLocationUpdateScreen allows users to update the location of one of their hotspots within
+ * a single view. It expects the hotspot address and new location (represented by lat/lng pair) to
+ * be provided via navigation params, shows the new location to the user (along with the associated
+ * fee). Pressing "I confirm" will submit an "assert location" transaction to the blockchain and
+ * redirect the user ("navigation.goBack").
+ */
 function HotspotLocationUpdateScreen({ route }: Props) {
   const { hotspotAddress } = route.params
   const { longitude, latitude } = route.params.location
