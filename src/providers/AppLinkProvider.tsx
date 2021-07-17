@@ -236,10 +236,10 @@ const useAppLink = () => {
                 let memo
                 if (entries[1]) {
                   if (typeof entries[1] === 'number') {
-                    // Case (4) stringified JSON object { type, payees: {[payeeAddress]: amount} }
+                    // Case (5) stringified JSON object { type, payees: {[payeeAddress]: amount} }
                     amount = entries[1] as number
                   } else if (typeof entries[1] === 'object') {
-                    // Case (5) stringified JSON object { type, payees: {[payeeAddress]: { amount, memo? }} }
+                    // Case (6) stringified JSON object { type, payees: {[payeeAddress]: { amount, memo? }} }
                     const scanData = entries[1] as {
                       amount: string
                       memo?: string
