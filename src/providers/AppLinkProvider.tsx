@@ -97,11 +97,18 @@ const useAppLink = () => {
           break
         }
 
-        case 'hotspot_location':
+        case 'hotspot_location': {
+          const {
+            hotspotAddress,
+            longitude,
+            latitude,
+          } = record as AppLinkLocation
           navigator.updateHotspotLocation({
-            location: record as AppLinkLocation,
+            hotspotAddress,
+            location: { latitude, longitude },
           })
           break
+        }
       }
     },
     [isLocked, isBackedUp, qrOnboardEnabled],
@@ -152,9 +159,10 @@ const useAppLink = () => {
   const parseLocation = (data: string): AppLinkLocation | undefined => {
     try {
       const dataObj = JSON.parse(data)
-      if (dataObj.lat && dataObj.lng) {
+      if (dataObj.lat && dataObj.lng && dataObj.address) {
         return {
           type: 'hotspot_location',
+          hotspotAddress: dataObj.address,
           latitude: dataObj.lat,
           longitude: dataObj.lng,
         }
@@ -165,7 +173,7 @@ const useAppLink = () => {
   /**
    * The data scanned from the QR code is expected to be one of these possibilities:
    * (1) A helium deeplink URL
-   * (2) A lat/lng pair for hotspot location updates
+   * (2) A lat/lng pair + hotspot address for hotspot location updates
    * (3) address string
    * (4) stringified JSON object { type, address, amount?, memo? }
    * (5) stringified JSON object { type, payees: {[payeeAddress]: amount} }

@@ -2,6 +2,10 @@ import { StackNavigationProp } from '@react-navigation/stack'
 
 export type HotspotStackParamList = {
   HotspotsScreen: undefined | { address: string }
+  HotspotLocationUpdateScreen: {
+    hotspotAddress: string
+    location: { longitude: number; latitude: number }
+  }
 }
 
 export type HotspotNavigationProp = StackNavigationProp<HotspotStackParamList>

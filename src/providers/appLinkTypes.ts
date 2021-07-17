@@ -32,6 +32,7 @@ export type Payee = {
 
 export type AppLinkLocation = {
   type: AppLinkCategoryType
-  latitude: string
-  longitude: string
+  hotspotAddress: string
+  latitude: number
+  longitude: number
 }
