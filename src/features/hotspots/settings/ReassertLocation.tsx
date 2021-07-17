@@ -17,7 +17,7 @@ import { OnboardingRecord } from '../../../utils/stakingClient'
 
 export type Coords = { latitude: number; longitude: number }
 export type ReassertLocationState = 'fee' | 'update' | 'confirm' | 'search'
-const DEFAULT_FEE_DATA = {
+export const DEFAULT_FEE_DATA = {
   remainingFreeAsserts: 0,
   totalStakingAmountDC: new Balance(0, CurrencyType.dataCredit),
   totalStakingAmountUsd: new Balance(0, CurrencyType.usd),
