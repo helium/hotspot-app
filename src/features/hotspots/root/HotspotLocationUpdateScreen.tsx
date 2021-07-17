@@ -147,7 +147,9 @@ function HotspotLocationUpdateScreen({ route }: Props) {
               totalStakingAmountUsd={feeData.totalStakingAmountUsd}
             />
           ) : (
-            <Text color="redMedium">No hotspot found for address</Text>
+            <Text color="redMedium">
+              {t('hotspot_settings.reassert.failTitle')}
+            </Text>
           )}
         </Box>
       </BottomSheetModalProvider>
