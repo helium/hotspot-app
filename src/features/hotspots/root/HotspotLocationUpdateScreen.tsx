@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react'
 import { Alert } from 'react-native'
 import { RouteProp, useNavigation } from '@react-navigation/native'
