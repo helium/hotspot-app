@@ -134,6 +134,8 @@ export default {
     loading: 'Loading...',
     copy: 'Copy',
     address: 'Address',
+    copy_address: 'Copy Address',
+    share: 'Share',
     invalid_password: 'You password is incorrect',
     something_went_wrong: 'Something went wrong',
     hnt_to_currency: '{{currencyType}}. Data from CoinGecko',
@@ -143,6 +145,8 @@ export default {
     minutes_plural: '{{count}} minutes',
     seconds: '{{count}} second',
     seconds_plural: '{{count}} seconds',
+    meters: '{{distance}}m',
+    kilometers: '{{distance}}km',
   },
   hotspot_setup: {
     selection: {
@@ -175,11 +179,12 @@ export default {
       ],
       next: "I've read the guide",
     },
-    qrScan: {
-      title: 'Scan QR Code',
+    external: {
+      qrTitle: 'Scan QR Code',
+      webTitle: 'Web Onboarding',
       wallet_address: 'Your wallet address is:',
     },
-    qrConfirm: {
+    confirm: {
       title: 'Confirm\nInformation',
       title_one_line: 'Confirm Information',
       public_key: 'Public Key',
@@ -286,8 +291,16 @@ export default {
     },
     onboarding_error: {
       title: 'Onboarding Error',
-      subtitle:
-        'Unable to find Hotspot in the Onboarding Server. Please contact the Hotspot manufacturer for next steps.',
+      subtitle: {
+        something_went_wrong:
+          'Something went wrong. Please contact the Hotspot manufacturer for next steps.',
+        invalid_onboarding_address:
+          'Your onboarding address is invalid. Please contact the Hotspot manufacturer for next steps.',
+        no_onboarding_key:
+          'Unable to find Hotspot in the Onboarding Server. Please contact the Hotspot manufacturer for next steps.',
+        service_unavailable:
+          "The Onboarding Server is temporarily unavailable and users won't be able to add Hotspots at this time.  Check for updates on status.helium.com and try again later.",
+      },
       next: 'Exit Setup',
       disconnected:
         'There was an error connecting to the Hotspot. Please try again.',
@@ -321,6 +334,9 @@ export default {
         'There was an error constructing the Assert Location transaction. Please try again.',
       assert_loc_error_no_loc:
         'The selected location is invalid. Please try again.',
+      assert_loc_error_no_change_title: 'Location Unchanged',
+      assert_loc_error_no_change_body:
+        'The Hotspot location has not changed. Drag the pin to a different location and try again.',
       no_onboarding_key_title: 'No onboarding key found',
       no_onboarding_key_message: 'Would you like to try again?',
     },
@@ -421,6 +437,12 @@ export default {
     },
   },
   wallet: {
+    empty: {
+      title: 'Welcome to\nyour wallet',
+      subtitle: 'Your balance is zero.',
+      description:
+        'You can send HNT to the below address/QR or deploy a Hotspot to start learning.',
+    },
     title: 'My Wallet',
     copiedToClipboard: 'Copied {{address}} to clipboard',
     share: 'Share',
@@ -439,9 +461,9 @@ export default {
       },
     ],
     chartRanges: {
-      days: { label: '14D', accessibilityLabel: '14 Days' },
-      weeks: { label: '12W', accessibilityLabel: '12 Weeks' },
-      months: { label: '12M', accessibilityLabel: '12 Months' },
+      daily: { label: '14D', accessibilityLabel: '14 Days' },
+      weekly: { label: '12W', accessibilityLabel: '12 Weeks' },
+      monthly: { label: '12M', accessibilityLabel: '12 Months' },
     },
   },
   send: {
@@ -570,8 +592,8 @@ export default {
       title: 'Add a New Hotspot',
       subtitle:
         'If you just added a Hotspot, hang tight. It takes a few moments for the Network to propagate the Hotspot.',
-      setup: 'Set up Hotspot',
-      explorer: 'View Hotspots Around Me',
+      setup: '+ Add a Hotspot',
+      explorer: 'Browse Network Map',
     },
     owned: {
       title: 'My Hotspots',
@@ -635,11 +657,19 @@ export default {
       subtitle:
         'Here you’ll get news, updates and alerts about your Hotspots and The People’s Network.',
     },
+    hotspot_updates: 'Hotspot Updates',
+    helium_updates: 'Helium Updates',
+    helium_update: 'Helium Update',
+    weekly_earnings: 'Weekly Earnings',
+    failure_notifications: 'Failure Notifications',
   },
   transactions: {
     pending: 'Pending',
     mining: 'Mining Rewards',
     sent: 'Sent HNT',
+    stakeValidator: 'Stake HNT',
+    unstakeValidator: 'Unstake HNT',
+    transferValidator: 'Transfer Stake',
     burnHNT: 'Burn HNT',
     received: 'Received HNT',
     added: 'Hotspot Added to Blockchain',
@@ -769,7 +799,7 @@ export default {
     },
   },
   hotspot_details: {
-    checklist: 'Checklist',
+    checklist: 'Progress',
     title: 'Hotspot Details',
     owner: 'Owned by {{address}}',
     owner_you: 'Owned by you',
@@ -782,14 +812,9 @@ export default {
     challenge_title: 'Challenges',
     challenge_sub_title: '(witness, challenger, or challengee)',
     picker_title: 'Past',
-    overview: 'Overview',
+    overview: 'Earnings',
     no_location: 'No Location',
-    picker_options: [
-      'Past 24 Hours',
-      'Past 7 Days',
-      'Past 14 Days',
-      'Past 30 Days',
-    ],
+    picker_options: ['24H', '14D', '30D'],
     picker_prompt: 'Select Range',
     status_online: 'Online',
     status_offline: 'Needs Attention',
@@ -827,6 +852,13 @@ export default {
       message:
         'The Hotspots in this list have witnessed a Beacon from {{hotspotName}} recently.\n\nFluctuations are normal and expected. The number of Hotspots will reset to zero if you update location, antenna, or elevation',
     },
+    witness_desc:
+      'These Hotspots witnessed {{hotspotAnimal}}’s\nbeacons over the last 5 days.',
+    witness_desc_none:
+      'No Hotspots have heard and responded to\n{{hotspotAnimal}}’s beacons over the last 5 days.',
+    get_witnessed: 'GET WITNESSED',
+    get_witnessed_desc:
+      'Position your Hotspot so that it can be heard by others. Often this means moving it higher in order to increase its range.',
   },
   transfer: {
     title: 'Transfer Hotspot',
@@ -895,9 +927,7 @@ export default {
         'Hotspots must be fully synced before they can mine. New Hotspots can take up to 96 hours to sync.',
       full: 'Hotspot is fully synced.',
       partial:
-        'Hotspot is {{count}} block behind the Helium blockchain and is roughly {{percent}}% synced. The blockchain is currently at block {{height}}.',
-      partial_plural:
-        'Hotspot is {{count}} blocks behind the Helium blockchain and is roughly {{percent}}% synced. The blockchain is currently at block {{height}}.',
+        'Hotspot is syncing with the Helium blockchain and is roughly {{percent}}% synced.',
       title: 'Sync to Blockchain',
     },
     status: {
@@ -967,6 +997,11 @@ export default {
       title: 'Unable to initiate Discovery Mode',
       message:
         'Hotspot may be behind a relay and is not responding. Check your router settings and try again.',
+    },
+    instability_warning: {
+      title: 'Discovery Mode Performance',
+      message:
+        'The backend service for Discovery Mode is experiencing performance issues and users may see inconsistent results.',
     },
     begin: {
       title: 'Discovery Mode',
@@ -1051,5 +1086,8 @@ export default {
     },
     title: 'Map Filters',
     button: 'Choose Map Filter',
+  },
+  statusBanner: {
+    description: 'Last updated {{date}}. Tap for info.',
   },
 }

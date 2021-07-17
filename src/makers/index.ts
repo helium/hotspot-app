@@ -7,6 +7,7 @@ import nebra from './nebra'
 import rak from './rak'
 import sensecap from './sensecap'
 import syncrobit from './syncrobit'
+import kerlink from './kerlink'
 import { LangType, supportedLangs } from '../utils/i18n/i18nTypes'
 import { HotspotMakerLangField } from './hotspotMakerTypes'
 
@@ -19,6 +20,7 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
   rak,
   sensecap,
   syncrobit,
+  kerlink,
 }
 
 export const AntennaModels = {
@@ -31,6 +33,7 @@ export const AntennaModels = {
   ...rak.antennas,
   ...sensecap.antennas,
   ...syncrobit.antennas,
+  ...kerlink.antennas,
 }
 
 export const HotspotMakerModels = {
@@ -42,6 +45,7 @@ export const HotspotMakerModels = {
   ...rak.hotspots,
   ...sensecap.hotspots,
   ...syncrobit.hotspots,
+  ...kerlink.hotspots,
 }
 
 export type HotspotType = keyof typeof HotspotMakerModels
@@ -77,10 +81,6 @@ export const AntennaModelKeys = Object.keys(
 export const AntennaTypeCount = AntennaModelKeys.length
 
 export const getMakerSupportEmail = (makerId?: number): string => {
-  Object.keys(Makers).forEach((m) => {
-    const maker = Makers[m]
-    if (maker.id === makerId) return maker.supportEmail
-  })
-
-  return 'support@helium.com'
+  const makerKey = Object.keys(Makers).find((m) => Makers[m].id === makerId)
+  return makerKey ? Makers[makerKey].supportEmail : 'support@helium.com'
 }

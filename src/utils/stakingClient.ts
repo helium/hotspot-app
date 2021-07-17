@@ -21,6 +21,8 @@ export type OnboardingRecord = {
     createdAt: string
     updatedAt: string
   }
+  code: number
+  errorMessage: string
 }
 
 export type Maker = {

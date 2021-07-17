@@ -395,9 +395,9 @@ export default {
       },
     ],
     chartRanges: {
-      days: { label: '14D', accessibilityLabel: '14 Days' },
-      weeks: { label: '12W', accessibilityLabel: '12 Weeks' },
-      months: { label: '12M', accessibilityLabel: '12 Months' },
+      daily: { label: '14D', accessibilityLabel: '14 Days' },
+      weekly: { label: '12W', accessibilityLabel: '12 Weeks' },
+      monthly: { label: '12M', accessibilityLabel: '12 Months' },
     },
   },
   send: {
@@ -724,7 +724,7 @@ export default {
     picker_title: '过去',
     overview: '概览',
     no_location: '无位置',
-    picker_options: ['过去 24 小时', '过去 7 天', '过去 14 天', '过去 30 天'],
+    picker_options: ['过去 24 小时', '过去 14 天', '过去 30 天'],
     picker_prompt: '选择范围',
     status_online: '在线',
     status_offline: '请注意',

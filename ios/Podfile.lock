@@ -29,7 +29,7 @@ PODS:
     - React-Core
     - UMCore
     - UMImageLoaderInterface
-  - EXLocalAuthentication (9.5.0):
+  - EXLocalAuthentication (11.0.2):
     - UMConstantsInterface
     - UMCore
   - EXLocation (9.0.1):
@@ -362,8 +362,8 @@ PODS:
     - React-Core
   - RNCClipboard (1.5.1):
     - React-Core
-  - RNCMaskedView (0.1.11):
-    - React
+  - RNCMaskedView (0.2.4):
+    - React-Core
   - RNDeviceInfo (7.4.0):
     - React-Core
   - RNGestureHandler (1.10.3):
@@ -492,7 +492,7 @@ DEPENDENCIES:
   - "ReactNativeART (from `../node_modules/@react-native-community/art`)"
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-community/clipboard`)"
-  - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
+  - "RNCMaskedView (from `../node_modules/@react-native-masked-view/masked-view`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNLocalize (from `../node_modules/react-native-localize`)
@@ -636,7 +636,7 @@ EXTERNAL SOURCES:
   RNCClipboard:
     :path: "../node_modules/@react-native-community/clipboard"
   RNCMaskedView:
-    :path: "../node_modules/@react-native-community/masked-view"
+    :path: "../node_modules/@react-native-masked-view/masked-view"
   RNDeviceInfo:
     :path: "../node_modules/react-native-device-info"
   RNGestureHandler:
@@ -690,7 +690,7 @@ SPEC CHECKSUMS:
   EXFileSystem: afe9b1fd937d30270bf5108ba44e2f4a1d1ad694
   EXHaptics: 6d2e09387f0eb4d3c8dc97ae905cbea8afe33651
   EXImageLoader: 7153fb1307ac643299a9072b71da0d276f4c7789
-  EXLocalAuthentication: acb740dcb15753d8f0ce90d93609322a2545cd41
+  EXLocalAuthentication: 4f625501ff104674734c3113fcb28e401f674ff2
   EXLocation: 90232c6f2773b04a3c146bfda9f181035722c10a
   EXPermissions: 30cbe5b72bd209b65c00884180ad058a60bb413d
   EXSecureStore: 1b571851e6068b30b8ec097be848a04603c03bae
@@ -740,7 +740,7 @@ SPEC CHECKSUMS:
   ReactNativeART: 78edc68dd4a1e675338cd0cd113319cf3a65f2ab
   RNCAsyncStorage: b03032fdbdb725bea0bd9e5ec5a7272865ae7398
   RNCClipboard: 41d8d918092ae8e676f18adada19104fa3e68495
-  RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
+  RNCMaskedView: fc29d354a40316a990e8fb46391f08aea829c3aa
   RNDeviceInfo: 9538a884f862fe4aa0d7cead9f34e292d41ba8f6
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
   RNLocalize: 7c7aeda16c01db7a0918981c14875c0a53be9b79

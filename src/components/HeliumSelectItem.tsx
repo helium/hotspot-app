@@ -1,6 +1,7 @@
 import React, { memo, useMemo } from 'react'
+import { LayoutChangeEvent } from 'react-native'
 import { SvgProps } from 'react-native-svg'
-import { Colors } from '../theme/theme'
+import { Colors, Spacing } from '../theme/theme'
 import Text from './Text'
 import TouchableOpacityBox from './TouchableOpacityBox'
 
@@ -17,6 +18,9 @@ type Props = {
   item: HeliumSelectItemType
   onPress: () => void
   variant: HeliumSelectVariant
+  backgroundColor?: Colors
+  handleLayout: (event: LayoutChangeEvent) => void
+  itemPadding?: Spacing
 }
 
 const HeliumSelectItem = ({
@@ -24,23 +28,26 @@ const HeliumSelectItem = ({
   item: { label, color, Icon },
   onPress,
   variant,
+  backgroundColor = 'white',
+  handleLayout,
+  itemPadding,
 }: Props) => {
   const textColor = useMemo(() => {
     if (variant === 'flat') {
       if (selected) return color
-      return 'purpleText'
+      return 'purpleGray'
     }
 
     if (selected) return 'white'
     return 'purpleText'
   }, [color, selected, variant])
 
-  const backgroundColor = useMemo(() => {
+  const background = useMemo(() => {
     if (variant === 'flat') return undefined
 
     if (selected) return color
-    return 'white'
-  }, [color, selected, variant])
+    return backgroundColor
+  }, [backgroundColor, color, selected, variant])
 
   const text = useMemo(() => {
     if (variant === 'flat') return label.toUpperCase()
@@ -49,18 +56,18 @@ const HeliumSelectItem = ({
 
   return (
     <TouchableOpacityBox
-      backgroundColor={backgroundColor}
-      minWidth={80}
+      backgroundColor={background}
       height="100%"
       flexDirection="row"
+      onLayout={handleLayout}
       alignItems="center"
       borderRadius="round"
       onPress={onPress}
-      paddingHorizontal="ms"
+      paddingHorizontal={itemPadding || 'ms'}
     >
       {!!Icon && selected && <Icon height={16} width={16} color="white" />}
       <Text
-        variant={variant === 'flat' ? 'bold' : 'regular'}
+        variant={variant === 'flat' ? 'bold' : 'medium'}
         fontSize={variant === 'flat' ? 13 : 16}
         color={textColor}
         marginLeft={Icon ? 'xs' : 'none'}

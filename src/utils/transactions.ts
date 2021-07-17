@@ -198,11 +198,9 @@ export const stringAmountToBalance = (formAmount: string) => {
   return Balance.fromFloat(floatAmount, CurrencyType.networkToken)
 }
 
-export const getMemoBytesLeft = (
-  memo: string,
-): { numBytes: number; valid: boolean } => {
-  if (!memo) return { numBytes: 8, valid: true }
-  const buff = Buffer.from(memo)
+export const getMemoBytesLeft = (base64Memo?: string) => {
+  if (!base64Memo) return { numBytes: 8, valid: true }
+  const buff = Buffer.from(base64Memo, 'base64')
   const size = buff.byteLength
   return { numBytes: size < 8 ? 8 - size : 0, valid: size <= 8 }
 }

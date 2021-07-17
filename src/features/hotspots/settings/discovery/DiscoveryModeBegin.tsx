@@ -1,7 +1,6 @@
 import React, { memo, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ActivityIndicator } from 'react-native'
-import { Hotspot, Witness } from '@helium/http'
 import { isEqual } from 'lodash'
 import Text from '../../../../components/Text'
 import { hp } from '../../../../utils/layout'
@@ -24,7 +23,6 @@ type Props = {
   onBeginNew: () => void
   onRequestSelected: (request: DiscoveryRequest) => void
   error: boolean
-  hotspot: Hotspot | Witness
 }
 
 const DiscoveryModeBegin = ({
@@ -33,7 +31,6 @@ const DiscoveryModeBegin = ({
   onBeginNew,
   onRequestSelected,
   error,
-  hotspot,
 }: Props) => {
   const { t } = useTranslation()
   const [recentRequests, setRecentRequests] = useState(
@@ -133,7 +130,6 @@ const DiscoveryModeBegin = ({
             onRequestSelected={onRequestSelected}
             requestsRemaining={recentDiscoveryInfo?.requestsRemaining || 0}
             requests={recentRequests}
-            hotspotAddress={hotspot.address}
           />
         )}
         {!recentRequests && !error && (

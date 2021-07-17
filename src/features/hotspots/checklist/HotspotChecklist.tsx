@@ -16,7 +16,7 @@ import HotspotChecklistCarousel, {
 } from './HotspotChecklistCarousel'
 import { wp } from '../../../utils/layout'
 import { Theme } from '../../../theme/theme'
-import { SYNC_BLOCK_BUFFER } from '../../../utils/hotspotUtils'
+import { SyncStatus } from '../../../store/hotspots/hotspotsSlice'
 
 type Props = BoxProps<Theme> & {
   hotspot: Hotspot | Witness
@@ -43,8 +43,16 @@ const HotspotChecklist = ({
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
   )
+  const syncStatuses = useSelector(
+    (state: RootState) => state.hotspots.syncStatuses,
+  )
   const [showSkeleton, setShowSkeleton] = useState(true)
   const [lastLoadedAddress, setLastLoadedAddress] = useState<string>()
+
+  const hotspotSyncStatus = useMemo(() => syncStatuses[hotspot.address], [
+    hotspot.address,
+    syncStatuses,
+  ])
 
   useEffect(() => {
     if (!visible) return
@@ -66,18 +74,23 @@ const HotspotChecklist = ({
   }, [loadingActivity, showSkeleton, visible])
 
   const syncStatus = useMemo(() => {
-    if (!hotspot?.status?.height || !blockHeight) {
+    if (
+      !blockHeight ||
+      !hotspotSyncStatus ||
+      hotspotSyncStatus.status === undefined
+    )
+      return ''
+
+    if (!hotspotSyncStatus.hotspotBlockHeight) {
       return t('checklist.blocks.not')
     }
-    if (blockHeight - hotspot.status.height < SYNC_BLOCK_BUFFER) {
+    if (hotspotSyncStatus.status === SyncStatus.full) {
       return t('checklist.blocks.full')
     }
     return t('checklist.blocks.partial', {
-      count: blockHeight - hotspot.status.height,
-      percent: ((hotspot.status.height / blockHeight) * 100).toFixed(2),
-      height: hotspot.status.height,
+      percent: hotspotSyncStatus.percent,
     })
-  }, [blockHeight, hotspot?.status?.height, t])
+  }, [blockHeight, hotspotSyncStatus, t])
 
   const hotspotStatus = useMemo(
     () =>
@@ -138,9 +151,7 @@ const HotspotChecklist = ({
         title: t('checklist.blocks.title'),
         description: syncStatus,
         complete:
-          (blockHeight &&
-            hotspot?.status?.height &&
-            blockHeight - hotspot.status.height < SYNC_BLOCK_BUFFER) ||
+          (blockHeight && hotspotSyncStatus?.status === SyncStatus.full) ||
           false,
         showAuto: true,
       },
@@ -198,9 +209,9 @@ const HotspotChecklist = ({
       challengerTxn,
       dataTransferStatus,
       dataTransferTxn,
-      hotspot?.status?.height,
       hotspot?.status?.online,
       hotspotStatus,
+      hotspotSyncStatus,
       syncStatus,
       t,
       witnessStatus,
@@ -250,6 +261,7 @@ const HotspotChecklist = ({
                 height={70}
                 marginTop={spacing.s}
                 borderRadius={8}
+                marginBottom={spacing.xxl}
               />
             </SkeletonPlaceholder.Item>
           </SkeletonPlaceholder.Item>

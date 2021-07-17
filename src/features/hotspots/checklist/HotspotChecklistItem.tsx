@@ -28,7 +28,7 @@ const CompletePill = ({
   text,
 }: CompleteProps) => (
   <Box
-    backgroundColor="white"
+    backgroundColor="grayBox"
     borderRadius="s"
     padding="xs"
     flexDirection="row"
@@ -168,7 +168,7 @@ const HotspotChecklistItem = ({
                 })}
               </Text>
               <AutoPill
-                textColor="grayBox"
+                textColor="grayPurple"
                 visible={!complete}
                 backgroundColor="grayText"
                 auto={t('checklist.pending')}
@@ -192,7 +192,7 @@ const HotspotChecklistItem = ({
               {description}
             </Text>
             <AutoPill
-              textColor="grayBox"
+              textColor="grayPurple"
               visible={showAuto}
               backgroundColor="grayText"
               autoText={autoText}

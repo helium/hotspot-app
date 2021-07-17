@@ -36,7 +36,7 @@ The new Hotspot app will include a recommendation engine which will suggest acti
 
 ## Join us in Discord
 
-Chat with the developers and the product team in the [Helium Community Discord](https://discord.gg/helium) and look for the #wallet-mobile-app channel.
+Chat with the developers and the product team in the [Helium Community Discord](https://discord.gg/helium) and look for the #hotspot-app-development channel.
 
 ## App Designs
 

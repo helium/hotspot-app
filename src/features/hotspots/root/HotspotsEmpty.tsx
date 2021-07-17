@@ -8,15 +8,12 @@ import HotspotIcon from '../../../assets/images/blueHotspotIcon.svg'
 import Text from '../../../components/Text'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 import { RootState } from '../../../store/rootReducer'
+import TouchableOpacityBox from '../../../components/BSTouchableOpacityBox'
 
 const HotspotsEmpty = ({
-  onOpenExplorer,
-  lightTheme,
-  locationBlocked,
+  onRequestShowMap,
 }: {
-  onOpenExplorer?: () => void
-  lightTheme?: boolean
-  locationBlocked: boolean
+  onRequestShowMap?: () => void
 }) => {
   const { t } = useTranslation()
   const navigation = useNavigation<RootNavigationProp>()
@@ -25,19 +22,20 @@ const HotspotsEmpty = ({
     (state: RootState) => state.hotspots.failure,
   )
   return (
-    <Box padding="l">
+    <Box padding="l" flex={1} justifyContent="center">
       <HotspotIcon />
-      <Text
-        variant="h2"
-        paddingTop="l"
-        paddingBottom="m"
-        color={lightTheme ? 'black' : 'white'}
-      >
+      <Text variant="bold" fontSize={40} paddingVertical="l" color="purpleMain">
         {fetchHotspotsFailed
           ? t('generic.something_went_wrong')
           : t('hotspots.owned.title')}
       </Text>
-      <Text variant="subtitleRegular" paddingBottom="l" color="grayText">
+      <Text
+        variant="light"
+        fontSize={19}
+        lineHeight={22}
+        paddingBottom="lx"
+        color="purpleText"
+      >
         {fetchHotspotsFailed
           ? t('hotspots.empty.failed')
           : t('hotspots.empty.body')}
@@ -48,9 +46,19 @@ const HotspotsEmpty = ({
         variant="primary"
         title={t('hotspots.new.setup')}
       />
-      {!locationBlocked && (
-        <Button onPress={onOpenExplorer} title={t('hotspots.new.explorer')} />
-      )}
+      <TouchableOpacityBox onPress={onRequestShowMap} padding="l">
+        <Text
+          paddingTop="s"
+          variant="light"
+          fontSize={19}
+          textAlign="center"
+          lineHeight={22}
+          paddingBottom="lx"
+          color="purpleText"
+        >
+          {t('hotspots.new.explorer')}
+        </Text>
+      </TouchableOpacityBox>
     </Box>
   )
 }

@@ -20,6 +20,7 @@ import { useSelector } from 'react-redux'
 import animalName from 'angry-purple-tiger'
 import { Hotspot, PendingTransaction, Witness } from '@helium/http'
 import Toast from 'react-native-simple-toast'
+import { visible } from '@shopify/restyle'
 import BlurBox from '../../../components/BlurBox'
 import Card from '../../../components/Card'
 import Text from '../../../components/Text'
@@ -77,9 +78,6 @@ const HotspotSettings = ({ hotspot }: Props) => {
   } = useHotspotSettingsContext()
   const { purpleMain } = useColors()
   const { account } = useSelector((state: RootState) => state.account)
-  const discoveryEnabled = useSelector(
-    (state: RootState) => state.features.discoveryEnabled,
-  )
   const { showSettings } = useSelector(
     (state: RootState) => state.hotspotDetails,
   )
@@ -109,10 +107,15 @@ const HotspotSettings = ({ hotspot }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showSettings])
 
-  const setNextState = useCallback((s: State) => {
-    animateTransition('HotspotSettings.SetNextState')
-    setSettingsState(s)
-  }, [])
+  const setNextState = useCallback(
+    (s: State) => {
+      if (!visible || s === settingsState) return
+
+      animateTransition('HotspotSettings.SetNextState')
+      setSettingsState(s)
+    },
+    [settingsState],
+  )
 
   const handleClose = useCallback(() => {
     disableBack()
@@ -358,18 +361,14 @@ const HotspotSettings = ({ hotspot }: Props) => {
           compact
           buttonIcon={<TransferIcon />}
         />
-        {discoveryEnabled && (
-          <>
-            <Box backgroundColor="black" height={0.5} />
-            <HotspotSettingsOption
-              title={t('hotspot_settings.discovery.title')}
-              subtitle={t('hotspot_settings.discovery.subtitle')}
-              onPress={onPressDiscoveryMode}
-              compact
-              buttonIcon={<DiscoveryModeIcon color={purpleMain} />}
-            />
-          </>
-        )}
+        <Box backgroundColor="black" height={0.5} />
+        <HotspotSettingsOption
+          title={t('hotspot_settings.discovery.title')}
+          subtitle={t('hotspot_settings.discovery.subtitle')}
+          onPress={onPressDiscoveryMode}
+          compact
+          buttonIcon={<DiscoveryModeIcon color={purpleMain} />}
+        />
         <Box backgroundColor="black" height={0.5} />
         <HotspotSettingsOption
           title={t('hotspot_settings.update.title')}
@@ -382,7 +381,6 @@ const HotspotSettings = ({ hotspot }: Props) => {
     )
   }, [
     account?.address,
-    discoveryEnabled,
     handleClose,
     hasActiveTransfer,
     hotspot,
@@ -403,6 +401,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
       visible={showSettings}
       onRequestClose={handleClose}
       animationType="fade"
+      statusBarTranslucent
     >
       <BlurBox
         top={0}

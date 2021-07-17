@@ -1,16 +1,15 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { memo, useCallback, useState } from 'react'
-import { ActivityIndicator } from 'react-native'
 import { BoxProps } from '@shopify/restyle'
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import Chart from './Chart'
 import { ChartData } from './types'
-import { useColors } from '../../theme/themeHooks'
 import Box from '../Box'
 import { Theme } from '../../theme/theme'
 
 type Props = BoxProps<Theme> & {
   height: number
-  data: ChartData[]
+  data?: ChartData[] | null
   onFocus: (data: ChartData | null) => void
   showXAxisLabel?: boolean
   upColor?: string
@@ -30,7 +29,6 @@ const ChartContainer = ({
   ...boxProps
 }: Props) => {
   const [width, setWidth] = useState(0)
-  const colors = useColors()
 
   const handleLayout = useCallback(
     (event: { nativeEvent: { layout: { width: number } } }) => {
@@ -40,12 +38,16 @@ const ChartContainer = ({
   )
 
   if (loading) {
-    return <ActivityIndicator size="small" color={colors.grayMain} />
+    return (
+      <SkeletonPlaceholder>
+        <SkeletonPlaceholder.Item height={boxProps.height} width={width} />
+      </SkeletonPlaceholder>
+    )
   }
 
   return (
-    <Box onLayout={handleLayout} {...boxProps}>
-      {width > 0 && (
+    <Box onLayout={handleLayout} justifyContent="center" {...boxProps}>
+      {width > 0 && data && !loading && (
         <Chart
           width={width}
           height={boxProps.height}

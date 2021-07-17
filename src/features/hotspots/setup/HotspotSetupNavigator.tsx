@@ -22,8 +22,8 @@ import HotspotSetupSkipLocationScreen from './HotspotSetupSkipLocationScreen'
 import NotHotspotOwnerError from './NotHotspotOwnerError'
 import OwnedHotspotError from './OwnedHotspotError'
 import AntennaSetupScreen from './AntennaSetupScreen'
-import HotspotSetupScanQrScreen from './HotspotSetupScanQrScreen'
-import HotspotSetupQrConfirmScreen from './HotspotSetupQrConfirmScreen'
+import HotspotSetupExternalScreen from './HotspotSetupExternalScreen'
+import HotspotSetupExternalConfirmScreen from './HotspotSetupExternalConfirmScreen'
 
 const HotspotSetupStack = createStackNavigator()
 
@@ -42,12 +42,12 @@ const HotspotSetup = () => {
         component={HotspotSetupEducationScreen}
       />
       <HotspotSetupStack.Screen
-        name="HotspotSetupScanQrScreen"
-        component={HotspotSetupScanQrScreen}
+        name="HotspotSetupExternalScreen"
+        component={HotspotSetupExternalScreen}
       />
       <HotspotSetupStack.Screen
-        name="HotspotSetupQrConfirmScreen"
-        component={HotspotSetupQrConfirmScreen}
+        name="HotspotSetupExternalConfirmScreen"
+        component={HotspotSetupExternalConfirmScreen}
       />
       <HotspotSetupStack.Screen
         name="HotspotSetupDiagnosticsScreen"

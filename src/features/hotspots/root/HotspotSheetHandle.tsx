@@ -6,38 +6,54 @@ import FollowButton from '../../../components/FollowButton'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Settings from '../../../assets/images/settings.svg'
 import { useColors } from '../../../theme/themeHooks'
+import ShareHotspot from '../../../components/ShareHotspot'
 
-export const HOTSPOT_SHEET_HANDLE_HEIGHT = 52
-
-type Props = { hotspot?: Hotspot | Witness; toggleSettings?: () => void }
-const HotspotDetailsHandle = ({ hotspot, toggleSettings }: Props) => {
+type Props = {
+  hotspot?: Hotspot | Witness
+  toggleSettings?: () => void
+}
+const HotspotSheetHandle = ({ hotspot, toggleSettings }: Props) => {
   const colors = useColors()
   const showHotspotOptions = hotspot && hotspot.address
+
+  if (!showHotspotOptions) return null
   return (
     <Box
       flexDirection="row"
       flex={1}
-      justifyContent={showHotspotOptions ? 'space-between' : 'center'}
+      justifyContent="flex-end"
       alignItems="center"
-      paddingHorizontal="m"
-      height={HOTSPOT_SHEET_HANDLE_HEIGHT}
+      paddingTop="l"
+      backgroundColor="white"
     >
-      {showHotspotOptions && hotspot && (
-        <FollowButton address={hotspot.address} />
-      )}
-      <Box height={22} justifyContent="center">
+      <Box
+        position="absolute"
+        height={22}
+        paddingTop="s"
+        justifyContent="center"
+        alignItems="center"
+        top={0}
+        bottom={0}
+        left={0}
+        right={0}
+      >
         <CardHandle />
       </Box>
-      {showHotspotOptions && (
-        <TouchableOpacityBox
-          onPress={toggleSettings}
-          hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
-        >
-          <Settings width={22} height={22} color={colors.grayPurple} />
-        </TouchableOpacityBox>
+      {showHotspotOptions && hotspot && (
+        <Box flexDirection="row" alignItems="center">
+          <FollowButton address={hotspot.address} />
+          <TouchableOpacityBox
+            onPress={toggleSettings}
+            marginLeft="m"
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Settings width={22} height={22} color={colors.grayPurple} />
+          </TouchableOpacityBox>
+          <ShareHotspot hotspot={hotspot} />
+        </Box>
       )}
     </Box>
   )
 }
 
-export default memo(HotspotDetailsHandle)
+export default memo(HotspotSheetHandle)

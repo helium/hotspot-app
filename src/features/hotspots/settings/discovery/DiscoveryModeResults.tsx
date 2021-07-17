@@ -10,7 +10,7 @@ import {
 import animateTransition from '../../../../utils/animateTransition'
 import { hp } from '../../../../utils/layout'
 import DiscoveryModeResultsCard from './DiscoveryModeResultsCard'
-import filterDiscoveryResponses from './filterDiscoveryResponses'
+import dedupeDiscoveryResponses from './dedupeDiscoveryResponses'
 import { useAppDispatch } from '../../../../store/store'
 import { fetchHotspotsForHex } from '../../../../store/discovery/discoverySlice'
 import { RootState } from '../../../../store/rootReducer'
@@ -36,9 +36,7 @@ const DiscoveryModeResults = ({
     (state: RootState) => state.discovery.hotspotsForHexId,
   )
   const [selectedHexId, setSelectedHexId] = useState<string>()
-  const [filteredResponses, setFilteredResponses] = useState<
-    DiscoveryResponse[]
-  >([])
+  const [responses, setResponses] = useState<DiscoveryResponse[]>([])
 
   const selectedHotspots = useMemo(() => {
     if (!selectedHexId) return []
@@ -47,9 +45,7 @@ const DiscoveryModeResults = ({
 
   useEffect(() => {
     if (request) {
-      setFilteredResponses(
-        filterDiscoveryResponses(hotspot.address, request.responses),
-      )
+      setResponses(dedupeDiscoveryResponses(request.responses))
     }
   }, [hotspot.address, request])
 
@@ -70,12 +66,12 @@ const DiscoveryModeResults = ({
   return (
     <Box height={hp(85)}>
       <DiscoveryMap
-        responses={filteredResponses}
+        responses={responses}
         onSelectHex={showOverlay}
         selectedHexId={selectedHexId}
       />
       <DiscoveryModeResultsCard
-        responses={filteredResponses}
+        responses={responses}
         request={request}
         isPolling={isPolling}
         selectedHotspots={selectedHotspots}

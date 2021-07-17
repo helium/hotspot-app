@@ -18,7 +18,6 @@ import { BoxProps } from '@shopify/restyle'
 import { StyleProp, ViewStyle } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { h3ToGeo } from 'h3-js'
-import { differenceBy } from 'lodash'
 import Box from './Box'
 import Text from './Text'
 import NoLocation from '../assets/images/no-location.svg'
@@ -26,9 +25,7 @@ import { findBounds } from '../utils/mapUtils'
 import CurrentLocationButton from './CurrentLocationButton'
 import { theme, Theme } from '../theme/theme'
 import { useColors } from '../theme/themeHooks'
-import H3Grid from './H3Grid'
-import NetworkCoverage from './NetworkCoverage'
-import HotspotsCoverage from './HotspotsCoverage'
+import Coverage from './Coverage'
 
 const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
 
@@ -37,7 +34,7 @@ type Props = BoxProps<Theme> & {
   onDidFinishLoadingMap?: (latitude: number, longitude: number) => void
   onMapMoving?: (feature: Feature<Point, RegionPayload>) => void
   onHexSelected?: (id: string) => void
-
+  cameraBottomOffset?: number
   currentLocationEnabled?: boolean
   zoomLevel?: number
   mapCenter?: number[]
@@ -78,6 +75,7 @@ const Map = ({
   showH3Grid = false,
   followedHotspots,
   showRewardScale,
+  cameraBottomOffset,
   ...props
 }: Props) => {
   const colors = useColors()
@@ -192,8 +190,8 @@ const Map = ({
       }
     })
 
-    return findBounds(boundsLocations)
-  }, [mapCenter, selectedHex, selectedHotspot, witnesses])
+    return findBounds(boundsLocations, cameraBottomOffset)
+  }, [mapCenter, cameraBottomOffset, selectedHex, selectedHotspot, witnesses])
 
   const defaultCameraSettings = useMemo(
     () => ({
@@ -201,16 +199,6 @@ const Map = ({
       centerCoordinate: mapCenter,
     }),
     [mapCenter, zoomLevel],
-  )
-
-  const selectedHotspots = useMemo(() => {
-    if (!selectedHotspot) return []
-    return [selectedHotspot]
-  }, [selectedHotspot])
-
-  const followedHexes = useMemo(
-    () => differenceBy(followedHotspots, ownedHotspots, (h) => h.locationHex),
-    [followedHotspots, ownedHotspots],
   )
 
   return (
@@ -268,49 +256,19 @@ const Map = ({
           animationDuration={animationDuration}
         />
         <MapboxGL.Images images={mapImages} />
-        <H3Grid
-          bounds={mapBounds}
-          visible={showH3Grid}
-          zoomLevel={mapZoomLevel}
-        />
-        <HotspotsCoverage
-          id="owned"
-          onHexSelected={onHexPress}
-          hotspots={ownedHotspots}
-          fill
-          opacity={0.4}
-        />
-        <HotspotsCoverage
-          id="followed"
-          onHexSelected={onHexPress}
-          hotspots={followedHexes}
-          fill
-          fillColor={colors.purpleBright}
-          opacity={0.4}
-        />
-        <HotspotsCoverage
-          id="selected"
-          hotspots={selectedHotspots}
-          hexes={selectedHex ? [selectedHex] : []}
-          outline
-          outlineColor={colors.white}
-          outlineWidth={4}
-        />
-        <NetworkCoverage
-          onHexSelected={onHexPress}
-          visible={showNearbyHotspots}
-          selectedHexId={selectedHex}
-          showRewardScale={showRewardScale}
-          showCount
-        />
-        <HotspotsCoverage
-          id="witnesses"
-          onHexSelected={onHexPress}
-          hotspots={witnesses}
-          fill
-          opacity={0.6}
-          fillColor={colors.yellow}
-        />
+        {showNearbyHotspots && (
+          <Coverage
+            showGrid={showH3Grid}
+            bounds={mapBounds}
+            mapZoom={mapZoomLevel}
+            onHexSelected={onHexPress}
+            selectedHexId={selectedHex}
+            witnesses={witnesses}
+            ownedHotspots={ownedHotspots}
+            followedHotspots={followedHotspots}
+            showRewardScale={showRewardScale}
+          />
+        )}
       </MapboxGL.MapView>
       {currentLocationEnabled && (
         <CurrentLocationButton onPress={centerUserLocation} />

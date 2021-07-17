@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { Hotspot, Sum, Witness } from '@helium/http'
+import { Hotspot, Sum } from '@helium/http'
 import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
 import { orderBy, sortBy } from 'lodash'
 import {
@@ -11,6 +11,12 @@ import { distance, LocationCoords } from '../../utils/location'
 import { getWallet, deleteWallet, postWallet } from '../../utils/walletClient'
 import * as Logger from '../../utils/logger'
 import { FeaturesState } from '../features/featuresSlice'
+import {
+  CacheRecord,
+  handleCacheFulfilled,
+  hasValidCache,
+} from '../../utils/cacheUtils'
+import { getSyncStatus } from '../../utils/hotspotUtils'
 
 export enum HotspotSort {
   New = 'new',
@@ -35,7 +41,7 @@ export type HotspotsSliceState = {
   loadingRewards: boolean
   hotspotsLoaded: boolean
   failure: boolean
-  selectedHotspot?: Hotspot | Witness
+  syncStatuses: Record<string, CacheRecord<HotspotStatus>>
 }
 
 const initialState: HotspotsSliceState = {
@@ -48,6 +54,7 @@ const initialState: HotspotsSliceState = {
   loadingOrderedHotspots: false,
   hotspotsLoaded: false,
   failure: false,
+  syncStatuses: {},
 }
 
 type SorterContext = {
@@ -206,7 +213,9 @@ export const fetchHotspotsData = createAsyncThunk(
 
     const hotspotPromises = [getHotspots()]
     if (followEnabled) {
-      hotspotPromises.push(getWallet('hotspots/follow', null, true))
+      hotspotPromises.push(
+        getWallet('hotspots/follow', null, { camelCase: true }),
+      )
     }
     const allHotspots = await Promise.all(
       hotspotPromises.map((p) =>
@@ -237,11 +246,9 @@ export const followHotspot = createAsyncThunk<
   },
   string
 >('hotspots/followHotspot', async (hotspotAddress) => {
-  const followed = await postWallet(
-    `hotspots/follow/${hotspotAddress}`,
-    null,
-    true,
-  )
+  const followed = await postWallet(`hotspots/follow/${hotspotAddress}`, null, {
+    camelCase: true,
+  })
   let blockHotspot: Hotspot | null = null
   try {
     blockHotspot = await getHotspotDetails(hotspotAddress)
@@ -270,9 +277,60 @@ export const unfollowHotspot = createAsyncThunk<Hotspot[], string>(
     const followed = await deleteWallet(
       `hotspots/follow/${hotspot_address}`,
       null,
-      true,
+      { camelCase: true },
     )
     return sanitizeWalletHotspots(followed)
+  },
+)
+
+export enum SyncStatus {
+  full,
+  partial,
+  none,
+}
+
+type HotspotStatus = {
+  status: SyncStatus
+  percent: number
+  hotspotBlockHeight: number
+}
+
+type StatusAttrs = {
+  address: string
+  statusTime?: string
+  blockHeight?: number
+}
+
+export const fetchSyncStatus = createAsyncThunk(
+  'hotspotDetails/fetchHotspotData',
+  async ({ address, statusTime, blockHeight }: StatusAttrs, { getState }) => {
+    if (!address) {
+      throw new Error('fetchSyncStatus - address is empty')
+    }
+
+    const {
+      hotspots: { syncStatuses },
+    } = getState() as {
+      hotspots: {
+        syncStatuses: Record<string, CacheRecord<HotspotStatus>>
+      }
+    }
+
+    if (syncStatuses[address] && hasValidCache(syncStatuses[address])) {
+      throw new Error(`sync status for hotspot ${address} is already valid`)
+    }
+
+    if (!statusTime) {
+      return getSyncStatus(1, blockHeight) // Start from genesis block
+    }
+
+    // TODO: This is just temporary while we figure out a long-term solution
+    const response = await fetch(
+      `https://api.helium.io/v1/blocks/height/?max_time=${statusTime}`,
+    )
+    const body = await response.json()
+
+    return getSyncStatus(body.data.height, blockHeight)
   },
 )
 
@@ -311,37 +369,6 @@ const hotspotsSlice = createSlice({
           location: payload,
         }),
       }
-    },
-    selectHotspot: (
-      state,
-      { payload }: { payload: Hotspot | Witness | undefined },
-    ) => {
-      state.selectedHotspot = payload
-    },
-    selectNextHotspot: (state) => {
-      if (!state.selectedHotspot || state.orderedHotspots.length === 0) {
-        state.selectedHotspot = undefined
-        return
-      }
-
-      const index = state.orderedHotspots.findIndex(
-        ({ address }) => address === state.selectedHotspot?.address,
-      )
-      const nextIndex = (index + 1) % state.orderedHotspots.length
-      state.selectedHotspot = state.orderedHotspots[nextIndex]
-    },
-    selectPrevHotspot: (state) => {
-      if (!state.selectedHotspot || state.orderedHotspots.length === 0) {
-        state.selectedHotspot = undefined
-        return
-      }
-
-      const index = state.orderedHotspots.findIndex(
-        ({ address }) => address === state.selectedHotspot?.address,
-      )
-      const nextIndex =
-        index === 0 ? state.orderedHotspots.length - 1 : index - 1
-      state.selectedHotspot = state.orderedHotspots[nextIndex]
     },
   },
   extraReducers: (builder) => {
@@ -409,6 +436,14 @@ const hotspotsSlice = createSlice({
           const rewards = state.rewards || {}
           rewards[hotspotAddress] = hotspotRewards
           state.rewards = rewards
+        }
+      },
+    )
+    builder.addCase(
+      fetchSyncStatus.fulfilled,
+      (state, { meta: { arg }, payload }) => {
+        if (arg.address) {
+          state.syncStatuses[arg.address] = handleCacheFulfilled(payload)
         }
       },
     )

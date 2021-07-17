@@ -70,7 +70,7 @@ const ShareHotspot = ({ hotspot }: Props) => {
     <HeliumActionSheet
       buttonProps={buttonProps}
       iconVariant="kabob"
-      iconColor="grayMain"
+      iconColor="grayPurple"
       title={startCase(hotspot.name)}
       data={actionSheetData}
       closeOnSelect={false}

@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { isEqual } from 'lodash'
+import { getUnixTime } from 'date-fns'
 import discoverySlice, {
   fetchDiscoveryById,
   fetchRecentDiscoveries,
@@ -24,11 +25,7 @@ import DiscoveryModeBegin from './DiscoveryModeBegin'
 import DiscoveryModeResults from './DiscoveryModeResults'
 import useMount from '../../../../utils/useMount'
 import useAlert from '../../../../utils/useAlert'
-import {
-  getSyncStatus,
-  isRelay,
-  SyncStatus,
-} from '../../../../utils/hotspotUtils'
+import { isRelay, SyncStatus } from '../../../../utils/hotspotUtils'
 import Articles from '../../../../constants/articles'
 import useDiscoveryPoll from './useDiscoveryPoll'
 
@@ -59,8 +56,11 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
   const selectedRequest = useSelector(
     (state: RootState) => state.discovery.selectedRequest,
   )
-  const blockHeight = useSelector(
-    (state: RootState) => state.heliumData.blockHeight,
+  const lastWarningDate = useSelector(
+    (state: RootState) => state.discovery.lastWarningDate,
+  )
+  const syncStatuses = useSelector(
+    (state: RootState) => state.hotspots.syncStatuses,
   )
 
   const fetchRecent = useCallback(() => {
@@ -86,6 +86,35 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
       fetchRecent()
     }
   }, [dispatch, fetchRecent, onClose, viewState])
+
+  useEffect(() => {
+    if (!recentDiscoveryInfo?.serverDate) return
+
+    const unixTime = (dateStr?: string) => {
+      const insertDate = dateStr ? new Date(dateStr) : null
+      if (!insertDate) return 0
+
+      return getUnixTime(insertDate)
+    }
+
+    const oneDayInSeconds = 86400
+
+    if (
+      !lastWarningDate ||
+      unixTime(lastWarningDate) + oneDayInSeconds <
+        unixTime(recentDiscoveryInfo.serverDate)
+    ) {
+      showOKAlert({
+        titleKey: 'discovery.instability_warning.title',
+        messageKey: 'discovery.instability_warning.message',
+      })
+      dispatch(
+        discoverySlice.actions.updateLastWarningDate(
+          recentDiscoveryInfo.serverDate,
+        ),
+      )
+    }
+  }, [dispatch, lastWarningDate, recentDiscoveryInfo, showOKAlert])
 
   useEffect(() => {
     if (
@@ -126,8 +155,7 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
   const handleNewSelected = useCallback(async () => {
     if (!hotspot.address || !userAddress) return
 
-    const hotspotHeight = hotspot.status?.height || 0
-    const { status } = getSyncStatus(hotspotHeight, blockHeight)
+    const { status } = syncStatuses[hotspot.address]
     if (status !== SyncStatus.full) {
       showOKAlert({
         titleKey: 'discovery.syncing_prompt.title',
@@ -164,7 +192,7 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
     } else {
       dispatchDiscovery()
     }
-  }, [hotspot, blockHeight, dispatchDiscovery, showOKAlert, t, userAddress])
+  }, [hotspot, userAddress, syncStatuses, showOKAlert, t, dispatchDiscovery])
 
   const handleRequestSelected = useCallback(
     (request: DiscoveryRequest) => {
@@ -189,7 +217,6 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
           onClose={onClose}
           recentDiscoveryInfo={recentDiscoveryInfo}
           error={infoLoading === 'rejected'}
-          hotspot={hotspot}
         />
       )
     case 'results':

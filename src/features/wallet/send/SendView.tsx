@@ -196,11 +196,14 @@ const SendView = ({
   useEffect(() => {
     if (!scanResult) return
     setType(scanResult.type)
-    const getAmountAndBalance = (scanAmount?: string) => {
+    const getAmountAndBalance = (scanAmount?: string | number) => {
       let amount = ''
       let balanceAmount = new Balance(0, CurrencyType.networkToken)
       if (scanAmount) {
-        const floatAmount = parseFloat(scanAmount.replace(/,/g, ''))
+        let floatAmount = scanAmount
+        if (typeof floatAmount === 'string') {
+          floatAmount = parseFloat(floatAmount.replace(/,/g, ''))
+        }
         balanceAmount = Balance.fromFloat(
           floatAmount,
           CurrencyType.networkToken,

@@ -1,13 +1,14 @@
-import React, { useCallback, useMemo, useState } from 'react'
-import { ActivityIndicator } from 'react-native'
+import React, { useCallback, useMemo, useState, useEffect } from 'react'
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import { ChartData } from '../../../components/BarChart/types'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import ChartContainer from '../../../components/BarChart/ChartContainer'
-import { useColors } from '../../../theme/themeHooks'
+import { useBorderRadii, useColors } from '../../../theme/themeHooks'
 import animateTransition from '../../../utils/animateTransition'
 import { locale } from '../../../utils/i18n'
 import DateModule from '../../../utils/DateModule'
+import TimelinePicker from './TimelinePicker'
 
 type Props = {
   title: string
@@ -15,6 +16,8 @@ type Props = {
   change?: number
   data: ChartData[]
   loading?: boolean
+  timelineIndex: number
+  onTimelineChanged: (value: number, index: number) => void
 }
 
 const HotspotDetailChart = ({
@@ -22,13 +25,27 @@ const HotspotDetailChart = ({
   number,
   change = 0,
   data,
-  loading,
+  loading: propsLoading,
+  timelineIndex,
+  onTimelineChanged,
 }: Props) => {
-  const { black, grayLight, grayMain, purpleMain, greenOnline } = useColors()
+  const { black, grayLight, purpleMain, greenOnline } = useColors()
+  const { l } = useBorderRadii()
+  const [loading, setLoading] = useState(propsLoading)
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
 
+  useEffect(() => {
+    if (propsLoading === loading) return
+
+    animateTransition('HotspotDetailChart.LoadingChange', {
+      enabledOnAndroid: false,
+    })
+
+    setLoading(propsLoading)
+  }, [loading, propsLoading])
+
   const onFocus = useCallback(async (chartData: ChartData | null) => {
-    animateTransition('HotspotDetailChart.OnFocus', false)
+    animateTransition('HotspotDetailChart.OnFocus', { enabledOnAndroid: false })
 
     if (!chartData) {
       setFocusedData(null)
@@ -43,46 +60,46 @@ const HotspotDetailChart = ({
   }, [])
 
   const body = useMemo(() => {
-    if (loading) return <ActivityIndicator size="small" color={grayMain} />
+    if (loading)
+      return (
+        <SkeletonPlaceholder>
+          <SkeletonPlaceholder.Item
+            height={400}
+            width="100%"
+            borderRadius={l}
+          />
+        </SkeletonPlaceholder>
+      )
 
     return (
       <>
-        <Box
-          height="100%"
-          flex={3}
-          paddingRight="s"
-          justifyContent="space-between"
-        >
-          <Text
-            variant="light"
-            color="grayDarkText"
-            fontSize={16}
-            maxFontSizeMultiplier={1.2}
-          >
+        <Box flex={1}>
+          <Text color="grayLightText" fontSize={16} maxFontSizeMultiplier={1.2}>
             {title}
           </Text>
-          <Text
-            variant="light"
-            color="grayDarkText"
-            fontSize={37}
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            maxFontSizeMultiplier={1}
-          >
-            {focusedData ? focusedData.up.toLocaleString(locale) : number}
-          </Text>
-          {change !== undefined && !focusedData ? (
-            <Box
-              paddingHorizontal="xs"
-              height={24}
-              backgroundColor={change < 0 ? 'purpleMain' : 'greenOnline'}
-              justifyContent="center"
-              alignItems="center"
-              borderRadius="s"
-              alignSelf="baseline"
+          <Box flexDirection="row">
+            <Text
+              variant="light"
+              color="grayDarkText"
+              fontSize={37}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              maxFontSizeMultiplier={1}
             >
+              {focusedData ? focusedData.up.toLocaleString(locale) : number}
+            </Text>
+
+            <TimelinePicker
+              flex={1}
+              index={timelineIndex}
+              onTimelineChanged={onTimelineChanged}
+            />
+          </Box>
+
+          <Box flexDirection="row" flex={1} justifyContent="flex-end">
+            {change !== undefined && !focusedData ? (
               <Text
-                color="white"
+                color={change < 0 ? 'purpleMain' : 'greenOnline'}
                 variant="bold"
                 fontSize={13}
                 maxFontSizeMultiplier={1.1}
@@ -92,30 +109,36 @@ const HotspotDetailChart = ({
                   minimumFractionDigits: 2,
                 })}%`}
               </Text>
-            </Box>
-          ) : (
-            <Text
-              variant="body3"
-              color="grayDarkText"
-              padding="xs"
-              adjustsFontSizeToFit
-              maxFontSizeMultiplier={1.1}
-            >
-              {focusedData ? focusedData.label : ''}
-            </Text>
-          )}
+            ) : (
+              <Text
+                variant="body3"
+                color="grayDarkText"
+                adjustsFontSizeToFit
+                maxFontSizeMultiplier={1.1}
+              >
+                {focusedData ? focusedData.label : ''}
+              </Text>
+            )}
+          </Box>
         </Box>
-
-        <Box flex={5} alignSelf="flex-end">
-          <ChartContainer
-            height={68}
-            data={data}
-            onFocus={onFocus}
-            showXAxisLabel={false}
-            upColor={change >= 0 ? greenOnline : purpleMain}
-            downColor={grayLight}
-            labelColor={black}
-          />
+        <Box
+          paddingTop="m"
+          flexDirection="row"
+          justifyContent={loading ? 'center' : 'space-between'}
+          alignItems="center"
+          marginBottom="xxs"
+        >
+          <Box width="100%" height={250}>
+            <ChartContainer
+              height={100}
+              data={data}
+              onFocus={onFocus}
+              showXAxisLabel={false}
+              upColor={change >= 0 ? greenOnline : purpleMain}
+              downColor={grayLight}
+              labelColor={black}
+            />
+          </Box>
         </Box>
       </>
     )
@@ -125,26 +148,19 @@ const HotspotDetailChart = ({
     data,
     focusedData,
     grayLight,
-    grayMain,
     greenOnline,
+    l,
     loading,
     number,
     onFocus,
+    onTimelineChanged,
     purpleMain,
+    timelineIndex,
     title,
   ])
 
   return (
-    <Box
-      backgroundColor="grayBox"
-      paddingHorizontal="lx"
-      paddingVertical="m"
-      flexDirection="row"
-      justifyContent={loading ? 'center' : 'space-between'}
-      alignItems="center"
-      height={154}
-      marginBottom="xxs"
-    >
+    <Box backgroundColor="grayBoxLight" paddingTop="xl" padding="l">
       {body}
     </Box>
   )

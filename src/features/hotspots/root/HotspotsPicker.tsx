@@ -17,10 +17,12 @@ import usePrevious from '../../../utils/usePrevious'
 import HeliumSelect from '../../../components/HeliumSelect'
 import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
 import useGetLocation from '../../../utils/useGetLocation'
+import { useSpacing } from '../../../theme/themeHooks'
 
 const HotspotsPicker = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
+  const spacing = useSpacing()
   const maybeGetLocation = useGetLocation()
   const order = useSelector((state: RootState) => state.hotspots.order)
   const navigation = useNavigation()
@@ -113,10 +115,15 @@ const HotspotsPicker = () => {
     return opts
   }, [followHotspotEnabled, locationBlocked, t])
 
+  const contentContainerStyle = useMemo(
+    () => ({ paddingHorizontal: spacing.l }),
+    [spacing.l],
+  )
+
   return (
     <Box flexDirection="row" alignItems="center" width="100%">
       <HeliumSelect
-        paddingHorizontal="l"
+        contentContainerStyle={contentContainerStyle}
         marginBottom="lm"
         data={data}
         selectedValue={order}

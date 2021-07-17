@@ -24,10 +24,10 @@ import { getSecureItem } from '../../../utils/secureAccount'
 
 type Route = RouteProp<
   HotspotSetupStackParamList,
-  'HotspotSetupQrConfirmScreen'
+  'HotspotSetupExternalConfirmScreen'
 >
 
-const HotspotSetupQrConfirmScreen = () => {
+const HotspotSetupExternalConfirmScreen = () => {
   const { t } = useTranslation()
   const { params } = useRoute<Route>()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
@@ -47,7 +47,7 @@ const HotspotSetupQrConfirmScreen = () => {
 
     const getRecord = async () => {
       const record = await getOnboardingRecord(publicKey)
-      animateTransition('HotspotSetupQrConfirmScreen.GetMac')
+      animateTransition('HotspotSetupExternalConfirmScreen.GetMac')
       setMacAddress(record.macEth0)
       setOnboardingRecord(record)
     }
@@ -96,8 +96,8 @@ const HotspotSetupQrConfirmScreen = () => {
         marginTop="l"
       >
         {breakpoints.smallPhone
-          ? t('hotspot_setup.qrConfirm.title_one_line')
-          : t('hotspot_setup.qrConfirm.title')}
+          ? t('hotspot_setup.confirm.title_one_line')
+          : t('hotspot_setup.confirm.title')}
       </Text>
       <Box
         padding="l"
@@ -113,7 +113,7 @@ const HotspotSetupQrConfirmScreen = () => {
           fontSize={16}
           maxFontSizeMultiplier={1}
         >
-          {t('hotspot_setup.qrConfirm.public_key')}
+          {t('hotspot_setup.confirm.public_key')}
         </Text>
         <Text
           variant="light"
@@ -139,7 +139,7 @@ const HotspotSetupQrConfirmScreen = () => {
           fontSize={16}
           maxFontSizeMultiplier={1}
         >
-          {t('hotspot_setup.qrConfirm.mac_address')}
+          {t('hotspot_setup.confirm.mac_address')}
         </Text>
         {macAddress ? (
           <Text
@@ -170,7 +170,7 @@ const HotspotSetupQrConfirmScreen = () => {
           fontSize={16}
           maxFontSizeMultiplier={1}
         >
-          {t('hotspot_setup.qrConfirm.owner_address')}
+          {t('hotspot_setup.confirm.owner_address')}
         </Text>
         <Text
           variant="light"
@@ -189,10 +189,10 @@ const HotspotSetupQrConfirmScreen = () => {
         mode="contained"
         variant="primary"
         onPress={navNext}
-        disabled={publicKey !== address}
+        disabled={ownerAddress !== address}
       />
     </BackScreen>
   )
 }
 
-export default HotspotSetupQrConfirmScreen
+export default HotspotSetupExternalConfirmScreen

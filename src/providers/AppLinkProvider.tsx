@@ -35,10 +35,6 @@ const useAppLink = () => {
     AppLink | AppLinkPayment | null
   >(null)
 
-  const qrOnboardEnabled = useSelector(
-    (state: RootState) => state.features.qrOnboardEnabled,
-  )
-
   const {
     app: { isLocked, isBackedUp },
   } = useSelector((state: RootState) => state)
@@ -82,13 +78,6 @@ const useAppLink = () => {
           break
 
         case 'add_gateway': {
-          if (!qrOnboardEnabled) {
-            if (qrOnboardEnabled === undefined) {
-              setUnhandledLink(record)
-            }
-            return
-          }
-
           const { address: txnStr } = record as AppLink
           if (!txnStr) return
 
@@ -97,23 +86,16 @@ const useAppLink = () => {
         }
       }
     },
-    [isLocked, isBackedUp, qrOnboardEnabled],
+    [isLocked, isBackedUp],
   )
 
   useEffect(() => {
     // Links will be handled once the app is unlocked
-    if (
-      !unhandledAppLink ||
-      isLocked ||
-      !isBackedUp ||
-      (unhandledAppLink?.type === 'add_gateway' &&
-        qrOnboardEnabled === undefined)
-    )
-      return
+    if (!unhandledAppLink || isLocked || !isBackedUp) return
 
     navToAppLink(unhandledAppLink)
     setUnhandledLink(null)
-  }, [isLocked, navToAppLink, unhandledAppLink, isBackedUp, qrOnboardEnabled])
+  }, [isLocked, navToAppLink, unhandledAppLink, isBackedUp])
 
   const parseUrl = useCallback((url: string) => {
     if (!url) return
@@ -147,7 +129,8 @@ const useAppLink = () => {
    * (1) A helium deeplink URL
    * (2) address string
    * (3) stringified JSON object { type, address, amount?, memo? }
-   * (4) stringified JSON object { type, payees: {[payeeAddress]: { amount, memo? }} }
+   * (4) stringified JSON object { type, payees: {[payeeAddress]: amount} }
+   * (5) stringified JSON object { type, payees: {[payeeAddress]: { amount, memo? }} }
    */
   const parseBarCodeData = useCallback(
     (data: string, scanType: AppLinkCategoryType): AppLink | AppLinkPayment => {
@@ -211,11 +194,26 @@ const useAppLink = () => {
             scanResult = {
               type,
               payees: Object.entries(rawScanResult.payees).map((entries) => {
-                const scanData = entries[1] as { amount: string; memo?: string }
+                let amount
+                let memo
+                if (entries[1]) {
+                  if (typeof entries[1] === 'number') {
+                    // Case (4) stringified JSON object { type, payees: {[payeeAddress]: amount} }
+                    amount = entries[1] as number
+                  } else if (typeof entries[1] === 'object') {
+                    // Case (5) stringified JSON object { type, payees: {[payeeAddress]: { amount, memo? }} }
+                    const scanData = entries[1] as {
+                      amount: string
+                      memo?: string
+                    }
+                    amount = scanData.amount
+                    memo = scanData.memo
+                  }
+                }
                 return {
                   address: entries[0],
-                  amount: scanData.amount,
-                  memo: scanData.memo,
+                  amount: `${amount}`,
+                  memo,
                 } as Payee
               }),
             }

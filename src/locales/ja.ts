@@ -438,9 +438,9 @@ export default {
       },
     ],
     chartRanges: {
-      days: { label: '14D', accessibilityLabel: '14 Days' },
-      weeks: { label: '12W', accessibilityLabel: '12 Weeks' },
-      months: { label: '12M', accessibilityLabel: '12 Months' },
+      daily: { label: '14D', accessibilityLabel: '14 Days' },
+      weekly: { label: '12W', accessibilityLabel: '12 Weeks' },
+      monthly: { label: '12M', accessibilityLabel: '12 Months' },
     },
   },
   send: {
@@ -776,7 +776,7 @@ export default {
     picker_title: '過去',
     overview: '概要',
     no_location: '位置情報がありません',
-    picker_options: ['過去24時間', '過去7日間', '過去14日間', '過去30日間'],
+    picker_options: ['過去24時間', '過去14日間', '過去30日間'],
     picker_prompt: '範囲を選択',
     status_online: 'オンライン',
     status_offline: '注意が必要',
