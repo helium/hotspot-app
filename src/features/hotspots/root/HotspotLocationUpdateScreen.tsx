@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Alert } from 'react-native'
 import { RouteProp, useNavigation } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
@@ -55,21 +55,17 @@ function HotspotLocationUpdateScreen({ route }: Props) {
   const submitTxn = useSubmitTxn()
   const navigation = useNavigation()
   const [loading, setLoading] = useState(false)
-  const [locationName, setLocationName] = useState('')
 
   // Find location name based on lng/lat
-  useEffect(() => {
-    async function getLocationName() {
-      const results = await reverseGeocode(latitude, longitude)
-      if (results.length > 0) {
-        const [{ street, city, isoCountryCode }] = results
-        if (street && city) {
-          setLocationName([street, city, isoCountryCode].join(', '))
-        }
+  const { result: locationName } = useAsync(async () => {
+    const results = await reverseGeocode(latitude, longitude)
+    if (results.length > 0) {
+      const [{ street, city, isoCountryCode }] = results
+      if (street && city) {
+        return [street, city, isoCountryCode].join(', ')
       }
     }
-    getLocationName()
-  }, [latitude, longitude])
+  }, [])
 
   // Find onboardingRecord for selected hotspot if available
   const { result: onboardingRecord } = useAsync(
