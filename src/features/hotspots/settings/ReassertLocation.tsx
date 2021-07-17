@@ -1,13 +1,11 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import Balance, { CurrencyType } from '@helium/currency'
-import { useNavigation } from '@react-navigation/native'
 import React, { memo, useCallback, useEffect, useState } from 'react'
 import { useAsync } from 'react-async-hook'
 import { Hotspot, Witness } from '@helium/http'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../../store/rootReducer'
 import animateTransition from '../../../utils/animateTransition'
-import useHaptic from '../../../utils/useHaptic'
 import ReassertLocationFee from './ReassertLocationFee'
 import ReassertLocationUpdate from './ReassertLocationUpdate'
 import { useHotspotSettingsContext } from './HotspotSettingsProvider'
@@ -16,9 +14,6 @@ import ReassertAddressSearch from './ReassertAddressSearch'
 import { PlaceGeography } from '../../../utils/googlePlaces'
 import { loadLocationFeeData } from '../../../utils/assertLocationUtils'
 import { OnboardingRecord } from '../../../utils/stakingClient'
-import { RootNavigationProp } from '../../../navigation/main/tabTypes'
-import { useAppDispatch } from '../../../store/store'
-import hotspotDetailsSlice from '../../../store/hotspotDetails/hotspotDetailsSlice'
 
 export type Coords = { latitude: number; longitude: number }
 export type ReassertLocationState = 'fee' | 'update' | 'confirm' | 'search'
@@ -45,9 +40,6 @@ const ReassertLocation = ({
   onStateChange,
   onboardingRecord,
 }: Props) => {
-  const { triggerNavHaptic } = useHaptic()
-  const dispatch = useAppDispatch()
-  const navigation = useNavigation<RootNavigationProp>()
   const account = useSelector((state: RootState) => state.account.account)
   const [state, setState] = useState<ReassertLocationState>('fee')
   const [updatedLocation, setUpdatedLocation] = useState<Coords | undefined>()
@@ -111,12 +103,6 @@ const ReassertLocation = ({
     [onStateChange],
   )
 
-  const handleScan = () => {
-    triggerNavHaptic()
-    navigation.navigate('ScanStack')
-    dispatch(hotspotDetailsSlice.actions.toggleShowSettings())
-  }
-
   const amount = feeData.isFree
     ? 'O DC'
     : feeData.totalStakingAmountDC.toString(0, {
@@ -143,6 +129,7 @@ const ReassertLocation = ({
       return (
         <ReassertLocationUpdate
           amount={amount}
+          hotspot={hotspot}
           key={state}
           coords={
             hotspot.lat && hotspot.lng
@@ -151,7 +138,6 @@ const ReassertLocation = ({
           }
           onCancel={handleBack}
           onSearch={handleSearch}
-          onScan={handleScan}
           onConfirm={handleComplete}
           locationSelected={(latitude, longitude, name) => {
             setUpdatedLocation({ latitude, longitude })
@@ -170,6 +156,7 @@ const ReassertLocation = ({
       return (
         <ReassertLocationUpdate
           amount={amount}
+          hotspot={hotspot}
           key={state}
           onCancel={handleBack}
           confirming
