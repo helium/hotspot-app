@@ -16,8 +16,9 @@ import Box from '../../../components/Box'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 
-import * as Logger from '../../../utils/logger'
 import useSubmitTxn from '../../../hooks/useSubmitTxn'
+import * as Logger from '../../../utils/logger'
+import { getOnboardingRecord } from '../../../utils/stakingClient'
 import { reverseGeocode } from '../../../utils/location'
 import {
   assertLocationTxn,
@@ -59,6 +60,27 @@ function HotspotLocationUpdateScreen({ route }: Props) {
     getLocationName()
   }, [latitude, longitude])
 
+  // Find onboardingRecord for selected hotspot if available
+  const { result: onboardingRecord } = useAsync(
+    async () =>
+      hotspot
+        ? getOnboardingRecord(hotspot.address)
+        : Promise.resolve(undefined),
+    [hotspot?.address],
+  )
+
+  // Calculate reassert fee for hotspot
+  const { result: feeData = DEFAULT_FEE_DATA } = useAsync(() => {
+    if (hotspot) {
+      return loadLocationFeeData(
+        hotspot.nonce,
+        account?.balance?.integerBalance,
+        onboardingRecord,
+      )
+    }
+    return Promise.resolve(DEFAULT_FEE_DATA)
+  }, [hotspot?.nonce, account?.balance?.integerBalance, onboardingRecord])
+
   const constructTransaction = async () => {
     if (!hotspot) return
     const hotspotGain = hotspot.gain ? hotspot.gain / 10 : 1.2
@@ -68,13 +90,9 @@ function HotspotLocationUpdateScreen({ route }: Props) {
       longitude,
       hotspotGain,
       hotspot.elevation,
-      undefined,
+      onboardingRecord,
       true,
     )
-  }
-
-  const onClose = () => {
-    navigation.goBack()
   }
 
   const onSubmit = async () => {
@@ -106,16 +124,9 @@ function HotspotLocationUpdateScreen({ route }: Props) {
     }
   }
 
-  // Calculate reassert fee for hotspot
-  const { result: feeData = DEFAULT_FEE_DATA } = useAsync(() => {
-    if (hotspot) {
-      return loadLocationFeeData(
-        hotspot.nonce,
-        account?.balance?.integerBalance,
-      )
-    }
-    return Promise.resolve(DEFAULT_FEE_DATA)
-  }, [hotspot?.nonce, account?.balance?.integerBalance])
+  const onClose = () => {
+    navigation.goBack()
+  }
 
   return (
     <SafeAreaBox backgroundColor="primaryBackground" flex={1}>
