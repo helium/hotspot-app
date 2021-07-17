@@ -2,14 +2,11 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { getWallet } from '../../utils/walletClient'
 
 export type FeaturesState = {
-  discoveryEnabled: boolean
   checklistEnabled: boolean
   followHotspotEnabled: boolean
-  qrOnboardEnabled?: boolean
 }
 
 const initialState: FeaturesState = {
-  discoveryEnabled: false,
   checklistEnabled: false,
   followHotspotEnabled: true,
 }
@@ -26,10 +23,8 @@ const featuresSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(fetchFeatures.fulfilled, (state, { payload }) => {
-      state.discoveryEnabled = payload.discoveryEnabled
       state.checklistEnabled = payload.checklistEnabled
       state.followHotspotEnabled = payload.followHotspotEnabled
-      state.qrOnboardEnabled = payload.qrOnboardEnabled
     })
   },
 })

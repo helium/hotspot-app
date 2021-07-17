@@ -4,15 +4,16 @@ import HotspotIcon_iStation from './istation.svg'
 import { MakerHotspot } from '../hotspotMakerTypes'
 import ANTENNAS from './antennas'
 
-const qr =
-  'Please visit the following URL from your computer or directly your phone by selecting the link below:'
-const qrLink = 'https://helium-onboarding.kerlink.com/?wallet=WALLET'
+const externalOnboard =
+  'Please onboard your Kerlink gateway by tapping the link below:'
+
+const onboardUrl = 'https://helium-onboarding.kerlink.com/?wallet=WALLET'
 
 const KERLINK_IFEMTO = {
   name: 'Kerlink iFemtoCell',
-  onboardType: 'QR',
+  onboardType: 'WEB',
   icon: HotspotIcon_iFemto,
-  qrLink,
+  onboardUrl,
   translations: {
     en: {
       diagnostic:
@@ -21,7 +22,7 @@ const KERLINK_IFEMTO = {
         'Attach the antenna and plug in the provided power adapter.',
         'Your Hotspot will boot up, and its light will become Green when ready.',
       ],
-      qr,
+      externalOnboard,
     },
   },
   antenna: {
@@ -31,8 +32,8 @@ const KERLINK_IFEMTO = {
 
 const KERLINK_IFEMTO_EVO = {
   name: 'Kerlink iFemtoCell Evolution',
-  onboardType: 'QR',
-  qrLink,
+  onboardType: 'WEB',
+  onboardUrl,
   icon: HotspotIcon_iFemtoEvo,
   translations: {
     en: {
@@ -42,7 +43,7 @@ const KERLINK_IFEMTO_EVO = {
         'Attach the antenna and plug in the provided power adapter.',
         'Your Hotspot will boot up, and its light will become Green when ready.',
       ],
-      qr,
+      externalOnboard,
     },
   },
   antenna: {
@@ -52,8 +53,8 @@ const KERLINK_IFEMTO_EVO = {
 
 const KERLINK_ISTATION = {
   name: 'Kerlink iStation',
-  qrLink,
-  onboardType: 'QR',
+  onboardUrl,
+  onboardType: 'WEB',
   icon: HotspotIcon_iStation,
   translations: {
     en: {
@@ -63,7 +64,7 @@ const KERLINK_ISTATION = {
         'Attach the antenna and plug in the provided power adapter.',
         'Your Hotspot will boot up, and its light will become Green when ready.',
       ],
-      qr,
+      externalOnboard,
     },
   },
   antenna: {

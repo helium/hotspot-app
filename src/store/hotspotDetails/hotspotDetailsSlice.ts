@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { Bucket, Hotspot, Reward, Sum, Witness } from '@helium/http'
+import { Hotspot, Reward, Sum, Witness } from '@helium/http'
 import {
-  getHotspotChallengeSums,
   getHotspotDetails,
   getHotspotRewards,
   getHotspotRewardsSum,
@@ -19,37 +18,6 @@ import {
 type FetchDetailsParams = {
   address: string
   numDays: number
-}
-
-export const fetchHotspotChallengeSums = async (
-  params: FetchDetailsParams,
-  today: Date,
-  previousMaxDate: Date,
-  bucket: Bucket,
-) => {
-  const challengeSums = await getHotspotChallengeSums({
-    address: params.address,
-    minTime: `-${params.numDays} day`,
-    maxTime: today,
-    bucket,
-  })
-  const challengeSumsPrevious = await getHotspotChallengeSums({
-    address: params.address,
-    minTime: `-${params.numDays} day`,
-    maxTime: previousMaxDate,
-    bucket,
-  })
-  challengeSums.reverse()
-  const totalSum = challengeSums.reduce((total, { sum }) => total + sum, 0)
-  const prevSum = challengeSumsPrevious.reduce(
-    (total, { sum }) => total + sum,
-    0,
-  )
-  return {
-    challengeSums,
-    challengeSum: totalSum,
-    challengeChange: calculatePercentChange(totalSum, prevSum),
-  }
 }
 
 export const fetchHotspotData = createAsyncThunk<HotspotData, string>(
@@ -91,7 +59,6 @@ export const fetchHotspotChartData = createAsyncThunk<
     if (hasValidCache(details)) {
       throw new Error('Data already fetched')
     }
-    const bucket = params.numDays === 1 ? 'hour' : 'day'
     const startDate = new Date()
     const endDate = new Date(startDate)
     endDate.setDate(endDate.getDate() - params.numDays)
@@ -99,12 +66,10 @@ export const fetchHotspotChartData = createAsyncThunk<
       getHotspotRewardsSum(params.address, params.numDays),
       getHotspotRewardsSum(params.address, params.numDays, endDate),
       getHotspotRewards(params.address, params.numDays),
-      fetchHotspotChallengeSums(params, startDate, endDate, bucket),
     ])
     const rewardSum = data[0]
     const pastRewardSum = data[1]
     const rewards = data[2]
-    const challengeSumData = data[3]
     return {
       rewardSum,
       rewards,
@@ -112,7 +77,6 @@ export const fetchHotspotChartData = createAsyncThunk<
         rewardSum.total,
         pastRewardSum.total,
       ),
-      ...challengeSumData,
     }
   },
 )
@@ -121,9 +85,6 @@ type HotspotChartData = {
   rewardSum?: Sum
   rewards?: Reward[]
   rewardsChange?: number
-  challengeSums?: Sum[]
-  challengeSum?: number
-  challengeChange?: number
 }
 
 type HotspotData = {

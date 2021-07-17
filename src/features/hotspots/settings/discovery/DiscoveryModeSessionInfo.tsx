@@ -6,14 +6,13 @@ import Box from '../../../../components/Box'
 import { DiscoveryRequest } from '../../../../store/discovery/discoveryTypes'
 import Button from '../../../../components/Button'
 import DiscoveryModeSessionItem from './DiscoveryModeSessionItem'
-import filterDiscoveryResponses from './filterDiscoveryResponses'
+import dedupeDiscoveryResponses from './dedupeDiscoveryResponses'
 
 type Props = {
   requests: DiscoveryRequest[]
   requestsRemaining: number
   onBeginNew: () => void
   onRequestSelected: (request: DiscoveryRequest) => void
-  hotspotAddress: string
 }
 type ItemType = { item: DiscoveryRequest; index: number }
 const DiscoveryModeSessionInfo = ({
@@ -21,7 +20,6 @@ const DiscoveryModeSessionInfo = ({
   requestsRemaining,
   onBeginNew,
   onRequestSelected,
-  hotspotAddress,
 }: Props) => {
   const { t } = useTranslation()
   const [canRequest, setCanRequest] = useState<boolean>()
@@ -50,15 +48,12 @@ const DiscoveryModeSessionInfo = ({
           item={props.item}
           date={props.item.insertedAt}
           errorCode={props.item.errorCode}
-          responseCount={
-            filterDiscoveryResponses(hotspotAddress, props.item.responses)
-              .length
-          }
+          responseCount={dedupeDiscoveryResponses(props.item.responses).length}
           onRequestSelected={handleRequestSelected}
         />
       )
     },
-    [handleRequestSelected, hotspotAddress, requests.length],
+    [handleRequestSelected, requests.length],
   )
 
   return (

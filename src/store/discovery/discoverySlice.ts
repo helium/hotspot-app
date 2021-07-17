@@ -1,10 +1,13 @@
 import { Hotspot } from '@helium/http'
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import AsyncStorage from '@react-native-community/async-storage'
 import { getHotspotsForHexId } from '../../utils/appDataClient'
 import { makeDiscoverySignature } from '../../utils/secureAccount'
 import { getWallet, postWallet } from '../../utils/walletClient'
 import { Loading } from '../activity/activitySlice'
 import { DiscoveryRequest, RecentDiscoveryInfo } from './discoveryTypes'
+
+const LAST_WARNING_KEY = 'lastWarningKey'
 
 export type DiscoveryState = {
   recentDiscoveryInfos: Record<string, RecentDiscoveryInfo>
@@ -13,6 +16,7 @@ export type DiscoveryState = {
   selectedRequest?: DiscoveryRequest | null
   requestId?: number | null
   hotspotsForHexId: Record<string, Hotspot[]>
+  lastWarningDate?: string
 }
 
 const initialState: DiscoveryState = {
@@ -28,11 +32,17 @@ export const fetchHotspotsForHex = createAsyncThunk<
 >('discovery/hotspotsForHex', async ({ hexId }) => getHotspotsForHexId(hexId))
 
 export const fetchRecentDiscoveries = createAsyncThunk<
-  RecentDiscoveryInfo,
+  { recent: RecentDiscoveryInfo; lastWarningDate?: string },
   { hotspotAddress: string }
->('discovery/recent', async ({ hotspotAddress }) =>
-  getWallet(`discoveries/${hotspotAddress}`, null, { camelCase: true }),
-)
+>('discovery/recent', async ({ hotspotAddress }) => {
+  const lastWarningDate = await AsyncStorage.getItem(LAST_WARNING_KEY)
+
+  const recent = await getWallet(`discoveries/${hotspotAddress}`, null, {
+    camelCase: true,
+  })
+
+  return { lastWarningDate: lastWarningDate || '', recent }
+})
 
 export const startDiscovery = createAsyncThunk<
   DiscoveryRequest,
@@ -72,6 +82,10 @@ const discoverySlice = createSlice({
       state.selectedRequest = null
       state.requestId = null
     },
+    updateLastWarningDate: (state, action: PayloadAction<string>) => {
+      state.lastWarningDate = action.payload
+      AsyncStorage.setItem(LAST_WARNING_KEY, action.payload)
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchRecentDiscoveries.pending, (state) => {
@@ -88,7 +102,8 @@ const discoverySlice = createSlice({
           },
         },
       ) => {
-        state.recentDiscoveryInfos[hotspotAddress] = payload
+        state.recentDiscoveryInfos[hotspotAddress] = payload.recent
+        state.lastWarningDate = payload.lastWarningDate
         state.infoLoading = 'fulfilled'
       },
     )

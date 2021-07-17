@@ -14,19 +14,17 @@ import {
   LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
-  Platform,
 } from 'react-native'
 import Globe from '@assets/images/globeShortcut.svg'
 import Search from '@assets/images/searchShortcut.svg'
 import Home from '@assets/images/homeShortcut.svg'
 import Follow from '@assets/images/follow.svg'
-import sleep from '../../../utils/sleep'
+import animalName from 'angry-purple-tiger'
 import { wp } from '../../../utils/layout'
 import Text from '../../../components/Text'
 import { useColors, useSpacing } from '../../../theme/themeHooks'
 import Box from '../../../components/Box'
 import usePrevious from '../../../utils/usePrevious'
-import animateTransition from '../../../utils/animateTransition'
 import TouchableOpacityBox from '../../../components/BSTouchableOpacityBox'
 
 export const SHORTCUT_NAV_HEIGHT = 44
@@ -48,24 +46,38 @@ export const IS_GLOBAL_OPT = (
 
 type FollowedHotspot = Hotspot & { followed?: boolean }
 
+const getItemId = (item: GlobalOpt | FollowedHotspot | Witness | Hotspot) =>
+  IS_GLOBAL_OPT(item) ? item : item.address
+
+const getAnimalName = (hotspot: Hotspot) => {
+  const pieces = (hotspot.name || animalName(hotspot.address)).split('-')
+  return pieces[pieces.length - 1]
+}
+
+const sortByName = (hotspots: Hotspot[]) =>
+  hotspots.sort((l, r) => (getAnimalName(l) > getAnimalName(r) ? 1 : -1))
+
 const ShortcutNav = ({
   ownedHotspots,
   followedHotspots,
-  selectedItem,
+  selectedItem: propsItem,
   onItemSelected,
 }: Props) => {
   const colors = useColors()
   const spacing = useSpacing()
   const listRef = useRef<FlatList<Hotspot | Witness | GlobalOpt>>(null)
   const snapPos = useRef<number>(0)
+  const hasFollowHotspotChange = useRef(false)
+  const disableMomentumSnap = useRef(false)
   const scrollOffset = useRef(0)
-  const followChanged = useRef(false)
+  const [internalItem, setInternalItem] = useState({ index: 2, id: 'home' }) // start user at home
+  const hasScrolledToHome = useRef(false)
   const optSize = ITEM_SIZE + spacing[ITEM_MARGIN]
   const prevFollowed = usePrevious(followedHotspots)
   const [sizes, setSizes] = useState(
     GLOBAL_OPTS.reduce(
       (obj, item) => ({ ...obj, [item]: optSize }),
-      {} as Record<string, number>,
+      {} as Record<string, number | null>,
     ),
   )
 
@@ -80,17 +92,39 @@ const ShortcutNav = ({
     // 2. Followed
     // 3. Owned
 
-    const sortedFollowed = followedHotspots.sort((h) =>
-      h.owner === ownerAddress ? -1 : 1,
-    )
-    const unique = uniqBy(
+    const uniqueHotspots = uniqBy(
       [
-        ...sortedFollowed.map((h) => ({ ...h, followed: true })),
+        ...followedHotspots.map((h) => ({ ...h, followed: true })),
         ...ownedHotspots,
       ],
       (h) => h.address,
+    ) as FollowedHotspot[]
+
+    const groupedHotspots = uniqueHotspots.reduce(
+      (val, hotspot) => {
+        if (!hotspot.followed) {
+          return { ...val, owned: [...val.owned, hotspot] }
+        }
+        if (hotspot.owner === ownerAddress) {
+          return {
+            ...val,
+            ownedAndFollowed: [...val.ownedAndFollowed, hotspot],
+          }
+        }
+        return { ...val, followed: [...val.followed, hotspot] }
+      },
+      {
+        ownedAndFollowed: [] as FollowedHotspot[],
+        followed: [] as FollowedHotspot[],
+        owned: [] as FollowedHotspot[],
+      } as Record<'ownedAndFollowed' | 'followed' | 'owned', FollowedHotspot[]>,
     )
-    return unique as FollowedHotspot[]
+
+    return [
+      ...sortByName(groupedHotspots.ownedAndFollowed),
+      ...sortByName(groupedHotspots.followed),
+      ...sortByName(groupedHotspots.owned),
+    ]
   }, [followedHotspots, ownedHotspots, ownerAddress])
 
   const isSelected = useCallback(
@@ -109,15 +143,6 @@ const ShortcutNav = ({
     },
     [],
   )
-
-  useEffect(() => {
-    if (prevFollowed && followedHotspots.length !== prevFollowed.length) {
-      followChanged.current = true
-      animateTransition('ShortcutNav.FollowChanged', {
-        enabledOnAndroid: false,
-      })
-    }
-  }, [followedHotspots, prevFollowed])
 
   const data = useMemo(() => {
     return [...GLOBAL_OPTS, ...hotspots]
@@ -147,7 +172,7 @@ const ShortcutNav = ({
             offset =
               2.5 * ITEM_SIZE +
               3 * spacing[ITEM_MARGIN] +
-              sizes[item.address] / 2
+              (sizes[item.address] || 0) / 2
           } else {
             let sizeKey = ''
             const prevItem = data[index - 1]
@@ -158,8 +183,8 @@ const ShortcutNav = ({
             }
             offset =
               total[index - 1] +
-              sizes[item.address] / 2 +
-              sizes[sizeKey] / 2 +
+              (sizes[item.address] || 0) / 2 +
+              (sizes[sizeKey] || 0) / 2 +
               spacing[ITEM_MARGIN]
           }
         }
@@ -171,6 +196,7 @@ const ShortcutNav = ({
 
   const scroll = useCallback(
     (index: number, animated = true) => {
+      disableMomentumSnap.current = true
       let offset = 0
       if (index >= 0) {
         offset = scrollOffsets[index]
@@ -185,26 +211,97 @@ const ShortcutNav = ({
     [scrollOffsets],
   )
 
+  useEffect(() => {
+    // Scroll to home when component first mounts
+    if (hasScrolledToHome.current || Object.keys(sizes).length < data.length)
+      return
+
+    hasScrolledToHome.current = true
+    scroll(2, true)
+  }, [data.length, scroll, sizes])
+
+  useEffect(() => {
+    if (getItemId(propsItem) === internalItem.id) {
+      return
+    }
+
+    const index = data.findIndex(
+      (item) => getItemId(item) === getItemId(propsItem),
+    )
+
+    if (index === -1) return
+
+    // The selected item was changed from the outside world
+    // Track it and scroll to it
+    setInternalItem({
+      index,
+      id: getItemId(propsItem),
+    })
+
+    scroll(index)
+  }, [data, scroll, propsItem, internalItem.id])
+
+  const handleItemSelected = useCallback(
+    (item: GlobalOpt | Hotspot) => {
+      if (getItemId(item) === getItemId(propsItem)) {
+        return
+      }
+      setInternalItem({
+        index: data.indexOf(item),
+        id: getItemId(item),
+      })
+      onItemSelected(item)
+    },
+    [data, onItemSelected, propsItem],
+  )
+
+  useEffect(() => {
+    // if there's a newly followed hotspot, wait for sizes to update then scroll to it
+    if (!hasFollowHotspotChange.current) return
+
+    const allSizesFound = data.every((d) => !!sizes[getItemId(d)])
+    if (!allSizesFound) return
+
+    const nextIndex = data.findIndex((d) => isSelected(d, propsItem))
+    if (nextIndex === -1) return
+
+    hasFollowHotspotChange.current = false
+    scroll(nextIndex)
+  }, [data, isSelected, scroll, propsItem, sizes])
+
+  useEffect(() => {
+    if (prevFollowed && followedHotspots.length !== prevFollowed.length) {
+      // remove this item from the size list
+      if (internalItem.index >= GLOBAL_OPTS.length && propsItem) {
+        sizes[getItemId(propsItem)] = null
+      }
+
+      if (followedHotspots.length < prevFollowed.length) {
+        // a hotspot has been unfollowed, snap to nearest pill
+        const maxIndex = data.length - 1
+        const nextIndex = Math.min(maxIndex, internalItem.index)
+        handleItemSelected(data[nextIndex])
+      }
+
+      hasFollowHotspotChange.current = true
+    }
+  }, [
+    data,
+    followedHotspots.length,
+    handleItemSelected,
+    isSelected,
+    prevFollowed,
+    propsItem,
+    internalItem,
+    sizes,
+  ])
+
   const handlePress = useCallback(
     (item: GlobalOpt | Hotspot) => async () => {
-      if (Platform.OS === 'android') {
-        onItemSelected(item)
-        await sleep(100) // let the ui update, then scroll over
-      }
-
+      handleItemSelected(item)
       scroll(data.findIndex((d) => isSelected(d, item)))
-
-      if (
-        // they're viewing a hotspot they don't own or follow
-        // need to select it on ios because the scroll won't trigger selection
-        Platform.OS === 'ios' &&
-        item === 'explore' &&
-        scrollOffset.current === 0
-      ) {
-        onItemSelected(item)
-      }
     },
-    [data, isSelected, onItemSelected, scroll],
+    [data, handleItemSelected, isSelected, scroll],
   )
 
   const backgroundColor = useCallback(
@@ -221,7 +318,7 @@ const ShortcutNav = ({
     (item: FollowedHotspot, index: number) => {
       if (!item.name) return null
 
-      const selected = isSelected(item, selectedItem)
+      const selected = isSelected(item, propsItem)
       const [, , animal] = item.name.split('-')
 
       return (
@@ -259,13 +356,13 @@ const ShortcutNav = ({
       handleLayout,
       handlePress,
       isSelected,
-      selectedItem,
+      propsItem,
     ],
   )
 
   const renderGlobalOpt = useCallback(
     (item: GlobalOpt) => {
-      const selected = isSelected(item, selectedItem)
+      const selected = isSelected(item, propsItem)
 
       const getIcon = () => {
         const color = () => {
@@ -293,13 +390,13 @@ const ShortcutNav = ({
           width={ITEM_SIZE}
           height={ITEM_SIZE}
           marginRight={ITEM_MARGIN}
-          backgroundColor={selected ? 'white' : 'purpleMuted'}
+          backgroundColor={selected ? 'white' : 'purpleDarkMuted'}
         >
           {getIcon()}
         </TouchableOpacityBox>
       )
     },
-    [colors, handlePress, isSelected, selectedItem],
+    [colors, handlePress, isSelected, propsItem],
   )
 
   type ListItem = { item: Hotspot | GlobalOpt; index: number }
@@ -320,15 +417,16 @@ const ShortcutNav = ({
     return item.address
   }, [])
 
-  useEffect(() => {
-    const index = data.findIndex((d) => isSelected(d, selectedItem))
-    scroll(index, Platform.OS === 'android')
-  }, [selectedItem, data, scroll, isSelected, scrollOffsets])
-
-  const contentContainerStyle = useMemo(
-    () => ({ paddingHorizontal: wp(50) - ITEM_SIZE / 2 }),
-    [],
-  )
+  const contentContainerStyle = useMemo(() => {
+    const paddingStart = wp(50) - ITEM_SIZE / 2
+    const lastItem = data[data.length - 1]
+    let lastItemWidth = ITEM_SIZE
+    if (!IS_GLOBAL_OPT(lastItem) && sizes[lastItem.address]) {
+      lastItemWidth = sizes[lastItem.address] || 0
+    }
+    const paddingEnd = wp(50) - lastItemWidth / 2
+    return { paddingStart, paddingEnd }
+  }, [data, sizes])
 
   const handleScroll = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -339,6 +437,8 @@ const ShortcutNav = ({
 
   const handleScrollMomentum = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      if (disableMomentumSnap.current) return
+
       let snapIndex = 0
       const scrolledOffset = event.nativeEvent.contentOffset.x
 
@@ -360,13 +460,18 @@ const ShortcutNav = ({
       const nextItem = data[snapIndex]
       const nextPos = scrollOffsets[snapIndex]
 
-      if (nextItem === selectedItem) return
+      if (nextItem === propsItem) return
 
       snapPos.current = nextPos
-      onItemSelected(nextItem)
+      handleItemSelected(nextItem)
     },
-    [data, onItemSelected, scrollOffsets, selectedItem],
+    [data, handleItemSelected, scrollOffsets, propsItem],
   )
+
+  const handleBeginDrag = useCallback(() => {
+    disableMomentumSnap.current = false
+  }, [])
+
   return (
     <Box height={SHORTCUT_NAV_HEIGHT} backgroundColor="primaryBackground">
       <Box top={-43} left={0} right={0} height={43} position="absolute">
@@ -380,9 +485,11 @@ const ShortcutNav = ({
         horizontal
         data={data}
         contentContainerStyle={contentContainerStyle}
+        initialNumToRender={10000} // Need all pills to render in order to avoid snap jank
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         onScroll={handleScroll}
+        onScrollBeginDrag={handleBeginDrag}
         onMomentumScrollEnd={handleScrollMomentum}
         snapToOffsets={scrollOffsets}
         decelerationRate="fast"

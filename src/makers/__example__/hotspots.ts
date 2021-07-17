@@ -47,7 +47,7 @@ const ExampleHotspotQR = {
         'Attach the antenna and plug in the provided power adapter.',
         'Your Hotspot will boot up, and its light will become Green when ready.',
       ],
-      qr: 'Visit maker dashboard to generate a QR-code',
+      externalOnboard: 'Visit maker dashboard to generate a QR-code',
     },
     ja: {
       // TODO: Translate strings for diagnostic, power, and bluetooth

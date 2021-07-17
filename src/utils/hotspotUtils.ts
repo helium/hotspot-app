@@ -7,23 +7,34 @@ export enum SyncStatus {
   none,
 }
 
-export const SYNC_BLOCK_BUFFER = 500
+export const SYNC_BLOCK_BUFFER = 1500
 
-export const getSyncStatus = (hotspotHeight: number, blockHeight?: number) => {
-  if (!blockHeight) return { status: SyncStatus.none, percent: 0 }
+export const getSyncStatus = (
+  hotspotBlockHeight: number,
+  blockHeight?: number,
+) => {
+  if (!blockHeight)
+    return { status: SyncStatus.none, percent: 0, hotspotBlockHeight }
 
-  const syncedRatio = hotspotHeight / blockHeight
+  const syncedRatio = hotspotBlockHeight / blockHeight
   const percentSynced = round(syncedRatio * 100, 2)
-  const within500Blocks = hotspotHeight
-    ? blockHeight - hotspotHeight <= SYNC_BLOCK_BUFFER
+
+  const withinBlockBuffer = hotspotBlockHeight
+    ? blockHeight - hotspotBlockHeight <= SYNC_BLOCK_BUFFER
     : false
-  if (percentSynced === 100 || within500Blocks) {
-    return { status: SyncStatus.full, percent: 100 }
+
+  if (percentSynced === 100 || withinBlockBuffer) {
+    return { status: SyncStatus.full, percent: 100, hotspotBlockHeight }
   }
+
   if (percentSynced === 0) {
-    return { status: SyncStatus.none, percent: 0 }
+    return { status: SyncStatus.none, percent: 0, hotspotBlockHeight }
   }
-  return { status: SyncStatus.partial, percent: percentSynced }
+  return {
+    status: SyncStatus.partial,
+    percent: percentSynced,
+    hotspotBlockHeight,
+  }
 }
 
 export const generateRewardScaleColor = (rewardScale: number): Colors => {

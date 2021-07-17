@@ -134,6 +134,10 @@ const HotspotsList = ({
     [],
   )
 
+  const topStyle = useMemo(() => ({ paddingTop: top }), [top])
+
+  const keyExtractor = useCallback((item: Hotspot) => item.address, [])
+
   return (
     <Box backgroundColor="white" flex={1} top={visible ? 0 : wh}>
       {visible && <FocusAwareStatusBar barStyle="dark-content" />}
@@ -141,7 +145,7 @@ const HotspotsList = ({
         flexDirection="row"
         justifyContent="space-between"
         alignItems="center"
-        style={{ paddingTop: top }}
+        style={topStyle}
       >
         <TouchableOpacityBox onPress={searchPressed} padding="l">
           <Search width={22} height={22} color={colors.purpleGrayLight} />
@@ -154,7 +158,7 @@ const HotspotsList = ({
       {hasHotspots ? (
         <SectionList
           sections={sections}
-          keyExtractor={(item: Hotspot) => item.address}
+          keyExtractor={keyExtractor}
           ListHeaderComponent={<WelcomeOverview />}
           renderSectionHeader={renderHeader}
           renderItem={renderItem}

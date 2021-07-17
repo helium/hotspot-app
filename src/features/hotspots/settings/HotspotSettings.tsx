@@ -78,9 +78,6 @@ const HotspotSettings = ({ hotspot }: Props) => {
   } = useHotspotSettingsContext()
   const { purpleMain } = useColors()
   const { account } = useSelector((state: RootState) => state.account)
-  const discoveryEnabled = useSelector(
-    (state: RootState) => state.features.discoveryEnabled,
-  )
   const { showSettings } = useSelector(
     (state: RootState) => state.hotspotDetails,
   )
@@ -364,18 +361,14 @@ const HotspotSettings = ({ hotspot }: Props) => {
           compact
           buttonIcon={<TransferIcon />}
         />
-        {discoveryEnabled && (
-          <>
-            <Box backgroundColor="black" height={0.5} />
-            <HotspotSettingsOption
-              title={t('hotspot_settings.discovery.title')}
-              subtitle={t('hotspot_settings.discovery.subtitle')}
-              onPress={onPressDiscoveryMode}
-              compact
-              buttonIcon={<DiscoveryModeIcon color={purpleMain} />}
-            />
-          </>
-        )}
+        <Box backgroundColor="black" height={0.5} />
+        <HotspotSettingsOption
+          title={t('hotspot_settings.discovery.title')}
+          subtitle={t('hotspot_settings.discovery.subtitle')}
+          onPress={onPressDiscoveryMode}
+          compact
+          buttonIcon={<DiscoveryModeIcon color={purpleMain} />}
+        />
         <Box backgroundColor="black" height={0.5} />
         <HotspotSettingsOption
           title={t('hotspot_settings.update.title')}
@@ -388,7 +381,6 @@ const HotspotSettings = ({ hotspot }: Props) => {
     )
   }, [
     account?.address,
-    discoveryEnabled,
     handleClose,
     hasActiveTransfer,
     hotspot,
@@ -409,6 +401,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
       visible={showSettings}
       onRequestClose={handleClose}
       animationType="fade"
+      statusBarTranslucent
     >
       <BlurBox
         top={0}

@@ -36,10 +36,6 @@ const useAppLink = () => {
     AppLink | AppLinkPayment | null
   >(null)
 
-  const qrOnboardEnabled = useSelector(
-    (state: RootState) => state.features.qrOnboardEnabled,
-  )
-
   const {
     app: { isLocked, isBackedUp },
   } = useSelector((state: RootState) => state)
@@ -83,13 +79,6 @@ const useAppLink = () => {
           break
 
         case 'add_gateway': {
-          if (!qrOnboardEnabled) {
-            if (qrOnboardEnabled === undefined) {
-              setUnhandledLink(record as AppLink)
-            }
-            return
-          }
-
           const { address: txnStr } = record as AppLink
           if (!txnStr) return
 
@@ -111,23 +100,16 @@ const useAppLink = () => {
         }
       }
     },
-    [isLocked, isBackedUp, qrOnboardEnabled],
+    [isLocked, isBackedUp],
   )
 
   useEffect(() => {
     // Links will be handled once the app is unlocked
-    if (
-      !unhandledAppLink ||
-      isLocked ||
-      !isBackedUp ||
-      (unhandledAppLink?.type === 'add_gateway' &&
-        qrOnboardEnabled === undefined)
-    )
-      return
+    if (!unhandledAppLink || isLocked || !isBackedUp) return
 
     navToAppLink(unhandledAppLink)
     setUnhandledLink(null)
-  }, [isLocked, navToAppLink, unhandledAppLink, isBackedUp, qrOnboardEnabled])
+  }, [isLocked, navToAppLink, unhandledAppLink, isBackedUp])
 
   const parseUrl = useCallback((url: string) => {
     if (!url) return

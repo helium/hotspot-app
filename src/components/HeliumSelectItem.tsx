@@ -1,7 +1,7 @@
 import React, { memo, useMemo } from 'react'
 import { LayoutChangeEvent } from 'react-native'
 import { SvgProps } from 'react-native-svg'
-import { Colors } from '../theme/theme'
+import { Colors, Spacing } from '../theme/theme'
 import Text from './Text'
 import TouchableOpacityBox from './TouchableOpacityBox'
 
@@ -20,6 +20,7 @@ type Props = {
   variant: HeliumSelectVariant
   backgroundColor?: Colors
   handleLayout: (event: LayoutChangeEvent) => void
+  itemPadding?: Spacing
 }
 
 const HeliumSelectItem = ({
@@ -29,11 +30,12 @@ const HeliumSelectItem = ({
   variant,
   backgroundColor = 'white',
   handleLayout,
+  itemPadding,
 }: Props) => {
   const textColor = useMemo(() => {
     if (variant === 'flat') {
       if (selected) return color
-      return 'purpleText'
+      return 'purpleGray'
     }
 
     if (selected) return 'white'
@@ -61,7 +63,7 @@ const HeliumSelectItem = ({
       alignItems="center"
       borderRadius="round"
       onPress={onPress}
-      paddingHorizontal="ms"
+      paddingHorizontal={itemPadding || 'ms'}
     >
       {!!Icon && selected && <Icon height={16} width={16} color="white" />}
       <Text

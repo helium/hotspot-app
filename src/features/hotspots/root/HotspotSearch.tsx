@@ -20,6 +20,7 @@ import HotspotSearchListItem from './HotspotSearchListItem'
 import HotspotSearchEmpty from './HotspotSearchEmpty'
 import SegmentedControl from '../../../components/SegmentedControl'
 import CardHandle from '../../../components/CardHandle'
+import usePrevious from '../../../utils/usePrevious'
 
 const ItemSeparatorComponent = () => <Box height={1} backgroundColor="white" />
 
@@ -35,6 +36,7 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace, visible }: Props) => {
   const { hotspots, locations, filter, searchTerm } = useSelector(
     (state: RootState) => state.hotspotSearch,
   )
+  const prevSearchTerm = usePrevious(searchTerm)
 
   const filterNames = HotspotSearchFilterKeys.map((f) =>
     t(`hotspots.search.${f}`),
@@ -58,10 +60,10 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace, visible }: Props) => {
   )
 
   useEffect(() => {
-    if (!visible) return
+    if (!visible || searchTerm === prevSearchTerm) return
 
     dispatch(fetchData({ filter, searchTerm }))
-  }, [dispatch, filter, searchTerm, visible])
+  }, [dispatch, filter, prevSearchTerm, searchTerm, visible])
 
   useEffect(() => {
     if (!visible) return
@@ -161,33 +163,37 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace, visible }: Props) => {
       handleComponent={handle}
       animateOnMount={false}
     >
-      <Box
-        backgroundColor="white"
-        flex={1}
-        paddingHorizontal="l"
-        paddingVertical="l"
-      >
-        <SegmentedControl
-          values={filterNames}
-          selectedIndex={selectedFilterIndex}
-          onChange={handleFilterChange}
-        />
-        <SearchInput
-          onSearch={updateSearchTerm}
-          marginVertical="m"
-          initialValue={searchTerm}
-        />
-        {!!searchTerm && (
-          <FlatList
-            data={listData}
-            keyboardShouldPersistTaps="always"
-            keyExtractor={keyExtractor}
-            renderItem={renderItem}
-            ItemSeparatorComponent={ItemSeparatorComponent}
+      {visible && (
+        <Box
+          backgroundColor="white"
+          flex={1}
+          paddingHorizontal="l"
+          paddingVertical="l"
+        >
+          <SegmentedControl
+            values={filterNames}
+            selectedIndex={selectedFilterIndex}
+            onChange={handleFilterChange}
           />
-        )}
-        {!searchTerm && <HotspotSearchEmpty onSelectTerm={updateSearchTerm} />}
-      </Box>
+          <SearchInput
+            onSearch={updateSearchTerm}
+            marginVertical="m"
+            initialValue={searchTerm}
+          />
+          {!!searchTerm && (
+            <FlatList
+              data={listData}
+              keyboardShouldPersistTaps="always"
+              keyExtractor={keyExtractor}
+              renderItem={renderItem}
+              ItemSeparatorComponent={ItemSeparatorComponent}
+            />
+          )}
+          {!searchTerm && (
+            <HotspotSearchEmpty onSelectTerm={updateSearchTerm} />
+          )}
+        </Box>
+      )}
     </BottomSheet>
   )
 }

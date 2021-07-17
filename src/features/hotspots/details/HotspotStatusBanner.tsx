@@ -28,10 +28,17 @@ const HotspotStatusBanner = ({
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
   )
+  const syncStatuses = useSelector(
+    (state: RootState) => state.hotspots.syncStatuses,
+  )
   const { t } = useTranslation()
   const { orangeExtraDark } = useColors()
   const [visible, setVisible] = useState(false)
   const prevHotspotAddress = usePrevious(hotspot.address)
+  const hotspotSyncStatus = useMemo(() => syncStatuses[hotspot.address], [
+    hotspot.address,
+    syncStatuses,
+  ])
 
   useEffect(() => {
     if (visible === propsVisible) return
@@ -55,15 +62,19 @@ const HotspotStatusBanner = ({
   const subtitle = useMemo(() => {
     if (hotspot.status?.online !== 'online') return
 
-    if (!hotspot.status.height || hotspot.status.height === 0) {
+    if (!hotspotSyncStatus || hotspotSyncStatus.hotspotBlockHeight === 0) {
       return t('hotspot_details.status_prompt_online.subtitle_starting')
     }
 
-    return t('hotspot_details.status_prompt_online.subtitle_active', {
-      hotspotBlock: hotspot.status.height,
-      currentBlock: blockHeight,
-    })
-  }, [blockHeight, hotspot, t])
+    if (hotspotSyncStatus?.hotspotBlockHeight) {
+      return t('hotspot_details.status_prompt_online.subtitle_active', {
+        hotspotBlock: hotspotSyncStatus?.hotspotBlockHeight,
+        currentBlock: blockHeight,
+      })
+    }
+
+    return ' '
+  }, [blockHeight, hotspot.status, hotspotSyncStatus, t])
 
   const handleClose = useCallback(() => {
     onDismiss()

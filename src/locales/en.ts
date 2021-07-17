@@ -178,11 +178,12 @@ export default {
       ],
       next: "I've read the guide",
     },
-    qrScan: {
-      title: 'Scan QR Code',
+    external: {
+      qrTitle: 'Scan QR Code',
+      webTitle: 'Web Onboarding',
       wallet_address: 'Your wallet address is:',
     },
-    qrConfirm: {
+    confirm: {
       title: 'Confirm\nInformation',
       title_one_line: 'Confirm Information',
       public_key: 'Public Key',
@@ -332,6 +333,9 @@ export default {
         'There was an error constructing the Assert Location transaction. Please try again.',
       assert_loc_error_no_loc:
         'The selected location is invalid. Please try again.',
+      assert_loc_error_no_change_title: 'Location Unchanged',
+      assert_loc_error_no_change_body:
+        'The Hotspot location has not changed. Drag the pin to a different location and try again.',
       no_onboarding_key_title: 'No onboarding key found',
       no_onboarding_key_message: 'Would you like to try again?',
     },
@@ -785,7 +789,7 @@ export default {
     },
   },
   hotspot_details: {
-    checklist: 'Checklist',
+    checklist: 'Progress',
     title: 'Hotspot Details',
     owner: 'Owned by {{address}}',
     owner_you: 'Owned by you',
@@ -798,14 +802,9 @@ export default {
     challenge_title: 'Challenges',
     challenge_sub_title: '(witness, challenger, or challengee)',
     picker_title: 'Past',
-    overview: 'Overview',
+    overview: 'Earnings',
     no_location: 'No Location',
-    picker_options: [
-      'Past 24 Hours',
-      'Past 7 Days',
-      'Past 14 Days',
-      'Past 30 Days',
-    ],
+    picker_options: ['24H', '14D', '30D'],
     picker_prompt: 'Select Range',
     status_online: 'Online',
     status_offline: 'Needs Attention',
@@ -843,6 +842,13 @@ export default {
       message:
         'The Hotspots in this list have witnessed a Beacon from {{hotspotName}} recently.\n\nFluctuations are normal and expected. The number of Hotspots will reset to zero if you update location, antenna, or elevation',
     },
+    witness_desc:
+      'These Hotspots witnessed {{hotspotAnimal}}’s\nbeacons over the last 5 days.',
+    witness_desc_none:
+      'No Hotspots have heard and responded to\n{{hotspotAnimal}}’s beacons over the last 5 days.',
+    get_witnessed: 'GET WITNESSED',
+    get_witnessed_desc:
+      'Position your Hotspot so that it can be heard by others. Often this means moving it higher in order to increase its range.',
   },
   transfer: {
     title: 'Transfer Hotspot',
@@ -911,9 +917,7 @@ export default {
         'Hotspots must be fully synced before they can mine. New Hotspots can take up to 96 hours to sync.',
       full: 'Hotspot is fully synced.',
       partial:
-        'Hotspot is {{count}} block behind the Helium blockchain and is roughly {{percent}}% synced. The blockchain is currently at block {{height}}.',
-      partial_plural:
-        'Hotspot is {{count}} blocks behind the Helium blockchain and is roughly {{percent}}% synced. The blockchain is currently at block {{height}}.',
+        'Hotspot is syncing with the Helium blockchain and is roughly {{percent}}% synced.',
       title: 'Sync to Blockchain',
     },
     status: {
@@ -983,6 +987,11 @@ export default {
       title: 'Unable to initiate Discovery Mode',
       message:
         'Hotspot may be behind a relay and is not responding. Check your router settings and try again.',
+    },
+    instability_warning: {
+      title: 'Discovery Mode Performance',
+      message:
+        'The backend service for Discovery Mode is experiencing performance issues and users may see inconsistent results.',
     },
     begin: {
       title: 'Discovery Mode',

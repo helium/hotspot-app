@@ -65,6 +65,7 @@ const LONGAP_PRO = {
   name: 'LongAP Pro Hotspot',
   icon: HotspotIcon,
   onboardType: 'QR',
+  onboardUrl: 'asdf.dcom',
   translations: {
     en: {
       diagnostic:
@@ -73,7 +74,7 @@ const LONGAP_PRO = {
         "Attach the antenna's and plug in the provided power adapter.",
         'The LongAP Pro PWR LED will light up once it’s powered on.',
       ],
-      qr:
+      externalOnboard:
         'Visit dashboard.longap.com/onboard or the local management-console to generate a QR-code',
     },
   },

@@ -104,6 +104,8 @@ const HotspotsView = ({
 
   const handleShortcutItemSelected = useCallback(
     (item: GlobalOpt | Hotspot | Witness) => {
+      if (shortcutItem === item) return
+
       let animConfig = LayoutAnimation.Presets.spring
 
       const springDamping = Platform.select({ ios: 0.9, android: 2 })
@@ -114,12 +116,12 @@ const HotspotsView = ({
         delete: { ...animConfig.delete, springDamping },
       }
       animateTransition('HotspotsView.ShortcutChanged', {
-        enabledOnAndroid: true,
+        enabledOnAndroid: false,
         config: animConfig,
       })
       setShortcutItem(item)
     },
-    [],
+    [shortcutItem],
   )
 
   const setGlobalOption = useCallback(
@@ -254,6 +256,7 @@ const HotspotsView = ({
   useEffect(() => {
     if (!params?.address) return
 
+    // Fetch the hotspot for deep links
     const fetchHotspot = async () => {
       const hotspot = (await dispatch(fetchHotspotData(params.address))) as {
         payload?: { hotspot: Hotspot }

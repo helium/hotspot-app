@@ -8,7 +8,7 @@ import ShareAddress from '@assets/images/shareAddress.svg'
 import { useTranslation } from 'react-i18next'
 import Clipboard from '@react-native-community/clipboard'
 import Toast from 'react-native-simple-toast'
-import { Share } from 'react-native'
+import { ActivityIndicator, Share } from 'react-native'
 import Box from '../../../components/Box'
 import { getSecureItem } from '../../../utils/secureAccount'
 import { Spacing, Theme } from '../../../theme/theme'
@@ -17,12 +17,14 @@ import { DebouncedTouchableOpacityBox } from '../../../components/TouchableOpaci
 import Text from '../../../components/Text'
 import useHaptic from '../../../utils/useHaptic'
 
-type Props = BoxProps<Theme>
+type Props = BoxProps<Theme> & { loading: boolean }
 
 const QR_CONTAINER_SIZE = 146
 
-const WalletAddress = ({ ...boxProps }: Props) => {
-  const { result: address, loading } = useAsync(getSecureItem, ['address'])
+const WalletAddress = ({ loading: loadingWallet, ...boxProps }: Props) => {
+  const { result: address, loading: loadingAddress } = useAsync(getSecureItem, [
+    'address',
+  ])
   const { triggerNavHaptic } = useHaptic()
   const spacing = useSpacing()
   const padding = useMemo(() => 'm' as Spacing, [])
@@ -52,16 +54,19 @@ const WalletAddress = ({ ...boxProps }: Props) => {
     triggerNavHaptic()
   }, [address, triggerNavHaptic])
 
-  if (loading || !address) return null
+  if (loadingAddress || !address) return null
 
   return (
     <Box alignItems="center" {...boxProps}>
+      {loadingWallet && <ActivityIndicator color="gray" />}
+
       <Box
         height={QR_CONTAINER_SIZE}
         width={QR_CONTAINER_SIZE}
         backgroundColor="white"
         padding={padding}
         borderRadius="xl"
+        marginTop={loadingWallet ? 'l' : 'none'}
       >
         <QRCode
           size={QR_CONTAINER_SIZE - 2 * spacing[padding]}
