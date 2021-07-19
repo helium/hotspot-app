@@ -22,6 +22,10 @@ const HotspotsScreen = () => {
   const hotspotsLoaded = useSelector(
     (state: RootState) => state.hotspots.hotspotsLoaded,
   )
+  const fleetModeEnabled = useSelector(
+    (state: RootState) => state.app.isFleetModeEnabled,
+  )
+
   const [startOnMap, setStartOnMap] = useState(false)
   const dispatch = useAppDispatch()
   const { currentLocation: location } = useSelector(
@@ -45,8 +49,8 @@ const HotspotsScreen = () => {
   })
 
   useEffect(() => {
-    dispatch(fetchRewards())
-  }, [hotspots, dispatch])
+    dispatch(fetchRewards({ fetchType: fleetModeEnabled ? 'followed' : 'all' }))
+  }, [hotspots, dispatch, fleetModeEnabled])
 
   const viewState = useMemo(() => {
     if (!hotspotsLoaded) return 'loading'
