@@ -134,9 +134,6 @@ const accountSlice = createSlice({
         loading: 'rejected',
       }
     })
-    // builder.addCase(fetchAccountRewards.pending, (state) => {
-    //   state.rewardsSum = handleCachePending()
-    // })
     builder.addCase(fetchAccountRewards.rejected, (state) => {
       state.rewardsSum = handleCacheRejected()
     })

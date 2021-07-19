@@ -34,9 +34,6 @@ const HotspotsPicker = ({ visible }: Props) => {
   const { currentLocation, locationBlocked } = useSelector(
     (state: RootState) => state.location,
   )
-  const followHotspotEnabled = useSelector(
-    (state: RootState) => state.features.followHotspotEnabled,
-  )
   const prevOrder = usePrevious(order)
 
   const locationDeniedHandler = useCallback(() => {
@@ -100,14 +97,12 @@ const HotspotsPicker = ({ visible }: Props) => {
       Icon: NewestHotspot,
       color: 'purpleMain',
     })
-    if (followHotspotEnabled) {
-      opts.push({
-        label: t(`hotspots.owned.filter.${HotspotSort.Followed}`),
-        value: HotspotSort.Followed,
-        Icon: FollowedHotspot,
-        color: 'purpleBright',
-      })
-    }
+    opts.push({
+      label: t(`hotspots.owned.filter.${HotspotSort.Followed}`),
+      value: HotspotSort.Followed,
+      Icon: FollowedHotspot,
+      color: 'purpleBright',
+    })
     if (!locationBlocked) {
       opts.push({
         label: t(`hotspots.owned.filter.${HotspotSort.Near}`),
@@ -131,7 +126,7 @@ const HotspotsPicker = ({ visible }: Props) => {
       color: 'purpleMain',
     })
     return opts
-  }, [fleetModeEnabled, followHotspotEnabled, locationBlocked, t])
+  }, [fleetModeEnabled, locationBlocked, t])
 
   const contentContainerStyle = useMemo(
     () => ({ paddingHorizontal: spacing.l }),
