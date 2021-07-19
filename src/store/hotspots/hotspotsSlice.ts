@@ -365,6 +365,8 @@ const hotspotsSlice = createSlice({
       return { ...initialState }
     },
     changeFilter: (state, { payload }: { payload: HotspotSort }) => {
+      if (state.order === payload) return state
+
       state.order = payload
       state.loadingOrderedHotspots = true
     },

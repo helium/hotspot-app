@@ -41,10 +41,19 @@ const HotspotsPicker = ({ visible }: Props) => {
   }, [dispatch])
 
   useMount(() => {
-    // if fleetModeEnabled, show Followed else New
     if (!fleetModeEnabled) {
+      // On mount if fleet mode is off, default to New filter
       dispatch(hotspotsSlice.actions.changeFilter(HotspotSort.New))
     }
+  })
+
+  useVisible({
+    onAppear: () => {
+      // if fleet mode is on and they're on the new filter, bring them to followed when this view appears
+      if (fleetModeEnabled && order === HotspotSort.New) {
+        dispatch(hotspotsSlice.actions.changeFilter(HotspotSort.Followed))
+      }
+    },
   })
 
   useVisible({
