@@ -1081,4 +1081,21 @@ export default {
   statusBanner: {
     description: 'Last updated {{date}}. Tap for info.',
   },
+  fleetMode: {
+    autoEnablePrompt: {
+      title: 'Fleet Mode Enabled',
+      subtitle:
+        'Fleet Mode Fleet Mode has been enabled for this account to improve app performance.',
+    },
+    enablePrompt: {
+      title: 'Enable Fleet Mode',
+      subtitle:
+        'Fleet Mode optimizes app performance by reducing the amount of data the app fetches but does not impact onboarding, setting location, or diagnostics. Fleet Mode is recommended for accounts with more than {{lowerLimit}} Hotspots.',
+    },
+    disablePrompt: {
+      title: 'Turning Off Fleet Mode',
+      subtitle:
+        'Turning off Fleet Mode may negatively affect App performance, resulting in your ability to interact with the App. We do not recommend turning off Fleet Mode for users with more than {{lowerLimit}} Hotspots in an account.',
+    },
+  },
 }

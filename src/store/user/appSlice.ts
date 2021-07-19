@@ -12,6 +12,7 @@ export type AppState = {
   isBackedUp: boolean
   isHapticDisabled: boolean
   isFleetModeEnabled: boolean
+  hasFleetModeAutoEnabled: boolean
   convertHntToCurrency: boolean
   isSettingUpHotspot: boolean
   isRestored: boolean
@@ -35,6 +36,7 @@ const initialState: AppState = {
   lastIdle: null,
   isLocked: false,
   isRequestingPermission: false,
+  hasFleetModeAutoEnabled: false,
 }
 
 type Restore = {
@@ -59,6 +61,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       getSecureItem('convertHntToCurrency'), // 5
       getSecureItem('address'), // 6
       getSecureItem('fleetModeEnabled'), // 7
+      getSecureItem('hasFleetModeAutoEnabled'), // 8
     ])
     const isBackedUp = vals[0]
     const address = vals[6]
@@ -74,6 +77,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       isHapticDisabled: vals[4],
       convertHntToCurrency: vals[5],
       isFleetModeEnabled: vals[7],
+      hasFleetModeAutoEnabled: vals[8],
     } as Restore
   },
 )
@@ -105,9 +109,16 @@ const appSlice = createSlice({
       state.isHapticDisabled = action.payload
       setSecureItem('hapticDisabled', action.payload)
     },
-    updateFleetModeEnabled: (state, action: PayloadAction<boolean>) => {
-      state.isFleetModeEnabled = action.payload
-      setSecureItem('fleetModeEnabled', action.payload)
+    updateFleetModeEnabled: (
+      state,
+      action: PayloadAction<{ enabled: boolean; autoEnabled?: boolean }>,
+    ) => {
+      state.isFleetModeEnabled = action.payload.enabled
+      setSecureItem('fleetModeEnabled', action.payload.enabled)
+      if (action.payload.autoEnabled) {
+        state.hasFleetModeAutoEnabled = true
+        setSecureItem('hasFleetModeAutoEnabled', true)
+      }
     },
     toggleConvertHntToCurrency: (state) => {
       state.convertHntToCurrency = !state.convertHntToCurrency
