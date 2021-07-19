@@ -49,7 +49,7 @@ const initialState: HotspotsSliceState = {
   orderedHotspots: [],
   followedHotspotsObj: {},
   followedHotspots: [],
-  order: HotspotSort.New,
+  order: HotspotSort.Followed,
   loadingRewards: false,
   loadingOrderedHotspots: false,
   hotspotsLoaded: false,

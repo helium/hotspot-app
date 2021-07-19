@@ -82,7 +82,7 @@ const HotspotsList = ({
         borderTopLeftRadius="m"
         backgroundColor="white"
       >
-        <HotspotsPicker />
+        <HotspotsPicker visible={visible} />
         {order === HotspotSort.Offline &&
           !hasOfflineHotspot &&
           filterHasHotspots && (
@@ -110,7 +110,7 @@ const HotspotsList = ({
         )}
       </Box>
     )
-  }, [order, hasOfflineHotspot, orderedHotspots, t])
+  }, [orderedHotspots, visible, order, hasOfflineHotspot, t])
 
   const renderItem = useCallback(
     ({ item }) => {

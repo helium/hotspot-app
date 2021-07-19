@@ -6,7 +6,6 @@ import { RootState } from '../../../store/rootReducer'
 import HotspotsView from './HotspotsView'
 import Box from '../../../components/Box'
 import {
-  fetchFollowedHotspotsFromBlock,
   fetchHotspotsData,
   fetchRewards,
 } from '../../../store/hotspots/hotspotsSlice'
@@ -46,10 +45,6 @@ const HotspotsScreen = () => {
   })
 
   useEffect(() => {
-    // dispatch(fetchHotspotsData()) will trigger an update to hotspots
-    // anytime hotspots update, update rewards and following
-    // Separating these calls allows the UI to respond more quickly
-    dispatch(fetchFollowedHotspotsFromBlock())
     dispatch(fetchRewards())
   }, [hotspots, dispatch])
 

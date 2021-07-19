@@ -4,6 +4,7 @@ import { getWallet } from '../../utils/walletClient'
 export type FeaturesState = {
   checklistEnabled: boolean
   followHotspotEnabled: boolean
+  fleetModeLimit?: number
 }
 
 const initialState: FeaturesState = {
@@ -25,6 +26,7 @@ const featuresSlice = createSlice({
     builder.addCase(fetchFeatures.fulfilled, (state, { payload }) => {
       state.checklistEnabled = payload.checklistEnabled
       state.followHotspotEnabled = payload.followHotspotEnabled
+      state.fleetModeLimit = 20
     })
   },
 })

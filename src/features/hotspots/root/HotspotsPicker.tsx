@@ -6,7 +6,6 @@ import NearestHotspot from '@assets/images/nearestHotspot.svg'
 import OfflineHotspot from '@assets/images/offlineHotspot.svg'
 import FollowedHotspot from '@assets/images/follow.svg'
 import TopHotspot from '@assets/images/topHotspot.svg'
-import { useNavigation } from '@react-navigation/native'
 import Box from '../../../components/Box'
 import hotspotsSlice, {
   HotspotSort,
@@ -18,14 +17,20 @@ import HeliumSelect from '../../../components/HeliumSelect'
 import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
 import useGetLocation from '../../../utils/useGetLocation'
 import { useSpacing } from '../../../theme/themeHooks'
+import useVisible from '../../../utils/useVisible'
+import useMount from '../../../utils/useMount'
 
-const HotspotsPicker = () => {
+type Props = { visible: boolean }
+const HotspotsPicker = ({ visible }: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const spacing = useSpacing()
   const maybeGetLocation = useGetLocation()
+  const fleetModeEnabled = useSelector(
+    (state: RootState) => state.app.isFleetModeEnabled,
+  )
   const order = useSelector((state: RootState) => state.hotspots.order)
-  const navigation = useNavigation()
+
   const { currentLocation, locationBlocked } = useSelector(
     (state: RootState) => state.location,
   )
@@ -38,14 +43,25 @@ const HotspotsPicker = () => {
     dispatch(hotspotsSlice.actions.changeFilter(HotspotSort.New))
   }, [dispatch])
 
-  useEffect(() => {
-    maybeGetLocation(false, locationDeniedHandler)
-    return navigation.addListener('focus', () => {
+  useMount(() => {
+    // if fleetModeEnabled, show Followed else New
+    if (!fleetModeEnabled) {
+      dispatch(hotspotsSlice.actions.changeFilter(HotspotSort.New))
+    }
+  })
+
+  useVisible({
+    onAppear: () => {
       maybeGetLocation(false, locationDeniedHandler)
       dispatch(hotspotsSlice.actions.changeFilterData(currentLocation))
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    },
+  })
+
+  useEffect(() => {
+    if (!visible) return
+
+    dispatch(hotspotsSlice.actions.changeFilterData(currentLocation))
+  }, [currentLocation, dispatch, visible])
 
   useEffect(() => {
     if (
