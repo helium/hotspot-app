@@ -61,6 +61,9 @@ const HotspotsView = ({
     expanded: 0,
   })
   const [detailHeight, setDetailHeight] = useState(0)
+  const fleetModeEnabled = useSelector(
+    (state: RootState) => state.app.isFleetModeEnabled,
+  )
   const hotspotsForHexId = useSelector(
     (state: RootState) => state.discovery.hotspotsForHexId,
   )
@@ -429,7 +432,7 @@ const HotspotsView = ({
       </Box>
 
       <ShortcutNav
-        ownedHotspots={ownedHotspots || []}
+        ownedHotspots={!fleetModeEnabled && ownedHotspots ? ownedHotspots : []}
         followedHotspots={followedHotspots || []}
         selectedItem={shortcutItem}
         onItemSelected={handleItemSelected}

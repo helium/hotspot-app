@@ -119,7 +119,7 @@ export const fetchRewards = createAsyncThunk<
       )
     ).filter((a) => a !== undefined) as Sum[]
     followedResponses.forEach((reward, i) => {
-      const address = unOwnedAddresses[i]
+      const address = followingAddresses[i]
       rewards[address] = reward
     })
     return { rewards, total }
