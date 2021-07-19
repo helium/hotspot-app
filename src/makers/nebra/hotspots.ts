@@ -114,7 +114,7 @@ const NEBRA_OUTDOOR = {
     },
   },
   icon: OutdoorHotspotIcon,
-  antenna: { default: ANTENNAS.NEBRA_INDOOR },
+  antenna: { default: ANTENNAS.NEBRA_OUTDOOR },
 } as MakerHotspot
 
 export default { NEBRA_INDOOR, NEBRA_OUTDOOR }
