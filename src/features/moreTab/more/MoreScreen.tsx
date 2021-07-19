@@ -119,6 +119,10 @@ const MoreScreen = () => {
     dispatch(appSlice.actions.updateHapticEnabled(!app.isHapticDisabled))
   }, [dispatch, app.isHapticDisabled])
 
+  const handleFleetMode = useCallback(() => {
+    dispatch(appSlice.actions.updateFleetModeEnabled(!app.isFleetModeEnabled))
+  }, [app.isFleetModeEnabled, dispatch])
+
   const handleSignOut = useCallback(() => {
     Alert.alert(
       t('more.sections.app.signOutAlert.title'),
@@ -258,6 +262,11 @@ const MoreScreen = () => {
             value: app.convertHntToCurrency,
           },
           {
+            title: t('more.sections.app.enableFleetMode'),
+            onToggle: handleFleetMode,
+            value: app.isFleetModeEnabled,
+          },
+          {
             title: t('more.sections.app.signOut'),
             onPress: handleSignOut,
             destructive: true,
@@ -267,18 +276,20 @@ const MoreScreen = () => {
       },
     ]
   }, [
-    t,
-    handlePinRequired,
+    app.isFleetModeEnabled,
     app.isPinRequired,
     app.isHapticDisabled,
     app.convertHntToCurrency,
     app.authInterval,
     app.isPinRequiredForPayment,
+    t,
+    handlePinRequired,
     handleRevealWords,
     language,
     handleLanguageChange,
     handleHaptic,
     handleConvertHntToCurrency,
+    handleFleetMode,
     handleSignOut,
     version,
     authIntervals,

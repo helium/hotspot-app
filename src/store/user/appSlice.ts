@@ -11,6 +11,7 @@ import { Intervals } from '../../features/moreTab/more/useAuthIntervals'
 export type AppState = {
   isBackedUp: boolean
   isHapticDisabled: boolean
+  isFleetModeEnabled: boolean
   convertHntToCurrency: boolean
   isSettingUpHotspot: boolean
   isRestored: boolean
@@ -24,6 +25,7 @@ export type AppState = {
 const initialState: AppState = {
   isBackedUp: false,
   isHapticDisabled: false,
+  isFleetModeEnabled: false,
   convertHntToCurrency: false,
   isSettingUpHotspot: false,
   isRestored: false,
@@ -49,13 +51,14 @@ export const restoreUser = createAsyncThunk<Restore>(
   'app/restoreUser',
   async () => {
     const vals = await Promise.all([
-      getSecureItem('accountBackedUp'),
-      getSecureItem('requirePin'),
-      getSecureItem('requirePinForPayment'),
-      getSecureItem('authInterval'),
-      getSecureItem('hapticDisabled'),
-      getSecureItem('convertHntToCurrency'),
-      getSecureItem('address'),
+      getSecureItem('accountBackedUp'), // 0
+      getSecureItem('requirePin'), // 1
+      getSecureItem('requirePinForPayment'), // 2
+      getSecureItem('authInterval'), // 3
+      getSecureItem('hapticDisabled'), // 4
+      getSecureItem('convertHntToCurrency'), // 5
+      getSecureItem('address'), // 6
+      getSecureItem('fleetModeEnabled'), // 7
     ])
     const isBackedUp = vals[0]
     const address = vals[6]
@@ -70,7 +73,8 @@ export const restoreUser = createAsyncThunk<Restore>(
       isLocked: vals[1],
       isHapticDisabled: vals[4],
       convertHntToCurrency: vals[5],
-    }
+      isFleetModeEnabled: vals[7],
+    } as Restore
   },
 )
 
@@ -100,6 +104,10 @@ const appSlice = createSlice({
     updateHapticEnabled: (state, action: PayloadAction<boolean>) => {
       state.isHapticDisabled = action.payload
       setSecureItem('hapticDisabled', action.payload)
+    },
+    updateFleetModeEnabled: (state, action: PayloadAction<boolean>) => {
+      state.isFleetModeEnabled = action.payload
+      setSecureItem('fleetModeEnabled', action.payload)
     },
     toggleConvertHntToCurrency: (state) => {
       state.convertHntToCurrency = !state.convertHntToCurrency

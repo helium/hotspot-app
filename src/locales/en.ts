@@ -560,6 +560,7 @@ export default {
       app: {
         title: 'App',
         enableHapticFeedback: 'Enable Haptic Feedback',
+        enableFleetMode: 'Enable Fleet Mode',
         convertHntToCurrency: 'Convert HNT to Currency',
         language: 'Language',
         signOut: 'Sign Out',
