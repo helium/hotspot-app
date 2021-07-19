@@ -81,7 +81,7 @@ const hotspotSorters: Record<HotspotSort, HotspotSorter> = {
       return hotspots
     }
     return sortBy(hotspots, [
-      (h) => (context.rewards ? -context.rewards[h.address].total : 0),
+      (h) => (context.rewards ? -context.rewards[h.address]?.total : 0),
     ])
   },
   [HotspotSort.Offline]: (hotspots) =>

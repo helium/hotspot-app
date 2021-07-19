@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { LayoutAnimation, Platform } from 'react-native'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { Hotspot, Witness } from '@helium/http'
 import { useSharedValue } from 'react-native-reanimated'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
@@ -32,6 +32,9 @@ import { fetchHotspotsForHex } from '../../../store/discovery/discoverySlice'
 import { MapFilters } from '../../map/MapFiltersButton'
 import MapFilterModal from '../../map/MapFilterModal'
 import ShortcutNav, { GlobalOpt, IS_GLOBAL_OPT } from './ShortcutNav'
+import { useAppDispatch } from '../../../store/store'
+import { fetchAccountRewards } from '../../../store/account/accountSlice'
+import useVisible from '../../../utils/useVisible'
 
 type Props = {
   ownedHotspots?: Hotspot[]
@@ -53,7 +56,7 @@ const HotspotsView = ({
 }: Props) => {
   const navigation = useNavigation()
   const { params } = useRoute<Route>()
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const [location, setLocation] = useState(propsLocation)
   const [showMap, setShowMap] = useState(false)
   const [detailSnapPoints, setDetailSnapPoints] = useState<HotspotSnapPoints>({
@@ -66,6 +69,9 @@ const HotspotsView = ({
   )
   const hotspotsForHexId = useSelector(
     (state: RootState) => state.discovery.hotspotsForHexId,
+  )
+  const accountRewards = useSelector(
+    (state: RootState) => state.account.rewardsSum,
   )
   const [selectedHexId, setSelectedHexId] = useState<string>()
   const [selectedHotspotIndex, setSelectedHotspotIndex] = useState(0)
@@ -98,6 +104,12 @@ const HotspotsView = ({
   const showRewardScale = useMemo(() => mapFilter === MapFilters.reward, [
     mapFilter,
   ])
+
+  useVisible({
+    onAppear: () => {
+      dispatch(fetchAccountRewards())
+    },
+  })
 
   useEffect(() => {
     if (shortcutItem === 'explore' && prevShorcutItem !== 'explore') {
@@ -353,6 +365,7 @@ const HotspotsView = ({
           searchPressed={handleSearching(true)}
           addHotspotPressed={handleHotspotSetup}
           hasHotspots={hasHotspots}
+          accountRewards={accountRewards}
         />
       </>
     )
@@ -368,6 +381,7 @@ const HotspotsView = ({
     handleSearching,
     handleHotspotSetup,
     hasHotspots,
+    accountRewards,
   ])
 
   const onChangeMapFilter = useCallback((filter: MapFilters) => {

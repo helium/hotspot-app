@@ -1,10 +1,16 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import { Account } from '@helium/http'
-import { getAccount } from '../../utils/appDataClient'
+import { Account, Sum } from '@helium/http'
+import { getAccount, getAccountRewards } from '../../utils/appDataClient'
 import { getWallet } from '../../utils/walletClient'
 import { ChartData, ChartRange } from '../../components/BarChart/types'
 import { FilterType } from '../../features/wallet/root/walletTypes'
 import { Loading } from '../activity/activitySlice'
+import {
+  CacheRecord,
+  handleCacheFulfilled,
+  handleCacheRejected,
+  hasValidCache,
+} from '../../utils/cacheUtils'
 
 export type ChartRangeData = { data: ChartData[]; loading: Loading }
 type ActivityChart = Record<ChartRange, ChartRangeData>
@@ -14,12 +20,14 @@ export type AccountState = {
   fetchDataStatus: Loading
   activityChart: Record<FilterType, ActivityChart>
   activityChartRange: ChartRange
+  rewardsSum: CacheRecord<Sum>
 }
 
 const initialState: AccountState = {
   fetchDataStatus: 'idle',
   activityChart: {} as Record<FilterType, ActivityChart>,
   activityChartRange: 'daily',
+  rewardsSum: { loading: true } as CacheRecord<Sum>,
 }
 
 type AccountData = {
@@ -43,6 +51,22 @@ export const fetchActivityChart = createAsyncThunk<
 >('account/fetchActivityChart', async ({ range, filterType }) => {
   return getWallet('wallet/chart', { range, type: filterType })
 })
+
+export const fetchAccountRewards = createAsyncThunk(
+  'account/fetchAccountRewards',
+  async (_, { getState }) => {
+    const currentState = getState() as {
+      account: {
+        rewardsSum: CacheRecord<Sum>
+      }
+    }
+    const sum = currentState.account.rewardsSum
+    if (hasValidCache(sum)) {
+      return sum
+    }
+    return getAccountRewards()
+  },
+)
 
 // This slice contains data related to the user account
 const accountSlice = createSlice({
@@ -109,6 +133,15 @@ const accountSlice = createSlice({
         ...currentChart,
         loading: 'rejected',
       }
+    })
+    // builder.addCase(fetchAccountRewards.pending, (state) => {
+    //   state.rewardsSum = handleCachePending()
+    // })
+    builder.addCase(fetchAccountRewards.rejected, (state) => {
+      state.rewardsSum = handleCacheRejected()
+    })
+    builder.addCase(fetchAccountRewards.fulfilled, (state, { payload }) => {
+      state.rewardsSum = handleCacheFulfilled(payload)
     })
   },
 })

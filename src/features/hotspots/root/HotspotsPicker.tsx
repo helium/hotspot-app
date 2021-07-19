@@ -116,12 +116,14 @@ const HotspotsPicker = ({ visible }: Props) => {
         color: 'purpleMain',
       })
     }
-    opts.push({
-      label: t(`hotspots.owned.filter.${HotspotSort.Earn}`),
-      value: HotspotSort.Earn,
-      Icon: TopHotspot,
-      color: 'purpleMain',
-    })
+    if (!fleetModeEnabled) {
+      opts.push({
+        label: t(`hotspots.owned.filter.${HotspotSort.Earn}`),
+        value: HotspotSort.Earn,
+        Icon: TopHotspot,
+        color: 'purpleMain',
+      })
+    }
     opts.push({
       label: t(`hotspots.owned.filter.${HotspotSort.Offline}`),
       value: HotspotSort.Offline,
@@ -129,7 +131,7 @@ const HotspotsPicker = ({ visible }: Props) => {
       color: 'purpleMain',
     })
     return opts
-  }, [followHotspotEnabled, locationBlocked, t])
+  }, [fleetModeEnabled, followHotspotEnabled, locationBlocked, t])
 
   const contentContainerStyle = useMemo(
     () => ({ paddingHorizontal: spacing.l }),

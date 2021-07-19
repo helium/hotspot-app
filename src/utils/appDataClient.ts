@@ -140,6 +140,20 @@ export const getAccount = async (address?: string) => {
   return data
 }
 
+export const getAccountRewards = async (opts?: {
+  address?: string
+  numDaysBack?: number
+}) => {
+  Logger.breadcrumb('getAccountRewards', breadcrumbOpts)
+  const accountAddress = opts?.address || (await getAddress())
+  if (!accountAddress) return
+
+  const initialDate = new Date()
+  const endDate = new Date()
+  endDate.setDate(initialDate.getDate() - (opts?.numDaysBack || 1))
+  return client.account(accountAddress).rewards.sum.get(endDate, initialDate)
+}
+
 export const getBlockHeight = () => {
   Logger.breadcrumb('getBlockHeight', breadcrumbOpts)
   return client.blocks.getHeight()
