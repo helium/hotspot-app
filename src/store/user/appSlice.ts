@@ -52,32 +52,43 @@ type Restore = {
 export const restoreUser = createAsyncThunk<Restore>(
   'app/restoreUser',
   async () => {
-    const vals = await Promise.all([
-      getSecureItem('accountBackedUp'), // 0
-      getSecureItem('requirePin'), // 1
-      getSecureItem('requirePinForPayment'), // 2
-      getSecureItem('authInterval'), // 3
-      getSecureItem('hapticDisabled'), // 4
-      getSecureItem('convertHntToCurrency'), // 5
-      getSecureItem('address'), // 6
-      getSecureItem('fleetModeEnabled'), // 7
-      getSecureItem('hasFleetModeAutoEnabled'), // 8
+    const [
+      isBackedUp,
+      isPinRequired,
+      isPinRequiredForPayment,
+      authInterval,
+      isHapticDisabled,
+      convertHntToCurrency,
+      address,
+      isFleetModeEnabled,
+      hasFleetModeAutoEnabled,
+    ] = await Promise.all([
+      getSecureItem('accountBackedUp'),
+      getSecureItem('requirePin'),
+      getSecureItem('requirePinForPayment'),
+      getSecureItem('authInterval'),
+      getSecureItem('hapticDisabled'),
+      getSecureItem('convertHntToCurrency'),
+      getSecureItem('address'),
+      getSecureItem('fleetModeEnabled'),
+      getSecureItem('hasFleetModeAutoEnabled'),
     ])
-    const isBackedUp = vals[0]
-    const address = vals[6]
+
     if (isBackedUp && address) {
       OneSignal.sendTags({ address })
     }
     return {
       isBackedUp,
-      isPinRequired: vals[1],
-      isPinRequiredForPayment: vals[2],
-      authInterval: vals[3] ? parseInt(vals[3], 10) : Intervals.IMMEDIATELY,
-      isLocked: vals[1],
-      isHapticDisabled: vals[4],
-      convertHntToCurrency: vals[5],
-      isFleetModeEnabled: vals[7],
-      hasFleetModeAutoEnabled: vals[8],
+      isPinRequired,
+      isPinRequiredForPayment,
+      authInterval: authInterval
+        ? parseInt(authInterval, 10)
+        : Intervals.IMMEDIATELY,
+      isLocked: isPinRequired,
+      isHapticDisabled,
+      convertHntToCurrency,
+      isFleetModeEnabled,
+      hasFleetModeAutoEnabled,
     } as Restore
   },
 )
