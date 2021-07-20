@@ -878,7 +878,7 @@ export default {
       success: 'Hotspotが{{count}}ブロック前にChallengeを発行しました。',
       success_plural: 'Hotspotが{{count}}ブロック前にChallengeを発行しました。',
       fail:
-        'HotspotはまだChallengeを発行していません。Hotspotは480ブロックごと（約8時間ごと）にChallengeを自動的に作成します。',
+        'HotspotはまだChallengeを発行していません。Hotspotは300ブロックごと（約5時間ごと）にChallengeを自動的に作成します。',
       title: 'Challengeを作成',
     },
     challenge_witness: {
@@ -901,7 +901,7 @@ export default {
       success_plural:
         'Hotspotは{{count}}ブロック前のChallengeに最後に追加されました。',
       fail:
-        'オンラインHotspotは480ブロック（8時間）ごとにChallengeが作成され、次にChallengeが作成されるまでに時間がかかる場合があります。',
+        'オンラインHotspotは300ブロック（8時間）ごとにChallengeが作成され、次にChallengeが作成されるまでに時間がかかる場合があります。',
       title: 'Challengeを渡す',
     },
     data_transfer: {
