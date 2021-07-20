@@ -8,6 +8,7 @@ import Client, {
   ResourceList,
 } from '@helium/http'
 import { Transaction } from '@helium/transactions'
+import { subDays } from 'date-fns'
 import {
   HotspotActivityFilters,
   HotspotActivityType,
@@ -149,8 +150,7 @@ export const getAccountRewards = async (opts?: {
   if (!accountAddress) return
 
   const initialDate = new Date()
-  const endDate = new Date()
-  endDate.setDate(initialDate.getDate() - (opts?.numDaysBack || 1))
+  const endDate = subDays(initialDate, opts?.numDaysBack || 1)
   return client.account(accountAddress).rewards.sum.get(endDate, initialDate)
 }
 
