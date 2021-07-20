@@ -139,8 +139,13 @@ const HotspotDetails = ({
 
   // load hotspot data
   useEffect(() => {
-    if (!address || listIndex === 0 || (listIndex === 1 && prevListIndex === 1))
+    if (
+      !address ||
+      listIndex === 0 ||
+      (listIndex === 1 && prevListIndex === 1)
+    ) {
       return
+    }
 
     dispatch(fetchHotspotData(address))
   }, [address, dispatch, hotspot, listIndex, prevListIndex, timelineValue])
@@ -325,6 +330,7 @@ const HotspotDetails = ({
 
   const handleToggleStatus = useCallback(async () => {
     if (listIndex === 0) {
+      setListIndex(1)
       listRef.current?.snapTo(1)
       if (showStatusBanner) {
         return // banner is already showing, but was out of sight
@@ -358,6 +364,7 @@ const HotspotDetails = ({
   useEffect(() => {
     // contract the bottom sheet when a new hotspot is selected
     if (prevHotspotAddress && prevHotspotAddress !== propsHotspot?.address) {
+      setListIndex(0)
       listRef.current?.snapTo(0)
       setSelectedOption(selectData[0].value)
       scrollViewRef.current?.scrollTo({ y: 0, x: 0, animated: false })
