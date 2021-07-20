@@ -931,7 +931,7 @@ export default {
       success: 'Hotspot issued a challenge {{count}} block ago.',
       success_plural: 'Hotspot issued a challenge {{count}} blocks ago.',
       fail:
-        "Hotspot hasn't issued a challenge yet. Hotspots create challenges automatically every 480 blocks, or approximately 8 hours.",
+        "Hotspot hasn't issued a challenge yet. Hotspots create challenges automatically every 300 blocks, or approximately 5 hours.",
       title: 'Create a Challenge',
     },
     challenge_witness: {
@@ -952,7 +952,7 @@ export default {
       success_plural:
         'Hotspot last participated in a challenge {{count}} blocks ago.',
       fail:
-        'Online Hotspots are challenged every 480 blocks (or 8 hours). Hotspots send a Beacon (also known as a challenge) and if other Hotspot witness, they pass.',
+        'Online Hotspots are challenged every 300 blocks (or 5 hours). Hotspots send a Beacon (also known as a challenge) and if other Hotspot witness, they pass.',
       title: 'Pass a Challenge',
     },
     data_transfer: {
