@@ -15,7 +15,7 @@ import {
   handleCacheFulfilled,
   hasValidCache,
 } from '../../utils/cacheUtils'
-import { getSyncStatus } from '../../utils/hotspotUtils'
+import { getSyncStatus, HotspotSyncStatus } from '../../utils/hotspotUtils'
 
 export enum HotspotSort {
   New = 'new',
@@ -40,7 +40,7 @@ export type HotspotsSliceState = {
   loadingRewards: boolean
   hotspotsLoaded: boolean
   failure: boolean
-  syncStatuses: Record<string, CacheRecord<HotspotStatus>>
+  syncStatuses: Record<string, CacheRecord<{ status: HotspotSyncStatus }>>
 }
 
 const initialState: HotspotsSliceState = {
@@ -304,15 +304,18 @@ export enum SyncStatus {
   none,
 }
 
-type HotspotStatus = {
-  status: SyncStatus
-  percent: number
-  hotspotBlockHeight: number
-}
-
-export const fetchSyncStatus = createAsyncThunk(
+export const fetchSyncStatus = createAsyncThunk<
+  HotspotSyncStatus | null,
+  { hotspot: Hotspot | Witness; hotspotSyncBuffer: number }
+>(
   'hotspotDetails/fetchHotspotData',
-  async (hotspot: Hotspot | Witness, { getState }) => {
+  async (
+    {
+      hotspot,
+      hotspotSyncBuffer,
+    }: { hotspot: Hotspot | Witness; hotspotSyncBuffer: number },
+    { getState },
+  ) => {
     if (!hotspot.address) {
       throw new Error('fetchSyncStatus - address is empty')
     }
@@ -321,7 +324,7 @@ export const fetchSyncStatus = createAsyncThunk(
       hotspots: { syncStatuses },
     } = getState() as {
       hotspots: {
-        syncStatuses: Record<string, CacheRecord<HotspotStatus>>
+        syncStatuses: Record<string, CacheRecord<HotspotSyncStatus>>
       }
     }
 
@@ -332,8 +335,12 @@ export const fetchSyncStatus = createAsyncThunk(
       return null
     }
 
-    if (!hotspot.status?.timestamp) {
-      return getSyncStatus(1, hotspot.status?.height) // Start from genesis block
+    if (!hotspot.status?.timestamp || !hotspot.status?.height) {
+      return getSyncStatus({
+        hotspotBlockHeight: 1,
+        blockHeight: 1000000,
+        hotspotSyncBuffer,
+      })
     }
 
     // TODO: This is just temporary while we figure out a long-term solution
@@ -342,7 +349,11 @@ export const fetchSyncStatus = createAsyncThunk(
     )
     const body = await response.json()
 
-    return getSyncStatus(body.data.height, hotspot.status?.height)
+    return getSyncStatus({
+      hotspotBlockHeight: hotspot.status?.height,
+      blockHeight: body.data.height,
+      hotspotSyncBuffer,
+    })
   },
 )
 
@@ -455,9 +466,11 @@ const hotspotsSlice = createSlice({
     )
     builder.addCase(
       fetchSyncStatus.fulfilled,
-      (state, { meta: { arg }, payload }) => {
-        if (arg.address && payload) {
-          state.syncStatuses[arg.address] = handleCacheFulfilled(payload)
+      (state, { meta: { arg }, payload: status }) => {
+        if (arg.hotspot.address && status) {
+          state.syncStatuses[arg.hotspot.address] = handleCacheFulfilled({
+            status,
+          })
         }
       },
     )

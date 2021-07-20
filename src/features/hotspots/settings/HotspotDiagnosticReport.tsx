@@ -26,7 +26,7 @@ import animateTransition from '../../../utils/animateTransition'
 import { locale } from '../../../utils/i18n'
 import useAlert from '../../../utils/useAlert'
 import usePrevious from '../../../utils/usePrevious'
-import { getSyncStatus, SyncStatus } from '../../../utils/hotspotUtils'
+import { getSyncStatus } from '../../../utils/hotspotUtils'
 import { getMakerSupportEmail } from '../../../makers'
 
 type Info = {
@@ -75,6 +75,9 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
     onboardingRecord,
   } = useSelector((state: RootState) => state.connectedHotspot)
   const { blockHeight } = useSelector((state: RootState) => state.heliumData)
+  const hotspotSyncBuffer = useSelector(
+    (state: RootState) => state.features.hotspotSyncBuffer,
+  )
   const dispatch = useAppDispatch()
   const { enableBack } = useHotspotSettingsContext()
 
@@ -165,21 +168,25 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
     nextInfo.currentTime = getUnixTime(new Date())
     nextInfo.height = parseInt(diagnostics?.height || '0', 10)
 
-    const { status } = getSyncStatus(nextInfo.height, blockHeight)
+    const status = getSyncStatus({
+      hotspotBlockHeight: nextInfo.height,
+      blockHeight,
+      hotspotSyncBuffer,
+    })
     switch (status) {
-      case SyncStatus.full:
+      case 'full':
         nextInfo.fullySynced = true
         break
-      case SyncStatus.partial:
+      case 'partial':
         nextInfo.fullySynced = 'partial'
         break
-      case SyncStatus.none:
+      case 'none':
         nextInfo.fullySynced = false
         break
     }
 
     setInfo(nextInfo)
-  }, [blockHeight, challenges, diagnostics?.height])
+  }, [blockHeight, challenges, diagnostics?.height, hotspotSyncBuffer])
 
   useEffect(() => {
     dispatch(

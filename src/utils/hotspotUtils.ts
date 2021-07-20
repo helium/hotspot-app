@@ -1,40 +1,36 @@
 import { round } from 'lodash'
 import { Colors } from '../theme/theme'
 
-export enum SyncStatus {
-  full,
-  partial,
-  none,
-}
+export type HotspotSyncStatus = 'full' | 'partial' | 'none'
 
-export const SYNC_BLOCK_BUFFER = 1500
-
-export const getSyncStatus = (
-  hotspotBlockHeight: number,
-  blockHeight?: number,
-) => {
-  if (!blockHeight)
-    return { status: SyncStatus.none, percent: 0, hotspotBlockHeight }
+export const getSyncStatus = ({
+  hotspotBlockHeight,
+  blockHeight,
+  hotspotSyncBuffer,
+}: {
+  hotspotBlockHeight: number
+  blockHeight?: number
+  hotspotSyncBuffer?: number
+}): HotspotSyncStatus => {
+  if (!blockHeight || !hotspotSyncBuffer) {
+    return 'none'
+  }
 
   const syncedRatio = hotspotBlockHeight / blockHeight
   const percentSynced = round(syncedRatio * 100, 2)
 
   const withinBlockBuffer = hotspotBlockHeight
-    ? blockHeight - hotspotBlockHeight <= SYNC_BLOCK_BUFFER
+    ? blockHeight - hotspotBlockHeight <= hotspotSyncBuffer
     : false
 
   if (percentSynced === 100 || withinBlockBuffer) {
-    return { status: SyncStatus.full, percent: 100, hotspotBlockHeight }
+    return 'full'
   }
 
   if (percentSynced === 0) {
-    return { status: SyncStatus.none, percent: 0, hotspotBlockHeight }
+    return 'none'
   }
-  return {
-    status: SyncStatus.partial,
-    percent: percentSynced,
-    hotspotBlockHeight,
-  }
+  return 'partial'
 }
 
 export const generateRewardScaleColor = (rewardScale: number): Colors => {

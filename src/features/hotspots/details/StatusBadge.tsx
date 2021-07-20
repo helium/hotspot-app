@@ -3,12 +3,12 @@ import { useTranslation } from 'react-i18next'
 import { Insets } from 'react-native'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import { SyncStatus } from '../../../utils/hotspotUtils'
+import { HotspotSyncStatus } from '../../../utils/hotspotUtils'
 
 type Props = {
   online?: string
   onPress: () => void
-  syncStatus?: SyncStatus
+  syncStatus?: HotspotSyncStatus
   hitSlop?: Insets
 }
 
@@ -25,7 +25,7 @@ const StatusBadge = ({
       if (syncStatus === undefined) {
         return ''
       }
-      if (syncStatus === SyncStatus.full) {
+      if (syncStatus === 'full') {
         return t('hotspot_details.status_online')
       }
       return t('hotspot_details.status_syncing')

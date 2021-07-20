@@ -91,6 +91,9 @@ const HotspotDetails = ({
   const syncStatuses = useSelector(
     (state: RootState) => state.hotspots.syncStatuses,
   )
+  const hotspotSyncBuffer = useSelector(
+    (state: RootState) => state.features.hotspotSyncBuffer,
+  )
   const listRef = useRef<BottomSheet>(null)
   const scrollViewRef = useRef<BottomSheetScrollViewType>(null)
   const [isRelayed, setIsRelayed] = useState(false)
@@ -164,10 +167,10 @@ const HotspotDetails = ({
   }, [address, dispatch, hotspot, listIndex, prevListIndex, timelineValue])
 
   useEffect(() => {
-    if (!address || !hotspot) return
+    if (!address || !hotspot || !hotspotSyncBuffer) return
 
-    dispatch(fetchSyncStatus(hotspot))
-  }, [address, blockHeight, dispatch, hotspot])
+    dispatch(fetchSyncStatus({ hotspot, hotspotSyncBuffer }))
+  }, [address, blockHeight, dispatch, hotspot, hotspotSyncBuffer])
 
   const formattedHotspotName = useMemo(() => {
     if (!hotspot) return ''
