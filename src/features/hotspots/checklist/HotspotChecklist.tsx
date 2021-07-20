@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import { BoxProps } from '@shopify/restyle'
+import { formatDistanceToNow } from 'date-fns'
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
 import { fetchChecklistActivity } from '../../../store/hotspotDetails/hotspotChecklistSlice'
@@ -16,7 +17,7 @@ import HotspotChecklistCarousel, {
 } from './HotspotChecklistCarousel'
 import { wp } from '../../../utils/layout'
 import { Theme } from '../../../theme/theme'
-import { SyncStatus } from '../../../store/hotspots/hotspotsSlice'
+import shortLocale from '../../../utils/formatDistance'
 
 type Props = BoxProps<Theme> & {
   hotspot: Hotspot | Witness
@@ -81,16 +82,26 @@ const HotspotChecklist = ({
     )
       return ''
 
-    if (!hotspotSyncStatus.hotspotBlockHeight) {
-      return t('checklist.blocks.not')
+    const timeAgo = hotspot.status?.timestamp
+      ? formatDistanceToNow(new Date(hotspot.status.timestamp), {
+          locale: shortLocale,
+          addSuffix: true,
+        })
+      : null
+
+    if (hotspotSyncStatus.status === 'full') {
+      if (!timeAgo) {
+        return t('checklist.blocks.full')
+      }
+      return t('checklist.blocks.full_with_date', {
+        timeAgo,
+      })
     }
-    if (hotspotSyncStatus.status === SyncStatus.full) {
-      return t('checklist.blocks.full')
+    if (!timeAgo) {
+      return t('checklist.blocks.partial')
     }
-    return t('checklist.blocks.partial', {
-      percent: hotspotSyncStatus.percent,
-    })
-  }, [blockHeight, hotspotSyncStatus, t])
+    return t('checklist.blocks.partial_with_date', { timeAgo })
+  }, [blockHeight, hotspot.status?.timestamp, hotspotSyncStatus, t])
 
   const hotspotStatus = useMemo(
     () =>
@@ -151,8 +162,7 @@ const HotspotChecklist = ({
         title: t('checklist.blocks.title'),
         description: syncStatus,
         complete:
-          (blockHeight && hotspotSyncStatus?.status === SyncStatus.full) ||
-          false,
+          (blockHeight && hotspotSyncStatus?.status === 'full') || false,
         showAuto: true,
       },
       {

@@ -149,7 +149,6 @@ const HotspotDetails = ({
     ) {
       return
     }
-
     dispatch(fetchHotspotData(address))
   }, [address, dispatch, hotspot, listIndex, prevListIndex, timelineValue])
 
@@ -325,19 +324,33 @@ const HotspotDetails = ({
     [onChangeHeight, snapPoints],
   )
 
+  const syncStatus = useMemo(
+    () => (hotspot?.address ? syncStatuses[hotspot?.address]?.status : null),
+    [hotspot?.address, syncStatuses],
+  )
+
   const handleToggleStatus = useCallback(async () => {
-    if (listIndex === 0) {
-      setListIndex(1)
-      listRef.current?.snapTo(1)
-      if (showStatusBanner) {
-        return // banner is already showing, but was out of sight
+    if (!syncStatus || syncStatus === 'full') return
+
+    if (syncStatuses)
+      if (listIndex === 0) {
+        setListIndex(1)
+        listRef.current?.snapTo(1)
+        if (showStatusBanner) {
+          return // banner is already showing, but was out of sight
+        }
       }
-    }
     if (listIndex === 0) {
       await sleep(300) // Add a little delay to avoid animation jank
     }
     toggleShowStatusBanner()
-  }, [listIndex, showStatusBanner, toggleShowStatusBanner])
+  }, [
+    listIndex,
+    showStatusBanner,
+    syncStatus,
+    syncStatuses,
+    toggleShowStatusBanner,
+  ])
 
   const contentContainerStyle = useMemo(() => ({ paddingLeft: spacing.m }), [
     spacing.m,
@@ -449,7 +462,7 @@ const HotspotDetails = ({
                 <StatusBadge
                   hitSlop={hitSlop}
                   online={hotspot?.status?.online}
-                  syncStatus={syncStatuses[hotspot?.address]?.status}
+                  syncStatus={syncStatus}
                   onPress={handleToggleStatus}
                 />
               )}
@@ -483,6 +496,7 @@ const HotspotDetails = ({
             marginBottom="l"
             visible={showStatusBanner}
             onDismiss={toggleShowStatusBanner}
+            syncStatus={syncStatus}
           />
 
           <Box

@@ -3,12 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { Insets } from 'react-native'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import { Colors } from '../../../theme/theme'
 import { HotspotSyncStatus } from '../../../utils/hotspotUtils'
 
 type Props = {
   online?: string
   onPress: () => void
-  syncStatus?: HotspotSyncStatus
+  syncStatus?: HotspotSyncStatus | null
   hitSlop?: Insets
 }
 
@@ -33,9 +34,16 @@ const StatusBadge = ({
     return t('hotspot_details.status_offline')
   }, [online, syncStatus, t])
 
+  const backgroundColor = useMemo((): Colors => {
+    if (online === 'offline') return 'orangeDark'
+
+    if (!syncStatus) return 'white'
+    return 'greenOnline'
+  }, [online, syncStatus])
+
   return (
     <TouchableOpacityBox
-      backgroundColor={online === 'online' ? 'greenOnline' : 'orangeDark'}
+      backgroundColor={backgroundColor}
       paddingHorizontal="s"
       hitSlop={hitSlop}
       borderRadius="l"
@@ -43,6 +51,7 @@ const StatusBadge = ({
       justifyContent="center"
       onPress={onPress}
       minWidth={60}
+      disabled={syncStatus === 'full'}
     >
       <Text color="white" variant="regular" fontSize={14}>
         {title}

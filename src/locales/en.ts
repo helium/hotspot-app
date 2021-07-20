@@ -914,11 +914,12 @@ export default {
   checklist: {
     title: 'Checklist',
     blocks: {
-      not:
-        'Hotspots must be fully synced before they can mine. New Hotspots can take up to 96 hours to sync.',
-      full: 'Hotspot is fully synced.',
+      full: 'Hotspot is fully synced as of {{timeAgo}}.',
       partial:
-        'Hotspot is syncing with the Helium blockchain and is roughly {{percent}}% synced.',
+        'Hotspot is syncing with the Helium blockchain as of {{timeAgo}}.',
+      full_with_date: 'Hotspot is fully synced as of {{timeAgo}}.',
+      partial_with_date:
+        'Hotspot is syncing with the Helium blockchain as of {{timeAgo}}.',
       title: 'Sync to Blockchain',
     },
     status: {

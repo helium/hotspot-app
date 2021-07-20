@@ -5,6 +5,7 @@ import React, { useState, useEffect, memo, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import Close from '@assets/images/close.svg'
+import { formatDistanceToNow } from 'date-fns'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import { RootState } from '../../../store/rootReducer'
@@ -12,33 +13,54 @@ import { Theme } from '../../../theme/theme'
 import { useColors } from '../../../theme/themeHooks'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import animateTransition from '../../../utils/animateTransition'
+import shortLocale from '../../../utils/formatDistance'
 import usePrevious from '../../../utils/usePrevious'
+import { HotspotSyncStatus } from '../../../utils/hotspotUtils'
 
 type Props = BoxProps<Theme> & {
   hotspot: Hotspot | Witness
   visible: boolean
   onDismiss: () => void
+  syncStatus: HotspotSyncStatus | null
 }
 const HotspotStatusBanner = ({
   hotspot,
   visible: propsVisible,
   onDismiss,
+  syncStatus,
   ...boxProps
 }: Props) => {
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
   )
-  const syncStatuses = useSelector(
-    (state: RootState) => state.hotspots.syncStatuses,
-  )
   const { t } = useTranslation()
   const { orangeExtraDark } = useColors()
   const [visible, setVisible] = useState(false)
   const prevHotspotAddress = usePrevious(hotspot.address)
-  const hotspotSyncStatus = useMemo(() => syncStatuses[hotspot.address], [
-    hotspot.address,
-    syncStatuses,
-  ])
+
+  const syncStatusMessage = useMemo(() => {
+    if (!blockHeight || !syncStatus) return ''
+
+    const timeAgo = hotspot.status?.timestamp
+      ? formatDistanceToNow(new Date(hotspot.status.timestamp), {
+          locale: shortLocale,
+          addSuffix: true,
+        })
+      : null
+
+    if (syncStatus === 'full') {
+      if (!timeAgo) {
+        return t('checklist.blocks.full')
+      }
+      return t('checklist.blocks.full_with_date', {
+        timeAgo,
+      })
+    }
+    if (!timeAgo) {
+      return t('checklist.blocks.partial')
+    }
+    return t('checklist.blocks.partial_with_date', { timeAgo })
+  }, [blockHeight, hotspot.status?.timestamp, syncStatus, t])
 
   useEffect(() => {
     if (visible === propsVisible) return
@@ -58,23 +80,6 @@ const HotspotStatusBanner = ({
     }
     return t('hotspot_details.status_prompt_offline.title')
   }, [hotspot.status, t])
-
-  const subtitle = useMemo(() => {
-    if (hotspot.status?.online !== 'online') return
-
-    if (!hotspotSyncStatus || hotspotSyncStatus.hotspotBlockHeight === 0) {
-      return t('hotspot_details.status_prompt_online.subtitle_starting')
-    }
-
-    if (hotspotSyncStatus?.hotspotBlockHeight) {
-      return t('hotspot_details.status_prompt_online.subtitle_active', {
-        hotspotBlock: hotspotSyncStatus?.hotspotBlockHeight,
-        currentBlock: blockHeight,
-      })
-    }
-
-    return ' '
-  }, [blockHeight, hotspot.status, hotspotSyncStatus, t])
 
   const handleClose = useCallback(() => {
     onDismiss()
@@ -106,16 +111,15 @@ const HotspotStatusBanner = ({
       >
         {title}
       </Text>
-      {subtitle && (
-        <Text
-          variant="regular"
-          fontSize={15}
-          lineHeight={21}
-          color="orangeExtraDark"
-        >
-          {subtitle}
-        </Text>
-      )}
+      <Text
+        variant="regular"
+        fontSize={15}
+        lineHeight={21}
+        color="orangeExtraDark"
+        marginRight="l"
+      >
+        {syncStatusMessage}
+      </Text>
       <TouchableOpacityBox
         onPress={handleClose}
         position="absolute"
