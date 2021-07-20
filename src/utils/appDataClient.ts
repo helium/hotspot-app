@@ -8,6 +8,7 @@ import Client, {
   ResourceList,
 } from '@helium/http'
 import { Transaction } from '@helium/transactions'
+import { subDays } from 'date-fns'
 import {
   HotspotActivityFilters,
   HotspotActivityType,
@@ -138,6 +139,19 @@ export const getAccount = async (address?: string) => {
 
   const { data } = await client.accounts.get(accountAddress)
   return data
+}
+
+export const getAccountRewards = async (opts?: {
+  address?: string
+  numDaysBack?: number
+}) => {
+  Logger.breadcrumb('getAccountRewards', breadcrumbOpts)
+  const accountAddress = opts?.address || (await getAddress())
+  if (!accountAddress) return
+
+  const initialDate = new Date()
+  const endDate = subDays(initialDate, opts?.numDaysBack || 1)
+  return client.account(accountAddress).rewards.sum.get(endDate, initialDate)
 }
 
 export const getBlockHeight = () => {

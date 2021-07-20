@@ -3,6 +3,7 @@ import React, { useEffect, useState, memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
+import { Sum } from '@helium/http'
 import Box from '../../../components/Box'
 import EmojiBlip from '../../../components/EmojiBlip'
 import Text from '../../../components/Text'
@@ -10,6 +11,7 @@ import { RootState } from '../../../store/rootReducer'
 import useCurrency from '../../../utils/useCurrency'
 import HotspotsTicker from './HotspotsTicker'
 import animateTransition from '../../../utils/animateTransition'
+import { CacheRecord } from '../../../utils/cacheUtils'
 
 const TimeOfDayTitle = ({ date }: { date: Date }) => {
   const { t } = useTranslation()
@@ -33,9 +35,10 @@ const TimeOfDayTitle = ({ date }: { date: Date }) => {
   )
 }
 
-const WelcomeOverview = () => {
+type Props = { accountRewards: CacheRecord<Sum> }
+const WelcomeOverview = ({ accountRewards }: Props) => {
   const { t } = useTranslation()
-  const { hntBalanceToDisplayVal, toggleConvertHntToCurrency } = useCurrency()
+  const { hntToDisplayVal, toggleConvertHntToCurrency } = useCurrency()
   const [bodyText, setBodyText] = useState('')
 
   const hotspots = useSelector(
@@ -43,25 +46,9 @@ const WelcomeOverview = () => {
     isEqual,
   )
 
-  const totalRewards = useSelector(
-    (state: RootState) => state.hotspots.totalRewards,
-    isEqual,
-  )
-  const rewards = useSelector(
-    (state: RootState) => state.hotspots.rewards,
-    isEqual,
-  )
-  const loadingRewards = useSelector(
-    (state: RootState) => state.hotspots.loadingRewards,
-  )
-
-  const loading = useMemo(() => {
-    if (hotspots.length > 0 && rewards && Object.keys(rewards).length === 0)
-      // has hotspots but rewards haven't been loaded yet
-      return loadingRewards
-
-    return false
-  }, [hotspots.length, loadingRewards, rewards])
+  const loading = useMemo(() => accountRewards.loading, [
+    accountRewards.loading,
+  ])
 
   useEffect(() => {
     if (!loading)
@@ -71,15 +58,15 @@ const WelcomeOverview = () => {
   }, [loading])
 
   const updateBodyText = useCallback(async () => {
-    if (loading || !totalRewards) return
+    if (loading) return
 
-    const hntAmount = await hntBalanceToDisplayVal(totalRewards)
+    const hntAmount = await hntToDisplayVal(accountRewards.total)
     const nextBodyText = t('hotspots.owned.reward_summary', {
       count: hotspots.length,
       hntAmount,
     })
     setBodyText(nextBodyText)
-  }, [hntBalanceToDisplayVal, hotspots?.length, loading, t, totalRewards])
+  }, [accountRewards.total, hntToDisplayVal, hotspots.length, loading, t])
 
   useEffect(() => {
     updateBodyText()

@@ -10,7 +10,6 @@ import {
 import { distance, LocationCoords } from '../../utils/location'
 import { getWallet, deleteWallet, postWallet } from '../../utils/walletClient'
 import * as Logger from '../../utils/logger'
-import { FeaturesState } from '../features/featuresSlice'
 import {
   CacheRecord,
   handleCacheFulfilled,
@@ -49,7 +48,7 @@ const initialState: HotspotsSliceState = {
   orderedHotspots: [],
   followedHotspotsObj: {},
   followedHotspots: [],
-  order: HotspotSort.New,
+  order: HotspotSort.Followed,
   loadingRewards: false,
   loadingOrderedHotspots: false,
   hotspotsLoaded: false,
@@ -81,7 +80,7 @@ const hotspotSorters: Record<HotspotSort, HotspotSorter> = {
       return hotspots
     }
     return sortBy(hotspots, [
-      (h) => (context.rewards ? -context.rewards[h.address].total : 0),
+      (h) => (context.rewards ? -context.rewards[h.address]?.total : 0),
     ])
   },
   [HotspotSort.Offline]: (hotspots) =>
@@ -89,66 +88,87 @@ const hotspotSorters: Record<HotspotSort, HotspotSorter> = {
   [HotspotSort.Followed]: (hotspots) => hotspots,
 }
 
-export const fetchRewards = createAsyncThunk(
-  'hotspots/fetchRewards',
-  async (_, { getState }) => {
-    const { hotspots, followedHotspots } = (getState() as {
-      hotspots: {
-        hotspots: Hotspot[]
-        followedHotspots: Hotspot[]
-      }
-    }).hotspots
-
-    let total = new Balance(0, CurrencyType.networkToken)
-
-    const ownedAddresses = hotspots.map((h) => h.address)
-    const followingAddresses = followedHotspots.map((h) => h.address)
-    const unOwnedAddresses = followingAddresses.filter(
-      (fa) => !ownedAddresses.includes(fa),
-    )
-
-    const unOwnedResults = (
-      await Promise.all(
-        unOwnedAddresses
-          .map((address) => getHotspotRewardsSum(address, 1))
-          .map((p) =>
-            p.catch((e) => {
-              Logger.error(e)
-            }),
-          ),
-      )
-    ).filter((a) => a !== undefined) as Sum[]
-
-    const ownedResults = (
-      await Promise.all(
-        ownedAddresses
-          .map((address) => getHotspotRewardsSum(address, 1))
-          .map((p) =>
-            p.catch((e) => {
-              Logger.error(e)
-            }),
-          ),
-      )
-    ).filter((a) => a !== undefined) as Sum[]
-
-    const rewards: Record<string, Sum> = {}
-    ownedResults.forEach((reward, i) => {
-      const address = ownedAddresses[i]
-      rewards[address] = reward
-      total = total.plus(reward.balanceTotal)
-    })
-
-    unOwnedResults.forEach((reward, i) => {
-      const address = unOwnedAddresses[i]
-      rewards[address] = reward
-    })
-
-    return {
-      total,
-      rewards,
-    }
+export const fetchRewards = createAsyncThunk<
+  {
+    total: Balance<NetworkTokens>
+    rewards: Record<string, Sum>
   },
-)
+  { fetchType: 'all' | 'followed' }
+>('hotspots/fetchRewards', async ({ fetchType }, { getState }) => {
+  const { hotspots, followedHotspots } = (getState() as {
+    hotspots: {
+      hotspots: Hotspot[]
+      followedHotspots: Hotspot[]
+    }
+  }).hotspots
+  const followingAddresses = followedHotspots.map((h) => h.address)
+  let total = new Balance(0, CurrencyType.networkToken)
+  const rewards: Record<string, Sum> = {}
+
+  if (fetchType === 'followed') {
+    const followedResponses = (
+      await Promise.all(
+        followingAddresses
+          .map((address) => getHotspotRewardsSum(address, 1))
+          .map((p) =>
+            p.catch((e) => {
+              Logger.error(e)
+            }),
+          ),
+      )
+    ).filter((a) => a !== undefined) as Sum[]
+    followedResponses.forEach((reward, i) => {
+      const address = followingAddresses[i]
+      rewards[address] = reward
+    })
+    return { rewards, total }
+  }
+
+  const ownedAddresses = hotspots.map((h) => h.address)
+  const unOwnedAddresses = followingAddresses.filter(
+    (fa) => !ownedAddresses.includes(fa),
+  )
+
+  const unOwnedResults = (
+    await Promise.all(
+      unOwnedAddresses
+        .map((address) => getHotspotRewardsSum(address, 1))
+        .map((p) =>
+          p.catch((e) => {
+            Logger.error(e)
+          }),
+        ),
+    )
+  ).filter((a) => a !== undefined) as Sum[]
+
+  const ownedResults = (
+    await Promise.all(
+      ownedAddresses
+        .map((address) => getHotspotRewardsSum(address, 1))
+        .map((p) =>
+          p.catch((e) => {
+            Logger.error(e)
+          }),
+        ),
+    )
+  ).filter((a) => a !== undefined) as Sum[]
+
+  ownedResults.forEach((reward, i) => {
+    const address = ownedAddresses[i]
+    rewards[address] = reward
+    total = total.plus(reward.balanceTotal)
+  })
+
+  unOwnedResults.forEach((reward, i) => {
+    const address = unOwnedAddresses[i]
+    rewards[address] = reward
+  })
+
+  return {
+    total,
+    rewards,
+  }
+})
 export const fetchFollowedHotspotsFromBlock = createAsyncThunk(
   'hotspots/fetchFollowedHotspotsFromBlock ',
   async (_, { getState }) => {
@@ -207,16 +227,11 @@ const sanitizeWalletHotspots = (hotspots: WalletHotspot[]) => {
 type WalletHotspot = Hotspot & { lat: string; lng: string }
 export const fetchHotspotsData = createAsyncThunk(
   'hotspots/fetchHotspotsData',
-  async (_arg, { getState }) => {
-    const appState = getState() as { features: FeaturesState }
-    const followEnabled = appState.features.followHotspotEnabled
-
+  async (_arg) => {
     const hotspotPromises = [getHotspots()]
-    if (followEnabled) {
-      hotspotPromises.push(
-        getWallet('hotspots/follow', null, { camelCase: true }),
-      )
-    }
+    hotspotPromises.push(
+      getWallet('hotspots/follow', null, { camelCase: true }),
+    )
     const allHotspots = await Promise.all(
       hotspotPromises.map((p) =>
         p.catch((e) => {
@@ -350,6 +365,8 @@ const hotspotsSlice = createSlice({
       return { ...initialState }
     },
     changeFilter: (state, { payload }: { payload: HotspotSort }) => {
+      if (state.order === payload) return state
+
       state.order = payload
       state.loadingOrderedHotspots = true
     },
