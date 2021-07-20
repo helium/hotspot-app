@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { Hotspot, Sum } from '@helium/http'
+import { Hotspot, Sum, Witness } from '@helium/http'
 import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
 import { orderBy, sortBy } from 'lodash'
 import {
@@ -310,16 +310,10 @@ type HotspotStatus = {
   hotspotBlockHeight: number
 }
 
-type StatusAttrs = {
-  address: string
-  statusTime?: string
-  blockHeight?: number
-}
-
 export const fetchSyncStatus = createAsyncThunk(
   'hotspotDetails/fetchHotspotData',
-  async ({ address, statusTime, blockHeight }: StatusAttrs, { getState }) => {
-    if (!address) {
+  async (hotspot: Hotspot | Witness, { getState }) => {
+    if (!hotspot.address) {
       throw new Error('fetchSyncStatus - address is empty')
     }
 
@@ -331,21 +325,24 @@ export const fetchSyncStatus = createAsyncThunk(
       }
     }
 
-    if (syncStatuses[address] && hasValidCache(syncStatuses[address])) {
-      throw new Error(`sync status for hotspot ${address} is already valid`)
+    if (
+      syncStatuses[hotspot.address] &&
+      hasValidCache(syncStatuses[hotspot.address])
+    ) {
+      return null
     }
 
-    if (!statusTime) {
-      return getSyncStatus(1, blockHeight) // Start from genesis block
+    if (!hotspot.status?.timestamp) {
+      return getSyncStatus(1, hotspot.status?.height) // Start from genesis block
     }
 
     // TODO: This is just temporary while we figure out a long-term solution
     const response = await fetch(
-      `https://api.helium.io/v1/blocks/height/?max_time=${statusTime}`,
+      `https://api.helium.io/v1/blocks/height/?max_time=${hotspot.status.timestamp}`,
     )
     const body = await response.json()
 
-    return getSyncStatus(body.data.height, blockHeight)
+    return getSyncStatus(body.data.height, hotspot.status?.height)
   },
 )
 
@@ -459,7 +456,7 @@ const hotspotsSlice = createSlice({
     builder.addCase(
       fetchSyncStatus.fulfilled,
       (state, { meta: { arg }, payload }) => {
-        if (arg.address) {
+        if (arg.address && payload) {
           state.syncStatuses[arg.address] = handleCacheFulfilled(payload)
         }
       },
