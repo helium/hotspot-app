@@ -860,7 +860,7 @@ export default {
       success_plural:
         'Hotspot이 블록 {{count}}개 전에 Challenge를 발행했습니다.',
       fail:
-        'Hotspot이 Challenge를 아직 발행하지 않았습니다. Hotspot은 300 블록 또는 약 5시간마다 자동으로 Challenge를 생성합니다.',
+        'Hotspot이 Challenge를 아직 발행하지 않았습니다. Hotspot은 360 블록 또는 약 6시간마다 자동으로 Challenge를 생성합니다.',
       title: 'Challenge 생성',
     },
     challenge_witness: {
@@ -882,7 +882,7 @@ export default {
       success_plural:
         'Hotspot이 블록 {{count}}개 전에 마지막으로 Challenge에 참여했습니다.',
       fail:
-        '온라인 Hotspot은 300 블록(또는 5 시간)마다 Challenge를 받으며 Challenge를 받기까지 다소 시간이 소요될 수 있습니다.',
+        '온라인 Hotspot은 360 블록(또는 6 시간)마다 Challenge를 받으며 Challenge를 받기까지 다소 시간이 소요될 수 있습니다.',
       title: 'Challenge 통과',
     },
     data_transfer: {
