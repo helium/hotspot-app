@@ -901,7 +901,7 @@ export default {
       success_plural:
         'Hotspotは{{count}}ブロック前のChallengeに最後に追加されました。',
       fail:
-        'オンラインHotspotは300ブロック（8時間）ごとにChallengeが作成され、次にChallengeが作成されるまでに時間がかかる場合があります。',
+        'オンラインHotspotは300ブロック（5時間）ごとにChallengeが作成され、次にChallengeが作成されるまでに時間がかかる場合があります。',
       title: 'Challengeを渡す',
     },
     data_transfer: {
