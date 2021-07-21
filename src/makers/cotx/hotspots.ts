@@ -3,7 +3,7 @@ import { MakerHotspot } from '../hotspotMakerTypes'
 import ANTENNAS from './antennas'
 
 const COTX_V1 = {
-  name: 'COTX Gateway',
+  name: 'COTX Gateways',
   onboardType: 'BLE',
   translations: {
     en: {
