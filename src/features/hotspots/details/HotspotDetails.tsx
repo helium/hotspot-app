@@ -330,8 +330,6 @@ const HotspotDetails = ({
   )
 
   const handleToggleStatus = useCallback(async () => {
-    if (!syncStatus || syncStatus === 'full') return
-
     if (syncStatuses)
       if (listIndex === 0) {
         setListIndex(1)
@@ -344,13 +342,7 @@ const HotspotDetails = ({
       await sleep(300) // Add a little delay to avoid animation jank
     }
     toggleShowStatusBanner()
-  }, [
-    listIndex,
-    showStatusBanner,
-    syncStatus,
-    syncStatuses,
-    toggleShowStatusBanner,
-  ])
+  }, [listIndex, showStatusBanner, syncStatuses, toggleShowStatusBanner])
 
   const contentContainerStyle = useMemo(() => ({ paddingLeft: spacing.m }), [
     spacing.m,

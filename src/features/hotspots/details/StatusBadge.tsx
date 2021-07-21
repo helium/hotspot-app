@@ -37,9 +37,8 @@ const StatusBadge = ({
   const backgroundColor = useMemo((): Colors => {
     if (online === 'offline') return 'orangeDark'
 
-    if (!syncStatus) return 'white'
     return 'greenOnline'
-  }, [online, syncStatus])
+  }, [online])
 
   return (
     <TouchableOpacityBox
@@ -51,7 +50,7 @@ const StatusBadge = ({
       justifyContent="center"
       onPress={onPress}
       minWidth={60}
-      disabled={syncStatus === 'full'}
+      disabled={syncStatus === 'full' && online === 'online'}
     >
       <Text color="white" variant="regular" fontSize={14}>
         {title}
