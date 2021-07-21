@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { Hotspot, Sum, Witness } from '@helium/http'
+import { Hotspot, Sum } from '@helium/http'
 import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
 import { orderBy, sortBy } from 'lodash'
 import {
@@ -10,12 +10,8 @@ import {
 import { distance, LocationCoords } from '../../utils/location'
 import { getWallet, deleteWallet, postWallet } from '../../utils/walletClient'
 import * as Logger from '../../utils/logger'
-import {
-  CacheRecord,
-  handleCacheFulfilled,
-  hasValidCache,
-} from '../../utils/cacheUtils'
-import { getSyncStatus, HotspotSyncStatus } from '../../utils/hotspotUtils'
+import { CacheRecord, handleCacheFulfilled } from '../../utils/cacheUtils'
+import { HotspotSyncStatus } from '../../features/hotspots/root/hotspotTypes'
 
 export enum HotspotSort {
   New = 'new',
@@ -298,62 +294,6 @@ export const unfollowHotspot = createAsyncThunk<Hotspot[], string>(
   },
 )
 
-export enum SyncStatus {
-  full,
-  partial,
-  none,
-}
-
-export const fetchSyncStatus = createAsyncThunk<
-  HotspotSyncStatus | null,
-  { hotspot: Hotspot | Witness; hotspotSyncBuffer: number }
->(
-  'hotspotDetails/fetchSyncStatus',
-  async (
-    {
-      hotspot,
-      hotspotSyncBuffer,
-    }: { hotspot: Hotspot | Witness; hotspotSyncBuffer: number },
-    { getState },
-  ) => {
-    if (!hotspot.address) {
-      throw new Error('fetchSyncStatus - address is empty')
-    }
-
-    const {
-      hotspots: { syncStatuses },
-    } = getState() as {
-      hotspots: {
-        syncStatuses: Record<string, CacheRecord<{ status: HotspotSyncStatus }>>
-      }
-    }
-
-    if (
-      syncStatuses[hotspot.address] &&
-      hasValidCache(syncStatuses[hotspot.address]) &&
-      syncStatuses[hotspot.address].status !== 'none'
-    ) {
-      return null
-    }
-
-    if (!hotspot.status?.timestamp || !hotspot.status?.height) {
-      return 'none'
-    }
-
-    // TODO: This is just temporary while we figure out a long-term solution
-    const response = await fetch(
-      `https://api.helium.io/v1/blocks/height/?max_time=${hotspot.status.timestamp}`,
-    )
-    const body = await response.json()
-
-    return getSyncStatus({
-      hotspotBlockHeight: hotspot.status?.height,
-      blockHeight: body.data.height,
-      hotspotSyncBuffer,
-    })
-  },
-)
-
 const hotspotsToObj = (hotspots: Hotspot[]) =>
   hotspots.reduce((obj, hotspot) => {
     return {
@@ -368,6 +308,16 @@ const hotspotsSlice = createSlice({
   reducers: {
     signOut: () => {
       return { ...initialState }
+    },
+    updateSyncStatus: (
+      state,
+      {
+        payload: { address, status },
+      }: { payload: { address: string; status: HotspotSyncStatus } },
+    ) => {
+      state.syncStatuses[address] = handleCacheFulfilled({
+        status,
+      })
     },
     changeFilter: (state, { payload }: { payload: HotspotSort }) => {
       if (state.order === payload) return state
@@ -458,16 +408,6 @@ const hotspotsSlice = createSlice({
           const rewards = state.rewards || {}
           rewards[hotspotAddress] = hotspotRewards
           state.rewards = rewards
-        }
-      },
-    )
-    builder.addCase(
-      fetchSyncStatus.fulfilled,
-      (state, { meta: { arg }, payload: status }) => {
-        if (arg?.hotspot?.address && status) {
-          state.syncStatuses[arg.hotspot.address] = handleCacheFulfilled({
-            status,
-          })
         }
       },
     )

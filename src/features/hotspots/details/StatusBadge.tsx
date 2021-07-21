@@ -4,12 +4,12 @@ import { Insets } from 'react-native'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { Colors } from '../../../theme/theme'
-import { HotspotSyncStatus } from '../../../utils/hotspotUtils'
+import { HotspotSyncStatus } from '../root/hotspotTypes'
 
 type Props = {
   online?: string
   onPress: () => void
-  syncStatus?: HotspotSyncStatus | null
+  syncStatus?: HotspotSyncStatus
   hitSlop?: Insets
 }
 

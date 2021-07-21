@@ -46,8 +46,8 @@ import { useColors, useSpacing } from '../../../theme/themeHooks'
 import HotspotSheetHandle from '../root/HotspotSheetHandle'
 import { hp } from '../../../utils/layout'
 import sleep from '../../../utils/sleep'
-import { fetchSyncStatus } from '../../../store/hotspots/hotspotsSlice'
 import usePrevious from '../../../utils/usePrevious'
+import useHotspotSync from '../useHotspotSync'
 
 const hitSlop = { top: 24, bottom: 24 } as Insets
 
@@ -85,15 +85,7 @@ const HotspotDetails = ({
     useSelector(
       (state: RootState) => state.hotspotDetails.hotspotData[address],
     ) || {}
-  const blockHeight = useSelector(
-    (state: RootState) => state.heliumData.blockHeight,
-  )
-  const syncStatuses = useSelector(
-    (state: RootState) => state.hotspots.syncStatuses,
-  )
-  const hotspotSyncBuffer = useSelector(
-    (state: RootState) => state.features.hotspotSyncBuffer,
-  )
+
   const listRef = useRef<BottomSheet>(null)
   const scrollViewRef = useRef<BottomSheetScrollViewType>(null)
   const [isRelayed, setIsRelayed] = useState(false)
@@ -113,6 +105,8 @@ const HotspotDetails = ({
     hotspotDetailsHotspot,
     propsHotspot,
   ])
+
+  const { updateSyncStatus, hotspotSyncStatus } = useHotspotSync(hotspot)
 
   useEffect(() => {
     if (!visible) return
@@ -166,10 +160,8 @@ const HotspotDetails = ({
   }, [address, dispatch, hotspot, listIndex, prevListIndex, timelineValue])
 
   useEffect(() => {
-    if (!address || !hotspot || !hotspotSyncBuffer) return
-
-    dispatch(fetchSyncStatus({ hotspot, hotspotSyncBuffer }))
-  }, [address, blockHeight, dispatch, hotspot, hotspotSyncBuffer])
+    updateSyncStatus()
+  }, [updateSyncStatus])
 
   const formattedHotspotName = useMemo(() => {
     if (!hotspot) return ''
@@ -324,25 +316,19 @@ const HotspotDetails = ({
     [onChangeHeight, snapPoints],
   )
 
-  const syncStatus = useMemo(
-    () => (hotspot?.address ? syncStatuses[hotspot?.address]?.status : null),
-    [hotspot?.address, syncStatuses],
-  )
-
   const handleToggleStatus = useCallback(async () => {
-    if (syncStatuses)
-      if (listIndex === 0) {
-        setListIndex(1)
-        listRef.current?.snapTo(1)
-        if (showStatusBanner) {
-          return // banner is already showing, but was out of sight
-        }
+    if (listIndex === 0) {
+      setListIndex(1)
+      listRef.current?.snapTo(1)
+      if (showStatusBanner) {
+        return // banner is already showing, but was out of sight
       }
+    }
     if (listIndex === 0) {
       await sleep(300) // Add a little delay to avoid animation jank
     }
     toggleShowStatusBanner()
-  }, [listIndex, showStatusBanner, syncStatuses, toggleShowStatusBanner])
+  }, [listIndex, showStatusBanner, toggleShowStatusBanner])
 
   const contentContainerStyle = useMemo(() => ({ paddingLeft: spacing.m }), [
     spacing.m,
@@ -454,7 +440,7 @@ const HotspotDetails = ({
                 <StatusBadge
                   hitSlop={hitSlop}
                   online={hotspot?.status?.online}
-                  syncStatus={syncStatus}
+                  syncStatus={hotspotSyncStatus?.status}
                   onPress={handleToggleStatus}
                 />
               )}
@@ -488,7 +474,6 @@ const HotspotDetails = ({
             marginBottom="l"
             visible={showStatusBanner}
             onDismiss={toggleShowStatusBanner}
-            syncStatus={syncStatus}
           />
 
           <Box

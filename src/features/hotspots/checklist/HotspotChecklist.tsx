@@ -5,7 +5,6 @@ import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import { BoxProps } from '@shopify/restyle'
-import { formatDistanceToNow } from 'date-fns'
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
 import { fetchChecklistActivity } from '../../../store/hotspotDetails/hotspotChecklistSlice'
@@ -17,7 +16,7 @@ import HotspotChecklistCarousel, {
 } from './HotspotChecklistCarousel'
 import { wp } from '../../../utils/layout'
 import { Theme } from '../../../theme/theme'
-import shortLocale from '../../../utils/formatDistance'
+import useHotspotSync from '../useHotspotSync'
 
 type Props = BoxProps<Theme> & {
   hotspot: Hotspot | Witness
@@ -41,6 +40,7 @@ const HotspotChecklist = ({
     dataTransferTxn,
     loadingActivity,
   } = useSelector((state: RootState) => state.hotspotChecklist)
+  const { getStatusMessage } = useHotspotSync(hotspot)
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
   )
@@ -74,41 +74,14 @@ const HotspotChecklist = ({
     }
   }, [loadingActivity, showSkeleton, visible])
 
-  const syncStatus = useMemo(() => {
-    if (
-      !blockHeight ||
-      !hotspotSyncStatus ||
-      hotspotSyncStatus.status === undefined
-    )
-      return ''
-
-    const timeAgo = hotspot.status?.timestamp
-      ? formatDistanceToNow(new Date(hotspot.status.timestamp), {
-          locale: shortLocale,
-          addSuffix: true,
-        })
-      : null
-
-    if (hotspotSyncStatus.status === 'full') {
-      if (!timeAgo) {
-        return t('checklist.blocks.full')
-      }
-      return t('checklist.blocks.full_with_date', {
-        timeAgo,
-      })
-    }
-    if (!timeAgo) {
-      return t('checklist.blocks.partial')
-    }
-    return t('checklist.blocks.partial_with_date', { timeAgo })
-  }, [blockHeight, hotspot.status?.timestamp, hotspotSyncStatus, t])
+  const isOnline = useMemo(() => hotspot?.status?.online === 'online', [
+    hotspot?.status?.online,
+  ])
 
   const hotspotStatus = useMemo(
     () =>
-      hotspot?.status?.online === 'online'
-        ? t('checklist.status.online')
-        : t('checklist.status.offline'),
-    [hotspot?.status?.online, t],
+      isOnline ? t('checklist.status.online') : t('checklist.status.offline'),
+    [isOnline, t],
   )
 
   const challengerStatus = useMemo(
@@ -160,16 +133,15 @@ const HotspotChecklist = ({
       {
         key: 'checklist.blocks',
         title: t('checklist.blocks.title'),
-        description: syncStatus,
-        complete:
-          (blockHeight && hotspotSyncStatus?.status === 'full') || false,
+        description: getStatusMessage(),
+        complete: (isOnline && hotspotSyncStatus?.status === 'full') || false,
         showAuto: true,
       },
       {
         key: 'checklist.status',
         title: t('checklist.status.title'),
         description: hotspotStatus,
-        complete: hotspot?.status?.online === 'online',
+        complete: isOnline,
         showAuto: false,
       },
       {
@@ -211,7 +183,6 @@ const HotspotChecklist = ({
       },
     ],
     [
-      blockHeight,
       challengeWitnessStatus,
       challengeeStatus,
       challengeeTxn,
@@ -219,10 +190,10 @@ const HotspotChecklist = ({
       challengerTxn,
       dataTransferStatus,
       dataTransferTxn,
-      hotspot?.status?.online,
+      getStatusMessage,
       hotspotStatus,
-      hotspotSyncStatus,
-      syncStatus,
+      hotspotSyncStatus?.status,
+      isOnline,
       t,
       witnessStatus,
       witnessTxn,
