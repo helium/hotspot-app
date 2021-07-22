@@ -71,17 +71,6 @@ export const getHotspotDetails = async (address: string): Promise<Hotspot> => {
   return client.hotspots.get(address)
 }
 
-export const getHotspotRewardsSum = async (
-  address: string,
-  numDaysBack: number,
-  date: Date = new Date(),
-) => {
-  Logger.breadcrumb('getHotspotRewardsSum', breadcrumbOpts)
-  const endDate = new Date(date)
-  endDate.setDate(date.getDate() - numDaysBack)
-  return client.hotspot(address).rewards.sum.get(endDate, date)
-}
-
 export const getHotspotRewards = async (
   address: string,
   numDaysBack: number,

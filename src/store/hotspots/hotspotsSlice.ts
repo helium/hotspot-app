@@ -1,12 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { Hotspot, Sum } from '@helium/http'
+import { Hotspot } from '@helium/http'
 import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
-import { orderBy, sortBy } from 'lodash'
-import {
-  getHotspotDetails,
-  getHotspotRewardsSum,
-  getHotspots,
-} from '../../utils/appDataClient'
+import { orderBy, sortBy, uniq } from 'lodash'
+import { getHotspotDetails, getHotspots } from '../../utils/appDataClient'
 import { distance, LocationCoords } from '../../utils/location'
 import { getWallet, deleteWallet, postWallet } from '../../utils/walletClient'
 import * as Logger from '../../utils/logger'
@@ -21,7 +17,19 @@ export enum HotspotSort {
   Offline = 'offline',
 }
 
-type Rewards = Record<string, Sum>
+export type WalletReward = {
+  avg: number
+  gateway: string
+  max: number
+  median: number
+  min: number
+  stddev: number
+  sum: number
+  total: number
+  updated_at: string
+}
+
+type Rewards = Record<string, Balance<NetworkTokens>>
 
 export type HotspotsSliceState = {
   hotspots: Hotspot[]
@@ -30,9 +38,8 @@ export type HotspotsSliceState = {
   followedHotspotsObj: Record<string, Hotspot>
   followedHotspots: Hotspot[]
   order: HotspotSort
-  rewards?: Rewards
+  rewards: Rewards
   location?: LocationCoords
-  totalRewards?: Balance<NetworkTokens>
   loadingRewards: boolean
   hotspotsLoaded: boolean
   failure: boolean
@@ -50,6 +57,7 @@ const initialState: HotspotsSliceState = {
   hotspotsLoaded: false,
   failure: false,
   syncStatuses: {},
+  rewards: {},
 }
 
 type SorterContext = {
@@ -76,7 +84,8 @@ const hotspotSorters: Record<HotspotSort, HotspotSorter> = {
       return hotspots
     }
     return sortBy(hotspots, [
-      (h) => (context.rewards ? -context.rewards[h.address]?.total : 0),
+      (h) =>
+        context.rewards ? -context.rewards[h.address]?.integerBalance : 0,
     ])
   },
   [HotspotSort.Offline]: (hotspots) =>
@@ -85,10 +94,7 @@ const hotspotSorters: Record<HotspotSort, HotspotSorter> = {
 }
 
 export const fetchRewards = createAsyncThunk<
-  {
-    total: Balance<NetworkTokens>
-    rewards: Record<string, Sum>
-  },
+  WalletReward[],
   { fetchType: 'all' | 'followed' }
 >('hotspots/fetchRewards', async ({ fetchType }, { getState }) => {
   const { hotspots, followedHotspots } = (getState() as {
@@ -97,73 +103,16 @@ export const fetchRewards = createAsyncThunk<
       followedHotspots: Hotspot[]
     }
   }).hotspots
-  const followingAddresses = followedHotspots.map((h) => h.address)
-  let total = new Balance(0, CurrencyType.networkToken)
-  const rewards: Record<string, Sum> = {}
-
-  if (fetchType === 'followed') {
-    const followedResponses = (
-      await Promise.all(
-        followingAddresses
-          .map((address) => getHotspotRewardsSum(address, 1))
-          .map((p) =>
-            p.catch((e) => {
-              Logger.error(e)
-            }),
-          ),
-      )
-    ).filter((a) => a !== undefined) as Sum[]
-    followedResponses.forEach((reward, i) => {
-      const address = followingAddresses[i]
-      rewards[address] = reward
-    })
-    return { rewards, total }
+  let gatewayAddresses = followedHotspots.map((h) => h.address)
+  if (fetchType === 'all') {
+    const ownedAddresses = hotspots.map((h) => h.address)
+    gatewayAddresses = uniq([...ownedAddresses, ...gatewayAddresses])
   }
 
-  const ownedAddresses = hotspots.map((h) => h.address)
-  const unOwnedAddresses = followingAddresses.filter(
-    (fa) => !ownedAddresses.includes(fa),
-  )
-
-  const unOwnedResults = (
-    await Promise.all(
-      unOwnedAddresses
-        .map((address) => getHotspotRewardsSum(address, 1))
-        .map((p) =>
-          p.catch((e) => {
-            Logger.error(e)
-          }),
-        ),
-    )
-  ).filter((a) => a !== undefined) as Sum[]
-
-  const ownedResults = (
-    await Promise.all(
-      ownedAddresses
-        .map((address) => getHotspotRewardsSum(address, 1))
-        .map((p) =>
-          p.catch((e) => {
-            Logger.error(e)
-          }),
-        ),
-    )
-  ).filter((a) => a !== undefined) as Sum[]
-
-  ownedResults.forEach((reward, i) => {
-    const address = ownedAddresses[i]
-    rewards[address] = reward
-    total = total.plus(reward.balanceTotal)
+  return getWallet('hotspots/rewards', {
+    addresses: gatewayAddresses.join(','),
+    dayRange: 1,
   })
-
-  unOwnedResults.forEach((reward, i) => {
-    const address = unOwnedAddresses[i]
-    rewards[address] = reward
-  })
-
-  return {
-    total,
-    rewards,
-  }
 })
 export const fetchFollowedHotspotsFromBlock = createAsyncThunk(
   'hotspots/fetchFollowedHotspotsFromBlock ',
@@ -252,7 +201,7 @@ export const followHotspot = createAsyncThunk<
   {
     followed: Hotspot[]
     blockHotspot: Hotspot | null
-    hotspotRewards: Sum | null
+    hotspotRewards: Balance<NetworkTokens> | null
     hotspotAddress: string
   },
   string
@@ -267,9 +216,18 @@ export const followHotspot = createAsyncThunk<
     Logger.error(e)
   }
 
-  let hotspotRewards: Sum | null = null
+  let hotspotRewards: Balance<NetworkTokens> | null = null
   try {
-    hotspotRewards = await getHotspotRewardsSum(hotspotAddress, 1)
+    const response: WalletReward[] = await getWallet('hotspots/rewards', {
+      addresses: hotspotAddress,
+      dayRange: 1,
+    })
+    if (response && response.length) {
+      hotspotRewards = Balance.fromFloat(
+        response[0].total,
+        CurrencyType.networkToken,
+      )
+    }
   } catch (e) {
     Logger.error(e)
   }
@@ -355,12 +313,19 @@ const hotspotsSlice = createSlice({
         state.order = HotspotSort.Followed
       }
     })
+    builder.addCase(fetchRewards.rejected, (state, _action) => {
+      state.loadingRewards = false
+    })
     builder.addCase(fetchRewards.pending, (state, _action) => {
       state.loadingRewards = true
     })
     builder.addCase(fetchRewards.fulfilled, (state, action) => {
-      state.rewards = action.payload.rewards
-      state.totalRewards = action.payload.total
+      action.payload.forEach((r) => {
+        state.rewards[r.gateway] = Balance.fromFloat(
+          r.total,
+          CurrencyType.networkToken,
+        )
+      })
       state.loadingRewards = false
     })
     builder.addCase(

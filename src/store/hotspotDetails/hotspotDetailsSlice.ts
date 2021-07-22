@@ -1,12 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { Hotspot, Reward, Sum, Witness } from '@helium/http'
+import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
 import {
   getHotspotDetails,
   getHotspotRewards,
-  getHotspotRewardsSum,
   getHotspotWitnesses,
 } from '../../utils/appDataClient'
-import { calculatePercentChange } from '../../features/hotspots/details/RewardsHelper'
 import {
   CacheRecord,
   handleCacheRejected,
@@ -14,6 +13,8 @@ import {
   handleCacheFulfilled,
   hasValidCache,
 } from '../../utils/cacheUtils'
+import { getWallet } from '../../utils/walletClient'
+import { WalletReward } from '../hotspots/hotspotsSlice'
 
 type FetchDetailsParams = {
   address: string
@@ -62,21 +63,52 @@ export const fetchHotspotChartData = createAsyncThunk<
     const startDate = new Date()
     const endDate = new Date(startDate)
     endDate.setDate(endDate.getDate() - params.numDays)
-    const data = await Promise.all([
-      getHotspotRewardsSum(params.address, params.numDays),
-      getHotspotRewardsSum(params.address, params.numDays, endDate),
+    const data: [WalletReward[], WalletReward[], Reward[]] = await Promise.all([
+      getWallet('hotspots/rewards', {
+        addresses: params.address,
+        dayRange: params.numDays,
+      }),
+      getWallet('hotspots/rewards', {
+        addresses: params.address,
+        dayRange: params.numDays * 2,
+      }),
       getHotspotRewards(params.address, params.numDays),
     ])
-    const rewardSum = data[0]
-    const pastRewardSum = data[1]
-    const rewards = data[2]
+    const [selectedRange, fullRange, rewards] = data
+    let rewardsChange = 0
+    if (
+      selectedRange &&
+      selectedRange.length &&
+      fullRange &&
+      fullRange.length
+    ) {
+      const selectedBalance = Balance.fromFloat(
+        selectedRange[0].total,
+        CurrencyType.networkToken,
+      )
+      const fullBalance = Balance.fromFloat(
+        fullRange[0].total,
+        CurrencyType.networkToken,
+      )
+      const previousBalance: Balance<NetworkTokens> = fullBalance.minus(
+        selectedBalance,
+      )
+      if (
+        previousBalance.integerBalance > 0 &&
+        selectedBalance.integerBalance > 0
+      ) {
+        rewardsChange =
+          ((selectedBalance.bigInteger.toNumber() -
+            previousBalance.bigInteger.toNumber()) /
+            previousBalance.bigInteger.toNumber()) *
+          100
+      }
+    }
+
     return {
-      rewardSum,
+      selectedRange,
       rewards,
-      rewardsChange: calculatePercentChange(
-        rewardSum.total,
-        pastRewardSum.total,
-      ),
+      rewardsChange,
     }
   },
 )

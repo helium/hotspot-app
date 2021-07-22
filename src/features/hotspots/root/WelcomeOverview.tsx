@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import { Sum } from '@helium/http'
+import Balance, { CurrencyType } from '@helium/currency'
 import Box from '../../../components/Box'
 import EmojiBlip from '../../../components/EmojiBlip'
 import Text from '../../../components/Text'
@@ -38,7 +39,7 @@ const TimeOfDayTitle = ({ date }: { date: Date }) => {
 type Props = { accountRewards: CacheRecord<Sum> }
 const WelcomeOverview = ({ accountRewards }: Props) => {
   const { t } = useTranslation()
-  const { hntToDisplayVal, toggleConvertHntToCurrency } = useCurrency()
+  const { hntBalanceToDisplayVal, toggleConvertHntToCurrency } = useCurrency()
   const [bodyText, setBodyText] = useState('')
 
   const hotspots = useSelector(
@@ -60,13 +61,21 @@ const WelcomeOverview = ({ accountRewards }: Props) => {
   const updateBodyText = useCallback(async () => {
     if (loading) return
 
-    const hntAmount = await hntToDisplayVal(accountRewards.total)
+    const hntAmount = await hntBalanceToDisplayVal(
+      Balance.fromFloat(accountRewards.total, CurrencyType.networkToken),
+    )
     const nextBodyText = t('hotspots.owned.reward_summary', {
       count: hotspots.length,
       hntAmount,
     })
     setBodyText(nextBodyText)
-  }, [accountRewards.total, hntToDisplayVal, hotspots.length, loading, t])
+  }, [
+    accountRewards.total,
+    hntBalanceToDisplayVal,
+    hotspots.length,
+    loading,
+    t,
+  ])
 
   useEffect(() => {
     updateBodyText()
