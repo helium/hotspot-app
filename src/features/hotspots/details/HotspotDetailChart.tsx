@@ -77,7 +77,7 @@ const HotspotDetailChart = ({
           <Text color="grayLightText" fontSize={16} maxFontSizeMultiplier={1.2}>
             {title}
           </Text>
-          <Box flexDirection="row">
+          <Box flexDirection="row" alignItems="center">
             <Text
               variant="light"
               color="grayDarkText"
@@ -113,7 +113,7 @@ const HotspotDetailChart = ({
               <Text
                 variant="body3"
                 color="grayDarkText"
-                adjustsFontSizeToFit
+                fontSize={13}
                 maxFontSizeMultiplier={1.1}
               >
                 {focusedData ? focusedData.label : ''}
