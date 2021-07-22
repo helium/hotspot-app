@@ -123,7 +123,7 @@ const HotspotsList = ({
           hotspot={item}
           showCarot
           loading={loadingRewards}
-          totalReward={rewards[item.address]?.balanceTotal}
+          totalReward={rewards[item.address]}
         />
       )
     },
