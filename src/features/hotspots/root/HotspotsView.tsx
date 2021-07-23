@@ -282,7 +282,8 @@ const HotspotsView = ({
     }
 
     fetchHotspot()
-  }, [dispatch, handlePresentDetails, params])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params])
 
   const handleSelectPlace = useCallback(
     async (place: PlacePrediction) => {
