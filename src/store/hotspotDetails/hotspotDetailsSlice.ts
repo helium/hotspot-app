@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { Hotspot, Reward, Sum, Witness } from '@helium/http'
+import { Hotspot, Reward, Witness } from '@helium/http'
 import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
 import {
   getHotspotDetails,
@@ -76,13 +76,14 @@ export const fetchHotspotChartData = createAsyncThunk<
     ])
     const [selectedRange, fullRange, rewards] = data
     let rewardsChange = 0
+    let selectedBalance = Balance.fromFloat(0, CurrencyType.networkToken)
     if (
       selectedRange &&
       selectedRange.length &&
       fullRange &&
       fullRange.length
     ) {
-      const selectedBalance = Balance.fromFloat(
+      selectedBalance = Balance.fromFloat(
         selectedRange[0].total,
         CurrencyType.networkToken,
       )
@@ -106,7 +107,7 @@ export const fetchHotspotChartData = createAsyncThunk<
     }
 
     return {
-      selectedRange,
+      rewardSum: selectedBalance,
       rewards,
       rewardsChange,
     }
@@ -114,7 +115,7 @@ export const fetchHotspotChartData = createAsyncThunk<
 )
 
 type HotspotChartData = {
-  rewardSum?: Sum
+  rewardSum?: Balance<NetworkTokens>
   rewards?: Reward[]
   rewardsChange?: number
 }
