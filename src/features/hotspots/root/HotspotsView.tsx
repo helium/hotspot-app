@@ -35,6 +35,7 @@ import ShortcutNav, { GlobalOpt, IS_GLOBAL_OPT } from './ShortcutNav'
 import { useAppDispatch } from '../../../store/store'
 import { fetchAccountRewards } from '../../../store/account/accountSlice'
 import useVisible from '../../../utils/useVisible'
+import { fetchValidators } from '../../../store/validators/validatorsSlice'
 
 type Props = {
   ownedHotspots?: Hotspot[]
@@ -108,6 +109,7 @@ const HotspotsView = ({
   useVisible({
     onAppear: () => {
       dispatch(fetchAccountRewards())
+      dispatch(fetchValidators())
     },
   })
 

@@ -52,6 +52,15 @@ export const getHotspots = async () => {
   return newHotspotList.takeJSON(1000)
 }
 
+export const getValidators = async () => {
+  Logger.breadcrumb('getValidators', breadcrumbOpts)
+  const address = await getAddress()
+  if (!address) return []
+
+  const newValidatorsList = await client.account(address).validators.list()
+  return newValidatorsList.takeJSON(1000)
+}
+
 export const getHotspotsForHexId = async (hexId: string) => {
   const hotspotsList = await client.hotspots.hex(hexId)
   return hotspotsList.takeJSON(1000)
