@@ -49,7 +49,7 @@ export const getHotspots = async () => {
   if (!address) return []
 
   const newHotspotList = await client.account(address).hotspots.list()
-  return newHotspotList.takeJSON(1000)
+  return newHotspotList.takeJSON(MAX)
 }
 
 export const getValidators = async () => {
@@ -58,12 +58,12 @@ export const getValidators = async () => {
   if (!address) return []
 
   const newValidatorsList = await client.account(address).validators.list()
-  return newValidatorsList.takeJSON(1000)
+  return newValidatorsList.takeJSON(MAX)
 }
 
 export const getHotspotsForHexId = async (hexId: string) => {
   const hotspotsList = await client.hotspots.hex(hexId)
-  return hotspotsList.takeJSON(1000)
+  return hotspotsList.takeJSON(MAX)
 }
 
 export const searchHotspots = async (searchTerm: string) => {
@@ -72,7 +72,7 @@ export const searchHotspots = async (searchTerm: string) => {
   if (!address) return []
 
   const newHotspotList = await client.hotspots.search(searchTerm)
-  return newHotspotList.takeJSON(1000)
+  return newHotspotList.takeJSON(MAX)
 }
 
 export const getHotspotDetails = async (address: string): Promise<Hotspot> => {
