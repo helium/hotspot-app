@@ -11,11 +11,11 @@ const COTX_V1 = {
         '<b><white>Diagnostic support allows COTX Gateway to identify issues with your Hotspot in a secure way.</white></b>\n\nCOTX Gateway will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@cotxnetworks.com</b></purple> from the email used to purchase the Hotspot.',
       power: [
         'Plug in the provided power adapter into an outlet near a window and screw in the provided antenna on the back of the Hotspot.',
-        'After power on the COTX Gateway Miner, information will be shown on the display screen.',
+        'Once the COTX Gateway Miner is powered on, on the display screen will appear.',
       ],
       bluetooth: [
         'Press and hold the BT button for 5 seconds to turn on Bluetooth.',
-        'The hotspot is ready to pair when the screen display Bluetooth icon turn on.\n\nMake sure your phone’s Bluetooth is turned on!',
+        'The Hotspot is ready to pair when the screen displays the Bluetooth icon.\n\nMake sure your phone’s Bluetooth is turned on!',
       ],
     },
     ja: {
