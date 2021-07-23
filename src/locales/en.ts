@@ -589,10 +589,20 @@ export default {
     owned: {
       title: 'My Hotspots',
       title_no_hotspots: 'Hotspots',
-      reward_summary:
+      hotspot_plural: '{{count}} Hotspots',
+      hotspot: 'Hotspot',
+      validator_plural: '{{count}} Validators',
+      validator: 'Validator',
+      reward_hotspot_summary:
         'Your Hotspot has earned\n{{hntAmount}} in the past 24 hours.',
-      reward_summary_plural:
+      reward_hotspot_summary_plural:
         'Your {{count}} Hotspots have earned\n{{hntAmount}} in the past 24 hours.',
+      reward_validator_summary:
+        'Your Validator has earned\n{{hntAmount}} in the past 24 hours.',
+      reward_validator_summary_plural:
+        'Your {{count}} Validators have earned\n{{hntAmount}} in the past 24 hours.',
+      reward_hotspot_and_validator_summary:
+        'Your {{hotspot}} and \n{{validator}} have earned\n{{hntAmount}} in the past 24 hours.',
       your_hotspots: 'Your Hotspots',
       filter: {
         new: 'Newest Hotspots',
