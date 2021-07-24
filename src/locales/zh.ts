@@ -92,6 +92,7 @@ export default {
   generic: {
     clear: '清除',
     done: '已完成',
+    disabled: '残障人士',
     understand: '我知道了',
     blocks: '区块',
     active: '活跃',

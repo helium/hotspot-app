@@ -94,6 +94,7 @@ export default {
   generic: {
     clear: 'Clear',
     done: 'Done',
+    disabled: 'Disabled',
     readMore: 'Read More',
     witness: 'Witness',
     understand: 'I understand',

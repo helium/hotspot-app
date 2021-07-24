@@ -13,12 +13,14 @@ import SendDetailsForm from './SendDetailsForm'
 import { Transfer } from '../../hotspots/transfers/TransferRequests'
 import { AppLinkCategoryType } from '../../../providers/appLinkTypes'
 import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
+import { Colors } from '../../../theme/theme'
 
 type Props = {
   account?: Account
   fee: Balance<NetworkTokens>
   hasSufficientBalance?: boolean
   hasValidActivity?: boolean
+  isDisabled: boolean
   isLocked: boolean
   isSeller?: boolean
   isValid: boolean
@@ -31,6 +33,7 @@ type Props = {
   type: AppLinkCategoryType
   unlockForm: () => void
   updateSendDetails: (detailsId: string, updates: SendDetailsUpdate) => void
+  warning?: string
 }
 
 const SendForm = ({
@@ -38,6 +41,7 @@ const SendForm = ({
   fee,
   hasSufficientBalance,
   hasValidActivity,
+  isDisabled,
   isLocked,
   isSeller,
   isValid,
@@ -50,6 +54,7 @@ const SendForm = ({
   type,
   unlockForm,
   updateSendDetails,
+  warning,
 }: Props) => {
   const { t } = useTranslation()
 
@@ -79,8 +84,10 @@ const SendForm = ({
       <ScrollView contentContainerStyle={{ marginTop: 16 }}>
         {isLocked && (
           <LockedHeader
+            backgroundColor={isDisabled ? 'grayLight' : 'blueMain'}
             onClosePress={unlockForm}
-            allowClose={type !== 'dc_burn'}
+            allowClose={type !== 'dc_burn' && !isDisabled}
+            text={isDisabled ? t('generic.disabled') : t('send.qrInfo')}
           />
         )}
         {sendDetails.map((details, index) => (
@@ -128,17 +135,31 @@ const SendForm = ({
         disabled={!isValid}
       />
       {shouldShowFee && <FeeFooter fee={fee} />}
+      {warning && <NoticeFooter text={warning} color="redMain" />}
     </Box>
   )
 }
 
 const FeeFooter = ({ fee }: { fee: Balance<NetworkTokens> }) => {
   const { t } = useTranslation()
+  const feeText = `+${fee.toString(8, {
+    decimalSeparator,
+    groupSeparator,
+  })} ${t('generic.fee').toUpperCase()}`
+  return <NoticeFooter text={feeText} />
+}
+
+const NoticeFooter = ({
+  text,
+  color = 'grayText',
+}: {
+  text: string
+  color?: Colors
+}) => {
   return (
     <Box marginTop="m">
-      <Text variant="mono" color="grayText" alignSelf="center" fontSize={11}>
-        +{fee.toString(8, { decimalSeparator, groupSeparator })}{' '}
-        {t('generic.fee').toUpperCase()}
+      <Text variant="mono" color={color} alignSelf="center" fontSize={11}>
+        {text}
       </Text>
     </Box>
   )

@@ -93,6 +93,7 @@ const SendView = ({
     (state: RootState) => state.heliumData.currentOraclePrice,
   )
   const [type, setType] = useState<AppLinkCategoryType>(sendType || 'payment')
+  const [isDisabled, setDisabled] = useState(false)
   const [isLocked, setIsLocked] = useState(false)
   const [isValid, setIsValid] = useState(false)
   const [hasSufficientBalance, setHasSufficientBalance] = useState(false)
@@ -103,6 +104,7 @@ const SendView = ({
   const {
     account: { account },
   } = useSelector((state: RootState) => state)
+  const [warning, setWarning] = useState('')
 
   const { feeToHNT } = useFees()
 
@@ -185,6 +187,20 @@ const SendView = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // If a senderAddress is provided in scanResult but doesn't match the current account address
+  // then disable form and display warning message
+  useAsync(async () => {
+    if (!scanResult?.senderAddress) return
+    const address = await getAddress()
+    const senderAddress = Address.fromB58(`${scanResult.senderAddress}`)
+    if (senderAddress !== address) {
+      setDisabled(true)
+      setIsLocked(true)
+      // TODO: Use translations
+      setWarning('Invalid sender address')
+    }
+  }, [scanResult?.senderAddress])
 
   // process scan results
   useEffect(() => {
@@ -552,6 +568,7 @@ const SendView = ({
           fee={fee}
           hasSufficientBalance={hasSufficientBalance}
           hasValidActivity={hasValidActivity}
+          isDisabled={isDisabled}
           isLocked={isLocked}
           isSeller={isSeller}
           isValid={isValid}
@@ -564,6 +581,7 @@ const SendView = ({
           type={type}
           unlockForm={unlockForm}
           updateSendDetails={updateSendDetails}
+          warning={warning}
         />
       </Box>
       {isSeller && (

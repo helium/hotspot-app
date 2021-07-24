@@ -94,6 +94,7 @@ export default {
   generic: {
     clear: '지우기',
     done: '완료',
+    disabled: '장애인',
     understand: '내용을 이해함',
     blocks: '블록',
     active: '활성화',

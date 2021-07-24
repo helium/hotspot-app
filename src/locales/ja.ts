@@ -94,6 +94,7 @@ export default {
   generic: {
     clear: 'クリア',
     done: '完了',
+    disabled: '無効',
     understand: '理解しました',
     blocks: 'ブロック',
     active: 'アクティブ',
