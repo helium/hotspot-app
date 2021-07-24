@@ -1,7 +1,7 @@
 import { MakerAntenna } from '../antennaMakerTypes'
 
 const HELTEC_HOTSPOT = {
-  name: 'Heltec Hostpot (all)',
+  name: 'Heltec Hostpot (default)',
   gain: 3.5,
 } as MakerAntenna
 
