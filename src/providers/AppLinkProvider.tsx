@@ -128,9 +128,9 @@ const useAppLink = () => {
    * The data scanned from the QR code is expected to be one of these possibilities:
    * (1) A helium deeplink URL
    * (2) address string
-   * (3) stringified JSON object { type, address, amount?, memo? }
-   * (4) stringified JSON object { type, payees: {[payeeAddress]: amount} }
-   * (5) stringified JSON object { type, payees: {[payeeAddress]: { amount, memo? }} }
+   * (3) stringified JSON object { type, senderAddress?, address, amount?, memo? }
+   * (4) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: amount} }
+   * (5) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: { amount, memo? }} }
    */
   const parseBarCodeData = useCallback(
     (data: string, scanType: AppLinkCategoryType): AppLink | AppLinkPayment => {
@@ -179,9 +179,10 @@ const useAppLink = () => {
         if (type === 'payment') {
           let scanResult: AppLinkPayment
           if (rawScanResult.address) {
-            // Case (3) stringified JSON { type, address, amount?, memo? }
+            // Case (3) stringified JSON { type, senderAddress?, address, amount?, memo? }
             scanResult = {
               type,
+              senderAddress: rawScanResult.senderAddress,
               payees: [
                 {
                   address: rawScanResult.address,
@@ -193,15 +194,16 @@ const useAppLink = () => {
           } else if (rawScanResult.payees) {
             scanResult = {
               type,
+              senderAddress: rawScanResult.senderAddress,
               payees: Object.entries(rawScanResult.payees).map((entries) => {
                 let amount
                 let memo
                 if (entries[1]) {
                   if (typeof entries[1] === 'number') {
-                    // Case (4) stringified JSON object { type, payees: {[payeeAddress]: amount} }
+                    // Case (4) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: amount} }
                     amount = entries[1] as number
                   } else if (typeof entries[1] === 'object') {
-                    // Case (5) stringified JSON object { type, payees: {[payeeAddress]: { amount, memo? }} }
+                    // Case (5) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: { amount, memo? }} }
                     const scanData = entries[1] as {
                       amount: string
                       memo?: string
@@ -221,6 +223,8 @@ const useAppLink = () => {
             throw new Error('Invalid transaction encoding')
           }
 
+          if (scanResult.senderAddress)
+            assertValidAddress(scanResult.senderAddress)
           scanResult.payees.forEach(({ address }) =>
             assertValidAddress(address),
           )
