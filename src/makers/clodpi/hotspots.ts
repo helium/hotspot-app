@@ -6,6 +6,7 @@ const ClodPi = {
   name: 'ClodPi Pro Hotspot',
   icon: HotspotIcon,
   onboardType: 'QR',
+  onboardUrl: 'https://hotspot.clodpi.io/dashboard',
   translations: {
     en: {
       diagnostic:
