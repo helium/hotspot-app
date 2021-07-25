@@ -439,6 +439,7 @@ export default {
     hotspot_label: 'Hotspot',
     last_activity: '上次报告的活动: {{activity}}',
     label_error: '您的帐户 HNT 余额不足。',
+    invalid_sender_address: '发件人地址无效',
     stale_error: 'Hotspot 在最近的 {{blocks}} 个区块没有发生信标或见证活动。',
     scan: {
       title: '二维码使用方式',
