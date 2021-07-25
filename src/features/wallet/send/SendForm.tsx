@@ -135,7 +135,7 @@ const SendForm = ({
         disabled={!isValid || isDisabled}
       />
       {shouldShowFee && <FeeFooter fee={fee} />}
-      {warning && <NoticeFooter text={warning} color="redMain" />}
+      {!!warning && <NoticeFooter text={warning} color="redMain" />}
     </Box>
   )
 }
