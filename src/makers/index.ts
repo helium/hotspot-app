@@ -1,3 +1,4 @@
+import panther from './panther'
 import bobcat from './bobcat'
 import customAntennas from './custom/antennas'
 import finestra from './finestra'
@@ -12,6 +13,7 @@ import { LangType, supportedLangs } from '../utils/i18n/i18nTypes'
 import { HotspotMakerLangField } from './hotspotMakerTypes'
 
 export const Makers: Record<string, { id: number; supportEmail: string }> = {
+  panther,
   bobcat,
   finestra,
   helium,
@@ -24,6 +26,7 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
 }
 
 export const AntennaModels = {
+  ...panther.antennas,
   ...bobcat.antennas,
   ...customAntennas,
   ...finestra.antennas,
@@ -37,6 +40,7 @@ export const AntennaModels = {
 }
 
 export const HotspotMakerModels = {
+  ...panther.hotspots,
   ...bobcat.hotspots,
   ...finestra.hotspots,
   ...helium.hotspots,
