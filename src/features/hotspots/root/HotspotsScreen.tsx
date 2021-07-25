@@ -6,16 +6,18 @@ import { RootState } from '../../../store/rootReducer'
 import HotspotsView from './HotspotsView'
 import Box from '../../../components/Box'
 import {
-  fetchFollowedHotspotsFromBlock,
   fetchHotspotsData,
   fetchRewards,
 } from '../../../store/hotspots/hotspotsSlice'
 import useVisible from '../../../utils/useVisible'
 import { useAppDispatch } from '../../../store/store'
 import useGetLocation from '../../../utils/useGetLocation'
+import useAlert from '../../../utils/useAlert'
+import appSlice from '../../../store/user/appSlice'
 
 const HotspotsScreen = () => {
   const maybeGetLocation = useGetLocation()
+  const { showOKAlert } = useAlert()
   const hotspots = useSelector((state: RootState) => state.hotspots.hotspots)
   const followedHotspots = useSelector(
     (state: RootState) => state.hotspots.followedHotspots,
@@ -23,6 +25,16 @@ const HotspotsScreen = () => {
   const hotspotsLoaded = useSelector(
     (state: RootState) => state.hotspots.hotspotsLoaded,
   )
+  const fleetModeEnabled = useSelector(
+    (state: RootState) => state.app.isFleetModeEnabled,
+  )
+  const hasFleetModeAutoEnabled = useSelector(
+    (state: RootState) => state.app.hasFleetModeAutoEnabled,
+  )
+  const fleetModeLowerLimit = useSelector(
+    (state: RootState) => state.features.fleetModeLowerLimit,
+  )
+
   const [startOnMap, setStartOnMap] = useState(false)
   const dispatch = useAppDispatch()
   const { currentLocation: location } = useSelector(
@@ -38,6 +50,35 @@ const HotspotsScreen = () => {
     return [location?.longitude || 0, location?.latitude || 0]
   }, [location?.latitude, location?.longitude])
 
+  useEffect(() => {
+    if (
+      fleetModeEnabled ||
+      hasFleetModeAutoEnabled === undefined ||
+      hasFleetModeAutoEnabled ||
+      fleetModeLowerLimit === undefined ||
+      hotspots.length < fleetModeLowerLimit
+    )
+      return
+
+    dispatch(
+      appSlice.actions.updateFleetModeEnabled({
+        enabled: true,
+        autoEnabled: true,
+      }),
+    )
+    showOKAlert({
+      titleKey: 'fleetMode.autoEnablePrompt.title',
+      messageKey: 'fleetMode.autoEnablePrompt.subtitle',
+    })
+  }, [
+    dispatch,
+    fleetModeEnabled,
+    fleetModeLowerLimit,
+    hasFleetModeAutoEnabled,
+    hotspots,
+    showOKAlert,
+  ])
+
   useVisible({
     onAppear: () => {
       dispatch(fetchHotspotsData())
@@ -46,12 +87,8 @@ const HotspotsScreen = () => {
   })
 
   useEffect(() => {
-    // dispatch(fetchHotspotsData()) will trigger an update to hotspots
-    // anytime hotspots update, update rewards and following
-    // Separating these calls allows the UI to respond more quickly
-    dispatch(fetchFollowedHotspotsFromBlock())
-    dispatch(fetchRewards())
-  }, [hotspots, dispatch])
+    dispatch(fetchRewards({ fetchType: fleetModeEnabled ? 'followed' : 'all' }))
+  }, [hotspots, dispatch, fleetModeEnabled])
 
   const viewState = useMemo(() => {
     if (!hotspotsLoaded) return 'loading'

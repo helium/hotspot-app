@@ -46,8 +46,8 @@ import { useColors, useSpacing } from '../../../theme/themeHooks'
 import HotspotSheetHandle from '../root/HotspotSheetHandle'
 import { hp } from '../../../utils/layout'
 import sleep from '../../../utils/sleep'
-import { fetchSyncStatus } from '../../../store/hotspots/hotspotsSlice'
 import usePrevious from '../../../utils/usePrevious'
+import useHotspotSync from '../useHotspotSync'
 
 const hitSlop = { top: 24, bottom: 24 } as Insets
 
@@ -85,12 +85,7 @@ const HotspotDetails = ({
     useSelector(
       (state: RootState) => state.hotspotDetails.hotspotData[address],
     ) || {}
-  const blockHeight = useSelector(
-    (state: RootState) => state.heliumData.blockHeight,
-  )
-  const syncStatuses = useSelector(
-    (state: RootState) => state.hotspots.syncStatuses,
-  )
+
   const listRef = useRef<BottomSheet>(null)
   const scrollViewRef = useRef<BottomSheetScrollViewType>(null)
   const [isRelayed, setIsRelayed] = useState(false)
@@ -110,6 +105,8 @@ const HotspotDetails = ({
     hotspotDetailsHotspot,
     propsHotspot,
   ])
+
+  const { updateSyncStatus, hotspotSyncStatus } = useHotspotSync(hotspot)
 
   useEffect(() => {
     if (!visible) return
@@ -139,9 +136,13 @@ const HotspotDetails = ({
 
   // load hotspot data
   useEffect(() => {
-    if (!address || listIndex === 0 || (listIndex === 1 && prevListIndex === 1))
+    if (
+      !address ||
+      listIndex === 0 ||
+      (listIndex === 1 && prevListIndex === 1)
+    ) {
       return
-
+    }
     dispatch(fetchHotspotData(address))
   }, [address, dispatch, hotspot, listIndex, prevListIndex, timelineValue])
 
@@ -159,16 +160,8 @@ const HotspotDetails = ({
   }, [address, dispatch, hotspot, listIndex, prevListIndex, timelineValue])
 
   useEffect(() => {
-    if (!address) return
-
-    dispatch(
-      fetchSyncStatus({
-        address,
-        statusTime: hotspot?.status?.timestamp,
-        blockHeight,
-      }),
-    )
-  }, [address, blockHeight, dispatch, hotspot?.status?.timestamp])
+    updateSyncStatus()
+  }, [updateSyncStatus])
 
   const formattedHotspotName = useMemo(() => {
     if (!hotspot) return ''
@@ -325,6 +318,7 @@ const HotspotDetails = ({
 
   const handleToggleStatus = useCallback(async () => {
     if (listIndex === 0) {
+      setListIndex(1)
       listRef.current?.snapTo(1)
       if (showStatusBanner) {
         return // banner is already showing, but was out of sight
@@ -358,6 +352,7 @@ const HotspotDetails = ({
   useEffect(() => {
     // contract the bottom sheet when a new hotspot is selected
     if (prevHotspotAddress && prevHotspotAddress !== propsHotspot?.address) {
+      setListIndex(0)
       listRef.current?.snapTo(0)
       setSelectedOption(selectData[0].value)
       scrollViewRef.current?.scrollTo({ y: 0, x: 0, animated: false })
@@ -445,7 +440,7 @@ const HotspotDetails = ({
                 <StatusBadge
                   hitSlop={hitSlop}
                   online={hotspot?.status?.online}
-                  syncStatus={syncStatuses[hotspot?.address]?.status}
+                  syncStatus={hotspotSyncStatus?.status}
                   onPress={handleToggleStatus}
                 />
               )}
@@ -507,7 +502,7 @@ const HotspotDetails = ({
           {selectedOption === 'overview' && (
             <HotspotDetailChart
               title={t('hotspot_details.reward_title')}
-              number={rewardSum?.total.toFixed(2)}
+              number={rewardSum?.floatBalance.toFixed(2)}
               change={rewardsChange}
               data={rewardChartData}
               loading={loading}

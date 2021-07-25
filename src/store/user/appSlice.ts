@@ -13,6 +13,8 @@ export type AppState = {
   isHapticDisabled: boolean
   isSecureModeEnabled: boolean
   permanentPaymentAddress: string
+  isFleetModeEnabled: boolean
+  hasFleetModeAutoEnabled: boolean
   convertHntToCurrency: boolean
   isSettingUpHotspot: boolean
   isRestored: boolean
@@ -28,6 +30,7 @@ const initialState: AppState = {
   isHapticDisabled: false,
   isSecureModeEnabled: false,
   permanentPaymentAddress: '',
+  isFleetModeEnabled: false,
   convertHntToCurrency: false,
   isSettingUpHotspot: false,
   isRestored: false,
@@ -37,6 +40,7 @@ const initialState: AppState = {
   lastIdle: null,
   isLocked: false,
   isRequestingPermission: false,
+  hasFleetModeAutoEnabled: false,
 }
 
 type Restore = {
@@ -64,6 +68,8 @@ export const restoreUser = createAsyncThunk<Restore>(
       address,
       isSecureModeEnabled,
       permanentPaymentAddress,
+      isFleetModeEnabled,
+      hasFleetModeAutoEnabled,
     ] = await Promise.all([
       getSecureItem('accountBackedUp'),
       getSecureItem('requirePin'),
@@ -74,7 +80,10 @@ export const restoreUser = createAsyncThunk<Restore>(
       getSecureItem('address'),
       getSecureItem('secureModeEnabled'),
       getSecureItem('permanentPaymentAddress'),
+      getSecureItem('fleetModeEnabled'),
+      getSecureItem('hasFleetModeAutoEnabled'),
     ])
+
     if (isBackedUp && address) {
       OneSignal.sendTags({ address })
     }
@@ -90,7 +99,9 @@ export const restoreUser = createAsyncThunk<Restore>(
       convertHntToCurrency,
       isSecureModeEnabled,
       permanentPaymentAddress,
-    }
+      isFleetModeEnabled,
+      hasFleetModeAutoEnabled,
+    } as Restore
   },
 )
 
@@ -128,6 +139,17 @@ const appSlice = createSlice({
     updateHapticEnabled: (state, action: PayloadAction<boolean>) => {
       state.isHapticDisabled = action.payload
       setSecureItem('hapticDisabled', action.payload)
+    },
+    updateFleetModeEnabled: (
+      state,
+      action: PayloadAction<{ enabled: boolean; autoEnabled?: boolean }>,
+    ) => {
+      state.isFleetModeEnabled = action.payload.enabled
+      setSecureItem('fleetModeEnabled', action.payload.enabled)
+      if (action.payload.autoEnabled) {
+        state.hasFleetModeAutoEnabled = true
+        setSecureItem('hasFleetModeAutoEnabled', true)
+      }
     },
     toggleConvertHntToCurrency: (state) => {
       state.convertHntToCurrency = !state.convertHntToCurrency

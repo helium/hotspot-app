@@ -42,6 +42,7 @@ import { useLanguageContext } from '../../../providers/LanguageProvider'
 import { EXPLORER_BASE_URL } from '../../../utils/config'
 import { SUPPORTED_LANGUAGUES } from '../../../utils/i18n/i18nTypes'
 import Articles from '../../../constants/articles'
+import useAlert from '../../../utils/useAlert'
 
 type Route = RouteProp<RootStackParamList & MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
@@ -50,7 +51,11 @@ const MoreScreen = () => {
   const dispatch = useAppDispatch()
   const { version } = useDevice()
   const app = useSelector((state: RootState) => state.app, isEqual)
+  const fleetModeLowerLimit = useSelector(
+    (state: RootState) => state.features.fleetModeLowerLimit,
+  )
   const authIntervals = useAuthIntervals()
+  const { showOKCancelAlert } = useAlert()
   const { changeLanguage, language } = useLanguageContext()
   const navigation = useNavigation<MoreNavigationProp & RootNavigationProp>()
   const spacing = useSpacing()
@@ -130,6 +135,25 @@ const MoreScreen = () => {
   const handleHaptic = useCallback(() => {
     dispatch(appSlice.actions.updateHapticEnabled(!app.isHapticDisabled))
   }, [dispatch, app.isHapticDisabled])
+
+  const handleFleetMode = useCallback(async () => {
+    const decision = await showOKCancelAlert({
+      titleKey: app.isFleetModeEnabled
+        ? 'fleetMode.disablePrompt.title'
+        : 'fleetMode.enablePrompt.title',
+      messageKey: app.isFleetModeEnabled
+        ? 'fleetMode.disablePrompt.subtitle'
+        : 'fleetMode.enablePrompt.subtitle',
+      messageOptions: { lowerLimit: `${fleetModeLowerLimit}` },
+    })
+    if (!decision) return
+
+    dispatch(
+      appSlice.actions.updateFleetModeEnabled({
+        enabled: !app.isFleetModeEnabled,
+      }),
+    )
+  }, [app.isFleetModeEnabled, dispatch, fleetModeLowerLimit, showOKCancelAlert])
 
   const handleSignOut = useCallback(() => {
     Alert.alert(
@@ -285,6 +309,11 @@ const MoreScreen = () => {
             value: app.convertHntToCurrency,
           },
           {
+            title: t('more.sections.app.enableFleetMode'),
+            onToggle: handleFleetMode,
+            value: app.isFleetModeEnabled,
+          },
+          {
             title: t('more.sections.app.signOut'),
             onPress: handleSignOut,
             destructive: true,
@@ -294,8 +323,7 @@ const MoreScreen = () => {
       },
     ]
   }, [
-    t,
-    handlePinRequired,
+    app.isFleetModeEnabled,
     app.isPinRequired,
     app.isHapticDisabled,
     app.convertHntToCurrency,
@@ -304,11 +332,14 @@ const MoreScreen = () => {
     app.isSecureModeEnabled,
     showingSecureModeConfirmation,
     setShowingSecureModeConfirmation,
+    t,
+    handlePinRequired,
     handleRevealWords,
     language,
     handleLanguageChange,
     handleHaptic,
     handleConvertHntToCurrency,
+    handleFleetMode,
     handleSignOut,
     version,
     authIntervals,

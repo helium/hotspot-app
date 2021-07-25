@@ -30,9 +30,6 @@ const NotHotspotOwnerErrorScreen = () => {
   const followedHotspots = useSelector(
     (state: RootState) => state.hotspots.followedHotspotsObj,
   )
-  const followHotspotEnabled = useSelector(
-    (state: RootState) => state.features.followHotspotEnabled,
-  )
 
   const { followPurple, white } = useColors()
   const [following, setFollowing] = useState(!!followedHotspots[address])
@@ -41,7 +38,7 @@ const NotHotspotOwnerErrorScreen = () => {
   const opacityAnim = useRef(new Animated.Value(1))
 
   const anim = useCallback(async () => {
-    if (following || !followHotspotEnabled) return
+    if (following) return
 
     await sleep(700)
     Animated.loop(
@@ -60,7 +57,7 @@ const NotHotspotOwnerErrorScreen = () => {
       ]),
       { iterations: 3 },
     ).start(() => setAnimFinished(true))
-  }, [followHotspotEnabled, following])
+  }, [following])
 
   useEffect(() => {
     if (!animFinished) return
@@ -79,11 +76,9 @@ const NotHotspotOwnerErrorScreen = () => {
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
-      if (followHotspotEnabled) {
-        dispatch(fetchHotspotsData())
-      }
+      dispatch(fetchHotspotsData())
     })
-  }, [followHotspotEnabled, navigation, dispatch])
+  }, [navigation, dispatch])
 
   const handleFollowChange = useCallback((nextFollowing) => {
     setFollowing(nextFollowing)
@@ -123,9 +118,7 @@ const NotHotspotOwnerErrorScreen = () => {
           adjustsFontSizeToFit
           marginBottom={{ phone: 'xl', smallPhone: 'ms' }}
         >
-          {followHotspotEnabled
-            ? t('hotspot_setup.not_owner.subtitle_1')
-            : t('hotspot_setup.not_owner.subtitle_1_no_follow')}
+          {t('hotspot_setup.not_owner.subtitle_1')}
         </Text>
         <Text
           variant="subtitleLight"
@@ -135,49 +128,46 @@ const NotHotspotOwnerErrorScreen = () => {
           lineHeight={20}
           maxFontSizeMultiplier={1.3}
         >
-          {followHotspotEnabled ? t('hotspot_setup.not_owner.subtitle_2') : ''}
+          {t('hotspot_setup.not_owner.subtitle_2')}
         </Text>
-        {followHotspotEnabled && (
-          <>
-            <Box
-              height={52.5}
-              style={styles.ownedHotspotBox}
-              borderRadius="l"
-              alignItems="center"
-              flexDirection="row"
-            >
-              <Text
-                marginLeft="l"
-                style={hotspotNameStyle}
-                variant="medium"
-                fontSize={16}
-                flex={1}
-              >
-                {startCase(name)}
-              </Text>
-              <FollowButton
-                padding="l"
-                address={address}
-                colors={colors}
-                handleChange={handleFollowChange}
-              />
-            </Box>
-            <AnimatedBox
-              alignItems="flex-end"
-              paddingVertical="m"
-              height={18}
-              style={[
-                {
-                  transform: [{ translateY: slideUpAnimRef.current }],
-                  opacity: opacityAnim.current,
-                },
-                styles.arrow,
-              ]}
-            >
-              {!following && <UpArrow />}
-            </AnimatedBox>
-          </>
-        )}
+
+        <Box
+          height={52.5}
+          style={styles.ownedHotspotBox}
+          borderRadius="l"
+          alignItems="center"
+          flexDirection="row"
+        >
+          <Text
+            marginLeft="l"
+            style={hotspotNameStyle}
+            variant="medium"
+            fontSize={16}
+            flex={1}
+          >
+            {startCase(name)}
+          </Text>
+          <FollowButton
+            padding="l"
+            address={address}
+            colors={colors}
+            handleChange={handleFollowChange}
+          />
+        </Box>
+        <AnimatedBox
+          alignItems="flex-end"
+          paddingVertical="m"
+          height={18}
+          style={[
+            {
+              transform: [{ translateY: slideUpAnimRef.current }],
+              opacity: opacityAnim.current,
+            },
+            styles.arrow,
+          ]}
+        >
+          {!following && <UpArrow />}
+        </AnimatedBox>
       </Box>
       <Text
         variant="subtitleLight"
