@@ -70,12 +70,21 @@ export const assertLocationTxn = async (
   return finalTxn
 }
 
-export const loadLocationFeeData = async (
+export const loadLocationFeeData = async ({
   nonce = 0,
   accountIntegerBalance = 0,
-  onboardingRecord?: OnboardingRecord,
-) => {
-  const isFree = await hasFreeLocationAssert(nonce, onboardingRecord)
+  onboardingRecord,
+  dataOnly = false,
+}: {
+  nonce?: number
+  accountIntegerBalance?: number
+  onboardingRecord?: OnboardingRecord
+  dataOnly?: boolean
+}) => {
+  let isFree = false
+  if (!dataOnly) {
+    isFree = await hasFreeLocationAssert(nonce, onboardingRecord)
+  }
   const owner = await getAddress()
   const payer = isFree ? onboardingRecord?.maker?.address : owner
 
@@ -83,15 +92,23 @@ export const loadLocationFeeData = async (
     throw new Error('Missing payer or owner')
   }
 
-  const { stakingFee, fee } = calculateAssertLocFee(owner, payer, nonce)
-
-  const totalStakingAmountDC = new Balance(
-    stakingFee + fee,
-    CurrencyType.dataCredit,
-  )
   const { price: oraclePrice } = await getCurrentOraclePrice()
-  const totalStakingAmount = totalStakingAmountDC.toNetworkTokens(oraclePrice)
-  const totalStakingAmountUsd = totalStakingAmountDC.toUsd(oraclePrice)
+
+  let totalStakingAmountUsd = new Balance(500000000, CurrencyType.usd) // $5
+  let totalStakingAmount = totalStakingAmountUsd.toNetworkTokens(oraclePrice)
+  let totalStakingAmountDC = totalStakingAmountUsd.toDataCredits(oraclePrice)
+
+  if (!dataOnly) {
+    const { stakingFee, fee } = calculateAssertLocFee(owner, payer, nonce)
+
+    totalStakingAmountDC = new Balance(
+      stakingFee + fee,
+      CurrencyType.dataCredit,
+    )
+
+    totalStakingAmount = totalStakingAmountDC.toNetworkTokens(oraclePrice)
+    totalStakingAmountUsd = totalStakingAmountDC.toUsd(oraclePrice)
+  }
 
   const balance = accountIntegerBalance || 0
   const hasSufficientBalance = balance >= totalStakingAmount.integerBalance

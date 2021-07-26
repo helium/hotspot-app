@@ -43,11 +43,11 @@ const HotspotSetupConfirmLocationScreen = () => {
   )
   const { loading, result, error } = useAsync(
     () =>
-      loadLocationFeeData(
-        connectedHotspotDetails?.nonce || 0,
-        account?.balance?.integerBalance || 0,
+      loadLocationFeeData({
+        nonce: connectedHotspotDetails?.nonce,
+        accountIntegerBalance: account?.balance?.integerBalance,
         onboardingRecord,
-      ),
+      }),
     [],
   )
 

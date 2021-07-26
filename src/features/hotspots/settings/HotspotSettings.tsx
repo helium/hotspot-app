@@ -55,6 +55,7 @@ import { getAccountTxnsList } from '../../../utils/appDataClient'
 import usePermissionManager from '../../../utils/usePermissionManager'
 import useAlert from '../../../utils/useAlert'
 import { getLocationPermission } from '../../../store/location/locationSlice'
+import { isDataOnly } from '../../../utils/hotspotUtils'
 
 type State = 'init' | 'scan' | 'transfer' | 'discoveryMode' | 'updateHotspot'
 
@@ -87,9 +88,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
   )
   const { showOKCancelAlert } = useAlert()
 
-  const isDataOnly = useMemo(() => hotspot?.mode === 'dataonly', [
-    hotspot?.mode,
-  ])
+  const dataOnly = useMemo(() => isDataOnly(hotspot), [hotspot])
 
   useEffect(() => {
     getState()
@@ -357,7 +356,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
 
     return (
       <Box>
-        {!isDataOnly && (
+        {!dataOnly && (
           <HotspotSettingsOption
             title={t('hotspot_settings.transfer.title')}
             subtitle={transferButtonTitle}
@@ -398,7 +397,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
     settingsState,
     t,
     transferButtonTitle,
-    isDataOnly,
+    dataOnly,
   ])
 
   return (

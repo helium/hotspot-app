@@ -30,7 +30,7 @@ import HeliumSelect from '../../../components/HeliumSelect'
 import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
 import HotspotStatusBanner from './HotspotStatusBanner'
 import useToggle from '../../../utils/useToggle'
-import { isRelay } from '../../../utils/hotspotUtils'
+import { isDataOnly, isRelay } from '../../../utils/hotspotUtils'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Articles from '../../../constants/articles'
 import HotspotListItem from '../../../components/HotspotListItem'
@@ -109,9 +109,7 @@ const HotspotDetails = ({
 
   const { updateSyncStatus, hotspotSyncStatus } = useHotspotSync(hotspot)
 
-  const isDataOnly = useMemo(() => hotspot?.mode === 'dataonly', [
-    hotspot?.mode,
-  ])
+  const dataOnly = useMemo(() => isDataOnly(hotspot), [hotspot])
 
   useEffect(() => {
     if (!visible) return
@@ -306,7 +304,7 @@ const HotspotDetails = ({
   )
 
   const handleToggleStatus = useCallback(async () => {
-    if (isDataOnly) {
+    if (dataOnly) {
       showOKAlert({
         titleKey: 'hotspot_details.data_only_prompt.title',
         messageKey: 'hotspot_details.data_only_prompt.message',
@@ -325,7 +323,7 @@ const HotspotDetails = ({
     }
     toggleShowStatusBanner()
   }, [
-    isDataOnly,
+    dataOnly,
     listIndex,
     showOKAlert,
     showStatusBanner,
@@ -444,7 +442,7 @@ const HotspotDetails = ({
                   online={hotspot?.status?.online}
                   syncStatus={hotspotSyncStatus?.status}
                   onPress={handleToggleStatus}
-                  isDataOnly={isDataOnly}
+                  isDataOnly={dataOnly}
                 />
               )}
               {isRelayed && (

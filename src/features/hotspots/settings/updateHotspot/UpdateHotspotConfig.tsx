@@ -29,6 +29,7 @@ import useSubmitTxn from '../../../../hooks/useSubmitTxn'
 import { decimalSeparator, groupSeparator } from '../../../../utils/i18n'
 import { calculateAssertLocFee } from '../../../../utils/fees'
 import { MakerAntenna } from '../../../../makers/antennaMakerTypes'
+import { isDataOnly } from '../../../../utils/hotspotUtils'
 
 type Props = {
   onClose: () => void
@@ -117,7 +118,9 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
     name: string,
   ) => {
     if (updatedLocation) {
-      const feeData = await loadLocationFeeData()
+      const feeData = await loadLocationFeeData({
+        dataOnly: isDataOnly(hotspot),
+      })
       setLocationFee(
         feeData.totalStakingAmountDC.toString(0, {
           groupSeparator,

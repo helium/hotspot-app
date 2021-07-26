@@ -25,7 +25,7 @@ import DiscoveryModeBegin from './DiscoveryModeBegin'
 import DiscoveryModeResults from './DiscoveryModeResults'
 import useMount from '../../../../utils/useMount'
 import useAlert from '../../../../utils/useAlert'
-import { isRelay } from '../../../../utils/hotspotUtils'
+import { isDataOnly, isRelay } from '../../../../utils/hotspotUtils'
 import Articles from '../../../../constants/articles'
 import useDiscoveryPoll from './useDiscoveryPoll'
 import useHotspotSync from '../../useHotspotSync'
@@ -153,14 +153,12 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
     setViewState('results')
   }, [dispatch, hotspot])
 
-  const isDataOnly = useMemo(() => hotspot?.mode === 'dataonly', [
-    hotspot?.mode,
-  ])
+  const dataOnly = useMemo(() => isDataOnly(hotspot), [hotspot])
 
   const handleNewSelected = useCallback(async () => {
     if (!hotspot.address || !userAddress) return
 
-    if (isDataOnly) {
+    if (dataOnly) {
       dispatchDiscovery()
       return
     }
@@ -208,7 +206,7 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
     hotspot.status?.listenAddrs,
     userAddress,
     hotspotSyncStatus?.status,
-    isDataOnly,
+    dataOnly,
     showOKAlert,
     t,
     dispatchDiscovery,
