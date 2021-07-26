@@ -7,21 +7,28 @@ import { OnboardingNavigationProp } from '../onboardingTypes'
 import Box from '../../../components/Box'
 import ImageBox from '../../../components/ImageBox'
 import TextTransform from '../../../components/TextTransform'
+import { isTablet } from 'react-native-device-info'
 
 const WelcomeScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<OnboardingNavigationProp>()
 
   return (
-    <Box backgroundColor="primaryBackground" flex={1}>
+    <Box backgroundColor="primaryBackground" flex={1} >
+      <Box
+        flex={2}
+        height={"100%"}
+      >
       <ImageBox
-        alignSelf="flex-end"
-        maxHeight="50%"
+        flex={1}
+        alignSelf={isTablet() ? "flex-end" : "auto"}
+        maxHeight="100%"
         resizeMode="contain"
         aspectRatio={1242 / 1340}
-        width="100%"
+        width="50%"
         source={require('../../../assets/images/welcome.png')}
       />
+      </Box>
       <Box
         flex={1}
         paddingVertical="l"
