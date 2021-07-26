@@ -160,8 +160,13 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
   const handleNewSelected = useCallback(async () => {
     if (!hotspot.address || !userAddress) return
 
+    if (isDataOnly) {
+      dispatchDiscovery()
+      return
+    }
+
     const status = hotspotSyncStatus?.status
-    if (status !== 'full' && !isDataOnly) {
+    if (status !== 'full') {
       showOKAlert({
         titleKey: 'discovery.syncing_prompt.title',
         messageKey: 'discovery.syncing_prompt.message',

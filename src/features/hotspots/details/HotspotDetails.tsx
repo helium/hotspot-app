@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import {
   LayoutChangeEvent,
-  Alert,
   Linking,
   ActivityIndicator,
   Insets,
@@ -48,6 +47,7 @@ import { hp } from '../../../utils/layout'
 import sleep from '../../../utils/sleep'
 import usePrevious from '../../../utils/usePrevious'
 import useHotspotSync from '../useHotspotSync'
+import useAlert from '../../../utils/useAlert'
 
 const hitSlop = { top: 24, bottom: 24 } as Insets
 
@@ -86,6 +86,7 @@ const HotspotDetails = ({
       (state: RootState) => state.hotspotDetails.hotspotData[address],
     ) || {}
 
+  const { showOKAlert, showOKCancelAlert } = useAlert()
   const listRef = useRef<BottomSheet>(null)
   const scrollViewRef = useRef<BottomSheetScrollViewType>(null)
   const [isRelayed, setIsRelayed] = useState(false)
@@ -107,6 +108,10 @@ const HotspotDetails = ({
   ])
 
   const { updateSyncStatus, hotspotSyncStatus } = useHotspotSync(hotspot)
+
+  const isDataOnly = useMemo(() => hotspot?.mode === 'dataonly', [
+    hotspot?.mode,
+  ])
 
   useEffect(() => {
     if (!visible) return
@@ -208,25 +213,18 @@ const HotspotDetails = ({
     [],
   )
 
-  const handleRelayedPress = useCallback(() => {
-    Alert.alert(
-      t('hotspot_details.relay_prompt.title'),
-      t('hotspot_details.relay_prompt.message'),
-      [
-        {
-          text: t('generic.ok'),
-        },
-        {
-          text: t('discovery.troubleshooting_guide'),
-          style: 'cancel',
-          onPress: () => {
-            if (Linking.canOpenURL(Articles.Relay))
-              Linking.openURL(Articles.Relay)
-          },
-        },
-      ],
-    )
-  }, [t])
+  const handleRelayedPress = useCallback(async () => {
+    const decision = await showOKCancelAlert({
+      titleKey: 'hotspot_details.relay_prompt.title',
+      messageKey: 'hotspot_details.relay_prompt.message',
+      cancelKey: 'discovery.troubleshooting_guide',
+      cancelStyle: 'cancel',
+    })
+
+    if (!decision && Linking.canOpenURL(Articles.Relay)) {
+      Linking.openURL(Articles.Relay)
+    }
+  }, [showOKCancelAlert])
 
   const getDistance = useCallback(
     (otherHotspot: Hotspot | Witness) => {
@@ -271,27 +269,18 @@ const HotspotDetails = ({
     [getDistance, onSelectHotspot],
   )
 
-  const showWitnessAlert = useCallback(() => {
-    Alert.alert(
-      t('hotspot_details.witness_prompt.title'),
-      t('hotspot_details.witness_prompt.message', {
-        hotspotName: animalName(hotspot?.address || ''),
-      }),
-      [
-        {
-          text: t('generic.ok'),
-        },
-        {
-          text: t('generic.readMore'),
-          style: 'cancel',
-          onPress: () => {
-            if (Linking.canOpenURL(Articles.Witnesses))
-              Linking.openURL(Articles.Witnesses)
-          },
-        },
-      ],
-    )
-  }, [hotspot?.address, t])
+  const showWitnessAlert = useCallback(async () => {
+    const decision = await showOKCancelAlert({
+      titleKey: 'hotspot_details.witness_prompt.title',
+      messageKey: 'hotspot_details.witness_prompt.message',
+      cancelKey: 'discovery.troubleshooting_guide',
+      cancelStyle: 'cancel',
+    })
+
+    if (!decision && Linking.canOpenURL(Articles.Witnesses)) {
+      Linking.openURL(Articles.Witnesses)
+    }
+  }, [showOKCancelAlert])
 
   const cardHandle = useCallback(() => {
     return (
@@ -317,6 +306,13 @@ const HotspotDetails = ({
   )
 
   const handleToggleStatus = useCallback(async () => {
+    if (isDataOnly) {
+      showOKAlert({
+        titleKey: 'hotspot_details.data_only_prompt.title',
+        messageKey: 'hotspot_details.data_only_prompt.message',
+      })
+      return
+    }
     if (listIndex === 0) {
       setListIndex(1)
       listRef.current?.snapTo(1)
@@ -328,7 +324,13 @@ const HotspotDetails = ({
       await sleep(300) // Add a little delay to avoid animation jank
     }
     toggleShowStatusBanner()
-  }, [listIndex, showStatusBanner, toggleShowStatusBanner])
+  }, [
+    isDataOnly,
+    listIndex,
+    showOKAlert,
+    showStatusBanner,
+    toggleShowStatusBanner,
+  ])
 
   const contentContainerStyle = useMemo(() => ({ paddingLeft: spacing.m }), [
     spacing.m,
@@ -442,6 +444,7 @@ const HotspotDetails = ({
                   online={hotspot?.status?.online}
                   syncStatus={hotspotSyncStatus?.status}
                   onPress={handleToggleStatus}
+                  isDataOnly={isDataOnly}
                 />
               )}
               {isRelayed && (
