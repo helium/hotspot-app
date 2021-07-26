@@ -7,6 +7,7 @@ import heliumStatusSlice from './helium/heliumStatusSlice'
 import hotspotDetailsSlice from './hotspotDetails/hotspotDetailsSlice'
 import hotspotsSlice from './hotspots/hotspotsSlice'
 import hotspotSearchSlice from './hotspotSearch/hotspotSearchSlice'
+import validatorsSlice from './validators/validatorsSlice'
 import activitySlice from './activity/activitySlice'
 import hotspotChecklistSlice from './hotspotDetails/hotspotChecklistSlice'
 import discoverySlice from './discovery/discoverySlice'
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
   hotspots: hotspotsSlice.reducer,
   hotspotSearch: hotspotSearchSlice.reducer,
   hotspotChecklist: hotspotChecklistSlice.reducer,
+  validators: validatorsSlice.reducer,
   discovery: discoverySlice.reducer,
   features: featuresSlice.reducer,
   location: locationSlice.reducer,

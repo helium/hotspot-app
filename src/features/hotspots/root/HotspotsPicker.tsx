@@ -6,7 +6,6 @@ import NearestHotspot from '@assets/images/nearestHotspot.svg'
 import OfflineHotspot from '@assets/images/offlineHotspot.svg'
 import FollowedHotspot from '@assets/images/follow.svg'
 import TopHotspot from '@assets/images/topHotspot.svg'
-import { useNavigation } from '@react-navigation/native'
 import Box from '../../../components/Box'
 import hotspotsSlice, {
   HotspotSort,
@@ -18,19 +17,22 @@ import HeliumSelect from '../../../components/HeliumSelect'
 import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
 import useGetLocation from '../../../utils/useGetLocation'
 import { useSpacing } from '../../../theme/themeHooks'
+import useVisible from '../../../utils/useVisible'
+import useMount from '../../../utils/useMount'
 
-const HotspotsPicker = () => {
+type Props = { visible: boolean }
+const HotspotsPicker = ({ visible }: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const spacing = useSpacing()
   const maybeGetLocation = useGetLocation()
+  const fleetModeEnabled = useSelector(
+    (state: RootState) => state.app.isFleetModeEnabled,
+  )
   const order = useSelector((state: RootState) => state.hotspots.order)
-  const navigation = useNavigation()
+
   const { currentLocation, locationBlocked } = useSelector(
     (state: RootState) => state.location,
-  )
-  const followHotspotEnabled = useSelector(
-    (state: RootState) => state.features.followHotspotEnabled,
   )
   const prevOrder = usePrevious(order)
 
@@ -38,14 +40,34 @@ const HotspotsPicker = () => {
     dispatch(hotspotsSlice.actions.changeFilter(HotspotSort.New))
   }, [dispatch])
 
-  useEffect(() => {
-    maybeGetLocation(false, locationDeniedHandler)
-    return navigation.addListener('focus', () => {
+  useMount(() => {
+    if (!fleetModeEnabled) {
+      // On mount if fleet mode is off, default to New filter
+      dispatch(hotspotsSlice.actions.changeFilter(HotspotSort.New))
+    }
+  })
+
+  useVisible({
+    onAppear: () => {
+      // if fleet mode is on and they're on the new filter, bring them to followed when this view appears
+      if (fleetModeEnabled && order === HotspotSort.New) {
+        dispatch(hotspotsSlice.actions.changeFilter(HotspotSort.Followed))
+      }
+    },
+  })
+
+  useVisible({
+    onAppear: () => {
       maybeGetLocation(false, locationDeniedHandler)
       dispatch(hotspotsSlice.actions.changeFilterData(currentLocation))
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    },
+  })
+
+  useEffect(() => {
+    if (!visible) return
+
+    dispatch(hotspotsSlice.actions.changeFilterData(currentLocation))
+  }, [currentLocation, dispatch, visible])
 
   useEffect(() => {
     if (
@@ -84,14 +106,12 @@ const HotspotsPicker = () => {
       Icon: NewestHotspot,
       color: 'purpleMain',
     })
-    if (followHotspotEnabled) {
-      opts.push({
-        label: t(`hotspots.owned.filter.${HotspotSort.Followed}`),
-        value: HotspotSort.Followed,
-        Icon: FollowedHotspot,
-        color: 'purpleBright',
-      })
-    }
+    opts.push({
+      label: t(`hotspots.owned.filter.${HotspotSort.Followed}`),
+      value: HotspotSort.Followed,
+      Icon: FollowedHotspot,
+      color: 'purpleBright',
+    })
     if (!locationBlocked) {
       opts.push({
         label: t(`hotspots.owned.filter.${HotspotSort.Near}`),
@@ -100,12 +120,14 @@ const HotspotsPicker = () => {
         color: 'purpleMain',
       })
     }
-    opts.push({
-      label: t(`hotspots.owned.filter.${HotspotSort.Earn}`),
-      value: HotspotSort.Earn,
-      Icon: TopHotspot,
-      color: 'purpleMain',
-    })
+    if (!fleetModeEnabled) {
+      opts.push({
+        label: t(`hotspots.owned.filter.${HotspotSort.Earn}`),
+        value: HotspotSort.Earn,
+        Icon: TopHotspot,
+        color: 'purpleMain',
+      })
+    }
     opts.push({
       label: t(`hotspots.owned.filter.${HotspotSort.Offline}`),
       value: HotspotSort.Offline,
@@ -113,7 +135,7 @@ const HotspotsPicker = () => {
       color: 'purpleMain',
     })
     return opts
-  }, [followHotspotEnabled, locationBlocked, t])
+  }, [fleetModeEnabled, locationBlocked, t])
 
   const contentContainerStyle = useMemo(
     () => ({ paddingHorizontal: spacing.l }),
