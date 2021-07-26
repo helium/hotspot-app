@@ -79,7 +79,6 @@ const InputField = ({
             blurOnSubmit
             autoCompleteType="off"
             textContentType="none"
-            autoCapitalize="none"
             autoCorrect={false}
             dataDetectorTypes="none"
             keyboardAppearance="dark"
