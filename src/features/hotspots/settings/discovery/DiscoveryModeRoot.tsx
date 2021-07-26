@@ -25,7 +25,7 @@ import DiscoveryModeBegin from './DiscoveryModeBegin'
 import DiscoveryModeResults from './DiscoveryModeResults'
 import useMount from '../../../../utils/useMount'
 import useAlert from '../../../../utils/useAlert'
-import { isRelay, SyncStatus } from '../../../../utils/hotspotUtils'
+import { isRelay } from '../../../../utils/hotspotUtils'
 import Articles from '../../../../constants/articles'
 import useDiscoveryPoll from './useDiscoveryPoll'
 
@@ -156,7 +156,7 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
     if (!hotspot.address || !userAddress) return
 
     const { status } = syncStatuses[hotspot.address]
-    if (status !== SyncStatus.full) {
+    if (status !== 'full') {
       showOKAlert({
         titleKey: 'discovery.syncing_prompt.title',
         messageKey: 'discovery.syncing_prompt.message',

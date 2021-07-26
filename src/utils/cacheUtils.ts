@@ -4,7 +4,7 @@ export type CacheRecord<T> = T & {
 }
 
 const asCacheRecord = <T>(item: T) => {
-  if ('lastFetchedTimestamp' in item && 'loading' in item) {
+  if (item && 'lastFetchedTimestamp' in item && 'loading' in item) {
     return (item as unknown) as CacheRecord<T>
   }
 }
@@ -18,8 +18,13 @@ export const hasValidCache = <T>(item: T, mins = 5) => {
   return false
 }
 
-export const handleCacheRejected = <T>(item: T) =>
-  ({ ...item, loading: false } as CacheRecord<T>)
+export const handleCacheRejected = <T>(item?: T) => {
+  if (!item) {
+    return { loading: false } as CacheRecord<T>
+  }
+
+  return { ...item, loading: false } as CacheRecord<T>
+}
 
 export const handleCacheFulfilled = <T>(item: T) =>
   ({
@@ -28,7 +33,7 @@ export const handleCacheFulfilled = <T>(item: T) =>
     lastFetchedTimestamp: Date.now(),
   } as CacheRecord<T>)
 
-export const handleCachePending = <T>(item: CacheRecord<T>) => {
+export const handleCachePending = <T>(item?: CacheRecord<T>) => {
   if (!item) {
     return { loading: true } as CacheRecord<T>
   }

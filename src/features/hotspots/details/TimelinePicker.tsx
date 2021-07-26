@@ -64,6 +64,7 @@ const TimelinePicker = ({
       onValueChanged={handleValueChanged}
       itemPadding="xs"
       justifyContent="flex-end"
+      marginRight="n_ms"
       {...boxProps}
     />
   )

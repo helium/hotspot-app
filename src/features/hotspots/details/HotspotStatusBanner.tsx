@@ -3,16 +3,15 @@ import { Hotspot, Witness } from '@helium/http'
 import { BoxProps } from '@shopify/restyle'
 import React, { useState, useEffect, memo, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useSelector } from 'react-redux'
 import Close from '@assets/images/close.svg'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
-import { RootState } from '../../../store/rootReducer'
 import { Theme } from '../../../theme/theme'
 import { useColors } from '../../../theme/themeHooks'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import animateTransition from '../../../utils/animateTransition'
 import usePrevious from '../../../utils/usePrevious'
+import useHotspotSync from '../useHotspotSync'
 
 type Props = BoxProps<Theme> & {
   hotspot: Hotspot | Witness
@@ -25,20 +24,12 @@ const HotspotStatusBanner = ({
   onDismiss,
   ...boxProps
 }: Props) => {
-  const blockHeight = useSelector(
-    (state: RootState) => state.heliumData.blockHeight,
-  )
-  const syncStatuses = useSelector(
-    (state: RootState) => state.hotspots.syncStatuses,
-  )
   const { t } = useTranslation()
   const { orangeExtraDark } = useColors()
   const [visible, setVisible] = useState(false)
   const prevHotspotAddress = usePrevious(hotspot.address)
-  const hotspotSyncStatus = useMemo(() => syncStatuses[hotspot.address], [
-    hotspot.address,
-    syncStatuses,
-  ])
+
+  const { getStatusMessage } = useHotspotSync(hotspot)
 
   useEffect(() => {
     if (visible === propsVisible) return
@@ -59,34 +50,23 @@ const HotspotStatusBanner = ({
     return t('hotspot_details.status_prompt_offline.title')
   }, [hotspot.status, t])
 
-  const subtitle = useMemo(() => {
-    if (hotspot.status?.online !== 'online') return
-
-    if (!hotspotSyncStatus || hotspotSyncStatus.hotspotBlockHeight === 0) {
-      return t('hotspot_details.status_prompt_online.subtitle_starting')
-    }
-
-    if (hotspotSyncStatus?.hotspotBlockHeight) {
-      return t('hotspot_details.status_prompt_online.subtitle_active', {
-        hotspotBlock: hotspotSyncStatus?.hotspotBlockHeight,
-        currentBlock: blockHeight,
-      })
-    }
-
-    return ' '
-  }, [blockHeight, hotspot.status, hotspotSyncStatus, t])
-
   const handleClose = useCallback(() => {
     onDismiss()
   }, [onDismiss])
+
+  const subtitle = useMemo(() => {
+    if (hotspot.status?.online !== 'online') return null
+
+    return getStatusMessage()
+  }, [getStatusMessage, hotspot.status?.online])
 
   if (!visible) return null
 
   return (
     <Box
-      height={68}
       {...boxProps}
       paddingHorizontal="l"
+      paddingVertical="ms"
       justifyContent="center"
     >
       <Box
@@ -106,12 +86,13 @@ const HotspotStatusBanner = ({
       >
         {title}
       </Text>
-      {subtitle && (
+      {!!subtitle && (
         <Text
           variant="regular"
           fontSize={15}
           lineHeight={21}
           color="orangeExtraDark"
+          marginRight="l"
         >
           {subtitle}
         </Text>
