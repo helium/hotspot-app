@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { Hotspot, Witness } from '@helium/http'
 import { useAsync } from 'react-async-hook'
 import { Alert, Linking } from 'react-native'
@@ -28,6 +28,7 @@ import useAlert from '../../../../utils/useAlert'
 import { isRelay } from '../../../../utils/hotspotUtils'
 import Articles from '../../../../constants/articles'
 import useDiscoveryPoll from './useDiscoveryPoll'
+import useHotspotSync from '../../useHotspotSync'
 
 type Props = { onClose: () => void; hotspot: Hotspot | Witness }
 const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
@@ -59,9 +60,8 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
   const lastWarningDate = useSelector(
     (state: RootState) => state.discovery.lastWarningDate,
   )
-  const syncStatuses = useSelector(
-    (state: RootState) => state.hotspots.syncStatuses,
-  )
+
+  const { updateSyncStatus, hotspotSyncStatus } = useHotspotSync(hotspot)
 
   const fetchRecent = useCallback(() => {
     if (!hotspot.address || !userAddress) return
@@ -71,6 +71,7 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
 
   useMount(() => {
     dispatch(discoverySlice.actions.clearSelections())
+    updateSyncStatus()
   })
 
   const handleBack = useCallback(() => {
@@ -152,11 +153,15 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
     setViewState('results')
   }, [dispatch, hotspot])
 
+  const isDataOnly = useMemo(() => hotspot?.mode === 'dataonly', [
+    hotspot?.mode,
+  ])
+
   const handleNewSelected = useCallback(async () => {
     if (!hotspot.address || !userAddress) return
 
-    const { status } = syncStatuses[hotspot.address]
-    if (status !== 'full') {
+    const status = hotspotSyncStatus?.status
+    if (status !== 'full' && !isDataOnly) {
       showOKAlert({
         titleKey: 'discovery.syncing_prompt.title',
         messageKey: 'discovery.syncing_prompt.message',
@@ -192,7 +197,17 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
     } else {
       dispatchDiscovery()
     }
-  }, [hotspot, userAddress, syncStatuses, showOKAlert, t, dispatchDiscovery])
+  }, [
+    hotspot.address,
+    hotspot.status?.online,
+    hotspot.status?.listenAddrs,
+    userAddress,
+    hotspotSyncStatus?.status,
+    isDataOnly,
+    showOKAlert,
+    t,
+    dispatchDiscovery,
+  ])
 
   const handleRequestSelected = useCallback(
     (request: DiscoveryRequest) => {

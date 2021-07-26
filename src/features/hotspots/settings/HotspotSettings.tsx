@@ -87,6 +87,10 @@ const HotspotSettings = ({ hotspot }: Props) => {
   )
   const { showOKCancelAlert } = useAlert()
 
+  const isDataOnly = useMemo(() => hotspot?.mode === 'dataonly', [
+    hotspot?.mode,
+  ])
+
   useEffect(() => {
     getState()
     dispatch(getLocationPermission())
@@ -353,14 +357,16 @@ const HotspotSettings = ({ hotspot }: Props) => {
 
     return (
       <Box>
-        <HotspotSettingsOption
-          title={t('hotspot_settings.transfer.title')}
-          subtitle={transferButtonTitle}
-          buttonDisabled={hasActiveTransfer === undefined}
-          onPress={onPressTransferSetting}
-          compact
-          buttonIcon={<TransferIcon />}
-        />
+        {!isDataOnly && (
+          <HotspotSettingsOption
+            title={t('hotspot_settings.transfer.title')}
+            subtitle={transferButtonTitle}
+            buttonDisabled={hasActiveTransfer === undefined}
+            onPress={onPressTransferSetting}
+            compact
+            buttonIcon={<TransferIcon />}
+          />
+        )}
         <Box backgroundColor="black" height={0.5} />
         <HotspotSettingsOption
           title={t('hotspot_settings.discovery.title')}
@@ -392,6 +398,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
     settingsState,
     t,
     transferButtonTitle,
+    isDataOnly,
   ])
 
   return (
