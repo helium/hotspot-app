@@ -43,7 +43,9 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
   const { t } = useTranslation()
   const submitTxn = useSubmitTxn()
   const navigation = useNavigation()
-  const [state, setState] = useState<State>('antenna')
+  const [state, setState] = useState<State>(
+    isDataOnly(hotspot) ? 'location' : 'antenna',
+  )
   const [antenna, setAntenna] = useState<MakerAntenna>()
   const [gain, setGain] = useState<number>()
   const [elevation, setElevation] = useState<number>(0)
@@ -200,48 +202,52 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
     }
   }
 
-  const StatePicker = () => (
-    <Box flexDirection="row" borderRadius="m">
-      <TouchableOpacityBox
-        onPress={toggleUpdateAntenna}
-        padding="s"
-        backgroundColor={updatingAntenna ? 'purpleMain' : 'white'}
-        width="50%"
-        borderTopWidth={1}
-        borderBottomWidth={1}
-        borderLeftWidth={1}
-        borderColor="purpleMain"
-        borderTopLeftRadius="m"
-        borderBottomLeftRadius="m"
-      >
-        <Text
-          textAlign="center"
-          color={updatingAntenna ? 'white' : 'purpleMain'}
+  const StatePicker = () => {
+    if (isDataOnly(hotspot)) return null
+
+    return (
+      <Box flexDirection="row" borderRadius="m">
+        <TouchableOpacityBox
+          onPress={toggleUpdateAntenna}
+          padding="s"
+          backgroundColor={updatingAntenna ? 'purpleMain' : 'white'}
+          width="50%"
+          borderTopWidth={1}
+          borderBottomWidth={1}
+          borderLeftWidth={1}
+          borderColor="purpleMain"
+          borderTopLeftRadius="m"
+          borderBottomLeftRadius="m"
         >
-          {t('hotspot_settings.reassert.update_antenna')}
-        </Text>
-      </TouchableOpacityBox>
-      <TouchableOpacityBox
-        onPress={toggleUpdateLocation}
-        padding="s"
-        width="50%"
-        borderTopRightRadius="m"
-        borderBottomRightRadius="m"
-        borderTopWidth={1}
-        borderBottomWidth={1}
-        borderRightWidth={1}
-        borderColor="purpleMain"
-        backgroundColor={updatingLocation ? 'purpleMain' : 'white'}
-      >
-        <Text
-          textAlign="center"
-          color={updatingLocation ? 'white' : 'purpleMain'}
+          <Text
+            textAlign="center"
+            color={updatingAntenna ? 'white' : 'purpleMain'}
+          >
+            {t('hotspot_settings.reassert.update_antenna')}
+          </Text>
+        </TouchableOpacityBox>
+        <TouchableOpacityBox
+          onPress={toggleUpdateLocation}
+          padding="s"
+          width="50%"
+          borderTopRightRadius="m"
+          borderBottomRightRadius="m"
+          borderTopWidth={1}
+          borderBottomWidth={1}
+          borderRightWidth={1}
+          borderColor="purpleMain"
+          backgroundColor={updatingLocation ? 'purpleMain' : 'white'}
         >
-          {t('hotspot_settings.options.reassert')}
-        </Text>
-      </TouchableOpacityBox>
-    </Box>
-  )
+          <Text
+            textAlign="center"
+            color={updatingLocation ? 'white' : 'purpleMain'}
+          >
+            {t('hotspot_settings.options.reassert')}
+          </Text>
+        </TouchableOpacityBox>
+      </Box>
+    )
+  }
 
   const ConfirmDetails = () => (
     <Box>

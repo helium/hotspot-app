@@ -94,6 +94,7 @@ export const loadLocationFeeData = async ({
 
   const { price: oraclePrice } = await getCurrentOraclePrice()
 
+  // TODO: Use staking_fee_txn_assert_location_dataonly_gateway_v1 from helium-js vars
   let totalStakingAmountUsd = new Balance(500000000, CurrencyType.usd) // $5
   let totalStakingAmount = totalStakingAmountUsd.toNetworkTokens(oraclePrice)
   let totalStakingAmountDC = totalStakingAmountUsd.toDataCredits(oraclePrice)
