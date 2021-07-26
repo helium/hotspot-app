@@ -4,6 +4,7 @@ import { calculateAssertLocFee } from './fees'
 import { makeAssertLocTxn } from './transactions'
 import {
   getAddress,
+  getChainVars,
   getCurrentOraclePrice,
   getHotspotDetails,
 } from './appDataClient'
@@ -70,12 +71,21 @@ export const assertLocationTxn = async (
   return finalTxn
 }
 
-export const loadLocationFeeData = async (
+export const loadLocationFeeData = async ({
   nonce = 0,
   accountIntegerBalance = 0,
-  onboardingRecord?: OnboardingRecord,
-) => {
-  const isFree = await hasFreeLocationAssert(nonce, onboardingRecord)
+  onboardingRecord,
+  dataOnly = false,
+}: {
+  nonce?: number
+  accountIntegerBalance?: number
+  onboardingRecord?: OnboardingRecord
+  dataOnly?: boolean
+}) => {
+  let isFree = false
+  if (!dataOnly) {
+    isFree = await hasFreeLocationAssert(nonce, onboardingRecord)
+  }
   const owner = await getAddress()
   const payer = isFree ? onboardingRecord?.maker?.address : owner
 
@@ -83,13 +93,23 @@ export const loadLocationFeeData = async (
     throw new Error('Missing payer or owner')
   }
 
-  const { stakingFee, fee } = calculateAssertLocFee(owner, payer, nonce)
-
-  const totalStakingAmountDC = new Balance(
-    stakingFee + fee,
-    CurrencyType.dataCredit,
-  )
   const { price: oraclePrice } = await getCurrentOraclePrice()
+
+  let totalStakingAmountDC = new Balance(0, CurrencyType.dataCredit)
+
+  if (!dataOnly) {
+    const { stakingFee, fee } = calculateAssertLocFee(owner, payer, nonce)
+
+    totalStakingAmountDC = new Balance(
+      stakingFee + fee,
+      CurrencyType.dataCredit,
+    )
+  } else {
+    const chainVars = await getChainVars()
+    const { stakingFeeTxnAssertLocationDataonlyGatewayV1: feeUsd } = chainVars
+    totalStakingAmountDC = new Balance(feeUsd, CurrencyType.dataCredit)
+  }
+
   const totalStakingAmount = totalStakingAmountDC.toNetworkTokens(oraclePrice)
   const totalStakingAmountUsd = totalStakingAmountDC.toUsd(oraclePrice)
 

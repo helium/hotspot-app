@@ -817,6 +817,7 @@ export default {
     no_location: 'No Location',
     picker_options: ['24H', '14D', '30D'],
     picker_prompt: 'Select Range',
+    status_data_only: 'Data-Only',
     status_online: 'Online',
     status_offline: 'Needs Attention',
     status_syncing: 'Syncing',
@@ -838,6 +839,11 @@ export default {
     no_location_body: 'Pair with the Hotspot to begin.',
     percent_synced: '{{percent}}% Synced',
     starting_sync: 'Starting Sync...',
+    data_only_prompt: {
+      title: 'Data-Only Hotspot Explained',
+      message:
+        'These Hotspots earn HNT for transmitting data packets from sensors.\n\nThey do not affect transmit scales and do not affect Hotspot Proof-of-Coverage earnings of nearby Hotspots.',
+    },
     relay_prompt: {
       title: 'Hotspot is Relayed',
       message:

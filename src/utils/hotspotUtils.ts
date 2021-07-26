@@ -1,3 +1,4 @@
+import { Hotspot, Witness } from '@helium/http'
 import { Colors } from '../theme/theme'
 
 export const generateRewardScaleColor = (rewardScale: number): Colors => {
@@ -18,3 +19,6 @@ export const isRelay = (listenAddrs: string[] | undefined) => {
   const IP = /ip4/g
   return listenAddrs.length > 0 && !listenAddrs.find((a) => a.match(IP))
 }
+
+export const isDataOnly = (hotspot?: Hotspot | Witness) =>
+  hotspot?.mode === 'dataonly'
