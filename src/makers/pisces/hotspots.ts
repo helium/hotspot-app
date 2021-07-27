@@ -3,7 +3,7 @@ import { MakerHotspot } from '../hotspotMakerTypes'
 import ANTENNAS from './antennas'
 
 const pisces = {
-  name: 'Pisces Miner',
+  name: 'Pisces Outdoor P100',
   icon: HotspotIcon,
   onboardType: 'BLE',
   translations: {
