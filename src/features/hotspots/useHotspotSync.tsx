@@ -32,11 +32,7 @@ const useHotspotSync = (hotspot?: Hotspot | Witness) => {
   }, [hotspot, syncStatuses])
 
   const getStatusMessage = useCallback(() => {
-    if (
-      !hotspot ||
-      !hotspotSyncStatus ||
-      hotspotSyncStatus.status === undefined
-    ) {
+    if (!hotspot) {
       return ''
     }
     if (hotspot.status?.online !== 'online') {
@@ -50,7 +46,7 @@ const useHotspotSync = (hotspot?: Hotspot | Witness) => {
         })
       : null
 
-    if (hotspotSyncStatus.status === 'full') {
+    if (hotspotSyncStatus?.status === 'full') {
       if (!timeAgo) {
         return t('checklist.blocks.full')
       }
