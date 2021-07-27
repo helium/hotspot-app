@@ -4,6 +4,7 @@ import { calculateAssertLocFee } from './fees'
 import { makeAssertLocTxn } from './transactions'
 import {
   getAddress,
+  getChainVars,
   getCurrentOraclePrice,
   getHotspotDetails,
 } from './appDataClient'
@@ -94,10 +95,7 @@ export const loadLocationFeeData = async ({
 
   const { price: oraclePrice } = await getCurrentOraclePrice()
 
-  // TODO: Use staking_fee_txn_assert_location_dataonly_gateway_v1 from helium-js vars
-  let totalStakingAmountUsd = new Balance(500000000, CurrencyType.usd) // $5
-  let totalStakingAmount = totalStakingAmountUsd.toNetworkTokens(oraclePrice)
-  let totalStakingAmountDC = totalStakingAmountUsd.toDataCredits(oraclePrice)
+  let totalStakingAmountDC = new Balance(0, CurrencyType.dataCredit)
 
   if (!dataOnly) {
     const { stakingFee, fee } = calculateAssertLocFee(owner, payer, nonce)
@@ -106,10 +104,14 @@ export const loadLocationFeeData = async ({
       stakingFee + fee,
       CurrencyType.dataCredit,
     )
-
-    totalStakingAmount = totalStakingAmountDC.toNetworkTokens(oraclePrice)
-    totalStakingAmountUsd = totalStakingAmountDC.toUsd(oraclePrice)
+  } else {
+    const chainVars = await getChainVars()
+    const { stakingFeeTxnAssertLocationDataonlyGatewayV1: feeUsd } = chainVars
+    totalStakingAmountDC = new Balance(feeUsd, CurrencyType.dataCredit)
   }
+
+  const totalStakingAmount = totalStakingAmountDC.toNetworkTokens(oraclePrice)
+  const totalStakingAmountUsd = totalStakingAmountDC.toUsd(oraclePrice)
 
   const balance = accountIntegerBalance || 0
   const hasSufficientBalance = balance >= totalStakingAmount.integerBalance
