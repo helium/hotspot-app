@@ -26,6 +26,8 @@ import { useColors, useSpacing } from '../../../theme/themeHooks'
 import Box from '../../../components/Box'
 import usePrevious from '../../../utils/usePrevious'
 import TouchableOpacityBox from '../../../components/BSTouchableOpacityBox'
+import { GlobalOpt, GLOBAL_OPTS } from './hotspotTypes'
+import { isGlobalOption } from '../../../utils/hotspotUtils'
 
 export const SHORTCUT_NAV_HEIGHT = 44
 const ITEM_SIZE = 35
@@ -37,17 +39,11 @@ type Props = {
   selectedItem: GlobalOpt | Hotspot | Witness
   onItemSelected: (item: GlobalOpt | Hotspot) => void
 }
-const GLOBAL_OPTS = ['explore', 'search', 'home'] as const
-export type GlobalOpt = typeof GLOBAL_OPTS[number]
-
-export const IS_GLOBAL_OPT = (
-  item: GlobalOpt | Hotspot | Witness,
-): item is GlobalOpt => typeof item === 'string'
 
 type FollowedHotspot = Hotspot & { followed?: boolean }
 
 const getItemId = (item: GlobalOpt | FollowedHotspot | Witness | Hotspot) =>
-  IS_GLOBAL_OPT(item) ? item : item.address
+  isGlobalOption(item) ? item : item.address
 
 const getAnimalName = (hotspot: Hotspot) => {
   const pieces = (hotspot.name || animalName(hotspot.address)).split('-')
@@ -132,10 +128,10 @@ const ShortcutNav = ({
       item: GlobalOpt | Witness | Hotspot,
       selected: GlobalOpt | Witness | Hotspot,
     ) => {
-      if (IS_GLOBAL_OPT(selected) && IS_GLOBAL_OPT(item)) {
+      if (isGlobalOption(selected) && isGlobalOption(item)) {
         return selected === item
       }
-      if (!IS_GLOBAL_OPT(selected) && !IS_GLOBAL_OPT(item)) {
+      if (!isGlobalOption(selected) && !isGlobalOption(item)) {
         return selected.address === item.address
       }
 
@@ -151,7 +147,7 @@ const ShortcutNav = ({
   const handleLayout = useCallback(
     (index: number) => (event: LayoutChangeEvent) => {
       const item = data[index]
-      if (IS_GLOBAL_OPT(item)) return
+      if (isGlobalOption(item)) return
 
       const { width } = event.nativeEvent.layout
       setSizes((s) => ({ ...s, [item.address]: width }))
@@ -167,7 +163,7 @@ const ShortcutNav = ({
 
         if (index < GLOBAL_OPTS.length) {
           offset = index * (ITEM_SIZE + spacing[ITEM_MARGIN])
-        } else if (!IS_GLOBAL_OPT(item)) {
+        } else if (!isGlobalOption(item)) {
           if (index === GLOBAL_OPTS.length) {
             offset =
               2.5 * ITEM_SIZE +
@@ -176,7 +172,7 @@ const ShortcutNav = ({
           } else {
             let sizeKey = ''
             const prevItem = data[index - 1]
-            if (IS_GLOBAL_OPT(prevItem)) {
+            if (isGlobalOption(prevItem)) {
               sizeKey = prevItem
             } else {
               sizeKey = prevItem.address
@@ -402,7 +398,7 @@ const ShortcutNav = ({
   type ListItem = { item: Hotspot | GlobalOpt; index: number }
   const renderItem = useCallback(
     ({ item, index }: ListItem) => {
-      if (IS_GLOBAL_OPT(item)) {
+      if (isGlobalOption(item)) {
         return renderGlobalOpt(item as GlobalOpt)
       }
       return renderHotspot(item, index)
@@ -411,7 +407,7 @@ const ShortcutNav = ({
   )
 
   const keyExtractor = useCallback((item: GlobalOpt | Hotspot) => {
-    if (IS_GLOBAL_OPT(item)) {
+    if (isGlobalOption(item)) {
       return item
     }
     return item.address
@@ -421,7 +417,7 @@ const ShortcutNav = ({
     const paddingStart = wp(50) - ITEM_SIZE / 2
     const lastItem = data[data.length - 1]
     let lastItemWidth = ITEM_SIZE
-    if (!IS_GLOBAL_OPT(lastItem) && sizes[lastItem.address]) {
+    if (!isGlobalOption(lastItem) && sizes[lastItem.address]) {
       lastItemWidth = sizes[lastItem.address] || 0
     }
     const paddingEnd = wp(50) - lastItemWidth / 2

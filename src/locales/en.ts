@@ -799,6 +799,16 @@ export default {
         'Unable to update Hotspot while a transaction is pending. Please try again later.',
     },
   },
+  validator_details: {
+    overview: 'Overview',
+    penalties: 'Penalties',
+    consensus_groups: 'Consensus Groups',
+    in_consensus: ' In Consensus Group',
+    time_range: 'Time Range',
+    time_range_24_hours: '24H',
+    time_range_14_days: '14D',
+    time_range_30_days: '30D',
+  },
   hotspot_details: {
     checklist: 'Progress',
     title: 'Hotspot Details',

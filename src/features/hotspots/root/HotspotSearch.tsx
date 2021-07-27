@@ -1,7 +1,7 @@
 import React, { memo, useMemo, useCallback, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import { Hotspot } from '@helium/http'
+import { Hotspot, Validator } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { FlatList } from 'react-native-gesture-handler'
 import { Keyboard } from 'react-native'
@@ -26,14 +26,20 @@ const ItemSeparatorComponent = () => <Box height={1} backgroundColor="white" />
 
 type Props = {
   onSelectHotspot: (hotspot: Hotspot) => void
+  onSelectValidator: (validator: Validator) => void
   onSelectPlace: (place: PlacePrediction) => void
   visible: boolean
 }
-const HotspotSearch = ({ onSelectHotspot, onSelectPlace, visible }: Props) => {
+const HotspotSearch = ({
+  onSelectHotspot,
+  onSelectValidator,
+  onSelectPlace,
+  visible,
+}: Props) => {
   const listRef = useRef<BottomSheet>(null)
   const dispatch = useAppDispatch()
   const { t } = useTranslation()
-  const { hotspots, locations, filter, searchTerm } = useSelector(
+  const { results: listData, filter, searchTerm } = useSelector(
     (state: RootState) => state.hotspotSearch,
   )
   const prevSearchTerm = usePrevious(searchTerm)
@@ -71,11 +77,6 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace, visible }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible])
 
-  const listData = useMemo(() => [...hotspots, ...locations], [
-    hotspots,
-    locations,
-  ])
-
   const keyExtractor = useCallback((item: PlacePrediction | Hotspot) => {
     if ('placeId' in item) {
       return item.placeId
@@ -84,19 +85,21 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace, visible }: Props) => {
   }, [])
 
   const onPressItem = useCallback(
-    (item: PlacePrediction | Hotspot) => () => {
-      if ('address' in item) {
+    (item: PlacePrediction | Hotspot | Validator) => () => {
+      if ('geocode' in item) {
         onSelectHotspot(item)
-      } else {
+      } else if ('versionHeartbeat' in item) {
+        onSelectValidator(item)
+      } else if ('placeId' in item) {
         onSelectPlace(item)
       }
       dispatch(hotspotSearchSlice.actions.addRecentSearchTerm(searchTerm))
       Keyboard.dismiss()
     },
-    [dispatch, searchTerm, onSelectHotspot, onSelectPlace],
+    [dispatch, searchTerm, onSelectHotspot, onSelectValidator, onSelectPlace],
   )
 
-  type ListItem = { item: PlacePrediction | Hotspot; index: number }
+  type ListItem = { item: PlacePrediction | Hotspot | Validator; index: number }
   const renderItem = useCallback(
     ({ item, index }: ListItem) => {
       const isFirst = index === 0
@@ -106,13 +109,15 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace, visible }: Props) => {
       let subtitle = ''
       if ('placeId' in item) {
         title = item.description
-      } else if (item.name) {
+      } else {
         title = animalName(item.address)
-        if (item.geocode?.longCity && item.geocode.shortState) {
-          const { longCity, shortState } = item.geocode
-          subtitle = `${longCity}${longCity ? ', ' : ''}${shortState}`
-        } else {
-          subtitle = t('hotspot_details.no_location_title')
+        if ('geocode' in item) {
+          if (item.geocode?.longCity && item.geocode.shortState) {
+            const { longCity, shortState } = item.geocode
+            subtitle = `${longCity}${longCity ? ', ' : ''}${shortState}`
+          } else {
+            subtitle = t('hotspot_details.no_location_title')
+          }
         }
       }
       return (
@@ -164,12 +169,7 @@ const HotspotSearch = ({ onSelectHotspot, onSelectPlace, visible }: Props) => {
       animateOnMount={false}
     >
       {visible && (
-        <Box
-          backgroundColor="white"
-          flex={1}
-          paddingHorizontal="l"
-          paddingVertical="l"
-        >
+        <Box backgroundColor="white" flex={1} padding="l">
           <SegmentedControl
             values={filterNames}
             selectedIndex={selectedFilterIndex}

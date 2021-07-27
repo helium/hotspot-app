@@ -1,3 +1,5 @@
+import { Hotspot, Validator, Witness } from '@helium/http'
+import { GlobalOpt } from '../features/hotspots/root/hotspotTypes'
 import { Colors } from '../theme/theme'
 
 export const generateRewardScaleColor = (rewardScale: number): Colors => {
@@ -18,3 +20,21 @@ export const isRelay = (listenAddrs: string[] | undefined) => {
   const IP = /ip4/g
   return listenAddrs.length > 0 && !listenAddrs.find((a) => a.match(IP))
 }
+
+export const isValidator = (
+  item: GlobalOpt | Hotspot | Witness | Validator,
+): item is Validator => (item as Validator).versionHeartbeat !== undefined
+
+export const isHotspot = (
+  item: GlobalOpt | Hotspot | Witness | Validator,
+): item is Hotspot =>
+  (item as Hotspot).location !== undefined &&
+  (item as Witness).witnessFor === undefined
+
+export const isWitness = (
+  item: GlobalOpt | Hotspot | Witness | Validator,
+): item is Hotspot => (item as Witness).witnessFor !== undefined
+
+export const isGlobalOption = (
+  item: GlobalOpt | Hotspot | Witness,
+): item is GlobalOpt => typeof item === 'string'

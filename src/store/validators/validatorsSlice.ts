@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { Validator } from '@helium/http'
-import { getValidators } from '../../utils/appDataClient'
+import { getElectedValidators, getValidators } from '../../utils/appDataClient'
 import {
   CacheRecord,
   handleCacheFulfilled,
@@ -9,10 +9,12 @@ import {
 
 export type ValidatorsSliceState = {
   validators: CacheRecord<{ data: Validator[] }>
+  electedValidators: CacheRecord<{ data: Validator[] }>
 }
 
 const initialState: ValidatorsSliceState = {
   validators: { lastFetchedTimestamp: 0, loading: false, data: [] },
+  electedValidators: { lastFetchedTimestamp: 0, loading: false, data: [] },
 }
 
 export const fetchValidators = createAsyncThunk(
@@ -26,6 +28,20 @@ export const fetchValidators = createAsyncThunk(
     if (hasValidCache(validators)) return validators.data
 
     return getValidators()
+  },
+)
+
+export const fetchElectedValidators = createAsyncThunk(
+  'validators/fetchElectedValidators',
+  async (_arg, { getState }) => {
+    const {
+      validators: { electedValidators },
+    } = (await getState()) as {
+      validators: ValidatorsSliceState
+    }
+    if (hasValidCache(electedValidators)) return electedValidators.data
+
+    return getElectedValidators()
   },
 )
 
@@ -46,6 +62,9 @@ const validatorsSlice = createSlice({
     })
     builder.addCase(fetchValidators.fulfilled, (state, action) => {
       state.validators = handleCacheFulfilled({ data: action.payload })
+    })
+    builder.addCase(fetchElectedValidators.fulfilled, (state, action) => {
+      state.electedValidators = handleCacheFulfilled({ data: action.payload })
     })
   },
 })

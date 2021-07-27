@@ -39,6 +39,7 @@ const palette = {
   grayLightText: '#A7AACD',
   grayMid: '#A5AEBD',
   grayPurple: '#E3E5F8',
+  grayPurpleLight: '#EBEEFB',
   grayHighlight: '#EBEDF9',
   grayAccent: '#B3C2E8',
 
@@ -64,6 +65,7 @@ const palette = {
   purpleDarkMuted: '#4C5280',
   purpleDull: '#474973',
   purpleText: '#5C5EA0',
+  purpleMediumText: '#8B90C1',
   purpleLightText: '#979CC8',
 
   greenBright: '#29D391',
@@ -253,6 +255,7 @@ export const theme = createTheme({
     s: 4,
     ms: 6,
     m: 8,
+    lm: 10,
     l: 12,
     xl: 20,
     round: 1000,
