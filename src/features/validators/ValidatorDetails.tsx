@@ -6,6 +6,9 @@ import { ScrollView } from 'react-native-gesture-handler'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useSelector } from 'react-redux'
 import Carousel from 'react-native-snap-carousel'
+import Penalty from '@assets/images/penalty.svg'
+import Heartbeat from '@assets/images/heartbeat.svg'
+import VersionHeartbeat from '@assets/images/versionHeartbeat.svg'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
 import HeliumSelect from '../../components/HeliumSelect'
@@ -15,12 +18,12 @@ import ConsensusBanner from './ConsensusBanner'
 import FollowButton from '../../components/FollowButton'
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar'
 import ShareSheet from '../../components/ShareSheet'
-
 import { useAppDispatch } from '../../store/store'
 import { fetchElectedValidators } from '../../store/validators/validatorsSlice'
 import { RootState } from '../../store/rootReducer'
 import ValidatorDetailsOverview from './ValidatorDetailsOverview'
 import { useSpacing } from '../../theme/themeHooks'
+import { formatHeartbeatVersion } from '../../utils/validatorUtils'
 
 export type HotspotSnapPoints = { collapsed: number; expanded: number }
 type Props = {
@@ -117,6 +120,23 @@ const ValidatorDetails = ({ validator }: Props) => {
     [selectData],
   )
 
+  const formattedVersionHeartbeat = useMemo(() => {
+    if (!validator?.versionHeartbeat) return ''
+    return formatHeartbeatVersion(validator.versionHeartbeat)
+  }, [validator])
+
+  const isOnline = useMemo(() => validator?.status?.online === 'online', [
+    validator?.status?.online,
+  ])
+
+  const status = useMemo(
+    () =>
+      isOnline
+        ? t('validator_details.status_online')
+        : t('validator_details.status_offline'),
+    [isOnline, t],
+  )
+
   return (
     <Box
       backgroundColor="white"
@@ -140,30 +160,80 @@ const ValidatorDetails = ({ validator }: Props) => {
               <FollowButton address={validator?.address || ''} />
               <ShareSheet item={validator} />
             </Box>
-            <Box marginBottom="lm" alignItems="flex-start" marginHorizontal="m">
+            <Box marginBottom="lm">
               <Text
                 variant="light"
                 fontSize={29}
                 lineHeight={31}
                 color="black"
                 numberOfLines={1}
-                width="100%"
                 adjustsFontSizeToFit
               >
                 {formattedHotspotName[0]}
               </Text>
-              <Box flexDirection="row" alignItems="flex-start">
-                <Text
-                  variant="regular"
-                  fontSize={29}
-                  lineHeight={31}
-                  width="100%"
-                  color="black"
-                  numberOfLines={1}
-                  adjustsFontSizeToFit
+              <Text
+                variant="regular"
+                fontSize={29}
+                lineHeight={31}
+                color="black"
+                numberOfLines={1}
+                adjustsFontSizeToFit
+              >
+                {formattedHotspotName[1]}
+              </Text>
+              <Box flexDirection="row" marginTop="s">
+                <Box
+                  backgroundColor={isOnline ? 'greenOnline' : 'orangeDark'}
+                  borderRadius="round"
+                  alignItems="center"
+                  flexDirection="row"
+                  justifyContent="center"
+                  paddingHorizontal="s"
                 >
-                  {formattedHotspotName[1]}
-                </Text>
+                  <Text color="white">{status}</Text>
+                </Box>
+                <Box
+                  backgroundColor="grayBoxLight"
+                  borderRadius="round"
+                  alignItems="center"
+                  flexDirection="row"
+                  justifyContent="center"
+                  padding="xs"
+                  marginLeft="s"
+                >
+                  <VersionHeartbeat />
+                  <Text color="grayText" marginLeft="xs">
+                    {formattedVersionHeartbeat}
+                  </Text>
+                </Box>
+                <Box
+                  backgroundColor="grayBoxLight"
+                  borderRadius="round"
+                  alignItems="center"
+                  flexDirection="row"
+                  justifyContent="center"
+                  padding="xs"
+                  marginLeft="s"
+                >
+                  <Heartbeat />
+                  <Text color="grayText" marginLeft="xs">
+                    {validator?.lastHeartbeat}
+                  </Text>
+                </Box>
+                <Box
+                  backgroundColor="grayBoxLight"
+                  borderRadius="round"
+                  alignItems="center"
+                  flexDirection="row"
+                  justifyContent="center"
+                  padding="xs"
+                  marginLeft="s"
+                >
+                  <Penalty />
+                  <Text color="grayText" marginLeft="xs">
+                    {validator?.penalty?.toFixed(2)}
+                  </Text>
+                </Box>
               </Box>
             </Box>
           </Box>

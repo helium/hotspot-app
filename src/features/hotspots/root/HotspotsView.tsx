@@ -39,10 +39,10 @@ import { fetchValidators } from '../../../store/validators/validatorsSlice'
 import ValidatorDetails from '../../validators/ValidatorDetails'
 import {
   isHotspot,
-  isValidator,
   isWitness,
   isGlobalOption,
 } from '../../../utils/hotspotUtils'
+import { isValidator } from '../../../utils/validatorUtils'
 
 type Props = {
   ownedHotspots?: Hotspot[]

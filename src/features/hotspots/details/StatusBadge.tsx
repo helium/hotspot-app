@@ -8,7 +8,7 @@ import { HotspotSyncStatus } from '../root/hotspotTypes'
 
 type Props = {
   online?: string
-  onPress: () => void
+  onPress?: () => void
   syncStatus?: HotspotSyncStatus
   hitSlop?: Insets
 }
@@ -35,7 +35,7 @@ const StatusBadge = ({
   }, [online, syncStatus, t])
 
   const backgroundColor = useMemo((): Colors => {
-    if (online === 'offline') return 'orangeDark'
+    if (online !== 'online') return 'orangeDark'
 
     return 'greenOnline'
   }, [online])

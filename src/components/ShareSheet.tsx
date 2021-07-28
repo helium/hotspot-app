@@ -14,7 +14,7 @@ import { TouchableOpacityBoxProps } from './TouchableOpacityBox'
 import useHaptic from '../utils/useHaptic'
 import { EXPLORER_BASE_URL } from '../utils/config'
 import { createAppLink } from '../providers/AppLinkProvider'
-import { isValidator } from '../utils/hotspotUtils'
+import { isValidator } from '../utils/validatorUtils'
 
 type Props = { item?: Hotspot | Witness | Validator }
 const ShareSheet = ({ item }: Props) => {
