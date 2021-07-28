@@ -808,6 +808,8 @@ export default {
     time_range_24_hours: '24H',
     time_range_14_days: '14D',
     time_range_30_days: '30D',
+    in_cooldown_mode: 'In Cooldown Mode',
+    cooldown_blocks_left: '{{blocks}} Blocks Left',
   },
   hotspot_details: {
     checklist: 'Progress',

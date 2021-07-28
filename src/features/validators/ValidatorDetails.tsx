@@ -96,16 +96,19 @@ const ValidatorDetails = ({ validator }: Props) => {
   }, [inConsensus, top])
 
   type RenderItemProp = { item: HeliumSelectItemType }
-  const renderItem = useCallback(({ item }: RenderItemProp) => {
-    switch (item.value as ViewOpt) {
-      case 'overview':
-        return <ValidatorDetailsOverview />
-      case 'penalties':
-        return <Box height={330} margin="lm" backgroundColor="orange" />
-      case 'consensus_groups':
-        return <Box height={830} margin="lm" backgroundColor="yellow" />
-    }
-  }, [])
+  const renderItem = useCallback(
+    ({ item }: RenderItemProp) => {
+      switch (item.value as ViewOpt) {
+        case 'overview':
+          return <ValidatorDetailsOverview validator={validator} />
+        case 'penalties':
+          return <Box height={330} margin="lm" backgroundColor="orange" />
+        case 'consensus_groups':
+          return <Box height={330} margin="lm" backgroundColor="yellow" />
+      }
+    },
+    [validator],
+  )
 
   const onSnapToItem = useCallback(
     (index: number) => {
