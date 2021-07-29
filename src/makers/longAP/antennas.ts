@@ -11,12 +11,12 @@ const LONG_AP_LIGHT = {
 } as MakerAntenna
 
 const LONG_AP_PRO_3 = {
-  name: 'LongAP One',
+  name: 'LongAP Pro (3 dBi)',
   gain: 3,
 } as MakerAntenna
 
 const LONG_AP_PRO_6 = {
-  name: 'LongAP One',
+  name: 'LongAP Pro (6 dBi)',
   gain: 6,
 } as MakerAntenna
 
