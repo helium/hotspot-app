@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -205,4 +205,4 @@ const HotspotChecklistItem = ({
   )
 }
 
-export default memo(HotspotChecklistItem)
+export default HotspotChecklistItem
