@@ -52,7 +52,7 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
   const [location, setLocation] = useState<Coords>()
   const [locationName, setLocationName] = useState<string>()
   const [fullScreen, setFullScreen] = useState(false)
-  const [isLocationChange, setIsLocationChange] = useState(false)
+  const [isLocationChange, setIsLocationChange] = useState(isDataOnly(hotspot))
   const [loading, setLoading] = useState(false)
   const [locationFee, setLocationFee] = useState('')
 
