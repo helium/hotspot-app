@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux'
 import Carousel from 'react-native-snap-carousel'
 import Penalty from '@assets/images/penalty.svg'
 import Heartbeat from '@assets/images/heartbeat.svg'
+import Cooldown from '@assets/images/cooldown.svg'
 import VersionHeartbeat from '@assets/images/versionHeartbeat.svg'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
@@ -23,7 +24,7 @@ import { fetchElectedValidators } from '../../store/validators/validatorsSlice'
 import { RootState } from '../../store/rootReducer'
 import ValidatorDetailsOverview from './ValidatorDetailsOverview'
 import { useSpacing } from '../../theme/themeHooks'
-import { formatHeartbeatVersion } from '../../utils/validatorUtils'
+import { formatHeartbeatVersion, isUnstaked } from '../../utils/validatorUtils'
 
 export type HotspotSnapPoints = { collapsed: number; expanded: number }
 type Props = {
@@ -41,6 +42,11 @@ const ValidatorDetails = ({ validator }: Props) => {
     (state: RootState) => state.validators.electedValidators,
   )
   const carouselRef = useRef<Carousel<HeliumSelectItemType>>(null)
+
+  const unstaked = useMemo(() => {
+    if (!validator) return false
+    return isUnstaked(validator)
+  }, [validator])
 
   useEffect(() => {
     if (!validator) return
@@ -181,7 +187,7 @@ const ValidatorDetails = ({ validator }: Props) => {
               >
                 {formattedHotspotName[1]}
               </Text>
-              <Box flexDirection="row" marginTop="s">
+              <Box flexDirection="row" marginTop="s" height={24}>
                 <Box
                   backgroundColor={isOnline ? 'greenOnline' : 'orangeDark'}
                   borderRadius="round"
@@ -190,7 +196,14 @@ const ValidatorDetails = ({ validator }: Props) => {
                   justifyContent="center"
                   paddingHorizontal="s"
                 >
-                  <Text color="white">{status}</Text>
+                  <Text
+                    variant="medium"
+                    fontSize={13}
+                    color="white"
+                    maxFontSizeMultiplier={1.5}
+                  >
+                    {status}
+                  </Text>
                 </Box>
                 <Box
                   backgroundColor="grayBoxLight"
@@ -198,11 +211,15 @@ const ValidatorDetails = ({ validator }: Props) => {
                   alignItems="center"
                   flexDirection="row"
                   justifyContent="center"
-                  padding="xs"
+                  paddingHorizontal="xs"
                   marginLeft="s"
                 >
                   <VersionHeartbeat />
-                  <Text color="grayText" marginLeft="xs">
+                  <Text
+                    color="grayText"
+                    marginLeft="xs"
+                    maxFontSizeMultiplier={1.5}
+                  >
                     {formattedVersionHeartbeat}
                   </Text>
                 </Box>
@@ -212,11 +229,15 @@ const ValidatorDetails = ({ validator }: Props) => {
                   alignItems="center"
                   flexDirection="row"
                   justifyContent="center"
-                  padding="xs"
+                  paddingHorizontal="xs"
                   marginLeft="s"
                 >
                   <Heartbeat />
-                  <Text color="grayText" marginLeft="xs">
+                  <Text
+                    color="grayText"
+                    marginLeft="xs"
+                    maxFontSizeMultiplier={1.5}
+                  >
                     {validator?.lastHeartbeat}
                   </Text>
                 </Box>
@@ -226,14 +247,33 @@ const ValidatorDetails = ({ validator }: Props) => {
                   alignItems="center"
                   flexDirection="row"
                   justifyContent="center"
-                  padding="xs"
+                  paddingHorizontal="xs"
                   marginLeft="s"
                 >
                   <Penalty />
-                  <Text color="grayText" marginLeft="xs">
+                  <Text
+                    color="grayText"
+                    marginLeft="xs"
+                    maxFontSizeMultiplier={1.5}
+                  >
                     {validator?.penalty?.toFixed(2)}
                   </Text>
                 </Box>
+                {unstaked && (
+                  <Box
+                    backgroundColor="purpleBox"
+                    borderRadius="round"
+                    alignItems="center"
+                    flexDirection="row"
+                    justifyContent="center"
+                    paddingHorizontal="xs"
+                    marginLeft="s"
+                    height="100%"
+                    aspectRatio={1}
+                  >
+                    <Cooldown height={12} width={12} />
+                  </Box>
+                )}
               </Box>
             </Box>
           </Box>

@@ -4,17 +4,18 @@ import { useTranslation } from 'react-i18next'
 import Cooldown from '@assets/images/cooldown.svg'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
+import { isUnstaked } from '../../utils/validatorUtils'
 
 type Props = { validator?: Validator }
 const ValidatorCooldown = ({ validator }: Props) => {
   const { t } = useTranslation()
 
-  const isUnstaked = useMemo(() => {
+  const unstaked = useMemo(() => {
     if (!validator) return false
-    return validator.stakeStatus === 'unstaked'
+    return isUnstaked(validator)
   }, [validator])
 
-  if (!isUnstaked) return null
+  if (!unstaked) return null
 
   return (
     <Box

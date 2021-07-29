@@ -15,3 +15,6 @@ export const formatHeartbeatVersion = (versionHeartbeat: number) => {
 
   return [major, minor, patch].join('.')
 }
+
+export const isUnstaked = (validator?: Validator) =>
+  validator?.stakeStatus === 'unstaked'
