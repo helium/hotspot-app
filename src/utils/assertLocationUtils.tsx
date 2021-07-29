@@ -12,15 +12,25 @@ import { getStakingSignedTransaction, OnboardingRecord } from './stakingClient'
 import { getH3Location } from './h3Utils'
 import * as Logger from './logger'
 
-export const assertLocationTxn = async (
-  gateway: string | undefined,
-  lat: number | undefined,
-  lng: number | undefined,
+export const assertLocationTxn = async ({
+  gateway,
+  lat,
+  lng,
   decimalGain = 1.2,
   elevation = 0,
-  onboardingRecord: OnboardingRecord | undefined,
-  updatingLocation: boolean,
-) => {
+  onboardingRecord,
+  updatingLocation,
+  dataOnly,
+}: {
+  gateway: string | undefined
+  lat: number | undefined
+  lng: number | undefined
+  decimalGain?: number
+  elevation?: number
+  onboardingRecord: OnboardingRecord | undefined
+  updatingLocation: boolean
+  dataOnly: boolean
+}) => {
   if (!gateway) {
     return undefined
   }
@@ -33,7 +43,10 @@ export const assertLocationTxn = async (
     Logger.breadcrumb(`Could not find hotspot details for ${gateway}`)
   }
   const newNonce = speculativeNonce + 1
-  const isFree = await hasFreeLocationAssert(speculativeNonce, onboardingRecord)
+  let isFree = false
+  if (!dataOnly) {
+    isFree = await hasFreeLocationAssert(speculativeNonce, onboardingRecord)
+  }
   const owner = await getAddress()
   const payer = isFree ? onboardingRecord?.maker?.address : owner
 
@@ -42,9 +55,16 @@ export const assertLocationTxn = async (
   }
 
   const antennaGain = decimalGain * 10
-  const stakingFee = updatingLocation
-    ? Transaction.stakingFeeTxnAssertLocationV1
-    : 0
+  let stakingFee = 0
+  if (updatingLocation) {
+    if (dataOnly) {
+      const chainVars = await getChainVars()
+      const { stakingFeeTxnAssertLocationDataonlyGatewayV1: fee } = chainVars
+      stakingFee = fee
+    } else {
+      stakingFee = Transaction.stakingFeeTxnAssertLocationV1
+    }
+  }
   const location = getH3Location(lat, lng)
 
   const txn = await makeAssertLocTxn(
@@ -106,8 +126,8 @@ export const loadLocationFeeData = async ({
     )
   } else {
     const chainVars = await getChainVars()
-    const { stakingFeeTxnAssertLocationDataonlyGatewayV1: feeUsd } = chainVars
-    totalStakingAmountDC = new Balance(feeUsd, CurrencyType.dataCredit)
+    const { stakingFeeTxnAssertLocationDataonlyGatewayV1: fee } = chainVars
+    totalStakingAmountDC = new Balance(fee, CurrencyType.dataCredit)
   }
 
   const totalStakingAmount = totalStakingAmountDC.toNetworkTokens(oraclePrice)

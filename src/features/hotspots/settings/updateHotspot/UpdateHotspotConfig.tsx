@@ -151,26 +151,28 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
         return
       }
       const hotspotGain = hotspot.gain ? hotspot.gain / 10 : 1.2
-      return assertLocationTxn(
-        hotspot.address,
-        location.latitude,
-        location.longitude,
-        hotspotGain,
-        hotspot.elevation,
+      return assertLocationTxn({
+        gateway: hotspot.address,
+        lat: location.latitude,
+        lng: location.longitude,
+        decimalGain: hotspotGain,
+        elevation: hotspot.elevation,
         onboardingRecord,
-        isLocationChange,
-      )
+        updatingLocation: isLocationChange,
+        dataOnly: isDataOnly(hotspot),
+      })
     }
 
-    return assertLocationTxn(
-      hotspot.address,
-      hotspot.lat,
-      hotspot.lng,
-      gain,
+    return assertLocationTxn({
+      gateway: hotspot.address,
+      lat: hotspot.lat,
+      lng: hotspot.lng,
+      decimalGain: gain,
       elevation,
       onboardingRecord,
-      false,
-    )
+      updatingLocation: false,
+      dataOnly: isDataOnly(hotspot),
+    })
   }
 
   const onSubmit = async () => {
