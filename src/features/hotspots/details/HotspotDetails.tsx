@@ -177,27 +177,33 @@ const HotspotDetails = ({
   }, [hotspot])
 
   const selectData = useMemo(() => {
-    return [
+    let data = [
       {
         label: t('hotspot_details.overview'),
         value: 'overview',
         color: 'purpleMain',
         Icon: EarningsIcon,
       } as HeliumSelectItemType,
-      {
-        label: t('hotspot_details.checklist'),
-        value: 'checklist',
-        color: 'purpleMain',
-        Icon: WitnessIcon,
-      } as HeliumSelectItemType,
-      {
-        label: t('map_filter.witness.title'),
-        value: 'witnesses',
-        color: 'purpleMain',
-        Icon: CheckCircle,
-      } as HeliumSelectItemType,
     ]
-  }, [t])
+
+    if (!isDataOnly(hotspot))
+      data = [
+        ...data,
+        {
+          label: t('hotspot_details.checklist'),
+          value: 'checklist',
+          color: 'purpleMain',
+          Icon: WitnessIcon,
+        } as HeliumSelectItemType,
+        {
+          label: t('map_filter.witness.title'),
+          value: 'witnesses',
+          color: 'purpleMain',
+          Icon: CheckCircle,
+        } as HeliumSelectItemType,
+      ]
+    return data
+  }, [hotspot, t])
 
   const [selectedOption, setSelectedOption] = useState(selectData[0].value)
 
@@ -330,9 +336,12 @@ const HotspotDetails = ({
     toggleShowStatusBanner,
   ])
 
-  const contentContainerStyle = useMemo(() => ({ paddingLeft: spacing.m }), [
-    spacing.m,
-  ])
+  const contentContainerStyle = useMemo(
+    () => ({
+      paddingLeft: !isDataOnly(hotspot) ? spacing.m : undefined,
+    }),
+    [hotspot, spacing.m],
+  )
 
   const onTimelineChanged = useCallback(
     (value, index) => {
@@ -478,7 +487,7 @@ const HotspotDetails = ({
           />
 
           <Box
-            justifyContent="flex-start"
+            justifyContent={isDataOnly(hotspot) ? 'center' : 'flex-start'}
             flexDirection="row"
             backgroundColor="grayBoxLight"
           >
@@ -488,6 +497,8 @@ const HotspotDetails = ({
               contentContainerStyle={contentContainerStyle}
               data={selectData}
               backgroundColor="grayBoxLight"
+              flex={undefined}
+              width={undefined}
               selectedValue={selectedOption}
               onValueChanged={handleSelectValueChanged}
             />
