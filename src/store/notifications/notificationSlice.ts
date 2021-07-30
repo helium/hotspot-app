@@ -19,6 +19,15 @@ export type Notification = {
   viewed_at?: string | null
 }
 
+export enum NotificationFilter {
+  ALL = 'all',
+  HELIUM_UPDATES = 'helium-update',
+  HOTSPOT_UPDATES = 'hotspot-update',
+  HOTSPOT_TRANSFER = 'transfer',
+  WEEKLY_EARNINGS = 'earnings',
+  FAILED_NOTIFICATIONS = 'failed-txn',
+}
+
 export type NotificationState = {
   pushNotification?: OSNotification
   notifications: Notification[]

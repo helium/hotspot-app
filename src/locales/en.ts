@@ -659,6 +659,7 @@ export default {
         'Here you’ll get news, updates and alerts about your Hotspots and The People’s Network.',
     },
     hotspot_updates: 'Hotspot Updates',
+    hotspot_transfers: 'Hotspot Transfers',
     helium_updates: 'Helium Updates',
     helium_update: 'Helium Update',
     weekly_earnings: 'Weekly Earnings',

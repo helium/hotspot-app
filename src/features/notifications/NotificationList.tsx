@@ -4,17 +4,19 @@ import { useTranslation } from 'react-i18next'
 import { RefreshControl, SectionList } from 'react-native'
 import { formatDistance, fromUnixTime } from 'date-fns'
 import Box from '../../components/Box'
-import Text from '../../components/Text'
+import Text, { TextProps } from '../../components/Text'
 import NotificationShow from './NotificationShow'
 import animateTransition from '../../utils/animateTransition'
 import {
   fetchMoreNotifications,
   Notification,
+  NotificationFilter,
 } from '../../store/notifications/notificationSlice'
 import { useColors, useSpacing } from '../../theme/themeHooks'
 import NotificationItem from './NotificationItem'
 import NotificationGroupHeader from './NotificationGroupHeader'
 import { useAppDispatch } from '../../store/store'
+import HeliumActionSheet from '../../components/HeliumActionSheet'
 
 export type NotificationGroupData = {
   title: string
@@ -43,11 +45,17 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
     selectedNotification,
     setSelectedNotification,
   ] = useState<Notification | null>(null)
+  const [filter, setFilter] = useState<NotificationFilter>(
+    NotificationFilter.ALL,
+  )
 
   const getNotificationGroupTitle = useCallback(
     (iconUrl: string) => {
-      if (iconUrl.includes('hotspot-update') || iconUrl.includes('transfer')) {
+      if (iconUrl.includes('hotspot-update')) {
         return t('notifications.hotspot_updates')
+      }
+      if (iconUrl.includes('transfer')) {
+        return t('notifications.hotspot_transfers')
       }
       if (iconUrl.includes('helium-update')) {
         return t('notifications.helium_updates')
@@ -156,11 +164,65 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
 
   const containerStyle = useMemo(() => ({ marginBottom: 46 }), [])
 
+  const onSelectFilter = useCallback((value) => {
+    setFilter(value)
+    // TODO: filter notification list
+  }, [])
+
+  const filterActionSheetData = useMemo(
+    () => [
+      { label: 'All Messages', value: NotificationFilter.ALL },
+      {
+        label: t('notifications.helium_updates'),
+        value: NotificationFilter.HELIUM_UPDATES,
+      },
+      {
+        label: t('notifications.hotspot_updates'),
+        value: NotificationFilter.HOTSPOT_UPDATES,
+      },
+      {
+        label: t('notifications.weekly_earnings'),
+        value: NotificationFilter.WEEKLY_EARNINGS,
+      },
+      {
+        label: t('notifications.hotspot_transfers'),
+        value: NotificationFilter.HOTSPOT_TRANSFER,
+      },
+      {
+        label: t('notifications.failure_notifications'),
+        value: NotificationFilter.FAILED_NOTIFICATIONS,
+      },
+    ],
+    [t],
+  )
+
+  const filterActionSheetTextStyle = useMemo(
+    () => ({ color: 'grayText', fontSize: 15 } as TextProps),
+    [],
+  )
+
   return (
     <Box flex={1} style={containerStyle}>
-      <Text variant="h3" flexGrow={1} padding="l" paddingBottom="xl">
-        {t('notifications.list.title')}
-      </Text>
+      <Box
+        flexDirection="row"
+        justifyContent="space-between"
+        alignItems="center"
+        padding="l"
+        paddingBottom="xl"
+      >
+        <Text variant="h3" flexGrow={1}>
+          {t('notifications.list.title')}
+        </Text>
+        <HeliumActionSheet
+          data={filterActionSheetData}
+          selectedValue={filter}
+          onValueSelected={onSelectFilter}
+          title="Filter Notifications"
+          textProps={filterActionSheetTextStyle}
+          iconVariant="carot"
+          iconColor="grayText"
+        />
+      </Box>
 
       <Box
         backgroundColor="white"
