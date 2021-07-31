@@ -132,7 +132,7 @@ const SendForm = ({
         title={getButtonTitle()}
         variant="primary"
         mode="contained"
-        disabled={!isValid || isDisabled}
+        disabled={!isValid}
       />
       {shouldShowFee && <FeeFooter fee={fee} />}
       {warning && <NoticeFooter text={warning} color="redMain" />}
