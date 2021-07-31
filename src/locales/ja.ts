@@ -483,7 +483,6 @@ export default {
     hotspot_label: 'Hotspot',
     last_activity: '最後に報告されたアクティビティ：{{activity}}',
     label_error: 'アカウントに十分なHNTがありません。',
-    invalid_sender_address: '送信者アドレスが無効です',
     stale_error:
       'Hotspotには、最後の{{blocks}}ブロックにBeaconまたはWitnessのアクティビティはありません。',
     scan: {

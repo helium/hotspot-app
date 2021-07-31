@@ -197,7 +197,8 @@ const SendView = ({
     if (!isEqual(senderAddress, address)) {
       setDisabled(true)
       setIsLocked(true)
-      setWarning(t('send.invalid_sender_address'))
+      // TODO: Use translations
+      setWarning('Invalid sender address')
     }
   }, [scanResult?.senderAddress])
 

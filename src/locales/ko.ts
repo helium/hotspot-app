@@ -467,7 +467,6 @@ export default {
     hotspot_label: 'Hotspot',
     last_activity: '마지막으로 보고된 활동: {{activity}}',
     label_error: '계정에 충분한 HNT가 없습니다.',
-    invalid_sender_address: '잘못된 발신자 주소',
     stale_error:
       'Hotspot이 마지막 {{blocks}} 블록에서 Beacon 또는 감시 활동이 없었습니다.',
     scan: {
