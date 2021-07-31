@@ -11,7 +11,7 @@ import { Address } from '@helium/crypto-react-native'
 import { useAsync } from 'react-async-hook'
 import { useSelector } from 'react-redux'
 import { TransferHotspotV1 } from '@helium/transactions'
-import { isEqual, some } from 'lodash'
+import { some } from 'lodash'
 import { RootState } from '../../../store/rootReducer'
 import Box from '../../../components/Box'
 import useHaptic from '../../../utils/useHaptic'
@@ -194,7 +194,7 @@ const SendView = ({
     if (!scanResult?.senderAddress) return
     const address = await getAddress()
     const senderAddress = Address.fromB58(`${scanResult.senderAddress}`)
-    if (!isEqual(senderAddress, address)) {
+    if (senderAddress !== address) {
       setDisabled(true)
       setIsLocked(true)
       // TODO: Use translations
