@@ -7,9 +7,9 @@ import Box from '../../components/Box'
 const EmptyNotifications = () => {
   const { t } = useTranslation()
   return (
-    <Box justifyContent="center" flex={1} paddingHorizontal="l">
+    <Box justifyContent="center" flex={1}>
       <BellBubble />
-      <Text variant="h2" marginVertical="m">
+      <Text variant="h2" marginVertical="m" color="black">
         {t('notifications.none.title')}
       </Text>
       <Text variant="subtitle">{t('notifications.none.subtitle')}</Text>

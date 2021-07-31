@@ -35,17 +35,26 @@ export type NotificationState = {
   loadingNotification: boolean
 }
 
-export const fetchNotifications = createAsyncThunk<Notification[]>(
-  'account/fetchNotifications',
-  async () => getWallet('notifications'),
+export type FetchMoreNotificationData = {
+  lastId: number
+  filter?: NotificationFilter
+}
+
+export const fetchNotifications = createAsyncThunk<
+  Notification[],
+  NotificationFilter | undefined
+>('account/fetchNotifications', async (filter) =>
+  getWallet('notifications', { filter_type: filter || NotificationFilter.ALL }),
 )
 
-export const fetchMoreNotifications = createAsyncThunk<Notification[], number>(
-  'account/fetchMoreNotifications',
-  async (lastId: number) =>
-    getWallet('notifications', {
-      before: lastId,
-    }),
+export const fetchMoreNotifications = createAsyncThunk<
+  Notification[],
+  FetchMoreNotificationData
+>('account/fetchMoreNotifications', async ({ lastId, filter }) =>
+  getWallet('notifications', {
+    before: lastId,
+    filter_type: filter || NotificationFilter.ALL,
+  }),
 )
 
 export const markNotificationsViewed = createAsyncThunk<Notification[]>(

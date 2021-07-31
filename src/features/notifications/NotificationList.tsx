@@ -6,7 +6,6 @@ import { formatDistance, fromUnixTime } from 'date-fns'
 import Box from '../../components/Box'
 import Text, { TextProps } from '../../components/Text'
 import NotificationShow from './NotificationShow'
-import animateTransition from '../../utils/animateTransition'
 import {
   fetchMoreNotifications,
   Notification,
@@ -17,6 +16,7 @@ import NotificationItem from './NotificationItem'
 import NotificationGroupHeader from './NotificationGroupHeader'
 import { useAppDispatch } from '../../store/store'
 import HeliumActionSheet from '../../components/HeliumActionSheet'
+import EmptyNotifications from './EmptyNotifications'
 
 export type NotificationGroupData = {
   title: string
@@ -29,15 +29,20 @@ type Props = {
   notifications: Notification[]
   refreshing: boolean
   onRefresh: () => void
+  onFilterChanged: (filter: NotificationFilter) => void
+  filter: NotificationFilter
 }
-const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
+const NotificationList = ({
+  notifications,
+  refreshing,
+  onRefresh,
+  onFilterChanged,
+  filter,
+}: Props) => {
   const { t } = useTranslation()
   const colors = useColors()
   const spacing = useSpacing()
   const dispatch = useAppDispatch()
-  const [allNotifications, setAllNotifications] = useState<Array<Notification>>(
-    [],
-  )
   const [groupedNotifications, setGroupedNotifications] = useState<
     Array<NotificationGroupData>
   >([])
@@ -45,9 +50,6 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
     selectedNotification,
     setSelectedNotification,
   ] = useState<Notification | null>(null)
-  const [filter, setFilter] = useState<NotificationFilter>(
-    NotificationFilter.ALL,
-  )
 
   const getNotificationGroupTitle = useCallback(
     (iconUrl: string) => {
@@ -72,28 +74,10 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
   )
 
   useEffect(() => {
-    if (notifications.length !== allNotifications.length) {
-      setAllNotifications(notifications)
-      return
-    }
-    notifications.some((propNotif, index) => {
-      const notif = allNotifications[index]
-      const isEqual =
-        propNotif.id === notif.id && propNotif.viewed_at === notif.viewed_at
-
-      if (!isEqual) {
-        // data has changed update
-        setAllNotifications(notifications)
-      }
-      return isEqual
-    })
-  }, [allNotifications, notifications])
-
-  useEffect(() => {
     const now = new Date()
 
     const grouped = groupBy(
-      allNotifications,
+      notifications,
       (notification) =>
         formatDistance(fromUnixTime(notification.time), now, {
           addSuffix: true,
@@ -111,13 +95,17 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
       }))
       .sort((a, b) => b.data[0].time - a.data[0].time)
 
-    animateTransition('NotificationList.SortedAndGrouped')
     setGroupedNotifications(arr)
-  }, [allNotifications, getNotificationGroupTitle, t])
+  }, [notifications, getNotificationGroupTitle, t])
 
   const loadMoreNotifications = useCallback(() => {
-    dispatch(fetchMoreNotifications(notifications[notifications.length - 1].id))
-  }, [dispatch, notifications])
+    dispatch(
+      fetchMoreNotifications({
+        lastId: notifications[notifications.length - 1].id,
+        filter,
+      }),
+    )
+  }, [dispatch, filter, notifications])
 
   const listContainerStyle = useMemo(
     () => ({
@@ -162,12 +150,12 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
     [],
   )
 
-  const containerStyle = useMemo(() => ({ marginBottom: 46 }), [])
-
-  const onSelectFilter = useCallback((value) => {
-    setFilter(value)
-    // TODO: filter notification list
-  }, [])
+  const onSelectFilter = useCallback(
+    (value) => {
+      onFilterChanged(value)
+    },
+    [onFilterChanged],
+  )
 
   const filterActionSheetData = useMemo(
     () => [
@@ -202,7 +190,7 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
   )
 
   return (
-    <Box flex={1} style={containerStyle}>
+    <Box flex={1}>
       <Box
         flexDirection="row"
         justifyContent="space-between"
@@ -224,12 +212,7 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
         />
       </Box>
 
-      <Box
-        backgroundColor="white"
-        borderRadius="xl"
-        marginBottom="xl"
-        overflow="hidden"
-      >
+      <Box backgroundColor="white" borderRadius="xl" flex={1}>
         <SectionList
           stickySectionHeadersEnabled={false}
           contentContainerStyle={listContainerStyle}
@@ -248,6 +231,7 @@ const NotificationList = ({ notifications, refreshing, onRefresh }: Props) => {
           renderSectionHeader={renderListHeader}
           onEndReached={loadMoreNotifications}
           onEndReachedThreshold={0.2}
+          ListEmptyComponent={<EmptyNotifications />}
         />
         <NotificationShow
           notification={selectedNotification}
