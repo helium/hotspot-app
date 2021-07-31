@@ -497,6 +497,11 @@ export default {
       view_description:
         'QRコードを共有して、他のユーザーからHNTを入金するか受け取ります。',
       learn_more: '詳細',
+      parse_code_error: 'QRコードを解析できません',
+      invalid_sender_address:
+        'QRコードの送信者アドレスは有効なウォレットアカウントアドレスではありません。',
+      mismatched_sender_address:
+        'QRコードの送信者アドレスがウォレットアカウントアドレスと一致しません。 続行するには、アドレスが一致している必要があります。',
     },
     send_max_fee: {
       error_title: '最大送信エラー',

@@ -481,6 +481,11 @@ export default {
       view_description:
         'QR 코드를 공유하여 HNT를 예치하거나 다른 사람으로부터 전송받을 수 있습니다.',
       learn_more: '자세히 알아보기',
+      parse_code_error: 'QR 코드를 구문 분석할 수 없음',
+      invalid_sender_address:
+        'QR 코드의 보낸 사람 주소는 유효한 지갑 계정 주소가 아닙니다.',
+      mismatched_sender_address:
+        'QR 코드의 보낸 사람 주소가 지갑 계정 주소와 일치하지 않습니다. 계속하려면 주소가 일치해야 합니다.',
     },
     send_max_fee: {
       error_title: '최대 오류 전송',

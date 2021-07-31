@@ -451,6 +451,10 @@ export default {
       view: '查看二维码',
       view_description: '分享您的二维码以存入或收取他人的 HNT。',
       learn_more: '了解更多',
+      parse_code_error: '无法解析二维码',
+      invalid_sender_address: '二维码中的发件人地址不是有效的钱包账户地址。',
+      mismatched_sender_address:
+        '二维码中的发件人地址与钱包账户地址不匹配。 地址必须匹配才能继续。',
     },
     send_max_fee: {
       error_title: '发送最大值出错',
