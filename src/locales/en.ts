@@ -928,8 +928,8 @@ export default {
     blocks: {
       not:
         'Hotspots must be fully synced before they can mine. New Hotspots can take up to 96 hours to sync.',
-      full: 'Hotspot fully synced as of {{timeAgo}}.',
-      partial: 'Hotspot syncing with the Helium blockchain as of {{timeAgo}}.',
+      full: 'Hotspot fully synced.',
+      partial: 'Hotspot syncing with the Helium blockchain.',
       full_with_date: 'Hotspot fully synced as of {{timeAgo}}.',
       partial_with_date:
         'Hotspot syncing with the Helium blockchain as of {{timeAgo}}.',
