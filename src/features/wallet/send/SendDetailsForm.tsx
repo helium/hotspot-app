@@ -218,7 +218,7 @@ const SendDetailsForm = ({
         />
       )}
       <InputField
-        type="numeric"
+        type="decimal-pad"
         testID="AmountInput"
         defaultValue={amount}
         onChange={setFormAmount}
@@ -291,7 +291,7 @@ const SendDetailsForm = ({
         />
       )}
       <InputField
-        type="numeric"
+        type="decimal-pad"
         defaultValue={amount}
         onChange={setAmount}
         value={amount}
@@ -339,7 +339,7 @@ const SendDetailsForm = ({
         }
       />
       <InputField
-        type="numeric"
+        type="decimal-pad"
         defaultValue={amount}
         onChange={setFormAmount}
         value={amount}

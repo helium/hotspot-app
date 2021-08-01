@@ -23,9 +23,6 @@ const StatusBadge = ({
 
   const title = useMemo(() => {
     if (online === 'online') {
-      if (syncStatus === undefined) {
-        return ''
-      }
       if (syncStatus === 'full') {
         return t('hotspot_details.status_online')
       }
