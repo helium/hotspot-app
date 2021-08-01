@@ -811,6 +811,7 @@ export default {
       '이 전송은 더 이상 활성화되지 않습니다. 판매자에게 자세한 내용을 문의하세요.',
     fine_print: '구매자가 트랜잭션을 수락하고 완료하면 Hotspot이 전송됩니다.',
     notification_button: '트랜잭션 보기',
+    deployModeTransferDisabled: '배포 모드에서는 전송이 비활성화됩니다.',
     cancel: {
       button_title: '전송 보류. 취소하려면 탭하세요.',
       failed_alert_title: '전송을 취소할 수 없음',

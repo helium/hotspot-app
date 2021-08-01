@@ -775,6 +775,7 @@ export default {
     canceled_alert_body: '此转让不再处于活动状态。请联系卖家了解更多信息。',
     fine_print: '一旦买家接受并完成交易，Hotspot 即被转让。',
     notification_button: '查看交易',
+    deployModeTransferDisabled: '在部署模式下禁用传输',
     cancel: {
       button_title: '转让待处理。轻触以取消。',
       failed_alert_title: '无法取消转让',

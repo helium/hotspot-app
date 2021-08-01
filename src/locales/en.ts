@@ -895,6 +895,7 @@ export default {
     fine_print:
       'Hotspot will transfer once the buyer accepts and completes the transaction.',
     notification_button: 'View Transaction',
+    deployModeTransferDisabled: 'Transfers are disabled in Deploy Mode',
     cancel: {
       button_title: 'Transfer Pending. Tap to Cancel.',
       failed_alert_title: 'Unable to Cancel Transfer',
