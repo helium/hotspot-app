@@ -552,7 +552,7 @@ export default {
           title: 'Deploy Mode',
           enableButton: 'Enable Deploy Mode',
           description:
-            'Activating deploy mode will remove the ability to reveal the 12 words for this account. You will still be able to add hotspots and update their locations, and send funds to one whitelisted address if provided.',
+            'Activating deploy mode will remove the ability to transfer hotspots and reveal the 12 words for this account. You will still be able to add hotspots and update their locations, and send payments to one wallet address (if provided below).',
           warning: 'You must log out to disable this feature.',
           addressLabel: 'Permanent recipient address',
         },
