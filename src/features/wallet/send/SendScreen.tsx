@@ -24,17 +24,17 @@ const SendScreen = ({ route }: Props) => {
   const isPinRequiredForPayment = useSelector(
     (state: RootState) => state.app.isPinRequiredForPayment,
   )
-  const isSecureModeEnabled = useSelector(
-    (state: RootState) => state.app.isSecureModeEnabled,
+  const isDeployModeEnabled = useSelector(
+    (state: RootState) => state.app.isDeployModeEnabled,
   )
   const permanentPaymentAddress = useSelector(
     (state: RootState) => state.app.permanentPaymentAddress,
   )
-  // If "Secure Mode" is enabled, only allow payment transactions
-  const type = isSecureModeEnabled ? 'payment' : route?.params?.type
-  // If "Secure Mode" is enabled without a permanent payment address, disable all payments
-  const isSecureModePaymentsDisabled =
-    isSecureModeEnabled && !permanentPaymentAddress
+  // If "Deploy Mode" is enabled, only allow payment transactions
+  const type = isDeployModeEnabled ? 'payment' : route?.params?.type
+  // If "Deploy Mode" is enabled without a permanent payment address, disable all payments
+  const isDeployModePaymentsDisabled =
+    isDeployModeEnabled && !permanentPaymentAddress
 
   useEffect(() => {
     // Check if pin is required, show lock screen if so
@@ -69,13 +69,13 @@ const SendScreen = ({ route }: Props) => {
           scanResult={scanResult}
           sendType={type}
           hotspotAddress={hotspotAddress}
-          isDisabled={isSecureModePaymentsDisabled}
+          isDisabled={isDeployModePaymentsDisabled}
           isSeller={isSeller}
           canSubmit={canSubmit}
           lockedPaymentAddress={permanentPaymentAddress}
           warning={
-            isSecureModePaymentsDisabled
-              ? t('send.secureModePaymentsDisabled')
+            isDeployModePaymentsDisabled
+              ? t('send.deployModePaymentsDisabled')
               : undefined
           }
         />

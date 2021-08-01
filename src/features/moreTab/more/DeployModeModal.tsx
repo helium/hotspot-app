@@ -49,7 +49,7 @@ type Props = BoxProps<Theme> & {
   onClose?: () => void
 }
 
-const SecureModeModal = ({ isVisible, onClose = () => {} }: Props) => {
+const DeployModeModal = ({ isVisible, onClose = () => {} }: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const insets = useSafeAreaInsets()
@@ -57,8 +57,8 @@ const SecureModeModal = ({ isVisible, onClose = () => {} }: Props) => {
   const [sendAddress, setSendAddress] = useState('')
 
   const sheetHeight = 400 + (insets?.bottom || 0) + keyboardHeight
-  const enableSecureMode = useCallback(() => {
-    dispatch(appSlice.actions.enableSecureMode(true))
+  const enableDeployMode = useCallback(() => {
+    dispatch(appSlice.actions.enableDeployMode(true))
     if (sendAddress) {
       dispatch(appSlice.actions.setPermanentPaymentAddress(sendAddress))
     }
@@ -79,15 +79,15 @@ const SecureModeModal = ({ isVisible, onClose = () => {} }: Props) => {
       isVisible={isVisible}
       onClose={onClose}
       sheetHeight={sheetHeight}
-      title={t('more.sections.security.secureMode.title')}
+      title={t('more.sections.security.deployMode.title')}
     >
-      <Text>{t('more.sections.security.secureMode.description')}</Text>
+      <Text>{t('more.sections.security.deployMode.description')}</Text>
       <Text marginVertical="m" fontFamily={Font.main.semiBold}>
-        {t('more.sections.security.secureMode.warning')}
+        {t('more.sections.security.deployMode.warning')}
       </Text>
       <InputField
         onChange={setSendAddress}
-        label={t('more.sections.security.secureMode.addressLabel')}
+        label={t('more.sections.security.deployMode.addressLabel')}
         placeholder={t('send.address.placeholder')}
         extra={
           sendAddress && isValid ? (
@@ -103,7 +103,7 @@ const SecureModeModal = ({ isVisible, onClose = () => {} }: Props) => {
             {t('generic.cancel')}
           </Text>
         </ActionButton>
-        <ActionButton onPress={enableSecureMode} style={confirmationStyle}>
+        <ActionButton onPress={enableDeployMode} style={confirmationStyle}>
           <Text variant="medium" fontSize={18} style={styles.confirmText}>
             {t('generic.submit')}
           </Text>
@@ -126,4 +126,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default SecureModeModal
+export default DeployModeModal

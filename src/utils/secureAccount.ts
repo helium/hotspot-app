@@ -24,7 +24,7 @@ const boolKeys = [
   'requirePinForPayment',
   'hapticDisabled',
   'convertHntToCurrency',
-  'secureModeEnabled',
+  'deployModeEnabled',
   'fleetModeEnabled',
   'hasFleetModeAutoEnabled',
 ] as const

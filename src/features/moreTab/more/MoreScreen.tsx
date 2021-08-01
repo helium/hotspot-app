@@ -35,7 +35,7 @@ import Account from '../../../assets/images/account.svg'
 import Box from '../../../components/Box'
 import DiscordItem from './DiscordItem'
 import AppInfoItem from './AppInfoItem'
-import SecureModeModal from './SecureModeModal'
+import DeployModeModal from './DeployModeModal'
 import activitySlice from '../../../store/activity/activitySlice'
 import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
 import { useLanguageContext } from '../../../providers/LanguageProvider'
@@ -60,8 +60,8 @@ const MoreScreen = () => {
   const navigation = useNavigation<MoreNavigationProp & RootNavigationProp>()
   const spacing = useSpacing()
   const [
-    showingSecureModeConfirmation,
-    setShowingSecureModeConfirmation,
+    showingDeployModeConfirmation,
+    setShowingDeployModeConfirmation,
   ] = useState(false)
 
   useEffect(() => {
@@ -240,21 +240,21 @@ const MoreScreen = () => {
       {
         title: t('more.sections.security.revealWords'),
         onPress: handleRevealWords,
-        disabled: app.isSecureModeEnabled,
+        disabled: app.isDeployModeEnabled,
       },
       {
-        title: t('more.sections.security.secureMode.enableButton'),
-        value: app.isSecureModeEnabled,
+        title: t('more.sections.security.deployMode.enableButton'),
+        value: app.isDeployModeEnabled,
         onToggle: () => {
-          setShowingSecureModeConfirmation(true)
+          setShowingDeployModeConfirmation(true)
         },
         renderModal: () => (
-          <SecureModeModal
-            isVisible={showingSecureModeConfirmation}
-            onClose={() => setShowingSecureModeConfirmation(false)}
+          <DeployModeModal
+            isVisible={showingDeployModeConfirmation}
+            onClose={() => setShowingDeployModeConfirmation(false)}
           />
         ),
-        disabled: app.isSecureModeEnabled,
+        disabled: app.isDeployModeEnabled,
       },
     ]
     return [
@@ -329,9 +329,9 @@ const MoreScreen = () => {
     app.convertHntToCurrency,
     app.authInterval,
     app.isPinRequiredForPayment,
-    app.isSecureModeEnabled,
-    showingSecureModeConfirmation,
-    setShowingSecureModeConfirmation,
+    app.isDeployModeEnabled,
+    showingDeployModeConfirmation,
+    setShowingDeployModeConfirmation,
     t,
     handlePinRequired,
     handleRevealWords,

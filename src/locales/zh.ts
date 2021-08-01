@@ -436,7 +436,7 @@ export default {
     },
     qrInfo: 'QR 信息',
     error: '提交此交易时出错。请重试。',
-    secureModePaymentsDisabled: '在安全模式下付款被禁用',
+    deployModePaymentsDisabled: '在部署模式下付款被禁用',
     hotspot_label: 'Hotspot',
     last_activity: '上次报告的活动: {{activity}}',
     label_error: '您的帐户 HNT 余额不足。',
@@ -476,11 +476,11 @@ export default {
           after_4_hr: '4 小时后',
         },
         revealWords: '显示助记词',
-        secureMode: {
-          title: '安全模式',
-          enableButton: '启用安全模式',
+        deployMode: {
+          title: '部署模式',
+          enableButton: '启用部署模式',
           description:
-            '激活安全模式将删除该帐户显示12个单词的功能。 您仍然可以添加热点并更新其位置，并将资金发送到一个列入白名单的地址（如果提供）。',
+            '激活部署模式将取消显示此帐户的 12 个单词的功能。 您仍然可以添加热点并更新它们的位置，并将资金发送到一个白名单地址（如果提供）。',
           warning: '您必须注销才能禁用此功能。',
           addressLabel: '永久收件人地址',
         },

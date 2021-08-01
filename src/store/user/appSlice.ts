@@ -11,7 +11,7 @@ import { Intervals } from '../../features/moreTab/more/useAuthIntervals'
 export type AppState = {
   isBackedUp: boolean
   isHapticDisabled: boolean
-  isSecureModeEnabled: boolean
+  isDeployModeEnabled: boolean
   permanentPaymentAddress: string
   isFleetModeEnabled: boolean
   hasFleetModeAutoEnabled: boolean
@@ -28,7 +28,7 @@ export type AppState = {
 const initialState: AppState = {
   isBackedUp: false,
   isHapticDisabled: false,
-  isSecureModeEnabled: false,
+  isDeployModeEnabled: false,
   permanentPaymentAddress: '',
   isFleetModeEnabled: false,
   convertHntToCurrency: false,
@@ -47,7 +47,7 @@ type Restore = {
   isBackedUp: boolean
   isPinRequired: boolean
   isPinRequiredForPayment: boolean
-  isSecureModeEnabled: boolean
+  isDeployModeEnabled: boolean
   permanentPaymentAddress: string
   authInterval: number
   isLocked: boolean
@@ -66,7 +66,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       isHapticDisabled,
       convertHntToCurrency,
       address,
-      isSecureModeEnabled,
+      isDeployModeEnabled,
       permanentPaymentAddress,
       isFleetModeEnabled,
       hasFleetModeAutoEnabled,
@@ -78,7 +78,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       getSecureItem('hapticDisabled'),
       getSecureItem('convertHntToCurrency'),
       getSecureItem('address'),
-      getSecureItem('secureModeEnabled'),
+      getSecureItem('deployModeEnabled'),
       getSecureItem('permanentPaymentAddress'),
       getSecureItem('fleetModeEnabled'),
       getSecureItem('hasFleetModeAutoEnabled'),
@@ -97,7 +97,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       isLocked: isPinRequired,
       isHapticDisabled,
       convertHntToCurrency,
-      isSecureModeEnabled,
+      isDeployModeEnabled,
       permanentPaymentAddress,
       isFleetModeEnabled,
       hasFleetModeAutoEnabled,
@@ -128,9 +128,9 @@ const appSlice = createSlice({
       state.isPinRequiredForPayment = action.payload
       setSecureItem('requirePinForPayment', action.payload)
     },
-    enableSecureMode: (state, action: PayloadAction<boolean>) => {
-      state.isSecureModeEnabled = action.payload
-      setSecureItem('secureModeEnabled', action.payload)
+    enableDeployMode: (state, action: PayloadAction<boolean>) => {
+      state.isDeployModeEnabled = action.payload
+      setSecureItem('deployModeEnabled', action.payload)
     },
     setPermanentPaymentAddress: (state, action: PayloadAction<string>) => {
       state.permanentPaymentAddress = action.payload
