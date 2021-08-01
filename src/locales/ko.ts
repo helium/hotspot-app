@@ -464,7 +464,7 @@ export default {
     },
     qrInfo: 'QR 정보',
     error: '이 트랜잭션을 제출하는 중에 오류가 발생했습니다. 다시 시도하세요.',
-    secureModePaymentsDisabled: '보안 모드에서는 결제가 비활성화됩니다.',
+    deployModePaymentsDisabled: '배포 모드에서는 결제가 비활성화됩니다.',
     hotspot_label: 'Hotspot',
     last_activity: '마지막으로 보고된 활동: {{activity}}',
     label_error: '계정에 충분한 HNT가 없습니다.',
