@@ -12,9 +12,11 @@ import {
 } from '../../store/notifications/notificationSlice'
 
 const NotificationsScreen = () => {
-  const { notifications, markNotificationStatus } = useSelector(
-    (state: RootState) => state.notifications,
-  )
+  const {
+    notifications,
+    markNotificationStatus,
+    loadingNotification,
+  } = useSelector((state: RootState) => state.notifications)
   const dispatch = useAppDispatch()
   const [filter, setFilter] = useState<NotificationFilter>(
     NotificationFilter.ALL,
@@ -50,6 +52,7 @@ const NotificationsScreen = () => {
     >
       <NotificationList
         notifications={notifications}
+        loadingNotification={loadingNotification}
         onRefresh={refreshNotifications}
         refreshing={markNotificationStatus === 'pending'}
         onFilterChanged={onFilterChanged}

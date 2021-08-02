@@ -1,7 +1,7 @@
 import { groupBy } from 'lodash'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { RefreshControl, SectionList } from 'react-native'
+import { ActivityIndicator, RefreshControl, SectionList } from 'react-native'
 import { formatDistance, fromUnixTime } from 'date-fns'
 import Box from '../../components/Box'
 import Text, { TextProps } from '../../components/Text'
@@ -27,6 +27,7 @@ export type NotificationGroupData = {
 
 type Props = {
   notifications: Notification[]
+  loadingNotification: boolean
   refreshing: boolean
   onRefresh: () => void
   onFilterChanged: (filter: NotificationFilter) => void
@@ -34,6 +35,7 @@ type Props = {
 }
 const NotificationList = ({
   notifications,
+  loadingNotification,
   refreshing,
   onRefresh,
   onFilterChanged,
@@ -159,7 +161,7 @@ const NotificationList = ({
 
   const filterActionSheetData = useMemo(
     () => [
-      { label: 'All Messages', value: NotificationFilter.ALL },
+      { label: t('notifications.all'), value: NotificationFilter.ALL },
       {
         label: t('notifications.helium_updates'),
         value: NotificationFilter.HELIUM_UPDATES,
@@ -231,7 +233,13 @@ const NotificationList = ({
           renderSectionHeader={renderListHeader}
           onEndReached={loadMoreNotifications}
           onEndReachedThreshold={0.2}
-          ListEmptyComponent={<EmptyNotifications />}
+          ListEmptyComponent={
+            loadingNotification ? (
+              <ActivityIndicator color="grayLight" />
+            ) : (
+              <EmptyNotifications />
+            )
+          }
         />
         <NotificationShow
           notification={selectedNotification}

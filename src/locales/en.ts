@@ -658,6 +658,7 @@ export default {
       subtitle:
         'Here you’ll get news, updates and alerts about your Hotspots and The People’s Network.',
     },
+    all: 'All Messages',
     hotspot_updates: 'Hotspot Updates',
     hotspot_transfers: 'Hotspot Transfers',
     helium_updates: 'Helium Updates',
