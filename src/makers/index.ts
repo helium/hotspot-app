@@ -2,6 +2,7 @@ import bobcat from './bobcat'
 import customAntennas from './custom/antennas'
 import finestra from './finestra'
 import helium from './helium'
+import linxdot from './linxdot'
 import longAP from './longAP'
 import nebra from './nebra'
 import rak from './rak'
@@ -15,6 +16,7 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
   bobcat,
   finestra,
   helium,
+  linxdot,
   longAP,
   nebra,
   rak,
@@ -28,6 +30,7 @@ export const AntennaModels = {
   ...customAntennas,
   ...finestra.antennas,
   ...helium.antennas,
+  ...linxdot.antennas,
   ...longAP.antennas,
   ...nebra.antennas,
   ...rak.antennas,
@@ -40,6 +43,7 @@ export const HotspotMakerModels = {
   ...bobcat.hotspots,
   ...finestra.hotspots,
   ...helium.hotspots,
+  ...linxdot.hotspots,
   ...longAP.hotspots,
   ...nebra.hotspots,
   ...rak.hotspots,
