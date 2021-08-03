@@ -56,7 +56,6 @@ const Linxdot = {
       ],
     },
   },
-  icon: HotspotIcon,
   antenna: { default: ANTENNAS.LINXDOT },
 } as MakerHotspot
 
