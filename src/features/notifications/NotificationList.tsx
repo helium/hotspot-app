@@ -237,7 +237,7 @@ const NotificationList = ({
             loadingNotification ? (
               <ActivityIndicator color="grayLight" />
             ) : (
-              <EmptyNotifications />
+              <EmptyNotifications filter={filter} />
             )
           }
         />
