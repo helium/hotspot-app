@@ -35,7 +35,10 @@ import ShortcutNav from './ShortcutNav'
 import { useAppDispatch } from '../../../store/store'
 import { fetchAccountRewards } from '../../../store/account/accountSlice'
 import useVisible from '../../../utils/useVisible'
-import { fetchValidators } from '../../../store/validators/validatorsSlice'
+import {
+  fetchFollowedValidators,
+  fetchMyValidators,
+} from '../../../store/validators/validatorsSlice'
 import ValidatorDetails from '../../validators/ValidatorDetails'
 import {
   isHotspot,
@@ -122,7 +125,8 @@ const HotspotsView = ({
   useVisible({
     onAppear: () => {
       dispatch(fetchAccountRewards())
-      dispatch(fetchValidators())
+      dispatch(fetchMyValidators())
+      dispatch(fetchFollowedValidators())
     },
   })
 

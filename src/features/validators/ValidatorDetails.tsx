@@ -16,7 +16,6 @@ import HeliumSelect from '../../components/HeliumSelect'
 import { HeliumSelectItemType } from '../../components/HeliumSelectItem'
 import { wh, wp } from '../../utils/layout'
 import ConsensusBanner from './ConsensusBanner'
-import FollowButton from '../../components/FollowButton'
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar'
 import ShareSheet from '../../components/ShareSheet'
 import { useAppDispatch } from '../../store/store'
@@ -25,6 +24,7 @@ import { RootState } from '../../store/rootReducer'
 import ValidatorDetailsOverview from './ValidatorDetailsOverview'
 import { useSpacing } from '../../theme/themeHooks'
 import { formatHeartbeatVersion, isUnstaked } from '../../utils/validatorUtils'
+import FollowValidatorButton from '../../components/FollowValidatorButton'
 
 export type HotspotSnapPoints = { collapsed: number; expanded: number }
 type Props = {
@@ -162,8 +162,7 @@ const ValidatorDetails = ({ validator }: Props) => {
               alignItems="center"
               justifyContent="flex-end"
             >
-              {/* TODO: Create a FollowValidatorButton when Wallet api supports it */}
-              <FollowButton address={validator?.address || ''} />
+              <FollowValidatorButton address={validator?.address || ''} />
               <ShareSheet item={validator} />
             </Box>
             <Box marginBottom="lm">

@@ -6,18 +6,23 @@ import {
   handleCacheFulfilled,
   hasValidCache,
 } from '../../utils/cacheUtils'
+import { deleteWallet, getWallet, postWallet } from '../../utils/walletClient'
 
 export type ValidatorsSliceState = {
   validators: CacheRecord<{ data: Validator[] }>
   electedValidators: CacheRecord<{ data: Validator[] }>
+  followedValidators: CacheRecord<{ data: Validator[] }>
+  followedValidatorsObj: Record<string, Validator>
 }
 
 const initialState: ValidatorsSliceState = {
   validators: { lastFetchedTimestamp: 0, loading: false, data: [] },
   electedValidators: { lastFetchedTimestamp: 0, loading: false, data: [] },
+  followedValidators: { lastFetchedTimestamp: 0, loading: false, data: [] },
+  followedValidatorsObj: {},
 }
 
-export const fetchValidators = createAsyncThunk(
+export const fetchMyValidators = createAsyncThunk(
   'validators/fetchValidators',
   async (_arg, { getState }) => {
     const {
@@ -45,6 +50,52 @@ export const fetchElectedValidators = createAsyncThunk(
   },
 )
 
+export const fetchFollowedValidators = createAsyncThunk(
+  'validators/fetchFollowedValidators',
+  async (_arg, { getState }) => {
+    const {
+      validators: { followedValidators },
+    } = (await getState()) as {
+      validators: ValidatorsSliceState
+    }
+    if (hasValidCache(followedValidators)) return followedValidators.data
+
+    return getWallet('validators/follow', null, { camelCase: true })
+  },
+)
+
+export const followValidator = createAsyncThunk<Validator[], string>(
+  'validators/followValidator',
+  async (validator_address) => {
+    const followed = await postWallet(
+      `validators/follow/${validator_address}`,
+      null,
+      { camelCase: true },
+    )
+    return followed
+  },
+)
+
+export const unfollowValidator = createAsyncThunk<Validator[], string>(
+  'validators/unfollowValidator',
+  async (validator_address) => {
+    const followed = await deleteWallet(
+      `validators/follow/${validator_address}`,
+      null,
+      { camelCase: true },
+    )
+    return followed
+  },
+)
+
+const validatorsToObj = (validators: Validator[]) =>
+  validators.reduce((obj, validator) => {
+    return {
+      ...obj,
+      [validator.address]: validator,
+    }
+  }, {})
+
 const validatorsSlice = createSlice({
   name: 'validatorDetails',
   initialState,
@@ -54,17 +105,29 @@ const validatorsSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchValidators.rejected, (state, _action) => {
+    builder.addCase(fetchMyValidators.rejected, (state, _action) => {
       state.validators.loading = false
     })
-    builder.addCase(fetchValidators.pending, (state, _action) => {
+    builder.addCase(fetchMyValidators.pending, (state, _action) => {
       state.validators.loading = true
     })
-    builder.addCase(fetchValidators.fulfilled, (state, action) => {
+    builder.addCase(fetchMyValidators.fulfilled, (state, action) => {
       state.validators = handleCacheFulfilled({ data: action.payload })
     })
     builder.addCase(fetchElectedValidators.fulfilled, (state, action) => {
       state.electedValidators = handleCacheFulfilled({ data: action.payload })
+    })
+    builder.addCase(fetchFollowedValidators.fulfilled, (state, action) => {
+      state.followedValidatorsObj = validatorsToObj(action.payload)
+      state.followedValidators = handleCacheFulfilled({ data: action.payload })
+    })
+    builder.addCase(followValidator.fulfilled, (state, action) => {
+      state.followedValidatorsObj = validatorsToObj(action.payload)
+      state.followedValidators = handleCacheFulfilled({ data: action.payload })
+    })
+    builder.addCase(unfollowValidator.fulfilled, (state, action) => {
+      state.followedValidatorsObj = validatorsToObj(action.payload)
+      state.followedValidators = handleCacheFulfilled({ data: action.payload })
     })
   },
 })
