@@ -440,7 +440,7 @@ export default {
       title: 'Welcome to\nyour wallet',
       subtitle: 'Your balance is zero.',
       description:
-        'You can send HNT to the below address/QR or deploy a Hotspot to start learning.',
+        'You can send HNT to the below address/QR or deploy a Hotspot to start earning.',
     },
     title: 'My Wallet',
     copiedToClipboard: 'Copied {{address}} to clipboard',
