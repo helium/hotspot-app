@@ -8,7 +8,7 @@ import React, {
 } from 'react'
 import Mask from '@assets/images/shortcutMask.svg'
 import { FlatList } from 'react-native-gesture-handler'
-import { Hotspot, Witness } from '@helium/http'
+import { Hotspot, Validator, Witness } from '@helium/http'
 import { uniqBy, upperFirst } from 'lodash'
 import {
   LayoutChangeEvent,
@@ -28,37 +28,92 @@ import usePrevious from '../../../utils/usePrevious'
 import TouchableOpacityBox from '../../../components/BSTouchableOpacityBox'
 import { GlobalOpt, GLOBAL_OPTS } from './hotspotTypes'
 import { isGlobalOption } from '../../../utils/hotspotUtils'
+import { isValidator } from '../../../utils/validatorUtils'
+import { prettyPrintToConsole } from '../../../utils/logger'
 
 export const SHORTCUT_NAV_HEIGHT = 44
 const ITEM_SIZE = 35
 const ITEM_MARGIN = 's'
 
-type Props = {
-  ownedHotspots: Hotspot[]
-  followedHotspots: Hotspot[]
-  selectedItem: GlobalOpt | Hotspot | Witness
-  onItemSelected: (item: GlobalOpt | Hotspot) => void
-}
-
-type FollowedHotspot = Hotspot & { followed?: boolean }
+type Followed = { followed?: boolean }
+type FollowedHotspot = Hotspot & Followed
+type Item = { address: string; owner?: string; name?: string }
 
 const getItemId = (item: GlobalOpt | FollowedHotspot | Witness | Hotspot) =>
   isGlobalOption(item) ? item : item.address
 
-const getAnimalName = (hotspot: Hotspot) => {
-  const pieces = (hotspot.name || animalName(hotspot.address)).split('-')
+const getAnimalName = <T extends Item>(item: T) => {
+  const pieces = (item.name || animalName(item.address)).split('-')
   return pieces[pieces.length - 1]
 }
 
-const sortByName = (hotspots: Hotspot[]) =>
-  hotspots.sort((l, r) => (getAnimalName(l) > getAnimalName(r) ? 1 : -1))
+const sortByName = <T extends Item>(items: T[]) =>
+  items.sort((l, r) => (getAnimalName(l) > getAnimalName(r) ? 1 : -1))
 
+const sortItems = <T extends Item>({
+  followed,
+  owned,
+  ownerAddress,
+}: {
+  followed: T[]
+  owned: T[]
+  ownerAddress?: string
+}) => {
+  // sort order
+  // 1. Owned and Followed
+  // 2. Followed
+  // 3. Owned
+
+  type FollowedItem = T & Followed
+  const uniqueHotspots = uniqBy(
+    [...followed.map((h) => ({ ...h, followed: true })), ...owned],
+    (h) => h.address,
+  ) as FollowedItem[]
+
+  const groupedHotspots = uniqueHotspots.reduce(
+    (val, item) => {
+      if (!item.followed) {
+        return { ...val, owned: [...val.owned, item] }
+      }
+      if (item.owner === ownerAddress) {
+        return {
+          ...val,
+          ownedAndFollowed: [...val.ownedAndFollowed, item],
+        }
+      }
+      return { ...val, followed: [...val.followed, item] }
+    },
+    {
+      ownedAndFollowed: [] as FollowedItem[],
+      followed: [] as FollowedItem[],
+      owned: [] as FollowedItem[],
+    } as Record<'ownedAndFollowed' | 'followed' | 'owned', FollowedItem[]>,
+  )
+
+  return [
+    ...sortByName(groupedHotspots.ownedAndFollowed),
+    ...sortByName(groupedHotspots.followed),
+    ...sortByName(groupedHotspots.owned),
+  ]
+}
+
+type Props = {
+  ownedHotspots: Hotspot[]
+  followedHotspots: Hotspot[]
+  ownedValidators: Validator[]
+  followedValidators: Validator[]
+  selectedItem: GlobalOpt | Hotspot | Witness
+  onItemSelected: (item: GlobalOpt | Hotspot) => void
+}
 const ShortcutNav = ({
   ownedHotspots,
   followedHotspots,
+  ownedValidators,
+  followedValidators,
   selectedItem: propsItem,
   onItemSelected,
 }: Props) => {
+  prettyPrintToConsole({ followedValidators, ownedValidators })
   const colors = useColors()
   const spacing = useSpacing()
   const listRef = useRef<FlatList<Hotspot | Witness | GlobalOpt>>(null)
@@ -83,44 +138,11 @@ const ShortcutNav = ({
   )
 
   const hotspots = useMemo(() => {
-    // sort order
-    // 1. Owned and Followed
-    // 2. Followed
-    // 3. Owned
-
-    const uniqueHotspots = uniqBy(
-      [
-        ...followedHotspots.map((h) => ({ ...h, followed: true })),
-        ...ownedHotspots,
-      ],
-      (h) => h.address,
-    ) as FollowedHotspot[]
-
-    const groupedHotspots = uniqueHotspots.reduce(
-      (val, hotspot) => {
-        if (!hotspot.followed) {
-          return { ...val, owned: [...val.owned, hotspot] }
-        }
-        if (hotspot.owner === ownerAddress) {
-          return {
-            ...val,
-            ownedAndFollowed: [...val.ownedAndFollowed, hotspot],
-          }
-        }
-        return { ...val, followed: [...val.followed, hotspot] }
-      },
-      {
-        ownedAndFollowed: [] as FollowedHotspot[],
-        followed: [] as FollowedHotspot[],
-        owned: [] as FollowedHotspot[],
-      } as Record<'ownedAndFollowed' | 'followed' | 'owned', FollowedHotspot[]>,
-    )
-
-    return [
-      ...sortByName(groupedHotspots.ownedAndFollowed),
-      ...sortByName(groupedHotspots.followed),
-      ...sortByName(groupedHotspots.owned),
-    ]
+    return sortItems({
+      owned: ownedHotspots,
+      followed: followedHotspots,
+      ownerAddress,
+    })
   }, [followedHotspots, ownedHotspots, ownerAddress])
 
   const isSelected = useCallback(
@@ -401,13 +423,18 @@ const ShortcutNav = ({
       if (isGlobalOption(item)) {
         return renderGlobalOpt(item as GlobalOpt)
       }
+      if (isValidator(item)) {
+        console.log('validatorrrrrrrrrrrrrrrrrrrrrrrrrrrrr')
+      }
       return renderHotspot(item, index)
     },
     [renderGlobalOpt, renderHotspot],
   )
 
   const keyExtractor = useCallback((item: GlobalOpt | Hotspot) => {
+    console.log({ item })
     if (isGlobalOption(item)) {
+      console.log({ item })
       return item
     }
     return item.address

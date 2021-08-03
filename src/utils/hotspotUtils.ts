@@ -1,5 +1,5 @@
 import { Hotspot, Validator, Witness } from '@helium/http'
-import { GlobalOpt } from '../features/hotspots/root/hotspotTypes'
+import { GlobalOpt, GLOBAL_OPTS } from '../features/hotspots/root/hotspotTypes'
 import { Colors } from '../theme/theme'
 
 export const generateRewardScaleColor = (rewardScale: number): Colors => {
@@ -31,6 +31,5 @@ export const isWitness = (
   item: GlobalOpt | Hotspot | Witness | Validator,
 ): item is Hotspot => (item as Witness).witnessFor !== undefined
 
-export const isGlobalOption = (
-  item: GlobalOpt | Hotspot | Witness,
-): item is GlobalOpt => typeof item === 'string'
+export const isGlobalOption = (item: unknown): item is GlobalOpt =>
+  typeof item === 'string' && GLOBAL_OPTS.includes(item as GlobalOpt)

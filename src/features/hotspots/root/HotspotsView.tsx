@@ -50,6 +50,8 @@ import { isValidator } from '../../../utils/validatorUtils'
 type Props = {
   ownedHotspots?: Hotspot[]
   followedHotspots?: Hotspot[]
+  ownedValidators: Validator[]
+  followedValidators: Validator[]
   startOnMap?: boolean
   location?: number[]
   onRequestShowMap: (prompt: boolean) => void
@@ -61,6 +63,8 @@ const SHEET_ANIM_DURATION = 500
 const HotspotsView = ({
   ownedHotspots,
   followedHotspots,
+  ownedValidators,
+  followedValidators,
   startOnMap,
   onRequestShowMap,
   location: propsLocation,
@@ -479,6 +483,10 @@ const HotspotsView = ({
       <ShortcutNav
         ownedHotspots={!fleetModeEnabled && ownedHotspots ? ownedHotspots : []}
         followedHotspots={followedHotspots || []}
+        ownedValidators={
+          !fleetModeEnabled && ownedValidators ? ownedValidators : []
+        }
+        followedValidators={followedValidators || []}
         selectedItem={shortcutItem}
         onItemSelected={handleItemSelected}
       />

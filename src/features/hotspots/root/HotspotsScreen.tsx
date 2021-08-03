@@ -18,6 +18,12 @@ import appSlice from '../../../store/user/appSlice'
 const HotspotsScreen = () => {
   const maybeGetLocation = useGetLocation()
   const { showOKAlert } = useAlert()
+  const validators = useSelector(
+    (state: RootState) => state.validators.validators.data,
+  )
+  const followedValidators = useSelector(
+    (state: RootState) => state.validators.followedValidators.data,
+  )
   const hotspots = useSelector((state: RootState) => state.hotspots.hotspots)
   const followedHotspots = useSelector(
     (state: RootState) => state.hotspots.followedHotspots,
@@ -51,6 +57,7 @@ const HotspotsScreen = () => {
   }, [location?.latitude, location?.longitude])
 
   useEffect(() => {
+    // TODO: Add validators into this check
     if (
       fleetModeEnabled ||
       hasFleetModeAutoEnabled === undefined ||
@@ -104,6 +111,8 @@ const HotspotsScreen = () => {
           <HotspotsView
             ownedHotspots={hotspots}
             followedHotspots={followedHotspots}
+            ownedValidators={validators}
+            followedValidators={followedValidators}
             startOnMap={startOnMap}
             location={coords}
             onRequestShowMap={browseMap}
