@@ -18,3 +18,6 @@ export const isRelay = (listenAddrs: string[] | undefined) => {
   const IP = /ip4/g
   return listenAddrs.length > 0 && !listenAddrs.find((a) => a.match(IP))
 }
+
+export const HELIUM_OLD_MAKER_ADDRESS =
+  '14fzfjFcHpDR1rTH8BNPvSi5dKBbgxaDnmsVPbCjuq9ENjpZbxh'
