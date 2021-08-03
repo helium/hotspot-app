@@ -109,57 +109,15 @@ export const fetchRewards = createAsyncThunk<
     gatewayAddresses = uniq([...ownedAddresses, ...gatewayAddresses])
   }
 
+  if (gatewayAddresses.length === 0) {
+    return []
+  }
+
   return getWallet('hotspots/rewards', {
     addresses: gatewayAddresses.join(','),
     dayRange: 1,
   })
 })
-export const fetchFollowedHotspotsFromBlock = createAsyncThunk(
-  'hotspots/fetchFollowedHotspotsFromBlock ',
-  async (_, { getState }) => {
-    const { hotspots, followedHotspots } = (getState() as {
-      hotspots: {
-        hotspots: Hotspot[]
-        followedHotspots: Hotspot[]
-      }
-    }).hotspots
-
-    const ownedAddresses = hotspots.map((h) => h.address)
-    const followingAddresses = followedHotspots.map((h) => h.address)
-    const unOwnedAddresses = followingAddresses.filter(
-      (fa) => !ownedAddresses.includes(fa),
-    )
-
-    const unOwnedHotspots = (
-      await Promise.all(
-        unOwnedAddresses
-          .map((a) => getHotspotDetails(a))
-          .map((p) =>
-            p.catch((e) => {
-              Logger.error(e)
-            }),
-          ),
-      )
-    ).filter((h) => h !== undefined) as Hotspot[]
-
-    // Followed hotspots come from the wallet api
-    // Replace followed hotspots with their blockchain equivalent
-    return followedHotspots.map((fh) => {
-      let idx = unOwnedHotspots.findIndex((uoh) => uoh.address === fh.address)
-      if (idx !== -1) {
-        return unOwnedHotspots[idx]
-      }
-      idx = hotspots.findIndex((h) => h.address === fh.address)
-      if (idx !== -1) {
-        return hotspots[idx]
-      }
-
-      // this should never happen, but providing a fallback just in the case the block api fails
-      return fh
-    })
-  },
-)
-
 // TODO: fix lat/lng coming as strings from the wallet api.
 const sanitizeWalletHotspots = (hotspots: WalletHotspot[]) => {
   return hotspots.map((h) => ({
@@ -328,14 +286,6 @@ const hotspotsSlice = createSlice({
       })
       state.loadingRewards = false
     })
-    builder.addCase(
-      fetchFollowedHotspotsFromBlock.fulfilled,
-      (state, action) => {
-        const followed: Hotspot[] = action.payload
-        state.followedHotspots = followed
-        state.followedHotspotsObj = hotspotsToObj(followed)
-      },
-    )
     builder.addCase(fetchHotspotsData.rejected, (state, _action) => {
       state.loadingRewards = false
       state.hotspotsLoaded = true
