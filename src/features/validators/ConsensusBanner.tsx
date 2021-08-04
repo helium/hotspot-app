@@ -7,6 +7,7 @@ import Text from '../../components/Text'
 
 const edges = ['top'] as Edge[]
 type Props = { visible: boolean }
+export const CONSENSUS_BANNER_HEIGHT = 32
 const ConsensusBanner = ({ visible }: Props) => {
   const { t } = useTranslation()
   if (!visible) return null
@@ -18,7 +19,7 @@ const ConsensusBanner = ({ visible }: Props) => {
       alignItems="center"
       backgroundColor="purpleBright"
     >
-      <Box minHeight={32} justifyContent="center">
+      <Box minHeight={CONSENSUS_BANNER_HEIGHT} justifyContent="center">
         <Text variant="regular" fontSize={13}>
           {t('validator_details.in_consensus')}
         </Text>

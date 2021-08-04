@@ -1,15 +1,84 @@
 import { Validator } from '@helium/http'
-import React, { useState, memo } from 'react'
+import React, { useState, memo, useMemo, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
+import ChartContainer from '../../components/BarChart/ChartContainer'
+import { ChartData } from '../../components/BarChart/types'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
+import { fetchChartData } from '../../store/rewards/rewardsSlice'
+import { RootState } from '../../store/rootReducer'
+import { useAppDispatch } from '../../store/store'
+import { useBorderRadii, useColors } from '../../theme/themeHooks'
+import animateTransition from '../../utils/animateTransition'
+import DateModule from '../../utils/DateModule'
+import { getRewardChartData } from '../hotspots/details/RewardsHelper'
 import ValidatorCooldown from './ValidatorCooldown'
 import ValidatorTimeRange from './ValidatorTimeRange'
+import { locale } from '../../utils/i18n'
 
-type Props = { validator?: Validator }
-const ValidatorDetailsOverview = ({ validator }: Props) => {
+type Props = { validator?: Validator; visible: boolean }
+const ValidatorDetailsOverview = ({ validator, visible }: Props) => {
   const { t } = useTranslation()
-  const [timeRange, setTimeRange] = useState<string | number>(1)
+  const dispatch = useAppDispatch()
+  const [timelineValue, setTimelineValue] = useState(14)
+  const [focusedData, setFocusedData] = useState<ChartData | null>(null)
+  const [dateLabel, setDateLabel] = useState('')
+  const chartData = useSelector((state: RootState) => state.rewards.chartData)
+  const { black, grayLight, purpleBright, greenOnline } = useColors()
+  const { l } = useBorderRadii()
+  const address = useMemo(() => {
+    if (!validator?.address) return ''
+    return validator.address
+  }, [validator])
+
+  const { rewards, rewardSum, rewardsChange, loading = true } =
+    chartData[address]?.[timelineValue] || {}
+
+  const rewardChartData = useMemo(() => {
+    if (!visible) return []
+
+    const data = getRewardChartData(rewards, timelineValue)
+    return data || []
+  }, [visible, rewards, timelineValue])
+
+  useEffect(() => {
+    if (!address || !visible) return
+
+    dispatch(
+      fetchChartData({
+        address,
+        numDays: timelineValue,
+        resource: 'validators',
+      }),
+    )
+  }, [address, dispatch, timelineValue, visible])
+
+  useEffect(() => {
+    const updateDateLabel = async () => {
+      let label = ''
+
+      if (focusedData) {
+        label = await DateModule.formatDate(
+          focusedData.label,
+          focusedData.showTime ? 'MMM d h:mma' : 'EEE MMM d',
+        )
+      }
+      setDateLabel(label)
+    }
+    updateDateLabel()
+  }, [focusedData])
+
+  const onFocus = useCallback(async (nextFocusedData: ChartData | null) => {
+    animateTransition('HotspotDetailChart.OnFocus', {
+      enabledOnAndroid: false,
+    })
+
+    setFocusedData(nextFocusedData)
+  }, [])
+
+  const change = useMemo(() => rewardsChange || 0, [rewardsChange])
 
   return (
     <>
@@ -26,8 +95,83 @@ const ValidatorDetailsOverview = ({ validator }: Props) => {
         <Text variant="medium" fontSize={15} color="purpleMediumText">
           {t('validator_details.time_range')}
         </Text>
-        <ValidatorTimeRange setTimeRange={setTimeRange} timeRange={timeRange} />
+        <ValidatorTimeRange
+          setTimeRange={setTimelineValue}
+          timeRange={timelineValue}
+        />
       </Box>
+      {loading ? (
+        <SkeletonPlaceholder>
+          <SkeletonPlaceholder.Item
+            height={217}
+            width="100%"
+            borderRadius={l}
+          />
+        </SkeletonPlaceholder>
+      ) : (
+        <Box
+          width="100%"
+          minHeight={217}
+          backgroundColor="grayPurpleLight"
+          borderRadius="lm"
+          padding="m"
+        >
+          <Box flexDirection="row" marginBottom="m">
+            <Box flex={1}>
+              <Text
+                color="grayLightText"
+                fontSize={16}
+                maxFontSizeMultiplier={1.2}
+              >
+                {t('hotspot_details.reward_title')}
+              </Text>
+              <Text
+                variant="light"
+                color="grayDarkText"
+                fontSize={37}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                maxFontSizeMultiplier={1}
+              >
+                {focusedData
+                  ? focusedData.up.toLocaleString(locale)
+                  : rewardSum?.floatBalance.toFixed(2)}
+              </Text>
+            </Box>
+            {!dateLabel ? (
+              <Text
+                color={change < 0 ? 'purpleMain' : 'greenOnline'}
+                variant="bold"
+                fontSize={13}
+                maxFontSizeMultiplier={1.1}
+              >
+                {`${change < 0 ? '' : '+'}${change.toLocaleString(locale, {
+                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 2,
+                })}%`}
+              </Text>
+            ) : (
+              <Text
+                variant="body3"
+                color="grayDarkText"
+                fontSize={13}
+                maxFontSizeMultiplier={1.1}
+              >
+                {dateLabel}
+              </Text>
+            )}
+          </Box>
+          <ChartContainer
+            height={100}
+            data={rewardChartData}
+            onFocus={onFocus}
+            showXAxisLabel={false}
+            upColor={(rewardsChange || 0) >= 0 ? greenOnline : purpleBright}
+            downColor={grayLight}
+            labelColor={black}
+          />
+        </Box>
+      )}
     </>
   )
 }

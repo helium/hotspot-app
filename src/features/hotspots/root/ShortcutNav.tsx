@@ -18,6 +18,8 @@ import {
 import Globe from '@assets/images/globeShortcut.svg'
 import Search from '@assets/images/searchShortcut.svg'
 import Home from '@assets/images/homeShortcut.svg'
+import HotspotIcon from '@assets/images/hotspotPillIcon.svg'
+import ValidatorIcon from '@assets/images/validatorPillIcon.svg'
 import Follow from '@assets/images/follow.svg'
 import animalName from 'angry-purple-tiger'
 import { wp } from '../../../utils/layout'
@@ -31,6 +33,51 @@ import { isGlobalOption } from '../../../utils/hotspotUtils'
 import { isValidator } from '../../../utils/validatorUtils'
 import animateTransition from '../../../utils/animateTransition'
 import sleep from '../../../utils/sleep'
+import { Colors } from '../../../theme/theme'
+
+const validatorColors = {
+  text: 'purpleDark' as Colors,
+  background: 'purpleBright' as Colors,
+  icon: 'purpleDark' as Colors,
+}
+const hotspotColors = {
+  text: 'purpleDark' as Colors,
+  background: 'blueBright' as Colors,
+  icon: 'purpleDark' as Colors,
+}
+
+const itemColors = {
+  validator: {
+    owned: {
+      ...validatorColors,
+    },
+    followedAndOwned: {
+      ...validatorColors,
+      text: 'purpleDark' as Colors,
+      icon: 'purpleBright' as Colors,
+    },
+    followedAndUnowned: {
+      ...validatorColors,
+      background: 'purpleBright30' as Colors,
+      text: 'purpleBright' as Colors,
+    },
+  },
+  hotspot: {
+    owned: {
+      ...hotspotColors,
+    },
+    followedAndOwned: {
+      ...hotspotColors,
+      text: 'purpleDark' as Colors,
+      icon: 'blueBright' as Colors,
+    },
+    followedAndUnowned: {
+      ...hotspotColors,
+      background: 'blueBright30' as Colors,
+      text: 'blueBright' as Colors,
+    },
+  },
+}
 
 export const SHORTCUT_NAV_HEIGHT = 44
 const ITEM_SIZE = 35
@@ -108,6 +155,7 @@ type Props = {
   selectedItem: GlobalOpt | Hotspot | Witness
   onItemSelected: (item: GlobalOpt | Hotspot | Validator) => void
 }
+
 const ShortcutNav = ({
   ownedHotspots,
   followedHotspots,
@@ -328,60 +376,66 @@ const ShortcutNav = ({
     [data, handleItemSelected, isSelected, scroll],
   )
 
-  const backgroundColor = useCallback(
-    (item: FollowedHotspot, selected: boolean) => {
-      if (item.owner === ownerAddress) {
-        return selected ? 'blueBright' : 'blueBright60'
-      }
-      return selected ? 'purpleBright' : 'purpleBright60'
-    },
-    [ownerAddress],
-  )
-
   const renderGateway = useCallback(
     (item: FollowedHotspot | FollowedValidator, index: number) => {
       if (!item.name) return null
-
-      const selected = isSelected(item, propsItem)
+      const isOwner = item.owner === ownerAddress
+      const followedAndUnowned = item.followed && !isOwner
+      const followedAndOwned = item.followed && isOwner
       const [, , animal] = item.name.split('-')
-
+      const itemIsValidator = isValidator(item)
+      const colorObj = itemColors[itemIsValidator ? 'validator' : 'hotspot']
+      let colorScheme = colorObj.owned
+      if (followedAndOwned) {
+        colorScheme = colorObj.followedAndOwned
+      } else if (followedAndUnowned) {
+        colorScheme = colorObj.followedAndUnowned
+      }
       return (
         <TouchableOpacityBox
           hitSlop={hitSlop}
-          backgroundColor={backgroundColor(item, selected)}
           onLayout={handleLayout(index)}
           onPress={handlePress(item)}
           borderRadius="round"
+          backgroundColor={colorScheme.background}
           marginRight={ITEM_MARGIN}
           height={ITEM_SIZE}
           flexDirection="row"
-          paddingHorizontal="m"
+          paddingRight="m"
+          paddingLeft={item.followed ? 'xs' : 'm'}
           alignItems="center"
         >
-          <Box paddingRight="xs">
+          <Box
+            marginRight="s"
+            borderRadius="round"
+            height={27}
+            width={27}
+            alignItems="center"
+            justifyContent="center"
+            backgroundColor={colorScheme.text}
+          >
             {item.followed && (
-              <Follow height={12} width={12} color={colors.primaryBackground} />
+              <Follow height={12} width={12} color={colors[colorScheme.icon]} />
             )}
           </Box>
+          {itemIsValidator ? (
+            <ValidatorIcon color={colors[colorScheme.text]} />
+          ) : (
+            <HotspotIcon color={colors[colorScheme.text]} />
+          )}
           <Text
             variant="medium"
             fontSize={16}
-            color="purpleDark"
+            color={colorScheme.text}
             maxFontSizeMultiplier={1}
+            marginLeft="s"
           >
             {upperFirst(animal)}
           </Text>
         </TouchableOpacityBox>
       )
     },
-    [
-      backgroundColor,
-      colors.primaryBackground,
-      handleLayout,
-      handlePress,
-      isSelected,
-      propsItem,
-    ],
+    [ownerAddress, handleLayout, handlePress, colors],
   )
 
   const renderGlobalOpt = useCallback(

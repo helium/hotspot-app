@@ -8,6 +8,7 @@ import { getWallet, deleteWallet, postWallet } from '../../utils/walletClient'
 import * as Logger from '../../utils/logger'
 import { CacheRecord, handleCacheFulfilled } from '../../utils/cacheUtils'
 import { HotspotSyncStatus } from '../../features/hotspots/root/hotspotTypes'
+import { WalletReward } from '../rewards/rewardsSlice'
 
 export enum HotspotSort {
   New = 'new',
@@ -15,18 +16,6 @@ export enum HotspotSort {
   Earn = 'earn',
   Followed = 'followed',
   Offline = 'offline',
-}
-
-export type WalletReward = {
-  avg: number
-  gateway: string
-  max: number
-  median: number
-  min: number
-  stddev: number
-  sum: number
-  total: number
-  updated_at: string
 }
 
 type Rewards = Record<string, Balance<NetworkTokens>>

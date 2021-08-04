@@ -13,7 +13,7 @@ export const formatHeartbeatVersion = (versionHeartbeat: number) => {
   const minor = parseInt(versionString.slice(3, 6), 10)
   const patch = parseInt(versionString.slice(6, 10), 10)
 
-  return [major, minor, patch].join('.')
+  return `v${[major, minor, patch].join('.')}`
 }
 
 export const isUnstaked = (validator?: Validator) =>

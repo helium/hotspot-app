@@ -61,6 +61,20 @@ export const getValidators = async () => {
   return newValidatorsList.takeJSON(MAX)
 }
 
+export const getValidatorRewards = async (
+  address: string,
+  numDaysBack: number,
+  date: Date = new Date(),
+) => {
+  Logger.breadcrumb('getValidatorRewards', breadcrumbOpts)
+  const endDate = new Date(date)
+  endDate.setDate(date.getDate() - numDaysBack)
+  const list = await client
+    .validator(address)
+    .rewards.list({ minTime: endDate, maxTime: date })
+  return list.take(MAX)
+}
+
 export const searchValidators = async (searchTerm: string) => {
   Logger.breadcrumb('searchValidators', breadcrumbOpts)
   const address = await getAddress()

@@ -8,8 +8,31 @@ import {
 } from '../../utils/cacheUtils'
 import { deleteWallet, getWallet, postWallet } from '../../utils/walletClient'
 
+export type WalletValidator = Validator & {
+  geocode: {
+    asn: number
+    city: string
+    continentCode: string
+    continentName: string
+    countryCode: string
+    countryName: string
+    datetime: string
+    host: string
+    ip: string
+    isp: string
+    latitude: number
+    longitude: number
+    metroCode: number
+    postalCode: string
+    rdns: string
+    regionCode: string
+    regionName: string
+    timezone: string
+  }
+}
 export type ValidatorsSliceState = {
   validators: CacheRecord<{ data: Validator[] }>
+  walletValidators: Record<string, CacheRecord<WalletValidator>>
   electedValidators: CacheRecord<{ data: Validator[] }>
   followedValidators: CacheRecord<{ data: Validator[] }>
   followedValidatorsObj: Record<string, Validator>
@@ -21,6 +44,7 @@ const initialState: ValidatorsSliceState = {
   myValidatorsLoaded: false,
   followedValidatorsLoaded: false,
   validators: { lastFetchedTimestamp: 0, loading: false, data: [] },
+  walletValidators: {},
   electedValidators: { lastFetchedTimestamp: 0, loading: false, data: [] },
   followedValidators: { lastFetchedTimestamp: 0, loading: false, data: [] },
   followedValidatorsObj: {},
@@ -51,6 +75,21 @@ export const fetchElectedValidators = createAsyncThunk(
     if (hasValidCache(electedValidators)) return electedValidators.data
 
     return getElectedValidators()
+  },
+)
+
+export const fetchWalletValidator = createAsyncThunk<WalletValidator, string>(
+  'validators/fetchWalletValidator',
+  async (address, { getState }) => {
+    const {
+      validators: { walletValidators },
+    } = (await getState()) as {
+      validators: ValidatorsSliceState
+    }
+    if (hasValidCache(walletValidators[address]))
+      return walletValidators[address]
+
+    return getWallet(`validators/${address}`, null, { camelCase: true })
   },
 )
 
@@ -119,6 +158,11 @@ const validatorsSlice = createSlice({
     builder.addCase(fetchMyValidators.fulfilled, (state, action) => {
       state.validators = handleCacheFulfilled({ data: action.payload })
       state.myValidatorsLoaded = true
+    })
+    builder.addCase(fetchWalletValidator.fulfilled, (state, action) => {
+      state.walletValidators[action.meta.arg] = handleCacheFulfilled(
+        action.payload,
+      )
     })
     builder.addCase(fetchFollowedValidators.rejected, (state, _action) => {
       state.followedValidators.loading = false

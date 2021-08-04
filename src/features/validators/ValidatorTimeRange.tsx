@@ -4,8 +4,8 @@ import HeliumSelect from '../../components/HeliumSelect'
 import { HeliumSelectItemType } from '../../components/HeliumSelectItem'
 
 type Props = {
-  timeRange: number | string
-  setTimeRange: (value: number | string) => void
+  timeRange: number
+  setTimeRange: (value: number) => void
 }
 const ValidatorTimeRange = ({ timeRange, setTimeRange }: Props) => {
   const { t } = useTranslation()

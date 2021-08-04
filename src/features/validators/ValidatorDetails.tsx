@@ -9,17 +9,22 @@ import Carousel from 'react-native-snap-carousel'
 import Penalty from '@assets/images/penalty.svg'
 import Heartbeat from '@assets/images/heartbeat.svg'
 import Cooldown from '@assets/images/cooldown.svg'
+import Data from '@assets/images/data.svg'
 import VersionHeartbeat from '@assets/images/versionHeartbeat.svg'
+import LocationMarker from '@assets/images/locationMarker.svg'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
 import HeliumSelect from '../../components/HeliumSelect'
 import { HeliumSelectItemType } from '../../components/HeliumSelectItem'
 import { wh, wp } from '../../utils/layout'
-import ConsensusBanner from './ConsensusBanner'
+import ConsensusBanner, { CONSENSUS_BANNER_HEIGHT } from './ConsensusBanner'
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar'
 import ShareSheet from '../../components/ShareSheet'
 import { useAppDispatch } from '../../store/store'
-import { fetchElectedValidators } from '../../store/validators/validatorsSlice'
+import {
+  fetchElectedValidators,
+  fetchWalletValidator,
+} from '../../store/validators/validatorsSlice'
 import { RootState } from '../../store/rootReducer'
 import ValidatorDetailsOverview from './ValidatorDetailsOverview'
 import { useSpacing } from '../../theme/themeHooks'
@@ -38,8 +43,13 @@ const ValidatorDetails = ({ validator }: Props) => {
   const { lm } = useSpacing()
   const { top } = useSafeAreaInsets()
   const dispatch = useAppDispatch()
+
   const electedValidators = useSelector(
     (state: RootState) => state.validators.electedValidators,
+  )
+  const walletValidator = useSelector(
+    (state: RootState) =>
+      state.validators.walletValidators[validator?.address || ''],
   )
   const carouselRef = useRef<Carousel<HeliumSelectItemType>>(null)
 
@@ -51,6 +61,7 @@ const ValidatorDetails = ({ validator }: Props) => {
   useEffect(() => {
     if (!validator) return
     dispatch(fetchElectedValidators())
+    dispatch(fetchWalletValidator(validator.address))
   }, [dispatch, validator])
 
   const formattedHotspotName = useMemo(() => {
@@ -101,7 +112,7 @@ const ValidatorDetails = ({ validator }: Props) => {
   const contentStyle = useMemo(() => {
     if (inConsensus) return {}
 
-    return { marginTop: top }
+    return { marginTop: top + CONSENSUS_BANNER_HEIGHT }
   }, [inConsensus, top])
 
   type RenderItemProp = { item: HeliumSelectItemType }
@@ -109,14 +120,19 @@ const ValidatorDetails = ({ validator }: Props) => {
     ({ item }: RenderItemProp) => {
       switch (item.value as ViewOpt) {
         case 'overview':
-          return <ValidatorDetailsOverview validator={validator} />
+          return (
+            <ValidatorDetailsOverview
+              validator={validator}
+              visible={selectedOption === 'overview'}
+            />
+          )
         case 'penalties':
           return <Box height={330} margin="lm" backgroundColor="orange" />
         case 'consensus_groups':
           return <Box height={330} margin="lm" backgroundColor="yellow" />
       }
     },
-    [validator],
+    [selectedOption, validator],
   )
 
   const onSnapToItem = useCallback(
@@ -143,6 +159,20 @@ const ValidatorDetails = ({ validator }: Props) => {
     [isOnline, t],
   )
 
+  const location = useMemo(() => {
+    if (!walletValidator?.geocode) {
+      return ''
+    }
+    const {
+      geocode: { city, countryCode, regionCode },
+    } = walletValidator
+
+    return [
+      [city, regionCode, countryCode].filter((g) => !!g).join(', '),
+      [regionCode, countryCode].filter((g) => !!g).join(', '),
+    ]
+  }, [walletValidator])
+
   return (
     <Box
       backgroundColor="white"
@@ -157,36 +187,8 @@ const ValidatorDetails = ({ validator }: Props) => {
       <ScrollView>
         <Box style={contentStyle} backgroundColor="grayBoxLight">
           <Box padding="lm" backgroundColor="white">
-            <Box
-              flexDirection="row"
-              alignItems="center"
-              justifyContent="flex-end"
-            >
-              <FollowValidatorButton address={validator?.address || ''} />
-              <ShareSheet item={validator} />
-            </Box>
-            <Box marginBottom="lm">
-              <Text
-                variant="light"
-                fontSize={29}
-                lineHeight={31}
-                color="black"
-                numberOfLines={1}
-                adjustsFontSizeToFit
-              >
-                {formattedHotspotName[0]}
-              </Text>
-              <Text
-                variant="regular"
-                fontSize={29}
-                lineHeight={31}
-                color="black"
-                numberOfLines={1}
-                adjustsFontSizeToFit
-              >
-                {formattedHotspotName[1]}
-              </Text>
-              <Box flexDirection="row" marginTop="s" height={24}>
+            <Box flexDirection="row" alignItems="center" marginBottom="lm">
+              <Box flexDirection="row" height={24} flex={1}>
                 <Box
                   backgroundColor={isOnline ? 'greenOnline' : 'orangeDark'}
                   borderRadius="round"
@@ -274,6 +276,51 @@ const ValidatorDetails = ({ validator }: Props) => {
                   </Box>
                 )}
               </Box>
+              <FollowValidatorButton address={validator?.address || ''} />
+              <ShareSheet item={validator} />
+            </Box>
+            <Box marginBottom="lm">
+              <Text
+                variant="light"
+                fontSize={29}
+                lineHeight={31}
+                color="black"
+                numberOfLines={1}
+                adjustsFontSizeToFit
+              >
+                {formattedHotspotName[0]}
+              </Text>
+              <Text
+                variant="regular"
+                fontSize={29}
+                lineHeight={31}
+                color="black"
+                numberOfLines={1}
+                adjustsFontSizeToFit
+              >
+                {formattedHotspotName[1]}
+              </Text>
+            </Box>
+            <Box flexDirection="row" alignItems="center">
+              <LocationMarker />
+              <Text
+                variant="regular"
+                color="grayText"
+                fontSize={13}
+                marginLeft="xs"
+                marginRight="m"
+              >
+                {location[0]}
+              </Text>
+              <Data />
+              <Text
+                variant="regular"
+                color="grayText"
+                fontSize={13}
+                marginLeft="xs"
+              >
+                {location[1]}
+              </Text>
             </Box>
           </Box>
 
