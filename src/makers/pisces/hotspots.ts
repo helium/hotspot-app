@@ -57,7 +57,7 @@ const pisces = {
     },
   },
   icon: HotspotIcon,
-  antenna: { default: ANTENNAS.pisces },
+  antenna: { default: ANTENNAS.Pisces },
 } as MakerHotspot
 
 export default { pisces }
