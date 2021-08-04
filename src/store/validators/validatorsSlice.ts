@@ -13,9 +13,13 @@ export type ValidatorsSliceState = {
   electedValidators: CacheRecord<{ data: Validator[] }>
   followedValidators: CacheRecord<{ data: Validator[] }>
   followedValidatorsObj: Record<string, Validator>
+  myValidatorsLoaded: boolean
+  followedValidatorsLoaded: boolean
 }
 
 const initialState: ValidatorsSliceState = {
+  myValidatorsLoaded: false,
+  followedValidatorsLoaded: false,
   validators: { lastFetchedTimestamp: 0, loading: false, data: [] },
   electedValidators: { lastFetchedTimestamp: 0, loading: false, data: [] },
   followedValidators: { lastFetchedTimestamp: 0, loading: false, data: [] },
@@ -107,19 +111,26 @@ const validatorsSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchMyValidators.rejected, (state, _action) => {
       state.validators.loading = false
+      state.myValidatorsLoaded = true
     })
     builder.addCase(fetchMyValidators.pending, (state, _action) => {
       state.validators.loading = true
     })
     builder.addCase(fetchMyValidators.fulfilled, (state, action) => {
       state.validators = handleCacheFulfilled({ data: action.payload })
+      state.myValidatorsLoaded = true
     })
-    builder.addCase(fetchElectedValidators.fulfilled, (state, action) => {
-      state.electedValidators = handleCacheFulfilled({ data: action.payload })
+    builder.addCase(fetchFollowedValidators.rejected, (state, _action) => {
+      state.followedValidators.loading = false
+      state.followedValidatorsLoaded = true
+    })
+    builder.addCase(fetchFollowedValidators.pending, (state, _action) => {
+      state.followedValidators.loading = true
     })
     builder.addCase(fetchFollowedValidators.fulfilled, (state, action) => {
       state.followedValidatorsObj = validatorsToObj(action.payload)
       state.followedValidators = handleCacheFulfilled({ data: action.payload })
+      state.followedValidatorsLoaded = true
     })
     builder.addCase(followValidator.fulfilled, (state, action) => {
       state.followedValidatorsObj = validatorsToObj(action.payload)
@@ -128,6 +139,9 @@ const validatorsSlice = createSlice({
     builder.addCase(unfollowValidator.fulfilled, (state, action) => {
       state.followedValidatorsObj = validatorsToObj(action.payload)
       state.followedValidators = handleCacheFulfilled({ data: action.payload })
+    })
+    builder.addCase(fetchElectedValidators.fulfilled, (state, action) => {
+      state.electedValidators = handleCacheFulfilled({ data: action.payload })
     })
   },
 })

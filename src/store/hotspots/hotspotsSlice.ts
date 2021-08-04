@@ -131,12 +131,11 @@ type WalletHotspot = Hotspot & { lat: string; lng: string }
 export const fetchHotspotsData = createAsyncThunk(
   'hotspots/fetchHotspotsData',
   async (_arg) => {
-    const hotspotPromises = [getHotspots()]
-    hotspotPromises.push(
-      getWallet('hotspots/follow', null, { camelCase: true }),
-    )
     const allHotspots = await Promise.all(
-      hotspotPromises.map((p) =>
+      [
+        getHotspots(),
+        getWallet('hotspots/follow', null, { camelCase: true }),
+      ].map((p) =>
         p.catch((e) => {
           Logger.error(e)
         }),
@@ -271,6 +270,11 @@ const hotspotsSlice = createSlice({
         state.order = HotspotSort.Followed
       }
     })
+    builder.addCase(fetchHotspotsData.rejected, (state, _action) => {
+      state.loadingRewards = false
+      state.hotspotsLoaded = true
+      state.failure = true
+    })
     builder.addCase(fetchRewards.rejected, (state, _action) => {
       state.loadingRewards = false
     })
@@ -285,11 +289,6 @@ const hotspotsSlice = createSlice({
         )
       })
       state.loadingRewards = false
-    })
-    builder.addCase(fetchHotspotsData.rejected, (state, _action) => {
-      state.loadingRewards = false
-      state.hotspotsLoaded = true
-      state.failure = true
     })
     builder.addCase(
       unfollowHotspot.fulfilled,

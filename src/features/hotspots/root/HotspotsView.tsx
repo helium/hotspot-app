@@ -88,6 +88,15 @@ const HotspotsView = ({
   const accountRewards = useSelector(
     (state: RootState) => state.account.rewardsSum,
   )
+  const hotspotsLoaded = useSelector(
+    (state: RootState) => state.hotspots.hotspotsLoaded,
+  )
+  const myValidatorsLoaded = useSelector(
+    (state: RootState) => state.validators.myValidatorsLoaded,
+  )
+  const followedValidatorsLoaded = useSelector(
+    (state: RootState) => state.validators.followedValidatorsLoaded,
+  )
   const [selectedHexId, setSelectedHexId] = useState<string>()
   const [selectedHotspotIndex, setSelectedHotspotIndex] = useState(0)
   const animatedIndex = useSharedValue<number>(0)
@@ -284,18 +293,20 @@ const HotspotsView = ({
   )
 
   const handleItemSelected = useCallback(
-    (item?: GlobalOpt | Hotspot) => {
+    (item?: GlobalOpt | Hotspot | Validator) => {
       if (!item) {
         setGlobalOption('home')
         return
       }
       if (isGlobalOption(item)) {
         setGlobalOption(item)
-      } else if (item) {
+      } else if (isHotspot(item)) {
         handlePresentHotspot(item)
+      } else {
+        handlePresentValidator(item)
       }
     },
-    [handlePresentHotspot, setGlobalOption],
+    [handlePresentHotspot, handlePresentValidator, setGlobalOption],
   )
 
   useEffect(() => {
@@ -489,6 +500,9 @@ const HotspotsView = ({
         followedValidators={followedValidators || []}
         selectedItem={shortcutItem}
         onItemSelected={handleItemSelected}
+        initialDataLoaded={
+          hotspotsLoaded && myValidatorsLoaded && followedValidatorsLoaded
+        }
       />
     </>
   )
