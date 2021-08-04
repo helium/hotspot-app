@@ -15,8 +15,7 @@ const ClodPi = {
         'Attach the antenna and plug in the provided power adapter.',
         'The ClodPi Pro PWR LED will light up once it’s powered on.',
       ],
-      externalOnboard:
-        'Visit the local management-console for QR-code',
+      externalOnboard: 'Visit the local management-console for QR-code',
     },
   },
   antenna: { default: ANTENNAS.CLODPI },
