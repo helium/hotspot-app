@@ -64,7 +64,7 @@ export const fetchChartData = createAsyncThunk<
     const chartData = currentState.chartData[address] || {}
     const details = chartData[numDays]
     if (hasValidCache(details)) {
-      throw new Error('Data already fetched')
+      return details
     }
     const startDate = new Date()
     const endDate = new Date(startDate)
@@ -130,6 +130,8 @@ const rewardsSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchChartData.pending, (state, action) => {
       const { address, numDays } = action.meta.arg
+      if (hasValidCache(state.chartData[address]?.[numDays])) return
+
       const prevDetails = state.chartData[address] || {}
       const prevState = prevDetails[numDays] || {}
       const nextState = handleCachePending(prevState)
@@ -140,10 +142,14 @@ const rewardsSlice = createSlice({
     })
     builder.addCase(fetchChartData.fulfilled, (state, action) => {
       const { address, numDays } = action.meta.arg
+      if (hasValidCache(state.chartData[address]?.[numDays])) return
+
       state.chartData[address][numDays] = handleCacheFulfilled(action.payload)
     })
     builder.addCase(fetchChartData.rejected, (state, action) => {
       const { address, numDays } = action.meta.arg
+      if (hasValidCache(state.chartData[address]?.[numDays])) return
+
       const prevDetails = state.chartData[address] || {}
       const prevState = prevDetails[numDays] || {}
       const nextState = handleCacheRejected(prevState)

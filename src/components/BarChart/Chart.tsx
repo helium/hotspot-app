@@ -158,9 +158,11 @@ const BarChart = ({
     [width, height],
   )
 
+  const activeOffsetX = useMemo(() => [-5, 5], []) // only activate the gesture if x moves 5 pixels
+
   return (
     <PanGestureHandler
-      activeOffsetX={[-5, 5]} // only activate the gesture if x moves 5 pixels
+      activeOffsetX={activeOffsetX}
       onGestureEvent={onPanEvent}
       onEnded={handleTouchEnd}
     >

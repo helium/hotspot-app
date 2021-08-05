@@ -18,8 +18,8 @@ import ValidatorCooldown from './ValidatorCooldown'
 import ValidatorTimeRange from './ValidatorTimeRange'
 import { locale } from '../../utils/i18n'
 
-type Props = { validator?: Validator; visible: boolean }
-const ValidatorDetailsOverview = ({ validator, visible }: Props) => {
+type Props = { validator?: Validator }
+const ValidatorDetailsOverview = ({ validator }: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const [timelineValue, setTimelineValue] = useState(14)
@@ -37,14 +37,12 @@ const ValidatorDetailsOverview = ({ validator, visible }: Props) => {
     chartData[address]?.[timelineValue] || {}
 
   const rewardChartData = useMemo(() => {
-    if (!visible) return []
-
     const data = getRewardChartData(rewards, timelineValue)
     return data || []
-  }, [visible, rewards, timelineValue])
+  }, [rewards, timelineValue])
 
   useEffect(() => {
-    if (!address || !visible) return
+    if (!address) return
 
     dispatch(
       fetchChartData({
@@ -53,7 +51,7 @@ const ValidatorDetailsOverview = ({ validator, visible }: Props) => {
         resource: 'validators',
       }),
     )
-  }, [address, dispatch, timelineValue, visible])
+  }, [address, dispatch, timelineValue])
 
   useEffect(() => {
     const updateDateLabel = async () => {

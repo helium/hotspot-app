@@ -43,6 +43,7 @@ const palette = {
   grayHighlight: '#EBEDF9',
   grayAccent: '#B3C2E8',
 
+  redLight: '#F59CA2',
   redMain: '#F97570',
   redMedium: '#FF6666',
 

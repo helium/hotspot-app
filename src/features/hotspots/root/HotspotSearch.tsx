@@ -21,6 +21,8 @@ import HotspotSearchEmpty from './HotspotSearchEmpty'
 import SegmentedControl from '../../../components/SegmentedControl'
 import CardHandle from '../../../components/CardHandle'
 import usePrevious from '../../../utils/usePrevious'
+import { isHotspot } from '../../../utils/hotspotUtils'
+import { isValidator } from '../../../utils/validatorUtils'
 
 const ItemSeparatorComponent = () => <Box height={1} backgroundColor="white" />
 
@@ -86,9 +88,9 @@ const HotspotSearch = ({
 
   const onPressItem = useCallback(
     (item: PlacePrediction | Hotspot | Validator) => () => {
-      if ('geocode' in item) {
+      if (isHotspot(item)) {
         onSelectHotspot(item)
-      } else if ('versionHeartbeat' in item) {
+      } else if (isValidator(item)) {
         onSelectValidator(item)
       } else if ('placeId' in item) {
         onSelectPlace(item)

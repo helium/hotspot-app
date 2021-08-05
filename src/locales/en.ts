@@ -812,6 +812,11 @@ export default {
     cooldown_blocks_left: '{{blocks}} Blocks Left',
     status_online: 'Online',
     status_offline: 'Offline',
+    current_block_height: 'Current Block Height: {{blockHeight}}',
+    penalty: 'Penalty',
+    performance: 'Performance Penalty',
+    tenure: 'Tenure Penalty',
+    block: 'Block {{height}}',
   },
   hotspot_details: {
     checklist: 'Progress',

@@ -21,9 +21,7 @@ export const isRelay = (listenAddrs: string[] | undefined) => {
   return listenAddrs.length > 0 && !listenAddrs.find((a) => a.match(IP))
 }
 
-export const isHotspot = (
-  item: GlobalOpt | Hotspot | Witness | Validator,
-): item is Hotspot =>
+export const isHotspot = (item: unknown): item is Hotspot =>
   (item as Hotspot).location !== undefined &&
   (item as Witness).witnessFor === undefined
 
