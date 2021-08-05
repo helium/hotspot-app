@@ -73,7 +73,6 @@ export const getAddress = async (): Promise<Address | undefined> => {
   const addressB58 = await getSecureItem('address')
   if (!addressB58) return
 
-  Logger.setUser(addressB58)
   return Address.fromB58(addressB58)
 }
 
