@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import Svg, { Rect, Text } from 'react-native-svg'
+import Svg from 'react-native-svg'
 import { clamp, max, maxBy, some } from 'lodash'
 import {
   PanGestureHandler,
@@ -10,9 +10,7 @@ import useHaptic from '../../utils/useHaptic'
 import { ChartData } from './types'
 import { useColors } from '../../theme/themeHooks'
 import usePrevious from '../../utils/usePrevious'
-
-// TODO
-// animate in?
+import ChartBar from './ChartBar'
 
 type Props = {
   width: number
@@ -173,44 +171,22 @@ const BarChart = ({
       >
         <Svg height="100%" width="100%">
           {data.map((v, i) => (
-            <React.Fragment key={`frag-${v.id}`}>
-              <Rect
-                x={barWidth * (2 * i)}
-                y={maxUpBarHeight - barHeight(v?.up)}
-                rx={barWidth / 2}
-                width={barWidth}
-                height={barHeight(v?.up)}
-                fill={upColor || greenBright}
-                opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
-              />
-
-              {hasDownBars && (
-                <Rect
-                  x={barWidth * (2 * i)}
-                  y={maxUpBarHeight + barGap}
-                  rx={barWidth / 2}
-                  width={barWidth}
-                  height={barHeight(v?.down)}
-                  fill={downColor || blueBright}
-                  opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
-                />
-              )}
-
-              {showXAxisLabel && (
-                <Text
-                  fill={labelColor || white}
-                  stroke="none"
-                  fontSize="12"
-                  fontWeight={300}
-                  x={barWidth * (2 * i) + barWidth / 2}
-                  y={height - 4}
-                  textAnchor="middle"
-                  opacity={focusedBar && focusedBar?.id === v.id ? 1 : 0.4}
-                >
-                  {v.label}
-                </Text>
-              )}
-            </React.Fragment>
+            <ChartBar
+              key={`frag-${v.id}`}
+              index={i}
+              showXAxisLabel={showXAxisLabel}
+              hasDownBars={hasDownBars}
+              barWidth={barWidth}
+              barHeight={barHeight}
+              upColor={upColor || greenBright}
+              barGap={barGap}
+              focusedBar={focusedBar}
+              downColor={downColor || blueBright}
+              labelColor={labelColor || white}
+              height={height}
+              maxUpBarHeight={maxUpBarHeight}
+              data={v}
+            />
           ))}
         </Svg>
       </Animated.View>

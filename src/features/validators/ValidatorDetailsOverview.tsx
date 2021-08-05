@@ -116,41 +116,25 @@ const ValidatorDetailsOverview = ({ validator, visible }: Props) => {
           borderRadius="lm"
           padding="m"
         >
-          <Box flexDirection="row" marginBottom="m">
-            <Box flex={1}>
-              <Text
-                color="grayLightText"
-                fontSize={16}
-                maxFontSizeMultiplier={1.2}
-              >
-                {t('hotspot_details.reward_title')}
-              </Text>
-              <Text
-                variant="light"
-                color="grayDarkText"
-                fontSize={37}
-                numberOfLines={1}
-                adjustsFontSizeToFit
-                maxFontSizeMultiplier={1}
-              >
-                {focusedData
-                  ? focusedData.up.toLocaleString(locale)
-                  : rewardSum?.floatBalance.toFixed(2)}
-              </Text>
-            </Box>
-            {!dateLabel ? (
-              <Text
-                color={change < 0 ? 'purpleMain' : 'greenOnline'}
-                variant="bold"
-                fontSize={13}
-                maxFontSizeMultiplier={1.1}
-              >
-                {`${change < 0 ? '' : '+'}${change.toLocaleString(locale, {
-                  maximumFractionDigits: 2,
-                  minimumFractionDigits: 2,
-                })}%`}
-              </Text>
-            ) : (
+          <Box flexDirection="row" marginBottom="m" alignItems="flex-end">
+            <Text
+              color="purpleBright"
+              variant="bold"
+              fontSize={13}
+              maxFontSizeMultiplier={1.1}
+              marginRight="s"
+            >
+              {focusedData
+                ? `${
+                    focusedData.up < 0 ? '' : '+'
+                  }${focusedData.up.toLocaleString(locale)}`
+                : `${change < 0 ? '' : '+'}${change.toLocaleString(locale, {
+                    maximumFractionDigits: 2,
+                    minimumFractionDigits: 2,
+                  })}%`}
+            </Text>
+
+            {!!dateLabel && (
               <Text
                 variant="body3"
                 color="grayDarkText"
@@ -170,6 +154,26 @@ const ValidatorDetailsOverview = ({ validator, visible }: Props) => {
             downColor={grayLight}
             labelColor={black}
           />
+          <Box marginTop="m">
+            <Text
+              color="purpleMediumText"
+              variant="medium"
+              fontSize={15}
+              maxFontSizeMultiplier={1.2}
+            >
+              {t('hotspot_details.reward_title')}
+            </Text>
+            <Text
+              variant="light"
+              color="grayDarkText"
+              fontSize={37}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              maxFontSizeMultiplier={1}
+            >
+              {rewardSum?.floatBalance.toFixed(2)}
+            </Text>
+          </Box>
         </Box>
       )}
     </>
