@@ -8,7 +8,7 @@ const BOBCAT_MINER_300 = {
   translations: {
     en: {
       diagnostic:
-        '<b><white>Diagnostic support allows Bobcat to identify issues with your Hotspot in a secure way.</white></b>\n\nBobcat will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nPlease check out our troubleshooting guide at <purple><b>https://www.bobcatminer.com/faq</b></purple> or use the local diagnoser to see hotspot real time operational data.',
+        '<b><white>Diagnostic support allows Bobcat to identify issues with your Hotspot in a secure way.</white></b>\n\nBobcat will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nPlease check the troubleshooting guide at <purple><b>https://www.bobcatminer.com/faq</b></purple> or use the local diagnoser to see Hotspot real-time operational data.',
       power: [
         'Plug in the provided power adapter into an outlet near a window and screw in the provided antenna on the back of the Hotspot.',
         'The Hotspot is ready when the light goes from red to yellow.',
