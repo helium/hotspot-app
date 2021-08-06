@@ -22,6 +22,11 @@ const ValidatorDetailsPenalties = ({ validator }: Props) => {
     (state: RootState) => state.heliumData.blockHeight,
   )
 
+  const penalties = useMemo(() => {
+    if (!validator?.penalties) return [] as ValidatorPenalty[]
+    return validator.penalties.sort((l, r) => r.height - l.height)
+  }, [validator?.penalties])
+
   type PenaltyItem = { index: number; item: ValidatorPenalty }
   const renderItem = useCallback(
     ({ index, item }: PenaltyItem) => {
@@ -107,7 +112,7 @@ const ValidatorDetailsPenalties = ({ validator }: Props) => {
       </Text>
 
       <FlatList
-        data={validator?.penalties || []}
+        data={penalties}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         contentContainerStyle={contentContainerStyle}
