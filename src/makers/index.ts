@@ -11,6 +11,7 @@ import sensecap from './sensecap'
 import syncrobit from './syncrobit'
 import kerlink from './kerlink'
 import pisces from './pisces'
+import freedomfi from './freedomfi'
 import { LangType, supportedLangs } from '../utils/i18n/i18nTypes'
 import { HotspotMakerLangField } from './hotspotMakerTypes'
 
@@ -27,6 +28,7 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
   syncrobit,
   kerlink,
   pisces,
+  freedomfi,
 }
 
 export const AntennaModels = {
@@ -43,6 +45,7 @@ export const AntennaModels = {
   ...syncrobit.antennas,
   ...kerlink.antennas,
   ...pisces.antennas,
+  ...freedomfi.antennas,
 }
 
 export const HotspotMakerModels = {
@@ -58,6 +61,7 @@ export const HotspotMakerModels = {
   ...syncrobit.hotspots,
   ...kerlink.hotspots,
   ...pisces.hotspots,
+  ...freedomfi.hotspots,
 }
 
 export type HotspotType = keyof typeof HotspotMakerModels
