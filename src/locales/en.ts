@@ -658,7 +658,32 @@ export default {
       subtitle:
         'Here you’ll get news, updates and alerts about your Hotspots and The People’s Network.',
     },
+    helium_updates_empty: {
+      title: 'There are no Helium updates',
+      subtitle: "Stay tuned for upcoming news about The People's Network.",
+    },
+    hotspot_update_empty: {
+      title: 'There are no Hotspot notifications',
+      subtitle:
+        "Here is where you'll be notified when your Hotspot falls offline or comes back online.",
+    },
+    transfers_empty: {
+      title: 'There are no Hotspot Transfers',
+      subtitle:
+        "Here is where you'll find pending Hotspot transfer notifications.",
+    },
+    earnings_empty: {
+      title: 'No weekly earnings to report',
+      subtitle:
+        "Here is where you'll find weekly earnings notifications from your owned Hotspots.",
+    },
+    failed_empty: {
+      title: 'No failed transactions',
+      subtitle: 'Any failed transaction notification will appear here.',
+    },
+    all: 'All Messages',
     hotspot_updates: 'Hotspot Updates',
+    hotspot_transfers: 'Hotspot Transfers',
     helium_updates: 'Helium Updates',
     helium_update: 'Helium Update',
     weekly_earnings: 'Weekly Earnings',
