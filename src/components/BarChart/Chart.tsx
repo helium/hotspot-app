@@ -106,7 +106,7 @@ const BarChart = ({
 
   const barHeight = useCallback(
     (value: number | undefined): number => {
-      if (value === 0 || value === undefined) return 0
+      if (value === 0 || value === undefined) return minBarHeight
       if (
         maxUpBarHeight === minBarHeight ||
         maxDownBarHeight === minBarHeight

@@ -1,6 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { Validator } from '@helium/http'
-import { getElectedValidators, getValidators } from '../../utils/appDataClient'
+import { AnyTransaction, Validator } from '@helium/http'
+import {
+  getElectedValidators,
+  getValidatorActivityList,
+  getValidators,
+} from '../../utils/appDataClient'
 import {
   CacheRecord,
   handleCacheFulfilled,
@@ -38,6 +42,7 @@ export type ValidatorsSliceState = {
   followedValidatorsObj: Record<string, Validator>
   myValidatorsLoaded: boolean
   followedValidatorsLoaded: boolean
+  transactions: Record<string, AnyTransaction[]>
 }
 
 const initialState: ValidatorsSliceState = {
@@ -48,6 +53,7 @@ const initialState: ValidatorsSliceState = {
   electedValidators: { lastFetchedTimestamp: 0, loading: false, data: [] },
   followedValidators: { lastFetchedTimestamp: 0, loading: false, data: [] },
   followedValidatorsObj: {},
+  transactions: {},
 }
 
 export const fetchMyValidators = createAsyncThunk(
@@ -109,9 +115,9 @@ export const fetchFollowedValidators = createAsyncThunk(
 
 export const followValidator = createAsyncThunk<Validator[], string>(
   'validators/followValidator',
-  async (validator_address) => {
+  async (validatorAddress) => {
     const followed = await postWallet(
-      `validators/follow/${validator_address}`,
+      `validators/follow/${validatorAddress}`,
       null,
       { camelCase: true },
     )
@@ -121,14 +127,19 @@ export const followValidator = createAsyncThunk<Validator[], string>(
 
 export const unfollowValidator = createAsyncThunk<Validator[], string>(
   'validators/unfollowValidator',
-  async (validator_address) => {
+  async (validatorAddress) => {
     const followed = await deleteWallet(
-      `validators/follow/${validator_address}`,
+      `validators/follow/${validatorAddress}`,
       null,
       { camelCase: true },
     )
     return followed
   },
+)
+
+export const fetchActivity = createAsyncThunk<AnyTransaction[], string>(
+  'validators/fetchActivity',
+  async (validatorAddress) => getValidatorActivityList(validatorAddress),
 )
 
 const validatorsToObj = (validators: Validator[]) =>
@@ -186,6 +197,9 @@ const validatorsSlice = createSlice({
     })
     builder.addCase(fetchElectedValidators.fulfilled, (state, action) => {
       state.electedValidators = handleCacheFulfilled({ data: action.payload })
+    })
+    builder.addCase(fetchActivity.fulfilled, (state, action) => {
+      state.transactions[action.meta.arg] = action.payload
     })
   },
 })

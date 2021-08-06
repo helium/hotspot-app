@@ -30,6 +30,7 @@ import { useSpacing } from '../../theme/themeHooks'
 import { formatHeartbeatVersion, isUnstaked } from '../../utils/validatorUtils'
 import FollowValidatorButton from '../../components/FollowValidatorButton'
 import ValidatorDetailsPenalties from './ValidatorDetailsPenalties'
+import ValidatorDetailsConsensus from './ValidatorDetailsConsensus'
 
 export type HotspotSnapPoints = { collapsed: number; expanded: number }
 type Props = {
@@ -128,7 +129,7 @@ const ValidatorDetails = ({ validator }: Props) => {
         case 'penalties':
           return <ValidatorDetailsPenalties validator={validator} />
         case 'consensus_groups':
-          return <Box height={330} margin="lm" backgroundColor="yellow" />
+          return <ValidatorDetailsConsensus validator={validator} />
       }
     },
     [validator],

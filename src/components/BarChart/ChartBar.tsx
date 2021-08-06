@@ -39,12 +39,6 @@ const ChartBar = ({
     [data],
   )
 
-  const upValue = useMemo(() => {
-    if (!showPlaceholderCircle) return data.up
-
-    return 1
-  }, [data.up, showPlaceholderCircle])
-
   const opacity = useMemo(() => {
     if (showPlaceholderCircle) return 0.1
     return !focusedBar || focusedBar?.id === data.id ? 1 : 0.4
@@ -54,10 +48,10 @@ const ChartBar = ({
     <>
       <Rect
         x={barWidth * (2 * index)}
-        y={maxUpBarHeight - barHeight(upValue)}
+        y={maxUpBarHeight - barHeight(data.up)}
         rx={barWidth / 2}
         width={barWidth}
-        height={barHeight(upValue)}
+        height={barHeight(data.up)}
         fill={upColor}
         opacity={opacity}
       />
