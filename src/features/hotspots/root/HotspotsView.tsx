@@ -46,6 +46,7 @@ import {
   isGlobalOption,
 } from '../../../utils/hotspotUtils'
 import { isValidator } from '../../../utils/validatorUtils'
+import ValidatorExplorer from '../../validators/ValidatorExplorer'
 
 type Props = {
   ownedHotspots?: Hotspot[]
@@ -390,6 +391,7 @@ const HotspotsView = ({
           onSelectValidator={handlePresentValidator}
           visible={shortcutItem === 'search'}
         />
+        <ValidatorExplorer visible={shortcutItem === 'validators'} />
         <HotspotDetails
           visible={isHotspot(shortcutItem)}
           hotspot={selectedHotspot}

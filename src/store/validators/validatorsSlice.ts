@@ -1,6 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { Validator } from '@helium/http'
-import { getElectedValidators, getValidators } from '../../utils/appDataClient'
+import { Election, Validator } from '@helium/http'
+import {
+  getElectedValidators,
+  getElections,
+  getValidators,
+} from '../../utils/appDataClient'
 import {
   CacheRecord,
   handleCacheFulfilled,
@@ -34,6 +38,7 @@ export type ValidatorsSliceState = {
   validators: CacheRecord<{ data: Validator[] }>
   walletValidators: Record<string, CacheRecord<WalletValidator>>
   electedValidators: CacheRecord<{ data: Validator[] }>
+  elections: CacheRecord<{ data: Election[] }>
   followedValidators: CacheRecord<{ data: Validator[] }>
   followedValidatorsObj: Record<string, Validator>
   myValidatorsLoaded: boolean
@@ -46,6 +51,7 @@ const initialState: ValidatorsSliceState = {
   validators: { lastFetchedTimestamp: 0, loading: false, data: [] },
   walletValidators: {},
   electedValidators: { lastFetchedTimestamp: 0, loading: false, data: [] },
+  elections: { lastFetchedTimestamp: 0, loading: false, data: [] },
   followedValidators: { lastFetchedTimestamp: 0, loading: false, data: [] },
   followedValidatorsObj: {},
 }
@@ -75,6 +81,21 @@ export const fetchElectedValidators = createAsyncThunk(
     if (hasValidCache(electedValidators)) return electedValidators.data
 
     return getElectedValidators()
+  },
+)
+
+export const fetchElections = createAsyncThunk(
+  'validators/fetchElections',
+  async (_arg, { getState }) => {
+    const {
+      validators: { elections },
+    } = (await getState()) as {
+      validators: ValidatorsSliceState
+    }
+    if (hasValidCache(elections)) return elections.data
+
+    const electionList = await getElections()
+    return electionList.take(5)
   },
 )
 
@@ -186,6 +207,9 @@ const validatorsSlice = createSlice({
     })
     builder.addCase(fetchElectedValidators.fulfilled, (state, action) => {
       state.electedValidators = handleCacheFulfilled({ data: action.payload })
+    })
+    builder.addCase(fetchElections.fulfilled, (state, action) => {
+      state.elections = handleCacheFulfilled({ data: action.payload })
     })
   },
 })

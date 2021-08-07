@@ -77,19 +77,19 @@ export const getValidatorRewards = async (
 
 export const searchValidators = async (searchTerm: string) => {
   Logger.breadcrumb('searchValidators', breadcrumbOpts)
-  const address = await getAddress()
-  if (!address) return []
-
   const newValidatorList = await client.validators.search(searchTerm)
   return newValidatorList.takeJSON(MAX)
 }
+
 export const getElectedValidators = async () => {
   Logger.breadcrumb('getElectedValidators ', breadcrumbOpts)
-  const address = await getAddress()
-  if (!address) return []
-
   const electedValidatorList = await client.validators.elected()
   return electedValidatorList.takeJSON(MAX)
+}
+
+export const getElections = async () => {
+  Logger.breadcrumb('getElections ', breadcrumbOpts)
+  return client.elections.list()
 }
 
 export const getHotspotsForHexId = async (hexId: string) => {
