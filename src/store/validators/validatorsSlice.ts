@@ -1,8 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { Election, Validator } from '@helium/http'
+import { AnyTransaction, Election, Validator } from '@helium/http'
 import {
   getElectedValidators,
   getElections,
+  getValidatorActivityList,
   getValidators,
 } from '../../utils/appDataClient'
 import {
@@ -43,6 +44,7 @@ export type ValidatorsSliceState = {
   followedValidatorsObj: Record<string, Validator>
   myValidatorsLoaded: boolean
   followedValidatorsLoaded: boolean
+  transactions: Record<string, AnyTransaction[]>
 }
 
 const initialState: ValidatorsSliceState = {
@@ -54,6 +56,7 @@ const initialState: ValidatorsSliceState = {
   elections: { lastFetchedTimestamp: 0, loading: false, data: [] },
   followedValidators: { lastFetchedTimestamp: 0, loading: false, data: [] },
   followedValidatorsObj: {},
+  transactions: {},
 }
 
 export const fetchMyValidators = createAsyncThunk(
@@ -130,9 +133,9 @@ export const fetchFollowedValidators = createAsyncThunk(
 
 export const followValidator = createAsyncThunk<Validator[], string>(
   'validators/followValidator',
-  async (validator_address) => {
+  async (validatorAddress) => {
     const followed = await postWallet(
-      `validators/follow/${validator_address}`,
+      `validators/follow/${validatorAddress}`,
       null,
       { camelCase: true },
     )
@@ -142,14 +145,19 @@ export const followValidator = createAsyncThunk<Validator[], string>(
 
 export const unfollowValidator = createAsyncThunk<Validator[], string>(
   'validators/unfollowValidator',
-  async (validator_address) => {
+  async (validatorAddress) => {
     const followed = await deleteWallet(
-      `validators/follow/${validator_address}`,
+      `validators/follow/${validatorAddress}`,
       null,
       { camelCase: true },
     )
     return followed
   },
+)
+
+export const fetchActivity = createAsyncThunk<AnyTransaction[], string>(
+  'validators/fetchActivity',
+  async (validatorAddress) => getValidatorActivityList(validatorAddress),
 )
 
 const validatorsToObj = (validators: Validator[]) =>
@@ -210,6 +218,9 @@ const validatorsSlice = createSlice({
     })
     builder.addCase(fetchElections.fulfilled, (state, action) => {
       state.elections = handleCacheFulfilled({ data: action.payload })
+    })
+    builder.addCase(fetchActivity.fulfilled, (state, action) => {
+      state.transactions[action.meta.arg] = action.payload
     })
   },
 })

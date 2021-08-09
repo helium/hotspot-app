@@ -7,6 +7,7 @@ import Box from '../../components/Box'
 import Text from '../../components/Text'
 import { RootState } from '../../store/rootReducer'
 import { Colors } from '../../theme/theme'
+import { useBorderRadii } from '../../theme/themeHooks'
 import { locale } from '../../utils/i18n'
 
 export type ValidatorPenalty = {
@@ -17,10 +18,16 @@ export type ValidatorPenalty = {
 type Props = { validator?: Validator }
 const ValidatorDetailsPenalties = ({ validator }: Props) => {
   const { t, i18n } = useTranslation()
+  const { lm } = useBorderRadii()
 
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
   )
+
+  const penalties = useMemo(() => {
+    if (!validator?.penalties) return [] as ValidatorPenalty[]
+    return validator.penalties.sort((l, r) => r.height - l.height)
+  }, [validator?.penalties])
 
   type PenaltyItem = { index: number; item: ValidatorPenalty }
   const renderItem = useCallback(
@@ -93,6 +100,7 @@ const ValidatorDetailsPenalties = ({ validator }: Props) => {
   }, [])
 
   const contentContainerStyle = useMemo(() => ({ paddingBottom: 32 }), [])
+  const style = useMemo(() => ({ borderRadius: lm }), [lm])
 
   return (
     <Box flex={1}>
@@ -107,7 +115,9 @@ const ValidatorDetailsPenalties = ({ validator }: Props) => {
       </Text>
 
       <FlatList
-        data={validator?.penalties || []}
+        showsVerticalScrollIndicator={false}
+        style={style}
+        data={penalties}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         contentContainerStyle={contentContainerStyle}

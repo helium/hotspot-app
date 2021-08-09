@@ -87,6 +87,15 @@ export const getElectedValidators = async () => {
   return electedValidatorList.takeJSON(MAX)
 }
 
+export const getValidatorActivityList = async (
+  address: string,
+  type = 'rewards_v2',
+) => {
+  Logger.breadcrumb('getValidatorActivity', breadcrumbOpts)
+  const params = { filterTypes: [type] }
+  return (await client.validator(address).activity.list(params)).takeJSON(MAX)
+}
+
 export const getElections = async () => {
   Logger.breadcrumb('getElections ', breadcrumbOpts)
   return client.elections.list()
