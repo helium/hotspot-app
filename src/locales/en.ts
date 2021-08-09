@@ -336,8 +336,9 @@ export default {
       assert_loc_error_no_change_title: 'Location Unchanged',
       assert_loc_error_no_change_body:
         'The Hotspot location has not changed. Drag the pin to a different location and try again.',
-      no_onboarding_key_title: 'No onboarding key found',
-      no_onboarding_key_message: 'Would you like to try again?',
+      no_onboarding_key_title: 'Hotspot not found on Onboarding Server',
+      no_onboarding_key_message:
+        'Unable to add Hotspot. Please contact your Hotspot manufacturer for next steps.',
     },
     enable_location: {
       title: 'Set Hotspot\nLocation',
