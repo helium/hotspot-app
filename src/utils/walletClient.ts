@@ -13,10 +13,8 @@ const makeRequest = async (url: string, opts: RequestInit) => {
       throw new Error('no token')
     }
 
-    const baseUrl = Config.WALLET_API_BASE_URL_DEV
+    const baseUrl = Config.WALLET_API_BASE_URL
     const route = [baseUrl, url].join('/')
-
-    console.log(route)
 
     const response = await fetch(route, {
       ...opts,
