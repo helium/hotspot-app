@@ -117,12 +117,18 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
     name: string,
   ) => {
     if (updatedLocation) {
-      const feeData = await loadLocationFeeData()
+      const feeData = await loadLocationFeeData(
+        hotspot?.nonce,
+        undefined,
+        onboardingRecord,
+      )
       setLocationFee(
-        feeData.totalStakingAmountDC.toString(0, {
-          groupSeparator,
-          decimalSeparator,
-        }),
+        feeData.isFree
+          ? '0 DC'
+          : feeData.totalStakingAmountDC.toString(0, {
+              groupSeparator,
+              decimalSeparator,
+            }),
       )
       setFullScreen(false)
       enableBack(onClose)

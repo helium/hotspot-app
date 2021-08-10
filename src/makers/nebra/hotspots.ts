@@ -9,19 +9,19 @@ const NEBRA_INDOOR = {
   translations: {
     en: {
       diagnostic:
-        '<b><white>Diagnostic support allows Nebra LTD to identify issues with your Hotspot in a secure way.</white></b>\n\nNebra will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@nebra.com</b></purple> from the email used to purchase the Hotspot.',
+        '<b><white>Diagnostic support allows Nebra Ltd to identify issues with your Hotspot in a secure way.</white></b>\n\nNebra will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@nebra.com</b></purple> from the email used to purchase the Hotspot.',
       power: [
         'Attach the antenna and plug in the provided power adapter near a window.',
-        'The Nebra Indoor Hotspot will have a green LED light up once it’s powered on.',
+        'The Nebra Indoor Hotspot will have a solid yellow LED light up on the back of the Hotspot once it’s powered on.',
       ],
       bluetooth: [
-        'Hold down the button on the back of the Nebra Indoor Hotspot until it starts flashing.',
-        'Once the LED is slowly blinking and is ready to pair.\n\nPress Next to scan.',
+        'Bluetooth is automatically enabled for 10 minutes after the Nebra Indoor Hotspot is powered on.',
+        'Alternatively, you can hold down the button on the back of the Nebra Indoor Hotspot for 10 seconds or until the green LED starts flashing.\n\nHotspot can take up to 1 minute to fully boot up.\n\nOnce the green LED is slowly blinking the Hotspot is ready to pair.\n\nPress Next to scan.',
       ],
     },
     ja: {
       diagnostic:
-        '<b><white>診断サポートにより、Nebra LTDはHotspotの問題を安全な方法で特定できます。</white></b>\n\nNebraが秘密キーにアクセスすることはありません。お使いのHotspotにのみアクセスし、ネットワーク上の他のデバイスにはアクセスしません。\n\n診断サポートをオプトアウトする場合は、Hotspotの購入時に使用したメールアドレスを使用して、<purple><b>support@nebra.com</b></purple>までメールでご連絡ください。',
+        '<b><white>診断サポートにより、Nebra LtdはHotspotの問題を安全な方法で特定できます。</white></b>\n\nNebraが秘密キーにアクセスすることはありません。お使いのHotspotにのみアクセスし、ネットワーク上の他のデバイスにはアクセスしません。\n\n診断サポートをオプトアウトする場合は、Hotspotの購入時に使用したメールアドレスを使用して、<purple><b>support@nebra.com</b></purple>までメールでご連絡ください。',
       power: [
         'アンテナを取り付け、窓の近くにある付属の電源アダプターに差し込みます。',
         'Nebra Indoor Hotspotの電源を入れると、緑色のLEDが点灯します。',
@@ -33,7 +33,7 @@ const NEBRA_INDOOR = {
     },
     ko: {
       diagnostic:
-        '<b><white>Nebra LTD는 진단 지원을 통해 안전한 방법으로 Hotspot에서 발생하는 문제를 식별할 수 있습니다.</white></b>\n\nNebra는 개인 키에 대한 액세스 권한이 없으며 네트워크 내의 다른 기기를 제외하고 Hotspot에만 액세스할 수 있습니다.\n\n진단 지원을 선택 취소하려면 Hotspot을 구매할 때 사용한 이메일을 통해 <purple><b>support@nebra.com</b></purple>으로 이메일을 보내주시기 바랍니다.',
+        '<b><white>Nebra Ltd는 진단 지원을 통해 안전한 방법으로 Hotspot에서 발생하는 문제를 식별할 수 있습니다.</white></b>\n\nNebra는 개인 키에 대한 액세스 권한이 없으며 네트워크 내의 다른 기기를 제외하고 Hotspot에만 액세스할 수 있습니다.\n\n진단 지원을 선택 취소하려면 Hotspot을 구매할 때 사용한 이메일을 통해 <purple><b>support@nebra.com</b></purple>으로 이메일을 보내주시기 바랍니다.',
       power: [
         '안테나를 부착하고 창가 부근의 제공된 어댑터에 연결합니다.',
         '전원이 켜지면 Nebra Indoor Hotspot에 초록색 LED 표시등이 표시됩니다.',
@@ -45,7 +45,7 @@ const NEBRA_INDOOR = {
     },
     zh: {
       diagnostic:
-        '<b><white>诊断支持帮助 Nebra LTD 安全确认您的 Hotspot 问题。</white></b>\n\nNebra 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@nebra.com</b></purple>。',
+        '<b><white>诊断支持帮助 Nebra Ltd 安全确认您的 Hotspot 问题。</white></b>\n\nNebra 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@nebra.com</b></purple>。',
       power: [
         '连接天线，将随附的电源适配器插入靠窗的插座。',
         '开机后，Nebra Indoor Hotspot 将亮起绿色 LED 指示灯。',
@@ -66,19 +66,19 @@ const NEBRA_OUTDOOR = {
   translations: {
     en: {
       diagnostic:
-        '<b><white>Diagnostic support allows Nebra LTD to identify issues with your Hotspot in a secure way.</white></b>\n\nNebra will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@nebra.com</b></purple> from the email used to purchase the Hotspot.',
+        '<b><white>Diagnostic support allows Nebra Ltd to identify issues with your Hotspot in a secure way.</white></b>\n\nNebra will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@nebra.com</b></purple> from the email used to purchase the Hotspot.',
       power: [
-        'Attach the antenna and connect to an appropriate power source.',
-        'The Nebra Outdoor Hotspot will have multiple lights come on once it’s powered on.',
+        'Attach the antenna and connect to an appropriate power source (Power over Ethernet or DC power supply).',
+        'With the case open, the Nebra Outdoor Hotspot has several LED lights that will come on once it’s powered on.',
       ],
       bluetooth: [
-        'There is no pairing button on the Nebra Outdoor Hotspot.',
-        'Bluetooth is automatically enabled for 10 minutes after the Nebra Outdoor Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.',
+        'Bluetooth is automatically enabled for 10 minutes after the Nebra Outdoor Hotspot is powered on.',
+        'Alternatively, you can hold down the button labelled S1 on the USB dongle hub inside Nebra Outdoor Hotspot for 10 seconds or until the red LED starts flashing.\n\nHotspot can take up to 1 minute to fully boot up.\n\nOnce the red LED is slowly blinking the Hotspot is ready to pair.\n\nPress Next to scan.',
       ],
     },
     ja: {
       diagnostic:
-        '<b><white>診断サポートにより、Nebra LTDはHotspotの問題を安全な方法で特定できます。</white></b>\n\nNebraが秘密キーにアクセスすることはありません。お使いのHotspotにのみアクセスし、ネットワーク上の他のデバイスにはアクセスしません。\n\n診断サポートをオプトアウトする場合は、Hotspotの購入時に使用したメールアドレスを使用して、<purple><b>support@nebra.com</b></purple>までメールでご連絡ください。',
+        '<b><white>診断サポートにより、Nebra LtdはHotspotの問題を安全な方法で特定できます。</white></b>\n\nNebraが秘密キーにアクセスすることはありません。お使いのHotspotにのみアクセスし、ネットワーク上の他のデバイスにはアクセスしません。\n\n診断サポートをオプトアウトする場合は、Hotspotの購入時に使用したメールアドレスを使用して、<purple><b>support@nebra.com</b></purple>までメールでご連絡ください。',
       power: [
         'アンテナを取り付け、適切な電源に接続します。',
         'Nebra Outdoor Hotspotの電源を入れると、複数のLEDが点灯します。',
@@ -90,7 +90,7 @@ const NEBRA_OUTDOOR = {
     },
     ko: {
       diagnostic:
-        '<b><white>Nebra LTD는 진단 지원을 통해 안전한 방법으로 Hotspot에서 발생하는 문제를 식별할 수 있습니다.</white></b>\n\nNebra는 개인 키에 대한 액세스 권한이 없으며 네트워크 내의 다른 기기를 제외하고 Hotspot에만 액세스할 수 있습니다.\n\n진단 지원을 선택 취소하려면 Hotspot을 구매할 때 사용한 이메일을 통해 <purple><b>support@nebra.com</b></purple>으로 이메일을 보내주시기 바랍니다.',
+        '<b><white>Nebra Ltd는 진단 지원을 통해 안전한 방법으로 Hotspot에서 발생하는 문제를 식별할 수 있습니다.</white></b>\n\nNebra는 개인 키에 대한 액세스 권한이 없으며 네트워크 내의 다른 기기를 제외하고 Hotspot에만 액세스할 수 있습니다.\n\n진단 지원을 선택 취소하려면 Hotspot을 구매할 때 사용한 이메일을 통해 <purple><b>support@nebra.com</b></purple>으로 이메일을 보내주시기 바랍니다.',
       power: [
         '안테나를 부착하고 적합한 전원에 연결합니다.',
         '전원이 켜지면 Nebra Outdoor Hotspot에 여러 개의 표시등이 표시됩니다.',
@@ -102,7 +102,7 @@ const NEBRA_OUTDOOR = {
     },
     zh: {
       diagnostic:
-        '<b><white>诊断支持帮助 Nebra LTD 安全确认您的 Hotspot 问题。</white></b>\n\nNebra 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@nebra.com</b></purple>。',
+        '<b><white>诊断支持帮助 Nebra Ltd 安全确认您的 Hotspot 问题。</white></b>\n\nNebra 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@nebra.com</b></purple>。',
       power: [
         '连接天线并正确连接电源。',
         '开机后，Nebra Outdoor Hotspot 将陆续亮起多个指示灯。',

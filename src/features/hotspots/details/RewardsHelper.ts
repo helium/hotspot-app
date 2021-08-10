@@ -1,15 +1,6 @@
 import { groupBy, sumBy } from 'lodash'
 import { Reward } from '@helium/http'
 
-export const calculatePercentChange = (
-  value: number,
-  previousValue: number,
-) => {
-  return (value === 0 && previousValue === 0) || previousValue === 0
-    ? 0
-    : ((value - previousValue) / previousValue) * 100
-}
-
 export const getRewardChartData = (
   rewardData: Reward[] | undefined,
   numDays: number | undefined,

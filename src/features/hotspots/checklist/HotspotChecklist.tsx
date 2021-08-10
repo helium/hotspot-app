@@ -16,7 +16,7 @@ import HotspotChecklistCarousel, {
 } from './HotspotChecklistCarousel'
 import { wp } from '../../../utils/layout'
 import { Theme } from '../../../theme/theme'
-import { SyncStatus } from '../../../store/hotspots/hotspotsSlice'
+import useHotspotSync from '../useHotspotSync'
 
 type Props = BoxProps<Theme> & {
   hotspot: Hotspot | Witness
@@ -40,6 +40,7 @@ const HotspotChecklist = ({
     dataTransferTxn,
     loadingActivity,
   } = useSelector((state: RootState) => state.hotspotChecklist)
+  const { getStatusMessage } = useHotspotSync(hotspot)
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
   )
@@ -73,31 +74,14 @@ const HotspotChecklist = ({
     }
   }, [loadingActivity, showSkeleton, visible])
 
-  const syncStatus = useMemo(() => {
-    if (
-      !blockHeight ||
-      !hotspotSyncStatus ||
-      hotspotSyncStatus.status === undefined
-    )
-      return ''
-
-    if (!hotspotSyncStatus.hotspotBlockHeight) {
-      return t('checklist.blocks.not')
-    }
-    if (hotspotSyncStatus.status === SyncStatus.full) {
-      return t('checklist.blocks.full')
-    }
-    return t('checklist.blocks.partial', {
-      percent: hotspotSyncStatus.percent,
-    })
-  }, [blockHeight, hotspotSyncStatus, t])
+  const isOnline = useMemo(() => hotspot?.status?.online === 'online', [
+    hotspot?.status?.online,
+  ])
 
   const hotspotStatus = useMemo(
     () =>
-      hotspot?.status?.online === 'online'
-        ? t('checklist.status.online')
-        : t('checklist.status.offline'),
-    [hotspot?.status?.online, t],
+      isOnline ? t('checklist.status.online') : t('checklist.status.offline'),
+    [isOnline, t],
   )
 
   const challengerStatus = useMemo(
@@ -149,17 +133,15 @@ const HotspotChecklist = ({
       {
         key: 'checklist.blocks',
         title: t('checklist.blocks.title'),
-        description: syncStatus,
-        complete:
-          (blockHeight && hotspotSyncStatus?.status === SyncStatus.full) ||
-          false,
+        description: getStatusMessage(),
+        complete: (isOnline && hotspotSyncStatus?.status === 'full') || false,
         showAuto: true,
       },
       {
         key: 'checklist.status',
         title: t('checklist.status.title'),
         description: hotspotStatus,
-        complete: hotspot?.status?.online === 'online',
+        complete: isOnline,
         showAuto: false,
       },
       {
@@ -201,7 +183,6 @@ const HotspotChecklist = ({
       },
     ],
     [
-      blockHeight,
       challengeWitnessStatus,
       challengeeStatus,
       challengeeTxn,
@@ -209,10 +190,10 @@ const HotspotChecklist = ({
       challengerTxn,
       dataTransferStatus,
       dataTransferTxn,
-      hotspot?.status?.online,
+      getStatusMessage,
       hotspotStatus,
-      hotspotSyncStatus,
-      syncStatus,
+      hotspotSyncStatus?.status,
+      isOnline,
       t,
       witnessStatus,
       witnessTxn,

@@ -31,13 +31,14 @@ import HeliumSelect from '../../../components/HeliumSelect'
 import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
 import HotspotStatusBanner from './HotspotStatusBanner'
 import useToggle from '../../../utils/useToggle'
-import { isRelay } from '../../../utils/hotspotUtils'
+import { HELIUM_OLD_MAKER_ADDRESS, isRelay } from '../../../utils/hotspotUtils'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Articles from '../../../constants/articles'
 import HotspotListItem from '../../../components/HotspotListItem'
 import Info from '../../../assets/images/info-hollow.svg'
 import Location from '../../../assets/images/location.svg'
 import Signal from '../../../assets/images/signal.svg'
+import HotspotIcon from '../../../assets/images/hotspot-icon-small.svg'
 import EarningsIcon from '../../../assets/images/earnings_icon.svg'
 import WitnessIcon from '../../../assets/images/checklist_challenge_witness.svg'
 import CheckCircle from '../../../assets/images/check-circle.svg'
@@ -46,17 +47,17 @@ import { useColors, useSpacing } from '../../../theme/themeHooks'
 import HotspotSheetHandle from '../root/HotspotSheetHandle'
 import { hp } from '../../../utils/layout'
 import sleep from '../../../utils/sleep'
-import { fetchSyncStatus } from '../../../store/hotspots/hotspotsSlice'
 import usePrevious from '../../../utils/usePrevious'
+import useHotspotSync from '../useHotspotSync'
 
 const hitSlop = { top: 24, bottom: 24 } as Insets
 
 export type HotspotSnapPoints = { collapsed: number; expanded: number }
 type Props = {
-  hotspot?: Hotspot | Witness
+  hotspot?: Hotspot
   onLayoutSnapPoints?: ((snapPoints: HotspotSnapPoints) => void) | undefined
   onFailure: () => void
-  onSelectHotspot: (hotspot: Hotspot | Witness) => void
+  onSelectHotspot: (hotspot: Hotspot) => void
   onChangeHeight: (height: number) => void
   visible: boolean
   toggleSettings: () => void
@@ -85,12 +86,7 @@ const HotspotDetails = ({
     useSelector(
       (state: RootState) => state.hotspotDetails.hotspotData[address],
     ) || {}
-  const blockHeight = useSelector(
-    (state: RootState) => state.heliumData.blockHeight,
-  )
-  const syncStatuses = useSelector(
-    (state: RootState) => state.hotspots.syncStatuses,
-  )
+
   const listRef = useRef<BottomSheet>(null)
   const scrollViewRef = useRef<BottomSheetScrollViewType>(null)
   const [isRelayed, setIsRelayed] = useState(false)
@@ -110,6 +106,10 @@ const HotspotDetails = ({
     hotspotDetailsHotspot,
     propsHotspot,
   ])
+
+  const { updateSyncStatus, hotspotSyncStatus } = useHotspotSync(hotspot)
+
+  const makers = useSelector((state: RootState) => state.heliumData.makers)
 
   useEffect(() => {
     if (!visible) return
@@ -146,7 +146,6 @@ const HotspotDetails = ({
     ) {
       return
     }
-
     dispatch(fetchHotspotData(address))
   }, [address, dispatch, hotspot, listIndex, prevListIndex, timelineValue])
 
@@ -164,16 +163,8 @@ const HotspotDetails = ({
   }, [address, dispatch, hotspot, listIndex, prevListIndex, timelineValue])
 
   useEffect(() => {
-    if (!address) return
-
-    dispatch(
-      fetchSyncStatus({
-        address,
-        statusTime: hotspot?.status?.timestamp,
-        blockHeight,
-      }),
-    )
-  }, [address, blockHeight, dispatch, hotspot?.status?.timestamp])
+    updateSyncStatus()
+  }, [updateSyncStatus])
 
   const formattedHotspotName = useMemo(() => {
     if (!hotspot) return ''
@@ -271,7 +262,7 @@ const HotspotDetails = ({
           pressable={false}
           key={witness.address}
           onPress={onSelectHotspot}
-          hotspot={witness}
+          hotspot={witness as Hotspot}
           showAddress={false}
           distanceAway={getDistance(witness)}
           showRewardScale
@@ -371,6 +362,14 @@ const HotspotDetails = ({
     }
   }, [prevHotspotAddress, propsHotspot, selectData])
 
+  const makerName = useMemo(() => {
+    if (hotspot?.payer === HELIUM_OLD_MAKER_ADDRESS) {
+      // special case for old Helium Hotspots
+      return 'Helium'
+    }
+    return makers?.find((m) => m.address === hotspot?.payer)?.name
+  }, [hotspot?.payer, makers])
+
   if (!hotspot) return null
 
   return (
@@ -440,6 +439,25 @@ const HotspotDetails = ({
                     t('antennas.onboarding.dbi')}
                 </Text>
               )}
+              {makerName && (
+                <Box
+                  marginLeft="m"
+                  flexDirection="row"
+                  alignItems="center"
+                  width="33%"
+                >
+                  <HotspotIcon width={10} height={10} color={colors.grayText} />
+                  <Text
+                    variant="body2"
+                    color="grayText"
+                    marginLeft="xs"
+                    ellipsizeMode="tail"
+                    numberOfLines={1}
+                  >
+                    {makerName}
+                  </Text>
+                </Box>
+              )}
             </Box>
             <Box
               flexDirection="row"
@@ -452,7 +470,7 @@ const HotspotDetails = ({
                 <StatusBadge
                   hitSlop={hitSlop}
                   online={hotspot?.status?.online}
-                  syncStatus={syncStatuses[hotspot?.address]?.status}
+                  syncStatus={hotspotSyncStatus?.status}
                   onPress={handleToggleStatus}
                 />
               )}
@@ -514,7 +532,7 @@ const HotspotDetails = ({
           {selectedOption === 'overview' && (
             <HotspotDetailChart
               title={t('hotspot_details.reward_title')}
-              number={rewardSum?.total.toFixed(2)}
+              number={rewardSum?.floatBalance.toFixed(2)}
               change={rewardsChange}
               data={rewardChartData}
               loading={loading}

@@ -1,5 +1,9 @@
 import React, { ReactElement, useRef } from 'react'
-import { TextInput, TouchableWithoutFeedback } from 'react-native'
+import {
+  KeyboardTypeOptions,
+  TextInput,
+  TouchableWithoutFeedback,
+} from 'react-native'
 import Box from './Box'
 import Text from './Text'
 import InputLock from '../assets/images/input-lock.svg'
@@ -12,7 +16,7 @@ type Props = {
   placeholder?: string
   extra?: ReactElement
   footer?: ReactElement
-  type?: 'default' | 'numeric'
+  type?: KeyboardTypeOptions
   onChange: (text: string) => void
   locked?: boolean
   defaultValue?: string
