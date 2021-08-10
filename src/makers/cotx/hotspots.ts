@@ -4,6 +4,7 @@ import ANTENNAS from './antennas'
 
 const COTX_V1 = {
   name: 'COTX Gateways',
+  icon: HotspotIcon,
   onboardType: 'BLE',
   translations: {
     en: {
@@ -27,7 +28,7 @@ const COTX_V1 = {
       ],
       bluetooth: [
         'BTボタンを5秒間押し続けて、Bluetoothをオンにします。',
-        '画面表示のBluetoothアイコンがオンになると、ホットスポットをペアリングする準備が整います。\ n \ nスマートフォンのBluetoothがオンになっていることを確認してください。',
+        '画面表示のBluetoothアイコンがオンになると、ホットスポットをペアリングする準備が整います。\n\nスマートフォンのBluetoothがオンになっていることを確認してください。',
       ],
     },
     ko: {
@@ -55,8 +56,11 @@ const COTX_V1 = {
       ],
     },
   },
-  icon: HotspotIcon,
-  antenna: { us: ANTENNAS.COTX_US, default: ANTENNAS.COTX_EU, cn: ANTENNAS.COTX_CN },
+  antenna: {
+    us: ANTENNAS.COTX_US,
+    default: ANTENNAS.COTX_EU,
+    cn: ANTENNAS.COTX_CN,
+  },
 } as MakerHotspot
 
 export default { COTX_V1 }
