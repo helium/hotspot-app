@@ -5,6 +5,7 @@ import { Hotspot, Validator, Witness } from '@helium/http'
 import { useSharedValue } from 'react-native-reanimated'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
+import { useAsync } from 'react-async-hook'
 import { RootStackParamList } from '../../../navigation/main/tabTypes'
 import Box from '../../../components/Box'
 import Map from '../../../components/Map'
@@ -46,7 +47,7 @@ import {
   isGlobalOption,
 } from '../../../utils/hotspotUtils'
 import { isValidator } from '../../../utils/validatorUtils'
-import ValidatorExplorer from '../../validators/ValidatorExplorer'
+import ValidatorExplorer from '../../validators/explorer/ValidatorExplorer'
 
 type Props = {
   ownedHotspots?: Hotspot[]
@@ -277,7 +278,7 @@ const HotspotsView = ({
 
       if (!hotspot.locationHex) return
 
-      onMapHexSelected(hotspot.locationHex, hotspot.address)
+      await onMapHexSelected(hotspot.locationHex, hotspot.address)
     },
     [
       detailSnapPoints.collapsed,
@@ -294,7 +295,7 @@ const HotspotsView = ({
   )
 
   const handleItemSelected = useCallback(
-    (item?: GlobalOpt | Hotspot | Validator) => {
+    async (item?: GlobalOpt | Hotspot | Validator) => {
       if (!item) {
         setGlobalOption('home')
         return
@@ -302,7 +303,7 @@ const HotspotsView = ({
       if (isGlobalOption(item)) {
         setGlobalOption(item)
       } else if (isHotspot(item)) {
-        handlePresentHotspot(item)
+        await handlePresentHotspot(item)
       } else {
         handlePresentValidator(item)
       }
@@ -310,7 +311,7 @@ const HotspotsView = ({
     [handlePresentHotspot, handlePresentValidator, setGlobalOption],
   )
 
-  useEffect(() => {
+  useAsync(async () => {
     if (!params?.address) return
 
     // Fetch the hotspot for deep links
@@ -320,10 +321,10 @@ const HotspotsView = ({
       }
       if (!hotspot.payload?.hotspot) return
 
-      handlePresentHotspot(hotspot.payload.hotspot)
+      await handlePresentHotspot(hotspot.payload.hotspot)
     }
 
-    fetchHotspot()
+    await fetchHotspot()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params])
 
@@ -391,7 +392,10 @@ const HotspotsView = ({
           onSelectValidator={handlePresentValidator}
           visible={shortcutItem === 'search'}
         />
-        <ValidatorExplorer visible={shortcutItem === 'validators'} />
+        <ValidatorExplorer
+          visible={shortcutItem === 'validators'}
+          onSelectValidator={handlePresentValidator}
+        />
         <HotspotDetails
           visible={isHotspot(shortcutItem)}
           hotspot={selectedHotspot}
