@@ -6,7 +6,7 @@ import FollowButton from '../../../components/FollowButton'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Settings from '../../../assets/images/settings.svg'
 import { useColors } from '../../../theme/themeHooks'
-import ShareSheet from '../../../components/ShareSheet'
+import ShareHotspot from '../../../components/ShareHotspot'
 
 type Props = {
   hotspot?: Hotspot | Witness
@@ -49,7 +49,7 @@ const HotspotSheetHandle = ({ hotspot, toggleSettings }: Props) => {
           >
             <Settings width={22} height={22} color={colors.grayPurple} />
           </TouchableOpacityBox>
-          <ShareSheet item={hotspot} />
+          <ShareHotspot hotspot={hotspot} />
         </Box>
       )}
     </Box>

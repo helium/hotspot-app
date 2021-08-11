@@ -1,7 +1,7 @@
 import React, { memo, useMemo, useCallback, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import { Hotspot, Validator } from '@helium/http'
+import { Hotspot } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { FlatList } from 'react-native-gesture-handler'
 import { Keyboard } from 'react-native'
@@ -21,27 +21,19 @@ import HotspotSearchEmpty from './HotspotSearchEmpty'
 import SegmentedControl from '../../../components/SegmentedControl'
 import CardHandle from '../../../components/CardHandle'
 import usePrevious from '../../../utils/usePrevious'
-import { isHotspot } from '../../../utils/hotspotUtils'
-import { isValidator } from '../../../utils/validatorUtils'
 
 const ItemSeparatorComponent = () => <Box height={1} backgroundColor="white" />
 
 type Props = {
   onSelectHotspot: (hotspot: Hotspot) => void
-  onSelectValidator: (validator: Validator) => void
   onSelectPlace: (place: PlacePrediction) => void
   visible: boolean
 }
-const HotspotSearch = ({
-  onSelectHotspot,
-  onSelectValidator,
-  onSelectPlace,
-  visible,
-}: Props) => {
+const HotspotSearch = ({ onSelectHotspot, onSelectPlace, visible }: Props) => {
   const listRef = useRef<BottomSheet>(null)
   const dispatch = useAppDispatch()
   const { t } = useTranslation()
-  const { results: listData, filter, searchTerm } = useSelector(
+  const { hotspots, locations, filter, searchTerm } = useSelector(
     (state: RootState) => state.hotspotSearch,
   )
   const prevSearchTerm = usePrevious(searchTerm)
@@ -79,6 +71,11 @@ const HotspotSearch = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible])
 
+  const listData = useMemo(() => [...hotspots, ...locations], [
+    hotspots,
+    locations,
+  ])
+
   const keyExtractor = useCallback((item: PlacePrediction | Hotspot) => {
     if ('placeId' in item) {
       return item.placeId
@@ -87,21 +84,19 @@ const HotspotSearch = ({
   }, [])
 
   const onPressItem = useCallback(
-    (item: PlacePrediction | Hotspot | Validator) => () => {
-      if (isHotspot(item)) {
+    (item: PlacePrediction | Hotspot) => () => {
+      if ('address' in item) {
         onSelectHotspot(item)
-      } else if (isValidator(item)) {
-        onSelectValidator(item)
-      } else if ('placeId' in item) {
+      } else {
         onSelectPlace(item)
       }
       dispatch(hotspotSearchSlice.actions.addRecentSearchTerm(searchTerm))
       Keyboard.dismiss()
     },
-    [dispatch, searchTerm, onSelectHotspot, onSelectValidator, onSelectPlace],
+    [dispatch, searchTerm, onSelectHotspot, onSelectPlace],
   )
 
-  type ListItem = { item: PlacePrediction | Hotspot | Validator; index: number }
+  type ListItem = { item: PlacePrediction | Hotspot; index: number }
   const renderItem = useCallback(
     ({ item, index }: ListItem) => {
       const isFirst = index === 0
@@ -111,15 +106,13 @@ const HotspotSearch = ({
       let subtitle = ''
       if ('placeId' in item) {
         title = item.description
-      } else {
+      } else if (item.name) {
         title = animalName(item.address)
-        if ('geocode' in item) {
-          if (item.geocode?.longCity && item.geocode.shortState) {
-            const { longCity, shortState } = item.geocode
-            subtitle = `${longCity}${longCity ? ', ' : ''}${shortState}`
-          } else {
-            subtitle = t('hotspot_details.no_location_title')
-          }
+        if (item.geocode?.longCity && item.geocode.shortState) {
+          const { longCity, shortState } = item.geocode
+          subtitle = `${longCity}${longCity ? ', ' : ''}${shortState}`
+        } else {
+          subtitle = t('hotspot_details.no_location_title')
         }
       }
       return (
@@ -171,7 +164,12 @@ const HotspotSearch = ({
       animateOnMount={false}
     >
       {visible && (
-        <Box backgroundColor="white" flex={1} padding="l">
+        <Box
+          backgroundColor="white"
+          flex={1}
+          paddingHorizontal="l"
+          paddingVertical="l"
+        >
           <SegmentedControl
             values={filterNames}
             selectedIndex={selectedFilterIndex}

@@ -26,6 +26,3 @@ export const HotspotActivityFilters = {
 } as Record<HotspotActivityType, string[]>
 
 export type HotspotSyncStatus = 'full' | 'partial'
-
-export const GLOBAL_OPTS = ['validators', 'explore', 'search', 'home'] as const
-export type GlobalOpt = typeof GLOBAL_OPTS[number]

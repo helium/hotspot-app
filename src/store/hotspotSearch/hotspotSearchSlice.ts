@@ -1,25 +1,27 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { Hotspot, Validator } from '@helium/http'
+import { Hotspot } from '@helium/http'
 import AsyncStorage from '@react-native-community/async-storage'
 import { uniqBy } from 'lodash'
 import Fuse from 'fuse.js'
 import { HotspotsSliceState } from '../hotspots/hotspotsSlice'
-import { searchHotspots, searchValidators } from '../../utils/appDataClient'
+import { searchHotspots } from '../../utils/appDataClient'
 import { getCities, PlacePrediction } from '../../utils/googlePlaces'
 
-export const HotspotSearchFilterKeys = ['all_hotspots', 'my_hotspots'] as const
+export const HotspotSearchFilterKeys = ['my_hotspots', 'all_hotspots'] as const
 export type HotspotSearchFilterType = typeof HotspotSearchFilterKeys[number]
 const RECENT_SEARCHES = 'recentHotspotSearches'
 
 type HotspotSearchSliceState = {
-  results: (Hotspot | Validator | PlacePrediction)[]
+  hotspots: Hotspot[]
+  locations: PlacePrediction[]
   filter: HotspotSearchFilterType
   searchTerm: string
   recentSearches: string[]
 }
 const initialState: HotspotSearchSliceState = {
-  results: [],
-  filter: 'all_hotspots',
+  hotspots: [],
+  locations: [],
+  filter: 'my_hotspots',
   searchTerm: '',
   recentSearches: [],
 }
@@ -36,7 +38,7 @@ export const restoreRecentSearches = createAsyncThunk<string[]>(
 )
 
 export const fetchData = createAsyncThunk<
-  (Hotspot | Validator | PlacePrediction)[],
+  { hotspots: Hotspot[]; locations: PlacePrediction[] },
   { filter: HotspotSearchFilterType; searchTerm: string }
 >('hotspotSearch/fetchData', async ({ filter, searchTerm }, { getState }) => {
   if (filter === 'my_hotspots') {
@@ -45,7 +47,7 @@ export const fetchData = createAsyncThunk<
     } = getState() as { hotspots: HotspotsSliceState }
     const unique = uniqBy([...hotspots, ...followedHotspots], (h) => h.address)
     if (!searchTerm) {
-      return unique
+      return { hotspots: unique, locations: [] }
     }
 
     const results = new Fuse(unique, {
@@ -55,29 +57,18 @@ export const fetchData = createAsyncThunk<
       .search(searchTerm)
       .map(({ item }) => item)
 
-    return results
+    return { hotspots: results, locations: [] }
   }
 
   // Fetch cities from google
   const locations = await getCities(searchTerm)
 
+  // Fetch hotspots from helium js
   let hotspots: Hotspot[] = []
-  let validators: Validator[] = []
   if (searchTerm) {
-    // Fetch hotspots from helium js
     hotspots = await searchHotspots(searchTerm)
-    // Fetch hotspots from helium js
-    validators = await searchValidators(searchTerm)
   }
-  const sortedResults = new Fuse([...locations, ...hotspots, ...validators], {
-    keys: ['name', 'description'],
-    shouldSort: true,
-    threshold: 1.0, // We're not filtering anything out - just sorting by match score
-  })
-    .search(searchTerm)
-    .map(({ item }) => item)
-
-  return sortedResults
+  return { hotspots, locations }
 })
 
 const hotspotSearchSlice = createSlice({
@@ -108,7 +99,8 @@ const hotspotSearchSlice = createSlice({
       state.recentSearches = action.payload
     })
     builder.addCase(fetchData.fulfilled, (state, action) => {
-      state.results = action.payload
+      state.hotspots = action.payload.hotspots
+      state.locations = action.payload.locations
     })
   },
 })

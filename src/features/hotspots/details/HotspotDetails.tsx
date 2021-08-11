@@ -20,8 +20,10 @@ import HotspotDetailChart from './HotspotDetailChart'
 import { RootState } from '../../../store/rootReducer'
 import { getRewardChartData } from './RewardsHelper'
 import { useAppDispatch } from '../../../store/store'
-import { fetchHotspotData } from '../../../store/hotspotDetails/hotspotDetailsSlice'
-import { fetchChartData } from '../../../store/rewards/rewardsSlice'
+import {
+  fetchHotspotChartData,
+  fetchHotspotData,
+} from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import HexBadge from './HexBadge'
 import HotspotChecklist from '../checklist/HotspotChecklist'
 import animateTransition from '../../../utils/animateTransition'
@@ -75,8 +77,10 @@ const HotspotDetails = ({
   const colors = useColors()
   const spacing = useSpacing()
   const address = propsHotspot?.address || ''
-  const hotspotChartData =
-    useSelector((state: RootState) => state.rewards.chartData[address]) || {}
+  const hotspotChatData =
+    useSelector(
+      (state: RootState) => state.hotspotDetails.chartData[address],
+    ) || {}
   const hotspotDetailsData =
     useSelector(
       (state: RootState) => state.hotspotDetails.hotspotData[address],
@@ -93,7 +97,7 @@ const HotspotDetails = ({
   const prevHotspotAddress = usePrevious(propsHotspot?.address)
 
   const { rewards, rewardSum, rewardsChange, loading = true } =
-    hotspotChartData[timelineValue] || {}
+    hotspotChatData[timelineValue] || {}
   const { hotspot: hotspotDetailsHotspot, witnesses } = hotspotDetailsData || {}
   const [showStatusBanner, toggleShowStatusBanner] = useToggle(false)
 
@@ -148,10 +152,9 @@ const HotspotDetails = ({
       return
 
     dispatch(
-      fetchChartData({
+      fetchHotspotChartData({
         address,
         numDays: timelineValue,
-        resource: 'hotspots',
       }),
     )
   }, [address, dispatch, hotspot, listIndex, prevListIndex, timelineValue])
@@ -337,10 +340,9 @@ const HotspotDetails = ({
       setTimelineIndex(index)
 
       dispatch(
-        fetchChartData({
+        fetchHotspotChartData({
           address,
           numDays: value,
-          resource: 'hotspots',
         }),
       )
     },

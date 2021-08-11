@@ -68,7 +68,7 @@ const HeliumSelectItem = ({
       {!!Icon && selected && <Icon height={16} width={16} color="white" />}
       <Text
         variant={variant === 'flat' ? 'bold' : 'medium'}
-        fontSize={variant === 'flat' ? 15 : 16}
+        fontSize={variant === 'flat' ? 13 : 16}
         color={textColor}
         marginLeft={Icon ? 'xs' : 'none'}
       >

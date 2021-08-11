@@ -18,7 +18,7 @@ const StakeValidator = ({ item }: Props) => {
   return (
     <>
       <Box flexDirection="row" marginBottom="s">
-        <Cloud color="#A667F6" />
+        <Cloud />
         <Text variant="medium" fontSize={15} color="black" marginLeft="s">
           {animalName(stakeValidator.address)}
         </Text>

@@ -142,14 +142,7 @@ const HotspotsList = ({
   const keyExtractor = useCallback((item: Hotspot) => item.address, [])
 
   return (
-    <Box
-      backgroundColor="white"
-      top={visible ? 0 : wh}
-      left={0}
-      right={0}
-      bottom={visible ? 0 : wh}
-      position="absolute"
-    >
+    <Box backgroundColor="white" flex={1} top={visible ? 0 : wh}>
       {visible && <FocusAwareStatusBar barStyle="dark-content" />}
       <Box
         flexDirection="row"
