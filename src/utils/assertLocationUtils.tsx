@@ -45,7 +45,7 @@ export const assertLocationTxn = async ({
   const newNonce = speculativeNonce + 1
   let isFree = false
   if (!dataOnly) {
-    isFree = await hasFreeLocationAssert(speculativeNonce, onboardingRecord)
+    isFree = hasFreeLocationAssert(speculativeNonce, onboardingRecord)
   }
   const owner = await getAddress()
   const payer = isFree ? onboardingRecord?.maker?.address : owner
@@ -104,7 +104,7 @@ export const loadLocationFeeData = async ({
 }) => {
   let isFree = false
   if (!dataOnly) {
-    isFree = await hasFreeLocationAssert(nonce, onboardingRecord)
+    isFree = hasFreeLocationAssert(nonce, onboardingRecord)
   }
   const owner = await getAddress()
   const payer = isFree ? onboardingRecord?.maker?.address : owner
