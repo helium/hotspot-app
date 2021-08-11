@@ -22,3 +22,6 @@ export const isRelay = (listenAddrs: string[] | undefined) => {
 
 export const isDataOnly = (hotspot?: Hotspot | Witness) =>
   hotspot?.mode === 'dataonly'
+
+export const HELIUM_OLD_MAKER_ADDRESS =
+  '14fzfjFcHpDR1rTH8BNPvSi5dKBbgxaDnmsVPbCjuq9ENjpZbxh'

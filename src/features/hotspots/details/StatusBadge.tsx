@@ -28,9 +28,6 @@ const StatusBadge = ({
       return t('hotspot_details.status_data_only')
     }
     if (online === 'online') {
-      if (syncStatus === undefined) {
-        return ''
-      }
       if (syncStatus === 'full') {
         return t('hotspot_details.status_online')
       }
