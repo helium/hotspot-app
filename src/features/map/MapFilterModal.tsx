@@ -42,15 +42,20 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
     onChangeMapFilter(selectedFilter)
   }
 
+  const handlePress = useCallback(
+    (filter: MapFilters) => () => {
+      animateTransition('MapFilterModal.filterChange')
+      setSelectedFilter(filter)
+    },
+    [],
+  )
+
   const YourHotspots = useCallback(() => {
     const selected = selectedFilter === MapFilters.owned
     return (
       <TouchableOpacityBox
         disabled={selected}
-        onPress={() => {
-          animateTransition('MapFilterModal.hotspotsFilter')
-          setSelectedFilter(MapFilters.owned)
-        }}
+        onPress={handlePress(MapFilters.owned)}
         backgroundColor={selected ? 'white' : 'whiteTransparent75'}
         borderRadius="m"
         padding="m"
@@ -100,17 +105,14 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
         </Box>
       </TouchableOpacityBox>
     )
-  }, [selectedFilter, t])
+  }, [handlePress, selectedFilter, t])
 
   const Witnesses = useCallback(() => {
     const selected = selectedFilter === MapFilters.witness
     return (
       <TouchableOpacityBox
         disabled={selected}
-        onPress={() => {
-          animateTransition('MapFilterModal.witnessFilter')
-          setSelectedFilter(MapFilters.witness)
-        }}
+        onPress={handlePress(MapFilters.witness)}
         backgroundColor={selected ? 'white' : 'whiteTransparent75'}
         borderRadius="m"
         padding="m"
@@ -175,17 +177,14 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
         </Box>
       </TouchableOpacityBox>
     )
-  }, [selectedFilter, t])
+  }, [handlePress, selectedFilter, t])
 
   const Rewards = useCallback(() => {
     const selected = selectedFilter === MapFilters.reward
     return (
       <TouchableOpacityBox
         disabled={selected}
-        onPress={() => {
-          animateTransition('MapFilterModal.rewardsFilter')
-          setSelectedFilter(MapFilters.reward)
-        }}
+        onPress={handlePress(MapFilters.reward)}
         backgroundColor={selected ? 'white' : 'whiteTransparent75'}
         borderRadius="m"
         padding="m"
@@ -216,7 +215,7 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
         </Box>
       </TouchableOpacityBox>
     )
-  }, [selectedFilter, t])
+  }, [handlePress, selectedFilter, t])
 
   const buttonColor = useMemo(() => {
     switch (selectedFilter) {
