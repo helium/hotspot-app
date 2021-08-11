@@ -8,7 +8,7 @@ import React, {
 } from 'react'
 import Mask from '@assets/images/shortcutMask.svg'
 import { FlatList } from 'react-native-gesture-handler'
-import { Hotspot, Witness } from '@helium/http'
+import { Hotspot, Validator, Witness } from '@helium/http'
 import { uniqBy, upperFirst } from 'lodash'
 import {
   LayoutChangeEvent,
@@ -18,6 +18,8 @@ import {
 import Globe from '@assets/images/globeShortcut.svg'
 import Search from '@assets/images/searchShortcut.svg'
 import Home from '@assets/images/homeShortcut.svg'
+import HotspotIcon from '@assets/images/hotspotPillIcon.svg'
+import ValidatorIcon from '@assets/images/validatorPillIcon.svg'
 import Follow from '@assets/images/follow.svg'
 import animalName from 'angry-purple-tiger'
 import { wp } from '../../../utils/layout'
@@ -26,40 +28,140 @@ import { useColors, useSpacing } from '../../../theme/themeHooks'
 import Box from '../../../components/Box'
 import usePrevious from '../../../utils/usePrevious'
 import TouchableOpacityBox from '../../../components/BSTouchableOpacityBox'
+import { GlobalOpt, GLOBAL_OPTS } from './hotspotTypes'
+import { isGlobalOption } from '../../../utils/hotspotUtils'
+import { isValidator } from '../../../utils/validatorUtils'
+import animateTransition from '../../../utils/animateTransition'
+import sleep from '../../../utils/sleep'
+import { Colors } from '../../../theme/theme'
+
+const validatorColors = {
+  text: 'purpleDark' as Colors,
+  background: 'purpleBright' as Colors,
+  icon: 'purpleDark' as Colors,
+}
+const hotspotColors = {
+  text: 'purpleDark' as Colors,
+  background: 'blueBright' as Colors,
+  icon: 'purpleDark' as Colors,
+}
+
+const itemColors = {
+  validator: {
+    owned: {
+      ...validatorColors,
+    },
+    followedAndOwned: {
+      ...validatorColors,
+      text: 'purpleDark' as Colors,
+      icon: 'purpleBright' as Colors,
+    },
+    followedAndUnowned: {
+      ...validatorColors,
+      background: 'purpleBright30' as Colors,
+      text: 'purpleBright' as Colors,
+    },
+  },
+  hotspot: {
+    owned: {
+      ...hotspotColors,
+    },
+    followedAndOwned: {
+      ...hotspotColors,
+      text: 'purpleDark' as Colors,
+      icon: 'blueBright' as Colors,
+    },
+    followedAndUnowned: {
+      ...hotspotColors,
+      background: 'blueBright30' as Colors,
+      text: 'blueBright' as Colors,
+    },
+  },
+}
 
 export const SHORTCUT_NAV_HEIGHT = 44
 const ITEM_SIZE = 35
 const ITEM_MARGIN = 's'
+const hitSlop = { top: 8, bottom: 8, left: 4, right: 4 }
+type Followed = { followed?: boolean }
+type FollowedHotspot = Hotspot & Followed
+type FollowedValidator = Hotspot & Followed
+type Item = { address: string; owner?: string; name?: string }
+
+const getItemId = (item: GlobalOpt | Item) =>
+  isGlobalOption(item) ? item : item.address
+
+const getAnimalName = <T extends Item>(item: T) => {
+  const pieces = (item.name || animalName(item.address)).split('-')
+  return pieces[pieces.length - 1]
+}
+
+const sortByName = <T extends Item>(items: T[]) =>
+  items.sort((l, r) => (getAnimalName(l) > getAnimalName(r) ? 1 : -1))
+
+const sortItems = <T extends Item>({
+  followed,
+  owned,
+  ownerAddress,
+}: {
+  followed: T[]
+  owned: T[]
+  ownerAddress?: string
+}) => {
+  // sort order
+  // 1. Owned and Followed
+  // 2. Followed
+  // 3. Owned
+
+  type FollowedItem = T & Followed
+  const uniqueItems = uniqBy(
+    [...followed.map((h) => ({ ...h, followed: true })), ...owned],
+    (h) => h.address,
+  ) as FollowedItem[]
+
+  const groupedItems = uniqueItems.reduce(
+    (val, item) => {
+      if (!item.followed) {
+        return { ...val, owned: [...val.owned, item] }
+      }
+      if (item.owner === ownerAddress) {
+        return {
+          ...val,
+          ownedAndFollowed: [...val.ownedAndFollowed, item],
+        }
+      }
+      return { ...val, followed: [...val.followed, item] }
+    },
+    {
+      ownedAndFollowed: [] as FollowedItem[],
+      followed: [] as FollowedItem[],
+      owned: [] as FollowedItem[],
+    } as Record<'ownedAndFollowed' | 'followed' | 'owned', FollowedItem[]>,
+  )
+
+  return [
+    ...sortByName(groupedItems.ownedAndFollowed),
+    ...sortByName(groupedItems.followed),
+    ...sortByName(groupedItems.owned),
+  ]
+}
 
 type Props = {
   ownedHotspots: Hotspot[]
   followedHotspots: Hotspot[]
+  ownedValidators: Validator[]
+  followedValidators: Validator[]
+  initialDataLoaded: boolean
   selectedItem: GlobalOpt | Hotspot | Witness
-  onItemSelected: (item: GlobalOpt | Hotspot) => void
+  onItemSelected: (item: GlobalOpt | Hotspot | Validator) => void
 }
-const GLOBAL_OPTS = ['explore', 'search', 'home'] as const
-export type GlobalOpt = typeof GLOBAL_OPTS[number]
-
-export const IS_GLOBAL_OPT = (
-  item: GlobalOpt | Hotspot | Witness,
-): item is GlobalOpt => typeof item === 'string'
-
-type FollowedHotspot = Hotspot & { followed?: boolean }
-
-const getItemId = (item: GlobalOpt | FollowedHotspot | Witness | Hotspot) =>
-  IS_GLOBAL_OPT(item) ? item : item.address
-
-const getAnimalName = (hotspot: Hotspot) => {
-  const pieces = (hotspot.name || animalName(hotspot.address)).split('-')
-  return pieces[pieces.length - 1]
-}
-
-const sortByName = (hotspots: Hotspot[]) =>
-  hotspots.sort((l, r) => (getAnimalName(l) > getAnimalName(r) ? 1 : -1))
 
 const ShortcutNav = ({
   ownedHotspots,
   followedHotspots,
+  ownedValidators,
+  followedValidators,
+  initialDataLoaded,
   selectedItem: propsItem,
   onItemSelected,
 }: Props) => {
@@ -70,16 +172,11 @@ const ShortcutNav = ({
   const hasFollowHotspotChange = useRef(false)
   const disableMomentumSnap = useRef(false)
   const scrollOffset = useRef(0)
-  const [internalItem, setInternalItem] = useState({ index: 2, id: 'home' }) // start user at home
+  const [internalItem, setInternalItem] = useState({ index: 2, id: 'home' })
   const hasScrolledToHome = useRef(false)
-  const optSize = ITEM_SIZE + spacing[ITEM_MARGIN]
   const prevFollowed = usePrevious(followedHotspots)
-  const [sizes, setSizes] = useState(
-    GLOBAL_OPTS.reduce(
-      (obj, item) => ({ ...obj, [item]: optSize }),
-      {} as Record<string, number | null>,
-    ),
-  )
+  const [sizes, setSizes] = useState({} as Record<string, number | null>)
+  const [data, setData] = useState<(GlobalOpt | Validator | Hotspot)[]>([])
 
   const ownerAddress = useMemo(
     () => (ownedHotspots.length ? ownedHotspots[0].owner : ''),
@@ -87,55 +184,30 @@ const ShortcutNav = ({
   )
 
   const hotspots = useMemo(() => {
-    // sort order
-    // 1. Owned and Followed
-    // 2. Followed
-    // 3. Owned
-
-    const uniqueHotspots = uniqBy(
-      [
-        ...followedHotspots.map((h) => ({ ...h, followed: true })),
-        ...ownedHotspots,
-      ],
-      (h) => h.address,
-    ) as FollowedHotspot[]
-
-    const groupedHotspots = uniqueHotspots.reduce(
-      (val, hotspot) => {
-        if (!hotspot.followed) {
-          return { ...val, owned: [...val.owned, hotspot] }
-        }
-        if (hotspot.owner === ownerAddress) {
-          return {
-            ...val,
-            ownedAndFollowed: [...val.ownedAndFollowed, hotspot],
-          }
-        }
-        return { ...val, followed: [...val.followed, hotspot] }
-      },
-      {
-        ownedAndFollowed: [] as FollowedHotspot[],
-        followed: [] as FollowedHotspot[],
-        owned: [] as FollowedHotspot[],
-      } as Record<'ownedAndFollowed' | 'followed' | 'owned', FollowedHotspot[]>,
-    )
-
-    return [
-      ...sortByName(groupedHotspots.ownedAndFollowed),
-      ...sortByName(groupedHotspots.followed),
-      ...sortByName(groupedHotspots.owned),
-    ]
+    return sortItems({
+      owned: ownedHotspots,
+      followed: followedHotspots,
+      ownerAddress,
+    })
   }, [followedHotspots, ownedHotspots, ownerAddress])
+
+  const validators = useMemo(() => {
+    return sortItems({
+      owned: ownedValidators,
+      followed: followedValidators,
+      ownerAddress,
+    })
+  }, [followedValidators, ownedValidators, ownerAddress])
 
   const isSelected = useCallback(
     (
       item: GlobalOpt | Witness | Hotspot,
       selected: GlobalOpt | Witness | Hotspot,
     ) => {
-      if (IS_GLOBAL_OPT(selected) && IS_GLOBAL_OPT(item)) {
+      if (isGlobalOption(selected) && isGlobalOption(item)) {
         return selected === item
       }
-      if (!IS_GLOBAL_OPT(selected) && !IS_GLOBAL_OPT(item)) {
+      if (!isGlobalOption(selected) && !isGlobalOption(item)) {
         return selected.address === item.address
       }
 
@@ -144,17 +216,18 @@ const ShortcutNav = ({
     [],
   )
 
-  const data = useMemo(() => {
-    return [...GLOBAL_OPTS, ...hotspots]
-  }, [hotspots])
+  useEffect(() => {
+    if (!initialDataLoaded) return
+    const nextData = [...validators, ...GLOBAL_OPTS, ...hotspots]
+    animateTransition('ShortcutNav.dataLoaded', { enabledOnAndroid: false })
+    setData(nextData)
+  }, [data.length, hotspots, initialDataLoaded, validators])
 
   const handleLayout = useCallback(
     (index: number) => (event: LayoutChangeEvent) => {
       const item = data[index]
-      if (IS_GLOBAL_OPT(item)) return
-
       const { width } = event.nativeEvent.layout
-      setSizes((s) => ({ ...s, [item.address]: width }))
+      setSizes((s) => ({ ...s, [getItemId(item)]: width }))
     },
     [data],
   )
@@ -163,33 +236,21 @@ const ShortcutNav = ({
     () =>
       data.reduce((total, item, index) => {
         let offset = 0
-        if (index === 0) return [offset]
-
-        if (index < GLOBAL_OPTS.length) {
-          offset = index * (ITEM_SIZE + spacing[ITEM_MARGIN])
-        } else if (!IS_GLOBAL_OPT(item)) {
-          if (index === GLOBAL_OPTS.length) {
-            offset =
-              2.5 * ITEM_SIZE +
-              3 * spacing[ITEM_MARGIN] +
-              (sizes[item.address] || 0) / 2
-          } else {
-            let sizeKey = ''
-            const prevItem = data[index - 1]
-            if (IS_GLOBAL_OPT(prevItem)) {
-              sizeKey = prevItem
-            } else {
-              sizeKey = prevItem.address
-            }
-            offset =
-              total[index - 1] +
-              (sizes[item.address] || 0) / 2 +
-              (sizes[sizeKey] || 0) / 2 +
-              spacing[ITEM_MARGIN]
-          }
+        if (index === 0) {
+          return [offset]
         }
 
-        return [...total, offset || 0]
+        const prevItem = data[index - 1]
+        const prevSize = sizes[getItemId(prevItem)] || 0
+        const currentSize = sizes[getItemId(item)] || 0
+
+        offset =
+          total[index - 1] +
+          currentSize / 2 +
+          prevSize / 2 +
+          spacing[ITEM_MARGIN]
+
+        return [...total, offset]
       }, [] as number[]),
     [data, sizes, spacing],
   )
@@ -213,12 +274,23 @@ const ShortcutNav = ({
 
   useEffect(() => {
     // Scroll to home when component first mounts
-    if (hasScrolledToHome.current || Object.keys(sizes).length < data.length)
+    if (
+      hasScrolledToHome.current ||
+      Object.keys(sizes).length < data.length ||
+      !initialDataLoaded ||
+      data.length === 0
+    )
       return
 
     hasScrolledToHome.current = true
-    scroll(2, true)
-  }, [data.length, scroll, sizes])
+
+    const scrollWithDelay = async () => {
+      await sleep(300)
+      const scrollIndex = validators.length + 2
+      scroll(scrollIndex, true)
+    }
+    scrollWithDelay()
+  }, [data.length, initialDataLoaded, scroll, sizes, validators.length])
 
   useEffect(() => {
     if (getItemId(propsItem) === internalItem.id) {
@@ -242,7 +314,7 @@ const ShortcutNav = ({
   }, [data, scroll, propsItem, internalItem.id])
 
   const handleItemSelected = useCallback(
-    (item: GlobalOpt | Hotspot) => {
+    (item: GlobalOpt | Hotspot | Validator) => {
       if (getItemId(item) === getItemId(propsItem)) {
         return
       }
@@ -304,64 +376,70 @@ const ShortcutNav = ({
     [data, handleItemSelected, isSelected, scroll],
   )
 
-  const backgroundColor = useCallback(
-    (item: FollowedHotspot, selected: boolean) => {
-      if (item.owner === ownerAddress) {
-        return selected ? 'blueBright' : 'blueBright60'
-      }
-      return selected ? 'purpleBright' : 'purpleBright60'
-    },
-    [ownerAddress],
-  )
-
-  const renderHotspot = useCallback(
-    (item: FollowedHotspot, index: number) => {
+  const renderGateway = useCallback(
+    (item: FollowedHotspot | FollowedValidator, index: number) => {
       if (!item.name) return null
-
-      const selected = isSelected(item, propsItem)
+      const isOwner = item.owner === ownerAddress
+      const followedAndUnowned = item.followed && !isOwner
+      const followedAndOwned = item.followed && isOwner
       const [, , animal] = item.name.split('-')
-
+      const itemIsValidator = isValidator(item)
+      const colorObj = itemColors[itemIsValidator ? 'validator' : 'hotspot']
+      let colorScheme = colorObj.owned
+      if (followedAndOwned) {
+        colorScheme = colorObj.followedAndOwned
+      } else if (followedAndUnowned) {
+        colorScheme = colorObj.followedAndUnowned
+      }
       return (
         <TouchableOpacityBox
-          hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
-          backgroundColor={backgroundColor(item, selected)}
+          hitSlop={hitSlop}
           onLayout={handleLayout(index)}
           onPress={handlePress(item)}
           borderRadius="round"
+          backgroundColor={colorScheme.background}
           marginRight={ITEM_MARGIN}
           height={ITEM_SIZE}
           flexDirection="row"
-          paddingHorizontal="m"
+          paddingRight="m"
+          paddingLeft={item.followed ? 'xs' : 'm'}
           alignItems="center"
         >
-          <Box paddingRight="xs">
+          <Box
+            marginRight="s"
+            borderRadius="round"
+            height={27}
+            width={27}
+            alignItems="center"
+            justifyContent="center"
+            backgroundColor={colorScheme.text}
+          >
             {item.followed && (
-              <Follow height={12} width={12} color={colors.primaryBackground} />
+              <Follow height={12} width={12} color={colors[colorScheme.icon]} />
             )}
           </Box>
+          {itemIsValidator ? (
+            <ValidatorIcon color={colors[colorScheme.text]} />
+          ) : (
+            <HotspotIcon color={colors[colorScheme.text]} />
+          )}
           <Text
             variant="medium"
             fontSize={16}
-            color="purpleDark"
+            color={colorScheme.text}
             maxFontSizeMultiplier={1}
+            marginLeft="s"
           >
             {upperFirst(animal)}
           </Text>
         </TouchableOpacityBox>
       )
     },
-    [
-      backgroundColor,
-      colors.primaryBackground,
-      handleLayout,
-      handlePress,
-      isSelected,
-      propsItem,
-    ],
+    [ownerAddress, handleLayout, handlePress, colors],
   )
 
   const renderGlobalOpt = useCallback(
-    (item: GlobalOpt) => {
+    (item: GlobalOpt, index: number) => {
       const selected = isSelected(item, propsItem)
 
       const getIcon = () => {
@@ -378,12 +456,14 @@ const ShortcutNav = ({
             return <Globe color={color()} />
           case 'search':
             return <Search color={color()} />
+          case 'validators':
+            return <ValidatorIcon height={21} width={21} color={color()} />
         }
       }
       return (
         <TouchableOpacityBox
           alignItems="center"
-          hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+          hitSlop={hitSlop}
           onPress={handlePress(item)}
           justifyContent="center"
           borderRadius="round"
@@ -391,42 +471,49 @@ const ShortcutNav = ({
           height={ITEM_SIZE}
           marginRight={ITEM_MARGIN}
           backgroundColor={selected ? 'white' : 'purpleDarkMuted'}
+          onLayout={handleLayout(index)}
         >
           {getIcon()}
         </TouchableOpacityBox>
       )
     },
-    [colors, handlePress, isSelected, propsItem],
+    [colors, handleLayout, handlePress, isSelected, propsItem],
   )
 
   type ListItem = { item: Hotspot | GlobalOpt; index: number }
   const renderItem = useCallback(
     ({ item, index }: ListItem) => {
-      if (IS_GLOBAL_OPT(item)) {
-        return renderGlobalOpt(item as GlobalOpt)
+      if (isGlobalOption(item)) {
+        return renderGlobalOpt(item as GlobalOpt, index)
       }
-      return renderHotspot(item, index)
+      return renderGateway(item, index)
     },
-    [renderGlobalOpt, renderHotspot],
+    [renderGlobalOpt, renderGateway],
   )
 
   const keyExtractor = useCallback((item: GlobalOpt | Hotspot) => {
-    if (IS_GLOBAL_OPT(item)) {
+    if (isGlobalOption(item)) {
       return item
     }
     return item.address
   }, [])
 
   const contentContainerStyle = useMemo(() => {
-    const paddingStart = wp(50) - ITEM_SIZE / 2
+    const halfWidth = wp(50)
+    let firstItemWidth = ITEM_SIZE
+    if (data.length && isValidator(data[0])) {
+      firstItemWidth = sizes[data[0].address] || 0
+    }
+    const paddingStart = halfWidth - firstItemWidth / 2
+
     const lastItem = data[data.length - 1]
     let lastItemWidth = ITEM_SIZE
-    if (!IS_GLOBAL_OPT(lastItem) && sizes[lastItem.address]) {
+    if (lastItem && !isGlobalOption(lastItem) && sizes[lastItem.address]) {
       lastItemWidth = sizes[lastItem.address] || 0
     }
-    const paddingEnd = wp(50) - lastItemWidth / 2
+    const paddingEnd = halfWidth - lastItemWidth / 2 - spacing.s
     return { paddingStart, paddingEnd }
-  }, [data, sizes])
+  }, [data, sizes, spacing.s])
 
   const handleScroll = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {

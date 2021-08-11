@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react'
-import { Hotspot, Witness } from '@helium/http'
+import { Hotspot, Validator, Witness } from '@helium/http'
 import { useTranslation } from 'react-i18next'
 import { startCase } from 'lodash'
 import CopyIco from '@assets/images/copy.svg'
@@ -14,12 +14,17 @@ import { TouchableOpacityBoxProps } from './TouchableOpacityBox'
 import useHaptic from '../utils/useHaptic'
 import { EXPLORER_BASE_URL } from '../utils/config'
 import { createAppLink } from '../providers/AppLinkProvider'
+import { isValidator } from '../utils/validatorUtils'
 
-type Props = { hotspot: Hotspot | Witness }
-const ShareHotspot = ({ hotspot }: Props) => {
+type Props = { item?: Hotspot | Witness | Validator }
+const ShareSheet = ({ item }: Props) => {
   const { t } = useTranslation()
   const { triggerNotification } = useHaptic()
-  const explorerUrl = `${EXPLORER_BASE_URL}/hotspots/${hotspot.address}`
+  const explorerUrl = useMemo(() => {
+    if (!item) return ''
+    const target = isValidator(item) ? 'validators' : 'hotspots'
+    return `${EXPLORER_BASE_URL}/${target}/${item.address}`
+  }, [item])
 
   const buttonProps = useMemo(
     () =>
@@ -43,17 +48,31 @@ const ShareHotspot = ({ hotspot }: Props) => {
         label: t('hotspot_details.options.share'),
         value: 'share',
         Icon: ShareHotspotIco,
-        action: () =>
-          Share.share({ message: createAppLink('hotspot', hotspot.address) }),
+        action: () => {
+          if (!item?.address) return
+
+          Share.share({
+            message: createAppLink('hotspot', item.address),
+          })
+          // TODO: Implement validator deep link
+          // Share.share({
+          //   message: createAppLink(
+          //     isValidator(item) ? 'validator' : 'hotspot',
+          //     item.address,
+          //   ),
+          // })
+        },
       },
       {
         label: `${t('generic.copy')} ${t('generic.address')}`,
         value: 'copy',
         Icon: CopyIco,
         action: () => {
-          Clipboard.setString(hotspot.address)
+          if (!item?.address) return
+
+          Clipboard.setString(item.address)
           triggerNotification('success')
-          const { address } = hotspot
+          const { address } = item
           const truncatedAddress = [
             address.slice(0, 8),
             address.slice(-8),
@@ -64,18 +83,18 @@ const ShareHotspot = ({ hotspot }: Props) => {
         },
       },
     ] as HeliumActionSheetItemType[]
-  }, [explorerUrl, hotspot, t, triggerNotification])
+  }, [explorerUrl, item, t, triggerNotification])
 
   return (
     <HeliumActionSheet
       buttonProps={buttonProps}
       iconVariant="kabob"
       iconColor="grayPurple"
-      title={startCase(hotspot.name)}
+      title={startCase(item?.name)}
       data={actionSheetData}
       closeOnSelect={false}
     />
   )
 }
 
-export default memo(ShareHotspot)
+export default memo(ShareSheet)

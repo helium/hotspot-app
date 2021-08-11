@@ -61,6 +61,37 @@ export const getValidators = async () => {
   return newValidatorsList.takeJSON(MAX)
 }
 
+export const getValidatorRewards = async (
+  address: string,
+  numDaysBack: number,
+  date: Date = new Date(),
+) => {
+  Logger.breadcrumb('getValidatorRewards', breadcrumbOpts)
+  const endDate = new Date(date)
+  endDate.setDate(date.getDate() - numDaysBack)
+  const list = await client
+    .validator(address)
+    .rewards.list({ minTime: endDate, maxTime: date })
+  return list.take(MAX)
+}
+
+export const searchValidators = async (searchTerm: string) => {
+  Logger.breadcrumb('searchValidators', breadcrumbOpts)
+  const newValidatorList = await client.validators.search(searchTerm)
+  return newValidatorList.takeJSON(MAX)
+}
+
+export const getElectedValidators = async () => {
+  Logger.breadcrumb('getElectedValidators ', breadcrumbOpts)
+  const electedValidatorList = await client.validators.elected()
+  return electedValidatorList.takeJSON(MAX)
+}
+
+export const getElections = async () => {
+  Logger.breadcrumb('getElections ', breadcrumbOpts)
+  return client.elections.list()
+}
+
 export const getHotspotsForHexId = async (hexId: string) => {
   const hotspotsList = await client.hotspots.hex(hexId)
   return hotspotsList.takeJSON(MAX)
