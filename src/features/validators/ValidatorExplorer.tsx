@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react'
+import React, { memo, useCallback, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { ActivityIndicator, FlatList, RefreshControl } from 'react-native'
 import animalName from 'angry-purple-tiger'
@@ -19,6 +19,8 @@ import PenaltyIcon from '../../assets/images/penalty.svg'
 import CarotRight from '../../assets/images/carot-right.svg'
 import RewardIcon from '../../assets/images/heliumReward.svg'
 import { useColors, useSpacing } from '../../theme/themeHooks'
+import HeliumSelect from '../../components/HeliumSelect'
+import { HeliumSelectItemType } from '../../components/HeliumSelectItem'
 
 type Props = {
   visible: boolean
@@ -60,6 +62,7 @@ const ValidatorExplorer = ({ visible }: Props) => {
           {elections?.data
             ?.map((election) => (
               <Box
+                key={election.hash}
                 borderRadius="round"
                 backgroundColor={
                   election.members.includes(address)
@@ -161,11 +164,35 @@ const ValidatorExplorer = ({ visible }: Props) => {
     [ElectedValidatorItem],
   )
 
+  const onMenuChanged = useCallback(() => {}, [])
+
+  const menuData = useMemo(
+    () =>
+      [
+        {
+          label: 'Consensus Group',
+          value: 'consensus',
+          color: 'purpleBright',
+        },
+      ] as HeliumSelectItemType[],
+    [],
+  )
+
   if (!visible) return null
 
   return (
     <Box flex={1} backgroundColor="white" style={{ paddingTop: top }}>
-      <Text>Validators</Text>
+      <Box height={65} marginBottom="s">
+        <HeliumSelect
+          data={menuData}
+          selectedValue="consensus"
+          variant="bubble"
+          onValueChanged={onMenuChanged}
+          showGradient={false}
+          scrollEnabled={false}
+          margin="m"
+        />
+      </Box>
       <FlatList
         contentContainerStyle={{ paddingBottom: 20 }}
         refreshControl={
