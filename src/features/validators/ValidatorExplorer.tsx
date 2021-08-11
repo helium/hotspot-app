@@ -1,19 +1,24 @@
-import React, { memo, useCallback, useEffect } from 'react'
+import React, { memo, useCallback } from 'react'
 import { useSelector } from 'react-redux'
-import { FlatList, RefreshControl } from 'react-native'
+import { ActivityIndicator, FlatList, RefreshControl } from 'react-native'
 import animalName from 'angry-purple-tiger'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useAsync } from 'react-async-hook'
+import { Validator } from '@helium/http'
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import Text from '../../components/Text'
 import {
   fetchElectedValidators,
   fetchElections,
+  fetchValidatorRewards,
 } from '../../store/validators/validatorsSlice'
 import { useAppDispatch } from '../../store/store'
 import { RootState } from '../../store/rootReducer'
 import Box from '../../components/Box'
 import PenaltyIcon from '../../assets/images/penalty.svg'
 import CarotRight from '../../assets/images/carot-right.svg'
-import { useColors } from '../../theme/themeHooks'
+import RewardIcon from '../../assets/images/heliumReward.svg'
+import { useColors, useSpacing } from '../../theme/themeHooks'
 
 type Props = {
   visible: boolean
@@ -22,6 +27,7 @@ type Props = {
 const ValidatorExplorer = ({ visible }: Props) => {
   const dispatch = useAppDispatch()
   const colors = useColors()
+  const spacing = useSpacing()
   const { top } = useSafeAreaInsets()
   const electedValidators = useSelector(
     (state: RootState) => state.validators.electedValidators,
@@ -29,14 +35,22 @@ const ValidatorExplorer = ({ visible }: Props) => {
   const elections = useSelector(
     (state: RootState) => state.validators.elections,
   )
+  const rewards = useSelector((state: RootState) => state.validators.rewards)
+  const rewardsLoading = useSelector(
+    (state: RootState) => state.validators.loadingRewards,
+  )
 
-  const loadElectedValidators = useCallback(() => {
-    dispatch(fetchElectedValidators())
-    dispatch(fetchElections())
+  const loadElectedValidators = useCallback(async () => {
+    const response = await dispatch(fetchElectedValidators())
+    const fetchedValidators = response.payload as Validator[]
+    await dispatch(
+      fetchValidatorRewards(fetchedValidators.map((v) => v.address)),
+    )
+    await dispatch(fetchElections())
   }, [dispatch])
 
-  useEffect(() => {
-    loadElectedValidators()
+  useAsync(async () => {
+    await loadElectedValidators()
   }, [loadElectedValidators])
 
   const ConsensusHistory = useCallback(
@@ -66,6 +80,7 @@ const ValidatorExplorer = ({ visible }: Props) => {
 
   const ElectedValidatorItem = useCallback(
     ({ validator }) => {
+      const earnings = rewards[validator.address]
       return (
         <Box
           padding="m"
@@ -88,12 +103,35 @@ const ValidatorExplorer = ({ visible }: Props) => {
               {animalName(validator.address)}
             </Text>
             <Box flexDirection="row" alignItems="center" paddingTop="s">
+              <RewardIcon color={colors.purpleMain} />
+              {rewardsLoading || !earnings ? (
+                <SkeletonPlaceholder>
+                  <SkeletonPlaceholder.Item
+                    height={12}
+                    width={50}
+                    borderRadius={spacing.m}
+                    marginRight={spacing.m}
+                    marginLeft={spacing.xs}
+                  />
+                </SkeletonPlaceholder>
+              ) : (
+                <Text
+                  color="grayText"
+                  variant="regular"
+                  fontSize={12}
+                  marginLeft="xs"
+                  marginRight="m"
+                >
+                  {`+${earnings?.toString(2)}`}
+                </Text>
+              )}
               <PenaltyIcon />
               <Text
                 color="grayText"
                 variant="regular"
                 fontSize={12}
                 marginLeft="xs"
+                marginRight="m"
               >
                 {validator.penalty?.toFixed(2)}
               </Text>
@@ -106,7 +144,14 @@ const ValidatorExplorer = ({ visible }: Props) => {
         </Box>
       )
     },
-    [ConsensusHistory],
+    [
+      ConsensusHistory,
+      colors.purpleMain,
+      rewards,
+      rewardsLoading,
+      spacing.m,
+      spacing.xs,
+    ],
   )
 
   const renderElected = useCallback(
@@ -131,6 +176,7 @@ const ValidatorExplorer = ({ visible }: Props) => {
           />
         }
         refreshing={electedValidators.loading}
+        ListEmptyComponent={<ActivityIndicator color="gray" />}
         data={electedValidators.data}
         renderItem={renderElected}
         keyExtractor={(item) => item.address}

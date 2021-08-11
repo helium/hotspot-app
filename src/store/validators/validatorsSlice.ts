@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { AnyTransaction, Election, Validator } from '@helium/http'
+import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
 import {
   getElectedValidators,
   getElections,
@@ -12,6 +13,9 @@ import {
   hasValidCache,
 } from '../../utils/cacheUtils'
 import { deleteWallet, getWallet, postWallet } from '../../utils/walletClient'
+import { WalletReward } from '../rewards/rewardsSlice'
+
+type Rewards = Record<string, Balance<NetworkTokens>>
 
 export type WalletValidator = Validator & {
   geocode: {
@@ -45,6 +49,8 @@ export type ValidatorsSliceState = {
   myValidatorsLoaded: boolean
   followedValidatorsLoaded: boolean
   transactions: Record<string, AnyTransaction[]>
+  rewards: Rewards
+  loadingRewards: boolean
 }
 
 const initialState: ValidatorsSliceState = {
@@ -57,6 +63,8 @@ const initialState: ValidatorsSliceState = {
   followedValidators: { lastFetchedTimestamp: 0, loading: false, data: [] },
   followedValidatorsObj: {},
   transactions: {},
+  rewards: {},
+  loadingRewards: false,
 }
 
 export const fetchMyValidators = createAsyncThunk(
@@ -160,6 +168,19 @@ export const fetchActivity = createAsyncThunk<AnyTransaction[], string>(
   async (validatorAddress) => getValidatorActivityList(validatorAddress),
 )
 
+export const fetchValidatorRewards = createAsyncThunk<WalletReward[], string[]>(
+  'validators/fetchValidatorRewards',
+  async (addresses) => {
+    if (addresses.length === 0) {
+      return []
+    }
+    return getWallet('validators/rewards', {
+      addresses: addresses.join(','),
+      dayRange: 30,
+    })
+  },
+)
+
 const validatorsToObj = (validators: Validator[]) =>
   validators.reduce((obj, validator) => {
     return {
@@ -215,6 +236,21 @@ const validatorsSlice = createSlice({
     })
     builder.addCase(fetchElectedValidators.fulfilled, (state, action) => {
       state.electedValidators = handleCacheFulfilled({ data: action.payload })
+    })
+    builder.addCase(fetchValidatorRewards.rejected, (state, _action) => {
+      state.loadingRewards = false
+    })
+    builder.addCase(fetchValidatorRewards.pending, (state, _action) => {
+      state.loadingRewards = true
+    })
+    builder.addCase(fetchValidatorRewards.fulfilled, (state, action) => {
+      action.payload.forEach((r) => {
+        state.rewards[r.gateway] = Balance.fromFloat(
+          r.total,
+          CurrencyType.networkToken,
+        )
+      })
+      state.loadingRewards = false
     })
     builder.addCase(fetchElections.fulfilled, (state, action) => {
       state.elections = handleCacheFulfilled({ data: action.payload })
