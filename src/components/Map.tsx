@@ -101,18 +101,19 @@ const Map = ({
   }, [onMapMoved])
 
   const centerUserLocation = useCallback(() => {
+    const hasCoords = userCoords && userCoords.longitude && userCoords.latitude
     camera.current?.setCamera({
-      centerCoordinate: userCoords
+      centerCoordinate: hasCoords
         ? [userCoords.longitude, userCoords.latitude]
         : [-98.35, 15],
-      zoomLevel: userCoords ? 16 : 2,
+      zoomLevel: hasCoords ? 16 : 2,
       animationDuration,
       heading: 0,
     })
   }, [animationDuration, userCoords])
 
   const handleUserLocationUpdate = useCallback(
-    (loc) => {
+    (loc: MapboxGL.Location) => {
       if (!loc?.coords || (userCoords.latitude && userCoords.longitude)) {
         return
       }
@@ -196,7 +197,7 @@ const Map = ({
   const defaultCameraSettings = useMemo(
     () => ({
       zoomLevel,
-      centerCoordinate: mapCenter,
+      centerCoordinate: mapCenter || [-98.35, 15],
     }),
     [mapCenter, zoomLevel],
   )
