@@ -18,6 +18,7 @@ import { getRewardChartData } from '../hotspots/details/RewardsHelper'
 import ValidatorCooldown from './ValidatorCooldown'
 import ValidatorTimeRange from './ValidatorTimeRange'
 import { locale } from '../../utils/i18n'
+import { fetchValidator } from '../../store/validators/validatorsSlice'
 
 type Props = { validator?: Validator }
 const ValidatorDetailsOverview = ({ validator }: Props) => {
@@ -42,6 +43,14 @@ const ValidatorDetailsOverview = ({ validator }: Props) => {
     return data || []
   }, [rewards, timelineValue])
 
+  const networkValidators = useSelector(
+    (state: RootState) => state.validators.networkValidators,
+  )
+  const consensusCount = useMemo(() => {
+    const networkValidator = networkValidators[address]
+    return networkValidator?.consensusGroups
+  }, [address, networkValidators])
+
   useEffect(() => {
     if (!address) return
 
@@ -52,6 +61,7 @@ const ValidatorDetailsOverview = ({ validator }: Props) => {
         resource: 'validators',
       }),
     )
+    dispatch(fetchValidator(address))
   }, [address, dispatch, timelineValue])
 
   useEffect(() => {
@@ -206,8 +216,7 @@ const ValidatorDetailsOverview = ({ validator }: Props) => {
               adjustsFontSizeToFit
               maxFontSizeMultiplier={1}
             >
-              {/* TODO: add this var to helium-js and wallet api {validator.consensusGroups} */}
-              ToDo
+              {consensusCount}
             </Text>
           </Box>
           <Box

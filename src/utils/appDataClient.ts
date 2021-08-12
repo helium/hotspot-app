@@ -6,6 +6,7 @@ import Client, {
   PendingTransaction,
   PocReceiptsV1,
   ResourceList,
+  Validator,
 } from '@helium/http'
 import { Transaction } from '@helium/transactions'
 import { subDays } from 'date-fns'
@@ -113,6 +114,13 @@ export const searchHotspots = async (searchTerm: string) => {
 
   const newHotspotList = await client.hotspots.search(searchTerm)
   return newHotspotList.takeJSON(MAX)
+}
+
+export const getValidatorDetails = async (
+  address: string,
+): Promise<Validator> => {
+  Logger.breadcrumb('getValidatorDetails', breadcrumbOpts)
+  return client.validators.get(address)
 }
 
 export const getHotspotDetails = async (address: string): Promise<Hotspot> => {

@@ -20,7 +20,7 @@ const ValidatorTimeRange = ({ timeRange, setTimeRange }: Props) => {
       (value) =>
         ({
           ...value,
-          color: 'purpleMain',
+          color: 'purpleBright',
         } as HeliumSelectItemType),
     )
   }, [t])

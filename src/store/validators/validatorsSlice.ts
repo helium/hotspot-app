@@ -5,6 +5,7 @@ import {
   getElectedValidators,
   getElections,
   getValidatorActivityList,
+  getValidatorDetails,
   getValidators,
 } from '../../utils/appDataClient'
 import {
@@ -42,6 +43,7 @@ export type WalletValidator = Validator & {
 export type ValidatorsSliceState = {
   validators: CacheRecord<{ data: Validator[] }>
   walletValidators: Record<string, CacheRecord<WalletValidator>>
+  networkValidators: Record<string, CacheRecord<Validator>>
   electedValidators: CacheRecord<{ data: Validator[] }>
   elections: CacheRecord<{ data: Election[] }>
   followedValidators: CacheRecord<{ data: Validator[] }>
@@ -58,6 +60,7 @@ const initialState: ValidatorsSliceState = {
   followedValidatorsLoaded: false,
   validators: { lastFetchedTimestamp: 0, loading: false, data: [] },
   walletValidators: {},
+  networkValidators: {},
   electedValidators: { lastFetchedTimestamp: 0, loading: false, data: [] },
   elections: { lastFetchedTimestamp: 0, loading: false, data: [] },
   followedValidators: { lastFetchedTimestamp: 0, loading: false, data: [] },
@@ -107,6 +110,21 @@ export const fetchElections = createAsyncThunk(
 
     const electionList = await getElections()
     return electionList.take(5)
+  },
+)
+
+export const fetchValidator = createAsyncThunk<Validator, string>(
+  'validators/fetchValidator',
+  async (address, { getState }) => {
+    const {
+      validators: { networkValidators },
+    } = (await getState()) as {
+      validators: ValidatorsSliceState
+    }
+    if (hasValidCache(networkValidators[address]))
+      return networkValidators[address]
+
+    return getValidatorDetails(address)
   },
 )
 
@@ -211,6 +229,11 @@ const validatorsSlice = createSlice({
     })
     builder.addCase(fetchWalletValidator.fulfilled, (state, action) => {
       state.walletValidators[action.meta.arg] = handleCacheFulfilled(
+        action.payload,
+      )
+    })
+    builder.addCase(fetchValidator.fulfilled, (state, action) => {
+      state.networkValidators[action.meta.arg] = handleCacheFulfilled(
         action.payload,
       )
     })
