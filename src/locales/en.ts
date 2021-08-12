@@ -614,13 +614,14 @@ export default {
     },
     search: {
       title: 'Hotspot Search',
+      network: 'Network\nSearch',
       my_hotspots: 'My Hotspots',
       all_hotspots: 'All Hotspots',
       placeholder: 'Search...',
       recent_searches: 'Recent Searches',
       tips: 'Search Tips',
       tips_body:
-        'Try typing a Hotspot Name (e.g. silly-animal-name) or a place name (e.g. New York City).\n\nNote: Hotspots added within the last 10 minutes may not appear.',
+        'Try typing a Hotspot or Validator Name (e.g. silly-animal-name) or a place name (e.g. New York City).\n\nNote: Hotspots and Validators added within the last 10 minutes may not appear.',
     },
     empty: {
       body: "You haven't added or followed any Hotspots yet.",

@@ -1,16 +1,16 @@
-import React, { memo, useMemo, useCallback, useEffect, useRef } from 'react'
+import React, { memo, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { Hotspot, Validator } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { FlatList } from 'react-native-gesture-handler'
 import { Keyboard } from 'react-native'
-import BottomSheet from '@gorhom/bottom-sheet'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Box from '../../../components/Box'
+import Text from '../../../components/Text'
 import SearchInput from '../../../components/SearchInput'
 import hotspotSearchSlice, {
   fetchData,
-  HotspotSearchFilterKeys,
   restoreRecentSearches,
 } from '../../../store/hotspotSearch/hotspotSearchSlice'
 import { useAppDispatch } from '../../../store/store'
@@ -18,11 +18,11 @@ import { RootState } from '../../../store/rootReducer'
 import { PlacePrediction } from '../../../utils/googlePlaces'
 import HotspotSearchListItem from './HotspotSearchListItem'
 import HotspotSearchEmpty from './HotspotSearchEmpty'
-import SegmentedControl from '../../../components/SegmentedControl'
-import CardHandle from '../../../components/CardHandle'
 import usePrevious from '../../../utils/usePrevious'
 import { isHotspot } from '../../../utils/hotspotUtils'
 import { isValidator } from '../../../utils/validatorUtils'
+import { wh } from '../../../utils/layout'
+import { useSpacing } from '../../../theme/themeHooks'
 
 const ItemSeparatorComponent = () => <Box height={1} backgroundColor="white" />
 
@@ -38,29 +38,14 @@ const HotspotSearch = ({
   onSelectPlace,
   visible,
 }: Props) => {
-  const listRef = useRef<BottomSheet>(null)
   const dispatch = useAppDispatch()
   const { t } = useTranslation()
-  const { results: listData, filter, searchTerm } = useSelector(
+  const { top } = useSafeAreaInsets()
+  const spacing = useSpacing()
+  const { results: listData, searchTerm } = useSelector(
     (state: RootState) => state.hotspotSearch,
   )
   const prevSearchTerm = usePrevious(searchTerm)
-
-  const filterNames = HotspotSearchFilterKeys.map((f) =>
-    t(`hotspots.search.${f}`),
-  )
-  const selectedFilterIndex = useMemo(
-    () => HotspotSearchFilterKeys.indexOf(filter),
-    [filter],
-  )
-
-  const handleFilterChange = useCallback(
-    (value) =>
-      dispatch(
-        hotspotSearchSlice.actions.setFilter(HotspotSearchFilterKeys[value]),
-      ),
-    [dispatch],
-  )
 
   const updateSearchTerm = useCallback(
     (term) => dispatch(hotspotSearchSlice.actions.setSearchTerm(term)),
@@ -70,8 +55,8 @@ const HotspotSearch = ({
   useEffect(() => {
     if (!visible || searchTerm === prevSearchTerm) return
 
-    dispatch(fetchData({ filter, searchTerm }))
-  }, [dispatch, filter, prevSearchTerm, searchTerm, visible])
+    dispatch(fetchData({ filter: 'all_hotspots', searchTerm }))
+  }, [dispatch, prevSearchTerm, searchTerm, visible])
 
   useEffect(() => {
     if (!visible) return
@@ -121,6 +106,9 @@ const HotspotSearch = ({
             subtitle = t('hotspot_details.no_location_title')
           }
         }
+        if ('stake' in item) {
+          subtitle = t('hotspots.owned.validator')
+        }
       }
       return (
         <HotspotSearchListItem
@@ -135,48 +123,21 @@ const HotspotSearch = ({
     [listData.length, onPressItem, t],
   )
 
-  const snapPoints = useMemo(() => [95, '75%'], [])
-  const handle = useCallback(
-    () => (
-      <Box
-        backgroundColor="white"
-        borderTopLeftRadius="none"
-        borderRadius="none"
-        flexDirection="row"
-        height={22}
-        paddingTop="s"
-        alignItems="center"
-        justifyContent="center"
-        flex={1}
-      >
-        <CardHandle />
-      </Box>
-    ),
-    [],
-  )
-
-  useEffect(() => {
-    if (!visible) {
-      listRef.current?.close()
-    } else {
-      listRef.current?.expand()
-    }
-  }, [visible])
-
   return (
-    <BottomSheet
-      ref={listRef}
-      snapPoints={snapPoints}
-      handleComponent={handle}
-      animateOnMount={false}
+    <Box
+      top={visible ? 0 : wh}
+      left={0}
+      right={0}
+      bottom={visible ? 0 : wh}
+      position="absolute"
+      backgroundColor="white"
+      style={{ paddingTop: top }}
     >
       {visible && (
         <Box backgroundColor="white" flex={1} padding="l">
-          <SegmentedControl
-            values={filterNames}
-            selectedIndex={selectedFilterIndex}
-            onChange={handleFilterChange}
-          />
+          <Text variant="h1" color="grayBlack">
+            {t('hotspots.search.network')}
+          </Text>
           <SearchInput
             onSearch={updateSearchTerm}
             marginVertical="m"
@@ -184,6 +145,7 @@ const HotspotSearch = ({
           />
           {!!searchTerm && (
             <FlatList
+              contentContainerStyle={{ paddingBottom: spacing.l }}
               data={listData}
               keyboardShouldPersistTaps="always"
               keyExtractor={keyExtractor}
@@ -196,7 +158,7 @@ const HotspotSearch = ({
           )}
         </Box>
       )}
-    </BottomSheet>
+    </Box>
   )
 }
 
