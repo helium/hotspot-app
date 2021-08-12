@@ -62,7 +62,7 @@ const ChartBar = ({
           y={maxUpBarHeight + barGap}
           rx={barWidth / 2}
           width={barWidth}
-          height={barHeight(data.down)}
+          height={data.down === 0 ? 0 : barHeight(data.down)}
           fill={downColor}
           opacity={opacity}
         />
