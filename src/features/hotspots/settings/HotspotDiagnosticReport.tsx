@@ -206,6 +206,7 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
 
   const handleSendReport = useCallback(() => {
     const supportEmail = getMakerSupportEmail(onboardingRecord?.maker?.id)
+    const descriptionInfo = t('hotspot_settings.diagnostics.desc_info')
     sendReport({
       eth: diagnostics?.eth ? formatMac(diagnostics.eth) : '',
       wifi: diagnostics?.wifi ? formatMac(diagnostics.wifi) : '',
@@ -223,6 +224,7 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
       hotspotMaker: onboardingRecord?.maker?.name || 'Unknown',
       appVersion: version,
       supportEmail,
+      descriptionInfo,
     })
   }, [
     address,
@@ -232,6 +234,7 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
     info,
     onboardingRecord,
     version,
+    t,
   ])
 
   if (loading) {

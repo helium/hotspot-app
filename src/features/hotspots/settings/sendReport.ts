@@ -19,6 +19,7 @@ export default async ({
   hotspotMaker,
   appVersion,
   supportEmail,
+  descriptionInfo,
 }: {
   eth: string
   wifi: string
@@ -34,6 +35,7 @@ export default async ({
   hotspotMaker: string
   appVersion: string
   supportEmail: string
+  descriptionInfo: string
 }) => {
   const deviceNameAndOS = () => {
     const deviceName = getDeviceId()
@@ -45,7 +47,7 @@ export default async ({
   let url = `mailto:${supportEmail}`
 
   const body = [
-    "**Please add more details to the issue you're experiencing below**\n\n",
+    `**${descriptionInfo}**\n\n`,
     `Hotspot: ${kebabCase(animalHash(gateway))}`,
     `Hotspot Maker: ${hotspotMaker}`,
     `Address: ${gateway}`,

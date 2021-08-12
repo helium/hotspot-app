@@ -749,6 +749,8 @@ export default {
     },
     diagnostics: {
       title: 'Diagnostic Report',
+      desc_info:
+        "Please add more details to the issue you're experiencing below",
       no_hotspots: 'No Hotspots Found',
       scan_again: 'Scan again',
       generating_report: 'Generating Report',
