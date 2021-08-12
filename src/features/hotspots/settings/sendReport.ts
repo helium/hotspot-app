@@ -45,6 +45,7 @@ export default async ({
   let url = `mailto:${supportEmail}`
 
   const body = [
+    "**Please add more details to the issue you're experiencing below**\n\n",
     `Hotspot: ${kebabCase(animalHash(gateway))}`,
     `Hotspot Maker: ${hotspotMaker}`,
     `Address: ${gateway}`,
