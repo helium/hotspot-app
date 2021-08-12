@@ -405,19 +405,19 @@ const ShortcutNav = ({
           paddingLeft={item.followed ? 'xs' : 'm'}
           alignItems="center"
         >
-          <Box
-            marginRight="s"
-            borderRadius="round"
-            height={27}
-            width={27}
-            alignItems="center"
-            justifyContent="center"
-            backgroundColor={colorScheme.text}
-          >
-            {item.followed && (
+          {item.followed && (
+            <Box
+              marginRight="s"
+              borderRadius="round"
+              height={27}
+              width={27}
+              alignItems="center"
+              justifyContent="center"
+              backgroundColor={colorScheme.text}
+            >
               <Follow height={12} width={12} color={colors[colorScheme.icon]} />
-            )}
-          </Box>
+            </Box>
+          )}
           {itemIsValidator ? (
             <ValidatorIcon color={colors[colorScheme.text]} />
           ) : (

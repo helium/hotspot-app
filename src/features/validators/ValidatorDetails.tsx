@@ -178,6 +178,8 @@ const ValidatorDetails = ({ validator }: Props) => {
     return `${currentBlockHeight - validator.lastHeartbeat}`
   }, [currentBlockHeight, validator?.lastHeartbeat])
 
+  const carouselContainerStyle = useMemo(() => ({ paddingBottom: 50 }), [])
+
   return (
     <Box
       backgroundColor="white"
@@ -349,6 +351,7 @@ const ValidatorDetails = ({ validator }: Props) => {
 
           <Carousel
             layout="default"
+            containerCustomStyle={carouselContainerStyle}
             ref={carouselRef}
             vertical={false}
             data={selectData}
