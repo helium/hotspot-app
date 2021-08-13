@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo } from 'react'
+import React, { memo, useCallback, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { ActivityIndicator, FlatList, RefreshControl } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -14,10 +14,12 @@ import { useAppDispatch } from '../../../store/store'
 import { RootState } from '../../../store/rootReducer'
 import Box from '../../../components/Box'
 import { useColors } from '../../../theme/themeHooks'
-import HeliumSelect from '../../../components/HeliumSelect'
-import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
 import { wh } from '../../../utils/layout'
 import ElectedValidatorItem from './ElectedValidatorItem'
+import Text from '../../../components/Text'
+import { getChainVars } from '../../../utils/appDataClient'
+import RewardIcon from '../../../assets/images/heliumReward.svg'
+import PenaltyIcon from '../../../assets/images/penalty.svg'
 
 type Props = {
   visible: boolean
@@ -35,6 +37,7 @@ const ValidatorExplorer = ({ visible, onSelectValidator }: Props) => {
   const rewardsLoading = useSelector(
     (state: RootState) => state.validators.loadingRewards,
   )
+  const [consensusMembers, setConsensusMembers] = useState<number>()
 
   const loadElectedValidators = useCallback(async () => {
     const response = await dispatch(fetchElectedValidators())
@@ -49,19 +52,10 @@ const ValidatorExplorer = ({ visible, onSelectValidator }: Props) => {
     await loadElectedValidators()
   }, [loadElectedValidators])
 
-  const onMenuChanged = useCallback(() => {}, [])
-
-  const menuData = useMemo(
-    () =>
-      [
-        {
-          label: t('validator_details.consensus_group'),
-          value: 'consensus',
-          color: 'purpleBright',
-        },
-      ] as HeliumSelectItemType[],
-    [t],
-  )
+  useAsync(async () => {
+    const chainVars = await getChainVars()
+    setConsensusMembers(chainVars.numConsensusMembers)
+  }, [])
 
   const renderElected = useCallback(
     (v) => {
@@ -76,6 +70,42 @@ const ValidatorExplorer = ({ visible, onSelectValidator }: Props) => {
     [onSelectValidator, rewardsLoading],
   )
 
+  const Header = useCallback(
+    () => (
+      <Box margin="m">
+        <Text variant="h1" color="purpleBright">
+          {t('validator_details.consensus_group_title')}
+        </Text>
+        <Text variant="body1" color="grayBlack" marginTop="s">
+          {t('validator_details.elected_count', { count: consensusMembers })}
+        </Text>
+        <Box flexDirection="row" alignItems="center" marginTop="s">
+          <RewardIcon color={colors.purpleMain} />
+          <Text color="grayDarkText" marginLeft="xs" marginRight="s">
+            {t('validator_details.earnings_desc')}
+          </Text>
+          <PenaltyIcon />
+          <Text color="grayDarkText" marginLeft="xs">
+            {t('validator_details.penalty_desc')}
+          </Text>
+        </Box>
+        <Box flexDirection="row" alignItems="center" marginTop="s">
+          <Box
+            marginLeft="xxxs"
+            borderRadius="round"
+            height={10}
+            width={10}
+            backgroundColor="purpleBright"
+          />
+          <Text marginLeft="xs" color="grayDarkText">
+            {t('validator_details.consensus_desc')}
+          </Text>
+        </Box>
+      </Box>
+    ),
+    [colors.purpleMain, consensusMembers, t],
+  )
+
   return (
     <Box
       top={visible ? 0 : wh}
@@ -86,17 +116,6 @@ const ValidatorExplorer = ({ visible, onSelectValidator }: Props) => {
       backgroundColor="white"
       style={{ paddingTop: top }}
     >
-      <Box height={65} marginBottom="s">
-        <HeliumSelect
-          data={menuData}
-          selectedValue="consensus"
-          variant="bubble"
-          onValueChanged={onMenuChanged}
-          showGradient={false}
-          scrollEnabled={false}
-          margin="m"
-        />
-      </Box>
       <FlatList
         contentContainerStyle={{ paddingBottom: 20 }}
         refreshControl={
@@ -111,6 +130,7 @@ const ValidatorExplorer = ({ visible, onSelectValidator }: Props) => {
         data={electedValidators.data}
         renderItem={renderElected}
         keyExtractor={(item) => item.address}
+        ListHeaderComponent={<Header />}
       />
     </Box>
   )
