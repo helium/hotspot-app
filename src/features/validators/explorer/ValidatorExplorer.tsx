@@ -73,7 +73,7 @@ const ValidatorExplorer = ({ visible, onSelectValidator }: Props) => {
   const Header = useCallback(
     () => (
       <Box margin="m">
-        <Text variant="h1" color="purpleBright">
+        <Text variant="h1" color="purpleBright" marginTop="m">
           {t('validator_details.consensus_group_title')}
         </Text>
         <Text variant="body1" color="grayBlack" marginTop="s">
@@ -108,13 +108,15 @@ const ValidatorExplorer = ({ visible, onSelectValidator }: Props) => {
 
   return (
     <Box
-      top={visible ? 0 : wh}
+      top={visible ? 65 + top : wh}
       left={0}
       right={0}
       bottom={visible ? 0 : wh}
       position="absolute"
       backgroundColor="white"
-      style={{ paddingTop: top }}
+      borderTopLeftRadius="l"
+      borderTopRightRadius="l"
+      overflow="hidden"
     >
       <FlatList
         contentContainerStyle={{ paddingBottom: 20 }}

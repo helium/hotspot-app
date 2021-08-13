@@ -6,6 +6,8 @@ import { useSharedValue } from 'react-native-reanimated'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import { useAsync } from 'react-async-hook'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useTranslation } from 'react-i18next'
 import { RootStackParamList } from '../../../navigation/main/tabTypes'
 import Box from '../../../components/Box'
 import Map from '../../../components/Map'
@@ -48,6 +50,8 @@ import {
 } from '../../../utils/hotspotUtils'
 import { isValidator } from '../../../utils/validatorUtils'
 import ValidatorExplorer from '../../validators/explorer/ValidatorExplorer'
+import HeliumSelect from '../../../components/HeliumSelect'
+import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
 
 type Props = {
   ownedHotspots?: Hotspot[]
@@ -74,6 +78,8 @@ const HotspotsView = ({
   const navigation = useNavigation()
   const { params } = useRoute<Route>()
   const dispatch = useAppDispatch()
+  const { top } = useSafeAreaInsets()
+  const { t } = useTranslation()
   const [location, setLocation] = useState(propsLocation)
   const [showMap, setShowMap] = useState(false)
   const [detailSnapPoints, setDetailSnapPoints] = useState<HotspotSnapPoints>({
@@ -103,6 +109,8 @@ const HotspotsView = ({
   const [selectedHotspotIndex, setSelectedHotspotIndex] = useState(0)
   const animatedIndex = useSharedValue<number>(0)
   const [mapFilter, setMapFilter] = useState(MapFilters.owned)
+  const [showTabs, setShowTabs] = useState(true)
+  const [exploreType, setExploreType] = useState('hotspots')
   const [shortcutItem, setShortcutItem] = useState<
     GlobalOpt | Hotspot | Validator
   >(startOnMap ? 'explore' : 'home')
@@ -178,6 +186,7 @@ const HotspotsView = ({
       handleShortcutItemSelected(opt)
       setSelectedHexId(undefined)
       setSelectedHotspotIndex(0)
+      setShowTabs(true)
     },
     [handleShortcutItemSelected],
   )
@@ -262,6 +271,7 @@ const HotspotsView = ({
       }
       setSelectedHexId(hexId)
       setSelectedHotspotIndex(index)
+      setShowTabs(false)
       if (hotspots?.payload?.length) {
         handleShortcutItemSelected(hotspots.payload[index] as Hotspot)
       }
@@ -393,7 +403,7 @@ const HotspotsView = ({
           visible={shortcutItem === 'search'}
         />
         <ValidatorExplorer
-          visible={shortcutItem === 'validators'}
+          visible={shortcutItem === 'explore' && exploreType === 'validators'}
           onSelectValidator={handlePresentValidator}
         />
         <HotspotDetails
@@ -424,6 +434,7 @@ const HotspotsView = ({
     handleSelectPlace,
     handlePresentValidator,
     shortcutItem,
+    exploreType,
     selectedHotspot,
     handleItemSelected,
     toggleSettings,
@@ -445,10 +456,45 @@ const HotspotsView = ({
     return detailHeight
   }, [detailHeight, shortcutItem])
 
+  const onMenuChanged = useCallback((value) => {
+    animateTransition('HotspotsView.ExploreTabs')
+    setExploreType(value)
+  }, [])
+
+  const menuData = useMemo(
+    () =>
+      [
+        {
+          label: t('explore_hotspots'),
+          value: 'hotspots',
+          color: 'blueBright',
+        },
+        {
+          label: t('explore_validators'),
+          value: 'validators',
+          color: 'purpleBright',
+        },
+      ] as HeliumSelectItemType[],
+    [t],
+  )
+
   return (
     <>
       <Box flex={1} flexDirection="column" justifyContent="space-between">
         <Box position="absolute" height="100%" width="100%">
+          <Box style={{ marginTop: top }} visible={showTabs} height={65}>
+            <HeliumSelect
+              data={menuData}
+              selectedValue={exploreType}
+              variant="bubble"
+              onValueChanged={onMenuChanged}
+              showGradient={false}
+              scrollEnabled={false}
+              marginVertical="m"
+              backgroundColor="primaryBackground"
+              contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
+            />
+          </Box>
           {showMap && (
             <Map
               cameraBottomOffset={cameraBottomOffset}
@@ -467,6 +513,9 @@ const HotspotsView = ({
               showNearbyHotspots
               showH3Grid
               showRewardScale={showRewardScale}
+              overflow="hidden"
+              borderTopLeftRadius="l"
+              borderTopRightRadius="l"
             />
           )}
           <HotspotsViewHeader

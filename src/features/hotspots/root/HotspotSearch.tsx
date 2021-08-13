@@ -1,10 +1,10 @@
-import React, { memo, useCallback, useEffect } from 'react'
+import React, { memo, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { Hotspot, Validator } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { FlatList } from 'react-native-gesture-handler'
-import { Keyboard } from 'react-native'
+import { Keyboard, Platform } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -123,9 +123,11 @@ const HotspotSearch = ({
     [listData.length, onPressItem, t],
   )
 
+  const paddingTop = useMemo(() => (Platform.OS === 'android' ? top : 0), [top])
+
   return (
     <Box
-      top={visible ? 0 : wh}
+      top={visible ? paddingTop : wh}
       left={0}
       right={0}
       bottom={visible ? 0 : wh}

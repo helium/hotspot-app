@@ -51,6 +51,16 @@ const ValidatorDetailsOverview = ({ validator }: Props) => {
     return networkValidator?.consensusGroups
   }, [address, networkValidators])
 
+  const stakeStatus = useMemo(() => {
+    if (validator?.stakeStatus) {
+      return (
+        validator.stakeStatus?.charAt(0)?.toUpperCase() +
+        validator.stakeStatus?.slice(1)
+      )
+    }
+    return ''
+  }, [validator?.stakeStatus])
+
   useEffect(() => {
     if (!address) return
 
@@ -199,6 +209,7 @@ const ValidatorDetailsOverview = ({ validator }: Props) => {
             borderRadius="lm"
             padding="m"
             marginRight="s"
+            justifyContent="center"
           >
             <Text
               color="purpleMediumText"
@@ -225,7 +236,28 @@ const ValidatorDetailsOverview = ({ validator }: Props) => {
             borderRadius="lm"
             padding="m"
             marginLeft="s"
-          />
+            justifyContent="center"
+          >
+            <Text
+              color="purpleMediumText"
+              variant="medium"
+              fontSize={15}
+              maxFontSizeMultiplier={1.2}
+            >
+              {t('validator_details.stake_status')}
+            </Text>
+            <Text
+              variant="light"
+              color="grayDarkText"
+              fontSize={30}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              maxFontSizeMultiplier={1}
+              paddingTop="xs"
+            >
+              {stakeStatus}
+            </Text>
+          </Box>
         </Box>
       </ScrollView>
     </Box>

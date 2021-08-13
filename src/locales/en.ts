@@ -850,6 +850,7 @@ export default {
     current_block_height: 'Current Block Height: {{blockHeight}}',
     penalty: 'Penalty',
     lifetime_consensus: 'Lifetime Consensus',
+    stake_status: 'Stake Status',
     performance: 'Performance Penalty',
     tenure: 'Tenure Penalty',
     block: 'Block {{height}}',
@@ -1172,4 +1173,6 @@ export default {
         'Turning off Fleet Mode may negatively affect App performance, resulting in your ability to interact with the App. We do not recommend turning off Fleet Mode for users with more than {{lowerLimit}} Hotspots in an account.',
     },
   },
+  explore_hotspots: 'Explore Hotspots',
+  explore_validators: 'Explore Validators',
 }

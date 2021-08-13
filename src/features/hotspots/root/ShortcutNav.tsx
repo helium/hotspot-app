@@ -456,8 +456,6 @@ const ShortcutNav = ({
             return <Globe color={color()} />
           case 'search':
             return <Search color={color()} />
-          case 'validators':
-            return <ValidatorIcon height={21} width={21} color={color()} />
         }
       }
       return (
