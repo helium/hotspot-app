@@ -29,6 +29,8 @@ import Coverage from './Coverage'
 
 const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
 
+const defaultLngLat = [-122.419418, 37.774929] // San Francisco
+
 type Props = BoxProps<Theme> & {
   onMapMoved?: (coords?: Position) => void
   onDidFinishLoadingMap?: (latitude: number, longitude: number) => void
@@ -101,18 +103,19 @@ const Map = ({
   }, [onMapMoved])
 
   const centerUserLocation = useCallback(() => {
+    const hasCoords = userCoords && userCoords.longitude && userCoords.latitude
     camera.current?.setCamera({
-      centerCoordinate: userCoords
+      centerCoordinate: hasCoords
         ? [userCoords.longitude, userCoords.latitude]
-        : [-98.35, 15],
-      zoomLevel: userCoords ? 16 : 2,
+        : defaultLngLat,
+      zoomLevel: hasCoords ? 16 : 2,
       animationDuration,
       heading: 0,
     })
   }, [animationDuration, userCoords])
 
   const handleUserLocationUpdate = useCallback(
-    (loc) => {
+    (loc: MapboxGL.Location) => {
       if (!loc?.coords || (userCoords.latitude && userCoords.longitude)) {
         return
       }
@@ -196,7 +199,7 @@ const Map = ({
   const defaultCameraSettings = useMemo(
     () => ({
       zoomLevel,
-      centerCoordinate: mapCenter,
+      centerCoordinate: mapCenter || defaultLngLat,
     }),
     [mapCenter, zoomLevel],
   )

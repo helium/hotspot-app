@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { LayoutAnimation, Platform } from 'react-native'
 import { useSelector } from 'react-redux'
-import { Hotspot, Validator, Witness } from '@helium/http'
+import { Hotspot, Validator } from '@helium/http'
 import { useSharedValue } from 'react-native-reanimated'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
@@ -104,7 +104,7 @@ const HotspotsView = ({
   const animatedIndex = useSharedValue<number>(0)
   const [mapFilter, setMapFilter] = useState(MapFilters.owned)
   const [shortcutItem, setShortcutItem] = useState<
-    GlobalOpt | Hotspot | Witness | Validator
+    GlobalOpt | Hotspot | Validator
   >(startOnMap ? 'explore' : 'home')
   const prevShorcutItem = usePrevious(shortcutItem)
 
@@ -152,7 +152,7 @@ const HotspotsView = ({
   }, [onRequestShowMap, prevShorcutItem, shortcutItem])
 
   const handleShortcutItemSelected = useCallback(
-    (item: GlobalOpt | Hotspot | Witness | Validator) => {
+    (item: GlobalOpt | Hotspot | Validator) => {
       if (shortcutItem === item) return
 
       let animConfig = LayoutAnimation.Presets.spring
@@ -270,7 +270,7 @@ const HotspotsView = ({
   )
 
   const handlePresentHotspot = useCallback(
-    async (hotspot: Hotspot | Witness) => {
+    async (hotspot: Hotspot) => {
       if (isGlobalOption(shortcutItem)) {
         setDetailHeight(detailSnapPoints.collapsed)
       }

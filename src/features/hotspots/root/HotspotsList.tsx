@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo } from 'react'
 import { SectionList } from 'react-native'
-import { Hotspot, Sum, Witness } from '@helium/http'
+import { Hotspot, Sum } from '@helium/http'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import Search from '@assets/images/search.svg'
@@ -29,7 +29,7 @@ const HotspotsList = ({
   onRequestShowMap,
   accountRewards,
 }: {
-  onSelectHotspot: (hotspot: Hotspot | Witness, showNav: boolean) => void
+  onSelectHotspot: (hotspot: Hotspot, showNav: boolean) => void
   visible: boolean
   searchPressed?: () => void
   addHotspotPressed?: () => void
@@ -53,7 +53,7 @@ const HotspotsList = ({
   const { t } = useTranslation()
 
   const handlePress = useCallback(
-    (hotspot: Hotspot | Witness) => {
+    (hotspot: Hotspot) => {
       onSelectHotspot(hotspot, orderedHotspots.length > 1)
     },
     [onSelectHotspot, orderedHotspots.length],
