@@ -1,4 +1,5 @@
 import bobcat from './bobcat'
+import cotx from './cotx'
 import clodpi from './clodpi'
 import customAntennas from './custom/antennas'
 import finestra from './finestra'
@@ -17,6 +18,7 @@ import { HotspotMakerLangField } from './hotspotMakerTypes'
 
 export const Makers: Record<string, { id: number; supportEmail: string }> = {
   bobcat,
+  cotx,
   clodpi,
   finestra,
   helium,
@@ -33,6 +35,7 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
 
 export const AntennaModels = {
   ...bobcat.antennas,
+  ...cotx.antennas,
   ...clodpi.antennas,
   ...customAntennas,
   ...finestra.antennas,
@@ -50,6 +53,7 @@ export const AntennaModels = {
 
 export const HotspotMakerModels = {
   ...bobcat.hotspots,
+  ...cotx.hotspots,
   ...clodpi.hotspots,
   ...finestra.hotspots,
   ...helium.hotspots,

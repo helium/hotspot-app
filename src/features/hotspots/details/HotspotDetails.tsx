@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import {
   LayoutChangeEvent,
-  Alert,
   Linking,
   ActivityIndicator,
   Insets,
@@ -31,7 +30,11 @@ import HeliumSelect from '../../../components/HeliumSelect'
 import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
 import HotspotStatusBanner from './HotspotStatusBanner'
 import useToggle from '../../../utils/useToggle'
-import { HELIUM_OLD_MAKER_ADDRESS, isRelay } from '../../../utils/hotspotUtils'
+import {
+  isDataOnly,
+  HELIUM_OLD_MAKER_ADDRESS,
+  isRelay,
+} from '../../../utils/hotspotUtils'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Articles from '../../../constants/articles'
 import HotspotListItem from '../../../components/HotspotListItem'
@@ -49,6 +52,7 @@ import { hp } from '../../../utils/layout'
 import sleep from '../../../utils/sleep'
 import usePrevious from '../../../utils/usePrevious'
 import useHotspotSync from '../useHotspotSync'
+import useAlert from '../../../utils/useAlert'
 
 const hitSlop = { top: 24, bottom: 24 } as Insets
 
@@ -87,6 +91,7 @@ const HotspotDetails = ({
       (state: RootState) => state.hotspotDetails.hotspotData[address],
     ) || {}
 
+  const { showOKAlert, showOKCancelAlert } = useAlert()
   const listRef = useRef<BottomSheet>(null)
   const scrollViewRef = useRef<BottomSheetScrollViewType>(null)
   const [isRelayed, setIsRelayed] = useState(false)
@@ -108,6 +113,8 @@ const HotspotDetails = ({
   ])
 
   const { updateSyncStatus, hotspotSyncStatus } = useHotspotSync(hotspot)
+
+  const dataOnly = useMemo(() => isDataOnly(hotspot), [hotspot])
 
   const makers = useSelector((state: RootState) => state.heliumData.makers)
 
@@ -177,27 +184,33 @@ const HotspotDetails = ({
   }, [hotspot])
 
   const selectData = useMemo(() => {
-    return [
+    let data = [
       {
         label: t('hotspot_details.overview'),
         value: 'overview',
         color: 'purpleMain',
         Icon: EarningsIcon,
       } as HeliumSelectItemType,
-      {
-        label: t('hotspot_details.checklist'),
-        value: 'checklist',
-        color: 'purpleMain',
-        Icon: WitnessIcon,
-      } as HeliumSelectItemType,
-      {
-        label: t('map_filter.witness.title'),
-        value: 'witnesses',
-        color: 'purpleMain',
-        Icon: CheckCircle,
-      } as HeliumSelectItemType,
     ]
-  }, [t])
+
+    if (!isDataOnly(hotspot))
+      data = [
+        ...data,
+        {
+          label: t('hotspot_details.checklist'),
+          value: 'checklist',
+          color: 'purpleMain',
+          Icon: WitnessIcon,
+        } as HeliumSelectItemType,
+        {
+          label: t('map_filter.witness.title'),
+          value: 'witnesses',
+          color: 'purpleMain',
+          Icon: CheckCircle,
+        } as HeliumSelectItemType,
+      ]
+    return data
+  }, [hotspot, t])
 
   const [selectedOption, setSelectedOption] = useState(selectData[0].value)
 
@@ -211,25 +224,18 @@ const HotspotDetails = ({
     [],
   )
 
-  const handleRelayedPress = useCallback(() => {
-    Alert.alert(
-      t('hotspot_details.relay_prompt.title'),
-      t('hotspot_details.relay_prompt.message'),
-      [
-        {
-          text: t('generic.ok'),
-        },
-        {
-          text: t('discovery.troubleshooting_guide'),
-          style: 'cancel',
-          onPress: () => {
-            if (Linking.canOpenURL(Articles.Relay))
-              Linking.openURL(Articles.Relay)
-          },
-        },
-      ],
-    )
-  }, [t])
+  const handleRelayedPress = useCallback(async () => {
+    const decision = await showOKCancelAlert({
+      titleKey: 'hotspot_details.relay_prompt.title',
+      messageKey: 'hotspot_details.relay_prompt.message',
+      cancelKey: 'discovery.troubleshooting_guide',
+      cancelStyle: 'cancel',
+    })
+
+    if (!decision && Linking.canOpenURL(Articles.Relay)) {
+      Linking.openURL(Articles.Relay)
+    }
+  }, [showOKCancelAlert])
 
   const getDistance = useCallback(
     (otherHotspot: Hotspot | Witness) => {
@@ -274,27 +280,18 @@ const HotspotDetails = ({
     [getDistance, onSelectHotspot],
   )
 
-  const showWitnessAlert = useCallback(() => {
-    Alert.alert(
-      t('hotspot_details.witness_prompt.title'),
-      t('hotspot_details.witness_prompt.message', {
-        hotspotName: animalName(hotspot?.address || ''),
-      }),
-      [
-        {
-          text: t('generic.ok'),
-        },
-        {
-          text: t('generic.readMore'),
-          style: 'cancel',
-          onPress: () => {
-            if (Linking.canOpenURL(Articles.Witnesses))
-              Linking.openURL(Articles.Witnesses)
-          },
-        },
-      ],
-    )
-  }, [hotspot?.address, t])
+  const showWitnessAlert = useCallback(async () => {
+    const decision = await showOKCancelAlert({
+      titleKey: 'hotspot_details.witness_prompt.title',
+      messageKey: 'hotspot_details.witness_prompt.message',
+      cancelKey: 'discovery.troubleshooting_guide',
+      cancelStyle: 'cancel',
+    })
+
+    if (!decision && Linking.canOpenURL(Articles.Witnesses)) {
+      Linking.openURL(Articles.Witnesses)
+    }
+  }, [showOKCancelAlert])
 
   const cardHandle = useCallback(() => {
     return (
@@ -320,6 +317,13 @@ const HotspotDetails = ({
   )
 
   const handleToggleStatus = useCallback(async () => {
+    if (dataOnly) {
+      showOKAlert({
+        titleKey: 'hotspot_details.data_only_prompt.title',
+        messageKey: 'hotspot_details.data_only_prompt.message',
+      })
+      return
+    }
     if (listIndex === 0) {
       setListIndex(1)
       listRef.current?.snapTo(1)
@@ -331,11 +335,20 @@ const HotspotDetails = ({
       await sleep(300) // Add a little delay to avoid animation jank
     }
     toggleShowStatusBanner()
-  }, [listIndex, showStatusBanner, toggleShowStatusBanner])
-
-  const contentContainerStyle = useMemo(() => ({ paddingLeft: spacing.m }), [
-    spacing.m,
+  }, [
+    dataOnly,
+    listIndex,
+    showOKAlert,
+    showStatusBanner,
+    toggleShowStatusBanner,
   ])
+
+  const contentContainerStyle = useMemo(
+    () => ({
+      paddingLeft: !isDataOnly(hotspot) ? spacing.m : undefined,
+    }),
+    [hotspot, spacing.m],
+  )
 
   const onTimelineChanged = useCallback(
     (value, index) => {
@@ -472,6 +485,7 @@ const HotspotDetails = ({
                   online={hotspot?.status?.online}
                   syncStatus={hotspotSyncStatus?.status}
                   onPress={handleToggleStatus}
+                  isDataOnly={dataOnly}
                 />
               )}
               {isRelayed && (
@@ -507,7 +521,7 @@ const HotspotDetails = ({
           />
 
           <Box
-            justifyContent="flex-start"
+            justifyContent={isDataOnly(hotspot) ? 'center' : 'flex-start'}
             flexDirection="row"
             backgroundColor="grayBoxLight"
           >
@@ -517,6 +531,8 @@ const HotspotDetails = ({
               contentContainerStyle={contentContainerStyle}
               data={selectData}
               backgroundColor="grayBoxLight"
+              flex={undefined}
+              width={undefined}
               selectedValue={selectedOption}
               onValueChanged={handleSelectValueChanged}
             />

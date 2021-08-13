@@ -29,7 +29,7 @@ export const useFees = () => {
       if (!balance) return new Balance<DataCredits>(0, CurrencyType.dataCredit)
 
       const prices = [currentOraclePrice, ...predictedOraclePrices]
-      const oraclePrice = minBy(prices, (p) => p?.price.integerBalance)
+      const oraclePrice = minBy(prices, (p) => p?.price?.integerBalance)
       // ensure precision is only 8 decimals
       const feeHNTInteger = Math.trunc(
         balance.toNetworkTokens(oraclePrice?.price).integerBalance,
