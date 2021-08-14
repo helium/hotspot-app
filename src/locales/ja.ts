@@ -830,7 +830,9 @@ export default {
     fine_print:
       '購入者がトランザクションを承諾して完了すると、Hotspotでデータが転送されます。',
     notification_button: 'トランザクションを表示',
-    deployModeTransferDisabled: 'デプロイモードでは転送が無効になります',
+    deployModeTransferDisableTitle: 'ホットスポットの転送が無効',
+    deployModeTransferDisabled:
+      '展開モードでは、転送ホットスポットは無効になります。',
     cancel: {
       button_title: '転送を保留しています。タップしてキャンセルします。',
       failed_alert_title: '転送をキャンセルできません',
