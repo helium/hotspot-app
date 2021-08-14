@@ -74,7 +74,13 @@ const NotificationShow = ({ notification, onClose }: Props) => {
           position="absolute"
         />
         <TouchableOpacityBox flex={1} onPress={onClose} />
-        <Card variant="modal" padding="l" margin="m" style={containerStyle}>
+        <Card
+          variant="modal"
+          padding="l"
+          margin="m"
+          style={containerStyle}
+          marginBottom="xl"
+        >
           <Box flexDirection="row" alignItems="center">
             <HeliumNotification />
             <Text variant="body2" color="purpleMain" marginLeft="xs" flex={1}>

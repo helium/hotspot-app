@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo } from 'react'
 import { SectionList } from 'react-native'
-import { Hotspot, Witness } from '@helium/http'
+import { Hotspot, Sum } from '@helium/http'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import Search from '@assets/images/search.svg'
@@ -18,6 +18,7 @@ import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { wh } from '../../../utils/layout'
 import FocusAwareStatusBar from '../../../components/FocusAwareStatusBar'
 import HotspotsEmpty from './HotspotsEmpty'
+import { CacheRecord } from '../../../utils/cacheUtils'
 
 const HotspotsList = ({
   onSelectHotspot,
@@ -26,13 +27,15 @@ const HotspotsList = ({
   addHotspotPressed,
   hasHotspots,
   onRequestShowMap,
+  accountRewards,
 }: {
-  onSelectHotspot: (hotspot: Hotspot | Witness, showNav: boolean) => void
+  onSelectHotspot: (hotspot: Hotspot, showNav: boolean) => void
   visible: boolean
   searchPressed?: () => void
   addHotspotPressed?: () => void
   hasHotspots: boolean
   onRequestShowMap?: () => void
+  accountRewards: CacheRecord<Sum>
 }) => {
   const colors = useColors()
   const { top } = useSafeAreaInsets()
@@ -50,7 +53,7 @@ const HotspotsList = ({
   const { t } = useTranslation()
 
   const handlePress = useCallback(
-    (hotspot: Hotspot | Witness) => {
+    (hotspot: Hotspot) => {
       onSelectHotspot(hotspot, orderedHotspots.length > 1)
     },
     [onSelectHotspot, orderedHotspots.length],
@@ -82,7 +85,7 @@ const HotspotsList = ({
         borderTopLeftRadius="m"
         backgroundColor="white"
       >
-        <HotspotsPicker />
+        <HotspotsPicker visible={visible} />
         {order === HotspotSort.Offline &&
           !hasOfflineHotspot &&
           filterHasHotspots && (
@@ -110,7 +113,7 @@ const HotspotsList = ({
         )}
       </Box>
     )
-  }, [order, hasOfflineHotspot, orderedHotspots, t])
+  }, [orderedHotspots, visible, order, hasOfflineHotspot, t])
 
   const renderItem = useCallback(
     ({ item }) => {
@@ -120,7 +123,7 @@ const HotspotsList = ({
           hotspot={item}
           showCarot
           loading={loadingRewards}
-          totalReward={rewards[item.address]?.balanceTotal}
+          totalReward={rewards[item.address]}
         />
       )
     },
@@ -159,7 +162,9 @@ const HotspotsList = ({
         <SectionList
           sections={sections}
           keyExtractor={keyExtractor}
-          ListHeaderComponent={<WelcomeOverview />}
+          ListHeaderComponent={
+            <WelcomeOverview accountRewards={accountRewards} />
+          }
           renderSectionHeader={renderHeader}
           renderItem={renderItem}
           contentContainerStyle={contentContainerStyle}

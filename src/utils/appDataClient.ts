@@ -8,6 +8,7 @@ import Client, {
   ResourceList,
 } from '@helium/http'
 import { Transaction } from '@helium/transactions'
+import { subDays } from 'date-fns'
 import {
   HotspotActivityFilters,
   HotspotActivityType,
@@ -48,12 +49,21 @@ export const getHotspots = async () => {
   if (!address) return []
 
   const newHotspotList = await client.account(address).hotspots.list()
-  return newHotspotList.takeJSON(1000)
+  return newHotspotList.takeJSON(MAX)
+}
+
+export const getValidators = async () => {
+  Logger.breadcrumb('getValidators', breadcrumbOpts)
+  const address = await getAddress()
+  if (!address) return []
+
+  const newValidatorsList = await client.account(address).validators.list()
+  return newValidatorsList.takeJSON(MAX)
 }
 
 export const getHotspotsForHexId = async (hexId: string) => {
   const hotspotsList = await client.hotspots.hex(hexId)
-  return hotspotsList.takeJSON(1000)
+  return hotspotsList.takeJSON(MAX)
 }
 
 export const searchHotspots = async (searchTerm: string) => {
@@ -62,23 +72,12 @@ export const searchHotspots = async (searchTerm: string) => {
   if (!address) return []
 
   const newHotspotList = await client.hotspots.search(searchTerm)
-  return newHotspotList.takeJSON(1000)
+  return newHotspotList.takeJSON(MAX)
 }
 
 export const getHotspotDetails = async (address: string): Promise<Hotspot> => {
   Logger.breadcrumb('getHotspotDetails', breadcrumbOpts)
   return client.hotspots.get(address)
-}
-
-export const getHotspotRewardsSum = async (
-  address: string,
-  numDaysBack: number,
-  date: Date = new Date(),
-) => {
-  Logger.breadcrumb('getHotspotRewardsSum', breadcrumbOpts)
-  const endDate = new Date(date)
-  endDate.setDate(date.getDate() - numDaysBack)
-  return client.hotspot(address).rewards.sum.get(endDate, date)
 }
 
 export const getHotspotRewards = async (
@@ -140,9 +139,22 @@ export const getAccount = async (address?: string) => {
   return data
 }
 
-export const getBlockHeight = () => {
+export const getAccountRewards = async (opts?: {
+  address?: string
+  numDaysBack?: number
+}) => {
+  Logger.breadcrumb('getAccountRewards', breadcrumbOpts)
+  const accountAddress = opts?.address || (await getAddress())
+  if (!accountAddress) return
+
+  const initialDate = new Date()
+  const endDate = subDays(initialDate, opts?.numDaysBack || 1)
+  return client.account(accountAddress).rewards.sum.get(endDate, initialDate)
+}
+
+export const getBlockHeight = (params?: { maxTime?: string }) => {
   Logger.breadcrumb('getBlockHeight', breadcrumbOpts)
-  return client.blocks.getHeight()
+  return client.blocks.getHeight(params)
 }
 
 export const getBlockStats = () => {

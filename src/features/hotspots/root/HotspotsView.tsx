@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { LayoutAnimation, Platform } from 'react-native'
-import { useDispatch, useSelector } from 'react-redux'
-import { Hotspot, Witness } from '@helium/http'
+import { useSelector } from 'react-redux'
+import { Hotspot } from '@helium/http'
 import { useSharedValue } from 'react-native-reanimated'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
@@ -32,6 +32,10 @@ import { fetchHotspotsForHex } from '../../../store/discovery/discoverySlice'
 import { MapFilters } from '../../map/MapFiltersButton'
 import MapFilterModal from '../../map/MapFilterModal'
 import ShortcutNav, { GlobalOpt, IS_GLOBAL_OPT } from './ShortcutNav'
+import { useAppDispatch } from '../../../store/store'
+import { fetchAccountRewards } from '../../../store/account/accountSlice'
+import useVisible from '../../../utils/useVisible'
+import { fetchValidators } from '../../../store/validators/validatorsSlice'
 
 type Props = {
   ownedHotspots?: Hotspot[]
@@ -53,7 +57,7 @@ const HotspotsView = ({
 }: Props) => {
   const navigation = useNavigation()
   const { params } = useRoute<Route>()
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const [location, setLocation] = useState(propsLocation)
   const [showMap, setShowMap] = useState(false)
   const [detailSnapPoints, setDetailSnapPoints] = useState<HotspotSnapPoints>({
@@ -61,16 +65,22 @@ const HotspotsView = ({
     expanded: 0,
   })
   const [detailHeight, setDetailHeight] = useState(0)
+  const fleetModeEnabled = useSelector(
+    (state: RootState) => state.app.isFleetModeEnabled,
+  )
   const hotspotsForHexId = useSelector(
     (state: RootState) => state.discovery.hotspotsForHexId,
+  )
+  const accountRewards = useSelector(
+    (state: RootState) => state.account.rewardsSum,
   )
   const [selectedHexId, setSelectedHexId] = useState<string>()
   const [selectedHotspotIndex, setSelectedHotspotIndex] = useState(0)
   const animatedIndex = useSharedValue<number>(0)
   const [mapFilter, setMapFilter] = useState(MapFilters.owned)
-  const [shortcutItem, setShortcutItem] = useState<
-    GlobalOpt | Hotspot | Witness
-  >(startOnMap ? 'explore' : 'home')
+  const [shortcutItem, setShortcutItem] = useState<GlobalOpt | Hotspot>(
+    startOnMap ? 'explore' : 'home',
+  )
   const prevShorcutItem = usePrevious(shortcutItem)
 
   const hotspotAddress = useMemo(() => {
@@ -96,6 +106,13 @@ const HotspotsView = ({
     mapFilter,
   ])
 
+  useVisible({
+    onAppear: () => {
+      dispatch(fetchAccountRewards())
+      dispatch(fetchValidators())
+    },
+  })
+
   useEffect(() => {
     if (shortcutItem === 'explore' && prevShorcutItem !== 'explore') {
       onRequestShowMap(true)
@@ -103,7 +120,7 @@ const HotspotsView = ({
   }, [onRequestShowMap, prevShorcutItem, shortcutItem])
 
   const handleShortcutItemSelected = useCallback(
-    (item: GlobalOpt | Hotspot | Witness) => {
+    (item: GlobalOpt | Hotspot) => {
       if (shortcutItem === item) return
 
       let animConfig = LayoutAnimation.Presets.spring
@@ -220,7 +237,7 @@ const HotspotsView = ({
   )
 
   const handlePresentDetails = useCallback(
-    async (hotspot: Hotspot | Witness) => {
+    async (hotspot: Hotspot) => {
       if (IS_GLOBAL_OPT(shortcutItem)) {
         setDetailHeight(detailSnapPoints.collapsed)
       }
@@ -267,7 +284,8 @@ const HotspotsView = ({
     }
 
     fetchHotspot()
-  }, [dispatch, handlePresentDetails, params])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params])
 
   const handleSelectPlace = useCallback(
     async (place: PlacePrediction) => {
@@ -350,6 +368,7 @@ const HotspotsView = ({
           searchPressed={handleSearching(true)}
           addHotspotPressed={handleHotspotSetup}
           hasHotspots={hasHotspots}
+          accountRewards={accountRewards}
         />
       </>
     )
@@ -365,6 +384,7 @@ const HotspotsView = ({
     handleSearching,
     handleHotspotSetup,
     hasHotspots,
+    accountRewards,
   ])
 
   const onChangeMapFilter = useCallback((filter: MapFilters) => {
@@ -429,7 +449,7 @@ const HotspotsView = ({
       </Box>
 
       <ShortcutNav
-        ownedHotspots={ownedHotspots || []}
+        ownedHotspots={!fleetModeEnabled && ownedHotspots ? ownedHotspots : []}
         followedHotspots={followedHotspots || []}
         selectedItem={shortcutItem}
         onItemSelected={handleItemSelected}

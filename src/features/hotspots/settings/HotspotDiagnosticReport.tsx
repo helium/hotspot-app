@@ -26,8 +26,8 @@ import animateTransition from '../../../utils/animateTransition'
 import { locale } from '../../../utils/i18n'
 import useAlert from '../../../utils/useAlert'
 import usePrevious from '../../../utils/usePrevious'
-import { getSyncStatus, SyncStatus } from '../../../utils/hotspotUtils'
 import { getMakerSupportEmail } from '../../../makers'
+import useHotspotSync from '../useHotspotSync'
 
 type Info = {
   percentSynced: number
@@ -35,7 +35,7 @@ type Info = {
   currentTime: number
   height: number
   hasLastChallenge: boolean
-  fullySynced: boolean | 'partial'
+  fullySynced: boolean
 }
 
 const formatMac = (mac: string) =>
@@ -75,6 +75,7 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
     onboardingRecord,
   } = useSelector((state: RootState) => state.connectedHotspot)
   const { blockHeight } = useSelector((state: RootState) => state.heliumData)
+  const { getSyncStatus, getSyncPercentage } = useHotspotSync()
   const dispatch = useAppDispatch()
   const { enableBack } = useHotspotSettingsContext()
 
@@ -165,21 +166,22 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
     nextInfo.currentTime = getUnixTime(new Date())
     nextInfo.height = parseInt(diagnostics?.height || '0', 10)
 
-    const { status } = getSyncStatus(nextInfo.height, blockHeight)
-    switch (status) {
-      case SyncStatus.full:
-        nextInfo.fullySynced = true
-        break
-      case SyncStatus.partial:
-        nextInfo.fullySynced = 'partial'
-        break
-      case SyncStatus.none:
-        nextInfo.fullySynced = false
-        break
-    }
+    const status = getSyncStatus({
+      hotspotBlockHeight: nextInfo.height,
+    })
 
+    nextInfo.fullySynced = status === 'full'
+    nextInfo.percentSynced = getSyncPercentage({
+      hotspotBlockHeight: nextInfo.height,
+    })
     setInfo(nextInfo)
-  }, [blockHeight, challenges, diagnostics?.height])
+  }, [
+    blockHeight,
+    challenges,
+    diagnostics?.height,
+    getSyncPercentage,
+    getSyncStatus,
+  ])
 
   useEffect(() => {
     dispatch(
@@ -204,6 +206,7 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
 
   const handleSendReport = useCallback(() => {
     const supportEmail = getMakerSupportEmail(onboardingRecord?.maker?.id)
+    const descriptionInfo = t('hotspot_settings.diagnostics.desc_info')
     sendReport({
       eth: diagnostics?.eth ? formatMac(diagnostics.eth) : '',
       wifi: diagnostics?.wifi ? formatMac(diagnostics.wifi) : '',
@@ -221,6 +224,7 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
       hotspotMaker: onboardingRecord?.maker?.name || 'Unknown',
       appVersion: version,
       supportEmail,
+      descriptionInfo,
     })
   }, [
     address,
@@ -230,6 +234,7 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
     info,
     onboardingRecord,
     version,
+    t,
   ])
 
   if (loading) {

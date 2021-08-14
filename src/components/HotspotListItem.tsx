@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { Hotspot, Witness } from '@helium/http'
+import { Hotspot } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import CarotRight from '@assets/images/carot-right.svg'
@@ -16,8 +16,8 @@ import { useColors } from '../theme/themeHooks'
 import Signal from '../assets/images/signal.svg'
 
 type HotspotListItemProps = {
-  onPress?: (hotspot: Hotspot | Witness) => void
-  hotspot: Hotspot | Witness
+  onPress?: (hotspot: Hotspot) => void
+  hotspot: Hotspot
   totalReward?: Balance<NetworkTokens>
   showCarot?: boolean
   loading?: boolean

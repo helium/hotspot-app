@@ -127,15 +127,16 @@ const HotspotTxnsProgressScreen = () => {
       try {
         const onboardingRecord =
           params?.onboardingRecord || connectedHotspot.onboardingRecord
-        const assertLocTxnResponse = await assertLocationTxn(
-          address,
+        const assertLocTxnResponse = await assertLocationTxn({
+          gateway: address,
           lat,
           lng,
-          gain,
+          decimalGain: gain,
           elevation,
           onboardingRecord,
-          true,
-        )
+          updatingLocation: true,
+          dataOnly: false,
+        })
         if (assertLocTxnResponse) {
           await submitTxn(assertLocTxnResponse)
           setFinished(true)

@@ -6,11 +6,14 @@ import {
   setSecureItem,
   signOut,
 } from '../../utils/secureAccount'
+import * as Logger from '../../utils/logger'
 import { Intervals } from '../../features/moreTab/more/useAuthIntervals'
 
 export type AppState = {
   isBackedUp: boolean
   isHapticDisabled: boolean
+  isFleetModeEnabled: boolean
+  hasFleetModeAutoEnabled: boolean
   convertHntToCurrency: boolean
   isSettingUpHotspot: boolean
   isRestored: boolean
@@ -24,6 +27,7 @@ export type AppState = {
 const initialState: AppState = {
   isBackedUp: false,
   isHapticDisabled: false,
+  isFleetModeEnabled: false,
   convertHntToCurrency: false,
   isSettingUpHotspot: false,
   isRestored: false,
@@ -33,6 +37,7 @@ const initialState: AppState = {
   lastIdle: null,
   isLocked: false,
   isRequestingPermission: false,
+  hasFleetModeAutoEnabled: false,
 }
 
 type Restore = {
@@ -48,7 +53,17 @@ type Restore = {
 export const restoreUser = createAsyncThunk<Restore>(
   'app/restoreUser',
   async () => {
-    const vals = await Promise.all([
+    const [
+      isBackedUp,
+      isPinRequired,
+      isPinRequiredForPayment,
+      authInterval,
+      isHapticDisabled,
+      convertHntToCurrency,
+      address,
+      isFleetModeEnabled,
+      hasFleetModeAutoEnabled,
+    ] = await Promise.all([
       getSecureItem('accountBackedUp'),
       getSecureItem('requirePin'),
       getSecureItem('requirePinForPayment'),
@@ -56,21 +71,27 @@ export const restoreUser = createAsyncThunk<Restore>(
       getSecureItem('hapticDisabled'),
       getSecureItem('convertHntToCurrency'),
       getSecureItem('address'),
+      getSecureItem('fleetModeEnabled'),
+      getSecureItem('hasFleetModeAutoEnabled'),
     ])
-    const isBackedUp = vals[0]
-    const address = vals[6]
+
     if (isBackedUp && address) {
       OneSignal.sendTags({ address })
+      Logger.setUser(address)
     }
     return {
       isBackedUp,
-      isPinRequired: vals[1],
-      isPinRequiredForPayment: vals[2],
-      authInterval: vals[3] ? parseInt(vals[3], 10) : Intervals.IMMEDIATELY,
-      isLocked: vals[1],
-      isHapticDisabled: vals[4],
-      convertHntToCurrency: vals[5],
-    }
+      isPinRequired,
+      isPinRequiredForPayment,
+      authInterval: authInterval
+        ? parseInt(authInterval, 10)
+        : Intervals.IMMEDIATELY,
+      isLocked: isPinRequired,
+      isHapticDisabled,
+      convertHntToCurrency,
+      isFleetModeEnabled,
+      hasFleetModeAutoEnabled,
+    } as Restore
   },
 )
 
@@ -100,6 +121,17 @@ const appSlice = createSlice({
     updateHapticEnabled: (state, action: PayloadAction<boolean>) => {
       state.isHapticDisabled = action.payload
       setSecureItem('hapticDisabled', action.payload)
+    },
+    updateFleetModeEnabled: (
+      state,
+      action: PayloadAction<{ enabled: boolean; autoEnabled?: boolean }>,
+    ) => {
+      state.isFleetModeEnabled = action.payload.enabled
+      setSecureItem('fleetModeEnabled', action.payload.enabled)
+      if (action.payload.autoEnabled) {
+        state.hasFleetModeAutoEnabled = true
+        setSecureItem('hasFleetModeAutoEnabled', true)
+      }
     },
     toggleConvertHntToCurrency: (state) => {
       state.convertHntToCurrency = !state.convertHntToCurrency

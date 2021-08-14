@@ -1,8 +1,10 @@
 import { isEqual } from 'lodash'
-import React, { useEffect, useState, memo, useCallback, useMemo } from 'react'
+import React, { useEffect, useState, memo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
+import { Sum } from '@helium/http'
+import Balance, { CurrencyType } from '@helium/currency'
 import Box from '../../../components/Box'
 import EmojiBlip from '../../../components/EmojiBlip'
 import Text from '../../../components/Text'
@@ -10,6 +12,7 @@ import { RootState } from '../../../store/rootReducer'
 import useCurrency from '../../../utils/useCurrency'
 import HotspotsTicker from './HotspotsTicker'
 import animateTransition from '../../../utils/animateTransition'
+import { CacheRecord } from '../../../utils/cacheUtils'
 
 const TimeOfDayTitle = ({ date }: { date: Date }) => {
   const { t } = useTranslation()
@@ -33,53 +36,92 @@ const TimeOfDayTitle = ({ date }: { date: Date }) => {
   )
 }
 
-const WelcomeOverview = () => {
+type Props = { accountRewards: CacheRecord<Sum> }
+const WelcomeOverview = ({ accountRewards }: Props) => {
   const { t } = useTranslation()
   const { hntBalanceToDisplayVal, toggleConvertHntToCurrency } = useCurrency()
   const [bodyText, setBodyText] = useState('')
-
+  const [{ hotspotsLoaded, validatorsLoaded }, setHasLoadedWelcome] = useState({
+    hotspotsLoaded: false,
+    validatorsLoaded: false,
+  })
   const hotspots = useSelector(
     (state: RootState) => state.hotspots.hotspots,
     isEqual,
   )
 
-  const totalRewards = useSelector(
-    (state: RootState) => state.hotspots.totalRewards,
-    isEqual,
-  )
-  const rewards = useSelector(
-    (state: RootState) => state.hotspots.rewards,
-    isEqual,
-  )
-  const loadingRewards = useSelector(
-    (state: RootState) => state.hotspots.loadingRewards,
+  const hotspotsLoading = useSelector(
+    (state: RootState) => state.hotspots.loadingOrderedHotspots,
   )
 
-  const loading = useMemo(() => {
-    if (hotspots.length > 0 && rewards && Object.keys(rewards).length === 0)
-      // has hotspots but rewards haven't been loaded yet
-      return loadingRewards
-
-    return false
-  }, [hotspots.length, loadingRewards, rewards])
+  const validators = useSelector(
+    (state: RootState) => state.validators.validators.data,
+    isEqual,
+  )
+  const validatorsLoading = useSelector(
+    (state: RootState) => state.validators.validators.loading,
+  )
 
   useEffect(() => {
-    if (!loading)
+    if (hotspotsLoaded && validatorsLoaded) return
+
+    const nextLoaded = {
+      hotspotsLoaded: hotspotsLoaded || !hotspotsLoading,
+      validatorsLoaded: validatorsLoaded || !validatorsLoaded,
+    }
+
+    if (nextLoaded.hotspotsLoaded && nextLoaded.validatorsLoaded) {
       animateTransition('WelcomeOverview.LoadingChange', {
         enabledOnAndroid: false,
       })
-  }, [loading])
+    }
+
+    setHasLoadedWelcome(nextLoaded)
+  }, [hotspotsLoaded, hotspotsLoading, validatorsLoaded, validatorsLoading])
 
   const updateBodyText = useCallback(async () => {
-    if (loading || !totalRewards) return
+    if (!hotspotsLoaded || !validatorsLoaded) return
 
-    const hntAmount = await hntBalanceToDisplayVal(totalRewards)
-    const nextBodyText = t('hotspots.owned.reward_summary', {
-      count: hotspots.length,
-      hntAmount,
-    })
+    const hntAmount = await hntBalanceToDisplayVal(
+      Balance.fromFloat(accountRewards.total, CurrencyType.networkToken),
+    )
+    const validatorCount = validators.length
+    const hotspotCount = hotspots.length
+    let nextBodyText = ''
+    if (validatorCount === 0) {
+      nextBodyText = t('hotspots.owned.reward_hotspot_summary', {
+        count: hotspotCount,
+        hntAmount,
+      })
+    } else if (hotspotCount === 0 && validatorCount > 0) {
+      nextBodyText = t('hotspots.owned.reward_validator_summary', {
+        count: validatorCount,
+        hntAmount,
+      })
+    } else {
+      const validator = t('hotspots.owned.validator', {
+        count: validatorCount,
+      })
+      const hotspot = t('hotspots.owned.hotspot', {
+        count: hotspotCount,
+      })
+
+      nextBodyText = t('hotspots.owned.reward_hotspot_and_validator_summary', {
+        hotspot,
+        validator,
+        hntAmount,
+      })
+    }
     setBodyText(nextBodyText)
-  }, [hntBalanceToDisplayVal, hotspots?.length, loading, t, totalRewards])
+  }, [
+    accountRewards.total,
+    hntBalanceToDisplayVal,
+    hotspots.length,
+    hotspotsLoaded,
+    t,
+    validators.length,
+    validatorsLoaded,
+  ])
 
   useEffect(() => {
     updateBodyText()
@@ -97,7 +139,7 @@ const WelcomeOverview = () => {
       <EmojiBlip date={date} />
       <TimeOfDayTitle date={date} />
       <Box marginTop="m" marginBottom="xxl">
-        {!loading ? (
+        {hotspotsLoaded && validatorsLoaded ? (
           <Text
             variant="light"
             fontSize={20}

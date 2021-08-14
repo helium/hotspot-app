@@ -33,6 +33,7 @@ const useAlert = () => {
       messageOptions?: Record<string, string>
       okKey?: string
       cancelKey?: string
+      cancelStyle?: 'destructive' | 'cancel'
     }): Promise<boolean> =>
       new Promise((resolve) => {
         const {
@@ -41,13 +42,14 @@ const useAlert = () => {
           messageOptions,
           okKey,
           cancelKey,
+          cancelStyle = 'destructive',
         } = options
         const title = t(titleKey)
         const message = messageKey ? t(messageKey, messageOptions) : undefined
         Alert.alert(title, message, [
           {
             text: t(cancelKey || 'generic.cancel'),
-            style: 'destructive',
+            style: cancelStyle,
             onPress: () => resolve(false),
           },
           {

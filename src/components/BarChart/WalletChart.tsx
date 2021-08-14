@@ -132,45 +132,21 @@ const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
 
   return (
     <Box {...boxProps} height={height}>
-      <Box
-        flexDirection="row"
-        justifyContent="flex-end"
-        alignItems="center"
-        onLayout={handleHeaderLayout}
-      >
-        {focusedData && (
-          <>
-            <CarotLeft
-              width={12}
-              height={12}
-              stroke={greenBright}
-              strokeWidth={2}
-            />
-            <Text
-              variant="body2"
-              fontSize={16}
-              maxFontSizeMultiplier={1.1}
-              marginLeft="xxs"
-              marginRight="xs"
-              color="black"
-            >
-              {up}
-            </Text>
-
-            <CarotRight color={blueBright} width={12} height={12} />
-            <Text
-              variant="body1"
-              maxFontSizeMultiplier={1.1}
-              fontSize={16}
-              marginLeft="xs"
-              flex={1}
-              color="grayDark"
-            >
-              {down}
-            </Text>
-          </>
-        )}
-        {!showDataRange && (
+      <Box flexDirection="column" onLayout={handleHeaderLayout}>
+        <Box flexDirection="row" justifyContent="space-between">
+          <Text
+            opacity={showDataRange ? 100 : 0}
+            variant="body2"
+            adjustsFontSizeToFit
+            numberOfLines={1}
+            color="grayDark"
+            fontSize={14}
+            maxFontSizeMultiplier={1}
+            maxWidth="40%"
+            marginTop="m"
+          >
+            {dataRange}
+          </Text>
           <HeliumSelect
             width={undefined}
             scrollEnabled={false}
@@ -181,20 +157,43 @@ const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
             onValueChanged={handleChartRangeChanged}
             marginBottom="l"
           />
-        )}
-        {showDataRange && (
+        </Box>
+        <Box
+          flexDirection="row"
+          alignItems="center"
+          marginTop="n_m"
+          marginBottom="s"
+          opacity={focusedData ? 100 : 0}
+        >
+          <CarotLeft
+            width={12}
+            height={12}
+            stroke={greenBright}
+            strokeWidth={2}
+          />
           <Text
-            maxWidth={150}
             variant="body2"
-            adjustsFontSizeToFit
-            numberOfLines={1}
-            color="grayDark"
             fontSize={16}
-            maxFontSizeMultiplier={1}
+            maxFontSizeMultiplier={1.1}
+            marginLeft="xxs"
+            marginRight="xs"
+            color="black"
           >
-            {dataRange}
+            {up}
           </Text>
-        )}
+
+          <CarotRight color={blueBright} width={12} height={12} />
+          <Text
+            variant="body1"
+            maxFontSizeMultiplier={1.1}
+            fontSize={16}
+            marginLeft="xs"
+            flex={1}
+            color="grayDark"
+          >
+            {down}
+          </Text>
+        </Box>
       </Box>
       {filter !== 'pending' && (
         <ChartContainer

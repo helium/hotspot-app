@@ -3,17 +3,20 @@ import { useTranslation } from 'react-i18next'
 import { Insets } from 'react-native'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import { SyncStatus } from '../../../utils/hotspotUtils'
+import { Colors } from '../../../theme/theme'
+import { HotspotSyncStatus } from '../root/hotspotTypes'
 
 type Props = {
   online?: string
+  isDataOnly: boolean
   onPress: () => void
-  syncStatus?: SyncStatus
+  syncStatus?: HotspotSyncStatus
   hitSlop?: Insets
 }
 
 const StatusBadge = ({
   online = 'offline',
+  isDataOnly,
   onPress,
   syncStatus,
   hitSlop,
@@ -21,21 +24,35 @@ const StatusBadge = ({
   const { t } = useTranslation()
 
   const title = useMemo(() => {
+    if (isDataOnly) {
+      return t('hotspot_details.status_data_only')
+    }
     if (online === 'online') {
-      if (syncStatus === undefined) {
-        return ''
-      }
-      if (syncStatus === SyncStatus.full) {
+      if (syncStatus === 'full') {
         return t('hotspot_details.status_online')
       }
       return t('hotspot_details.status_syncing')
     }
     return t('hotspot_details.status_offline')
-  }, [online, syncStatus, t])
+  }, [isDataOnly, online, syncStatus, t])
+
+  const textColor = useMemo((): Colors => {
+    if (isDataOnly) return 'grayText'
+
+    return 'white'
+  }, [isDataOnly])
+
+  const backgroundColor = useMemo((): Colors => {
+    if (isDataOnly) return 'grayLight'
+
+    if (online === 'offline') return 'orangeDark'
+
+    return 'greenOnline'
+  }, [isDataOnly, online])
 
   return (
     <TouchableOpacityBox
-      backgroundColor={online === 'online' ? 'greenOnline' : 'orangeDark'}
+      backgroundColor={backgroundColor}
       paddingHorizontal="s"
       hitSlop={hitSlop}
       borderRadius="l"
@@ -43,8 +60,9 @@ const StatusBadge = ({
       justifyContent="center"
       onPress={onPress}
       minWidth={60}
+      disabled={syncStatus === 'full' && online === 'online'}
     >
-      <Text color="white" variant="regular" fontSize={14}>
+      <Text color={textColor} variant="regular" fontSize={14}>
         {title}
       </Text>
     </TouchableOpacityBox>

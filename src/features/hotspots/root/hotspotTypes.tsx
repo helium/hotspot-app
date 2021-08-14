@@ -28,3 +28,5 @@ export const HotspotActivityFilters = {
   challenge_construction: ['poc_request_v1'],
   consensus_group: ['consensus_group_v1'],
 } as Record<HotspotActivityType, string[]>
+
+export type HotspotSyncStatus = 'full' | 'partial'
