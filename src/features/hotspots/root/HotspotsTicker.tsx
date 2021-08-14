@@ -17,6 +17,7 @@ import { useTextVariants } from '../../../theme/themeHooks'
 import { Theme } from '../../../theme/theme'
 import { locale } from '../../../utils/i18n'
 import useVisible from '../../../utils/useVisible'
+import { isTablet } from 'react-native-device-info'
 
 type Props = BoxProps<Theme>
 const HotspotsTicker = ({ ...boxProps }: Props) => {
@@ -82,7 +83,7 @@ const HotspotsTicker = ({ ...boxProps }: Props) => {
         repeatSpacer={0}
         easing={Easing.linear}
       >
-        {text}
+        {isTablet() ? text + text : text}
       </TextTicker>
     </Box>
   )
