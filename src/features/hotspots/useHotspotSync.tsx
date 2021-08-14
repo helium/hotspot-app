@@ -10,6 +10,7 @@ import hotspotsSlice from '../../store/hotspots/hotspotsSlice'
 import { useAppDispatch } from '../../store/store'
 import { hasValidCache } from '../../utils/cacheUtils'
 import { HotspotSyncStatus } from './root/hotspotTypes'
+import { getBlockHeight } from '../../utils/appDataClient'
 
 const useHotspotSync = (hotspot?: Hotspot | Witness) => {
   const { t } = useTranslation()
@@ -115,14 +116,10 @@ const useHotspotSync = (hotspot?: Hotspot | Witness) => {
     )
       return
 
-    const response = await fetch(
-      `https://api.helium.io/v1/blocks/height/?max_time=${hotspot.status.timestamp}`,
-    )
-    const body = await response.json()
-
+    const height = await getBlockHeight({ maxTime: hotspot.status.timestamp })
     const status = getSyncStatus({
       hotspotBlockHeight: hotspot.status.height,
-      blockHeight: body.data.height,
+      blockHeight: height,
     })
 
     if (!status) return

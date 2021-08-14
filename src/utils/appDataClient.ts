@@ -152,9 +152,9 @@ export const getAccountRewards = async (opts?: {
   return client.account(accountAddress).rewards.sum.get(endDate, initialDate)
 }
 
-export const getBlockHeight = () => {
+export const getBlockHeight = (params?: { maxTime?: string }) => {
   Logger.breadcrumb('getBlockHeight', breadcrumbOpts)
-  return client.blocks.getHeight()
+  return client.blocks.getHeight(params)
 }
 
 export const getBlockStats = () => {

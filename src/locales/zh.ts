@@ -833,7 +833,7 @@ export default {
       success: 'Hotspot 在 {{count}} 个区块前曾发出 Challenge。',
       success_plural: 'Hotspot 在 {{count}} 个区块前曾发出 Challenge。',
       fail:
-        'Hotspot 尚未发出 Challenge。Hotspot 每 360 个区块或大约每 6 小时会自动创建 Challenge。',
+        'Hotspot 尚未发出 Challenge。Hotspot 每 300 个区块或大约每 5 小时会自动创建 Challenge。',
       title: '创建 Challenge',
     },
     challenge_witness: {
@@ -852,7 +852,7 @@ export default {
       success: 'Hotspot 在 {{count}} 个区块前曾参与过一项 Challenge。',
       success_plural: 'Hotspot 在 {{count}} 个区块前曾参与过一项 Challenge。',
       fail:
-        '在线 Hotspot 每 360 个区块会创建 Challenge，创建过程可能会需要一段时间。',
+        '在线 Hotspot 每 300 个区块会创建 Challenge，创建过程可能会需要一段时间。',
       title: '通过 Challenge',
     },
     data_transfer: {

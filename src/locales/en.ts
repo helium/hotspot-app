@@ -337,8 +337,9 @@ export default {
       assert_loc_error_no_change_title: 'Location Unchanged',
       assert_loc_error_no_change_body:
         'The Hotspot location has not changed. Drag the pin to a different location and try again.',
-      no_onboarding_key_title: 'No onboarding key found',
-      no_onboarding_key_message: 'Would you like to try again?',
+      no_onboarding_key_title: 'Hotspot not found on Onboarding Server',
+      no_onboarding_key_message:
+        'Unable to add Hotspot. Please contact your Hotspot manufacturer for next steps.',
     },
     enable_location: {
       title: 'Set Hotspot\nLocation',
@@ -441,7 +442,7 @@ export default {
       title: 'Welcome to\nyour wallet',
       subtitle: 'Your balance is zero.',
       description:
-        'You can send HNT to the below address/QR or deploy a Hotspot to start learning.',
+        'You can send HNT to the below address/QR or deploy a Hotspot to start earning.',
     },
     title: 'My Wallet',
     copiedToClipboard: 'Copied {{address}} to clipboard',
@@ -668,7 +669,32 @@ export default {
       subtitle:
         'Here you’ll get news, updates and alerts about your Hotspots and The People’s Network.',
     },
+    helium_updates_empty: {
+      title: 'There are no Helium updates',
+      subtitle: "Stay tuned for upcoming news about The People's Network.",
+    },
+    hotspot_update_empty: {
+      title: 'There are no Hotspot notifications',
+      subtitle:
+        "Here is where you'll be notified when your Hotspot falls offline or comes back online.",
+    },
+    transfers_empty: {
+      title: 'There are no Hotspot Transfers',
+      subtitle:
+        "Here is where you'll find pending Hotspot transfer notifications.",
+    },
+    earnings_empty: {
+      title: 'No weekly earnings to report',
+      subtitle:
+        "Here is where you'll find weekly earnings notifications from your owned Hotspots.",
+    },
+    failed_empty: {
+      title: 'No failed transactions',
+      subtitle: 'Any failed transaction notification will appear here.',
+    },
+    all: 'All Messages',
     hotspot_updates: 'Hotspot Updates',
+    hotspot_transfers: 'Hotspot Transfers',
     helium_updates: 'Helium Updates',
     helium_update: 'Helium Update',
     weekly_earnings: 'Weekly Earnings',
@@ -733,6 +759,8 @@ export default {
     },
     diagnostics: {
       title: 'Diagnostic Report',
+      desc_info:
+        "Please add more details to the issue you're experiencing below",
       no_hotspots: 'No Hotspots Found',
       scan_again: 'Scan again',
       generating_report: 'Generating Report',
@@ -827,6 +855,7 @@ export default {
     no_location: 'No Location',
     picker_options: ['24H', '14D', '30D'],
     picker_prompt: 'Select Range',
+    status_data_only: 'Data-Only',
     status_online: 'Online',
     status_offline: 'Needs Attention',
     status_syncing: 'Syncing',
@@ -848,6 +877,11 @@ export default {
     no_location_body: 'Pair with the Hotspot to begin.',
     percent_synced: '{{percent}}% Synced',
     starting_sync: 'Starting Sync...',
+    data_only_prompt: {
+      title: 'Data-Only Hotspot Explained',
+      message:
+        'These Hotspots earn HNT for transmitting data packets from sensors.\n\nThey do not affect transmit scales and do not affect Hotspot Proof-of-Coverage earnings of nearby Hotspots.',
+    },
     relay_prompt: {
       title: 'Hotspot is Relayed',
       message:
@@ -954,7 +988,7 @@ export default {
       success: 'Hotspot issued a challenge {{count}} block ago.',
       success_plural: 'Hotspot issued a challenge {{count}} blocks ago.',
       fail:
-        "Hotspot hasn't issued a challenge yet. Hotspots create challenges automatically every 360 blocks, or approximately 6 hours.",
+        "Hotspot hasn't issued a challenge yet. Hotspots create challenges automatically every 300 blocks, or approximately 5 hours.",
       title: 'Create a Challenge',
     },
     challenge_witness: {
@@ -975,7 +1009,7 @@ export default {
       success_plural:
         'Hotspot last participated in a challenge {{count}} blocks ago.',
       fail:
-        'Online Hotspots are challenged every 360 blocks (or 6 hours). Hotspots send a Beacon (also known as a challenge) and if other Hotspot witness, they pass.',
+        'Online Hotspots are challenged every 300 blocks (or 5 hours). Hotspots send a Beacon (also known as a challenge) and if other Hotspot witness, they pass.',
       title: 'Pass a Challenge',
     },
     data_transfer: {

@@ -55,6 +55,7 @@ import { getAccountTxnsList } from '../../../utils/appDataClient'
 import usePermissionManager from '../../../utils/usePermissionManager'
 import useAlert from '../../../utils/useAlert'
 import { getLocationPermission } from '../../../store/location/locationSlice'
+import { isDataOnly } from '../../../utils/hotspotUtils'
 
 type State = 'init' | 'scan' | 'transfer' | 'discoveryMode' | 'updateHotspot'
 
@@ -86,6 +87,8 @@ const HotspotSettings = ({ hotspot }: Props) => {
     (state: RootState) => state.location,
   )
   const { showOKCancelAlert } = useAlert()
+
+  const dataOnly = useMemo(() => isDataOnly(hotspot), [hotspot])
 
   useEffect(() => {
     getState()
@@ -353,14 +356,16 @@ const HotspotSettings = ({ hotspot }: Props) => {
 
     return (
       <Box>
-        <HotspotSettingsOption
-          title={t('hotspot_settings.transfer.title')}
-          subtitle={transferButtonTitle}
-          buttonDisabled={hasActiveTransfer === undefined}
-          onPress={onPressTransferSetting}
-          compact
-          buttonIcon={<TransferIcon />}
-        />
+        {!dataOnly && (
+          <HotspotSettingsOption
+            title={t('hotspot_settings.transfer.title')}
+            subtitle={transferButtonTitle}
+            buttonDisabled={hasActiveTransfer === undefined}
+            onPress={onPressTransferSetting}
+            compact
+            buttonIcon={<TransferIcon />}
+          />
+        )}
         <Box backgroundColor="black" height={0.5} />
         <HotspotSettingsOption
           title={t('hotspot_settings.discovery.title')}
@@ -392,6 +397,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
     settingsState,
     t,
     transferButtonTitle,
+    dataOnly,
   ])
 
   return (
