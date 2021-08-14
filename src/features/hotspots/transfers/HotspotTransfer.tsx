@@ -3,7 +3,6 @@ import { Hotspot, Witness } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
-import { useSelector } from 'react-redux'
 import Text from '../../../components/Text'
 import TextInput from '../../../components/TextInput'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
@@ -14,7 +13,6 @@ import Button from '../../../components/Button'
 import { useHotspotSettingsContext } from '../settings/HotspotSettingsProvider'
 import { useColors } from '../../../theme/themeHooks'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
-import { RootState } from '../../../store/rootReducer'
 
 type Props = {
   onCloseTransfer: () => void
@@ -33,9 +31,6 @@ const HotspotTransfer = ({
   const [typedName, setTypedName] = useState('')
   const { enableBack } = useHotspotSettingsContext()
   const colors = useColors()
-  const isDeployModeEnabled = useSelector(
-    (state: RootState) => state.app.isDeployModeEnabled,
-  )
 
   useEffect(() => {
     enableBack(onCloseTransfer)
@@ -85,51 +80,38 @@ const HotspotTransfer = ({
         </Text>
       </Box>
       <Box padding="l" minHeight={340}>
-        {isDeployModeEnabled ? (
-          <Text
-            variant="body2"
-            color="redMain"
-            marginBottom="l"
-            maxFontSizeMultiplier={1.2}
-          >
-            {t('transfer.deployModeTransferDisabled')}
-          </Text>
-        ) : (
-          <>
-            <Text
-              variant="body2"
-              color="black"
-              marginBottom="l"
-              maxFontSizeMultiplier={1.2}
-            >
-              {t('transfer.body')}
-            </Text>
-            <Text
-              variant="h5"
-              color="black"
-              paddingBottom="l"
-              numberOfLines={1}
-              adjustsFontSizeToFit
-            >
-              {hotspotName.toUpperCase()}
-            </Text>
-            <TextInput
-              variant="medium"
-              placeholder={t('transfer.input_placeholder')}
-              onChangeText={handleTypeName}
-              value={typedName}
-              returnKeyType="done"
-            />
-            <Button
-              title={t('transfer.button_title')}
-              mode="contained"
-              variant="secondary"
-              paddingTop="m"
-              onPress={navigateToTransfer}
-              disabled={!typedHotspotName()}
-            />
-          </>
-        )}
+        <Text
+          variant="body2"
+          color="black"
+          marginBottom="l"
+          maxFontSizeMultiplier={1.2}
+        >
+          {t('transfer.body')}
+        </Text>
+        <Text
+          variant="h5"
+          color="black"
+          paddingBottom="l"
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
+          {hotspotName.toUpperCase()}
+        </Text>
+        <TextInput
+          variant="medium"
+          placeholder={t('transfer.input_placeholder')}
+          onChangeText={handleTypeName}
+          value={typedName}
+          returnKeyType="done"
+        />
+        <Button
+          title={t('transfer.button_title')}
+          mode="contained"
+          variant="secondary"
+          paddingTop="m"
+          onPress={navigateToTransfer}
+          disabled={!typedHotspotName()}
+        />
       </Box>
     </>
   )
