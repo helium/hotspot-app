@@ -32,7 +32,7 @@ const HotspotSetupConfirmLocationScreen = () => {
 
   const { params } = useRoute<Route>()
   const account = useSelector((state: RootState) => state.account.account)
-  const onboardingRecord = useSelector(
+  const connectedHotspotOnboardingRecord = useSelector(
     (state: RootState) => state.connectedHotspot.onboardingRecord,
   )
   const connectedHotspotDetails = useSelector(
@@ -44,9 +44,10 @@ const HotspotSetupConfirmLocationScreen = () => {
   const { loading, result, error } = useAsync(
     () =>
       loadLocationFeeData({
-        nonce: connectedHotspotDetails?.nonce,
+        nonce: connectedHotspotDetails?.nonce || 0,
         accountIntegerBalance: account?.balance?.integerBalance,
-        onboardingRecord,
+        onboardingRecord:
+          connectedHotspotOnboardingRecord || params?.onboardingRecord,
       }),
     [],
   )
