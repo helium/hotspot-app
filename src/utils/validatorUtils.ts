@@ -1,7 +1,7 @@
 import { Validator } from '@helium/http'
 
 export const isValidator = (item: unknown): item is Validator =>
-  (item as Validator).versionHeartbeat !== undefined
+  (item as Validator)?.versionHeartbeat !== undefined
 
 export const formatHeartbeatVersion = (versionHeartbeat: number) => {
   if (!versionHeartbeat) return

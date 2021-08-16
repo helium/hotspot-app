@@ -52,7 +52,9 @@ const ShareSheet = ({ item }: Props) => {
           if (!item?.address) return
 
           Share.share({
-            message: createAppLink('hotspot', item.address),
+            message: isValidator(item)
+              ? explorerUrl
+              : createAppLink('hotspot', item.address),
           })
           // TODO: Implement validator deep link
           // Share.share({
@@ -64,8 +66,10 @@ const ShareSheet = ({ item }: Props) => {
         },
       },
       {
-        label: `${t('generic.copy')} ${t('generic.address')}`,
-        value: 'copy',
+        label: `${t('generic.copy')} ${
+          isValidator(item) ? t('generic.validator') : t('generic.hotspot')
+        } ${t('generic.address')}`,
+        value: 'copy_hotspot',
         Icon: CopyIco,
         action: () => {
           if (!item?.address) return
@@ -77,6 +81,26 @@ const ShareSheet = ({ item }: Props) => {
             address.slice(0, 8),
             address.slice(-8),
           ].join('...')
+          Toast.show(
+            t('wallet.copiedToClipboard', { address: truncatedAddress }),
+          )
+        },
+      },
+      {
+        label: `${t('generic.copy')} ${t('generic.owner')} ${t(
+          'generic.address',
+        )}`,
+        value: 'copy_owner',
+        Icon: CopyIco,
+        action: () => {
+          if (!item?.owner) return
+
+          Clipboard.setString(item.owner)
+          triggerNotification('success')
+          const { owner } = item
+          const truncatedAddress = [owner.slice(0, 8), owner.slice(-8)].join(
+            '...',
+          )
           Toast.show(
             t('wallet.copiedToClipboard', { address: truncatedAddress }),
           )

@@ -110,6 +110,7 @@ export default {
     go_to_account: 'Go to My Account',
     go_to_settings: 'Go to Settings',
     hotspot: 'Hotspot',
+    validator: 'Validator',
     location: 'Location',
     unable_to_get_location: 'We were unable to get your location',
     location_blocked:
@@ -146,6 +147,7 @@ export default {
     seconds_plural: '{{count}} seconds',
     meters: '{{distance}}m',
     kilometers: '{{distance}}km',
+    owner: 'Owner',
   },
   hotspot_setup: {
     selection: {
