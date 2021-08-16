@@ -6,6 +6,9 @@ import animalName from 'angry-purple-tiger'
 import { FlatList } from 'react-native-gesture-handler'
 import { Keyboard, Platform } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import HotspotIcon from '@assets/images/hotspotPillIcon.svg'
+import ValidatorIcon from '@assets/images/validatorPillIcon.svg'
+import LocationIcon from '@assets/images/location.svg'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import SearchInput from '../../../components/SearchInput'
@@ -22,7 +25,7 @@ import usePrevious from '../../../utils/usePrevious'
 import { isHotspot } from '../../../utils/hotspotUtils'
 import { isValidator } from '../../../utils/validatorUtils'
 import { wh } from '../../../utils/layout'
-import { useSpacing } from '../../../theme/themeHooks'
+import { useColors, useSpacing } from '../../../theme/themeHooks'
 
 const ItemSeparatorComponent = () => <Box height={1} backgroundColor="white" />
 
@@ -41,6 +44,7 @@ const HotspotSearch = ({
   const dispatch = useAppDispatch()
   const { t } = useTranslation()
   const { top } = useSafeAreaInsets()
+  const colors = useColors()
   const spacing = useSpacing()
   const { results: listData, searchTerm } = useSelector(
     (state: RootState) => state.hotspotSearch,
@@ -92,10 +96,12 @@ const HotspotSearch = ({
       const isFirst = index === 0
       const isLast = index === listData.length - 1
 
+      let icon
       let title = ''
       let subtitle = ''
       if ('placeId' in item) {
         title = item.description
+        icon = <LocationIcon height={17} width={17} color={colors.offblack} />
       } else {
         title = animalName(item.address)
         if ('geocode' in item) {
@@ -106,12 +112,16 @@ const HotspotSearch = ({
             subtitle = t('hotspot_details.no_location_title')
           }
         }
-        if ('stake' in item) {
+        if (isValidator(item)) {
           subtitle = t('hotspots.owned.validator')
+          icon = <ValidatorIcon color={colors.purpleBright} />
+        } else {
+          icon = <HotspotIcon color={colors.blueBright} />
         }
       }
       return (
         <HotspotSearchListItem
+          icon={icon}
           title={title}
           subtitle={subtitle}
           isFirst={isFirst}
@@ -120,7 +130,14 @@ const HotspotSearch = ({
         />
       )
     },
-    [listData.length, onPressItem, t],
+    [
+      colors.blueBright,
+      colors.offblack,
+      colors.purpleBright,
+      listData.length,
+      onPressItem,
+      t,
+    ],
   )
 
   const paddingTop = useMemo(() => (Platform.OS === 'android' ? top : 0), [top])
