@@ -18,6 +18,7 @@ export type DiagnosticInfo = {
   ip: string
   nat_type: string
   wifi: string
+  disk: string
 }
 
 const parseWifi = (value: string): string[] => {
