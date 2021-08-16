@@ -857,6 +857,8 @@ export default {
     tenure: 'Tenure Penalty',
     block: 'Block {{height}}',
     block_elected: 'Block Elected {{block}}',
+    version_desc: 'Validator Version',
+    heartbeat_desc: 'Blocks since the last heartbeat transaction',
   },
   hotspot_details: {
     checklist: 'Progress',

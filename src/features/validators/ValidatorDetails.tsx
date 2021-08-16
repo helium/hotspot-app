@@ -31,6 +31,8 @@ import { formatHeartbeatVersion, isUnstaked } from '../../utils/validatorUtils'
 import FollowValidatorButton from '../../components/FollowValidatorButton'
 import ValidatorDetailsPenalties from './ValidatorDetailsPenalties'
 import ValidatorDetailsConsensus from './ValidatorDetailsConsensus'
+import { DebouncedTouchableOpacityBox } from '../../components/TouchableOpacityBox'
+import HotspotStatusBanner from '../hotspots/details/HotspotStatusBanner'
 
 export type HotspotSnapPoints = { collapsed: number; expanded: number }
 type Props = {
@@ -57,6 +59,9 @@ const ValidatorDetails = ({ validator }: Props) => {
       state.validators.walletValidators[validator?.address || ''],
   )
   const carouselRef = useRef<Carousel<HeliumSelectItemType>>(null)
+
+  const [showBanner, setShowBanner] = useState(false)
+  const [bannerText, setBannerText] = useState()
 
   const unstaked = useMemo(() => {
     if (!validator) return false
@@ -180,6 +185,17 @@ const ValidatorDetails = ({ validator }: Props) => {
 
   const carouselContainerStyle = useMemo(() => ({ paddingBottom: 50 }), [])
 
+  const toggleShowBanner = useCallback(
+    (text?) => {
+      const changedText = text && text !== bannerText
+      if (text) {
+        setBannerText(text)
+      }
+      setShowBanner(changedText ? true : !showBanner)
+    },
+    [bannerText, showBanner],
+  )
+
   return (
     <Box
       backgroundColor="white"
@@ -192,8 +208,13 @@ const ValidatorDetails = ({ validator }: Props) => {
       {validator && <FocusAwareStatusBar barStyle="dark-content" />}
       <ConsensusBanner visible={inConsensus} />
       <Box style={contentStyle} backgroundColor="grayBoxLight">
-        <Box padding="lm" backgroundColor="white">
-          <Box flexDirection="row" alignItems="center" marginBottom="lm">
+        <Box paddingVertical="lm" backgroundColor="white">
+          <Box
+            flexDirection="row"
+            alignItems="center"
+            marginBottom="lm"
+            paddingHorizontal="lm"
+          >
             <Box flexDirection="row" height={24} flex={1}>
               <Box
                 backgroundColor={isOnline ? 'greenOnline' : 'orangeDark'}
@@ -212,7 +233,7 @@ const ValidatorDetails = ({ validator }: Props) => {
                   {status}
                 </Text>
               </Box>
-              <Box
+              <DebouncedTouchableOpacityBox
                 backgroundColor="grayBoxLight"
                 borderRadius="round"
                 alignItems="center"
@@ -220,6 +241,9 @@ const ValidatorDetails = ({ validator }: Props) => {
                 justifyContent="center"
                 paddingHorizontal="xs"
                 marginLeft="s"
+                onPress={() =>
+                  toggleShowBanner(t('validator_details.version_desc'))
+                }
               >
                 <VersionHeartbeat />
                 <Text
@@ -229,9 +253,9 @@ const ValidatorDetails = ({ validator }: Props) => {
                 >
                   {formattedVersionHeartbeat}
                 </Text>
-              </Box>
+              </DebouncedTouchableOpacityBox>
               {blocksSinceLastHeartbeat && (
-                <Box
+                <DebouncedTouchableOpacityBox
                   backgroundColor="grayBoxLight"
                   borderRadius="round"
                   alignItems="center"
@@ -239,6 +263,9 @@ const ValidatorDetails = ({ validator }: Props) => {
                   justifyContent="center"
                   paddingHorizontal="xs"
                   marginLeft="s"
+                  onPress={() =>
+                    toggleShowBanner(t('validator_details.heartbeat_desc'))
+                  }
                 >
                   <Heartbeat />
                   <Text
@@ -248,9 +275,9 @@ const ValidatorDetails = ({ validator }: Props) => {
                   >
                     {blocksSinceLastHeartbeat}
                   </Text>
-                </Box>
+                </DebouncedTouchableOpacityBox>
               )}
-              <Box
+              <DebouncedTouchableOpacityBox
                 backgroundColor="grayBoxLight"
                 borderRadius="round"
                 alignItems="center"
@@ -258,6 +285,9 @@ const ValidatorDetails = ({ validator }: Props) => {
                 justifyContent="center"
                 paddingHorizontal="xs"
                 marginLeft="s"
+                onPress={() =>
+                  toggleShowBanner(t('validator_details.penalty_desc'))
+                }
               >
                 <Penalty />
                 <Text
@@ -267,7 +297,7 @@ const ValidatorDetails = ({ validator }: Props) => {
                 >
                   {validator?.penalty?.toFixed(2)}
                 </Text>
-              </Box>
+              </DebouncedTouchableOpacityBox>
               {unstaked && (
                 <Box
                   backgroundColor="purpleBox"
@@ -287,7 +317,19 @@ const ValidatorDetails = ({ validator }: Props) => {
             <FollowValidatorButton address={validator?.address || ''} />
             <ShareSheet item={validator} />
           </Box>
-          <Box marginBottom="lm">
+
+          <HotspotStatusBanner
+            hotspot={validator}
+            title=""
+            subtitle={bannerText}
+            backgroundColor="purpleBright"
+            textColor="grayDarkText"
+            marginBottom="l"
+            visible={showBanner}
+            onDismiss={toggleShowBanner}
+          />
+
+          <Box marginBottom="lm" paddingHorizontal="lm">
             <Text
               variant="light"
               fontSize={29}
@@ -309,7 +351,7 @@ const ValidatorDetails = ({ validator }: Props) => {
               {formattedHotspotName[1]}
             </Text>
           </Box>
-          <Box flexDirection="row" alignItems="center">
+          <Box flexDirection="row" alignItems="center" paddingHorizontal="lm">
             <LocationMarker />
             <Text
               variant="regular"
