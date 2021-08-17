@@ -1,5 +1,6 @@
 import { Hotspot } from '@helium/http'
 import { Feature, Position } from 'geojson'
+import { isNumber } from 'lodash'
 
 export const hotspotsToFeatures = (hotspots: Hotspot[]): Feature[] =>
   hotspots
@@ -27,7 +28,7 @@ export const findBounds = (
   coords: number[][],
   paddingBottom = 250,
 ): MapBounds | undefined => {
-  if (coords.length === 0) {
+  if (coords.length === 0 || !isNumber(coords[0]) || !isNumber(coords[1])) {
     return
   }
 
