@@ -627,7 +627,21 @@ export default {
         'Try typing a Hotspot or Validator Name (e.g. silly-animal-name) or a place name (e.g. New York City).\n\nNote: Hotspots and Validators added within the last 10 minutes may not appear.',
     },
     empty: {
-      body: "You haven't added or followed any Hotspots yet.",
+      title: 'Add a\nHelium Miner',
+      body: 'There are two types of miner\non the Helium Network:',
+      search: 'Search',
+      info: 'Info',
+      hotspots: {
+        title: 'Hotspots',
+        body:
+          'Hardware miners that participate in Proof-of-Coverage and mine HNT.',
+        add: 'Add Hotspot',
+      },
+      validators: {
+        title: 'Validators',
+        body:
+          'Validator nodes secure the Helium network by verifying transactions and adding blocks in Consensus Groups.',
+      },
       failed:
         'We’re having problems fetching your Hotspots due to an API or network outage. Please try again later.',
     },

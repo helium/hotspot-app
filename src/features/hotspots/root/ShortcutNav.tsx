@@ -219,6 +219,9 @@ const ShortcutNav = ({
   useEffect(() => {
     if (!initialDataLoaded) return
     const nextData = [...validators, ...GLOBAL_OPTS, ...hotspots]
+
+    if (nextData.length === data.length) return
+
     animateTransition('ShortcutNav.dataLoaded', { enabledOnAndroid: false })
     setData(nextData)
   }, [data.length, hotspots, initialDataLoaded, validators])
