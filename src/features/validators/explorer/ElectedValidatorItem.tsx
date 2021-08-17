@@ -66,7 +66,7 @@ const ElectedValidatorItem = ({
               <SkeletonPlaceholder>
                 <SkeletonPlaceholder.Item
                   height={12}
-                  width={50}
+                  width={90 - spacing.m}
                   borderRadius={spacing.m}
                   marginRight={spacing.m}
                   marginLeft={spacing.xs}
@@ -78,7 +78,7 @@ const ElectedValidatorItem = ({
                 variant="regular"
                 fontSize={12}
                 marginLeft="xs"
-                marginRight="m"
+                minWidth={90}
               >
                 {`+${earnings?.toString(2)}`}
               </Text>

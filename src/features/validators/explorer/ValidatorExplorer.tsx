@@ -72,20 +72,26 @@ const ValidatorExplorer = ({ visible, onSelectValidator }: Props) => {
 
   const Header = useCallback(
     () => (
-      <Box margin="m">
+      <Box marginVertical="m" marginHorizontal="l">
         <Text variant="h1" color="purpleBright" marginTop="m">
           {t('validator_details.consensus_group_title')}
         </Text>
-        <Text variant="body1" color="grayBlack" marginTop="s">
+        <Text variant="medium" fontSize={15} color="grayBlack" marginTop="s">
           {t('validator_details.elected_count', { count: consensusMembers })}
         </Text>
         <Box flexDirection="row" alignItems="center" marginTop="s">
           <RewardIcon color={colors.purpleMain} />
-          <Text color="grayDarkText" marginLeft="xs" marginRight="s">
+          <Text
+            color="black"
+            marginLeft="xs"
+            marginRight="s"
+            variant="light"
+            fontSize={13}
+          >
             {t('validator_details.earnings_desc')}
           </Text>
           <PenaltyIcon />
-          <Text color="grayDarkText" marginLeft="xs">
+          <Text color="black" marginLeft="xs" variant="light" fontSize={13}>
             {t('validator_details.penalty_desc')}
           </Text>
         </Box>
@@ -97,7 +103,7 @@ const ValidatorExplorer = ({ visible, onSelectValidator }: Props) => {
             width={10}
             backgroundColor="purpleBright"
           />
-          <Text marginLeft="xs" color="grayDarkText">
+          <Text marginLeft="xs" color="black" variant="light" fontSize={13}>
             {t('validator_details.consensus_desc')}
           </Text>
         </Box>

@@ -110,7 +110,9 @@ const HotspotsView = ({
   const animatedIndex = useSharedValue<number>(0)
   const [mapFilter, setMapFilter] = useState(MapFilters.owned)
   const [showTabs, setShowTabs] = useState(true)
-  const [exploreType, setExploreType] = useState('hotspots')
+  const [exploreType, setExploreType] = useState<'validators' | 'hotspots'>(
+    'hotspots',
+  )
   const [shortcutItem, setShortcutItem] = useState<
     GlobalOpt | Hotspot | Validator
   >(startOnMap ? 'explore' : 'home')
@@ -342,6 +344,7 @@ const HotspotsView = ({
     async (place: PlacePrediction) => {
       const placeLocation = await getPlaceGeography(place.placeId)
       setGlobalOption('explore')
+      setExploreType('hotspots')
       setLocation([placeLocation.lng, placeLocation.lat])
     },
     [setGlobalOption],
@@ -467,12 +470,16 @@ const HotspotsView = ({
         {
           label: t('explore_hotspots'),
           value: 'hotspots',
-          color: 'blueBright',
+          color: 'blueBright40',
+          textColor: 'purpleText',
+          selectedTextColor: 'blueBright',
         },
         {
           label: t('explore_validators'),
           value: 'validators',
-          color: 'purpleBright',
+          color: 'purpleBright40',
+          textColor: 'purpleText',
+          selectedTextColor: 'purpleBright',
         },
       ] as HeliumSelectItemType[],
     [t],
@@ -486,7 +493,7 @@ const HotspotsView = ({
             <HeliumSelect
               data={menuData}
               selectedValue={exploreType}
-              variant="bubble"
+              variant="bubbleBold"
               onValueChanged={onMenuChanged}
               showGradient={false}
               scrollEnabled={false}
