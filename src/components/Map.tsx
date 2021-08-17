@@ -18,6 +18,7 @@ import { BoxProps } from '@shopify/restyle'
 import { StyleProp, ViewStyle } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { h3ToGeo } from 'h3-js'
+import Config from 'react-native-config'
 import Box from './Box'
 import Text from './Text'
 import NoLocation from '../assets/images/no-location.svg'
@@ -26,8 +27,6 @@ import CurrentLocationButton from './CurrentLocationButton'
 import { theme, Theme } from '../theme/theme'
 import { useColors } from '../theme/themeHooks'
 import Coverage from './Coverage'
-
-const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
 
 const defaultLngLat = [-122.419418, 37.774929] // San Francisco
 
@@ -232,7 +231,7 @@ const Map = ({
         onRegionDidChange={onRegionDidChange}
         onRegionWillChange={onMapMoving}
         onDidFinishLoadingMap={onDidFinishLoad}
-        styleURL={styleURL}
+        styleURL={Config.MAPBOX_STYLE_URL}
         style={styles.map}
         logoEnabled={false}
         rotateEnabled={false}
