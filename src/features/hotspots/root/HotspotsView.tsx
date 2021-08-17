@@ -110,7 +110,9 @@ const HotspotsView = ({
   const animatedIndex = useSharedValue<number>(0)
   const [mapFilter, setMapFilter] = useState(MapFilters.owned)
   const [showTabs, setShowTabs] = useState(true)
-  const [exploreType, setExploreType] = useState('hotspots')
+  const [exploreType, setExploreType] = useState<'validators' | 'hotspots'>(
+    'hotspots',
+  )
   const [shortcutItem, setShortcutItem] = useState<
     GlobalOpt | Hotspot | Validator
   >(startOnMap ? 'explore' : 'home')
@@ -342,6 +344,7 @@ const HotspotsView = ({
     async (place: PlacePrediction) => {
       const placeLocation = await getPlaceGeography(place.placeId)
       setGlobalOption('explore')
+      setExploreType('hotspots')
       setLocation([placeLocation.lng, placeLocation.lat])
     },
     [setGlobalOption],

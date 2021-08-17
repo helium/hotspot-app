@@ -142,6 +142,12 @@ const HotspotSearch = ({
 
   const paddingTop = useMemo(() => (Platform.OS === 'android' ? top : 0), [top])
 
+  const contentContainerStyle = useMemo(
+    () => ({
+      paddingBottom: spacing.l,
+    }),
+    [spacing.l],
+  )
   return (
     <Box
       top={visible ? paddingTop : wh}
@@ -164,7 +170,7 @@ const HotspotSearch = ({
           />
           {!!searchTerm && (
             <FlatList
-              contentContainerStyle={{ paddingBottom: spacing.l }}
+              contentContainerStyle={contentContainerStyle}
               data={listData}
               keyboardShouldPersistTaps="always"
               keyExtractor={keyExtractor}
