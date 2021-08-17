@@ -467,12 +467,16 @@ const HotspotsView = ({
         {
           label: t('explore_hotspots'),
           value: 'hotspots',
-          color: 'blueBright',
+          color: 'blueBright40',
+          textColor: 'purpleText',
+          selectedTextColor: 'blueBright',
         },
         {
           label: t('explore_validators'),
           value: 'validators',
-          color: 'purpleBright',
+          color: 'purpleBright40',
+          textColor: 'purpleText',
+          selectedTextColor: 'purpleBright',
         },
       ] as HeliumSelectItemType[],
     [t],
@@ -486,7 +490,7 @@ const HotspotsView = ({
             <HeliumSelect
               data={menuData}
               selectedValue={exploreType}
-              variant="bubble"
+              variant="bubbleBold"
               onValueChanged={onMenuChanged}
               showGradient={false}
               scrollEnabled={false}
