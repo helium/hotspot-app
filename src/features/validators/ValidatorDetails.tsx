@@ -378,7 +378,7 @@ const ValidatorDetails = ({ validator }: Props) => {
           justifyContent="flex-start"
           backgroundColor="grayBoxLight"
           paddingTop="m"
-          minHeight={500}
+          minHeight="70%"
         >
           <HeliumSelect
             flex={undefined}
