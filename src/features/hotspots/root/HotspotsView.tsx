@@ -41,6 +41,7 @@ import useVisible from '../../../utils/useVisible'
 import {
   fetchFollowedValidators,
   fetchMyValidators,
+  fetchValidator,
 } from '../../../store/validators/validatorsSlice'
 import ValidatorDetails from '../../validators/ValidatorDetails'
 import {
@@ -324,20 +325,39 @@ const HotspotsView = ({
     [handlePresentHotspot, handlePresentValidator, setGlobalOption],
   )
 
-  useAsync(async () => {
-    if (!params?.address) return
-
-    // Fetch the hotspot for deep links
-    const fetchHotspot = async () => {
-      const hotspot = (await dispatch(fetchHotspotData(params.address))) as {
+  const handleHotspotLink = useCallback(
+    async (address: string) => {
+      const hotspot = (await dispatch(fetchHotspotData(address))) as {
         payload?: { hotspot: Hotspot }
       }
       if (!hotspot.payload?.hotspot) return
 
-      await handlePresentHotspot(hotspot.payload.hotspot)
-    }
+      handlePresentHotspot(hotspot.payload.hotspot)
+    },
+    [dispatch, handlePresentHotspot],
+  )
 
-    await fetchHotspot()
+  const handleValidatorLink = useCallback(
+    async (address: string) => {
+      const validator = (await dispatch(fetchValidator(address))) as {
+        payload: Validator
+      }
+      if (!validator.payload) return
+
+      handlePresentValidator(validator.payload)
+    },
+    [dispatch, handlePresentValidator],
+  )
+
+  useAsync(async () => {
+    if (!params?.address) return
+
+    // Deep link handling
+    if (params.resource === 'validator') {
+      handleValidatorLink(params.address)
+    } else {
+      handleHotspotLink(params.address)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params])
 

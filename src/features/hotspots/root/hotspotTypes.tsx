@@ -1,7 +1,9 @@
 import { StackNavigationProp } from '@react-navigation/stack'
 
 export type HotspotStackParamList = {
-  HotspotsScreen: undefined | { address: string }
+  HotspotsScreen:
+    | undefined
+    | { address: string; resource: 'validator' | 'hotspot' }
 }
 
 export type HotspotNavigationProp = StackNavigationProp<HotspotStackParamList>
