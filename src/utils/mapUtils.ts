@@ -28,7 +28,7 @@ export const findBounds = (
   coords: number[][],
   paddingBottom = 250,
 ): MapBounds | undefined => {
-  if (coords.length === 0 || !isNumber(coords[0]) || !isNumber(coords[1])) {
+  if (coords.length === 0) {
     return
   }
 
@@ -36,6 +36,15 @@ export const findBounds = (
   let maxLng = coords[0][0]
   let minLat = coords[0][1]
   let maxLat = coords[0][1]
+
+  if (
+    !isNumber(minLng) ||
+    !isNumber(maxLng) ||
+    !isNumber(minLat) ||
+    !isNumber(maxLat)
+  ) {
+    return
+  }
 
   coords.forEach((m) => {
     const [lng, lat] = m

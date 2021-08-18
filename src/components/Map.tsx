@@ -105,8 +105,6 @@ const Map = ({
   const centerUserLocation = useCallback(() => {
     const hasCoords =
       userCoords &&
-      userCoords.longitude &&
-      userCoords.latitude &&
       isNumber(userCoords.longitude) &&
       isNumber(userCoords.latitude)
     camera.current?.setCamera({
@@ -133,8 +131,6 @@ const Map = ({
   useEffect(() => {
     if (
       !showUserLocation ||
-      !userCoords.latitude ||
-      !userCoords.longitude ||
       !isNumber(userCoords.latitude) ||
       !isNumber(userCoords.longitude)
     )
@@ -209,8 +205,7 @@ const Map = ({
 
   const defaultCameraSettings = useMemo(() => {
     const centerCoordinate =
-      mapCenter &&
-      mapCenter.length === 2 &&
+      mapCenter?.length === 2 &&
       isNumber(mapCenter[0]) &&
       isNumber(mapCenter[1])
         ? mapCenter
