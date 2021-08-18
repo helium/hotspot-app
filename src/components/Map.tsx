@@ -19,6 +19,7 @@ import { StyleProp, ViewStyle } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { h3ToGeo } from 'h3-js'
 import Config from 'react-native-config'
+import { isNumber } from 'lodash'
 import Box from './Box'
 import Text from './Text'
 import NoLocation from '../assets/images/no-location.svg'
@@ -102,7 +103,10 @@ const Map = ({
   }, [onMapMoved])
 
   const centerUserLocation = useCallback(() => {
-    const hasCoords = userCoords && userCoords.longitude && userCoords.latitude
+    const hasCoords =
+      userCoords &&
+      isNumber(userCoords.longitude) &&
+      isNumber(userCoords.latitude)
     camera.current?.setCamera({
       centerCoordinate: hasCoords
         ? [userCoords.longitude, userCoords.latitude]
@@ -125,7 +129,11 @@ const Map = ({
   )
 
   useEffect(() => {
-    if (!showUserLocation || !userCoords.latitude || !userCoords.longitude)
+    if (
+      !showUserLocation ||
+      !isNumber(userCoords.latitude) ||
+      !isNumber(userCoords.longitude)
+    )
       return
 
     camera.current?.setCamera({
@@ -195,13 +203,18 @@ const Map = ({
     return findBounds(boundsLocations, cameraBottomOffset)
   }, [mapCenter, cameraBottomOffset, selectedHex, selectedHotspot, witnesses])
 
-  const defaultCameraSettings = useMemo(
-    () => ({
+  const defaultCameraSettings = useMemo(() => {
+    const centerCoordinate =
+      mapCenter?.length === 2 &&
+      isNumber(mapCenter[0]) &&
+      isNumber(mapCenter[1])
+        ? mapCenter
+        : defaultLngLat
+    return {
       zoomLevel,
-      centerCoordinate: mapCenter || defaultLngLat,
-    }),
-    [mapCenter, zoomLevel],
-  )
+      centerCoordinate,
+    }
+  }, [mapCenter, zoomLevel])
 
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
