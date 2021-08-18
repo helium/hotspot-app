@@ -2,27 +2,11 @@ import { useCallback } from 'react'
 import { Platform } from 'react-native'
 import { groupBy } from 'lodash'
 import { useTranslation } from 'react-i18next'
-import Mailer from 'react-native-mail'
 import {
   DiscoveryRequest,
   DiscoveryResponse,
 } from '../../../../store/discovery/discoveryTypes'
-import { error } from '../../../../utils/logger'
-
-export async function sendEmail(
-  subject: string,
-  body: string,
-  isHTML: boolean,
-) {
-  Mailer.mail(
-    {
-      subject,
-      body,
-      isHTML,
-    },
-    error,
-  )
-}
+import sendMail from '../../../../utils/sendMail'
 
 const useShareDiscovery = (request?: DiscoveryRequest | null) => {
   const { t } = useTranslation()
@@ -42,7 +26,11 @@ const useShareDiscovery = (request?: DiscoveryRequest | null) => {
         })
         .join('\n')
 
-      sendEmail(t('discovery.share.subject'), body, false)
+      sendMail({
+        subject: t('discovery.share.subject'),
+        body,
+        isHTML: false,
+      })
     },
     [t],
   )
@@ -76,7 +64,11 @@ const useShareDiscovery = (request?: DiscoveryRequest | null) => {
       </table>
     </html>`
 
-      sendEmail(t('discovery.share.subject'), body, true)
+      sendMail({
+        subject: t('discovery.share.subject'),
+        body,
+        isHTML: true,
+      })
     },
     [t],
   )
