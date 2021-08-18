@@ -8,7 +8,6 @@ import {
   getStatCounts,
 } from '../../utils/appDataClient'
 import { getCurrentPrices } from '../../utils/coinGeckoClient'
-import { signOut } from '../../utils/secureAccount'
 import { getMakers, Maker } from '../../utils/stakingClient'
 
 export type HeliumDataState = {
@@ -66,12 +65,7 @@ export const fetchInitialData = createAsyncThunk<HeliumDataState>(
 const heliumDataSlice = createSlice({
   name: 'heliumData',
   initialState,
-  reducers: {
-    signOut: () => {
-      signOut()
-      return { ...initialState, isRestored: true }
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder.addCase(fetchInitialData.fulfilled, (state, { payload }) => {
       state.currentOraclePrice = payload.currentOraclePrice

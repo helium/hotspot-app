@@ -16,7 +16,7 @@ import { NavigationContainer } from '@react-navigation/native'
 import { theme } from './theme/theme'
 import NavigationRoot from './navigation/NavigationRoot'
 import { useAppDispatch } from './store/store'
-import appSlice, { restoreUser } from './store/user/appSlice'
+import appSlice, { restoreAppSettings } from './store/user/appSlice'
 import { RootState } from './store/rootReducer'
 import { fetchData } from './store/account/accountSlice'
 import BluetoothProvider from './providers/BluetoothProvider'
@@ -36,6 +36,8 @@ import notificationSlice, {
 } from './store/notifications/notificationSlice'
 import AppLinkProvider from './providers/AppLinkProvider'
 import { navigationRef } from './navigation/navigator'
+import useSettingsRestore from './utils/useAccountSettings'
+import useMount from './utils/useMount'
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
@@ -70,6 +72,9 @@ const App = () => {
     isRequestingPermission,
     isLocked,
   } = useSelector((state: RootState) => state.app)
+
+  useSettingsRestore()
+
   const prevAppState = usePrevious(appState)
 
   const fetchDataStatus = useSelector(
@@ -130,21 +135,19 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appState])
 
-  // restore user and then fetch initial data
+  // update initial data when account is restored or app comes into foreground from background
   useEffect(() => {
-    if (!isRestored) {
-      dispatch(restoreUser())
-    } else {
+    if (
+      isRestored ||
+      (prevAppState === 'background' && appState === 'active')
+    ) {
       loadInitialData()
     }
-  }, [dispatch, loadInitialData, isRestored])
+  }, [dispatch, appState, prevAppState, loadInitialData, isRestored])
 
-  // update initial data when app comes into foreground from background
-  useEffect(() => {
-    if (prevAppState === 'background' && appState === 'active') {
-      loadInitialData()
-    }
-  }, [dispatch, appState, prevAppState, loadInitialData])
+  useMount(() => {
+    dispatch(restoreAppSettings())
+  })
 
   // hide splash screen
   useAsync(async () => {
