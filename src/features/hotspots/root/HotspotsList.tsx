@@ -17,7 +17,6 @@ import { HotspotSort } from '../../../store/hotspots/hotspotsSlice'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { wh } from '../../../utils/layout'
 import FocusAwareStatusBar from '../../../components/FocusAwareStatusBar'
-import HotspotsEmpty from './HotspotsEmpty'
 import { CacheRecord } from '../../../utils/cacheUtils'
 
 const HotspotsList = ({
@@ -25,16 +24,12 @@ const HotspotsList = ({
   visible,
   searchPressed,
   addHotspotPressed,
-  hasHotspots,
-  onRequestShowMap,
   accountRewards,
 }: {
   onSelectHotspot: (hotspot: Hotspot, showNav: boolean) => void
   visible: boolean
   searchPressed?: () => void
   addHotspotPressed?: () => void
-  hasHotspots: boolean
-  onRequestShowMap?: () => void
   accountRewards: CacheRecord<Sum>
 }) => {
   const colors = useColors()
@@ -165,21 +160,17 @@ const HotspotsList = ({
         </TouchableOpacityBox>
       </Box>
 
-      {hasHotspots ? (
-        <SectionList
-          sections={sections}
-          keyExtractor={keyExtractor}
-          ListHeaderComponent={
-            <WelcomeOverview accountRewards={accountRewards} />
-          }
-          renderSectionHeader={renderHeader}
-          renderItem={renderItem}
-          contentContainerStyle={contentContainerStyle}
-          showsVerticalScrollIndicator={false}
-        />
-      ) : (
-        <HotspotsEmpty onRequestShowMap={onRequestShowMap} />
-      )}
+      <SectionList
+        sections={sections}
+        keyExtractor={keyExtractor}
+        ListHeaderComponent={
+          <WelcomeOverview accountRewards={accountRewards} />
+        }
+        renderSectionHeader={renderHeader}
+        renderItem={renderItem}
+        contentContainerStyle={contentContainerStyle}
+        showsVerticalScrollIndicator={false}
+      />
     </Box>
   )
 }

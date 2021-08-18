@@ -52,6 +52,7 @@ import { isValidator } from '../../../utils/validatorUtils'
 import ValidatorExplorer from '../../validators/explorer/ValidatorExplorer'
 import HeliumSelect from '../../../components/HeliumSelect'
 import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
+import HotspotsEmpty from './HotspotsEmpty'
 
 type Props = {
   ownedHotspots?: Hotspot[]
@@ -350,10 +351,6 @@ const HotspotsView = ({
     [setGlobalOption],
   )
 
-  const dismissList = useCallback(() => {
-    setGlobalOption('explore')
-  }, [setGlobalOption])
-
   const hexHotspots = useMemo(() => {
     if (!selectedHexId) return []
     return hotspotsForHexId[selectedHexId]
@@ -419,15 +416,16 @@ const HotspotsView = ({
           toggleSettings={toggleSettings}
           animatedPosition={animatedIndex}
         />
-
         <HotspotsList
-          onRequestShowMap={dismissList}
           onSelectHotspot={handlePresentHotspot}
-          visible={shortcutItem === 'home'}
+          visible={hasHotspots && shortcutItem === 'home'}
           searchPressed={handleSearching(true)}
           addHotspotPressed={handleHotspotSetup}
-          hasHotspots={hasHotspots}
           accountRewards={accountRewards}
+        />
+        <HotspotsEmpty
+          visible={!hasHotspots && shortcutItem === 'home'}
+          onSearchPressed={handleSearching(true)}
         />
         <ValidatorDetails validator={selectedValidator} />
       </>
@@ -442,7 +440,6 @@ const HotspotsView = ({
     handleItemSelected,
     toggleSettings,
     animatedIndex,
-    dismissList,
     handleSearching,
     handleHotspotSetup,
     hasHotspots,
