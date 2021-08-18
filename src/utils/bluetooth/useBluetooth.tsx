@@ -61,7 +61,6 @@ const useBluetooth = () => {
         { allowDuplicates: false },
         (error, device) => {
           if (error) {
-            Logger.error(error)
             throw error
           }
 
@@ -92,10 +91,7 @@ const useBluetooth = () => {
         `Successfully discovered All Services and Characteristics for device: ${device.id}`,
       )
       return device
-    } catch (e) {
-      Logger.error(e)
-      throw e
-    }
+    } catch (e) {}
   }
 
   const findCharacteristic = async (
@@ -121,10 +117,7 @@ const useBluetooth = () => {
         } for service: ${service}`,
       )
       return characteristic
-    } catch (e) {
-      Logger.error(e)
-      throw e
-    }
+    } catch (e) {}
   }
 
   const readCharacteristic = async (
@@ -142,8 +135,7 @@ const useBluetooth = () => {
 
       return readChar
     } catch (e) {
-      Logger.error(e)
-      throw e
+      return {} as Characteristic
     }
   }
 
@@ -160,10 +152,7 @@ const useBluetooth = () => {
         `Successfully wrote Characteristic: ${writeChar.uuid} for service: ${writeChar.serviceUUID} with value ${writeChar.value}`,
       )
       return writeChar
-    } catch (e) {
-      Logger.error(e)
-      throw e
-    }
+    } catch (e) {}
   }
 
   const findAndReadCharacteristic = async (
