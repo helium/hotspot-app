@@ -6,20 +6,35 @@ import CopyIco from '@assets/images/copy.svg'
 import ShareHotspotIco from '@assets/images/shareHotspot.svg'
 import GlobeIco from '@assets/images/globe.svg'
 import Clipboard from '@react-native-community/clipboard'
+import Visibility from '@assets/images/visibility.svg'
+import VisibilityOff from '@assets/images/visibility_off.svg'
 import { Linking, Share } from 'react-native'
 import Toast from 'react-native-simple-toast'
+import { useSelector } from 'react-redux'
 import HeliumActionSheet from './HeliumActionSheet'
 import { HeliumActionSheetItemType } from './HeliumActionSheetItem'
 import { TouchableOpacityBoxProps } from './TouchableOpacityBox'
 import useHaptic from '../utils/useHaptic'
 import { EXPLORER_BASE_URL } from '../utils/config'
 import { createAppLink } from '../providers/AppLinkProvider'
+import { useAppDispatch } from '../store/store'
+import { hideHotspot, showHotspot } from '../store/hotspots/hotspotsSlice'
+import { RootState } from '../store/rootReducer'
 
 type Props = { hotspot: Hotspot | Witness }
 const ShareHotspot = ({ hotspot }: Props) => {
   const { t } = useTranslation()
+  const dispatch = useAppDispatch()
   const { triggerNotification } = useHaptic()
   const explorerUrl = `${EXPLORER_BASE_URL}/hotspots/${hotspot.address}`
+
+  const hiddenAddresses = useSelector(
+    (state: RootState) => state.hotspots.hiddenAddresses,
+  )
+  const isHidden = useMemo(() => hiddenAddresses.has(hotspot.address), [
+    hiddenAddresses,
+    hotspot.address,
+  ])
 
   const buttonProps = useMemo(
     () =>
@@ -63,8 +78,19 @@ const ShareHotspot = ({ hotspot }: Props) => {
           )
         },
       },
+      {
+        label: isHidden ? 'Show Hotspot' : 'Hide Hotspot',
+        value: 'visibility',
+        Icon: isHidden ? VisibilityOff : Visibility,
+        action: () =>
+          dispatch(
+            isHidden
+              ? showHotspot(hotspot.address)
+              : hideHotspot(hotspot.address),
+          ),
+      },
     ] as HeliumActionSheetItemType[]
-  }, [explorerUrl, hotspot, t, triggerNotification])
+  }, [dispatch, explorerUrl, hotspot, isHidden, t, triggerNotification])
 
   return (
     <HeliumActionSheet

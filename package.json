@@ -81,6 +81,7 @@
     "geojson2h3": "^1.1.1",
     "h3-js": "3.7.1",
     "i18next": "^19.8.3",
+    "immer": "^9.0.5",
     "lodash": "^4.17.20",
     "lottie-ios": "3.1.8",
     "lottie-react-native": "^4.0.2",

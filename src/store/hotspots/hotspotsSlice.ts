@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { Hotspot } from '@helium/http'
 import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
 import { orderBy, sortBy, uniq } from 'lodash'
@@ -34,6 +34,7 @@ type Rewards = Record<string, Balance<NetworkTokens>>
 export type HotspotsSliceState = {
   hotspots: Hotspot[]
   orderedHotspots: Hotspot[]
+  hiddenAddresses: Set<string>
   loadingOrderedHotspots: boolean
   followedHotspotsObj: Record<string, Hotspot>
   followedHotspots: Hotspot[]
@@ -51,6 +52,7 @@ const initialState: HotspotsSliceState = {
   orderedHotspots: [],
   followedHotspotsObj: {},
   followedHotspots: [],
+  hiddenAddresses: new Set([]),
   order: HotspotSort.Followed,
   loadingRewards: false,
   loadingOrderedHotspots: false,
@@ -252,6 +254,10 @@ export const unfollowHotspot = createAsyncThunk<Hotspot[], string>(
   },
 )
 
+export const hideHotspot = createAction<string>('hotspots/hideHotspot')
+
+export const showHotspot = createAction<string>('hotspots/showHotspot')
+
 const hotspotsToObj = (hotspots: Hotspot[]) =>
   hotspots.reduce((obj, hotspot) => {
     return {
@@ -376,6 +382,12 @@ const hotspotsSlice = createSlice({
         }
       },
     )
+    builder.addCase(hideHotspot, (state, action) => {
+      state.hiddenAddresses.add(action.payload)
+    })
+    builder.addCase(showHotspot, (state, action) => {
+      state.hiddenAddresses.delete(action.payload)
+    })
   },
 })
 
