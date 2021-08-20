@@ -5,7 +5,6 @@ import { orderBy, sortBy, uniq } from 'lodash'
 import { getHotspotDetails, getHotspots } from '../../utils/appDataClient'
 import { distance, LocationCoords } from '../../utils/location'
 import { getWallet, deleteWallet, postWallet } from '../../utils/walletClient'
-import * as Logger from '../../utils/logger'
 import { CacheRecord, handleCacheFulfilled } from '../../utils/cacheUtils'
 import { HotspotSyncStatus } from '../../features/hotspots/root/hotspotTypes'
 import { WalletReward } from '../rewards/rewardsSlice'
@@ -124,11 +123,7 @@ export const fetchHotspotsData = createAsyncThunk(
       [
         getHotspots(),
         getWallet('hotspots/follow', null, { camelCase: true }),
-      ].map((p) =>
-        p.catch((e) => {
-          Logger.error(e)
-        }),
-      ),
+      ].map((p) => p.catch(() => {})),
     )
 
     const [hotspots = [], followedHotspots = []]: [
@@ -158,9 +153,7 @@ export const followHotspot = createAsyncThunk<
   let blockHotspot: Hotspot | null = null
   try {
     blockHotspot = await getHotspotDetails(hotspotAddress)
-  } catch (e) {
-    Logger.error(e)
-  }
+  } catch (e) {}
 
   let hotspotRewards: Balance<NetworkTokens> | null = null
   try {
@@ -174,9 +167,7 @@ export const followHotspot = createAsyncThunk<
         CurrencyType.networkToken,
       )
     }
-  } catch (e) {
-    Logger.error(e)
-  }
+  } catch (e) {}
 
   return {
     followed: sanitizeWalletHotspots(followed),

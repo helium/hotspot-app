@@ -794,6 +794,11 @@ export default {
       eth_mac: 'Ethernet MAC',
       nat_type: 'NAT Type',
       ip: 'IP Address',
+      disk: 'Disk',
+      disk_read_only: 'Read-Only',
+      disk_no_data: 'No Data Available',
+      disk_read_only_instructions:
+        'Contact your Manufacturer for a replacement. Hotspot unable to sync due to hardware failure.',
       report_generated: 'Report Generated',
       send_to_support: 'Send Report to Support',
       help_link: 'Read more for possible solutions',

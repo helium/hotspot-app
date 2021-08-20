@@ -1,10 +1,10 @@
 import { kebabCase } from 'lodash'
 import animalHash from 'angry-purple-tiger'
 import { getDeviceId } from 'react-native-device-info'
-import { Linking, Platform } from 'react-native'
-import qs from 'qs'
+import { Platform } from 'react-native'
+import sendMail from '../../../utils/sendMail'
 
-export default async ({
+export default ({
   eth,
   wifi,
   fw,
@@ -12,6 +12,7 @@ export default async ({
   dialable,
   natType,
   ip,
+  disk,
   height,
   lastChallengeDate,
   reportGenerated,
@@ -28,6 +29,7 @@ export default async ({
   dialable: string
   natType: string
   ip: string
+  disk: string
   height: string
   lastChallengeDate: string
   reportGenerated: string
@@ -44,8 +46,6 @@ export default async ({
     return `${deviceName} | ${osName} ${osVersion}`
   }
 
-  let url = `mailto:${supportEmail}`
-
   const body = [
     `**${descriptionInfo}**\n\n`,
     `Hotspot: ${kebabCase(animalHash(gateway))}`,
@@ -61,22 +61,15 @@ export default async ({
     `Eth MAC: ${eth}`,
     `NAT Type: ${natType}`,
     `IP Address: ${ip}`,
+    `Disk status: ${disk}`,
     `Report Generated: ${reportGenerated}`,
     `Device Info: ${deviceNameAndOS()}`,
   ].join('\n')
 
-  const query = qs.stringify({
+  sendMail({
     subject: 'Diagnostic Report',
     body,
+    isHTML: false,
+    recipients: [supportEmail],
   })
-
-  if (query.length) {
-    url += `?${query}`
-  }
-
-  const canOpen = await Linking.canOpenURL(url)
-
-  if (canOpen) {
-    Linking.openURL(url)
-  }
 }
