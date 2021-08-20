@@ -15,6 +15,7 @@ import MapboxGL, {
 import { BoxProps } from '@shopify/restyle'
 import { Platform, StyleProp } from 'react-native'
 import { Position } from 'geojson'
+import Config from 'react-native-config'
 import { Theme } from '../../../../theme/theme'
 import Box from '../../../../components/Box'
 import { DiscoveryResponse } from '../../../../store/discovery/discoveryTypes'
@@ -22,8 +23,6 @@ import { findBounds } from '../../../../utils/mapUtils'
 import { useColors } from '../../../../theme/themeHooks'
 import useVisible from '../../../../utils/useVisible'
 import Coverage from '../../../../components/Coverage'
-
-const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
 
 type Props = BoxProps<Theme> & {
   responses: DiscoveryResponse[]
@@ -99,7 +98,7 @@ const DiscoveryMap = ({
         <MapboxGL.MapView
           ref={mapRef}
           style={styles.map}
-          styleURL={styleURL}
+          styleURL={Config.MAPBOX_STYLE_URL}
           onRegionDidChange={onRegionDidChange}
           logoEnabled={false}
           compassEnabled={false}
