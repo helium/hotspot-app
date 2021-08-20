@@ -45,6 +45,12 @@ const HotspotsList = ({
   const orderedHotspots = useSelector(
     (state: RootState) => state.hotspots.orderedHotspots,
   )
+  const hiddenAddresses = useSelector(
+    (state: RootState) => state.hotspots.hiddenAddresses,
+  )
+  const showHiddenHotspots = useSelector(
+    (state: RootState) => state.app.showHiddenHotspots,
+  )
   const rewards = useSelector(
     (state: RootState) => state.hotspots.rewards || {},
   )
@@ -52,32 +58,39 @@ const HotspotsList = ({
 
   const { t } = useTranslation()
 
+  const visibleHotspots = useMemo(() => {
+    if (showHiddenHotspots) {
+      return orderedHotspots
+    }
+    return orderedHotspots.filter((h) => !hiddenAddresses.has(h.address)) || []
+  }, [hiddenAddresses, orderedHotspots, showHiddenHotspots])
+
   const handlePress = useCallback(
     (hotspot: Hotspot) => {
-      onSelectHotspot(hotspot, orderedHotspots.length > 1)
+      onSelectHotspot(hotspot, visibleHotspots.length > 1)
     },
-    [onSelectHotspot, orderedHotspots.length],
+    [onSelectHotspot, visibleHotspots.length],
   )
 
   const hasOfflineHotspot = useMemo(
-    () => orderedHotspots.some((h: Hotspot) => h.status?.online !== 'online'),
-    [orderedHotspots],
+    () => visibleHotspots.some((h: Hotspot) => h.status?.online !== 'online'),
+    [visibleHotspots],
   )
 
   const sections = useMemo(() => {
-    let data = orderedHotspots
+    let data = visibleHotspots
     if (order === HotspotSort.Offline && hasOfflineHotspot) {
-      data = orderedHotspots.filter((h) => h.status?.online !== 'online')
+      data = visibleHotspots.filter((h) => h.status?.online !== 'online')
     }
     return [
       {
         data,
       },
     ]
-  }, [hasOfflineHotspot, order, orderedHotspots])
+  }, [hasOfflineHotspot, order, visibleHotspots])
 
   const renderHeader = useCallback(() => {
-    const filterHasHotspots = orderedHotspots && orderedHotspots.length > 0
+    const filterHasHotspots = visibleHotspots && visibleHotspots.length > 0
     return (
       <Box
         paddingVertical="s"
@@ -113,7 +126,7 @@ const HotspotsList = ({
         )}
       </Box>
     )
-  }, [orderedHotspots, visible, order, hasOfflineHotspot, t])
+  }, [visibleHotspots, visible, order, hasOfflineHotspot, t])
 
   const renderItem = useCallback(
     ({ item }) => {
@@ -124,10 +137,11 @@ const HotspotsList = ({
           showCarot
           loading={loadingRewards}
           totalReward={rewards[item.address]}
+          hidden={hiddenAddresses.has(item.address)}
         />
       )
     },
-    [handlePress, loadingRewards, rewards],
+    [handlePress, hiddenAddresses, loadingRewards, rewards],
   )
 
   const contentContainerStyle = useMemo(

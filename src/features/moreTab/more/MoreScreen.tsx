@@ -143,6 +143,10 @@ const MoreScreen = () => {
     )
   }, [app.isFleetModeEnabled, dispatch, fleetModeLowerLimit, showOKCancelAlert])
 
+  const handleShowHiddenHotspots = useCallback(() => {
+    dispatch(appSlice.actions.updateShowHiddenHotspots(!app.showHiddenHotspots))
+  }, [dispatch, app.showHiddenHotspots])
+
   const handleSignOut = useCallback(() => {
     Alert.alert(
       t('more.sections.app.signOutAlert.title'),
@@ -287,6 +291,11 @@ const MoreScreen = () => {
             value: app.isFleetModeEnabled,
           },
           {
+            title: t('more.sections.app.showHiddenHotspots'),
+            onToggle: handleShowHiddenHotspots,
+            value: app.showHiddenHotspots,
+          },
+          {
             title: t('more.sections.app.signOut'),
             onPress: handleSignOut,
             destructive: true,
@@ -296,20 +305,22 @@ const MoreScreen = () => {
       },
     ]
   }, [
-    app.isFleetModeEnabled,
+    t,
+    handlePinRequired,
     app.isPinRequired,
     app.isHapticDisabled,
     app.convertHntToCurrency,
+    app.isFleetModeEnabled,
+    app.showHiddenHotspots,
     app.authInterval,
     app.isPinRequiredForPayment,
-    t,
-    handlePinRequired,
     handleRevealWords,
     language,
     handleLanguageChange,
     handleHaptic,
     handleConvertHntToCurrency,
     handleFleetMode,
+    handleShowHiddenHotspots,
     handleSignOut,
     version,
     authIntervals,

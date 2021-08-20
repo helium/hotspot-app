@@ -19,6 +19,12 @@ const HotspotsScreen = () => {
   const maybeGetLocation = useGetLocation()
   const { showOKAlert } = useAlert()
   const hotspots = useSelector((state: RootState) => state.hotspots.hotspots)
+  const hiddenAddresses = useSelector(
+    (state: RootState) => state.hotspots.hiddenAddresses,
+  )
+  const showHiddenHotspots = useSelector(
+    (state: RootState) => state.app.showHiddenHotspots,
+  )
   const followedHotspots = useSelector(
     (state: RootState) => state.hotspots.followedHotspots,
   )
@@ -41,6 +47,13 @@ const HotspotsScreen = () => {
     (state: RootState) => state.location,
   )
 
+  const visibleHotspots = useMemo(() => {
+    if (showHiddenHotspots) {
+      return hotspots
+    }
+    return hotspots.filter((h) => !hiddenAddresses.has(h.address)) || []
+  }, [hiddenAddresses, hotspots, showHiddenHotspots])
+
   const browseMap = useCallback(async () => {
     setStartOnMap(true)
     maybeGetLocation(true)
@@ -56,7 +69,7 @@ const HotspotsScreen = () => {
       hasFleetModeAutoEnabled === undefined ||
       hasFleetModeAutoEnabled ||
       fleetModeLowerLimit === undefined ||
-      hotspots.length < fleetModeLowerLimit
+      visibleHotspots.length < fleetModeLowerLimit
     )
       return
 
@@ -75,7 +88,7 @@ const HotspotsScreen = () => {
     fleetModeEnabled,
     fleetModeLowerLimit,
     hasFleetModeAutoEnabled,
-    hotspots,
+    visibleHotspots,
     showOKAlert,
   ])
 
@@ -88,21 +101,30 @@ const HotspotsScreen = () => {
 
   useEffect(() => {
     dispatch(fetchRewards({ fetchType: fleetModeEnabled ? 'followed' : 'all' }))
-  }, [hotspots, dispatch, fleetModeEnabled])
+  }, [visibleHotspots, dispatch, fleetModeEnabled])
 
   const viewState = useMemo(() => {
     if (!hotspotsLoaded) return 'loading'
-    if (hotspots.length === 0 && followedHotspots.length === 0 && !location)
+    if (
+      visibleHotspots.length === 0 &&
+      followedHotspots.length === 0 &&
+      !location
+    )
       return 'empty'
     return 'view'
-  }, [followedHotspots.length, hotspots.length, hotspotsLoaded, location])
+  }, [
+    followedHotspots.length,
+    visibleHotspots.length,
+    hotspotsLoaded,
+    location,
+  ])
 
   return (
     <Box backgroundColor="primaryBackground" flex={1}>
       <BottomSheetModalProvider>
         {viewState !== 'loading' && (
           <HotspotsView
-            ownedHotspots={hotspots}
+            ownedHotspots={visibleHotspots}
             followedHotspots={followedHotspots}
             startOnMap={startOnMap}
             location={coords}

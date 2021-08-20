@@ -25,6 +25,7 @@ const boolKeys = [
   'convertHntToCurrency',
   'fleetModeEnabled',
   'hasFleetModeAutoEnabled',
+  'showHiddenHotspots',
 ] as const
 type BooleanKey = typeof boolKeys[number]
 

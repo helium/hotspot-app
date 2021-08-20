@@ -81,7 +81,7 @@ const ShareHotspot = ({ hotspot }: Props) => {
       {
         label: isHidden ? 'Show Hotspot' : 'Hide Hotspot',
         value: 'visibility',
-        Icon: isHidden ? VisibilityOff : Visibility,
+        Icon: isHidden ? Visibility : VisibilityOff,
         action: () =>
           dispatch(
             isHidden

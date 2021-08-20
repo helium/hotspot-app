@@ -12,6 +12,7 @@ import { Intervals } from '../../features/moreTab/more/useAuthIntervals'
 export type AppState = {
   isBackedUp: boolean
   isHapticDisabled: boolean
+  showHiddenHotspots: boolean
   isFleetModeEnabled: boolean
   hasFleetModeAutoEnabled: boolean
   convertHntToCurrency: boolean
@@ -27,6 +28,7 @@ export type AppState = {
 const initialState: AppState = {
   isBackedUp: false,
   isHapticDisabled: false,
+  showHiddenHotspots: false,
   isFleetModeEnabled: false,
   convertHntToCurrency: false,
   isSettingUpHotspot: false,
@@ -59,6 +61,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       isPinRequiredForPayment,
       authInterval,
       isHapticDisabled,
+      showHiddenHotspots,
       convertHntToCurrency,
       address,
       isFleetModeEnabled,
@@ -69,6 +72,7 @@ export const restoreUser = createAsyncThunk<Restore>(
       getSecureItem('requirePinForPayment'),
       getSecureItem('authInterval'),
       getSecureItem('hapticDisabled'),
+      getSecureItem('showHiddenHotspots'),
       getSecureItem('convertHntToCurrency'),
       getSecureItem('address'),
       getSecureItem('fleetModeEnabled'),
@@ -88,6 +92,7 @@ export const restoreUser = createAsyncThunk<Restore>(
         : Intervals.IMMEDIATELY,
       isLocked: isPinRequired,
       isHapticDisabled,
+      showHiddenHotspots,
       convertHntToCurrency,
       isFleetModeEnabled,
       hasFleetModeAutoEnabled,
@@ -121,6 +126,10 @@ const appSlice = createSlice({
     updateHapticEnabled: (state, action: PayloadAction<boolean>) => {
       state.isHapticDisabled = action.payload
       setSecureItem('hapticDisabled', action.payload)
+    },
+    updateShowHiddenHotspots: (state, action: PayloadAction<boolean>) => {
+      state.showHiddenHotspots = action.payload
+      setSecureItem('showHiddenHotspots', action.payload)
     },
     updateFleetModeEnabled: (
       state,

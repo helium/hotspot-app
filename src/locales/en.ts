@@ -562,6 +562,7 @@ export default {
         title: 'App',
         enableHapticFeedback: 'Enable Haptic Feedback',
         enableFleetMode: 'Enable Fleet Mode',
+        showHiddenHotspots: 'Show Hidden Hotspots',
         convertHntToCurrency: 'Convert HNT to Currency',
         language: 'Language',
         signOut: 'Sign Out',
