@@ -19,7 +19,7 @@ import { StyleProp, ViewStyle } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { h3ToGeo } from 'h3-js'
 import Config from 'react-native-config'
-import { isNumber } from 'lodash'
+import { isFinite } from 'lodash'
 import Box from './Box'
 import Text from './Text'
 import NoLocation from '../assets/images/no-location.svg'
@@ -105,8 +105,8 @@ const Map = ({
   const centerUserLocation = useCallback(() => {
     const hasCoords =
       userCoords &&
-      isNumber(userCoords.longitude) &&
-      isNumber(userCoords.latitude)
+      isFinite(userCoords.longitude) &&
+      isFinite(userCoords.latitude)
     camera.current?.setCamera({
       centerCoordinate: hasCoords
         ? [userCoords.longitude, userCoords.latitude]
@@ -131,8 +131,8 @@ const Map = ({
   useEffect(() => {
     if (
       !showUserLocation ||
-      !isNumber(userCoords.latitude) ||
-      !isNumber(userCoords.longitude)
+      !isFinite(userCoords.latitude) ||
+      !isFinite(userCoords.longitude)
     )
       return
 
@@ -206,8 +206,8 @@ const Map = ({
   const defaultCameraSettings = useMemo(() => {
     const centerCoordinate =
       mapCenter?.length === 2 &&
-      isNumber(mapCenter[0]) &&
-      isNumber(mapCenter[1])
+      isFinite(mapCenter[0]) &&
+      isFinite(mapCenter[1])
         ? mapCenter
         : defaultLngLat
     return {
