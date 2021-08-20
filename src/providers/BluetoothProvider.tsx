@@ -7,6 +7,7 @@ const initialState = {
   enable: async () => new Promise<BleManager>((resolve) => resolve()),
   scan: async () => {},
   connect: async () => undefined,
+  disconnect: async () => undefined,
   discoverAllServicesAndCharacteristics: async () => undefined,
   findAndReadCharacteristic: () =>
     new Promise<undefined>((resolve) => resolve()),

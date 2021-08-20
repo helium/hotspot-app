@@ -38,6 +38,21 @@ const useBluetooth = () => {
 
   const enable = async () => getBleManager().enable()
 
+  const disconnect = async (
+    hotspotDevice: Device,
+  ): Promise<Device | undefined> => {
+    Logger.breadcrumb('Disconnect hotspot requested')
+
+    try {
+      const device = await hotspotDevice.cancelConnection()
+      Logger.breadcrumb('Hotspot Disconnected')
+      return device
+    } catch (e) {
+      Logger.error(e)
+      throw e
+    }
+  }
+
   const connect = async (
     hotspotDevice: Device,
   ): Promise<Device | undefined> => {
@@ -180,6 +195,7 @@ const useBluetooth = () => {
     enable,
     scan,
     connect,
+    disconnect,
     discoverAllServicesAndCharacteristics,
     findAndReadCharacteristic,
     findAndWriteCharacteristic,

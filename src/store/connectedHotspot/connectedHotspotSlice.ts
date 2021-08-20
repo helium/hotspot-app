@@ -124,6 +124,9 @@ const connectedHotspotSlice = createSlice({
     signOut: () => {
       return { ...initialState }
     },
+    reset: () => {
+      return { ...initialState }
+    },
     initConnectedHotspot: (state, action: PayloadAction<HotspotDetails>) => {
       Object.assign(state, action.payload)
       state.status = 'initial'

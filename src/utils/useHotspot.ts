@@ -59,6 +59,7 @@ const useHotspot = () => {
   const {
     scan,
     connect,
+    disconnect,
     discoverAllServicesAndCharacteristics,
     findAndReadCharacteristic,
     findAndWriteCharacteristic,
@@ -130,6 +131,22 @@ const useHotspot = () => {
   const connectAndConfigHotspot = async (
     hotspotDevice: Device,
   ): Promise<HotspotConnectStatus> => {
+    dispatch(connectedHotspotSlice.actions.reset())
+    const prevDevice = connectedHotspot.current
+    if (prevDevice) {
+      const prevConnected = await prevDevice.isConnected()
+      if (prevConnected) {
+        try {
+          await disconnect(prevDevice)
+        } catch (e) {
+          Logger.error(
+            new Error(`Could not disconnect previous hotspot ${prevDevice.id}`),
+          )
+        }
+        connectedHotspot.current = null
+      }
+    }
+
     let connectedDevice = hotspotDevice
     const connected = await hotspotDevice.isConnected()
     if (!connected) {
