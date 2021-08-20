@@ -7,6 +7,7 @@ import LittleHotspot from '@assets/images/littleHotspot.svg'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
 import useCurrency from '../../../../utils/useCurrency'
+import { useColors } from '../../../../theme/themeHooks'
 
 type Reward = {
   type: string
@@ -27,6 +28,7 @@ const ActivityRewardLine = ({
   showTitle,
 }: Props) => {
   const { t } = useTranslation()
+  const colors = useColors()
   const { hntBalanceToDisplayVal, toggleConvertHntToCurrency } = useCurrency()
   const [reward, setReward] = useState('')
 
@@ -55,10 +57,10 @@ const ActivityRewardLine = ({
 
   const icon = useCallback(() => {
     if (isSecurityToken) {
-      return <HeliumReward />
+      return <HeliumReward color={colors.purpleBright} />
     }
     return <LittleHotspot />
-  }, [isSecurityToken])
+  }, [colors.purpleBright, isSecurityToken])
 
   return (
     <Box>
