@@ -110,6 +110,7 @@ export default {
     go_to_account: 'Go to My Account',
     go_to_settings: 'Go to Settings',
     hotspot: 'Hotspot',
+    validator: 'Validator',
     location: 'Location',
     unable_to_get_location: 'We were unable to get your location',
     location_blocked:
@@ -146,6 +147,7 @@ export default {
     seconds_plural: '{{count}} seconds',
     meters: '{{distance}}m',
     kilometers: '{{distance}}km',
+    owner: 'Owner',
   },
   hotspot_setup: {
     selection: {
@@ -615,16 +617,31 @@ export default {
     },
     search: {
       title: 'Hotspot Search',
+      network: 'Network\nSearch',
       my_hotspots: 'My Hotspots',
       all_hotspots: 'All Hotspots',
       placeholder: 'Search...',
       recent_searches: 'Recent Searches',
       tips: 'Search Tips',
       tips_body:
-        'Try typing a Hotspot Name (e.g. silly-animal-name) or a place name (e.g. New York City).\n\nNote: Hotspots added within the last 10 minutes may not appear.',
+        'Try typing a Hotspot or Validator Name (e.g. silly-animal-name) or a place name (e.g. New York City).\n\nNote: Hotspots and Validators added within the last 10 minutes may not appear.',
     },
     empty: {
-      body: "You haven't added or followed any Hotspots yet.",
+      title: 'Add a\nHelium Miner',
+      body: 'There are two types of miner\non the Helium Network:',
+      search: 'Search',
+      info: 'Info',
+      hotspots: {
+        title: 'Hotspots',
+        body:
+          'Hardware miners that participate in Proof-of-Coverage and mine HNT.',
+        add: 'Add Hotspot',
+      },
+      validators: {
+        title: 'Validators',
+        body:
+          'Validator nodes secure the Helium network by verifying transactions and adding blocks in Consensus Groups.',
+      },
       failed:
         'We’re having problems fetching your Hotspots due to an API or network outage. Please try again later.',
     },
@@ -777,6 +794,11 @@ export default {
       eth_mac: 'Ethernet MAC',
       nat_type: 'NAT Type',
       ip: 'IP Address',
+      disk: 'Disk',
+      disk_read_only: 'Read-Only',
+      disk_no_data: 'No Data Available',
+      disk_read_only_instructions:
+        'Contact your Manufacturer for a replacement. Hotspot unable to sync due to hardware failure.',
       report_generated: 'Report Generated',
       send_to_support: 'Send Report to Support',
       help_link: 'Read more for possible solutions',
@@ -826,6 +848,36 @@ export default {
       already_pending:
         'Unable to update Hotspot while a transaction is pending. Please try again later.',
     },
+  },
+  validator_details: {
+    overview: 'Overview',
+    penalties: 'Penalties',
+    consensus_groups: 'Consensus Groups',
+    consensus_group: 'Consensus Group',
+    consensus_group_title: 'Consensus\nGroup',
+    elected_count: 'Currently Elected Validators ({{count}})',
+    earnings_desc: '30d Earnings',
+    penalty_desc: 'Penalty Score',
+    consensus_desc: 'Participated in Consensus',
+    in_consensus: ' In Consensus Group',
+    time_range: 'Time Range',
+    time_range_24_hours: '24H',
+    time_range_14_days: '14D',
+    time_range_30_days: '30D',
+    in_cooldown_mode: 'In Cooldown Mode',
+    cooldown_blocks_left: '{{blocks}} Blocks Left',
+    status_online: 'Online',
+    status_offline: 'Offline',
+    current_block_height: 'Current Block Height: {{blockHeight}}',
+    penalty: 'Penalty',
+    lifetime_consensus: 'Lifetime Consensus',
+    stake_status: 'Stake Status',
+    performance: 'Performance Penalty',
+    tenure: 'Tenure Penalty',
+    block: 'Block {{height}}',
+    block_elected: 'Block Elected {{block}}',
+    version_desc: 'Validator Version',
+    heartbeat_desc: 'Blocks since the last heartbeat transaction',
   },
   hotspot_details: {
     checklist: 'Progress',
@@ -1144,4 +1196,6 @@ export default {
         'Turning off Fleet Mode may negatively affect App performance, resulting in your ability to interact with the App. We do not recommend turning off Fleet Mode for users with more than {{lowerLimit}} Hotspots in an account.',
     },
   },
+  explore_hotspots: 'Explore Hotspots',
+  explore_validators: 'Explore Validators',
 }

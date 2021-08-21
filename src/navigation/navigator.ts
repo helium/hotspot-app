@@ -17,7 +17,17 @@ const send = (params: { scanResult: AppLink | AppLinkPayment }) => {
 }
 
 const viewHotspot = (address: string) => {
-  navigationRef.current?.navigate('HotspotsScreen', { address })
+  navigationRef.current?.navigate('HotspotsScreen', {
+    address,
+    resource: 'hotspot',
+  })
+}
+
+const viewValidator = (address: string) => {
+  navigationRef.current?.navigate('HotspotsScreen', {
+    address,
+    resource: 'validator',
+  })
 }
 
 const updateHotspotLocation = (params: {
@@ -42,6 +52,7 @@ export default {
   lock,
   send,
   viewHotspot,
+  viewValidator,
   confirmAddGateway,
   updateHotspotLocation,
 }

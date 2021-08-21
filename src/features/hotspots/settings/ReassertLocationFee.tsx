@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import animalName from 'angry-purple-tiger'
 import Balance, { DataCredits, USDollars } from '@helium/currency'
 import { Hotspot, Witness } from '@helium/http'
+import { isFinite } from 'lodash'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import TextTransform from '../../../components/TextTransform'
@@ -55,7 +56,10 @@ const ReassertLocationFee = ({
 
   const mapCenter = useMemo(() => {
     if (newLocation) return [newLocation.longitude, newLocation.latitude]
-    return hotspot.lng !== undefined && hotspot.lat !== undefined
+    return !!hotspot.lng &&
+      isFinite(hotspot.lng) &&
+      !!hotspot.lat &&
+      isFinite(hotspot.lat)
       ? [hotspot.lng, hotspot.lat]
       : undefined
   }, [newLocation, hotspot.lng, hotspot.lat])

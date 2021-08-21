@@ -19,10 +19,8 @@ import HotspotDetailChart from './HotspotDetailChart'
 import { RootState } from '../../../store/rootReducer'
 import { getRewardChartData } from './RewardsHelper'
 import { useAppDispatch } from '../../../store/store'
-import {
-  fetchHotspotChartData,
-  fetchHotspotData,
-} from '../../../store/hotspotDetails/hotspotDetailsSlice'
+import { fetchHotspotData } from '../../../store/hotspotDetails/hotspotDetailsSlice'
+import { fetchChartData } from '../../../store/rewards/rewardsSlice'
 import HexBadge from './HexBadge'
 import HotspotChecklist from '../checklist/HotspotChecklist'
 import animateTransition from '../../../utils/animateTransition'
@@ -82,10 +80,8 @@ const HotspotDetails = ({
   const colors = useColors()
   const spacing = useSpacing()
   const address = propsHotspot?.address || ''
-  const hotspotChatData =
-    useSelector(
-      (state: RootState) => state.hotspotDetails.chartData[address],
-    ) || {}
+  const hotspotChartData =
+    useSelector((state: RootState) => state.rewards.chartData[address]) || {}
   const hotspotDetailsData =
     useSelector(
       (state: RootState) => state.hotspotDetails.hotspotData[address],
@@ -103,7 +99,7 @@ const HotspotDetails = ({
   const prevHotspotAddress = usePrevious(propsHotspot?.address)
 
   const { rewards, rewardSum, rewardsChange, loading = true } =
-    hotspotChatData[timelineValue] || {}
+    hotspotChartData[timelineValue] || {}
   const { hotspot: hotspotDetailsHotspot, witnesses } = hotspotDetailsData || {}
   const [showStatusBanner, toggleShowStatusBanner] = useToggle(false)
 
@@ -162,9 +158,10 @@ const HotspotDetails = ({
       return
 
     dispatch(
-      fetchHotspotChartData({
+      fetchChartData({
         address,
         numDays: timelineValue,
+        resource: 'hotspots',
       }),
     )
   }, [address, dispatch, hotspot, listIndex, prevListIndex, timelineValue])
@@ -356,9 +353,10 @@ const HotspotDetails = ({
       setTimelineIndex(index)
 
       dispatch(
-        fetchHotspotChartData({
+        fetchChartData({
           address,
           numDays: value,
+          resource: 'hotspots',
         }),
       )
     },

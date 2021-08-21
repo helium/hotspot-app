@@ -3,6 +3,7 @@ export const AppLinkCategories = [
   'dc_burn',
   'transfer',
   'hotspot',
+  'validator',
   'add_gateway',
   'hotspot_location',
 ] as const
