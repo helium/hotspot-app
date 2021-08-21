@@ -40,7 +40,7 @@ export const AntennaModels = {
 }
 
 export const HotspotMakerModels = {
-  ...pantherx.hotspots,
+  ...PantherX.hotspots,
   ...bobcat.hotspots,
   ...finestra.hotspots,
   ...helium.hotspots,
