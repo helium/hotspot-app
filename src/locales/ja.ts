@@ -497,7 +497,7 @@ export default {
       learn_more: '詳細',
       parse_code_error: 'QRコードを解析できません',
       invalid_hotspot_address:
-        'QRコードのホットスポットアドレスは有効なウォレットアカウントアドレスではありません。',
+        'QRコードのホットスポットアドレスが見つからないか無効です。',
     },
     send_max_fee: {
       error_title: '最大送信エラー',

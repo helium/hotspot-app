@@ -526,7 +526,7 @@ export default {
       learn_more: 'Learn More',
       parse_code_error: 'Unable to parse QR code',
       invalid_hotspot_address:
-        'Hotspot Address in QR code is not a valid wallet account address.',
+        'Hotspot Address in QR code is missing or invalid.',
     },
     send_max_fee: {
       error_title: 'Send Max Error',
