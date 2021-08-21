@@ -18,6 +18,7 @@ import BSHandle from '../../../components/BSHandle'
 import { useSpacing } from '../../../theme/themeHooks'
 import {
   useAppLinkContext,
+  AddressType,
   InvalidAddressError,
 } from '../../../providers/AppLinkProvider'
 import {
@@ -81,7 +82,10 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
   const handleFailedScan = async (error: Error) => {
     setScanned(true)
     setTimeout(() => setScanned(false), 2000)
-    if (error instanceof InvalidAddressError) {
+    const isInvalidHotspotAddress =
+      error instanceof InvalidAddressError &&
+      error.addressType === AddressType.HotspotAddress
+    if (isInvalidHotspotAddress) {
       await showOKAlert({
         titleKey: 'send.scan.parse_code_error',
         messageKey: 'send.scan.invalid_hotspot_address',
