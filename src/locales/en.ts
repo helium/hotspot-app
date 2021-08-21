@@ -524,6 +524,9 @@ export default {
       view_description:
         'Share your QR Code to deposit or receive HNT from others.',
       learn_more: 'Learn More',
+      parse_code_error: 'Unable to parse QR code',
+      invalid_hotspot_address:
+        'Hotspot Address in QR code is not a valid wallet account address.',
     },
     send_max_fee: {
       error_title: 'Send Max Error',

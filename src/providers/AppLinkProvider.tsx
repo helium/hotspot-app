@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import React, {
   createContext,
   ReactNode,
@@ -25,6 +26,37 @@ import {
 } from './appLinkTypes'
 
 const APP_LINK_PROTOCOL = 'helium://'
+
+// Define subclasses of Error to return address-specific errors when attempting to process scanned
+// payloads from QR codes
+export enum AddressType {
+  HotspotAddress = 'Hotspot Address',
+  SenderAddress = 'Sender Address',
+  ReceiverAddress = 'Receiver Address',
+}
+export class MissingAddressError extends Error {
+  addressType: AddressType
+
+  constructor(addressType: AddressType) {
+    super(`Missing required ${addressType}`)
+    this.addressType = addressType
+  }
+}
+export class InvalidAddressError extends Error {
+  addressType: AddressType
+
+  constructor(addressType: AddressType) {
+    super(`Invalid ${addressType}`)
+    this.addressType = addressType
+  }
+}
+const assertValidAddress = (
+  address: string,
+  addressType: AddressType = AddressType.HotspotAddress,
+) => {
+  if (!address) throw new MissingAddressError(addressType)
+  if (!Address.isValid(address)) throw new InvalidAddressError(addressType)
+}
 
 export const createAppLink = (
   resource: AppLinkCategoryType,
@@ -170,12 +202,6 @@ const useAppLink = () => {
       data: string,
       scanType: AppLinkCategoryType,
     ): AppLink | AppLinkPayment | AppLinkLocation => {
-      const assertValidAddress = (address: string) => {
-        if (!address || !Address.isValid(address)) {
-          throw new Error('Invalid transaction encoding')
-        }
-      }
-
       // Case (1) helium deeplink URL
       const urlParams = parseUrl(data)
       if (urlParams) {
@@ -185,6 +211,7 @@ const useAppLink = () => {
       // Case (2) lat/lng pair
       const location = parseLocation(data)
       if (location) {
+        assertValidAddress(location.hotspotAddress)
         return location
       }
 
@@ -202,76 +229,72 @@ const useAppLink = () => {
         }
       }
 
-      try {
-        const rawScanResult = JSON.parse(data)
-        const type = rawScanResult.type || scanType
+      const rawScanResult = JSON.parse(data)
+      const type = rawScanResult.type || scanType
 
-        if (type === 'dc_burn') {
-          // Case (4) stringified JSON { type, address, amount?, memo? }
-          const scanResult: AppLink = {
-            type,
-            address: rawScanResult.address,
-            amount: rawScanResult.amount,
-            memo: rawScanResult.memo,
-          }
-          assertValidAddress(scanResult.address)
-          return scanResult
+      if (type === 'dc_burn') {
+        // Case (4) stringified JSON { type, address, amount?, memo? }
+        const scanResult: AppLink = {
+          type,
+          address: rawScanResult.address,
+          amount: rawScanResult.amount,
+          memo: rawScanResult.memo,
         }
-
-        if (type === 'payment') {
-          let scanResult: AppLinkPayment
-          if (rawScanResult.address) {
-            // Case (4) stringified JSON { type, address, amount?, memo? }
-            scanResult = {
-              type,
-              payees: [
-                {
-                  address: rawScanResult.address,
-                  amount: rawScanResult.amount,
-                  memo: rawScanResult.memo,
-                },
-              ],
-            }
-          } else if (rawScanResult.payees) {
-            scanResult = {
-              type,
-              payees: Object.entries(rawScanResult.payees).map((entries) => {
-                let amount
-                let memo
-                if (entries[1]) {
-                  if (typeof entries[1] === 'number') {
-                    // Case (5) stringified JSON object { type, payees: {[payeeAddress]: amount} }
-                    amount = entries[1] as number
-                  } else if (typeof entries[1] === 'object') {
-                    // Case (6) stringified JSON object { type, payees: {[payeeAddress]: { amount, memo? }} }
-                    const scanData = entries[1] as {
-                      amount: string
-                      memo?: string
-                    }
-                    amount = scanData.amount
-                    memo = scanData.memo
-                  }
-                }
-                return {
-                  address: entries[0],
-                  amount: `${amount}`,
-                  memo,
-                } as Payee
-              }),
-            }
-          } else {
-            throw new Error('Invalid transaction encoding')
-          }
-
-          scanResult.payees.forEach(({ address }) =>
-            assertValidAddress(address),
-          )
-          return scanResult
-        }
-        throw new Error('Invalid transaction encoding')
-      } catch (error) {
-        throw new Error('Invalid transaction encoding')
+        assertValidAddress(scanResult.address, AddressType.SenderAddress)
+        return scanResult
       }
+
+      if (type === 'payment') {
+        let scanResult: AppLinkPayment
+        if (rawScanResult.address) {
+          // Case (4) stringified JSON { type, address, amount?, memo? }
+          scanResult = {
+            type,
+            payees: [
+              {
+                address: rawScanResult.address,
+                amount: rawScanResult.amount,
+                memo: rawScanResult.memo,
+              },
+            ],
+          }
+        } else if (rawScanResult.payees) {
+          scanResult = {
+            type,
+            payees: Object.entries(rawScanResult.payees).map((entries) => {
+              let amount
+              let memo
+              if (entries[1]) {
+                if (typeof entries[1] === 'number') {
+                  // Case (5) stringified JSON object { type, payees: {[payeeAddress]: amount} }
+                  amount = entries[1] as number
+                } else if (typeof entries[1] === 'object') {
+                  // Case (6) stringified JSON object { type, payees: {[payeeAddress]: { amount, memo? }} }
+                  const scanData = entries[1] as {
+                    amount: string
+                    memo?: string
+                  }
+                  amount = scanData.amount
+                  memo = scanData.memo
+                }
+              }
+              return {
+                address: entries[0],
+                amount: `${amount}`,
+                memo,
+              } as Payee
+            }),
+          }
+        } else {
+          throw new Error('Unrecognized payload for payment scan')
+        }
+
+        scanResult.payees.forEach(({ address }) =>
+          assertValidAddress(address, AddressType.ReceiverAddress),
+        )
+        return scanResult
+      }
+      throw new Error('Unknown scan type')
     },
     [parseUrl],
   )

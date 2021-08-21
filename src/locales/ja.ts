@@ -495,6 +495,9 @@ export default {
       view_description:
         'QRコードを共有して、他のユーザーからHNTを入金するか受け取ります。',
       learn_more: '詳細',
+      parse_code_error: 'QRコードを解析できません',
+      invalid_hotspot_address:
+        'QRコードのホットスポットアドレスは有効なウォレットアカウントアドレスではありません。',
     },
     send_max_fee: {
       error_title: '最大送信エラー',
