@@ -55,12 +55,11 @@ const ReassertLocationFee = ({
   )
 
   const mapCenter = useMemo(() => {
-    if (newLocation) return [newLocation.longitude, newLocation.latitude]
-    return !!hotspot.lng &&
-      isFinite(hotspot.lng) &&
-      !!hotspot.lat &&
-      isFinite(hotspot.lat)
-      ? [hotspot.lng, hotspot.lat]
+    const [lng, lat] = newLocation
+      ? [newLocation.longitude, newLocation.latitude]
+      : [hotspot.lng, hotspot.lat]
+    return !!lng && isFinite(lng) && !!lat && isFinite(lat)
+      ? [lng, lat]
       : undefined
   }, [newLocation, hotspot.lng, hotspot.lat])
 
