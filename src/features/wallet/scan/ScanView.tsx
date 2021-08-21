@@ -3,6 +3,7 @@ import { useNavigation } from '@react-navigation/native'
 import { useAsync } from 'react-async-hook'
 import { StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import Box from '../../../components/Box'
@@ -19,7 +20,11 @@ import {
   useAppLinkContext,
   InvalidAddressError,
 } from '../../../providers/AppLinkProvider'
-import { AppLinkCategoryType } from '../../../providers/appLinkTypes'
+import {
+  AppLinkCategoryType,
+  AppLinkLocation,
+} from '../../../providers/appLinkTypes'
+import { RootState } from '../../../store/rootReducer'
 
 type Props = {
   scanType?: AppLinkCategoryType
@@ -32,6 +37,7 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
   const [scanned, setScanned] = useState(false)
   const navigation = useNavigation()
   const spacing = useSpacing()
+  const hotspots = useSelector((state: RootState) => state.hotspots.hotspots)
 
   const { handleBarCode } = useAppLinkContext()
 
@@ -57,7 +63,13 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
     if (scanned) return
 
     try {
-      await handleBarCode(result, scanType)
+      await handleBarCode(result, scanType, undefined, (scanResult) => {
+        if (scanResult.type === 'hotspot_location') {
+          const { hotspotAddress } = scanResult as AppLinkLocation
+          const hotspot = hotspots.find((h) => h.address === hotspotAddress)
+          if (!hotspot) throw new InvalidAddressError()
+        }
+      })
 
       setScanned(true)
       triggerNotification('success')

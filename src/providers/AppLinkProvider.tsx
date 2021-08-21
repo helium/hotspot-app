@@ -37,7 +37,7 @@ export enum AddressType {
 export class MissingAddressError extends Error {
   addressType: AddressType
 
-  constructor(addressType: AddressType) {
+  constructor(addressType: AddressType = AddressType.HotspotAddress) {
     super(`Missing required ${addressType}`)
     this.addressType = addressType
   }
@@ -45,7 +45,7 @@ export class MissingAddressError extends Error {
 export class InvalidAddressError extends Error {
   addressType: AddressType
 
-  constructor(addressType: AddressType) {
+  constructor(addressType: AddressType = AddressType.HotspotAddress) {
     super(`Invalid ${addressType}`)
     this.addressType = addressType
   }
@@ -304,8 +304,12 @@ const useAppLink = () => {
       { data }: BarCodeScannerResult,
       scanType: AppLinkCategoryType,
       opts?: Record<string, string>,
+      assertScanResult?: (
+        scanResult: AppLink | AppLinkPayment | AppLinkLocation,
+      ) => void,
     ) => {
       const scanResult = parseBarCodeData(data, scanType)
+      if (assertScanResult) assertScanResult(scanResult)
 
       navToAppLink({ ...scanResult, ...opts })
     },
