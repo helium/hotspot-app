@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler'
-import React, { useCallback, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { LogBox, Platform, StatusBar, UIManager } from 'react-native'
 import useAppState from 'react-native-appstate-hook'
@@ -84,14 +84,12 @@ const App = () => {
     (state: RootState) => state.heliumData.blockHeight,
   )
 
-  const loadInitialData = useCallback(() => {
-    dispatch(fetchBlockHeight())
+  useMount(() => {
+    dispatch(restoreAppSettings())
     dispatch(fetchInitialData())
-    dispatch(fetchNotifications())
-  }, [dispatch])
+    configChainVars()
+  })
 
-  // initialize external libraries
-  useAsync(configChainVars, [])
   useEffect(() => {
     OneSignal.setAppId(Config.ONE_SIGNAL_APP_ID)
     OneSignal.setNotificationOpenedHandler((event: OpenedEvent) => {
@@ -110,8 +108,10 @@ const App = () => {
 
   // fetch feature flags for the app
   useEffect(() => {
+    if (!isBackedUp) return
     dispatch(fetchFeatures())
-  }, [dispatch])
+    dispatch(fetchNotifications())
+  }, [dispatch, isBackedUp])
 
   // handle app state changes
   useEffect(() => {
@@ -137,17 +137,10 @@ const App = () => {
 
   // update initial data when account is restored or app comes into foreground from background
   useEffect(() => {
-    if (
-      isRestored ||
-      (prevAppState === 'background' && appState === 'active')
-    ) {
-      loadInitialData()
+    if (prevAppState === 'background' && appState === 'active') {
+      dispatch(fetchInitialData())
     }
-  }, [dispatch, appState, prevAppState, loadInitialData, isRestored])
-
-  useMount(() => {
-    dispatch(restoreAppSettings())
-  })
+  }, [appState, dispatch, prevAppState])
 
   // hide splash screen
   useAsync(async () => {
