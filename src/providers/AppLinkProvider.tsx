@@ -71,6 +71,10 @@ const useAppLink = () => {
           navigator.viewHotspot((record as AppLink).address)
           break
 
+        case 'validator':
+          navigator.viewValidator((record as AppLink).address)
+          break
+
         case 'dc_burn':
         case 'payment':
         case 'transfer':
