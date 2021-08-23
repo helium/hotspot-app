@@ -1087,11 +1087,6 @@ export default {
       message:
         'Hotspot may be behind a relay and is not responding. Check your router settings and try again.',
     },
-    instability_warning: {
-      title: 'Discovery Mode Performance',
-      message:
-        'The backend service for Discovery Mode is experiencing performance issues and users may see inconsistent results.',
-    },
     begin: {
       title: 'Discovery Mode',
       subtitle:

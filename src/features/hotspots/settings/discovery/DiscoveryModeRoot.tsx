@@ -6,7 +6,6 @@ import { useSelector } from 'react-redux'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { isEqual } from 'lodash'
-import { getUnixTime } from 'date-fns'
 import discoverySlice, {
   fetchDiscoveryById,
   fetchRecentDiscoveries,
@@ -57,9 +56,6 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
   const selectedRequest = useSelector(
     (state: RootState) => state.discovery.selectedRequest,
   )
-  const lastWarningDate = useSelector(
-    (state: RootState) => state.discovery.lastWarningDate,
-  )
 
   const { updateSyncStatus, hotspotSyncStatus } = useHotspotSync(hotspot)
 
@@ -87,35 +83,6 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
       fetchRecent()
     }
   }, [dispatch, fetchRecent, onClose, viewState])
-
-  useEffect(() => {
-    if (!recentDiscoveryInfo?.serverDate) return
-
-    const unixTime = (dateStr?: string) => {
-      const insertDate = dateStr ? new Date(dateStr) : null
-      if (!insertDate) return 0
-
-      return getUnixTime(insertDate)
-    }
-
-    const oneDayInSeconds = 86400
-
-    if (
-      !lastWarningDate ||
-      unixTime(lastWarningDate) + oneDayInSeconds <
-        unixTime(recentDiscoveryInfo.serverDate)
-    ) {
-      showOKAlert({
-        titleKey: 'discovery.instability_warning.title',
-        messageKey: 'discovery.instability_warning.message',
-      })
-      dispatch(
-        discoverySlice.actions.updateLastWarningDate(
-          recentDiscoveryInfo.serverDate,
-        ),
-      )
-    }
-  }, [dispatch, lastWarningDate, recentDiscoveryInfo, showOKAlert])
 
   useEffect(() => {
     if (
