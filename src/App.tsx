@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler'
-import React, { useCallback, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { LogBox, Platform, StatusBar, UIManager } from 'react-native'
 import useAppState from 'react-native-appstate-hook'
@@ -16,7 +16,7 @@ import { NavigationContainer } from '@react-navigation/native'
 import { theme } from './theme/theme'
 import NavigationRoot from './navigation/NavigationRoot'
 import { useAppDispatch } from './store/store'
-import appSlice, { restoreUser } from './store/user/appSlice'
+import appSlice, { restoreAppSettings } from './store/user/appSlice'
 import { RootState } from './store/rootReducer'
 import { fetchData } from './store/account/accountSlice'
 import BluetoothProvider from './providers/BluetoothProvider'
@@ -36,6 +36,8 @@ import notificationSlice, {
 } from './store/notifications/notificationSlice'
 import AppLinkProvider from './providers/AppLinkProvider'
 import { navigationRef } from './navigation/navigator'
+import useSettingsRestore from './utils/useAccountSettings'
+import useMount from './utils/useMount'
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
@@ -70,6 +72,9 @@ const App = () => {
     isRequestingPermission,
     isLocked,
   } = useSelector((state: RootState) => state.app)
+
+  useSettingsRestore()
+
   const prevAppState = usePrevious(appState)
 
   const fetchDataStatus = useSelector(
@@ -79,14 +84,12 @@ const App = () => {
     (state: RootState) => state.heliumData.blockHeight,
   )
 
-  const loadInitialData = useCallback(() => {
-    dispatch(fetchBlockHeight())
+  useMount(() => {
+    dispatch(restoreAppSettings())
     dispatch(fetchInitialData())
-    dispatch(fetchNotifications())
-  }, [dispatch])
+    configChainVars()
+  })
 
-  // initialize external libraries
-  useAsync(configChainVars, [])
   useEffect(() => {
     OneSignal.setAppId(Config.ONE_SIGNAL_APP_ID)
     OneSignal.setNotificationOpenedHandler((event: OpenedEvent) => {
@@ -105,8 +108,10 @@ const App = () => {
 
   // fetch feature flags for the app
   useEffect(() => {
+    if (!isBackedUp) return
     dispatch(fetchFeatures())
-  }, [dispatch])
+    dispatch(fetchNotifications())
+  }, [dispatch, isBackedUp])
 
   // handle app state changes
   useEffect(() => {
@@ -130,21 +135,12 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appState])
 
-  // restore user and then fetch initial data
-  useEffect(() => {
-    if (!isRestored) {
-      dispatch(restoreUser())
-    } else {
-      loadInitialData()
-    }
-  }, [dispatch, loadInitialData, isRestored])
-
-  // update initial data when app comes into foreground from background
+  // update initial data when account is restored or app comes into foreground from background
   useEffect(() => {
     if (prevAppState === 'background' && appState === 'active') {
-      loadInitialData()
+      dispatch(fetchInitialData())
     }
-  }, [dispatch, appState, prevAppState, loadInitialData])
+  }, [appState, dispatch, prevAppState])
 
   // hide splash screen
   useAsync(async () => {

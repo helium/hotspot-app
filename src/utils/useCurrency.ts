@@ -9,8 +9,8 @@ import { OraclePrice } from '@helium/http'
 import { fetchCurrentOraclePrice } from '../store/helium/heliumDataSlice'
 import { RootState } from '../store/rootReducer'
 import { useAppDispatch } from '../store/store'
-import appSlice from '../store/user/appSlice'
 import { currencyType, decimalSeparator, groupSeparator, locale } from './i18n'
+import { updateSetting } from '../store/account/accountSlice'
 
 const useCurrency = () => {
   const { t } = useTranslation()
@@ -21,13 +21,13 @@ const useCurrency = () => {
   )
 
   const convert = useSelector(
-    (state: RootState) => state.app.convertHntToCurrency,
-    isEqual,
+    (state: RootState) => state.account.settings.convertHntToCurrency,
   )
 
   const toggle = useCallback(
-    () => dispatch(appSlice.actions.toggleConvertHntToCurrency()),
-    [dispatch],
+    () =>
+      dispatch(updateSetting({ key: 'convertHntToCurrency', value: !convert })),
+    [convert, dispatch],
   )
 
   const formatCurrency = useCallback(async (value: number) => {

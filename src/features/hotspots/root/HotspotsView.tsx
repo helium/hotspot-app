@@ -90,7 +90,7 @@ const HotspotsView = ({
   })
   const [detailHeight, setDetailHeight] = useState(0)
   const fleetModeEnabled = useSelector(
-    (state: RootState) => state.app.isFleetModeEnabled,
+    (state: RootState) => state.account.settings.isFleetModeEnabled,
   )
   const hotspotsForHexId = useSelector(
     (state: RootState) => state.discovery.hotspotsForHexId,

@@ -1,5 +1,6 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState, useMemo } from 'react'
 import { useSelector } from 'react-redux'
+import { Edge } from 'react-native-safe-area-context'
 import SafeAreaBox from '../../components/SafeAreaBox'
 import { RootState } from '../../store/rootReducer'
 import { useAppDispatch } from '../../store/store'
@@ -44,12 +45,10 @@ const NotificationsScreen = () => {
     [dispatch],
   )
 
+  const edges = useMemo(() => ['top', 'left', 'right'] as Edge[], [])
+
   return (
-    <SafeAreaBox
-      backgroundColor="primaryBackground"
-      edges={['top', 'left', 'right']}
-      flex={1}
-    >
+    <SafeAreaBox backgroundColor="primaryBackground" edges={edges} flex={1}>
       <NotificationList
         notifications={notifications}
         loadingNotification={loadingNotification}

@@ -96,6 +96,7 @@ export const fetchRewards = createAsyncThunk<
     const ownedAddresses = hotspots.map((h) => h.address)
     gatewayAddresses = uniq([...ownedAddresses, ...gatewayAddresses])
   }
+  if (gatewayAddresses.length === 0) return []
 
   if (gatewayAddresses.length === 0) {
     return []
