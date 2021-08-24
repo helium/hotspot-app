@@ -6,40 +6,24 @@ import CopyIco from '@assets/images/copy.svg'
 import ShareHotspotIco from '@assets/images/shareHotspot.svg'
 import GlobeIco from '@assets/images/globe.svg'
 import Clipboard from '@react-native-community/clipboard'
-import Visibility from '@assets/images/visibility.svg'
-import VisibilityOff from '@assets/images/visibility_off.svg'
 import { Linking, Share } from 'react-native'
 import Toast from 'react-native-simple-toast'
-import { useSelector } from 'react-redux'
 import HeliumActionSheet from './HeliumActionSheet'
-import { HeliumActionSheetItemType } from './HeliumActionSheetItem'
 import { TouchableOpacityBoxProps } from './TouchableOpacityBox'
 import useHaptic from '../utils/useHaptic'
 import { EXPLORER_BASE_URL } from '../utils/config'
 import { createAppLink } from '../providers/AppLinkProvider'
 import { isValidator } from '../utils/validatorUtils'
-import { useAppDispatch } from '../store/store'
-import { hideHotspot, showHotspot } from '../store/hotspots/hotspotsSlice'
-import { RootState } from '../store/rootReducer'
 
 type Props = { item?: Hotspot | Witness | Validator }
 const ShareSheet = ({ item }: Props) => {
   const { t } = useTranslation()
-  const dispatch = useAppDispatch()
   const { triggerNotification } = useHaptic()
   const explorerUrl = useMemo(() => {
     if (!item) return ''
     const target = isValidator(item) ? 'validators' : 'hotspots'
     return `${EXPLORER_BASE_URL}/${target}/${item.address}`
   }, [item])
-
-  const hiddenAddresses = useSelector(
-    (state: RootState) => state.hotspots.hiddenAddresses,
-  )
-  const isHidden = useMemo(() => item && hiddenAddresses.has(item.address), [
-    hiddenAddresses,
-    item,
-  ])
 
   const buttonProps = useMemo(
     () =>
@@ -121,19 +105,8 @@ const ShareSheet = ({ item }: Props) => {
           )
         },
       },
-      {
-        label: isHidden ? 'Show Hotspot' : 'Hide Hotspot',
-        value: 'visibility',
-        Icon: isHidden ? Visibility : VisibilityOff,
-        action: () => {
-          if (!item) return
-          dispatch(
-            isHidden ? showHotspot(item.address) : hideHotspot(item.address),
-          )
-        },
-      },
-    ] as HeliumActionSheetItemType[]
-  }, [dispatch, explorerUrl, item, isHidden, t, triggerNotification])
+    ]
+  }, [explorerUrl, item, t, triggerNotification])
 
   return (
     <HeliumActionSheet
