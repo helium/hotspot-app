@@ -12,7 +12,6 @@ import { Intervals } from '../../features/moreTab/more/useAuthIntervals'
 export type AppState = {
   isBackedUp: boolean
   isHapticDisabled: boolean
-  showHiddenHotspots: boolean
   isSettingUpHotspot: boolean
   isRestored: boolean
   isPinRequired: boolean
@@ -25,7 +24,6 @@ export type AppState = {
 const initialState: AppState = {
   isBackedUp: false,
   isHapticDisabled: false,
-  showHiddenHotspots: false,
   isSettingUpHotspot: false,
   isRestored: false,
   isPinRequired: false,
@@ -55,7 +53,6 @@ export const restoreAppSettings = createAsyncThunk<Restore>(
       authInterval,
       isHapticDisabled,
       address,
-      showHiddenHotspots,
     ] = await Promise.all([
       getSecureItem('accountBackedUp'),
       getSecureItem('requirePin'),
@@ -63,7 +60,6 @@ export const restoreAppSettings = createAsyncThunk<Restore>(
       getSecureItem('authInterval'),
       getSecureItem('hapticDisabled'),
       getSecureItem('address'),
-      getSecureItem('showHiddenHotspots'),
     ])
 
     if (isBackedUp && address) {
@@ -79,7 +75,6 @@ export const restoreAppSettings = createAsyncThunk<Restore>(
         : Intervals.IMMEDIATELY,
       isLocked: isPinRequired,
       isHapticDisabled,
-      showHiddenHotspots,
     } as Restore
   },
 )
@@ -110,10 +105,6 @@ const appSlice = createSlice({
     updateHapticEnabled: (state, action: PayloadAction<boolean>) => {
       state.isHapticDisabled = action.payload
       setSecureItem('hapticDisabled', action.payload)
-    },
-    updateShowHiddenHotspots: (state, action: PayloadAction<boolean>) => {
-      state.showHiddenHotspots = action.payload
-      setSecureItem('showHiddenHotspots', action.payload)
     },
     updateAuthInterval: (state, action: PayloadAction<number>) => {
       state.authInterval = action.payload

@@ -20,6 +20,7 @@ const boolKeys = [
   'isFleetModeEnabled',
   'hasFleetModeAutoEnabled',
   'convertHntToCurrency',
+  'showHiddenHotspots',
 ] as const
 type BooleanKey = typeof boolKeys[number]
 // Eventually we can add more types, but for now all our app account settings are booleans
@@ -34,6 +35,7 @@ export type AccountState = {
     isFleetModeEnabled?: boolean
     hasFleetModeAutoEnabled?: boolean
     convertHntToCurrency?: boolean
+    showHiddenHotspots?: boolean
   }
   settingsLoaded?: boolean
   settingsTransferRequired?: boolean
@@ -75,6 +77,7 @@ export const transferAppSettingsToAccount = createAsyncThunk<SettingsBag>(
     const fleetEnabled = await getSecureItem('fleetModeEnabled')
     const fleetAutoEnabled = await getSecureItem('hasFleetModeAutoEnabled')
     const convertHnt = await getSecureItem('convertHntToCurrency')
+    const showHiddenHotspots = await getSecureItem('showHiddenHotspots')
     const settings = [
       {
         key: 'isFleetModeEnabled',
@@ -87,6 +90,10 @@ export const transferAppSettingsToAccount = createAsyncThunk<SettingsBag>(
       {
         key: 'convertHntToCurrency',
         value: String(convertHnt),
+      },
+      {
+        key: 'showHiddenHotspots',
+        value: String(showHiddenHotspots),
       },
     ]
     return postWallet('accounts/settings', { settings })

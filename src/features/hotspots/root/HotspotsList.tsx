@@ -44,7 +44,7 @@ const HotspotsList = ({
     (state: RootState) => state.hotspots.hiddenAddresses,
   )
   const showHiddenHotspots = useSelector(
-    (state: RootState) => state.app.showHiddenHotspots,
+    (state: RootState) => state.account.settings.showHiddenHotspots,
   )
   const rewards = useSelector(
     (state: RootState) => state.hotspots.rewards || {},

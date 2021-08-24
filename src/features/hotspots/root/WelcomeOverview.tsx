@@ -54,7 +54,7 @@ const WelcomeOverview = ({ accountRewards }: Props) => {
     (state: RootState) => state.hotspots.hiddenAddresses,
   )
   const showHiddenHotspots = useSelector(
-    (state: RootState) => state.app.showHiddenHotspots,
+    (state: RootState) => state.account.settings.showHiddenHotspots,
   )
 
   const visibleHotspots = useMemo(() => {
