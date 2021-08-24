@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { Account, Sum } from '@helium/http'
 import { getAccount, getAccountRewards } from '../../utils/appDataClient'
-import { getWallet } from '../../utils/walletClient'
+import { getWallet, postWallet } from '../../utils/walletClient'
 import { ChartData, ChartRange } from '../../components/BarChart/types'
 import { FilterType } from '../../features/wallet/root/walletTypes'
 import { Loading } from '../activity/activitySlice'
@@ -11,9 +11,18 @@ import {
   handleCacheRejected,
   hasValidCache,
 } from '../../utils/cacheUtils'
+import { getSecureItem } from '../../utils/secureAccount'
 
 export type ChartRangeData = { data: ChartData[]; loading: Loading }
 type ActivityChart = Record<ChartRange, ChartRangeData>
+
+const boolKeys = [
+  'isFleetModeEnabled',
+  'hasFleetModeAutoEnabled',
+  'convertHntToCurrency',
+] as const
+type BooleanKey = typeof boolKeys[number]
+// Eventually we can add more types, but for now all our app account settings are booleans
 
 export type AccountState = {
   account?: Account
@@ -21,6 +30,13 @@ export type AccountState = {
   activityChart: Record<FilterType, ActivityChart>
   activityChartRange: ChartRange
   rewardsSum: CacheRecord<Sum>
+  settings: {
+    isFleetModeEnabled?: boolean
+    hasFleetModeAutoEnabled?: boolean
+    convertHntToCurrency?: boolean
+  }
+  settingsLoaded?: boolean
+  settingsTransferRequired?: boolean
 }
 
 const initialState: AccountState = {
@@ -28,11 +44,54 @@ const initialState: AccountState = {
   activityChart: {} as Record<FilterType, ActivityChart>,
   activityChartRange: 'daily',
   rewardsSum: { loading: true } as CacheRecord<Sum>,
+  settings: {},
 }
 
 type AccountData = {
   account?: Account
 }
+
+type SettingsBag = Array<{ key: string; value: string }>
+
+const settingsBagToKeyValue = (payload: SettingsBag) =>
+  payload.reduce((obj, { value, key }) => {
+    let val: string | boolean | number | undefined
+    if (boolKeys.includes(key as BooleanKey)) {
+      val = value === 'true'
+    } else {
+      return obj
+    }
+    return { ...obj, [key]: val }
+  }, {})
+
+export const fetchAccountSettings = createAsyncThunk<SettingsBag>(
+  'account/fetchAccountSettings',
+  async () => getWallet('accounts/settings'),
+)
+
+export const transferAppSettingsToAccount = createAsyncThunk<SettingsBag>(
+  'account/transferAppSettingsToAccount ',
+  async () => {
+    const fleetEnabled = await getSecureItem('fleetModeEnabled')
+    const fleetAutoEnabled = await getSecureItem('hasFleetModeAutoEnabled')
+    const convertHnt = await getSecureItem('convertHntToCurrency')
+    const settings = [
+      {
+        key: 'isFleetModeEnabled',
+        value: String(fleetEnabled),
+      },
+      {
+        key: 'hasFleetModeAutoEnabled',
+        value: String(fleetAutoEnabled),
+      },
+      {
+        key: 'convertHntToCurrency',
+        value: String(convertHnt),
+      },
+    ]
+    return postWallet('accounts/settings', { settings })
+  },
+)
 
 export const fetchData = createAsyncThunk<AccountData>(
   'account/fetchData',
@@ -68,6 +127,36 @@ export const fetchAccountRewards = createAsyncThunk(
   },
 )
 
+export const updateFleetModeEnabled = createAsyncThunk<
+  SettingsBag,
+  { enabled: boolean; autoEnabled?: boolean }
+>('account/updateFleetModeEnabled', async ({ enabled, autoEnabled }) => {
+  const settings = [
+    {
+      key: 'isFleetModeEnabled',
+      value: String(enabled),
+    },
+  ]
+  if (autoEnabled) {
+    settings.push({
+      key: 'hasFleetModeAutoEnabled',
+      value: String(autoEnabled),
+    })
+  }
+  return postWallet('accounts/settings', { settings })
+})
+
+export const updateSetting = createAsyncThunk<
+  SettingsBag,
+  { key: BooleanKey; value: boolean }
+>('account/updateSetting', async ({ key, value }) => {
+  const setting = {
+    key,
+    value: String(value),
+  }
+  return postWallet('accounts/settings', setting)
+})
+
 // This slice contains data related to the user account
 const accountSlice = createSlice({
   name: 'account',
@@ -75,6 +164,9 @@ const accountSlice = createSlice({
   reducers: {
     signOut: () => {
       return { ...initialState }
+    },
+    updateSettingsTransferRequired: (state, action: PayloadAction<boolean>) => {
+      state.settingsTransferRequired = action.payload
     },
     resetActivityChart: (state) => {
       return { ...state, activityChart: initialState.activityChart }
@@ -140,6 +232,52 @@ const accountSlice = createSlice({
     builder.addCase(fetchAccountRewards.fulfilled, (state, { payload }) => {
       state.rewardsSum = handleCacheFulfilled(payload)
     })
+    builder.addCase(fetchAccountSettings.fulfilled, (state, { payload }) => {
+      const settings = settingsBagToKeyValue(payload)
+      const nextState = { ...state, settings, settingsLoaded: true }
+      return nextState
+    })
+    builder.addCase(
+      transferAppSettingsToAccount.fulfilled,
+      (state, { payload }) => {
+        const settings = settingsBagToKeyValue(payload)
+        return {
+          ...state,
+          settings,
+          settingsLoaded: true,
+          settingsTransferRequired: false,
+        }
+      },
+    )
+    builder.addCase(
+      updateFleetModeEnabled.pending,
+      (
+        state,
+        {
+          meta: {
+            arg: { enabled, autoEnabled },
+          },
+        },
+      ) => {
+        state.settings.isFleetModeEnabled = enabled
+        if (autoEnabled) {
+          state.settings.hasFleetModeAutoEnabled = true
+        }
+      },
+    )
+    builder.addCase(
+      updateSetting.pending,
+      (
+        state,
+        {
+          meta: {
+            arg: { key, value },
+          },
+        },
+      ) => {
+        state.settings[key] = value
+      },
+    )
   },
 })
 

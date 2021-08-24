@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react'
+import React, { useEffect, useState, useMemo, useCallback, memo } from 'react'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { useSelector } from 'react-redux'
 import { ActivityIndicator } from 'react-native'
@@ -13,7 +13,7 @@ import useVisible from '../../../utils/useVisible'
 import { useAppDispatch } from '../../../store/store'
 import useGetLocation from '../../../utils/useGetLocation'
 import useAlert from '../../../utils/useAlert'
-import appSlice from '../../../store/user/appSlice'
+import { updateFleetModeEnabled } from '../../../store/account/accountSlice'
 
 const HotspotsScreen = () => {
   const maybeGetLocation = useGetLocation()
@@ -38,10 +38,10 @@ const HotspotsScreen = () => {
     (state: RootState) => state.hotspots.hotspotsLoaded,
   )
   const fleetModeEnabled = useSelector(
-    (state: RootState) => state.app.isFleetModeEnabled,
+    (state: RootState) => state.account.settings.isFleetModeEnabled,
   )
   const hasFleetModeAutoEnabled = useSelector(
-    (state: RootState) => state.app.hasFleetModeAutoEnabled,
+    (state: RootState) => state.account.settings.hasFleetModeAutoEnabled,
   )
   const fleetModeLowerLimit = useSelector(
     (state: RootState) => state.features.fleetModeLowerLimit,
@@ -81,7 +81,7 @@ const HotspotsScreen = () => {
       return
 
     dispatch(
-      appSlice.actions.updateFleetModeEnabled({
+      updateFleetModeEnabled({
         enabled: true,
         autoEnabled: true,
       }),
@@ -150,4 +150,4 @@ const HotspotsScreen = () => {
   )
 }
 
-export default HotspotsScreen
+export default memo(HotspotsScreen)
