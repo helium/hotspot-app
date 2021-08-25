@@ -751,6 +751,19 @@ export default {
       title: 'Update Hotspot',
       subtitle: 'Hotspot location or antenna details.',
     },
+    visibility_on: {
+      title: 'Show Hotspot',
+      subtitle: 'Makes the Hotspot visible in the app.',
+    },
+    visibility_off: {
+      title: 'Hide Hotspot',
+      subtitle: 'Hides the Hotspot in the app.',
+    },
+    visibility_popup: {
+      title: 'Hide Hotspot',
+      message:
+        'Hotspot will be hidden from view in the app but stays linked to your account.\n\nTo view Hidden Hotspots and unhide them, go to Settings.',
+    },
     discovery: {
       title: 'Discovery Mode',
       subtitle: 'Identify ideal Hotspot placement.',

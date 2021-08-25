@@ -229,12 +229,17 @@ const HotspotSettings = ({ hotspot }: Props) => {
     t,
   ])
 
-  const onToggleHotspotVisibility = useCallback(() => {
+  const onToggleHotspotVisibility = useCallback(async () => {
     if (!hotspot) return
     const addresses = new Set(hiddenAddresses?.split(','))
     if (isHidden) {
       addresses.delete(hotspot.address)
     } else {
+      const decision = await showOKCancelAlert({
+        titleKey: 'hotspot_settings.visibility_popup.title',
+        messageKey: 'hotspot_settings.visibility_popup.message',
+      })
+      if (!decision) return
       addresses.add(hotspot.address)
     }
     dispatch(
@@ -243,7 +248,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
         value: Array.from(addresses).join(','),
       }),
     )
-  }, [dispatch, hiddenAddresses, hotspot, isHidden])
+  }, [dispatch, hiddenAddresses, hotspot, isHidden, showOKCancelAlert])
 
   const onCloseOwnerSettings = useCallback(() => {
     setNextState('init')
@@ -411,12 +416,16 @@ const HotspotSettings = ({ hotspot }: Props) => {
         />
         <Box backgroundColor="black" height={0.5} />
         <HotspotSettingsOption
-          title={isHidden ? 'Show Hotspot' : 'Hide Hotspot'}
-          subtitle={
+          title={t(
             isHidden
-              ? 'Makes the Hotspot visible in the app.'
-              : 'Hides the Hotspot in the app.'
-          }
+              ? 'hotspot_settings.visibility_on.title'
+              : 'hotspot_settings.visibility_off.title',
+          )}
+          subtitle={t(
+            isHidden
+              ? 'hotspot_settings.visibility_on.subtitle'
+              : 'hotspot_settings.visibility_off.subtitle',
+          )}
           onPress={onToggleHotspotVisibility}
           compact
           buttonIcon={
