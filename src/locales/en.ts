@@ -695,6 +695,10 @@ export default {
       subtitle:
         "Here is where you'll find weekly earnings notifications from your owned Hotspots.",
     },
+    payment_empty: {
+      title: 'No payment transactions',
+      subtitle: 'Payment transaction notifications will appear here.',
+    },
     failed_empty: {
       title: 'No failed transactions',
       subtitle: 'Any failed transaction notification will appear here.',
@@ -705,6 +709,7 @@ export default {
     helium_updates: 'Helium Updates',
     helium_update: 'Helium Update',
     weekly_earnings: 'Weekly Earnings',
+    payment_notifications: 'Payment Notifications',
     failure_notifications: 'Failure Notifications',
   },
   transactions: {

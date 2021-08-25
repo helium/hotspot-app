@@ -25,6 +25,7 @@ export enum NotificationFilter {
   HOTSPOT_UPDATES = 'hotspot-update',
   HOTSPOT_TRANSFER = 'transfer',
   WEEKLY_EARNINGS = 'earnings',
+  PAYMENT_NOTIFICATIONS = 'payment-txn',
   FAILED_NOTIFICATIONS = 'failed-txn',
 }
 
