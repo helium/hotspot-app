@@ -88,7 +88,7 @@ const HotspotDetails = ({
       (state: RootState) => state.hotspotDetails.hotspotData[address],
     ) || {}
   const hiddenAddresses = useSelector(
-    (state: RootState) => state.hotspots.hiddenAddresses,
+    (state: RootState) => state.account.settings.hiddenAddresses,
   )
 
   const { showOKAlert, showOKCancelAlert } = useAlert()
@@ -119,7 +119,8 @@ const HotspotDetails = ({
   const makers = useSelector((state: RootState) => state.heliumData.makers)
 
   const isHidden = useMemo(
-    () => (hotspot?.address ? hiddenAddresses.has(hotspot?.address) : false),
+    () =>
+      hotspot?.address ? hiddenAddresses?.includes(hotspot?.address) : false,
     [hiddenAddresses, hotspot?.address],
   )
 

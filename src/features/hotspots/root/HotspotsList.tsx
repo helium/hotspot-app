@@ -41,7 +41,7 @@ const HotspotsList = ({
     (state: RootState) => state.hotspots.orderedHotspots,
   )
   const hiddenAddresses = useSelector(
-    (state: RootState) => state.hotspots.hiddenAddresses,
+    (state: RootState) => state.account.settings.hiddenAddresses,
   )
   const showHiddenHotspots = useSelector(
     (state: RootState) => state.account.settings.showHiddenHotspots,
@@ -57,7 +57,9 @@ const HotspotsList = ({
     if (showHiddenHotspots) {
       return orderedHotspots
     }
-    return orderedHotspots.filter((h) => !hiddenAddresses.has(h.address)) || []
+    return (
+      orderedHotspots.filter((h) => !hiddenAddresses?.includes(h.address)) || []
+    )
   }, [hiddenAddresses, orderedHotspots, showHiddenHotspots])
 
   const handlePress = useCallback(
@@ -132,7 +134,7 @@ const HotspotsList = ({
           showCarot
           loading={loadingRewards}
           totalReward={rewards[item.address]}
-          hidden={hiddenAddresses.has(item.address)}
+          hidden={hiddenAddresses?.includes(item.address)}
         />
       )
     },

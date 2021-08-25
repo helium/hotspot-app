@@ -58,7 +58,7 @@ import usePermissionManager from '../../../utils/usePermissionManager'
 import useAlert from '../../../utils/useAlert'
 import { getLocationPermission } from '../../../store/location/locationSlice'
 import { isDataOnly } from '../../../utils/hotspotUtils'
-import { hideHotspot, showHotspot } from '../../../store/hotspots/hotspotsSlice'
+import { updateSetting } from '../../../store/account/accountSlice'
 
 type State = 'init' | 'scan' | 'transfer' | 'discoveryMode' | 'updateHotspot'
 
@@ -86,7 +86,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
     (state: RootState) => state.hotspotDetails,
   )
   const hiddenAddresses = useSelector(
-    (state: RootState) => state.hotspots.hiddenAddresses,
+    (state: RootState) => state.account.settings.hiddenAddresses,
   )
   const { requestLocationPermission } = usePermissionManager()
   const { permissionResponse, locationBlocked } = useSelector(
@@ -117,7 +117,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
   }, [showSettings])
 
   const isHidden = useMemo(
-    () => hotspot && hiddenAddresses.has(hotspot.address),
+    () => hotspot && hiddenAddresses?.includes(hotspot.address),
     [hiddenAddresses, hotspot],
   )
 
@@ -229,12 +229,21 @@ const HotspotSettings = ({ hotspot }: Props) => {
     t,
   ])
 
-  const onPressHideHotspot = useCallback(() => {
+  const onToggleHotspotVisibility = useCallback(() => {
     if (!hotspot) return
+    const addresses = new Set(hiddenAddresses?.split(','))
+    if (isHidden) {
+      addresses.delete(hotspot.address)
+    } else {
+      addresses.add(hotspot.address)
+    }
     dispatch(
-      isHidden ? showHotspot(hotspot.address) : hideHotspot(hotspot.address),
+      updateSetting({
+        key: 'hiddenAddresses',
+        value: Array.from(addresses).join(','),
+      }),
     )
-  }, [dispatch, hotspot, isHidden])
+  }, [dispatch, hiddenAddresses, hotspot, isHidden])
 
   const onCloseOwnerSettings = useCallback(() => {
     setNextState('init')
@@ -408,7 +417,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
               ? 'Makes the Hotspot visible in the app.'
               : 'Hides the Hotspot in the app.'
           }
-          onPress={onPressHideHotspot}
+          onPress={onToggleHotspotVisibility}
           compact
           buttonIcon={
             isHidden ? (
@@ -433,7 +442,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
     purpleMain,
     onPressUpdateHotspot,
     isHidden,
-    onPressHideHotspot,
+    onToggleHotspotVisibility,
     onCloseOwnerSettings,
     handleClose,
   ])

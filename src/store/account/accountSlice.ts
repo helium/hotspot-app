@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Account, Sum } from '@helium/http'
 import { getAccount, getAccountRewards } from '../../utils/appDataClient'
 import { getWallet, postWallet } from '../../utils/walletClient'
@@ -23,7 +23,8 @@ const boolKeys = [
   'showHiddenHotspots',
 ] as const
 type BooleanKey = typeof boolKeys[number]
-// Eventually we can add more types, but for now all our app account settings are booleans
+const stringKeys = ['hiddenAddresses'] as const
+type StringKey = typeof stringKeys[number]
 
 export type AccountState = {
   account?: Account
@@ -36,6 +37,7 @@ export type AccountState = {
     hasFleetModeAutoEnabled?: boolean
     convertHntToCurrency?: boolean
     showHiddenHotspots?: boolean
+    hiddenAddresses?: string
   }
   settingsLoaded?: boolean
   settingsTransferRequired?: boolean
@@ -60,6 +62,8 @@ const settingsBagToKeyValue = (payload: SettingsBag) =>
     let val: string | boolean | number | undefined
     if (boolKeys.includes(key as BooleanKey)) {
       val = value === 'true'
+    } else if (stringKeys.includes(key as StringKey)) {
+      val = value
     } else {
       return obj
     }
@@ -155,7 +159,7 @@ export const updateFleetModeEnabled = createAsyncThunk<
 
 export const updateSetting = createAsyncThunk<
   SettingsBag,
-  { key: BooleanKey; value: boolean }
+  { key: BooleanKey | StringKey; value: boolean | string }
 >('account/updateSetting', async ({ key, value }) => {
   const setting = {
     key,
@@ -241,8 +245,7 @@ const accountSlice = createSlice({
     })
     builder.addCase(fetchAccountSettings.fulfilled, (state, { payload }) => {
       const settings = settingsBagToKeyValue(payload)
-      const nextState = { ...state, settings, settingsLoaded: true }
-      return nextState
+      return { ...state, settings, settingsLoaded: true }
     })
     builder.addCase(
       transferAppSettingsToAccount.fulfilled,
@@ -282,7 +285,11 @@ const accountSlice = createSlice({
           },
         },
       ) => {
-        state.settings[key] = value
+        if (boolKeys.includes(key as BooleanKey)) {
+          state.settings[key as BooleanKey] = value as boolean
+        } else if (stringKeys.includes(key as StringKey)) {
+          state.settings[key as StringKey] = value as string
+        }
       },
     )
   },

@@ -51,7 +51,7 @@ const WelcomeOverview = ({ accountRewards }: Props) => {
   )
 
   const hiddenAddresses = useSelector(
-    (state: RootState) => state.hotspots.hiddenAddresses,
+    (state: RootState) => state.account.settings.hiddenAddresses,
   )
   const showHiddenHotspots = useSelector(
     (state: RootState) => state.account.settings.showHiddenHotspots,
@@ -61,7 +61,7 @@ const WelcomeOverview = ({ accountRewards }: Props) => {
     if (showHiddenHotspots) {
       return hotspots
     }
-    return hotspots.filter((h) => !hiddenAddresses.has(h.address)) || []
+    return hotspots.filter((h) => !hiddenAddresses?.includes(h.address)) || []
   }, [hiddenAddresses, hotspots, showHiddenHotspots])
 
   const hotspotsLoading = useSelector(
