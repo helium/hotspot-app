@@ -81,7 +81,6 @@ export const transferAppSettingsToAccount = createAsyncThunk<SettingsBag>(
     const fleetEnabled = await getSecureItem('fleetModeEnabled')
     const fleetAutoEnabled = await getSecureItem('hasFleetModeAutoEnabled')
     const convertHnt = await getSecureItem('convertHntToCurrency')
-    const showHiddenHotspots = await getSecureItem('showHiddenHotspots')
     const settings = [
       {
         key: 'isFleetModeEnabled',
@@ -94,10 +93,6 @@ export const transferAppSettingsToAccount = createAsyncThunk<SettingsBag>(
       {
         key: 'convertHntToCurrency',
         value: String(convertHnt),
-      },
-      {
-        key: 'showHiddenHotspots',
-        value: String(showHiddenHotspots),
       },
     ]
     return postWallet('accounts/settings', { settings })

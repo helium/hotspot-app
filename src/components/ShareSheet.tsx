@@ -9,6 +9,7 @@ import Clipboard from '@react-native-community/clipboard'
 import { Linking, Share } from 'react-native'
 import Toast from 'react-native-simple-toast'
 import HeliumActionSheet from './HeliumActionSheet'
+import { HeliumActionSheetItemType } from './HeliumActionSheetItem'
 import { TouchableOpacityBoxProps } from './TouchableOpacityBox'
 import useHaptic from '../utils/useHaptic'
 import { EXPLORER_BASE_URL } from '../utils/config'
@@ -105,7 +106,7 @@ const ShareSheet = ({ item }: Props) => {
           )
         },
       },
-    ]
+    ] as HeliumActionSheetItemType[]
   }, [explorerUrl, item, t, triggerNotification])
 
   return (
