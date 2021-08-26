@@ -100,7 +100,7 @@ const HotspotConfigurationPicker = ({
       })
     }
     setGain(gainString)
-    onGainUpdated(parseFloat(gainString))
+    onGainUpdated(gainFloat)
   }
 
   const onChangeElevation = (text: string) => {
