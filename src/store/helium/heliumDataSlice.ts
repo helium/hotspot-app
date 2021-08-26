@@ -46,7 +46,6 @@ export const fetchStats = createAsyncThunk('heliumData/stats', async () =>
 export const fetchInitialData = createAsyncThunk<HeliumDataState>(
   'heliumData/fetchInitialData',
   async () => {
-    console.log('load initial data')
     const vals = await Promise.all([
       getCurrentOraclePrice(),
       getPredictedOraclePrice(),
