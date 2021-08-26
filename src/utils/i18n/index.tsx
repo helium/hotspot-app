@@ -19,7 +19,7 @@ export const usesMetricSystem = RNLocalize.usesMetricSystem()
 
 let phoneLang = 'en'
 if (Array.isArray(locales)) {
-  phoneLang = locales[0].languageCode
+  phoneLang = locales[0].languageTag
 }
 
 const hotspotMakerTranslations = getTranslations()
