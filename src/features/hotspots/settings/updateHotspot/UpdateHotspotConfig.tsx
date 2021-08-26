@@ -209,8 +209,6 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
   }
 
   const StatePicker = () => {
-    if (isDataOnly(hotspot)) return null
-
     return (
       <Box flexDirection="row" borderRadius="m">
         <TouchableOpacityBox
