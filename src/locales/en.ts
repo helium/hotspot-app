@@ -614,6 +614,7 @@ export default {
         earn: 'Top Earning Hotspots',
         offline: 'Offline Hotspots',
         followed: 'Followed Hotspots',
+        unasserted: 'Unasserted Hotspots',
       },
     },
     search: {
