@@ -41,7 +41,12 @@ const useBluetooth = () => {
   const disconnect = async (
     hotspotDevice: Device,
   ): Promise<Device | undefined> => {
-    Logger.breadcrumb('Disconnect hotspot requested')
+    Logger.breadcrumb(`Disconnect hotspot ${hotspotDevice.id} requested`)
+
+    const connected = await hotspotDevice.isConnected()
+    if (!connected) {
+      return hotspotDevice
+    }
 
     try {
       const device = await hotspotDevice.cancelConnection()
@@ -51,6 +56,14 @@ const useBluetooth = () => {
       Logger.error(e)
       throw e
     }
+  }
+
+  const disconnectAll = async () => {
+    Logger.breadcrumb('Disconnect hotspot requested')
+    const connectedIDs = await connectedDevices()
+
+    const promises = connectedIDs.flatMap((device) => disconnect(device))
+    return Promise.all(promises)
   }
 
   const connect = async (
@@ -67,6 +80,9 @@ const useBluetooth = () => {
       throw e
     }
   }
+
+  const connectedDevices = async () =>
+    getBleManager().connectedDevices([Service.MAIN_UUID])
 
   const scan = async (ms: number, callback: (device: Device) => void) => {
     Logger.breadcrumb('Scan for hotspots')
@@ -113,7 +129,7 @@ const useBluetooth = () => {
     service: Service = Service.MAIN_UUID,
   ) => {
     Logger.breadcrumb(
-      `Find Characteristic: ${characteristicUuid} for service: ${service}`,
+      `Find Characteristic: ${characteristicUuid} for service: ${service} with deviceName: ${hotspotDevice.localName}`,
     )
     const characteristics = await hotspotDevice.characteristicsForService(
       service,
@@ -202,6 +218,8 @@ const useBluetooth = () => {
     readCharacteristic,
     writeCharacteristic,
     findCharacteristic,
+    connectedDevices,
+    disconnectAll,
   }
 }
 

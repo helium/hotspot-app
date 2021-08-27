@@ -33,9 +33,11 @@ const HotspotSetupConnectingScreen = () => {
     checkFirmwareCurrent,
   } = useConnectedHotspotContext()
 
+  console.log({ availableHotspots, hotspotId })
   const hotspot = availableHotspots[hotspotId]
 
   useEffect(() => {
+    if (!hotspot) return
     const unsubscribe = navigation.addListener('focus', async () => {
       try {
         // connect to hotspot
@@ -84,7 +86,7 @@ const HotspotSetupConnectingScreen = () => {
 
     return unsubscribe
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [hotspot])
 
   return (
     <SafeAreaBox flex={1} backgroundColor="primaryBackground">

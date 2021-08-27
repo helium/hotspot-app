@@ -49,6 +49,14 @@ export enum HotspotErrorCode {
   GATEWAY_NOT_FOUND = 'gw_not_found', // This may no longer be relevant, but it's not hurting anything check for it
 }
 
+const logDevice = ({ id, name, localName }: Device) => {
+  return {
+    id,
+    name,
+    localName,
+  }
+}
+
 const useHotspot = () => {
   const submitTxn = useSubmitTxn()
   const connectedHotspot = useRef<Device | null>(null)
@@ -66,6 +74,8 @@ const useHotspot = () => {
     writeCharacteristic,
     readCharacteristic,
     findCharacteristic,
+    connectedDevices,
+    disconnectAll,
   } = useBluetoothContext()
   const dispatch = useAppDispatch()
   const connectedHotspotDetails = useSelector(
@@ -74,14 +84,36 @@ const useHotspot = () => {
 
   // TODO: Move staking calls to redux
 
+  const maybeDisconnectPrevDevice = async () => {
+    const connectedDevIds = await connectedDevices()
+    console.log({ connectedDevIds })
+    const prevDevice = connectedHotspot.current
+    if (prevDevice) {
+      console.log(`Has previous device ${logDevice(prevDevice)}`)
+      const prevConnected = await prevDevice.isConnected()
+      if (prevConnected) {
+        try {
+          await disconnect(prevDevice)
+        } catch (e) {
+          Logger.error(
+            new Error(`Could not disconnect previous hotspot ${prevDevice.id}`),
+          )
+        }
+        connectedHotspot.current = null
+      }
+    }
+  }
+
   const scanForHotspots = async (ms: number) => {
     setAvailableHotspots({})
-    await scan(ms, (hotspotDevice) =>
+    await disconnectAll()
+    await scan(ms, (hotspotDevice) => {
+      Logger.prettyPrintToConsole(logDevice(hotspotDevice))
       setAvailableHotspots((hotspots) => ({
         ...hotspots,
         [hotspotDevice.id]: hotspotDevice,
-      })),
-    )
+      }))
+    })
   }
 
   const getDecodedStringVal = async (
@@ -132,21 +164,9 @@ const useHotspot = () => {
     hotspotDevice: Device,
   ): Promise<HotspotConnectStatus> => {
     dispatch(connectedHotspotSlice.actions.reset())
-    const prevDevice = connectedHotspot.current
-    if (prevDevice) {
-      const prevConnected = await prevDevice.isConnected()
-      if (prevConnected) {
-        try {
-          await disconnect(prevDevice)
-        } catch (e) {
-          Logger.error(
-            new Error(`Could not disconnect previous hotspot ${prevDevice.id}`),
-          )
-        }
-        connectedHotspot.current = null
-      }
-    }
+    await maybeDisconnectPrevDevice()
 
+    console.log(`Attempting to connect ${logDevice(hotspotDevice)}`)
     let connectedDevice = hotspotDevice
     const connected = await hotspotDevice.isConnected()
     if (!connected) {
@@ -220,6 +240,8 @@ const useHotspot = () => {
 
   const scanForWifiNetworks = async (configured = false) => {
     if (!connectedHotspot.current) return
+
+    console.log(`scan for wifi with ${logDevice(connectedHotspot.current)}`)
 
     const characteristic = configured
       ? HotspotCharacteristic.WIFI_CONFIGURED_SERVICES
