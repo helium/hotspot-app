@@ -556,6 +556,7 @@ const HotspotDetails = ({
           >
             <HeliumSelect
               showGradient={false}
+              scrollEnabled={false}
               marginTop="m"
               contentContainerStyle={contentContainerStyle}
               data={selectData}

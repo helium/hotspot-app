@@ -28,6 +28,7 @@ import CurrentLocationButton from './CurrentLocationButton'
 import { theme, Theme } from '../theme/theme'
 import { useColors } from '../theme/themeHooks'
 import Coverage from './Coverage'
+import { distance } from '../utils/location'
 
 const defaultLngLat = [-122.419418, 37.774929] // San Francisco
 
@@ -179,6 +180,7 @@ const Map = ({
 
   const bounds = useMemo(() => {
     const boundsLocations: number[][] = []
+    let hotspotCoords: number[] | undefined
 
     if (mapCenter && !selectedHotspot && !selectedHex) {
       boundsLocations.push(mapCenter)
@@ -186,19 +188,33 @@ const Map = ({
 
     if (selectedHotspot && selectedHotspot.locationHex) {
       const h3Location = selectedHotspot.locationHex
-      boundsLocations.push(h3ToGeo(h3Location).reverse())
+      hotspotCoords = h3ToGeo(h3Location).reverse()
+      boundsLocations.push(hotspotCoords)
     }
 
     if (selectedHex && !selectedHotspot) {
       boundsLocations.push(h3ToGeo(selectedHex).reverse())
     }
 
-    witnesses.forEach((w) => {
-      if (w.locationHex) {
-        const h3Location = w.locationHex
-        boundsLocations.push(h3ToGeo(h3Location).reverse())
+    if (hotspotCoords) {
+      const hotspotLatLng = {
+        latitude: hotspotCoords[1],
+        longitude: hotspotCoords[0],
       }
-    })
+      witnesses.forEach((w) => {
+        if (w.locationHex) {
+          const h3Location = w.locationHex
+          const coords = h3ToGeo(h3Location).reverse()
+          const distanceKM = distance(
+            { latitude: coords[1], longitude: coords[0] },
+            hotspotLatLng,
+          )
+          if (distanceKM < 200) {
+            boundsLocations.push(coords)
+          }
+        }
+      })
+    }
 
     return findBounds(boundsLocations, cameraBottomOffset)
   }, [mapCenter, cameraBottomOffset, selectedHex, selectedHotspot, witnesses])
