@@ -45,7 +45,7 @@ type Props = BoxProps<Theme> & {
 type ListItem = { item: HeliumActionSheetItemType; index: number }
 
 const HeliumActionSheet = ({
-  data,
+  data: propsData,
   selectedValue,
   onValueSelected,
   title,
@@ -63,9 +63,14 @@ const HeliumActionSheet = ({
   const insets = useSafeAreaInsets()
   const [modalVisible, setModalVisible] = useState(false)
   const [sheetHeight, setSheetHeight] = useState(0)
+  const [data, setData] = useState<Array<HeliumActionSheetItemType>>([])
   const { t } = useTranslation()
   const colors = useColors()
   const offset = useSharedValue(0)
+
+  useEffect(() => {
+    setData(propsData)
+  }, [propsData])
 
   const animatedStyles = useAnimatedStyle(() => {
     return {
