@@ -4,6 +4,6 @@ import hotspots from './hotspots'
 export default {
   antennas,
   hotspots,
-  id: 99999, // TODO: Get maker id from onboarding server
+  id: 18,
   supportEmail: 'support@heltec.cn',
 }
