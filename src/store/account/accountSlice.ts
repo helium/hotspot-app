@@ -271,7 +271,7 @@ const accountSlice = createSlice({
       },
     )
     builder.addCase(
-      updateSetting.pending,
+      updateSetting.fulfilled,
       (
         state,
         {
