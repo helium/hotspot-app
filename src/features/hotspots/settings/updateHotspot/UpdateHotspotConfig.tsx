@@ -26,7 +26,11 @@ import {
 } from '../../../../utils/assertLocationUtils'
 import { getOnboardingRecord } from '../../../../utils/stakingClient'
 import useSubmitTxn from '../../../../hooks/useSubmitTxn'
-import { decimalSeparator, groupSeparator } from '../../../../utils/i18n'
+import {
+  decimalSeparator,
+  groupSeparator,
+  locale,
+} from '../../../../utils/i18n'
 import { calculateAssertLocFee } from '../../../../utils/fees'
 import { MakerAntenna } from '../../../../makers/antennaMakerTypes'
 import { isDataOnly } from '../../../../utils/hotspotUtils'
@@ -282,7 +286,11 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
             {t('antennas.onboarding.gain')}
           </Text>
           <Text variant="body1Medium" color="grayLightText" marginBottom="s">
-            {t('hotspot_setup.location_fee.gain', { gain })}
+            {t('hotspot_setup.location_fee.gain', {
+              gain: gain?.toLocaleString(locale, {
+                maximumFractionDigits: 1,
+              }),
+            })}
           </Text>
           <Text
             variant="body1Medium"
