@@ -3,6 +3,7 @@ export const AppLinkCategories = [
   'dc_burn',
   'transfer',
   'hotspot',
+  'validator',
   'add_gateway',
 ] as const
 export type AppLinkCategoryType = typeof AppLinkCategories[number]

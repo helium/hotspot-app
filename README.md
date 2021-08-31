@@ -151,7 +151,9 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 
 ### Environment Variables
 
-Copy the file `.env.sample` and rename it to `.env`. Once renamed update the values within the file.
+1. Copy the file `.env.sample` and rename it to `.env`.
+2. Once renamed update the values within the file.
+3. In order for maps to load you will need to create your own [Mapbox](https://account.mapbox.com) access token.
 
 ### Dependencies
 

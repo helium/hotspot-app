@@ -11,6 +11,7 @@ import { StyleProp } from 'react-native'
 import { Hotspot, Witness } from '@helium/http'
 import { Feature, FeatureCollection, Position } from 'geojson'
 import geojson2h3 from 'geojson2h3'
+import Config from 'react-native-config'
 import { DiscoveryResponse } from '../store/discovery/discoveryTypes'
 import { Colors } from '../theme/theme'
 import { useColors } from '../theme/themeHooks'
@@ -304,6 +305,25 @@ const makeStyles = (
     ],
   ]
 
+  const textFont = Config.MAPBOX_FONT_NAME
+    ? [Config.MAPBOX_FONT_NAME]
+    : undefined
+  let text = {
+    textColor: [
+      'case',
+      ['==', ['get', 'id'], selectedHex || ''],
+      '#FFFFFF',
+      '#000000',
+    ],
+    textSize: 18,
+    textField: '{hotspot_count}',
+    textOpacity: ['case', ['==', ['get', 'hotspot_count'], 1], 0, 1],
+  } as StyleProp<SymbolLayerStyle>
+
+  if (textFont) {
+    text = Object.assign(text, { textFont })
+  }
+
   return {
     gridLine: {
       lineWidth: gridLineWidth,
@@ -325,18 +345,7 @@ const makeStyles = (
       lineWidth: selectedLineWidth,
       lineColor: selectedOutlineColor,
     } as StyleProp<LineLayerStyle>,
-    text: {
-      textFont: ['Inter Semi Bold'],
-      textColor: [
-        'case',
-        ['==', ['get', 'id'], selectedHex || ''],
-        '#FFFFFF',
-        '#000000',
-      ],
-      textSize: 18,
-      textField: '{hotspot_count}',
-      textOpacity: ['case', ['==', ['get', 'hotspot_count'], 1], 0, 1],
-    } as StyleProp<SymbolLayerStyle>,
+    text,
     defaultCircle: {
       ...commonCircleStyle,
       circleColor: '#29d391',
