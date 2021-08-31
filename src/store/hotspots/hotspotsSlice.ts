@@ -3,7 +3,11 @@ import { Hotspot } from '@helium/http'
 import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
 import { orderBy, sortBy, uniq } from 'lodash'
 import { getHotspotDetails, getHotspots } from '../../utils/appDataClient'
-import { distance, LocationCoords } from '../../utils/location'
+import {
+  distance,
+  hotspotHasValidLocation,
+  LocationCoords,
+} from '../../utils/location'
 import { getWallet, deleteWallet, postWallet } from '../../utils/walletClient'
 import { CacheRecord, handleCacheFulfilled } from '../../utils/cacheUtils'
 import { HotspotSyncStatus } from '../../features/hotspots/root/hotspotTypes'
@@ -15,6 +19,7 @@ export enum HotspotSort {
   Earn = 'earn',
   Followed = 'followed',
   Offline = 'offline',
+  Unasserted = 'unasserted',
 }
 
 type Rewards = Record<string, Balance<NetworkTokens>>
@@ -79,6 +84,8 @@ const hotspotSorters: Record<HotspotSort, HotspotSorter> = {
   [HotspotSort.Offline]: (hotspots) =>
     orderBy(hotspots, ['status.online', 'offline']),
   [HotspotSort.Followed]: (hotspots) => hotspots,
+  [HotspotSort.Unasserted]: (hotspots) =>
+    hotspots.filter((h) => !hotspotHasValidLocation(h)),
 }
 
 export const fetchRewards = createAsyncThunk<
