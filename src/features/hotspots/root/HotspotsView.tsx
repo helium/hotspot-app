@@ -229,6 +229,12 @@ const HotspotsView = ({
 
   const { witnesses } = hotspotDetailsData || {}
 
+  useEffect(() => {
+    if (showWitnesses && !witnesses) {
+      dispatch(fetchHotspotData(hotspotAddress))
+    }
+  }, [mapFilter, hotspotAddress, dispatch, witnesses, showWitnesses])
+
   const hasUserLocation = useMemo(
     () =>
       location &&
