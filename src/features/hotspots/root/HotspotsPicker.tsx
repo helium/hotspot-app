@@ -27,7 +27,7 @@ const HotspotsPicker = ({ visible }: Props) => {
   const spacing = useSpacing()
   const maybeGetLocation = useGetLocation()
   const fleetModeEnabled = useSelector(
-    (state: RootState) => state.app.isFleetModeEnabled,
+    (state: RootState) => state.account.settings.isFleetModeEnabled,
   )
   const order = useSelector((state: RootState) => state.hotspots.order)
 

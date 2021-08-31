@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
+import Config from 'react-native-config'
 import Button from '../../../components/Button'
 import Text from '../../../components/Text'
 import { OnboardingNavigationProp } from '../onboardingTypes'
@@ -11,6 +12,22 @@ import TextTransform from '../../../components/TextTransform'
 const WelcomeScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<OnboardingNavigationProp>()
+
+  const createAccount = useCallback(
+    () => navigation.push('AccountPassphraseWarning'),
+    [navigation],
+  )
+
+  const importAccount = useCallback(() => {
+    const hasWords = !!Config.WORDS
+    if (!hasWords) {
+      navigation.push('AccountImportScreen')
+    } else {
+      navigation.push('ImportAccountConfirmScreen', {
+        words: Config.WORDS.split(','),
+      })
+    }
+  }, [navigation])
 
   return (
     <Box backgroundColor="primaryBackground" flex={1}>
@@ -39,11 +56,11 @@ const WelcomeScreen = () => {
           variant="primary"
           width="100%"
           marginBottom="s"
-          onPress={() => navigation.push('AccountPassphraseWarning')}
+          onPress={createAccount}
           title={t('account_setup.welcome.create_account')}
         />
         <Button
-          onPress={() => navigation.push('AccountImportScreen')}
+          onPress={importAccount}
           mode="text"
           variant="primary"
           title={t('account_setup.welcome.import_account')}

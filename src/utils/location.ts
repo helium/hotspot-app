@@ -1,5 +1,6 @@
 import { Hotspot, Witness } from '@helium/http'
 import * as Location from 'expo-location'
+import { isFinite } from 'lodash'
 
 export type LocationCoords = { latitude: number; longitude: number }
 
@@ -38,7 +39,16 @@ export const distance = (coords1: LocationCoords, coords2: LocationCoords) => {
 }
 
 export const hotspotHasValidLocation = (hotspot?: Hotspot | Witness) =>
-  !!hotspot && hotspot.lat !== 0 && hotspot.lng !== 0
+  !!hotspot &&
+  hotspot.lat !== 0 &&
+  hotspot.lng !== 0 &&
+  isFinite(hotspot.lat) &&
+  isFinite(hotspot.lng)
 
 export const locationIsValid = (location?: number[]) =>
-  !!location && location.length === 2 && location[0] !== 0 && location[1] !== 0
+  !!location &&
+  location.length === 2 &&
+  location[0] !== 0 &&
+  location[1] !== 0 &&
+  isFinite(location[0]) &&
+  isFinite(location[1])

@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { Hotspot, Witness } from '@helium/http'
 import { useAsync } from 'react-async-hook'
 import { Alert, Linking } from 'react-native'
@@ -6,7 +6,6 @@ import { useSelector } from 'react-redux'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { isEqual } from 'lodash'
-import { getUnixTime } from 'date-fns'
 import discoverySlice, {
   fetchDiscoveryById,
   fetchRecentDiscoveries,
@@ -25,9 +24,10 @@ import DiscoveryModeBegin from './DiscoveryModeBegin'
 import DiscoveryModeResults from './DiscoveryModeResults'
 import useMount from '../../../../utils/useMount'
 import useAlert from '../../../../utils/useAlert'
-import { isRelay } from '../../../../utils/hotspotUtils'
+import { isDataOnly, isRelay } from '../../../../utils/hotspotUtils'
 import Articles from '../../../../constants/articles'
 import useDiscoveryPoll from './useDiscoveryPoll'
+import useHotspotSync from '../../useHotspotSync'
 
 type Props = { onClose: () => void; hotspot: Hotspot | Witness }
 const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
@@ -56,12 +56,8 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
   const selectedRequest = useSelector(
     (state: RootState) => state.discovery.selectedRequest,
   )
-  const lastWarningDate = useSelector(
-    (state: RootState) => state.discovery.lastWarningDate,
-  )
-  const syncStatuses = useSelector(
-    (state: RootState) => state.hotspots.syncStatuses,
-  )
+
+  const { updateSyncStatus, hotspotSyncStatus } = useHotspotSync(hotspot)
 
   const fetchRecent = useCallback(() => {
     if (!hotspot.address || !userAddress) return
@@ -71,6 +67,7 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
 
   useMount(() => {
     dispatch(discoverySlice.actions.clearSelections())
+    updateSyncStatus()
   })
 
   const handleBack = useCallback(() => {
@@ -86,35 +83,6 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
       fetchRecent()
     }
   }, [dispatch, fetchRecent, onClose, viewState])
-
-  useEffect(() => {
-    if (!recentDiscoveryInfo?.serverDate) return
-
-    const unixTime = (dateStr?: string) => {
-      const insertDate = dateStr ? new Date(dateStr) : null
-      if (!insertDate) return 0
-
-      return getUnixTime(insertDate)
-    }
-
-    const oneDayInSeconds = 86400
-
-    if (
-      !lastWarningDate ||
-      unixTime(lastWarningDate) + oneDayInSeconds <
-        unixTime(recentDiscoveryInfo.serverDate)
-    ) {
-      showOKAlert({
-        titleKey: 'discovery.instability_warning.title',
-        messageKey: 'discovery.instability_warning.message',
-      })
-      dispatch(
-        discoverySlice.actions.updateLastWarningDate(
-          recentDiscoveryInfo.serverDate,
-        ),
-      )
-    }
-  }, [dispatch, lastWarningDate, recentDiscoveryInfo, showOKAlert])
 
   useEffect(() => {
     if (
@@ -152,10 +120,17 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
     setViewState('results')
   }, [dispatch, hotspot])
 
+  const dataOnly = useMemo(() => isDataOnly(hotspot), [hotspot])
+
   const handleNewSelected = useCallback(async () => {
     if (!hotspot.address || !userAddress) return
 
-    const { status } = syncStatuses[hotspot.address]
+    if (dataOnly) {
+      dispatchDiscovery()
+      return
+    }
+
+    const status = hotspotSyncStatus?.status
     if (status !== 'full') {
       showOKAlert({
         titleKey: 'discovery.syncing_prompt.title',
@@ -192,7 +167,17 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
     } else {
       dispatchDiscovery()
     }
-  }, [hotspot, userAddress, syncStatuses, showOKAlert, t, dispatchDiscovery])
+  }, [
+    hotspot.address,
+    hotspot.status?.online,
+    hotspot.status?.listenAddrs,
+    userAddress,
+    hotspotSyncStatus?.status,
+    dataOnly,
+    showOKAlert,
+    t,
+    dispatchDiscovery,
+  ])
 
   const handleRequestSelected = useCallback(
     (request: DiscoveryRequest) => {
