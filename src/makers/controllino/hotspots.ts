@@ -15,7 +15,7 @@ const ControllinoHotspot = {
         'Your Hotspot will boot up and is  ready in around 5 minutes.',
       ],
       bluetooth: [
-        'After roughly 5 minutes since plugging in the hotspot, you should see it as Bluetooth device on your phone.',
+        'After roughly 5 minutes after plugging in the Hotspot, you should see it as Bluetooth device on your phone.',
         'If you cannot see the Hotspot after a few minutes, plug out the power cable and plug it in again.',
       ],
     },
