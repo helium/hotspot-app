@@ -27,7 +27,7 @@ const NotificationShow = ({ notification, onClose }: Props) => {
   const spacing = useSpacing()
   const navigation = useNavigation<RootNavigationProp>()
 
-  const { body, title, time, footer, share_text: shareText } = notification || {
+  const { body, title, time, footer, shareText } = notification || {
     body: '',
     title: '',
   }
@@ -39,7 +39,7 @@ const NotificationShow = ({ notification, onClose }: Props) => {
   const onViewTransferRequest = () => {
     onClose()
     navigation.navigate('SendStack', {
-      hotspotAddress: notification?.hotspot_address || undefined,
+      hotspotAddress: notification?.hotspotAddress || undefined,
       isSeller: false,
       type: 'transfer',
     })
