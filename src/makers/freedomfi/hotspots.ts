@@ -15,7 +15,7 @@ const FreedomFiHotspot = {
         'The FreedomFi PWR LED will light up once it’s powered on.',
       ],
       externalOnboard:
-        'Please onboard your FreedomFi hotspot by tapping the link below:',
+        'Please onboard your FreedomFi Hotspot by tapping the link below:',
     },
   },
   antenna: {
