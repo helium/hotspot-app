@@ -5,6 +5,7 @@ import TextTicker from 'react-native-text-ticker'
 import { BoxProps } from '@shopify/restyle'
 import { useTranslation } from 'react-i18next'
 import { Easing } from 'react-native'
+import { isTablet } from 'react-native-device-info'
 import Box from '../../../components/Box'
 import {
   fetchStats,
@@ -17,7 +18,6 @@ import { useTextVariants } from '../../../theme/themeHooks'
 import { Theme } from '../../../theme/theme'
 import { locale } from '../../../utils/i18n'
 import useVisible from '../../../utils/useVisible'
-import { isTablet } from 'react-native-device-info'
 
 type Props = BoxProps<Theme>
 const HotspotsTicker = ({ ...boxProps }: Props) => {
