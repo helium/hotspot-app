@@ -50,6 +50,8 @@
 	<string>Allow Helium to use your location to add Hotspots to the network and explore Hotspots around you</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Allow Helium to authenticate with Face ID</string>
+	<key>UIRequiresFullScreen</key>
+	<true/>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Allow Helium to connect to and manage your Hotspots</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
