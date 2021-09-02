@@ -6,14 +6,12 @@ import {
   setSecureItem,
   signOut,
 } from '../../utils/secureAccount'
+import * as Logger from '../../utils/logger'
 import { Intervals } from '../../features/moreTab/more/useAuthIntervals'
 
 export type AppState = {
   isBackedUp: boolean
   isHapticDisabled: boolean
-  isFleetModeEnabled: boolean
-  hasFleetModeAutoEnabled: boolean
-  convertHntToCurrency: boolean
   isSettingUpHotspot: boolean
   isRestored: boolean
   isPinRequired: boolean
@@ -26,8 +24,6 @@ export type AppState = {
 const initialState: AppState = {
   isBackedUp: false,
   isHapticDisabled: false,
-  isFleetModeEnabled: false,
-  convertHntToCurrency: false,
   isSettingUpHotspot: false,
   isRestored: false,
   isPinRequired: false,
@@ -36,7 +32,6 @@ const initialState: AppState = {
   lastIdle: null,
   isLocked: false,
   isRequestingPermission: false,
-  hasFleetModeAutoEnabled: false,
 }
 
 type Restore = {
@@ -46,11 +41,10 @@ type Restore = {
   authInterval: number
   isLocked: boolean
   isHapticDisabled: boolean
-  convertHntToCurrency: boolean
 }
 
-export const restoreUser = createAsyncThunk<Restore>(
-  'app/restoreUser',
+export const restoreAppSettings = createAsyncThunk<Restore>(
+  'app/restoreAppSettings',
   async () => {
     const [
       isBackedUp,
@@ -58,24 +52,19 @@ export const restoreUser = createAsyncThunk<Restore>(
       isPinRequiredForPayment,
       authInterval,
       isHapticDisabled,
-      convertHntToCurrency,
       address,
-      isFleetModeEnabled,
-      hasFleetModeAutoEnabled,
     ] = await Promise.all([
       getSecureItem('accountBackedUp'),
       getSecureItem('requirePin'),
       getSecureItem('requirePinForPayment'),
       getSecureItem('authInterval'),
       getSecureItem('hapticDisabled'),
-      getSecureItem('convertHntToCurrency'),
       getSecureItem('address'),
-      getSecureItem('fleetModeEnabled'),
-      getSecureItem('hasFleetModeAutoEnabled'),
     ])
 
     if (isBackedUp && address) {
       OneSignal.sendTags({ address })
+      Logger.setUser(address)
     }
     return {
       isBackedUp,
@@ -86,9 +75,6 @@ export const restoreUser = createAsyncThunk<Restore>(
         : Intervals.IMMEDIATELY,
       isLocked: isPinRequired,
       isHapticDisabled,
-      convertHntToCurrency,
-      isFleetModeEnabled,
-      hasFleetModeAutoEnabled,
     } as Restore
   },
 )
@@ -120,25 +106,6 @@ const appSlice = createSlice({
       state.isHapticDisabled = action.payload
       setSecureItem('hapticDisabled', action.payload)
     },
-    updateFleetModeEnabled: (
-      state,
-      action: PayloadAction<{ enabled: boolean; autoEnabled?: boolean }>,
-    ) => {
-      state.isFleetModeEnabled = action.payload.enabled
-      setSecureItem('fleetModeEnabled', action.payload.enabled)
-      if (action.payload.autoEnabled) {
-        state.hasFleetModeAutoEnabled = true
-        setSecureItem('hasFleetModeAutoEnabled', true)
-      }
-    },
-    toggleConvertHntToCurrency: (state) => {
-      state.convertHntToCurrency = !state.convertHntToCurrency
-      setSecureItem('convertHntToCurrency', state.convertHntToCurrency)
-    },
-    updateConvertHntToCurrency: (state, action: PayloadAction<boolean>) => {
-      state.convertHntToCurrency = action.payload
-      setSecureItem('convertHntToCurrency', action.payload)
-    },
     updateAuthInterval: (state, action: PayloadAction<number>) => {
       state.authInterval = action.payload
       setSecureItem('authInterval', action.payload.toString())
@@ -164,7 +131,7 @@ const appSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(restoreUser.fulfilled, (state, { payload }) => {
+    builder.addCase(restoreAppSettings.fulfilled, (state, { payload }) => {
       return { ...state, ...payload, isRestored: true }
     })
   },

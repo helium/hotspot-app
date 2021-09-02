@@ -19,6 +19,8 @@ import { HotspotErrorCode } from '../../../utils/useHotspot'
 import { assertLocationTxn } from '../../../utils/assertLocationUtils'
 import useSubmitTxn from '../../../hooks/useSubmitTxn'
 import { HotspotSetupStackParamList } from './hotspotSetupTypes'
+import { getKeypair } from '../../../utils/secureAccount'
+import { getStakingSignedTransaction } from '../../../utils/stakingClient'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotTxnsProgressScreen'>
 
@@ -99,10 +101,34 @@ const HotspotTxnsProgressScreen = () => {
       // if so, construct and publish add gateway
 
       if (qrAddGatewayTxn) {
+        if (!address) {
+          showOKAlert({
+            titleKey: 'hotspot_setup.onboarding_error.title',
+            messageKey: 'hotspot_setup.onboarding_error.disconnected',
+          })
+          return
+        }
+
         // Gateway Txn scanned from QR
         try {
-          const addGateway = AddGatewayV1.fromString(qrAddGatewayTxn)
-          await submitTxn(addGateway)
+          const txn = AddGatewayV1.fromString(qrAddGatewayTxn)
+
+          const keypair = await getKeypair()
+
+          const txnOwnerSigned = await txn.sign({
+            owner: keypair,
+          })
+
+          const stakingServerSignedTxnStr = await getStakingSignedTransaction(
+            address,
+            txnOwnerSigned.toString(),
+          )
+
+          const stakingServerSignedTxn = AddGatewayV1.fromString(
+            stakingServerSignedTxnStr,
+          )
+
+          await submitTxn(stakingServerSignedTxn)
         } catch (error) {
           handleError(error, 'add_gateway')
           return
@@ -127,15 +153,16 @@ const HotspotTxnsProgressScreen = () => {
       try {
         const onboardingRecord =
           params?.onboardingRecord || connectedHotspot.onboardingRecord
-        const assertLocTxnResponse = await assertLocationTxn(
-          address,
+        const assertLocTxnResponse = await assertLocationTxn({
+          gateway: address,
           lat,
           lng,
-          gain,
+          decimalGain: gain,
           elevation,
           onboardingRecord,
-          true,
-        )
+          updatingLocation: true,
+          dataOnly: false,
+        })
         if (assertLocTxnResponse) {
           await submitTxn(assertLocTxnResponse)
           setFinished(true)

@@ -16,13 +16,13 @@ import { wp } from '../../../utils/layout'
 import CircleProgress from '../../../components/CircleProgress'
 
 type CompleteProps = {
-  visible?: boolean
+  visible: boolean
   colorString: Colors
   colorHex: string
   text: string
 }
 const CompletePill = ({
-  visible = true,
+  visible,
   colorString,
   colorHex,
   text,
@@ -174,7 +174,7 @@ const HotspotChecklistItem = ({
                 auto={t('checklist.pending')}
               />
               <CompletePill
-                visible={complete}
+                visible={!!complete}
                 colorHex={colors.purpleMain}
                 colorString="purpleMain"
                 text={t('checklist.complete')}

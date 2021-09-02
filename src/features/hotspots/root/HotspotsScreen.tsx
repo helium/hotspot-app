@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react'
+import React, { useEffect, useState, useMemo, useCallback, memo } from 'react'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { useSelector } from 'react-redux'
 import { ActivityIndicator } from 'react-native'
@@ -13,12 +13,24 @@ import useVisible from '../../../utils/useVisible'
 import { useAppDispatch } from '../../../store/store'
 import useGetLocation from '../../../utils/useGetLocation'
 import useAlert from '../../../utils/useAlert'
-import appSlice from '../../../store/user/appSlice'
+import { updateFleetModeEnabled } from '../../../store/account/accountSlice'
 
 const HotspotsScreen = () => {
   const maybeGetLocation = useGetLocation()
   const { showOKAlert } = useAlert()
+  const validators = useSelector(
+    (state: RootState) => state.validators.validators.data,
+  )
+  const followedValidators = useSelector(
+    (state: RootState) => state.validators.followedValidators.data,
+  )
   const hotspots = useSelector((state: RootState) => state.hotspots.hotspots)
+  const hiddenAddresses = useSelector(
+    (state: RootState) => state.account.settings.hiddenAddresses,
+  )
+  const showHiddenHotspots = useSelector(
+    (state: RootState) => state.account.settings.showHiddenHotspots,
+  )
   const followedHotspots = useSelector(
     (state: RootState) => state.hotspots.followedHotspots,
   )
@@ -26,10 +38,10 @@ const HotspotsScreen = () => {
     (state: RootState) => state.hotspots.hotspotsLoaded,
   )
   const fleetModeEnabled = useSelector(
-    (state: RootState) => state.app.isFleetModeEnabled,
+    (state: RootState) => state.account.settings.isFleetModeEnabled,
   )
   const hasFleetModeAutoEnabled = useSelector(
-    (state: RootState) => state.app.hasFleetModeAutoEnabled,
+    (state: RootState) => state.account.settings.hasFleetModeAutoEnabled,
   )
   const fleetModeLowerLimit = useSelector(
     (state: RootState) => state.features.fleetModeLowerLimit,
@@ -41,6 +53,13 @@ const HotspotsScreen = () => {
     (state: RootState) => state.location,
   )
 
+  const visibleHotspots = useMemo(() => {
+    if (showHiddenHotspots) {
+      return hotspots
+    }
+    return hotspots.filter((h) => !hiddenAddresses?.includes(h.address)) || []
+  }, [hiddenAddresses, hotspots, showHiddenHotspots])
+
   const browseMap = useCallback(async () => {
     setStartOnMap(true)
     maybeGetLocation(true)
@@ -51,17 +70,18 @@ const HotspotsScreen = () => {
   }, [location?.latitude, location?.longitude])
 
   useEffect(() => {
+    // TODO: Add validators into this check
     if (
       fleetModeEnabled ||
       hasFleetModeAutoEnabled === undefined ||
       hasFleetModeAutoEnabled ||
       fleetModeLowerLimit === undefined ||
-      hotspots.length < fleetModeLowerLimit
+      visibleHotspots.length < fleetModeLowerLimit
     )
       return
 
     dispatch(
-      appSlice.actions.updateFleetModeEnabled({
+      updateFleetModeEnabled({
         enabled: true,
         autoEnabled: true,
       }),
@@ -75,7 +95,7 @@ const HotspotsScreen = () => {
     fleetModeEnabled,
     fleetModeLowerLimit,
     hasFleetModeAutoEnabled,
-    hotspots,
+    visibleHotspots,
     showOKAlert,
   ])
 
@@ -88,22 +108,33 @@ const HotspotsScreen = () => {
 
   useEffect(() => {
     dispatch(fetchRewards({ fetchType: fleetModeEnabled ? 'followed' : 'all' }))
-  }, [hotspots, dispatch, fleetModeEnabled])
+  }, [visibleHotspots, dispatch, fleetModeEnabled])
 
   const viewState = useMemo(() => {
     if (!hotspotsLoaded) return 'loading'
-    if (hotspots.length === 0 && followedHotspots.length === 0 && !location)
+    if (
+      visibleHotspots.length === 0 &&
+      followedHotspots.length === 0 &&
+      !location
+    )
       return 'empty'
     return 'view'
-  }, [followedHotspots.length, hotspots.length, hotspotsLoaded, location])
+  }, [
+    followedHotspots.length,
+    visibleHotspots.length,
+    hotspotsLoaded,
+    location,
+  ])
 
   return (
     <Box backgroundColor="primaryBackground" flex={1}>
       <BottomSheetModalProvider>
         {viewState !== 'loading' && (
           <HotspotsView
-            ownedHotspots={hotspots}
+            ownedHotspots={visibleHotspots}
             followedHotspots={followedHotspots}
+            ownedValidators={validators}
+            followedValidators={followedValidators}
             startOnMap={startOnMap}
             location={coords}
             onRequestShowMap={browseMap}
@@ -119,4 +150,4 @@ const HotspotsScreen = () => {
   )
 }
 
-export default HotspotsScreen
+export default memo(HotspotsScreen)

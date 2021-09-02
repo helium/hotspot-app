@@ -8,6 +8,7 @@ import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 type Props = {
   title: string
   subtitle: string
+  icon: Element
   isFirst: boolean
   isLast: boolean
   onPress: () => void
@@ -16,6 +17,7 @@ type Props = {
 const HotspotSearchListItem = ({
   title,
   subtitle,
+  icon,
   isFirst,
   isLast,
   onPress,
@@ -35,9 +37,12 @@ const HotspotSearchListItem = ({
       onPress={onPress}
     >
       <Box justifyContent="center" flex={1}>
-        <Text variant="medium" fontSize={15} color="offblack">
-          {title}
-        </Text>
+        <Box flexDirection="row" alignItems="center">
+          {icon && <Box marginRight="xs">{icon}</Box>}
+          <Text variant="medium" fontSize={15} color="offblack">
+            {title}
+          </Text>
+        </Box>
         {!!subtitle && (
           <Text variant="regular" fontSize={12} color="grayLightText">
             {subtitle}

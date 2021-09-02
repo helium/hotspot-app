@@ -71,6 +71,10 @@ const useAppLink = () => {
           navigator.viewHotspot((record as AppLink).address)
           break
 
+        case 'validator':
+          navigator.viewValidator((record as AppLink).address)
+          break
+
         case 'dc_burn':
         case 'payment':
         case 'transfer':
@@ -110,12 +114,12 @@ const useAppLink = () => {
     ) as AppLink
 
     const path = parsed.url.replace(APP_LINK_PROTOCOL, '')
-    const [resourceType, resourceId] = path.split('/')
+    const [resourceType, ...rest] = path.split('/')
     if (resourceType && AppLinkCategories.find((k) => k === resourceType)) {
       record.type = resourceType as AppLinkCategoryType
     }
-    if (resourceId) {
-      record.address = resourceId
+    if (rest?.length) {
+      record.address = rest.join('/')
     }
 
     if (!record.type || !AppLinkCategories.find((k) => k === record.type)) {

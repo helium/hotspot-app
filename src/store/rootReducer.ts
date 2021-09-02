@@ -8,6 +8,7 @@ import hotspotDetailsSlice from './hotspotDetails/hotspotDetailsSlice'
 import hotspotsSlice from './hotspots/hotspotsSlice'
 import hotspotSearchSlice from './hotspotSearch/hotspotSearchSlice'
 import validatorsSlice from './validators/validatorsSlice'
+import rewardsSlice from './rewards/rewardsSlice'
 import activitySlice from './activity/activitySlice'
 import hotspotChecklistSlice from './hotspotDetails/hotspotChecklistSlice'
 import discoverySlice from './discovery/discoverySlice'
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
   hotspotSearch: hotspotSearchSlice.reducer,
   hotspotChecklist: hotspotChecklistSlice.reducer,
   validators: validatorsSlice.reducer,
+  rewards: rewardsSlice.reducer,
   discovery: discoverySlice.reducer,
   features: featuresSlice.reducer,
   location: locationSlice.reducer,

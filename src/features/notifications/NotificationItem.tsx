@@ -17,7 +17,7 @@ const NotificationItem = ({
   isLast,
   onNotificationSelected,
 }: Props) => {
-  const viewed = !!notification.viewed_at
+  const viewed = !!notification.viewedAt
   const colors = useColors()
 
   const onNotificationPress = useCallback(

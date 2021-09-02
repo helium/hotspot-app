@@ -34,7 +34,7 @@ const Icon = ({
     return <Account height={size} width={size} color={color} />
   }
   if (name === 'Notifications') {
-    const hasUnread = !!notifications.find((n) => !n.viewed_at)
+    const hasUnread = !!notifications.find((n) => !n.viewedAt)
     if (hasUnread) {
       return <NotificationsNew height={size} width={size} color={color} />
     }

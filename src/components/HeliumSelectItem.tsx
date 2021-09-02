@@ -5,12 +5,14 @@ import { Colors, Spacing } from '../theme/theme'
 import Text from './Text'
 import TouchableOpacityBox from './TouchableOpacityBox'
 
-export type HeliumSelectVariant = 'bubble' | 'flat'
+export type HeliumSelectVariant = 'bubble' | 'flat' | 'bubbleBold'
 export type HeliumSelectItemType = {
   label: string
   value: string | number
   Icon?: React.FC<SvgProps>
   color: Colors
+  textColor?: Colors
+  selectedTextColor?: Colors
 }
 
 type Props = {
@@ -25,14 +27,17 @@ type Props = {
 
 const HeliumSelectItem = ({
   selected,
-  item: { label, color, Icon },
+  item: { label, color, Icon, textColor, selectedTextColor },
   onPress,
   variant,
   backgroundColor = 'white',
   handleLayout,
   itemPadding,
 }: Props) => {
-  const textColor = useMemo(() => {
+  const itemTextColor = useMemo(() => {
+    if (textColor && !selected) return textColor
+    if (selectedTextColor && selected) return selectedTextColor
+
     if (variant === 'flat') {
       if (selected) return color
       return 'purpleGray'
@@ -40,7 +45,7 @@ const HeliumSelectItem = ({
 
     if (selected) return 'white'
     return 'purpleText'
-  }, [color, selected, variant])
+  }, [color, selected, selectedTextColor, textColor, variant])
 
   const background = useMemo(() => {
     if (variant === 'flat') return undefined
@@ -53,6 +58,27 @@ const HeliumSelectItem = ({
     if (variant === 'flat') return label.toUpperCase()
     return label
   }, [label, variant])
+
+  const fontSize = useMemo(() => {
+    switch (variant) {
+      case 'flat':
+        return 15
+      case 'bubble':
+        return 16
+      case 'bubbleBold':
+        return 17
+    }
+  }, [variant])
+
+  const textVariant = useMemo(() => {
+    switch (variant) {
+      case 'bubbleBold':
+      case 'flat':
+        return 'bold'
+      case 'bubble':
+        return 'medium'
+    }
+  }, [variant])
 
   return (
     <TouchableOpacityBox
@@ -67,9 +93,9 @@ const HeliumSelectItem = ({
     >
       {!!Icon && selected && <Icon height={16} width={16} color="white" />}
       <Text
-        variant={variant === 'flat' ? 'bold' : 'medium'}
-        fontSize={variant === 'flat' ? 13 : 16}
-        color={textColor}
+        variant={textVariant}
+        fontSize={fontSize}
+        color={itemTextColor}
         marginLeft={Icon ? 'xs' : 'none'}
       >
         {text}
