@@ -48,7 +48,10 @@ const HotspotTxnsProgressScreen = () => {
     }
 
     let titleKey = 'generic.error'
-    let messageKey = 'hotspot_setup.add_hotspot.add_hotspot_error_body'
+    let messageKey =
+      source === 'assert_location'
+        ? 'hotspot_setup.add_hotspot.assert_loc_error_body'
+        : 'hotspot_setup.add_hotspot.add_hotspot_error_body'
 
     if (isString(error)) {
       if (error === HotspotErrorCode.WAIT) {
@@ -57,8 +60,6 @@ const HotspotTxnsProgressScreen = () => {
       } else {
         messageKey = `Got error code ${error} from ${source}`
       }
-    } else if (error !== false) {
-      messageKey = error.toString()
     }
 
     await showOKAlert({ titleKey, messageKey })
