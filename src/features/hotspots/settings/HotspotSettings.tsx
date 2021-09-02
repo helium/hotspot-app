@@ -23,6 +23,7 @@ import Toast from 'react-native-simple-toast'
 import { visible } from '@shopify/restyle'
 import Visibility from '@assets/images/visibility.svg'
 import VisibilityOff from '@assets/images/visibility_off.svg'
+import { unwrapResult } from '@reduxjs/toolkit'
 import BlurBox from '../../../components/BlurBox'
 import Card from '../../../components/Card'
 import Text from '../../../components/Text'
@@ -231,7 +232,9 @@ const HotspotSettings = ({ hotspot }: Props) => {
 
   const onToggleHotspotVisibility = useCallback(async () => {
     if (!hotspot) return
-    const addresses = new Set(hiddenAddresses?.split(','))
+    const addresses = new Set(
+      !hiddenAddresses ? [] : JSON.parse(hiddenAddresses),
+    )
     if (isHidden) {
       addresses.delete(hotspot.address)
     } else {
@@ -242,13 +245,18 @@ const HotspotSettings = ({ hotspot }: Props) => {
       if (!decision) return
       addresses.add(hotspot.address)
     }
-    dispatch(
-      updateSetting({
-        key: 'hiddenAddresses',
-        value: Array.from(addresses).join(','),
-      }),
-    )
-  }, [dispatch, hiddenAddresses, hotspot, isHidden, showOKCancelAlert])
+    try {
+      const result = await dispatch(
+        updateSetting({
+          key: 'hiddenAddresses',
+          value: JSON.stringify(Array.from(addresses)),
+        }),
+      )
+      unwrapResult(result)
+    } catch (error) {
+      Toast.show(t('generic.something_went_wrong'))
+    }
+  }, [dispatch, hiddenAddresses, hotspot, isHidden, showOKCancelAlert, t])
 
   const onCloseOwnerSettings = useCallback(() => {
     setNextState('init')
