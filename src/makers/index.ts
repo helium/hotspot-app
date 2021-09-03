@@ -13,6 +13,7 @@ import syncrobit from './syncrobit'
 import kerlink from './kerlink'
 import heltec from './heltec'
 import pisces from './pisces'
+import controllino from './controllino'
 import freedomfi from './freedomfi'
 import { LangType, supportedLangs } from '../utils/i18n/i18nTypes'
 import { HotspotMakerLangField } from './hotspotMakerTypes'
@@ -32,6 +33,7 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
   kerlink,
   heltec,
   pisces,
+  controllino,
   freedomfi,
 }
 
@@ -51,6 +53,7 @@ export const AntennaModels = {
   ...kerlink.antennas,
   ...heltec.antennas,
   ...pisces.antennas,
+  ...controllino.antennas,
   ...freedomfi.antennas,
 }
 
@@ -69,6 +72,7 @@ export const HotspotMakerModels = {
   ...kerlink.hotspots,
   ...heltec.hotspots,
   ...pisces.hotspots,
+  ...controllino.hotspots,
   ...freedomfi.hotspots,
 }
 
