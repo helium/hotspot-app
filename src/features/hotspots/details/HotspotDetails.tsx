@@ -39,6 +39,7 @@ import HotspotListItem from '../../../components/HotspotListItem'
 import Info from '../../../assets/images/info-hollow.svg'
 import Location from '../../../assets/images/location.svg'
 import Signal from '../../../assets/images/signal.svg'
+import VisibilityOff from '../../../assets/images/visibility_off.svg'
 import HotspotIcon from '../../../assets/images/hotspot-icon-small.svg'
 import EarningsIcon from '../../../assets/images/earnings_icon.svg'
 import WitnessIcon from '../../../assets/images/checklist_challenge_witness.svg'
@@ -86,6 +87,9 @@ const HotspotDetails = ({
     useSelector(
       (state: RootState) => state.hotspotDetails.hotspotData[address],
     ) || {}
+  const hiddenAddresses = useSelector(
+    (state: RootState) => state.account.settings.hiddenAddresses,
+  )
 
   const { showOKAlert, showOKCancelAlert } = useAlert()
   const listRef = useRef<BottomSheet>(null)
@@ -113,6 +117,12 @@ const HotspotDetails = ({
   const dataOnly = useMemo(() => isDataOnly(hotspot), [hotspot])
 
   const makers = useSelector((state: RootState) => state.heliumData.makers)
+
+  const isHidden = useMemo(
+    () =>
+      hotspot?.address ? hiddenAddresses?.includes(hotspot?.address) : false,
+    [hiddenAddresses, hotspot?.address],
+  )
 
   useEffect(() => {
     if (!visible) return
@@ -403,25 +413,26 @@ const HotspotDetails = ({
                 variant="light"
                 fontSize={29}
                 lineHeight={31}
-                color="black"
+                color={isHidden ? 'grayLightText' : 'black'}
                 numberOfLines={1}
                 width="100%"
                 adjustsFontSizeToFit
               >
                 {formattedHotspotName[0]}
               </Text>
-              <Box flexDirection="row" alignItems="flex-start">
+              <Box flexDirection="row" alignItems="center">
                 <Text
                   variant="regular"
                   fontSize={29}
                   lineHeight={31}
-                  width="100%"
-                  color="black"
+                  paddingRight="s"
+                  color={isHidden ? 'grayLightText' : 'black'}
                   numberOfLines={1}
                   adjustsFontSizeToFit
                 >
                   {formattedHotspotName[1]}
                 </Text>
+                {isHidden && <VisibilityOff height={20} width={20} />}
               </Box>
             </Box>
             <Box
@@ -431,21 +442,37 @@ const HotspotDetails = ({
               marginBottom="m"
               marginLeft="m"
             >
-              <Location width={10} height={10} color={colors.grayText} />
+              <Location
+                width={10}
+                height={10}
+                color={isHidden ? colors.grayLightText : colors.grayText}
+              />
               <Text
                 variant="body2"
-                color="grayText"
+                color={isHidden ? 'grayLightText' : 'grayText'}
                 marginLeft="xs"
                 marginRight="m"
               >
                 {`${hotspot?.geocode?.longCity}, ${hotspot?.geocode?.shortCountry}`}
               </Text>
-              <Signal width={10} height={10} color={colors.grayText} />
-              <Text variant="body2" color="grayText" marginLeft="xs">
+              <Signal
+                width={10}
+                height={10}
+                color={isHidden ? colors.grayLightText : colors.grayText}
+              />
+              <Text
+                variant="body2"
+                color={isHidden ? 'grayLightText' : 'grayText'}
+                marginLeft="xs"
+              >
                 {t('generic.meters', { distance: hotspot?.elevation || 0 })}
               </Text>
               {hotspot?.gain !== undefined && (
-                <Text variant="body2" color="grayText" marginLeft="xs">
+                <Text
+                  variant="body2"
+                  color={isHidden ? 'grayLightText' : 'grayText'}
+                  marginLeft="xs"
+                >
                   {(hotspot.gain / 10).toFixed(1) +
                     t('antennas.onboarding.dbi')}
                 </Text>
@@ -457,10 +484,14 @@ const HotspotDetails = ({
                   alignItems="center"
                   width="33%"
                 >
-                  <HotspotIcon width={10} height={10} color={colors.grayText} />
+                  <HotspotIcon
+                    width={10}
+                    height={10}
+                    color={isHidden ? colors.grayLightText : colors.grayText}
+                  />
                   <Text
                     variant="body2"
-                    color="grayText"
+                    color={isHidden ? 'grayLightText' : 'grayText'}
                     marginLeft="xs"
                     ellipsizeMode="tail"
                     numberOfLines={1}
@@ -525,6 +556,7 @@ const HotspotDetails = ({
           >
             <HeliumSelect
               showGradient={false}
+              scrollEnabled={false}
               marginTop="m"
               contentContainerStyle={contentContainerStyle}
               data={selectData}

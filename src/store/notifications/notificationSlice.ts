@@ -4,19 +4,19 @@ import { getWallet, postWallet } from '../../utils/walletClient'
 import { Loading } from '../activity/activitySlice'
 
 export type Notification = {
-  account_address: string
+  accountAddress: string
   body: string
   color?: string | null
   footer?: string | null
-  hotspot_address?: string | null
-  hotspot_name?: string | null
+  hotspotAddress?: string | null
+  hotspotName?: string | null
   icon: string
   id: number
-  share_text?: string | null
+  shareText?: string | null
   style: string
   time: number
   title: string
-  viewed_at?: string | null
+  viewedAt?: string | null
 }
 
 export enum NotificationFilter {
@@ -25,6 +25,7 @@ export enum NotificationFilter {
   HOTSPOT_UPDATES = 'hotspot-update',
   HOTSPOT_TRANSFER = 'transfer',
   WEEKLY_EARNINGS = 'earnings',
+  PAYMENT_NOTIFICATIONS = 'payment-txn',
   FAILED_NOTIFICATIONS = 'failed-txn',
 }
 
@@ -44,24 +45,38 @@ export const fetchNotifications = createAsyncThunk<
   Notification[],
   NotificationFilter | undefined
 >('account/fetchNotifications', async (filter) =>
-  getWallet('notifications', { filter_type: filter || NotificationFilter.ALL }),
+  getWallet(
+    'notifications',
+    { filter_type: filter || NotificationFilter.ALL },
+    {
+      camelCase: true,
+    },
+  ),
 )
 
 export const fetchMoreNotifications = createAsyncThunk<
   Notification[],
   FetchMoreNotificationData
 >('account/fetchMoreNotifications', async ({ lastId, filter }) =>
-  getWallet('notifications', {
-    before: lastId,
-    filter_type: filter || NotificationFilter.ALL,
-  }),
+  getWallet(
+    'notifications',
+    {
+      before: lastId,
+      filter_type: filter || NotificationFilter.ALL,
+    },
+    {
+      camelCase: true,
+    },
+  ),
 )
 
 export const markNotificationsViewed = createAsyncThunk<Notification[]>(
   'account/markNotificationsViewed',
   async () => {
     await postWallet('notifications/view')
-    return getWallet('notifications')
+    return getWallet('notifications', null, {
+      camelCase: true,
+    })
   },
 )
 

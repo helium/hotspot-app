@@ -128,6 +128,14 @@ const HotspotsPicker = ({ visible }: Props) => {
         color: 'purpleMain',
       })
     }
+    if (fleetModeEnabled) {
+      opts.push({
+        label: t(`hotspots.owned.filter.${HotspotSort.Unasserted}`),
+        value: HotspotSort.Unasserted,
+        Icon: TopHotspot,
+        color: 'purpleMain',
+      })
+    }
     opts.push({
       label: t(`hotspots.owned.filter.${HotspotSort.Offline}`),
       value: HotspotSort.Offline,

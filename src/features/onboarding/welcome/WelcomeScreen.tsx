@@ -2,6 +2,7 @@ import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
 import Config from 'react-native-config'
+import { isTablet } from 'react-native-device-info'
 import Button from '../../../components/Button'
 import Text from '../../../components/Text'
 import { OnboardingNavigationProp } from '../onboardingTypes'
@@ -31,14 +32,17 @@ const WelcomeScreen = () => {
 
   return (
     <Box backgroundColor="primaryBackground" flex={1}>
-      <ImageBox
-        alignSelf="flex-end"
-        maxHeight="50%"
-        resizeMode="contain"
-        aspectRatio={1242 / 1340}
-        width="100%"
-        source={require('../../../assets/images/welcome.png')}
-      />
+      <Box flex={2} height="100%">
+        <ImageBox
+          flex={1}
+          alignSelf={isTablet() ? 'flex-end' : 'auto'}
+          maxHeight="100%"
+          resizeMode="contain"
+          aspectRatio={1242 / 1340}
+          width="50%"
+          source={require('../../../assets/images/welcome.png')}
+        />
+      </Box>
       <Box
         flex={1}
         paddingVertical="l"

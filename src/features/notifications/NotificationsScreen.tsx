@@ -24,7 +24,7 @@ const NotificationsScreen = () => {
   )
 
   const markAsRead = useCallback(() => {
-    if (!notifications.find((n) => !n.viewed_at)) return
+    if (!notifications.find((n) => !n.viewedAt)) return
 
     dispatch(markNotificationsViewed())
   }, [notifications, dispatch])

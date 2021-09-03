@@ -14,6 +14,7 @@ import { isRelay } from '../utils/hotspotUtils'
 import HexBadge from '../features/hotspots/details/HexBadge'
 import { useColors } from '../theme/themeHooks'
 import Signal from '../assets/images/signal.svg'
+import VisibilityOff from '../assets/images/visibility_off.svg'
 
 type HotspotListItemProps = {
   onPress?: (hotspot: Hotspot) => void
@@ -27,6 +28,7 @@ type HotspotListItemProps = {
   showRelayStatus?: boolean
   showAntennaDetails?: boolean
   pressable?: boolean
+  hidden?: boolean
 }
 
 const HotspotListItem = ({
@@ -41,6 +43,7 @@ const HotspotListItem = ({
   showAntennaDetails = false,
   pressable = true,
   distanceAway,
+  hidden,
 }: HotspotListItemProps) => {
   const { t } = useTranslation()
   const colors = useColors()
@@ -71,6 +74,11 @@ const HotspotListItem = ({
     hotspot?.status,
   ])
 
+  const statusBackgroundColor = useMemo(() => {
+    if (hidden) return 'grayLightText'
+    return hotspot.status?.online === 'online' ? 'greenOnline' : 'yellow'
+  }, [hidden, hotspot.status?.online])
+
   return (
     <Box marginBottom="xxs">
       <Pressable onPress={handlePress} disabled={!pressable}>
@@ -89,25 +97,27 @@ const HotspotListItem = ({
                   height={10}
                   width={10}
                   borderRadius="m"
-                  backgroundColor={
-                    hotspot.status?.online === 'online'
-                      ? 'greenOnline'
-                      : 'yellow'
-                  }
+                  backgroundColor={statusBackgroundColor}
                 />
                 <Text
                   variant="body2Medium"
-                  color="offblack"
+                  color={hidden ? 'grayLightText' : 'offblack'}
                   paddingStart="s"
+                  paddingEnd="s"
                   ellipsizeMode="tail"
                   numberOfLines={2}
-                  maxWidth={210}
+                  maxWidth={220}
                 >
                   {animalName(hotspot.address)}
                 </Text>
+                {hidden && <VisibilityOff height={10} width={10} />}
               </Box>
               {showAddress && (
-                <Text variant="body3Light" color="blueGray" marginTop="s">
+                <Text
+                  variant="body3Light"
+                  color={hidden ? 'grayLightText' : 'blueGray'}
+                  marginTop="s"
+                >
                   {locationText}
                 </Text>
               )}
@@ -126,7 +136,7 @@ const HotspotListItem = ({
                     <Text
                       onPress={toggleConvertHntToCurrency}
                       variant="body2"
-                      color="grayDarkText"
+                      color={hidden ? 'grayLightText' : 'grayDarkText'}
                       paddingEnd="s"
                     >
                       {reward}

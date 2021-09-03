@@ -564,6 +564,7 @@ export default {
         title: 'App',
         enableHapticFeedback: 'Enable Haptic Feedback',
         enableFleetMode: 'Enable Fleet Mode',
+        showHiddenHotspots: 'Show Hidden Hotspots',
         convertHntToCurrency: 'Convert HNT to Currency',
         language: 'Language',
         signOut: 'Sign Out',
@@ -613,6 +614,7 @@ export default {
         earn: 'Top Earning Hotspots',
         offline: 'Offline Hotspots',
         followed: 'Followed Hotspots',
+        unasserted: 'Unasserted Hotspots',
       },
     },
     search: {
@@ -695,6 +697,10 @@ export default {
       subtitle:
         "Here is where you'll find weekly earnings notifications from your owned Hotspots.",
     },
+    payment_empty: {
+      title: 'No payment transactions',
+      subtitle: 'Payment transaction notifications will appear here.',
+    },
     failed_empty: {
       title: 'No failed transactions',
       subtitle: 'Any failed transaction notification will appear here.',
@@ -705,6 +711,7 @@ export default {
     helium_updates: 'Helium Updates',
     helium_update: 'Helium Update',
     weekly_earnings: 'Weekly Earnings',
+    payment_notifications: 'Payment Notifications',
     failure_notifications: 'Failure Notifications',
   },
   transactions: {
@@ -749,6 +756,19 @@ export default {
     update: {
       title: 'Update Hotspot',
       subtitle: 'Hotspot location or antenna details.',
+    },
+    visibility_on: {
+      title: 'Show Hotspot',
+      subtitle: 'Makes the Hotspot visible in the app.',
+    },
+    visibility_off: {
+      title: 'Hide Hotspot',
+      subtitle: 'Hides the Hotspot in the app.',
+    },
+    visibility_popup: {
+      title: 'Hide Hotspot',
+      message:
+        'Hotspot will be hidden from view in the app but stays linked to your account.\n\nTo view Hidden Hotspots and unhide them, go to Settings.',
     },
     discovery: {
       title: 'Discovery Mode',
