@@ -21,6 +21,9 @@ import animalName from 'angry-purple-tiger'
 import { Hotspot, PendingTransaction, Witness } from '@helium/http'
 import Toast from 'react-native-simple-toast'
 import { visible } from '@shopify/restyle'
+import Visibility from '@assets/images/visibility.svg'
+import VisibilityOff from '@assets/images/visibility_off.svg'
+import { unwrapResult } from '@reduxjs/toolkit'
 import BlurBox from '../../../components/BlurBox'
 import Card from '../../../components/Card'
 import Text from '../../../components/Text'
@@ -56,6 +59,7 @@ import usePermissionManager from '../../../utils/usePermissionManager'
 import useAlert from '../../../utils/useAlert'
 import { getLocationPermission } from '../../../store/location/locationSlice'
 import { isDataOnly } from '../../../utils/hotspotUtils'
+import { updateSetting } from '../../../store/account/accountSlice'
 
 type State = 'init' | 'scan' | 'transfer' | 'discoveryMode' | 'updateHotspot'
 
@@ -81,6 +85,9 @@ const HotspotSettings = ({ hotspot }: Props) => {
   const { account } = useSelector((state: RootState) => state.account)
   const { showSettings } = useSelector(
     (state: RootState) => state.hotspotDetails,
+  )
+  const hiddenAddresses = useSelector(
+    (state: RootState) => state.account.settings.hiddenAddresses,
   )
   const { requestLocationPermission } = usePermissionManager()
   const { permissionResponse, locationBlocked } = useSelector(
@@ -112,6 +119,11 @@ const HotspotSettings = ({ hotspot }: Props) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showSettings])
+
+  const isHidden = useMemo(
+    () => hotspot && hiddenAddresses?.includes(hotspot.address),
+    [hiddenAddresses, hotspot],
+  )
 
   const setNextState = useCallback(
     (s: State) => {
@@ -227,6 +239,34 @@ const HotspotSettings = ({ hotspot }: Props) => {
     showOKAlert,
     t,
   ])
+
+  const onToggleHotspotVisibility = useCallback(async () => {
+    if (!hotspot) return
+    const addresses = new Set(
+      !hiddenAddresses ? [] : JSON.parse(hiddenAddresses),
+    )
+    if (isHidden) {
+      addresses.delete(hotspot.address)
+    } else {
+      const decision = await showOKCancelAlert({
+        titleKey: 'hotspot_settings.visibility_popup.title',
+        messageKey: 'hotspot_settings.visibility_popup.message',
+      })
+      if (!decision) return
+      addresses.add(hotspot.address)
+    }
+    try {
+      const result = await dispatch(
+        updateSetting({
+          key: 'hiddenAddresses',
+          value: JSON.stringify(Array.from(addresses)),
+        }),
+      )
+      unwrapResult(result)
+    } catch (error) {
+      Toast.show(t('generic.something_went_wrong'))
+    }
+  }, [dispatch, hiddenAddresses, hotspot, isHidden, showOKCancelAlert, t])
 
   const onCloseOwnerSettings = useCallback(() => {
     setNextState('init')
@@ -392,22 +432,46 @@ const HotspotSettings = ({ hotspot }: Props) => {
           compact
           buttonIcon={<UpdateIcon />}
         />
+        <Box backgroundColor="black" height={0.5} />
+        <HotspotSettingsOption
+          title={t(
+            isHidden
+              ? 'hotspot_settings.visibility_on.title'
+              : 'hotspot_settings.visibility_off.title',
+          )}
+          subtitle={t(
+            isHidden
+              ? 'hotspot_settings.visibility_on.subtitle'
+              : 'hotspot_settings.visibility_off.subtitle',
+          )}
+          onPress={onToggleHotspotVisibility}
+          compact
+          buttonIcon={
+            isHidden ? (
+              <Visibility height={20} width={20} />
+            ) : (
+              <VisibilityOff height={20} width={20} />
+            )
+          }
+        />
       </Box>
     )
   }, [
-    account?.address,
-    handleClose,
-    hasActiveTransfer,
     hotspot,
-    onCloseOwnerSettings,
-    onPressDiscoveryMode,
-    onPressTransferSetting,
-    onPressUpdateHotspot,
-    purpleMain,
+    account?.address,
     settingsState,
+    dataOnly,
     t,
     transferButtonTitle,
-    dataOnly,
+    hasActiveTransfer,
+    onPressTransferSetting,
+    onPressDiscoveryMode,
+    purpleMain,
+    onPressUpdateHotspot,
+    isHidden,
+    onToggleHotspotVisibility,
+    onCloseOwnerSettings,
+    handleClose,
   ])
 
   return (

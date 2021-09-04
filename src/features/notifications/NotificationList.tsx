@@ -179,6 +179,10 @@ const NotificationList = ({
         value: NotificationFilter.HOTSPOT_TRANSFER,
       },
       {
+        label: t('notifications.payment_notifications'),
+        value: NotificationFilter.PAYMENT_NOTIFICATIONS,
+      },
+      {
         label: t('notifications.failure_notifications'),
         value: NotificationFilter.FAILED_NOTIFICATIONS,
       },

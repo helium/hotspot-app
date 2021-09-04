@@ -36,6 +36,11 @@ const EmptyNotifications = ({ filter }: { filter: NotificationFilter }) => {
           title: t('notifications.earnings_empty.title'),
           body: t('notifications.earnings_empty.subtitle'),
         }
+      case NotificationFilter.PAYMENT_NOTIFICATIONS:
+        return {
+          title: t('notifications.payment_empty.title'),
+          body: t('notifications.payment_empty.subtitle'),
+        }
       case NotificationFilter.FAILED_NOTIFICATIONS:
         return {
           title: t('notifications.failed_empty.title'),

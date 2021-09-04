@@ -1,10 +1,13 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { LayoutAnimation, Platform } from 'react-native'
 import { useSelector } from 'react-redux'
-import { Hotspot } from '@helium/http'
+import { Hotspot, Validator } from '@helium/http'
 import { useSharedValue } from 'react-native-reanimated'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
+import { useAsync } from 'react-async-hook'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useTranslation } from 'react-i18next'
 import { RootStackParamList } from '../../../navigation/main/tabTypes'
 import Box from '../../../components/Box'
 import Map from '../../../components/Map'
@@ -24,22 +27,39 @@ import {
   hotspotHasValidLocation,
   locationIsValid,
 } from '../../../utils/location'
-import { HotspotStackParamList } from './hotspotTypes'
+import { GlobalOpt, HotspotStackParamList } from './hotspotTypes'
 import animateTransition from '../../../utils/animateTransition'
 import usePrevious from '../../../utils/usePrevious'
 import useMount from '../../../utils/useMount'
 import { fetchHotspotsForHex } from '../../../store/discovery/discoverySlice'
 import { MapFilters } from '../../map/MapFiltersButton'
 import MapFilterModal from '../../map/MapFilterModal'
-import ShortcutNav, { GlobalOpt, IS_GLOBAL_OPT } from './ShortcutNav'
+import ShortcutNav from './ShortcutNav'
 import { useAppDispatch } from '../../../store/store'
 import { fetchAccountRewards } from '../../../store/account/accountSlice'
 import useVisible from '../../../utils/useVisible'
-import { fetchValidators } from '../../../store/validators/validatorsSlice'
+import {
+  fetchFollowedValidators,
+  fetchMyValidators,
+  fetchValidator,
+} from '../../../store/validators/validatorsSlice'
+import ValidatorDetails from '../../validators/ValidatorDetails'
+import {
+  isHotspot,
+  isWitness,
+  isGlobalOption,
+} from '../../../utils/hotspotUtils'
+import { isValidator } from '../../../utils/validatorUtils'
+import ValidatorExplorer from '../../validators/explorer/ValidatorExplorer'
+import HeliumSelect from '../../../components/HeliumSelect'
+import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
+import HotspotsEmpty from './HotspotsEmpty'
 
 type Props = {
   ownedHotspots?: Hotspot[]
   followedHotspots?: Hotspot[]
+  ownedValidators: Validator[]
+  followedValidators: Validator[]
   startOnMap?: boolean
   location?: number[]
   onRequestShowMap: (prompt: boolean) => void
@@ -51,6 +71,8 @@ const SHEET_ANIM_DURATION = 500
 const HotspotsView = ({
   ownedHotspots,
   followedHotspots,
+  ownedValidators,
+  followedValidators,
   startOnMap,
   onRequestShowMap,
   location: propsLocation,
@@ -58,6 +80,8 @@ const HotspotsView = ({
   const navigation = useNavigation()
   const { params } = useRoute<Route>()
   const dispatch = useAppDispatch()
+  const { top } = useSafeAreaInsets()
+  const { t } = useTranslation()
   const [location, setLocation] = useState(propsLocation)
   const [showMap, setShowMap] = useState(false)
   const [detailSnapPoints, setDetailSnapPoints] = useState<HotspotSnapPoints>({
@@ -66,7 +90,7 @@ const HotspotsView = ({
   })
   const [detailHeight, setDetailHeight] = useState(0)
   const fleetModeEnabled = useSelector(
-    (state: RootState) => state.app.isFleetModeEnabled,
+    (state: RootState) => state.account.settings.isFleetModeEnabled,
   )
   const hotspotsForHexId = useSelector(
     (state: RootState) => state.discovery.hotspotsForHexId,
@@ -74,24 +98,43 @@ const HotspotsView = ({
   const accountRewards = useSelector(
     (state: RootState) => state.account.rewardsSum,
   )
+  const hotspotsLoaded = useSelector(
+    (state: RootState) => state.hotspots.hotspotsLoaded,
+  )
+  const myValidatorsLoaded = useSelector(
+    (state: RootState) => state.validators.myValidatorsLoaded,
+  )
+  const followedValidatorsLoaded = useSelector(
+    (state: RootState) => state.validators.followedValidatorsLoaded,
+  )
   const [selectedHexId, setSelectedHexId] = useState<string>()
   const [selectedHotspotIndex, setSelectedHotspotIndex] = useState(0)
   const animatedIndex = useSharedValue<number>(0)
   const [mapFilter, setMapFilter] = useState(MapFilters.owned)
-  const [shortcutItem, setShortcutItem] = useState<GlobalOpt | Hotspot>(
-    startOnMap ? 'explore' : 'home',
+  const [showTabs, setShowTabs] = useState(true)
+  const [exploreType, setExploreType] = useState<'validators' | 'hotspots'>(
+    'hotspots',
   )
+  const [shortcutItem, setShortcutItem] = useState<
+    GlobalOpt | Hotspot | Validator
+  >(startOnMap ? 'explore' : 'home')
   const prevShorcutItem = usePrevious(shortcutItem)
 
   const hotspotAddress = useMemo(() => {
-    if (shortcutItem && typeof shortcutItem !== 'string') {
-      return shortcutItem.address
-    }
-    return ''
+    if (!isHotspot(shortcutItem)) return ''
+
+    return shortcutItem.address
   }, [shortcutItem])
 
   const selectedHotspot = useMemo(() => {
-    if (!shortcutItem || IS_GLOBAL_OPT(shortcutItem)) return
+    if (!shortcutItem || (!isHotspot(shortcutItem) && !isWitness(shortcutItem)))
+      return
+
+    return shortcutItem
+  }, [shortcutItem])
+
+  const selectedValidator = useMemo(() => {
+    if (!shortcutItem || !isValidator(shortcutItem)) return
 
     return shortcutItem
   }, [shortcutItem])
@@ -109,7 +152,8 @@ const HotspotsView = ({
   useVisible({
     onAppear: () => {
       dispatch(fetchAccountRewards())
-      dispatch(fetchValidators())
+      dispatch(fetchMyValidators())
+      dispatch(fetchFollowedValidators())
     },
   })
 
@@ -120,7 +164,7 @@ const HotspotsView = ({
   }, [onRequestShowMap, prevShorcutItem, shortcutItem])
 
   const handleShortcutItemSelected = useCallback(
-    (item: GlobalOpt | Hotspot) => {
+    (item: GlobalOpt | Hotspot | Validator) => {
       if (shortcutItem === item) return
 
       let animConfig = LayoutAnimation.Presets.spring
@@ -146,6 +190,7 @@ const HotspotsView = ({
       handleShortcutItemSelected(opt)
       setSelectedHexId(undefined)
       setSelectedHotspotIndex(0)
+      setShowTabs(true)
     },
     [handleShortcutItemSelected],
   )
@@ -181,7 +226,14 @@ const HotspotsView = ({
     useSelector(
       (state: RootState) => state.hotspotDetails.hotspotData[hotspotAddress],
     ) || {}
+
   const { witnesses } = hotspotDetailsData || {}
+
+  useEffect(() => {
+    if (showWitnesses && !witnesses) {
+      dispatch(fetchHotspotData(hotspotAddress))
+    }
+  }, [mapFilter, hotspotAddress, dispatch, witnesses, showWitnesses])
 
   const hasUserLocation = useMemo(
     () =>
@@ -229,6 +281,7 @@ const HotspotsView = ({
       }
       setSelectedHexId(hexId)
       setSelectedHotspotIndex(index)
+      setShowTabs(false)
       if (hotspots?.payload?.length) {
         handleShortcutItemSelected(hotspots.payload[index] as Hotspot)
       }
@@ -236,16 +289,16 @@ const HotspotsView = ({
     [dispatch, handleShortcutItemSelected],
   )
 
-  const handlePresentDetails = useCallback(
+  const handlePresentHotspot = useCallback(
     async (hotspot: Hotspot) => {
-      if (IS_GLOBAL_OPT(shortcutItem)) {
+      if (isGlobalOption(shortcutItem)) {
         setDetailHeight(detailSnapPoints.collapsed)
       }
       handleShortcutItemSelected(hotspot)
 
       if (!hotspot.locationHex) return
 
-      onMapHexSelected(hotspot.locationHex, hotspot.address)
+      await onMapHexSelected(hotspot.locationHex, hotspot.address)
     },
     [
       detailSnapPoints.collapsed,
@@ -254,36 +307,63 @@ const HotspotsView = ({
       shortcutItem,
     ],
   )
+  const handlePresentValidator = useCallback(
+    (validator: Validator) => {
+      handleShortcutItemSelected(validator)
+    },
+    [handleShortcutItemSelected],
+  )
 
   const handleItemSelected = useCallback(
-    (item?: GlobalOpt | Hotspot) => {
+    async (item?: GlobalOpt | Hotspot | Validator) => {
       if (!item) {
         setGlobalOption('home')
         return
       }
-      if (IS_GLOBAL_OPT(item)) {
+      if (isGlobalOption(item)) {
         setGlobalOption(item)
-      } else if (item) {
-        handlePresentDetails(item)
+      } else if (isHotspot(item)) {
+        await handlePresentHotspot(item)
+      } else {
+        handlePresentValidator(item)
       }
     },
-    [handlePresentDetails, setGlobalOption],
+    [handlePresentHotspot, handlePresentValidator, setGlobalOption],
   )
 
-  useEffect(() => {
-    if (!params?.address) return
-
-    // Fetch the hotspot for deep links
-    const fetchHotspot = async () => {
-      const hotspot = (await dispatch(fetchHotspotData(params.address))) as {
+  const handleHotspotLink = useCallback(
+    async (address: string) => {
+      const hotspot = (await dispatch(fetchHotspotData(address))) as {
         payload?: { hotspot: Hotspot }
       }
       if (!hotspot.payload?.hotspot) return
 
-      handlePresentDetails(hotspot.payload.hotspot)
-    }
+      handlePresentHotspot(hotspot.payload.hotspot)
+    },
+    [dispatch, handlePresentHotspot],
+  )
 
-    fetchHotspot()
+  const handleValidatorLink = useCallback(
+    async (address: string) => {
+      const validator = (await dispatch(fetchValidator(address))) as {
+        payload: Validator
+      }
+      if (!validator.payload) return
+
+      handlePresentValidator(validator.payload)
+    },
+    [dispatch, handlePresentValidator],
+  )
+
+  useAsync(async () => {
+    if (!params?.address) return
+
+    // Deep link handling
+    if (params.resource === 'validator') {
+      handleValidatorLink(params.address)
+    } else {
+      handleHotspotLink(params.address)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params])
 
@@ -291,14 +371,11 @@ const HotspotsView = ({
     async (place: PlacePrediction) => {
       const placeLocation = await getPlaceGeography(place.placeId)
       setGlobalOption('explore')
+      setExploreType('hotspots')
       setLocation([placeLocation.lng, placeLocation.lat])
     },
     [setGlobalOption],
   )
-
-  const dismissList = useCallback(() => {
-    setGlobalOption('explore')
-  }, [setGlobalOption])
 
   const hexHotspots = useMemo(() => {
     if (!selectedHexId) return []
@@ -346,45 +423,54 @@ const HotspotsView = ({
     return (
       <>
         <HotspotSearch
-          onSelectHotspot={handlePresentDetails}
+          onSelectHotspot={handlePresentHotspot}
           onSelectPlace={handleSelectPlace}
+          onSelectValidator={handlePresentValidator}
           visible={shortcutItem === 'search'}
         />
+        <ValidatorExplorer
+          visible={shortcutItem === 'explore' && exploreType === 'validators'}
+          onSelectValidator={handlePresentValidator}
+        />
         <HotspotDetails
-          visible={typeof shortcutItem !== 'string'}
+          visible={isHotspot(shortcutItem)}
           hotspot={selectedHotspot}
           onLayoutSnapPoints={setDetailSnapPoints}
           onChangeHeight={setDetailHeight}
           onFailure={handleItemSelected}
-          onSelectHotspot={handlePresentDetails}
+          onSelectHotspot={handlePresentHotspot}
           toggleSettings={toggleSettings}
           animatedPosition={animatedIndex}
         />
-
         <HotspotsList
-          onRequestShowMap={dismissList}
-          onSelectHotspot={handlePresentDetails}
-          visible={shortcutItem === 'home'}
+          onSelectHotspot={handlePresentHotspot}
+          visible={hasHotspots && shortcutItem === 'home'}
           searchPressed={handleSearching(true)}
           addHotspotPressed={handleHotspotSetup}
-          hasHotspots={hasHotspots}
           accountRewards={accountRewards}
         />
+        <HotspotsEmpty
+          visible={!hasHotspots && shortcutItem === 'home'}
+          onSearchPressed={handleSearching(true)}
+        />
+        <ValidatorDetails validator={selectedValidator} />
       </>
     )
   }, [
-    handlePresentDetails,
+    handlePresentHotspot,
     handleSelectPlace,
+    handlePresentValidator,
     shortcutItem,
+    exploreType,
     selectedHotspot,
     handleItemSelected,
     toggleSettings,
     animatedIndex,
-    dismissList,
     handleSearching,
     handleHotspotSetup,
     hasHotspots,
     accountRewards,
+    selectedValidator,
   ])
 
   const onChangeMapFilter = useCallback((filter: MapFilters) => {
@@ -392,14 +478,53 @@ const HotspotsView = ({
   }, [])
 
   const cameraBottomOffset = useMemo(() => {
-    if (IS_GLOBAL_OPT(shortcutItem)) return
+    if (isGlobalOption(shortcutItem)) return
     return detailHeight
   }, [detailHeight, shortcutItem])
+
+  const onMenuChanged = useCallback((value) => {
+    animateTransition('HotspotsView.ExploreTabs')
+    setExploreType(value)
+  }, [])
+
+  const menuData = useMemo(
+    () =>
+      [
+        {
+          label: t('explore_hotspots'),
+          value: 'hotspots',
+          color: 'blueBright40',
+          textColor: 'purpleText',
+          selectedTextColor: 'blueBright',
+        },
+        {
+          label: t('explore_validators'),
+          value: 'validators',
+          color: 'purpleBright40',
+          textColor: 'purpleText',
+          selectedTextColor: 'purpleBright',
+        },
+      ] as HeliumSelectItemType[],
+    [t],
+  )
 
   return (
     <>
       <Box flex={1} flexDirection="column" justifyContent="space-between">
         <Box position="absolute" height="100%" width="100%">
+          <Box style={{ marginTop: top }} visible={showTabs} height={65}>
+            <HeliumSelect
+              data={menuData}
+              selectedValue={exploreType}
+              variant="bubbleBold"
+              onValueChanged={onMenuChanged}
+              showGradient={false}
+              scrollEnabled={false}
+              marginVertical="m"
+              backgroundColor="primaryBackground"
+              contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
+            />
+          </Box>
           {showMap && (
             <Map
               cameraBottomOffset={cameraBottomOffset}
@@ -418,6 +543,9 @@ const HotspotsView = ({
               showNearbyHotspots
               showH3Grid
               showRewardScale={showRewardScale}
+              overflow="hidden"
+              borderTopLeftRadius="l"
+              borderTopRightRadius="l"
             />
           )}
           <HotspotsViewHeader
@@ -451,8 +579,15 @@ const HotspotsView = ({
       <ShortcutNav
         ownedHotspots={!fleetModeEnabled && ownedHotspots ? ownedHotspots : []}
         followedHotspots={followedHotspots || []}
+        ownedValidators={
+          !fleetModeEnabled && ownedValidators ? ownedValidators : []
+        }
+        followedValidators={followedValidators || []}
         selectedItem={shortcutItem}
         onItemSelected={handleItemSelected}
+        initialDataLoaded={
+          hotspotsLoaded && myValidatorsLoaded && followedValidatorsLoaded
+        }
       />
     </>
   )
