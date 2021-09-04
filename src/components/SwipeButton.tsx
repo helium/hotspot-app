@@ -26,7 +26,7 @@ type SwipeButtonProps = {
 
 function SwipeButton({
   disabled = false,
-  disabledColor = '#FF6666',
+  disabledColor = '#F59CA2',
   enabledColor = '#FF4949',
   onSwipeSuccess = () => {},
   onSwipeSuccessDelay,
