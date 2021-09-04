@@ -149,6 +149,7 @@ export default {
     meters: '{{distance}}m',
     kilometers: '{{distance}}km',
     owner: 'Owner',
+    one: 'one',
   },
   hotspot_setup: {
     selection: {
@@ -553,11 +554,18 @@ export default {
         revealWords: 'Reveal Words',
         deployMode: {
           title: 'Deploy Mode',
+          subtitle:
+            'This mode adds extra protection to your wallet, restricting some app features.',
+          inDeployMode: 'In Deploy Mode:',
+          cantViewWords: "Can't view your 12 secure words",
+          cantTransferHotspots: "Can't transfer Hotspots from this account",
+          canOnlySendFunds: 'Can only send funds to',
+          otherAccount: 'other specified account',
           enableButton: 'Enable Deploy Mode',
-          description:
-            'Activating deploy mode will remove the ability to transfer hotspots and reveal the 12 words for this account. You will still be able to add hotspots and update their locations, and send payments to one wallet address (if provided below).',
-          warning: 'You must log out to disable this feature.',
-          addressLabel: 'Permanent recipient address',
+          enabledDescription: 'Deploy Mode Enabled',
+          disableInstructions:
+            'In order to disable this feature, you will have to log out. Remember to write down all 12 words now.',
+          addressLabel: 'Allowed Account Address...',
         },
       },
       learn: {

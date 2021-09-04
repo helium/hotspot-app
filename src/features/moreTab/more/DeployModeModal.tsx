@@ -4,16 +4,18 @@ import { Address } from '@helium/crypto-react-native'
 import { StyleSheet, StyleProp, View, ViewStyle } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Font, Theme } from '../../../theme/theme'
+import DeployModeIcon from '@assets/images/deployModeIcon.svg'
+import { Theme } from '../../../theme/theme'
 import appSlice from '../../../store/user/appSlice'
 import { useAppDispatch } from '../../../store/store'
 import Text from '../../../components/Text'
 import Box from '../../../components/Box'
+import Bullet from '../../../components/Bullet'
 import HeliumBottomSheet from '../../../components/HeliumBottomSheet'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import InputField from '../../../components/InputField'
-import Check from '../../../assets/images/check.svg'
 import useKeyboardHeight from '../../../utils/useKeyboardHeight'
+import { useColors } from '../../../theme/themeHooks'
 
 type ActionButtonProps = {
   children: React.ReactNode
@@ -30,11 +32,11 @@ const ActionButton = ({
   return (
     <TouchableOpacityBox
       height={49}
-      marginVertical="m"
+      marginVertical="xs"
       alignItems="center"
       justifyContent="center"
       borderRadius="ms"
-      width="48%"
+      width="100%"
       onPress={onPress}
       style={style}
       disabled={disabled}
@@ -54,9 +56,10 @@ const DeployModeModal = ({ isVisible, onClose = () => {} }: Props) => {
   const dispatch = useAppDispatch()
   const insets = useSafeAreaInsets()
   const keyboardHeight = useKeyboardHeight()
+  const colors = useColors()
   const [sendAddress, setSendAddress] = useState('')
 
-  const sheetHeight = 400 + (insets?.bottom || 0) + keyboardHeight
+  const sheetHeight = 700 + (insets?.bottom || 0) + keyboardHeight
   const enableDeployMode = useCallback(() => {
     dispatch(appSlice.actions.enableDeployMode(true))
     if (sendAddress) {
@@ -79,30 +82,56 @@ const DeployModeModal = ({ isVisible, onClose = () => {} }: Props) => {
       isVisible={isVisible}
       onClose={onClose}
       sheetHeight={sheetHeight}
-      title={t('more.sections.security.deployMode.title')}
+      hideHeaderBorder
     >
-      <Text>{t('more.sections.security.deployMode.description')}</Text>
-      <Text marginVertical="m" fontFamily={Font.main.semiBold}>
-        {t('more.sections.security.deployMode.warning')}
+      <DeployModeIcon />
+      <Text variant="h2" marginTop="l" maxFontSizeMultiplier={1} color="black">
+        {t('more.sections.security.deployMode.title')}
       </Text>
-      <InputField
-        onChange={setSendAddress}
-        label={t('more.sections.security.deployMode.addressLabel')}
-        placeholder={t('send.address.placeholder')}
-        extra={
-          sendAddress && isValid ? (
-            <Box padding="s" position="absolute" right={0}>
-              <Check />
-            </Box>
-          ) : undefined
-        }
-      />
-      <Box marginBottom="xl" style={styles.footerContainer}>
-        <ActionButton onPress={onClose} style={styles.cancelContainer}>
-          <Text variant="medium" fontSize={18} style={styles.cancelText}>
-            {t('generic.cancel')}
+      <Text
+        variant="body1"
+        paddingTop="m"
+        maxFontSizeMultiplier={1}
+        color="purpleText"
+        style={{ fontSize: 18 }}
+      >
+        {t('more.sections.security.deployMode.subtitle')}
+      </Text>
+      <Text variant="bold" marginTop="l" color="purpleLightText">
+        {t('more.sections.security.deployMode.inDeployMode')}
+      </Text>
+      <Box marginTop="m">
+        <Bullet color={colors.purpleLightText} style={styles.bullet}>
+          <Text variant="body2" color="purpleLightText">
+            {t('more.sections.security.deployMode.cantViewWords')}
           </Text>
-        </ActionButton>
+        </Bullet>
+        <Bullet color={colors.purpleLightText} style={styles.bullet}>
+          <Text variant="body2" color="purpleLightText" marginBottom="none">
+            {t('more.sections.security.deployMode.cantTransferHotspots')}
+          </Text>
+        </Bullet>
+        <Bullet color={colors.purpleLightText} style={styles.bullet}>
+          <Text variant="body2" color="purpleLightText" marginBottom="none">
+            {t('more.sections.security.deployMode.canOnlySendFunds')}{' '}
+            <Text variant="bold" color="purpleLightText">
+              {t('generic.one')}
+            </Text>{' '}
+            {t('more.sections.security.deployMode.otherAccount')}
+          </Text>
+        </Bullet>
+      </Box>
+      <Text variant="bold" marginTop="m" color="redMedium">
+        {t('more.sections.security.deployMode.disableInstructions')}
+      </Text>
+      <Box marginBottom="xl" style={styles.footerContainer}>
+        <InputField
+          onChange={setSendAddress}
+          placeholder={t('more.sections.security.deployMode.addressLabel')}
+          isFirst
+          isLast
+          optional
+        />
         <ActionButton onPress={enableDeployMode} style={confirmationStyle}>
           <Text variant="medium" fontSize={18} style={styles.confirmText}>
             {t('generic.submit')}
@@ -115,14 +144,14 @@ const DeployModeModal = ({ isVisible, onClose = () => {} }: Props) => {
 }
 
 const styles = StyleSheet.create({
+  bullet: { marginBottom: 0 },
   cancelContainer: { backgroundColor: '#F0F0F5' },
   cancelText: { color: '#B3B4D6' },
   confirmContainer: { backgroundColor: '#F97570' },
   confirmContainerDisabled: { backgroundColor: 'rgba(249, 117, 112, 0.5)' },
   confirmText: { color: '#FFFFFF' },
   footerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    marginTop: 'auto',
   },
 })
 

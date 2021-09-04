@@ -18,6 +18,7 @@ import useVisible from '../utils/useVisible'
 
 type Props = BoxProps<Theme> & {
   children?: React.ReactNode
+  hideHeaderBorder?: boolean
   isVisible: boolean
   onClose: () => void
   sheetHeight?: number
@@ -26,6 +27,7 @@ type Props = BoxProps<Theme> & {
 
 const HeliumBottomSheet = ({
   children,
+  hideHeaderBorder = false,
   isVisible,
   onClose,
   sheetHeight = 260,
@@ -86,7 +88,7 @@ const HeliumBottomSheet = ({
         >
           <Box
             flexDirection="row"
-            borderBottomWidth={1}
+            borderBottomWidth={hideHeaderBorder ? 0 : 1}
             style={styles.divider}
             marginTop="s"
             marginBottom="m"
@@ -103,7 +105,7 @@ const HeliumBottomSheet = ({
               paddingHorizontal="m"
               marginEnd="n_m"
             >
-              <Close color={colors.purpleGray} height={14} width={14} />
+              <Close color={colors.purpleLightText} height={14} width={14} />
             </TouchableOpacityBox>
           </Box>
           {children}
