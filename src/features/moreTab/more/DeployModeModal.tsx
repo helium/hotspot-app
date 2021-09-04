@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect } from 'react'
 import { BoxProps } from '@shopify/restyle'
 import { Address } from '@helium/crypto-react-native'
-import { StyleSheet, View } from 'react-native'
+import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import DeployModeIcon from '@assets/images/deployModeIcon.svg'
@@ -25,11 +25,10 @@ const DeployModeModal = ({ isVisible, onClose = () => {} }: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const insets = useSafeAreaInsets()
-  const keyboardHeight = useKeyboardHeight()
   const colors = useColors()
   const [sendAddress, setSendAddress] = useState('')
 
-  const sheetHeight = 700 + (insets?.bottom || 0) + keyboardHeight
+  const sheetHeight = 700 + (insets?.bottom || 0)
   const enableDeployMode = useCallback(() => {
     dispatch(appSlice.actions.enableDeployMode(true))
     if (sendAddress) {
@@ -51,61 +50,71 @@ const DeployModeModal = ({ isVisible, onClose = () => {} }: Props) => {
       sheetHeight={sheetHeight}
       hideHeaderBorder
     >
-      <DeployModeIcon />
-      <Text variant="h2" marginTop="l" maxFontSizeMultiplier={1} color="black">
-        {t('more.sections.security.deployMode.title')}
-      </Text>
-      <Text
-        variant="body1"
-        paddingTop="m"
-        maxFontSizeMultiplier={1}
-        color="purpleText"
-        style={{ fontSize: 18 }}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={100}
+        style={{ flexGrow: 1, marginTop: 'auto' }}
       >
-        {t('more.sections.security.deployMode.subtitle')}
-      </Text>
-      <Text variant="bold" marginTop="l" color="purpleLightText">
-        {t('more.sections.security.deployMode.inDeployMode')}
-      </Text>
-      <Box marginTop="m">
-        <Bullet color={colors.purpleLightText} style={styles.bullet}>
-          <Text variant="body2" color="purpleLightText">
-            {t('more.sections.security.deployMode.cantViewWords')}
-          </Text>
-        </Bullet>
-        <Bullet color={colors.purpleLightText} style={styles.bullet}>
-          <Text variant="body2" color="purpleLightText" marginBottom="none">
-            {t('more.sections.security.deployMode.cantTransferHotspots')}
-          </Text>
-        </Bullet>
-        <Bullet color={colors.purpleLightText} style={styles.bullet}>
-          <Text variant="body2" color="purpleLightText" marginBottom="none">
-            {t('more.sections.security.deployMode.canOnlySendFunds')}{' '}
-            <Text variant="bold" color="purpleLightText">
-              {t('generic.one')}
-            </Text>{' '}
-            {t('more.sections.security.deployMode.otherAccount')}
-          </Text>
-        </Bullet>
-      </Box>
-      <Text variant="bold" marginTop="m" color="redMedium">
-        {t('more.sections.security.deployMode.disableInstructions')}
-      </Text>
-      <Box marginBottom="xl" style={styles.footerContainer}>
-        <InputField
-          onChange={setSendAddress}
-          placeholder={t('more.sections.security.deployMode.addressLabel')}
-          isFirst
-          isLast
-          optional
-        />
-        <SwipeButton
-          disabled={!isValid}
-          onSwipeSuccess={enableDeployMode}
-          onSwipeSuccessDelay={1000}
-        />
-      </Box>
-      <View style={{ height: keyboardHeight }} />
+        <DeployModeIcon />
+        <Text
+          variant="h2"
+          marginTop="l"
+          maxFontSizeMultiplier={1}
+          color="black"
+        >
+          {t('more.sections.security.deployMode.title')}
+        </Text>
+        <Text
+          variant="body1"
+          paddingTop="m"
+          maxFontSizeMultiplier={1}
+          color="purpleText"
+          style={{ fontSize: 18 }}
+        >
+          {t('more.sections.security.deployMode.subtitle')}
+        </Text>
+        <Text variant="bold" marginTop="l" color="purpleLightText">
+          {t('more.sections.security.deployMode.inDeployMode')}
+        </Text>
+        <Box marginTop="m">
+          <Bullet color={colors.purpleLightText} style={styles.bullet}>
+            <Text variant="body2" color="purpleLightText">
+              {t('more.sections.security.deployMode.cantViewWords')}
+            </Text>
+          </Bullet>
+          <Bullet color={colors.purpleLightText} style={styles.bullet}>
+            <Text variant="body2" color="purpleLightText" marginBottom="none">
+              {t('more.sections.security.deployMode.cantTransferHotspots')}
+            </Text>
+          </Bullet>
+          <Bullet color={colors.purpleLightText} style={styles.bullet}>
+            <Text variant="body2" color="purpleLightText" marginBottom="none">
+              {t('more.sections.security.deployMode.canOnlySendFunds')}{' '}
+              <Text variant="bold" color="purpleLightText">
+                {t('generic.one')}
+              </Text>{' '}
+              {t('more.sections.security.deployMode.otherAccount')}
+            </Text>
+          </Bullet>
+        </Box>
+        <Text variant="bold" marginTop="m" color="redMedium">
+          {t('more.sections.security.deployMode.disableInstructions')}
+        </Text>
+        <Box marginVertical="xl">
+          <InputField
+            onChange={setSendAddress}
+            placeholder={t('more.sections.security.deployMode.addressLabel')}
+            isFirst
+            isLast
+            optional
+          />
+          <SwipeButton
+            disabled={!isValid}
+            onSwipeSuccess={enableDeployMode}
+            onSwipeSuccessDelay={1000}
+          />
+        </Box>
+      </KeyboardAvoidingView>
     </HeliumBottomSheet>
   )
 }
@@ -115,9 +124,6 @@ const styles = StyleSheet.create({
   cancelContainer: { backgroundColor: '#F0F0F5' },
   cancelText: { color: '#B3B4D6' },
   confirmText: { color: '#FFFFFF' },
-  footerContainer: {
-    marginTop: 'auto',
-  },
 })
 
 export default DeployModeModal
