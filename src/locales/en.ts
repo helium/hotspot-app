@@ -150,6 +150,7 @@ export default {
     kilometers: '{{distance}}km',
     owner: 'Owner',
     one: 'one',
+    swipe_to_confirm: 'Swipe to Confirm',
   },
   hotspot_setup: {
     selection: {

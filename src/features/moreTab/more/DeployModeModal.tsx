@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect } from 'react'
 import { BoxProps } from '@shopify/restyle'
 import { Address } from '@helium/crypto-react-native'
-import { StyleSheet, StyleProp, View, ViewStyle } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import DeployModeIcon from '@assets/images/deployModeIcon.svg'
@@ -12,39 +12,9 @@ import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import Bullet from '../../../components/Bullet'
 import HeliumBottomSheet from '../../../components/HeliumBottomSheet'
-import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import InputField from '../../../components/InputField'
-import useKeyboardHeight from '../../../utils/useKeyboardHeight'
 import { useColors } from '../../../theme/themeHooks'
-
-type ActionButtonProps = {
-  children: React.ReactNode
-  disabled?: boolean
-  onPress: () => void
-  style?: StyleProp<ViewStyle>
-}
-const ActionButton = ({
-  children,
-  disabled,
-  onPress,
-  style = {},
-}: ActionButtonProps) => {
-  return (
-    <TouchableOpacityBox
-      height={49}
-      marginVertical="xs"
-      alignItems="center"
-      justifyContent="center"
-      borderRadius="ms"
-      width="100%"
-      onPress={onPress}
-      style={style}
-      disabled={disabled}
-    >
-      {children}
-    </TouchableOpacityBox>
-  )
-}
+import SwipeButton from '../../../components/SwipeButton'
 
 type Props = BoxProps<Theme> & {
   isVisible: boolean
@@ -74,9 +44,6 @@ const DeployModeModal = ({ isVisible, onClose = () => {} }: Props) => {
 
   // Only disable "Submit" if an address is provided but is invalid
   const isValid = sendAddress ? Address.isValid(sendAddress) : true
-  const confirmationStyle = isValid
-    ? styles.confirmContainer
-    : styles.confirmContainerDisabled
   return (
     <HeliumBottomSheet
       isVisible={isVisible}
@@ -132,11 +99,11 @@ const DeployModeModal = ({ isVisible, onClose = () => {} }: Props) => {
           isLast
           optional
         />
-        <ActionButton onPress={enableDeployMode} style={confirmationStyle}>
-          <Text variant="medium" fontSize={18} style={styles.confirmText}>
-            {t('generic.submit')}
-          </Text>
-        </ActionButton>
+        <SwipeButton
+          disabled={!isValid}
+          onSwipeSuccess={enableDeployMode}
+          onSwipeSuccessDelay={1000}
+        />
       </Box>
       <View style={{ height: keyboardHeight }} />
     </HeliumBottomSheet>
@@ -147,8 +114,6 @@ const styles = StyleSheet.create({
   bullet: { marginBottom: 0 },
   cancelContainer: { backgroundColor: '#F0F0F5' },
   cancelText: { color: '#B3B4D6' },
-  confirmContainer: { backgroundColor: '#F97570' },
-  confirmContainerDisabled: { backgroundColor: 'rgba(249, 117, 112, 0.5)' },
   confirmText: { color: '#FFFFFF' },
   footerContainer: {
     marginTop: 'auto',
