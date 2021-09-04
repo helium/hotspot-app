@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import Search from '@assets/images/search.svg'
 import Add from '@assets/images/add.svg'
+import LockIcon from '@assets/images/lockIconRed.svg'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useColors } from '../../../theme/themeHooks'
 import Box from '../../../components/Box'
@@ -50,6 +51,9 @@ const HotspotsList = ({
     (state: RootState) => state.hotspots.rewards || {},
   )
   const order = useSelector((state: RootState) => state.hotspots.order)
+  const isDeployModeEnabled = useSelector(
+    (state: RootState) => state.app.isDeployModeEnabled,
+  )
 
   const { t } = useTranslation()
 
@@ -171,6 +175,11 @@ const HotspotsList = ({
         <TouchableOpacityBox onPress={searchPressed} padding="l">
           <Search width={22} height={22} color={colors.purpleGrayLight} />
         </TouchableOpacityBox>
+        {isDeployModeEnabled && (
+          <Box>
+            <LockIcon />
+          </Box>
+        )}
         <TouchableOpacityBox onPress={addHotspotPressed} padding="l">
           <Add width={22} height={22} color={colors.purpleGrayLight} />
         </TouchableOpacityBox>
