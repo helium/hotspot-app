@@ -3,6 +3,7 @@ import React, { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import Qr from '@assets/images/qr.svg'
+import LockIcon from '@assets/images/lockIconRed.svg'
 import { BoxProps } from '@shopify/restyle'
 import { Insets } from 'react-native'
 import Box from '../../../components/Box'
@@ -10,7 +11,6 @@ import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { Theme } from '../../../theme/theme'
 import { RootState } from '../../../store/rootReducer'
-import LockIcon from '../../../assets/images/lockIconRed.svg'
 
 type Props = BoxProps<Theme> & {
   handleScanPressed: () => void
