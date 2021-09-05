@@ -94,7 +94,7 @@ export default {
   generic: {
     clear: '지우기',
     done: '완료',
-    disabled: '장애인',
+    disabled: '장애가있는',
     understand: '내용을 이해함',
     blocks: '블록',
     active: '활성화',
@@ -141,6 +141,8 @@ export default {
     minutes_plural: '{{count}} 분',
     seconds: '{{count}} 초',
     seconds_plural: '{{count}} 초',
+    one: '하나',
+    swipe_to_confirm: '스와이프하여 확인',
   },
   hotspot_setup: {
     selection: {
@@ -508,11 +510,17 @@ export default {
         revealWords: '단어 공개',
         deployMode: {
           title: '배포 모드',
+          subtitle:
+            '이 모드는 지갑에 추가 보호 기능을 추가하여 일부 앱 기능을 제한합니다.',
+          inDeployMode: '배포 모드에서:',
+          cantViewWords: '12개의 보안 단어를 볼 수 없습니다',
+          cantTransferHotspots: '이 계정에서 핫스팟을 전송할 수 없습니다',
+          canOnlySendFunds: '송금만 가능',
+          otherAccount: '기타 지정된 계정',
           enableButton: '배포 모드 활성화',
-          description:
-            '배포 모드를 활성화하면 핫스팟을 전송하는 기능이 제거되고 이 계정에 대한 12단어가 표시됩니다. 여전히 핫스팟을 추가하고 위치를 업데이트하고 하나의 지갑 주소(아래에 제공된 경우)로 결제를 보낼 수 있습니다.',
-          warning: '이 기능을 비활성화하려면 로그아웃해야 합니다.',
-          addressLabel: '영구 수취인 주소',
+          disableInstructions:
+            '이 기능을 비활성화하려면 로그아웃해야 합니다. 지금 12개의 단어를 모두 적어두는 것을 잊지 마십시오.',
+          addressLabel: '허용된 계정 주소...',
         },
       },
       learn: {

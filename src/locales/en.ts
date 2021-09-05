@@ -563,7 +563,6 @@ export default {
           canOnlySendFunds: 'Can only send funds to',
           otherAccount: 'other specified account',
           enableButton: 'Enable Deploy Mode',
-          enabledDescription: 'Deploy Mode Enabled',
           disableInstructions:
             'In order to disable this feature, you will have to log out. Remember to write down all 12 words now.',
           addressLabel: 'Allowed Account Address...',

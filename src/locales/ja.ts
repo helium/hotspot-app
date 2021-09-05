@@ -141,6 +141,8 @@ export default {
     minutes_plural: '{{count}}分',
     seconds: '{{count}}秒',
     seconds_plural: '{{count}}秒',
+    one: '一',
+    swipe_to_confirm: 'スワイプして確認',
   },
   hotspot_setup: {
     selection: {
@@ -524,11 +526,18 @@ export default {
         revealWords: '単語を表示',
         deployMode: {
           title: 'デプロイモード',
+          subtitle:
+            'このモードはウォレットに追加の保護を追加し、一部のアプリ機能を制限します。',
+          inDeployMode: 'デプロイモードの場合：',
+          cantViewWords: 'あなたの12の安全な言葉を見ることができません',
+          cantTransferHotspots:
+            'このアカウントからホットスポットを転送できません',
+          canOnlySendFunds: 'にのみ資金を送ることができます',
+          otherAccount: '他の指定されたアカウント',
           enableButton: 'デプロイモードを有効にする',
-          description:
-            '展開モードをアクティブにすると、ホットスポットを転送する機能が削除され、このアカウントの12語が表示されます。 ホットスポットを追加してその場所を更新し、1つのウォレットアドレスに支払いを送信することはできます（以下に記載されている場合）。',
-          warning: 'この機能を無効にするには、ログアウトする必要があります。',
-          addressLabel: '永久受信者アドレス',
+          disableInstructions:
+            'この機能を無効にするには、ログアウトする必要があります。 今すぐ12語すべてを書き留めることを忘れないでください。',
+          addressLabel: '許可されたアカウントアドレス...',
         },
       },
       learn: {

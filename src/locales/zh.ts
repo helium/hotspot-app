@@ -92,7 +92,7 @@ export default {
   generic: {
     clear: '清除',
     done: '已完成',
-    disabled: '残障人士',
+    disabled: '已禁用',
     understand: '我知道了',
     blocks: '区块',
     active: '活跃',
@@ -138,6 +138,8 @@ export default {
     minutes_plural: '{{count}} 分钟',
     seconds: '{{count}} 秒',
     seconds_plural: '{{count}} 秒',
+    one: '一',
+    swipe_to_confirm: '滑动确认',
   },
   hotspot_setup: {
     selection: {
@@ -478,11 +480,16 @@ export default {
         revealWords: '显示助记词',
         deployMode: {
           title: '部署模式',
+          subtitle: '此模式为您的钱包增加了额外保护，限制了某些应用程序功能。',
+          inDeployMode: '在部署模式下：',
+          cantViewWords: '无法查看您的 12 个安全词',
+          cantTransferHotspots: '无法从此帐户转移热点',
+          canOnlySendFunds: '只能将资金发送至',
+          otherAccount: '其他指定帐户',
           enableButton: '启用部署模式',
-          description:
-            '激活部署模式将移除转移热点的功能并显示此帐户的 12 个字。 您仍然可以添加热点并更新它们的位置，并将付款发送到一个钱包地址（如果在下面提供）。',
-          warning: '您必须注销才能禁用此功能。',
-          addressLabel: '永久收件人地址',
+          disableInstructions:
+            '要禁用此功能，您必须注销。 记住现在写下所有 12 个单词。',
+          addressLabel: '允许的帐户地址...',
         },
       },
       learn: {
