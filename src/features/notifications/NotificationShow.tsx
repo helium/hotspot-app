@@ -27,7 +27,7 @@ const NotificationShow = ({ notification, onClose }: Props) => {
   const spacing = useSpacing()
   const navigation = useNavigation<RootNavigationProp>()
 
-  const { body, title, time, footer, share_text: shareText } = notification || {
+  const { body, title, time, footer, shareText } = notification || {
     body: '',
     title: '',
   }
@@ -39,7 +39,7 @@ const NotificationShow = ({ notification, onClose }: Props) => {
   const onViewTransferRequest = () => {
     onClose()
     navigation.navigate('SendStack', {
-      hotspotAddress: notification?.hotspot_address || undefined,
+      hotspotAddress: notification?.hotspotAddress || undefined,
       isSeller: false,
       type: 'transfer',
     })
@@ -74,7 +74,13 @@ const NotificationShow = ({ notification, onClose }: Props) => {
           position="absolute"
         />
         <TouchableOpacityBox flex={1} onPress={onClose} />
-        <Card variant="modal" padding="l" margin="m" style={containerStyle}>
+        <Card
+          variant="modal"
+          padding="l"
+          margin="m"
+          style={containerStyle}
+          marginBottom="xl"
+        >
           <Box flexDirection="row" alignItems="center">
             <HeliumNotification />
             <Text variant="body2" color="purpleMain" marginLeft="xs" flex={1}>

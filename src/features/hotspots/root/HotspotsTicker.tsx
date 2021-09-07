@@ -5,6 +5,7 @@ import TextTicker from 'react-native-text-ticker'
 import { BoxProps } from '@shopify/restyle'
 import { useTranslation } from 'react-i18next'
 import { Easing } from 'react-native'
+import { isTablet } from 'react-native-device-info'
 import Box from '../../../components/Box'
 import {
   fetchStats,
@@ -82,7 +83,7 @@ const HotspotsTicker = ({ ...boxProps }: Props) => {
         repeatSpacer={0}
         easing={Easing.linear}
       >
-        {text}
+        {isTablet() ? text + text : text}
       </TextTicker>
     </Box>
   )

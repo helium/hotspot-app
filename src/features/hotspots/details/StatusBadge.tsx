@@ -8,13 +8,15 @@ import { HotspotSyncStatus } from '../root/hotspotTypes'
 
 type Props = {
   online?: string
-  onPress: () => void
+  onPress?: () => void
+  isDataOnly: boolean
   syncStatus?: HotspotSyncStatus
   hitSlop?: Insets
 }
 
 const StatusBadge = ({
   online = 'offline',
+  isDataOnly,
   onPress,
   syncStatus,
   hitSlop,
@@ -22,23 +24,31 @@ const StatusBadge = ({
   const { t } = useTranslation()
 
   const title = useMemo(() => {
+    if (isDataOnly) {
+      return t('hotspot_details.status_data_only')
+    }
     if (online === 'online') {
-      if (syncStatus === undefined) {
-        return ''
-      }
       if (syncStatus === 'full') {
         return t('hotspot_details.status_online')
       }
       return t('hotspot_details.status_syncing')
     }
     return t('hotspot_details.status_offline')
-  }, [online, syncStatus, t])
+  }, [isDataOnly, online, syncStatus, t])
+
+  const textColor = useMemo((): Colors => {
+    if (isDataOnly) return 'grayText'
+
+    return 'white'
+  }, [isDataOnly])
 
   const backgroundColor = useMemo((): Colors => {
-    if (online === 'offline') return 'orangeDark'
+    if (isDataOnly) return 'grayLight'
+
+    if (online !== 'online') return 'orangeDark'
 
     return 'greenOnline'
-  }, [online])
+  }, [isDataOnly, online])
 
   return (
     <TouchableOpacityBox
@@ -52,7 +62,7 @@ const StatusBadge = ({
       minWidth={60}
       disabled={syncStatus === 'full' && online === 'online'}
     >
-      <Text color="white" variant="regular" fontSize={14}>
+      <Text color={textColor} variant="regular" fontSize={14}>
         {title}
       </Text>
     </TouchableOpacityBox>

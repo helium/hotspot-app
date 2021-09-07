@@ -65,22 +65,44 @@ const LONGAP_PRO = {
   name: 'LongAP Pro Hotspot',
   icon: HotspotIcon,
   onboardType: 'QR',
-  onboardUrl: 'asdf.dcom',
+  onboardUrl: 'https://dashboard.longap.com/onboard',
   translations: {
     en: {
       diagnostic:
         '<b><white>Diagnostic support allows LongAP to identify issues with your Hotspot in a secure way.</white></b>\n\nLongAP will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@longap.com</b></purple> from the email used to purchase the Hotspot.',
       power: [
-        "Attach the antenna's and plug in the provided power adapter.",
-        'The LongAP Pro PWR LED will light up once it’s powered on.',
+        'Attach the antenna and plug in a 802.3at power supply',
+        'The LongAP Pro will be shown as online on the dashboard',
       ],
       externalOnboard:
-        'Visit dashboard.longap.com/onboard or the local management-console to generate a QR-code',
+        'Visit https://dashboard.longap.com/onboard or the local management-console to generate a QR-code',
     },
   },
   antenna: {
-    default: ANTENNAS.LONG_AP_ONE_EU,
+    default: ANTENNAS.LONG_AP_PRO_3,
   },
 } as MakerHotspot
 
-export default { LONGAP_ONE, LONGAP_PRO }
+const LONGAP_LIGHT = {
+  name: 'LongAP Light Hotspot',
+  icon: HotspotIcon,
+  onboardType: 'QR',
+  onboardUrl: 'https://dashboard.longap.com/onboard',
+  translations: {
+    en: {
+      diagnostic:
+        '<b><white>Diagnostic support allows LongAP to identify issues with your Hotspot in a secure way.</white></b>\n\nLongAP will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@longap.com</b></purple> from the email used to purchase the Hotspot.',
+      power: [
+        'Attach the antenna and plug in the provided power adapter.',
+        'The LongAP Light LED will light up once it’s powered on.',
+      ],
+      externalOnboard:
+        'Visit https://dashboard.longap.com/onboard or the local management-console to generate a QR-code',
+    },
+  },
+  antenna: {
+    default: ANTENNAS.LONG_AP_LIGHT,
+  },
+} as MakerHotspot
+
+export default { LONGAP_ONE, LONGAP_PRO, LONGAP_LIGHT }

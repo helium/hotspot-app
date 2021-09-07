@@ -27,7 +27,7 @@ const HotspotsPicker = ({ visible }: Props) => {
   const spacing = useSpacing()
   const maybeGetLocation = useGetLocation()
   const fleetModeEnabled = useSelector(
-    (state: RootState) => state.app.isFleetModeEnabled,
+    (state: RootState) => state.account.settings.isFleetModeEnabled,
   )
   const order = useSelector((state: RootState) => state.hotspots.order)
 
@@ -124,6 +124,14 @@ const HotspotsPicker = ({ visible }: Props) => {
       opts.push({
         label: t(`hotspots.owned.filter.${HotspotSort.Earn}`),
         value: HotspotSort.Earn,
+        Icon: TopHotspot,
+        color: 'purpleMain',
+      })
+    }
+    if (fleetModeEnabled) {
+      opts.push({
+        label: t(`hotspots.owned.filter.${HotspotSort.Unasserted}`),
+        value: HotspotSort.Unasserted,
         Icon: TopHotspot,
         color: 'purpleMain',
       })

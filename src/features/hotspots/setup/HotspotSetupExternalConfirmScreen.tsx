@@ -48,11 +48,11 @@ const HotspotSetupExternalConfirmScreen = () => {
     const getRecord = async () => {
       const record = await getOnboardingRecord(publicKey)
       animateTransition('HotspotSetupExternalConfirmScreen.GetMac')
-      setMacAddress(record.macEth0)
+      setMacAddress(record.macEth0 || t('generic.unknown'))
       setOnboardingRecord(record)
     }
     getRecord()
-  }, [publicKey])
+  }, [publicKey, t])
 
   useEffect(() => {
     if (!params.addGatewayTxn) return

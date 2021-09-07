@@ -1,7 +1,10 @@
 import bobcat from './bobcat'
+import cotx from './cotx'
+import clodpi from './clodpi'
 import customAntennas from './custom/antennas'
 import finestra from './finestra'
 import helium from './helium'
+import linxdot from './linxdot'
 import longAP from './longAP'
 import nebra from './nebra'
 import rak from './rak'
@@ -9,13 +12,20 @@ import risinghf from './risinghf'
 import sensecap from './sensecap'
 import syncrobit from './syncrobit'
 import kerlink from './kerlink'
+import heltec from './heltec'
+import pisces from './pisces'
+import controllino from './controllino'
+import freedomfi from './freedomfi'
 import { LangType, supportedLangs } from '../utils/i18n/i18nTypes'
 import { HotspotMakerLangField } from './hotspotMakerTypes'
 
 export const Makers: Record<string, { id: number; supportEmail: string }> = {
   bobcat,
+  cotx,
+  clodpi,
   finestra,
   helium,
+  linxdot,
   longAP,
   nebra,
   rak,
@@ -23,13 +33,20 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
   sensecap,
   syncrobit,
   kerlink,
+  heltec,
+  pisces,
+  controllino,
+  freedomfi,
 }
 
 export const AntennaModels = {
   ...bobcat.antennas,
+  ...cotx.antennas,
+  ...clodpi.antennas,
   ...customAntennas,
   ...finestra.antennas,
   ...helium.antennas,
+  ...linxdot.antennas,
   ...longAP.antennas,
   ...nebra.antennas,
   ...rak.antennas,
@@ -37,12 +54,19 @@ export const AntennaModels = {
   ...sensecap.antennas,
   ...syncrobit.antennas,
   ...kerlink.antennas,
+  ...heltec.antennas,
+  ...pisces.antennas,
+  ...controllino.antennas,
+  ...freedomfi.antennas,
 }
 
 export const HotspotMakerModels = {
   ...bobcat.hotspots,
+  ...cotx.hotspots,
+  ...clodpi.hotspots,
   ...finestra.hotspots,
   ...helium.hotspots,
+  ...linxdot.hotspots,
   ...longAP.hotspots,
   ...nebra.hotspots,
   ...rak.hotspots,
@@ -50,6 +74,10 @@ export const HotspotMakerModels = {
   ...sensecap.hotspots,
   ...syncrobit.hotspots,
   ...kerlink.hotspots,
+  ...heltec.hotspots,
+  ...pisces.hotspots,
+  ...controllino.hotspots,
+  ...freedomfi.hotspots,
 }
 
 export type HotspotType = keyof typeof HotspotMakerModels
