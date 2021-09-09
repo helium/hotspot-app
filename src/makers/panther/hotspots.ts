@@ -11,11 +11,11 @@ const PANTHER_X1 = {
         '<b><white>Diagnostic support allows Panther X to identify issues with your Hotspot in a secure way.</white></b>\n\nPanther X will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>service@panther.global</b></purple> from the email used to purchase the Hotspot.',
       power: [
         'Plug in the provided power adapter into an outlet near a window and screw in the provided antenna on the back of the Hotspot.',
-        'The Panther X Hotspot will show a yellow LED light once it's powered on. Hotspot can take up to 30 seconds to fully boot up.',
+        'The Panther X Hotspot will show a yellow LED light once it’s powered on. Hotspot can take up to 30 seconds to fully boot up.',
       ],
       bluetooth: [
         'Press and hold the SET button for 5 seconds to turn on Bluetooth.',
-        'The hotspot is ready to pair when the light goes from yellow to blue.\n\nMake sure your phone's Bluetooth is turned on!',
+        'The hotspot is ready to pair when the light goes from yellow to blue.\n\nMake sure your phone’s Bluetooth is turned on!',
       ],
     },
     ja: {
