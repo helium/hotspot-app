@@ -536,6 +536,7 @@ const HotspotDetails = ({
               )}
               <HexBadge
                 hitSlop={hitSlop}
+                hotspotId={hotspot.address}  
                 rewardScale={hotspot.rewardScale}
                 backgroundColor="grayBoxLight"
               />

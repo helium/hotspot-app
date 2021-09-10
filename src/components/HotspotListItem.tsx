@@ -164,6 +164,7 @@ const HotspotListItem = ({
                 )}
                 {showRewardScale && (
                   <HexBadge
+                    hotspotId={hotspot.address}
                     rewardScale={hotspot.rewardScale}
                     pressable={false}
                     badge={false}
