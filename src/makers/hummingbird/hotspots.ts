@@ -21,7 +21,7 @@ const HUMMINGBIRD_H500 = {
     },
     zh: {
       diagnostic:
-        '<b><white>诊断支持帮助 Hummingbird 安全确认您的 Hotspot 问题。</white></b>\n\nHummingbird 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n请在<purple><b>https://www.bobcatminer.com/faq</b></purple>查看我们的故障排除指南或使用本地诊断工具查看热点实时运行数据。',
+        '<b><white>诊断支持帮助 Hummingbird 安全确认您的 Hotspot 问题。</white></b>\n\nHummingbird 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n请在<purple><b>https://www.xdt.com/faq</b></purple>查看我们的故障排除指南或使用本地诊断工具查看热点实时运行数据。',
       power: [
         '将电源适配器插入靠窗的插座，并将天线插入 Hotspot 背面并旋紧。',
         '当指示灯变为绿色，即表示 Hotspot 准备就绪。',
