@@ -7,7 +7,6 @@ import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { decimalSeparator, locale } from '../../../utils/i18n'
 import { useColors } from '../../../theme/themeHooks'
 import { generateRewardScaleColor } from '../../../utils/hotspotUtils'
-import Articles from '../../../constants/articles'
 import { Colors } from '../../../theme/theme'
 
 type Props = {
@@ -43,13 +42,14 @@ const HexBadge = ({
           style: 'cancel',
           onPress: () => {
             const url = `https://app.hotspotty.net/hotspots/${hotspotId}/reward-scaling`
-            if (Linking.canOpenURL(url))
+            if (Linking.canOpenURL(url)) {
               Linking.openURL(url)
+            }
           },
         },
       ],
     )
-  }, [t])
+  }, [hotspotId, t])
 
   const color = useMemo(() => {
     if (!rewardScale) return 'white'
