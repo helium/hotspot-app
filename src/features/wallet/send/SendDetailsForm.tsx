@@ -28,6 +28,10 @@ import {
 import * as Logger from '../../../utils/logger'
 import useHaptic from '../../../utils/useHaptic'
 import { AppLinkCategoryType } from '../../../providers/appLinkTypes'
+import {
+  getHotspotDetails,
+  getValidatorDetails,
+} from '../../../utils/appDataClient'
 
 type Props = {
   account?: Account
@@ -37,6 +41,7 @@ type Props = {
   index: number
   lastReportedActivity?: string
   onScanPress: () => void
+  setSendDisabled: (sendDisabled: boolean) => void
   sendDetails: SendDetails
   transferData?: Transfer
   type: AppLinkCategoryType
@@ -53,6 +58,7 @@ const SendDetailsForm = ({
   onScanPress,
   sendDetails,
   transferData,
+  setSendDisabled,
   type,
   updateSendDetails,
 }: Props) => {
@@ -75,6 +81,7 @@ const SendDetailsForm = ({
   )
   const [dcAmount, setDcAmount] = useState<string>(sendDetails.dcAmount)
   const [memo, setMemo] = useState<string>(sendDetails.memo)
+  const [isHotspotAddress, setIsHotspotAddress] = useState<boolean>()
 
   useEffect(() => {
     updateSendDetails(sendDetails.id, {
@@ -164,6 +171,35 @@ const SendDetailsForm = ({
     }
   }
 
+  const onDoneEditingAddress = async () => {
+    setAddressLoading(true)
+    try {
+      const hotspot = await getHotspotDetails(address)
+      if (hotspot.address === address) {
+        setIsHotspotAddress(true)
+        setSendDisabled(true)
+        setAddressLoading(false)
+        return
+      }
+    } catch (e) {
+      setIsHotspotAddress(false)
+      setSendDisabled(false)
+    }
+    try {
+      const validator = await getValidatorDetails(address)
+      if (validator.address === address) {
+        setIsHotspotAddress(true)
+        setSendDisabled(true)
+        setAddressLoading(false)
+        return
+      }
+    } catch (e) {
+      setIsHotspotAddress(false)
+      setSendDisabled(false)
+    }
+    setAddressLoading(false)
+  }
+
   const renderLockedPaymentForm = () => (
     <>
       <LockedField
@@ -200,16 +236,28 @@ const SendDetailsForm = ({
         isFirst
         defaultValue={address}
         onChange={setAddress}
+        onEndEditing={onDoneEditingAddress}
         label={t('send.address.label')}
         placeholder={t('send.address.placeholder')}
         extra={
           <AddressExtra
             addressLoading={addressLoading}
-            isValidAddress={Address.isValid(address)}
+            isValidAddress={
+              Address.isValid(address) &&
+              isHotspotAddress !== undefined &&
+              !isHotspotAddress
+            }
             onScanPress={onScanPress}
           />
         }
-        footer={<AddressAliasFooter addressAlias={addressAlias} />}
+        footer={
+          <Box>
+            <AddressAliasFooter addressAlias={addressAlias} />
+            {isHotspotAddress && (
+              <Text color="redMain">{t('send.not_valid_address')}</Text>
+            )}
+          </Box>
+        }
       />
       <InputField
         type="decimal-pad"
