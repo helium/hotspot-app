@@ -65,7 +65,7 @@ const WelcomeOverview = ({ accountRewards }: Props) => {
   }, [hiddenAddresses, hotspots, showHiddenHotspots])
 
   const hotspotsLoading = useSelector(
-    (state: RootState) => state.hotspots.loadingOrderedHotspots,
+    (state: RootState) => !state.hotspots.hotspotsLoaded,
   )
 
   const validators = useSelector(
@@ -81,7 +81,7 @@ const WelcomeOverview = ({ accountRewards }: Props) => {
 
     const nextLoaded = {
       hotspotsLoaded: hotspotsLoaded || !hotspotsLoading,
-      validatorsLoaded: validatorsLoaded || !validatorsLoaded,
+      validatorsLoaded: validatorsLoaded || !validatorsLoading,
     }
 
     if (nextLoaded.hotspotsLoaded && nextLoaded.validatorsLoaded) {

@@ -472,6 +472,7 @@ export default {
     },
   },
   send: {
+    not_valid_address: 'Not a valid Helium Wallet Address.',
     title: {
       payment: 'Send HNT',
       dcBurn: 'Burn HNT',
@@ -632,6 +633,8 @@ export default {
         earn: 'Top Earning Hotspots',
         offline: 'Offline Hotspots',
         followed: 'Followed Hotspots',
+        followedValidators: 'Followed Validators',
+        validators: 'Validators',
         unasserted: 'Unasserted Hotspots',
       },
     },

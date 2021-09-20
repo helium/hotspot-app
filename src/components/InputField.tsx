@@ -18,6 +18,7 @@ type Props = {
   footer?: ReactElement
   type?: KeyboardTypeOptions
   onChange: (text: string) => void
+  onEndEditing?: () => void
   locked?: boolean
   defaultValue?: string
   value?: string
@@ -35,6 +36,7 @@ const InputField = ({
   footer,
   type = 'default',
   onChange,
+  onEndEditing,
   locked = false,
   defaultValue,
   value,
@@ -104,6 +106,7 @@ const InputField = ({
               placeholder={placeholder}
               ref={inputRef}
               onChangeText={onChange}
+              onEndEditing={onEndEditing}
               defaultValue={defaultValue}
               editable={!locked}
               multiline

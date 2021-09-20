@@ -1,36 +1,21 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { Hotspot } from '@helium/http'
 import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
-import { orderBy, sortBy, uniq } from 'lodash'
+import { uniq } from 'lodash'
 import { getHotspotDetails, getHotspots } from '../../utils/appDataClient'
-import {
-  distance,
-  hotspotHasValidLocation,
-  LocationCoords,
-} from '../../utils/location'
+import { LocationCoords } from '../../utils/location'
 import { getWallet, deleteWallet, postWallet } from '../../utils/walletClient'
 import { CacheRecord, handleCacheFulfilled } from '../../utils/cacheUtils'
 import { HotspotSyncStatus } from '../../features/hotspots/root/hotspotTypes'
 import { WalletReward } from '../rewards/rewardsSlice'
 
-export enum HotspotSort {
-  New = 'new',
-  Near = 'near',
-  Earn = 'earn',
-  Followed = 'followed',
-  Offline = 'offline',
-  Unasserted = 'unasserted',
-}
-
-type Rewards = Record<string, Balance<NetworkTokens>>
+export type Rewards = Record<string, Balance<NetworkTokens>>
 
 export type HotspotsSliceState = {
   hotspots: Hotspot[]
   orderedHotspots: Hotspot[]
-  loadingOrderedHotspots: boolean
   followedHotspotsObj: Record<string, Hotspot>
   followedHotspots: Hotspot[]
-  order: HotspotSort
   rewards: Rewards
   location?: LocationCoords
   loadingRewards: boolean
@@ -44,48 +29,11 @@ const initialState: HotspotsSliceState = {
   orderedHotspots: [],
   followedHotspotsObj: {},
   followedHotspots: [],
-  order: HotspotSort.Followed,
   loadingRewards: false,
-  loadingOrderedHotspots: false,
   hotspotsLoaded: false,
   failure: false,
   syncStatuses: {},
   rewards: {},
-}
-
-type SorterContext = {
-  rewards?: Rewards
-  location?: LocationCoords
-}
-type HotspotSorter = (hotspots: Hotspot[], context?: SorterContext) => Hotspot[]
-const hotspotSorters: Record<HotspotSort, HotspotSorter> = {
-  [HotspotSort.New]: (hotspots) => orderBy(hotspots, 'blockAdded', 'desc'),
-  [HotspotSort.Near]: (hotspots, context) => {
-    if (!context?.location) {
-      return hotspots
-    }
-    return sortBy(hotspots, [
-      (h) =>
-        distance(context.location || { latitude: 0, longitude: 0 }, {
-          latitude: h.lat || 0,
-          longitude: h.lng || 0,
-        }),
-    ])
-  },
-  [HotspotSort.Earn]: (hotspots, context) => {
-    if (!context || !context.rewards) {
-      return hotspots
-    }
-    return sortBy(hotspots, [
-      (h) =>
-        context.rewards ? -context.rewards[h.address]?.integerBalance : 0,
-    ])
-  },
-  [HotspotSort.Offline]: (hotspots) =>
-    orderBy(hotspots, ['status.online', 'offline']),
-  [HotspotSort.Followed]: (hotspots) => hotspots,
-  [HotspotSort.Unasserted]: (hotspots) =>
-    hotspots.filter((h) => !hotspotHasValidLocation(h)),
 }
 
 export const fetchRewards = createAsyncThunk<
@@ -222,29 +170,6 @@ const hotspotsSlice = createSlice({
         status,
       })
     },
-    changeFilter: (state, { payload }: { payload: HotspotSort }) => {
-      if (state.order === payload) return state
-
-      state.order = payload
-      state.loadingOrderedHotspots = true
-    },
-    changeFilterData: (
-      state,
-      { payload }: { payload: LocationCoords | undefined },
-    ) => {
-      const hotspots = (state.order === HotspotSort.Followed
-        ? state.followedHotspots
-        : state.hotspots) as Hotspot[]
-      return {
-        ...state,
-        location: payload,
-        loadingOrderedHotspots: false,
-        orderedHotspots: hotspotSorters[state.order](hotspots, {
-          rewards: state.rewards as Rewards,
-          location: payload,
-        }),
-      }
-    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchHotspotsData.fulfilled, (state, action) => {
@@ -254,9 +179,6 @@ const hotspotsSlice = createSlice({
       state.hotspots = action.payload.hotspots
       state.hotspotsLoaded = true
       state.failure = false
-      if (state.hotspots.length === 0) {
-        state.order = HotspotSort.Followed
-      }
     })
     builder.addCase(fetchHotspotsData.rejected, (state, _action) => {
       state.loadingRewards = false

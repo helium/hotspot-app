@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Account } from '@helium/http'
@@ -59,6 +59,7 @@ const SendForm = ({
   warning,
 }: Props) => {
   const { t } = useTranslation()
+  const [sendDisabled, setSendDisabled] = useState(false)
 
   const getButtonTitle = () => {
     switch (type) {
@@ -101,6 +102,7 @@ const SendForm = ({
             isLocked={isLocked}
             isLockedAddress={isLockedAddress}
             isSeller={isSeller}
+            setSendDisabled={setSendDisabled}
             lastReportedActivity={lastReportedActivity}
             onScanPress={onScanPress}
             sendDetails={details}
@@ -135,7 +137,7 @@ const SendForm = ({
         title={getButtonTitle()}
         variant="primary"
         mode="contained"
-        disabled={!isValid}
+        disabled={!isValid || sendDisabled}
       />
       {shouldShowFee && <FeeFooter fee={fee} />}
       {warning && <NoticeFooter text={warning} color="redMain" />}
