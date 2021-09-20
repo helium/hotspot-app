@@ -25,7 +25,7 @@ import usePrevious from '../../../utils/usePrevious'
 import useMount from '../../../utils/useMount'
 import useVisible from '../../../utils/useVisible'
 import { isHotspot } from '../../../utils/hotspotUtils'
-import ElectedValidatorItem from '../../validators/explorer/ElectedValidatorItem'
+import ValidatorListItem from '../../validators/ValidatorListItem'
 import { fetchValidatorRewards } from '../../../store/validators/validatorsSlice'
 import { useAppDispatch } from '../../../store/store'
 import { isValidator } from '../../../utils/validatorUtils'
@@ -318,7 +318,7 @@ const HotspotsList = ({
       }
       if (isValidator(item)) {
         return (
-          <ElectedValidatorItem
+          <ValidatorListItem
             validator={item}
             onSelectValidator={handlePress}
             rewardsLoading={loadingValidatorRewards}

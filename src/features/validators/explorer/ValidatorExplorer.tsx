@@ -15,7 +15,7 @@ import { RootState } from '../../../store/rootReducer'
 import Box from '../../../components/Box'
 import { useColors } from '../../../theme/themeHooks'
 import { wh } from '../../../utils/layout'
-import ElectedValidatorItem from './ElectedValidatorItem'
+import ValidatorListItem from '../ValidatorListItem'
 import Text from '../../../components/Text'
 import { getChainVars } from '../../../utils/appDataClient'
 import RewardIcon from '../../../assets/images/heliumReward.svg'
@@ -60,7 +60,7 @@ const ValidatorExplorer = ({ visible, onSelectValidator }: Props) => {
   const renderElected = useCallback(
     (v) => {
       return (
-        <ElectedValidatorItem
+        <ValidatorListItem
           validator={v.item}
           onSelectValidator={onSelectValidator}
           rewardsLoading={rewardsLoading}

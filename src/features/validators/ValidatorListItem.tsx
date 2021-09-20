@@ -4,22 +4,22 @@ import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import { useSelector } from 'react-redux'
 import { Validator } from '@helium/http'
 import tinycolor from 'tinycolor2'
-import { DebouncedTouchableHighlightBox } from '../../../components/TouchableHighlightBox'
-import Box from '../../../components/Box'
-import Text from '../../../components/Text'
-import RewardIcon from '../../../assets/images/heliumReward.svg'
-import PenaltyIcon from '../../../assets/images/penalty.svg'
-import ConsensusHistory from './ConsensusHistory'
-import CarotRight from '../../../assets/images/carot-right.svg'
-import { RootState } from '../../../store/rootReducer'
-import { useColors, useSpacing } from '../../../theme/themeHooks'
+import RewardIcon from '@assets/images/heliumReward.svg'
+import PenaltyIcon from '@assets/images/penalty.svg'
+import CarotRight from '@assets/images/carot-right.svg'
+import { DebouncedTouchableHighlightBox } from '../../components/TouchableHighlightBox'
+import Box from '../../components/Box'
+import Text from '../../components/Text'
+import ConsensusHistory from './explorer/ConsensusHistory'
+import { RootState } from '../../store/rootReducer'
+import { useColors, useSpacing } from '../../theme/themeHooks'
 
 type Props = {
   validator: Validator
   onSelectValidator: (validator: Validator) => void
   rewardsLoading: boolean
 }
-const ElectedValidatorItem = ({
+const ValidatorListItem = ({
   validator,
   onSelectValidator,
   rewardsLoading,
@@ -128,4 +128,4 @@ const ElectedValidatorItem = ({
   )
 }
 
-export default memo(ElectedValidatorItem)
+export default memo(ValidatorListItem)
