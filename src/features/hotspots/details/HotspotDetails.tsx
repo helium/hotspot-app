@@ -275,7 +275,7 @@ const HotspotDetails = ({
           pressable={false}
           key={witness.address}
           onPress={onSelectHotspot}
-          hotspot={witness as Hotspot}
+          gateway={witness as Hotspot}
           showAddress={false}
           distanceAway={getDistance(witness)}
           showRewardScale

@@ -615,6 +615,8 @@ export default {
         earn: 'Top Earning Hotspots',
         offline: 'Offline Hotspots',
         followed: 'Followed Hotspots',
+        followedValidators: 'Followed Validators',
+        validators: 'Validators',
         unasserted: 'Unasserted Hotspots',
       },
     },
