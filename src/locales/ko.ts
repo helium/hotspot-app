@@ -94,6 +94,7 @@ export default {
   generic: {
     clear: '지우기',
     done: '완료',
+    disabled: '장애가있는',
     understand: '내용을 이해함',
     blocks: '블록',
     active: '활성화',
@@ -140,6 +141,8 @@ export default {
     minutes_plural: '{{count}} 분',
     seconds: '{{count}} 초',
     seconds_plural: '{{count}} 초',
+    one: '하나',
+    swipe_to_confirm: '스와이프하여 확인',
   },
   hotspot_setup: {
     selection: {
@@ -463,6 +466,7 @@ export default {
     },
     qrInfo: 'QR 정보',
     error: '이 트랜잭션을 제출하는 중에 오류가 발생했습니다. 다시 시도하세요.',
+    deployModePaymentsDisabled: '배포 모드에서는 결제가 비활성화됩니다.',
     hotspot_label: 'Hotspot',
     last_activity: '마지막으로 보고된 활동: {{activity}}',
     label_error: '계정에 충분한 HNT가 없습니다.',
@@ -504,6 +508,20 @@ export default {
           after_4_hr: '4시간 후',
         },
         revealWords: '단어 공개',
+        deployMode: {
+          title: '배포 모드',
+          subtitle:
+            '이 모드는 지갑에 추가 보호 기능을 추가하여 일부 앱 기능을 제한합니다.',
+          inDeployMode: '배포 모드에서:',
+          cantViewWords: '12개의 보안 단어를 볼 수 없습니다',
+          cantTransferHotspots: '이 계정에서 핫스팟을 전송할 수 없습니다',
+          canOnlySendFunds: '송금만 가능',
+          otherAccount: '기타 지정된 계정',
+          enableButton: '배포 모드 활성화',
+          disableInstructions:
+            '이 기능을 비활성화하려면 로그아웃해야 합니다. 지금 12개의 단어를 모두 적어두는 것을 잊지 마십시오.',
+          addressLabel: '허용된 계정 주소...',
+        },
       },
       learn: {
         title: '알아보기',
@@ -801,6 +819,8 @@ export default {
       '이 전송은 더 이상 활성화되지 않습니다. 판매자에게 자세한 내용을 문의하세요.',
     fine_print: '구매자가 트랜잭션을 수락하고 완료하면 Hotspot이 전송됩니다.',
     notification_button: '트랜잭션 보기',
+    deployModeTransferDisableTitle: '핫스팟 전송 비활성화됨',
+    deployModeTransferDisabled: '배포 모드에서는 핫스팟 전송이 비활성화됩니다.',
     cancel: {
       button_title: '전송 보류. 취소하려면 탭하세요.',
       failed_alert_title: '전송을 취소할 수 없음',

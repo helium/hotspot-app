@@ -92,6 +92,7 @@ export default {
   generic: {
     clear: '清除',
     done: '已完成',
+    disabled: '已禁用',
     understand: '我知道了',
     blocks: '区块',
     active: '活跃',
@@ -137,6 +138,8 @@ export default {
     minutes_plural: '{{count}} 分钟',
     seconds: '{{count}} 秒',
     seconds_plural: '{{count}} 秒',
+    one: '一',
+    swipe_to_confirm: '滑动确认',
   },
   hotspot_setup: {
     selection: {
@@ -435,6 +438,7 @@ export default {
     },
     qrInfo: 'QR 信息',
     error: '提交此交易时出错。请重试。',
+    deployModePaymentsDisabled: '在部署模式下付款被禁用',
     hotspot_label: 'Hotspot',
     last_activity: '上次报告的活动: {{activity}}',
     label_error: '您的帐户 HNT 余额不足。',
@@ -474,6 +478,19 @@ export default {
           after_4_hr: '4 小时后',
         },
         revealWords: '显示助记词',
+        deployMode: {
+          title: '部署模式',
+          subtitle: '此模式为您的钱包增加了额外保护，限制了某些应用程序功能。',
+          inDeployMode: '在部署模式下：',
+          cantViewWords: '无法查看您的 12 个安全词',
+          cantTransferHotspots: '无法从此帐户转移热点',
+          canOnlySendFunds: '只能将资金发送至',
+          otherAccount: '其他指定帐户',
+          enableButton: '启用部署模式',
+          disableInstructions:
+            '要禁用此功能，您必须注销。 记住现在写下所有 12 个单词。',
+          addressLabel: '允许的帐户地址...',
+        },
       },
       learn: {
         title: '学习',
@@ -765,6 +782,8 @@ export default {
     canceled_alert_body: '此转让不再处于活动状态。请联系卖家了解更多信息。',
     fine_print: '一旦买家接受并完成交易，Hotspot 即被转让。',
     notification_button: '查看交易',
+    deployModeTransferDisableTitle: '传输热点已禁用',
+    deployModeTransferDisabled: '在部署模式下禁用传输热点。',
     cancel: {
       button_title: '转让待处理。轻触以取消。',
       failed_alert_title: '无法取消转让',

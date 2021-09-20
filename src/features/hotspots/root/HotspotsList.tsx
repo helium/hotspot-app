@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import Search from '@assets/images/search.svg'
 import Add from '@assets/images/add.svg'
+import LockIcon from '@assets/images/lockIconRed.svg'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { orderBy, sortBy, uniq } from 'lodash'
 import { useAsync } from 'react-async-hook'
@@ -88,6 +89,10 @@ const HotspotsList = ({
     (state: RootState) => state.location,
   )
   const prevOrder = usePrevious(gatewaySortOrder)
+
+  const isDeployModeEnabled = useSelector(
+    (state: RootState) => state.app.isDeployModeEnabled,
+  )
 
   const locationDeniedHandler = useCallback(() => {
     setGatewaySortOrder(GatewaySort.New)
@@ -369,6 +374,11 @@ const HotspotsList = ({
         <TouchableOpacityBox onPress={searchPressed} padding="l">
           <Search width={22} height={22} color={colors.purpleGrayLight} />
         </TouchableOpacityBox>
+        {isDeployModeEnabled && (
+          <Box>
+            <LockIcon />
+          </Box>
+        )}
         <TouchableOpacityBox onPress={addHotspotPressed} padding="l">
           <Add width={22} height={22} color={colors.purpleGrayLight} />
         </TouchableOpacityBox>

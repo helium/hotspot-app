@@ -94,6 +94,7 @@ export default {
   generic: {
     clear: 'Clear',
     done: 'Done',
+    disabled: 'Disabled',
     readMore: 'Read More',
     witness: 'Witness',
     understand: 'I understand',
@@ -148,6 +149,8 @@ export default {
     meters: '{{distance}}m',
     kilometers: '{{distance}}km',
     owner: 'Owner',
+    one: 'one',
+    swipe_to_confirm: 'Swipe to Confirm',
   },
   hotspot_setup: {
     selection: {
@@ -509,6 +512,7 @@ export default {
     },
     qrInfo: 'QR INFO',
     error: 'There was an error submitting this transaction. Please try again.',
+    deployModePaymentsDisabled: 'Payments are disabled in Deploy Mode',
     hotspot_label: 'Hotspot',
     last_activity: 'LAST REPORTED ACTIVITY: {{activity}}',
     label_error: 'You do not have enough HNT in your account.',
@@ -550,6 +554,20 @@ export default {
           after_4_hr: 'After 4 hours',
         },
         revealWords: 'Reveal Words',
+        deployMode: {
+          title: 'Deploy Mode',
+          subtitle:
+            'This mode adds extra protection to your wallet, restricting some app features.',
+          inDeployMode: 'In Deploy Mode:',
+          cantViewWords: "Can't view your 12 secure words",
+          cantTransferHotspots: "Can't transfer Hotspots from this account",
+          canOnlySendFunds: 'Can only send funds to',
+          otherAccount: 'other specified account',
+          enableButton: 'Enable Deploy Mode',
+          disableInstructions:
+            'In order to disable this feature, you will have to log out. Remember to write down all 12 words now.',
+          addressLabel: 'Allowed Account Address...',
+        },
       },
       learn: {
         title: 'Learn',
@@ -994,6 +1012,9 @@ export default {
     fine_print:
       'Hotspot will transfer once the buyer accepts and completes the transaction.',
     notification_button: 'View Transaction',
+    deployModeTransferDisableTitle: 'Transfer Hotspot Disabled',
+    deployModeTransferDisabled:
+      'Transfer Hotspot is disabled while in Deploy Mode.',
     cancel: {
       button_title: 'Transfer Pending. Tap to Cancel.',
       failed_alert_title: 'Unable to Cancel Transfer',

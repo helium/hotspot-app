@@ -37,6 +37,7 @@ type Props = {
   account?: Account
   fee: Balance<NetworkTokens>
   isLocked: boolean
+  isLockedAddress: boolean
   isSeller?: boolean
   index: number
   lastReportedActivity?: string
@@ -53,6 +54,7 @@ const SendDetailsForm = ({
   account,
   fee,
   isLocked,
+  isLockedAddress,
   isSeller,
   lastReportedActivity,
   onScanPress,
@@ -238,35 +240,39 @@ const SendDetailsForm = ({
 
   const renderPaymentForm = () => (
     <>
-      <InputField
-        isFirst
-        defaultValue={address}
-        onChange={handleAddressChange}
-        onEndEditing={onDoneEditingAddress}
-        label={t('send.address.label')}
-        placeholder={t('send.address.placeholder')}
-        extra={
-          <AddressExtra
-            addressLoading={addressLoading}
-            isValidAddress={
-              Address.isValid(address) &&
-              isHotspotAddress !== undefined &&
-              !isHotspotAddress
-            }
-            onScanPress={onScanPress}
-          />
-        }
-        footer={
-          <Box>
-            <AddressAliasFooter addressAlias={addressAlias} />
-            {isHotspotAddress && (
-              <Text color="redMain" variant="body2">
-                {t('send.not_valid_address')}
-              </Text>
-            )}
-          </Box>
-        }
-      />
+      {isLockedAddress ? (
+        <LockedField label={t('send.address.label')} value={address} />
+      ) : (
+        <InputField
+          isFirst
+          defaultValue={address}
+          onChange={handleAddressChange}
+          onEndEditing={onDoneEditingAddress}
+          label={t('send.address.label')}
+          placeholder={t('send.address.placeholder')}
+          extra={
+            <AddressExtra
+              addressLoading={addressLoading}
+              isValidAddress={
+                Address.isValid(address) &&
+                isHotspotAddress !== undefined &&
+                !isHotspotAddress
+              }
+              onScanPress={onScanPress}
+            />
+          }
+          footer={
+            <Box>
+              <AddressAliasFooter addressAlias={addressAlias} />
+              {isHotspotAddress && (
+                <Text color="redMain" variant="body2">
+                  {t('send.not_valid_address')}
+                </Text>
+              )}
+            </Box>
+          }
+        />
+      )}
       <InputField
         type="decimal-pad"
         testID="AmountInput"
@@ -314,28 +320,32 @@ const SendDetailsForm = ({
 
   const renderBurnForm = () => (
     <>
-      <InputField
-        defaultValue={address}
-        onChange={setAddress}
-        label={t('send.address.label')}
-        placeholder={t('send.address.placeholder')}
-        extra={
-          Address.isValid(address) ? (
-            <Box padding="s" position="absolute" right={0}>
-              <Check />
-            </Box>
-          ) : (
-            <TouchableOpacityBox
-              onPress={onScanPress}
-              padding="s"
-              position="absolute"
-              right={0}
-            >
-              <QrCode width={16} color={primaryMain} />
-            </TouchableOpacityBox>
-          )
-        }
-      />
+      {isLockedAddress ? (
+        <LockedField label={t('send.address.label')} value={address} />
+      ) : (
+        <InputField
+          defaultValue={address}
+          onChange={setAddress}
+          label={t('send.address.label')}
+          placeholder={t('send.address.placeholder')}
+          extra={
+            Address.isValid(address) ? (
+              <Box padding="s" position="absolute" right={0}>
+                <Check />
+              </Box>
+            ) : (
+              <TouchableOpacityBox
+                onPress={onScanPress}
+                padding="s"
+                position="absolute"
+                right={0}
+              >
+                <QrCode width={16} color={primaryMain} />
+              </TouchableOpacityBox>
+            )
+          }
+        />
+      )}
       <InputField
         type="decimal-pad"
         defaultValue={amount}

@@ -1,4 +1,11 @@
-import React, { memo, ReactText, useCallback, useEffect, useMemo } from 'react'
+import React, {
+  memo,
+  ReactText,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, SectionList } from 'react-native'
 import { useSelector } from 'react-redux'
@@ -31,6 +38,7 @@ import Account from '../../../assets/images/account.svg'
 import Box from '../../../components/Box'
 import DiscordItem from './DiscordItem'
 import AppInfoItem from './AppInfoItem'
+import DeployModeModal from './DeployModeModal'
 import activitySlice from '../../../store/activity/activitySlice'
 import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
 import { useLanguageContext } from '../../../providers/LanguageProvider'
@@ -58,6 +66,10 @@ const MoreScreen = () => {
   const { changeLanguage, language } = useLanguageContext()
   const navigation = useNavigation<MoreNavigationProp & RootNavigationProp>()
   const spacing = useSpacing()
+  const [
+    showingDeployModeConfirmation,
+    setShowingDeployModeConfirmation,
+  ] = useState(false)
 
   useEffect(
     () =>
@@ -259,6 +271,21 @@ const MoreScreen = () => {
       {
         title: t('more.sections.security.revealWords'),
         onPress: handleRevealWords,
+        disabled: app.isDeployModeEnabled,
+      },
+      {
+        title: t('more.sections.security.deployMode.enableButton'),
+        value: app.isDeployModeEnabled,
+        onToggle: () => {
+          setShowingDeployModeConfirmation(true)
+        },
+        renderModal: () => (
+          <DeployModeModal
+            isVisible={showingDeployModeConfirmation}
+            onClose={() => setShowingDeployModeConfirmation(false)}
+          />
+        ),
+        disabled: app.isDeployModeEnabled,
       },
     ]
     return [
@@ -338,6 +365,9 @@ const MoreScreen = () => {
     app.isHapticDisabled,
     app.authInterval,
     app.isPinRequiredForPayment,
+    app.isDeployModeEnabled,
+    showingDeployModeConfirmation,
+    setShowingDeployModeConfirmation,
     showHiddenHotspots,
     handleRevealWords,
     language,
