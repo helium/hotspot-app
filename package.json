@@ -122,6 +122,7 @@
     "react-qr-code": "^1.0.3",
     "react-redux": "^7.2.2",
     "redux-thunk": "^2.3.0",
+    "tinycolor2": "^1.4.2",
     "use-debounce": "^5.2.0",
     "use-state-with-callback": "^2.0.3"
   },
@@ -137,6 +138,7 @@
     "@types/react-native": "^0.63.2",
     "@types/react-redux": "^7.1.11",
     "@types/react-test-renderer": "^16.9.2",
+    "@types/tinycolor2": "^1.4.3",
     "@types/webpack-env": "^1.15.3",
     "@typescript-eslint/eslint-plugin": "^4.1.0",
     "@typescript-eslint/parser": "^4.1.0",

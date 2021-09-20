@@ -6,7 +6,8 @@ import { useTranslation } from 'react-i18next'
 import Search from '@assets/images/search.svg'
 import Add from '@assets/images/add.svg'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { orderBy, sortBy } from 'lodash'
+import { orderBy, sortBy, uniq } from 'lodash'
+import { useAsync } from 'react-async-hook'
 import { useColors } from '../../../theme/themeHooks'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -23,6 +24,10 @@ import useGetLocation from '../../../utils/useGetLocation'
 import usePrevious from '../../../utils/usePrevious'
 import useMount from '../../../utils/useMount'
 import useVisible from '../../../utils/useVisible'
+import { isHotspot } from '../../../utils/hotspotUtils'
+import ElectedValidatorItem from '../../validators/explorer/ElectedValidatorItem'
+import { fetchValidatorRewards } from '../../../store/validators/validatorsSlice'
+import { useAppDispatch } from '../../../store/store'
 
 const HotspotsList = ({
   onSelectHotspot,
@@ -43,9 +48,17 @@ const HotspotsList = ({
   const [gatewaySortOrder, setGatewaySortOrder] = useState<GatewaySort>(
     GatewaySort.FollowedHotspots,
   )
-  const loadingRewards = useSelector(
+  const dispatch = useAppDispatch()
+  const loadingHotspotRewards = useSelector(
     (state: RootState) => state.hotspots.loadingRewards,
   )
+  const {
+    loadingRewards: loadingValidatorRewards,
+    myValidatorsLoaded,
+    followedValidatorsLoaded,
+    rewards: validatorRewards,
+  } = useSelector((state: RootState) => state.validators)
+
   const hotspots = useSelector((state: RootState) => state.hotspots.hotspots)
   const followedHotspots = useSelector(
     (state: RootState) => state.hotspots.followedHotspots,
@@ -62,7 +75,7 @@ const HotspotsList = ({
   const showHiddenHotspots = useSelector(
     (state: RootState) => state.account.settings.showHiddenHotspots,
   )
-  const rewards = useSelector(
+  const hotspotRewards = useSelector(
     (state: RootState) => state.hotspots.rewards || {},
   )
   const maybeGetLocation = useGetLocation()
@@ -101,6 +114,33 @@ const HotspotsList = ({
     },
   })
 
+  useAsync(async () => {
+    if (
+      !myValidatorsLoaded ||
+      !followedValidatorsLoaded ||
+      loadingValidatorRewards
+    ) {
+      return
+    }
+
+    const allValidatorAddresses = uniq(
+      [...followedValidators, ...validators].map(({ address }) => address),
+    )
+    const rewardsToFetch = allValidatorAddresses.flatMap((address) => {
+      const reward = validatorRewards[address]
+      if (!reward) return [address]
+      return []
+    })
+    if (rewardsToFetch.length === 0) return
+    await dispatch(fetchValidatorRewards(rewardsToFetch))
+  }, [
+    myValidatorsLoaded,
+    followedValidatorsLoaded,
+    validators,
+    followedValidators,
+    loadingValidatorRewards,
+  ])
+
   useEffect(() => {
     if (
       currentLocation ||
@@ -136,11 +176,12 @@ const HotspotsList = ({
         ])
       }
       case GatewaySort.Earn: {
-        if (!rewards) {
+        if (!hotspotRewards) {
           return hotspots
         }
         return sortBy(hotspots, [
-          (h) => (rewards ? -rewards[h.address]?.integerBalance : 0),
+          (h) =>
+            hotspotRewards ? -hotspotRewards[h.address]?.integerBalance : 0,
         ])
       }
       case GatewaySort.Offline:
@@ -160,7 +201,7 @@ const HotspotsList = ({
     followedValidators,
     gatewaySortOrder,
     hotspots,
-    rewards,
+    hotspotRewards,
     validators,
   ])
 
@@ -262,18 +303,33 @@ const HotspotsList = ({
 
   const renderItem = useCallback(
     ({ item }) => {
+      if (isHotspot(item)) {
+        return (
+          <HotspotListItem
+            onPress={handlePress}
+            gateway={item}
+            showCarot
+            loading={loadingHotspotRewards}
+            totalReward={hotspotRewards[item.address]}
+            hidden={hiddenAddresses?.includes(item.address)}
+          />
+        )
+      }
       return (
-        <HotspotListItem
-          onPress={handlePress}
-          gateway={item}
-          showCarot
-          loading={loadingRewards}
-          totalReward={rewards[item.address]}
-          hidden={hiddenAddresses?.includes(item.address)}
+        <ElectedValidatorItem
+          validator={item}
+          onSelectValidator={handlePress}
+          rewardsLoading={loadingValidatorRewards}
         />
       )
     },
-    [handlePress, hiddenAddresses, loadingRewards, rewards],
+    [
+      handlePress,
+      hiddenAddresses,
+      loadingHotspotRewards,
+      loadingValidatorRewards,
+      hotspotRewards,
+    ],
   )
 
   const contentContainerStyle = useMemo(

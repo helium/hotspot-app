@@ -1,8 +1,9 @@
-import React, { memo, useCallback } from 'react'
+import React, { memo, useCallback, useMemo } from 'react'
 import animalName from 'angry-purple-tiger'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import { useSelector } from 'react-redux'
 import { Validator } from '@helium/http'
+import tinycolor from 'tinycolor2'
 import { DebouncedTouchableHighlightBox } from '../../../components/TouchableHighlightBox'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -25,7 +26,9 @@ const ElectedValidatorItem = ({
 }: Props) => {
   const colors = useColors()
   const spacing = useSpacing()
-  const rewards = useSelector((state: RootState) => state.validators.rewards)
+  const { rewards, followedValidatorsObj, validatorsObj } = useSelector(
+    (state: RootState) => state.validators,
+  )
   const elections = useSelector(
     (state: RootState) => state.validators.elections,
   )
@@ -34,6 +37,24 @@ const ElectedValidatorItem = ({
   const onPress = useCallback(() => onSelectValidator(validator), [
     onSelectValidator,
     validator,
+  ])
+
+  const style = useMemo(() => {
+    let borderLeftColor = colors.purpleBright
+    if (
+      !validatorsObj[validator.address] &&
+      !followedValidatorsObj[validator.address]
+    ) {
+      borderLeftColor = tinycolor(borderLeftColor).setAlpha(0).toRgbString()
+    } else if (followedValidatorsObj[validator.address]) {
+      borderLeftColor = tinycolor(borderLeftColor).setAlpha(0.5).toRgbString()
+    }
+    return { borderLeftColor }
+  }, [
+    colors.purpleBright,
+    followedValidatorsObj,
+    validator.address,
+    validatorsObj,
   ])
 
   return (
@@ -47,7 +68,7 @@ const ElectedValidatorItem = ({
       backgroundColor="grayBox"
       marginBottom="xxs"
       borderLeftWidth={6}
-      borderLeftColor="purpleBright"
+      style={style}
     >
       <>
         <Box>
