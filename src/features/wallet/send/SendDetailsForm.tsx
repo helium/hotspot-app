@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { ActivityIndicator, Alert } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Address } from '@helium/crypto-react-native'
@@ -171,7 +171,13 @@ const SendDetailsForm = ({
     }
   }
 
+  const handleAddressChange = useCallback((text: string) => {
+    setIsHotspotAddress(false)
+    setAddress(text)
+  }, [])
+
   const onDoneEditingAddress = async () => {
+    if (!Address.isValid(address)) return
     setAddressLoading(true)
     try {
       const hotspot = await getHotspotDetails(address)
@@ -235,7 +241,7 @@ const SendDetailsForm = ({
       <InputField
         isFirst
         defaultValue={address}
-        onChange={setAddress}
+        onChange={handleAddressChange}
         onEndEditing={onDoneEditingAddress}
         label={t('send.address.label')}
         placeholder={t('send.address.placeholder')}
@@ -254,7 +260,9 @@ const SendDetailsForm = ({
           <Box>
             <AddressAliasFooter addressAlias={addressAlias} />
             {isHotspotAddress && (
-              <Text color="redMain">{t('send.not_valid_address')}</Text>
+              <Text color="redMain" variant="body2">
+                {t('send.not_valid_address')}
+              </Text>
             )}
           </Box>
         }
@@ -269,7 +277,7 @@ const SendDetailsForm = ({
         placeholder={t('send.amount.placeholder')}
         extra={
           <TouchableOpacityBox onPress={setMaxAmount}>
-            <Text fontSize={12} color="primaryMain">
+            <Text fontSize={12} color="primaryMain" variant="body2">
               {t('send.sendMax')}
             </Text>
           </TouchableOpacityBox>
