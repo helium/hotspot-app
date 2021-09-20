@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { Hotspot } from '@helium/http'
+import { Hotspot, Validator } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import CarotRight from '@assets/images/carot-right.svg'
@@ -10,15 +10,16 @@ import { Pressable } from 'react-native'
 import Box from './Box'
 import Text from './Text'
 import useCurrency from '../utils/useCurrency'
-import { isRelay } from '../utils/hotspotUtils'
+import { isRelay, isHotspot as checkIsHotspot } from '../utils/hotspotUtils'
 import HexBadge from '../features/hotspots/details/HexBadge'
 import { useColors } from '../theme/themeHooks'
 import Signal from '../assets/images/signal.svg'
 import VisibilityOff from '../assets/images/visibility_off.svg'
+import { isValidator as checkIsValidator } from '../utils/validatorUtils'
 
 type HotspotListItemProps = {
-  onPress?: (hotspot: Hotspot) => void
-  hotspot: Hotspot
+  onPress?: (hotspot: Hotspot | Validator) => void
+  gateway: Hotspot | Validator
   totalReward?: Balance<NetworkTokens>
   showCarot?: boolean
   loading?: boolean
@@ -33,7 +34,7 @@ type HotspotListItemProps = {
 
 const HotspotListItem = ({
   onPress,
-  hotspot,
+  gateway,
   totalReward,
   loading = false,
   showCarot = false,
@@ -48,7 +49,7 @@ const HotspotListItem = ({
   const { t } = useTranslation()
   const colors = useColors()
   const { toggleConvertHntToCurrency, hntBalanceToDisplayVal } = useCurrency()
-  const handlePress = useCallback(() => onPress?.(hotspot), [hotspot, onPress])
+  const handlePress = useCallback(() => onPress?.(gateway), [gateway, onPress])
   const [reward, setReward] = useState('')
 
   const updateReward = useCallback(async () => {
@@ -62,22 +63,26 @@ const HotspotListItem = ({
     updateReward()
   }, [updateReward])
 
+  const isValidator = useMemo(() => checkIsValidator(gateway), [gateway])
+  const isHotspot = useMemo(() => checkIsHotspot(gateway), [gateway])
+
   const locationText = useMemo(() => {
-    const { geocode: geo } = hotspot
+    if (isValidator) return ''
+    const { geocode: geo } = gateway as Hotspot
     if (!geo || (!geo.longStreet && !geo.longCity && !geo.shortCountry)) {
       return t('hotspot_details.no_location_title')
     }
     return `${geo.longStreet}, ${geo.longCity}, ${geo.shortCountry}`
-  }, [hotspot, t])
+  }, [gateway, isValidator, t])
 
-  const isRelayed = useMemo(() => isRelay(hotspot?.status?.listenAddrs), [
-    hotspot?.status,
+  const isRelayed = useMemo(() => isRelay(gateway?.status?.listenAddrs), [
+    gateway?.status,
   ])
 
   const statusBackgroundColor = useMemo(() => {
     if (hidden) return 'grayLightText'
-    return hotspot.status?.online === 'online' ? 'greenOnline' : 'yellow'
-  }, [hidden, hotspot.status?.online])
+    return gateway.status?.online === 'online' ? 'greenOnline' : 'yellow'
+  }, [hidden, gateway.status?.online])
 
   return (
     <Box marginBottom="xxs">
@@ -93,12 +98,14 @@ const HotspotListItem = ({
           >
             <Box flexDirection="column">
               <Box flexDirection="row" alignItems="center">
-                <Box
-                  height={10}
-                  width={10}
-                  borderRadius="m"
-                  backgroundColor={statusBackgroundColor}
-                />
+                {isHotspot && (
+                  <Box
+                    height={10}
+                    width={10}
+                    borderRadius="m"
+                    backgroundColor={statusBackgroundColor}
+                  />
+                )}
                 <Text
                   variant="body2Medium"
                   color={hidden ? 'grayLightText' : 'offblack'}
@@ -108,7 +115,7 @@ const HotspotListItem = ({
                   numberOfLines={2}
                   maxWidth={220}
                 >
-                  {animalName(hotspot.address)}
+                  {animalName(gateway.address)}
                 </Text>
                 {hidden && <VisibilityOff height={10} width={10} />}
               </Box>
@@ -162,16 +169,16 @@ const HotspotListItem = ({
                     </Text>
                   </Box>
                 )}
-                {showRewardScale && (
+                {showRewardScale && isHotspot && (
                   <HexBadge
-                    hotspotId={hotspot.address}
-                    rewardScale={hotspot.rewardScale}
+                    hotspotId={gateway.address}
+                    rewardScale={(gateway as Hotspot).rewardScale}
                     pressable={false}
                     badge={false}
                     fontSize={12}
                   />
                 )}
-                {showAntennaDetails && (
+                {showAntennaDetails && isHotspot && (
                   <Box marginLeft="s" flexDirection="row" alignItems="center">
                     <Signal width={10} height={10} color={colors.grayText} />
                     <Text
@@ -181,17 +188,17 @@ const HotspotListItem = ({
                       marginLeft="xs"
                     >
                       {t('generic.meters', {
-                        distance: hotspot?.elevation || 0,
+                        distance: (gateway as Hotspot)?.elevation || 0,
                       })}
                     </Text>
-                    {hotspot?.gain !== undefined && (
+                    {(gateway as Hotspot)?.gain !== undefined && (
                       <Text
                         color="grayText"
                         variant="regular"
                         fontSize={12}
                         marginLeft="xs"
                       >
-                        {(hotspot.gain / 10).toFixed(1) +
+                        {(((gateway as Hotspot).gain || 0) / 10).toFixed(1) +
                           t('antennas.onboarding.dbi')}
                       </Text>
                     )}

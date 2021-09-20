@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { SectionList } from 'react-native'
-import { Hotspot, Sum } from '@helium/http'
+import { Hotspot, Sum, Validator } from '@helium/http'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import Search from '@assets/images/search.svg'
@@ -31,7 +31,7 @@ const HotspotsList = ({
   addHotspotPressed,
   accountRewards,
 }: {
-  onSelectHotspot: (hotspot: Hotspot, showNav: boolean) => void
+  onSelectHotspot: (hotspot: Hotspot | Validator, showNav: boolean) => void
   visible: boolean
   searchPressed?: () => void
   addHotspotPressed?: () => void
@@ -49,6 +49,12 @@ const HotspotsList = ({
   const hotspots = useSelector((state: RootState) => state.hotspots.hotspots)
   const followedHotspots = useSelector(
     (state: RootState) => state.hotspots.followedHotspots,
+  )
+  const validators = useSelector(
+    (state: RootState) => state.validators.validators.data,
+  )
+  const followedValidators = useSelector(
+    (state: RootState) => state.validators.followedValidators.data,
   )
   const hiddenAddresses = useSelector(
     (state: RootState) => state.account.settings.hiddenAddresses,
@@ -113,7 +119,7 @@ const HotspotsList = ({
     prevOrder,
   ])
 
-  const orderedHotspots = useMemo(() => {
+  const orderedGateways = useMemo((): (Hotspot | Validator)[] => {
     switch (gatewaySortOrder) {
       case GatewaySort.New:
         return orderBy(hotspots, 'blockAdded', 'desc')
@@ -143,34 +149,54 @@ const HotspotsList = ({
         return followedHotspots
       case GatewaySort.Unasserted:
         return hotspots.filter((h) => !hotspotHasValidLocation(h))
+      case GatewaySort.FollowedValidators:
+        return followedValidators
+      case GatewaySort.Validators:
+        return validators
     }
-  }, [currentLocation, followedHotspots, gatewaySortOrder, hotspots, rewards])
+  }, [
+    currentLocation,
+    followedHotspots,
+    followedValidators,
+    gatewaySortOrder,
+    hotspots,
+    rewards,
+    validators,
+  ])
 
   const visibleHotspots = useMemo(() => {
-    if (showHiddenHotspots) {
-      return orderedHotspots
+    if (showHiddenHotspots || GatewaySort.FollowedValidators) {
+      return orderedGateways
     }
     return (
-      orderedHotspots.filter((h) => !hiddenAddresses?.includes(h.address)) || []
+      (orderedGateways as Hotspot[]).filter(
+        (h) => !hiddenAddresses?.includes(h.address),
+      ) || []
     )
-  }, [hiddenAddresses, orderedHotspots, showHiddenHotspots])
+  }, [hiddenAddresses, orderedGateways, showHiddenHotspots])
 
   const handlePress = useCallback(
-    (hotspot: Hotspot) => {
+    (hotspot: Hotspot | Validator) => {
       onSelectHotspot(hotspot, visibleHotspots.length > 1)
     },
     [onSelectHotspot, visibleHotspots.length],
   )
 
-  const hasOfflineHotspot = useMemo(
-    () => visibleHotspots.some((h: Hotspot) => h.status?.online !== 'online'),
-    [visibleHotspots],
-  )
+  const hasOfflineHotspot = useMemo(() => {
+    if (GatewaySort.FollowedValidators) {
+      return false
+    }
+    return (visibleHotspots as Hotspot[]).some(
+      (h: Hotspot) => h.status?.online !== 'online',
+    )
+  }, [visibleHotspots])
 
   const sections = useMemo(() => {
     let data = visibleHotspots
     if (gatewaySortOrder === GatewaySort.Offline && hasOfflineHotspot) {
-      data = visibleHotspots.filter((h) => h.status?.online !== 'online')
+      data = (visibleHotspots as Hotspot[]).filter(
+        (h) => h.status?.online !== 'online',
+      )
     }
     return [
       {
@@ -189,10 +215,12 @@ const HotspotsList = ({
         backgroundColor="white"
       >
         <HotspotsPicker
+          hasFollowedValidators={!!followedValidators.length}
           locationBlocked={locationBlocked}
           fleetModeEnabled={!!fleetModeEnabled}
           gatewaySort={gatewaySortOrder}
           handleFilterChange={setGatewaySortOrder}
+          hasValidators={!!validators.length}
         />
         {gatewaySortOrder === GatewaySort.Offline &&
           !hasOfflineHotspot &&
@@ -223,9 +251,11 @@ const HotspotsList = ({
     )
   }, [
     visibleHotspots,
+    followedValidators.length,
     locationBlocked,
     fleetModeEnabled,
     gatewaySortOrder,
+    validators.length,
     hasOfflineHotspot,
     t,
   ])
@@ -235,7 +265,7 @@ const HotspotsList = ({
       return (
         <HotspotListItem
           onPress={handlePress}
-          hotspot={item}
+          gateway={item}
           showCarot
           loading={loadingRewards}
           totalReward={rewards[item.address]}
@@ -255,7 +285,10 @@ const HotspotsList = ({
 
   const topStyle = useMemo(() => ({ paddingTop: top }), [top])
 
-  const keyExtractor = useCallback((item: Hotspot) => item.address, [])
+  const keyExtractor = useCallback(
+    (item: Hotspot | Validator) => item.address,
+    [],
+  )
 
   return (
     <Box

@@ -17,6 +17,8 @@ export enum GatewaySort {
   FollowedHotspots = 'followed',
   Offline = 'offline',
   Unasserted = 'unasserted',
+  FollowedValidators = 'followedValidators',
+  Validators = 'validators',
 }
 
 type Props = {
@@ -24,12 +26,16 @@ type Props = {
   gatewaySort: GatewaySort
   fleetModeEnabled: boolean
   locationBlocked: boolean
+  hasFollowedValidators: boolean
+  hasValidators: boolean
 }
 const HotspotsPicker = ({
   gatewaySort,
   handleFilterChange,
   fleetModeEnabled,
   locationBlocked,
+  hasFollowedValidators,
+  hasValidators,
 }: Props) => {
   const { t } = useTranslation()
   const spacing = useSpacing()
@@ -55,6 +61,22 @@ const HotspotsPicker = ({
       Icon: FollowedHotspot,
       color: 'purpleBright',
     })
+    if (hasValidators) {
+      opts.push({
+        label: t(`hotspots.owned.filter.${GatewaySort.Validators}`),
+        value: GatewaySort.Validators,
+        Icon: NewestHotspot,
+        color: 'purpleMain',
+      })
+    }
+    if (hasFollowedValidators) {
+      opts.push({
+        label: t(`hotspots.owned.filter.${GatewaySort.FollowedValidators}`),
+        value: GatewaySort.FollowedValidators,
+        Icon: FollowedHotspot,
+        color: 'purpleMain',
+      })
+    }
     if (!locationBlocked) {
       opts.push({
         label: t(`hotspots.owned.filter.${GatewaySort.Near}`),
@@ -86,7 +108,13 @@ const HotspotsPicker = ({
       color: 'purpleMain',
     })
     return opts
-  }, [fleetModeEnabled, locationBlocked, t])
+  }, [
+    fleetModeEnabled,
+    hasFollowedValidators,
+    hasValidators,
+    locationBlocked,
+    t,
+  ])
 
   const contentContainerStyle = useMemo(
     () => ({ paddingHorizontal: spacing.l }),
