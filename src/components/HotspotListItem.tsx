@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { Hotspot, Validator } from '@helium/http'
+import { Hotspot } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import CarotRight from '@assets/images/carot-right.svg'
@@ -10,16 +10,15 @@ import { Pressable } from 'react-native'
 import Box from './Box'
 import Text from './Text'
 import useCurrency from '../utils/useCurrency'
-import { isRelay, isHotspot as checkIsHotspot } from '../utils/hotspotUtils'
+import { isRelay } from '../utils/hotspotUtils'
 import HexBadge from '../features/hotspots/details/HexBadge'
 import { useColors } from '../theme/themeHooks'
 import Signal from '../assets/images/signal.svg'
 import VisibilityOff from '../assets/images/visibility_off.svg'
-import { isValidator as checkIsValidator } from '../utils/validatorUtils'
 
 type HotspotListItemProps = {
-  onPress?: (hotspot: Hotspot | Validator) => void
-  gateway: Hotspot | Validator
+  onPress?: (hotspot: Hotspot) => void
+  gateway: Hotspot
   totalReward?: Balance<NetworkTokens>
   showCarot?: boolean
   loading?: boolean
@@ -63,17 +62,13 @@ const HotspotListItem = ({
     updateReward()
   }, [updateReward])
 
-  const isValidator = useMemo(() => checkIsValidator(gateway), [gateway])
-  const isHotspot = useMemo(() => checkIsHotspot(gateway), [gateway])
-
   const locationText = useMemo(() => {
-    if (isValidator) return ''
     const { geocode: geo } = gateway as Hotspot
     if (!geo || (!geo.longStreet && !geo.longCity && !geo.shortCountry)) {
       return t('hotspot_details.no_location_title')
     }
     return `${geo.longStreet}, ${geo.longCity}, ${geo.shortCountry}`
-  }, [gateway, isValidator, t])
+  }, [gateway, t])
 
   const isRelayed = useMemo(() => isRelay(gateway?.status?.listenAddrs), [
     gateway?.status,
@@ -98,14 +93,12 @@ const HotspotListItem = ({
           >
             <Box flexDirection="column">
               <Box flexDirection="row" alignItems="center">
-                {isHotspot && (
-                  <Box
-                    height={10}
-                    width={10}
-                    borderRadius="m"
-                    backgroundColor={statusBackgroundColor}
-                  />
-                )}
+                <Box
+                  height={10}
+                  width={10}
+                  borderRadius="m"
+                  backgroundColor={statusBackgroundColor}
+                />
                 <Text
                   variant="body2Medium"
                   color={hidden ? 'grayLightText' : 'offblack'}
@@ -169,7 +162,7 @@ const HotspotListItem = ({
                     </Text>
                   </Box>
                 )}
-                {showRewardScale && isHotspot && (
+                {showRewardScale && (
                   <HexBadge
                     hotspotId={gateway.address}
                     rewardScale={(gateway as Hotspot).rewardScale}
@@ -178,7 +171,7 @@ const HotspotListItem = ({
                     fontSize={12}
                   />
                 )}
-                {showAntennaDetails && isHotspot && (
+                {showAntennaDetails && (
                   <Box marginLeft="s" flexDirection="row" alignItems="center">
                     <Signal width={10} height={10} color={colors.grayText} />
                     <Text

@@ -28,6 +28,7 @@ import { isHotspot } from '../../../utils/hotspotUtils'
 import ElectedValidatorItem from '../../validators/explorer/ElectedValidatorItem'
 import { fetchValidatorRewards } from '../../../store/validators/validatorsSlice'
 import { useAppDispatch } from '../../../store/store'
+import { isValidator } from '../../../utils/validatorUtils'
 
 const HotspotsList = ({
   onSelectHotspot,
@@ -315,13 +316,16 @@ const HotspotsList = ({
           />
         )
       }
-      return (
-        <ElectedValidatorItem
-          validator={item}
-          onSelectValidator={handlePress}
-          rewardsLoading={loadingValidatorRewards}
-        />
-      )
+      if (isValidator(item)) {
+        return (
+          <ElectedValidatorItem
+            validator={item}
+            onSelectValidator={handlePress}
+            rewardsLoading={loadingValidatorRewards}
+          />
+        )
+      }
+      return null
     },
     [
       handlePress,
