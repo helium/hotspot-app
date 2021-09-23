@@ -18,8 +18,10 @@ export const [currencyType] = RNLocalize.getCurrencies() || ['USD']
 export const usesMetricSystem = RNLocalize.usesMetricSystem()
 
 let phoneLang = 'en'
+let phoneLocale = 'en-US'
 if (Array.isArray(locales)) {
   phoneLang = locales[0].languageCode
+  phoneLocale = locales[0].languageTag
 }
 
 const hotspotMakerTranslations = getTranslations()
@@ -35,7 +37,7 @@ i18n.use(initReactI18next).init({
   fallbackLng: ['en'],
 })
 
-export const locale = phoneLang
+export const locale = phoneLocale
 
 export const useLanguage = () => {
   const [language, setLanguage] = useState('en')

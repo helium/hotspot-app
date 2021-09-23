@@ -18,6 +18,8 @@ import { BoxProps } from '@shopify/restyle'
 import { StyleProp, ViewStyle } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { h3ToGeo } from 'h3-js'
+import Config from 'react-native-config'
+import { isFinite } from 'lodash'
 import Box from './Box'
 import Text from './Text'
 import NoLocation from '../assets/images/no-location.svg'
@@ -26,8 +28,9 @@ import CurrentLocationButton from './CurrentLocationButton'
 import { theme, Theme } from '../theme/theme'
 import { useColors } from '../theme/themeHooks'
 import Coverage from './Coverage'
+import { distance } from '../utils/location'
 
-const styleURL = 'mapbox://styles/petermain/ckjtsfkfj0nay19o3f9jhft6v'
+const defaultLngLat = [-122.419418, 37.774929] // San Francisco
 
 type Props = BoxProps<Theme> & {
   onMapMoved?: (coords?: Position) => void
@@ -101,18 +104,22 @@ const Map = ({
   }, [onMapMoved])
 
   const centerUserLocation = useCallback(() => {
+    const hasCoords =
+      userCoords &&
+      isFinite(userCoords.longitude) &&
+      isFinite(userCoords.latitude)
     camera.current?.setCamera({
-      centerCoordinate: userCoords
+      centerCoordinate: hasCoords
         ? [userCoords.longitude, userCoords.latitude]
-        : [-98.35, 15],
-      zoomLevel: userCoords ? 16 : 2,
+        : defaultLngLat,
+      zoomLevel: hasCoords ? 16 : 2,
       animationDuration,
       heading: 0,
     })
   }, [animationDuration, userCoords])
 
   const handleUserLocationUpdate = useCallback(
-    (loc) => {
+    (loc: MapboxGL.Location) => {
       if (!loc?.coords || (userCoords.latitude && userCoords.longitude)) {
         return
       }
@@ -123,7 +130,11 @@ const Map = ({
   )
 
   useEffect(() => {
-    if (!showUserLocation || !userCoords.latitude || !userCoords.longitude)
+    if (
+      !showUserLocation ||
+      !isFinite(userCoords.latitude) ||
+      !isFinite(userCoords.longitude)
+    )
       return
 
     camera.current?.setCamera({
@@ -169,6 +180,7 @@ const Map = ({
 
   const bounds = useMemo(() => {
     const boundsLocations: number[][] = []
+    let hotspotCoords: number[] | undefined
 
     if (mapCenter && !selectedHotspot && !selectedHex) {
       boundsLocations.push(mapCenter)
@@ -176,30 +188,49 @@ const Map = ({
 
     if (selectedHotspot && selectedHotspot.locationHex) {
       const h3Location = selectedHotspot.locationHex
-      boundsLocations.push(h3ToGeo(h3Location).reverse())
+      hotspotCoords = h3ToGeo(h3Location).reverse()
+      boundsLocations.push(hotspotCoords)
     }
 
     if (selectedHex && !selectedHotspot) {
       boundsLocations.push(h3ToGeo(selectedHex).reverse())
     }
 
-    witnesses.forEach((w) => {
-      if (w.locationHex) {
-        const h3Location = w.locationHex
-        boundsLocations.push(h3ToGeo(h3Location).reverse())
+    if (hotspotCoords) {
+      const hotspotLatLng = {
+        latitude: hotspotCoords[1],
+        longitude: hotspotCoords[0],
       }
-    })
+      witnesses.forEach((w) => {
+        if (w.locationHex) {
+          const h3Location = w.locationHex
+          const coords = h3ToGeo(h3Location).reverse()
+          const distanceKM = distance(
+            { latitude: coords[1], longitude: coords[0] },
+            hotspotLatLng,
+          )
+          if (distanceKM < 200) {
+            boundsLocations.push(coords)
+          }
+        }
+      })
+    }
 
     return findBounds(boundsLocations, cameraBottomOffset)
   }, [mapCenter, cameraBottomOffset, selectedHex, selectedHotspot, witnesses])
 
-  const defaultCameraSettings = useMemo(
-    () => ({
+  const defaultCameraSettings = useMemo(() => {
+    const centerCoordinate =
+      mapCenter?.length === 2 &&
+      isFinite(mapCenter[0]) &&
+      isFinite(mapCenter[1])
+        ? mapCenter
+        : defaultLngLat
+    return {
       zoomLevel,
-      centerCoordinate: mapCenter,
-    }),
-    [mapCenter, zoomLevel],
-  )
+      centerCoordinate,
+    }
+  }, [mapCenter, zoomLevel])
 
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
@@ -229,7 +260,7 @@ const Map = ({
         onRegionDidChange={onRegionDidChange}
         onRegionWillChange={onMapMoving}
         onDidFinishLoadingMap={onDidFinishLoad}
-        styleURL={styleURL}
+        styleURL={Config.MAPBOX_STYLE_URL}
         style={styles.map}
         logoEnabled={false}
         rotateEnabled={false}

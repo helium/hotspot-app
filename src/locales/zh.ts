@@ -92,6 +92,7 @@ export default {
   generic: {
     clear: '清除',
     done: '已完成',
+    disabled: '已禁用',
     understand: '我知道了',
     blocks: '区块',
     active: '活跃',
@@ -137,6 +138,8 @@ export default {
     minutes_plural: '{{count}} 分钟',
     seconds: '{{count}} 秒',
     seconds_plural: '{{count}} 秒',
+    one: '一',
+    swipe_to_confirm: '滑动确认',
   },
   hotspot_setup: {
     selection: {
@@ -435,6 +438,7 @@ export default {
     },
     qrInfo: 'QR 信息',
     error: '提交此交易时出错。请重试。',
+    deployModePaymentsDisabled: '在部署模式下付款被禁用',
     hotspot_label: 'Hotspot',
     last_activity: '上次报告的活动: {{activity}}',
     label_error: '您的帐户 HNT 余额不足。',
@@ -450,6 +454,7 @@ export default {
       view_description: '分享您的二维码以存入或收取他人的 HNT。',
       learn_more: '了解更多',
       parse_code_error: '无法解析二维码',
+      invalid_hotspot_address: '二维码中的热点地址缺失或无效。',
       invalid_sender_address: '二维码中的发件人地址不是有效的钱包账户地址。',
       mismatched_sender_address:
         '二维码中的发件人地址与钱包账户地址不匹配。 地址必须匹配才能继续。',
@@ -478,6 +483,19 @@ export default {
           after_4_hr: '4 小时后',
         },
         revealWords: '显示助记词',
+        deployMode: {
+          title: '部署模式',
+          subtitle: '此模式为您的钱包增加了额外保护，限制了某些应用程序功能。',
+          inDeployMode: '在部署模式下：',
+          cantViewWords: '无法查看您的 12 个安全词',
+          cantTransferHotspots: '无法从此帐户转移热点',
+          canOnlySendFunds: '只能将资金发送至',
+          otherAccount: '其他指定帐户',
+          enableButton: '启用部署模式',
+          disableInstructions:
+            '要禁用此功能，您必须注销。 记住现在写下所有 12 个单词。',
+          addressLabel: '允许的帐户地址...',
+        },
       },
       learn: {
         title: '学习',
@@ -769,6 +787,8 @@ export default {
     canceled_alert_body: '此转让不再处于活动状态。请联系卖家了解更多信息。',
     fine_print: '一旦买家接受并完成交易，Hotspot 即被转让。',
     notification_button: '查看交易',
+    deployModeTransferDisableTitle: '传输热点已禁用',
+    deployModeTransferDisabled: '在部署模式下禁用传输热点。',
     cancel: {
       button_title: '转让待处理。轻触以取消。',
       failed_alert_title: '无法取消转让',
@@ -826,7 +846,7 @@ export default {
       success: 'Hotspot 在 {{count}} 个区块前曾发出 Challenge。',
       success_plural: 'Hotspot 在 {{count}} 个区块前曾发出 Challenge。',
       fail:
-        'Hotspot 尚未发出 Challenge。Hotspot 每 360 个区块或大约每 6 小时会自动创建 Challenge。',
+        'Hotspot 尚未发出 Challenge。Hotspot 每 240 个区块或大约每 4 小时会自动创建 Challenge。',
       title: '创建 Challenge',
     },
     challenge_witness: {
@@ -845,7 +865,7 @@ export default {
       success: 'Hotspot 在 {{count}} 个区块前曾参与过一项 Challenge。',
       success_plural: 'Hotspot 在 {{count}} 个区块前曾参与过一项 Challenge。',
       fail:
-        '在线 Hotspot 每 360 个区块会创建 Challenge，创建过程可能会需要一段时间。',
+        '在线 Hotspot 每 240 个区块会创建 Challenge，创建过程可能会需要一段时间。',
       title: '通过 Challenge',
     },
     data_transfer: {

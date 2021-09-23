@@ -4,7 +4,7 @@ import { TextStyle } from 'react-native'
 import { BoxProps } from '@shopify/restyle'
 
 import Text from './Text'
-import { Colors, Theme } from '../theme/theme'
+import { Colors, TextVariant, Theme } from '../theme/theme'
 import TouchableOpacityBox from './TouchableOpacityBox'
 import Box from './Box'
 import WithDebounce from './WithDebounce'
@@ -16,6 +16,7 @@ type Props = BoxProps<Theme> & {
   disabled?: boolean
   title?: string
   textStyle?: TextStyle
+  textVariant?: TextVariant
   color?: Colors
   backgroundColor?: Colors
   icon?: Element
@@ -36,6 +37,7 @@ const Button = ({
   variant = 'primary',
   color,
   textStyle,
+  textVariant,
   disabled,
   height,
   icon,
@@ -63,6 +65,7 @@ const Button = ({
   }
 
   const getTextVariant = () => {
+    if (textVariant) return textVariant
     if (mode === 'contained') return 'buttonBold'
     return 'buttonMedium'
   }
@@ -78,9 +81,9 @@ const Button = ({
         justifyContent="center"
         flexDirection="row"
         alignItems="center"
-        paddingHorizontal="m"
+        paddingHorizontal="ms"
       >
-        {icon && <Box marginEnd="s">{icon}</Box>}
+        {icon && <Box marginEnd="xxs">{icon}</Box>}
         <Text
           maxFontSizeMultiplier={1.2}
           alignSelf="center"

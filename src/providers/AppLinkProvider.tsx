@@ -24,6 +24,7 @@ import {
   AppLinkCategoryType,
   AppLinkPayment,
   Payee,
+  AppLinkLocation,
 } from './appLinkTypes'
 
 const APP_LINK_PROTOCOL = 'helium://'
@@ -31,13 +32,14 @@ const APP_LINK_PROTOCOL = 'helium://'
 // Define subclasses of Error to return address-specific errors when attempting to process scanned
 // payloads from QR codes
 export enum AddressType {
+  HotspotAddress = 'Hotspot Address',
   SenderAddress = 'Sender Address',
   ReceiverAddress = 'Receiver Address',
 }
 export class MissingAddressError extends Error {
   addressType: AddressType
 
-  constructor(addressType: AddressType) {
+  constructor(addressType: AddressType = AddressType.HotspotAddress) {
     super(`Missing required ${addressType}`)
     this.addressType = addressType
   }
@@ -45,7 +47,7 @@ export class MissingAddressError extends Error {
 export class InvalidAddressError extends Error {
   addressType: AddressType
 
-  constructor(addressType: AddressType) {
+  constructor(addressType: AddressType = AddressType.HotspotAddress) {
     super(`Invalid ${addressType}`)
     this.addressType = addressType
   }
@@ -58,7 +60,10 @@ export class MismatchedAddressError extends Error {
     this.addressType = addressType
   }
 }
-const assertValidAddress = (address: string, addressType: AddressType) => {
+const assertValidAddress = (
+  address: string,
+  addressType: AddressType = AddressType.HotspotAddress,
+) => {
   if (!address) throw new MissingAddressError(addressType)
   if (!Address.isValid(address)) throw new InvalidAddressError(addressType)
 }
@@ -105,9 +110,9 @@ const useAppLink = () => {
   })
 
   const navToAppLink = useCallback(
-    (record: AppLink | AppLinkPayment) => {
+    (record: AppLink | AppLinkPayment | AppLinkLocation) => {
       if (isLocked || !isBackedUp) {
-        setUnhandledLink(record)
+        setUnhandledLink(record as AppLink)
         return
       }
 
@@ -116,10 +121,14 @@ const useAppLink = () => {
           navigator.viewHotspot((record as AppLink).address)
           break
 
+        case 'validator':
+          navigator.viewValidator((record as AppLink).address)
+          break
+
         case 'dc_burn':
         case 'payment':
         case 'transfer':
-          navigator.send({ scanResult: record })
+          navigator.send({ scanResult: record as AppLink | AppLinkPayment })
           break
 
         case 'add_gateway': {
@@ -127,6 +136,19 @@ const useAppLink = () => {
           if (!txnStr) return
 
           navigator.confirmAddGateway(txnStr)
+          break
+        }
+
+        case 'hotspot_location': {
+          const {
+            hotspotAddress,
+            longitude,
+            latitude,
+          } = record as AppLinkLocation
+          navigator.updateHotspotLocation({
+            hotspotAddress,
+            location: { latitude, longitude },
+          })
           break
         }
       }
@@ -155,12 +177,12 @@ const useAppLink = () => {
     ) as AppLink
 
     const path = parsed.url.replace(APP_LINK_PROTOCOL, '')
-    const [resourceType, resourceId] = path.split('/')
+    const [resourceType, ...rest] = path.split('/')
     if (resourceType && AppLinkCategories.find((k) => k === resourceType)) {
       record.type = resourceType as AppLinkCategoryType
     }
-    if (resourceId) {
-      record.address = resourceId
+    if (rest?.length) {
+      record.address = rest.join('/')
     }
 
     if (!record.type || !AppLinkCategories.find((k) => k === record.type)) {
@@ -169,26 +191,48 @@ const useAppLink = () => {
     return record
   }, [])
 
+  const parseLocation = (data: string): AppLinkLocation | undefined => {
+    try {
+      const dataObj = JSON.parse(data)
+      if (dataObj.lat && dataObj.lng && dataObj.address) {
+        return {
+          type: 'hotspot_location',
+          hotspotAddress: dataObj.address,
+          latitude: dataObj.lat,
+          longitude: dataObj.lng,
+        }
+      }
+    } catch (err) {}
+  }
+
   /**
    * The data scanned from the QR code is expected to be one of these possibilities:
    * (1) A helium deeplink URL
-   * (2) address string
-   * (3) stringified JSON object { type, senderAddress?, address, amount?, memo? }
-   * (4) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: amount} }
-   * (5) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: { amount, memo? }} }
+   * (2) A lat/lng pair + hotspot address for hotspot location updates
+   * (3) address string
+   * (4) stringified JSON object { type, senderAddress?, address, amount?, memo? }
+   * (5) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: amount} }
+   * (6) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: { amount, memo? }} }
    */
   const parseBarCodeData = useCallback(
     async (
       data: string,
       scanType: AppLinkCategoryType,
-    ): Promise<AppLink | AppLinkPayment> => {
+    ): Promise<AppLink | AppLinkPayment | AppLinkLocation> => {
       // Case (1) helium deeplink URL
       const urlParams = parseUrl(data)
       if (urlParams) {
         return urlParams
       }
 
-      // Case (2) address string
+      // Case (2) lat/lng pair
+      const location = parseLocation(data)
+      if (location) {
+        assertValidAddress(location.hotspotAddress)
+        return location
+      }
+
+      // Case (3) address string
       if (Address.isValid(data)) {
         if (scanType === 'transfer') {
           return {
@@ -206,7 +250,7 @@ const useAppLink = () => {
       const type = rawScanResult.type || scanType
 
       if (type === 'dc_burn') {
-        // Case (3) stringified JSON { type, address, amount?, memo? }
+        // Case (4) stringified JSON { type, address, amount?, memo? }
         const scanResult: AppLink = {
           type,
           address: rawScanResult.address,
@@ -220,7 +264,7 @@ const useAppLink = () => {
       if (type === 'payment') {
         let scanResult: AppLinkPayment
         if (rawScanResult.address) {
-          // Case (3) stringified JSON { type, senderAddress?, address, amount?, memo? }
+          // Case (4) stringified JSON { type, senderAddress?, address, amount?, memo? }
           scanResult = {
             type,
             senderAddress: rawScanResult.senderAddress,
@@ -241,10 +285,10 @@ const useAppLink = () => {
               let memo
               if (entries[1]) {
                 if (typeof entries[1] === 'number') {
-                  // Case (4) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: amount} }
+                  // Case (5) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: amount} }
                   amount = entries[1] as number
                 } else if (typeof entries[1] === 'object') {
-                  // Case (5) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: { amount, memo? }} }
+                  // Case (6) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: { amount, memo? }} }
                   const scanData = entries[1] as {
                     amount: string
                     memo?: string
@@ -288,8 +332,12 @@ const useAppLink = () => {
       { data }: BarCodeScannerResult,
       scanType: AppLinkCategoryType,
       opts?: Record<string, string>,
+      assertScanResult?: (
+        scanResult: AppLink | AppLinkPayment | AppLinkLocation,
+      ) => void,
     ) => {
       const scanResult = await parseBarCodeData(data, scanType)
+      if (assertScanResult) assertScanResult(scanResult)
 
       navToAppLink({ ...scanResult, ...opts })
     },

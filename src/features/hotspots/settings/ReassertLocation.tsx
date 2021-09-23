@@ -14,10 +14,11 @@ import ReassertAddressSearch from './ReassertAddressSearch'
 import { PlaceGeography } from '../../../utils/googlePlaces'
 import { loadLocationFeeData } from '../../../utils/assertLocationUtils'
 import { OnboardingRecord } from '../../../utils/stakingClient'
+import { isDataOnly } from '../../../utils/hotspotUtils'
 
 export type Coords = { latitude: number; longitude: number }
 export type ReassertLocationState = 'fee' | 'update' | 'confirm' | 'search'
-const DEFAULT_FEE_DATA = {
+export const DEFAULT_FEE_DATA = {
   remainingFreeAsserts: 0,
   totalStakingAmountDC: new Balance(0, CurrencyType.dataCredit),
   totalStakingAmountUsd: new Balance(0, CurrencyType.usd),
@@ -47,11 +48,12 @@ const ReassertLocation = ({
 
   const { result: feeData = DEFAULT_FEE_DATA } = useAsync(
     () =>
-      loadLocationFeeData(
-        hotspot.nonce,
-        account?.balance?.integerBalance,
+      loadLocationFeeData({
+        nonce: hotspot.nonce,
+        accountIntegerBalance: account?.balance?.integerBalance,
         onboardingRecord,
-      ),
+        dataOnly: isDataOnly(hotspot),
+      }),
     [hotspot.nonce, account?.balance?.integerBalance, onboardingRecord],
   )
 

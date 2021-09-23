@@ -1,7 +1,13 @@
 import { StackNavigationProp } from '@react-navigation/stack'
 
 export type HotspotStackParamList = {
-  HotspotsScreen: undefined | { address: string }
+  HotspotsScreen:
+    | undefined
+    | { address: string; resource: 'validator' | 'hotspot' }
+  HotspotLocationUpdateScreen: {
+    hotspotAddress: string
+    location: { longitude: number; latitude: number }
+  }
 }
 
 export type HotspotNavigationProp = StackNavigationProp<HotspotStackParamList>
@@ -26,3 +32,6 @@ export const HotspotActivityFilters = {
 } as Record<HotspotActivityType, string[]>
 
 export type HotspotSyncStatus = 'full' | 'partial'
+
+export const GLOBAL_OPTS = ['explore', 'search', 'home'] as const
+export type GlobalOpt = typeof GLOBAL_OPTS[number]

@@ -94,6 +94,7 @@ export default {
   generic: {
     clear: 'クリア',
     done: '完了',
+    disabled: '無効',
     understand: '理解しました',
     blocks: 'ブロック',
     active: 'アクティブ',
@@ -140,6 +141,8 @@ export default {
     minutes_plural: '{{count}}分',
     seconds: '{{count}}秒',
     seconds_plural: '{{count}}秒',
+    one: '一',
+    swipe_to_confirm: 'スワイプして確認',
   },
   hotspot_setup: {
     selection: {
@@ -479,6 +482,7 @@ export default {
     qrInfo: 'QR情報',
     error:
       'このトランザクションの申請中にエラーが発生しました。もう一度実行してください。',
+    deployModePaymentsDisabled: 'デプロイモードでは支払いが無効になります',
     hotspot_label: 'Hotspot',
     last_activity: '最後に報告されたアクティビティ：{{activity}}',
     label_error: 'アカウントに十分なHNTがありません。',
@@ -496,6 +500,8 @@ export default {
         'QRコードを共有して、他のユーザーからHNTを入金するか受け取ります。',
       learn_more: '詳細',
       parse_code_error: 'QRコードを解析できません',
+      invalid_hotspot_address:
+        'QRコードのホットスポットアドレスが見つからないか無効です。',
       invalid_sender_address:
         'QRコードの送信者アドレスは有効なウォレットアカウントアドレスではありません。',
       mismatched_sender_address:
@@ -525,6 +531,21 @@ export default {
           after_4_hr: '4時間後',
         },
         revealWords: '単語を表示',
+        deployMode: {
+          title: 'デプロイモード',
+          subtitle:
+            'このモードはウォレットに追加の保護を追加し、一部のアプリ機能を制限します。',
+          inDeployMode: 'デプロイモードの場合：',
+          cantViewWords: 'あなたの12の安全な言葉を見ることができません',
+          cantTransferHotspots:
+            'このアカウントからホットスポットを転送できません',
+          canOnlySendFunds: 'にのみ資金を送ることができます',
+          otherAccount: '他の指定されたアカウント',
+          enableButton: 'デプロイモードを有効にする',
+          disableInstructions:
+            'この機能を無効にするには、ログアウトする必要があります。 今すぐ12語すべてを書き留めることを忘れないでください。',
+          addressLabel: '許可されたアカウントアドレス...',
+        },
       },
       learn: {
         title: '詳細',
@@ -825,6 +846,9 @@ export default {
     fine_print:
       '購入者がトランザクションを承諾して完了すると、Hotspotでデータが転送されます。',
     notification_button: 'トランザクションを表示',
+    deployModeTransferDisableTitle: 'ホットスポットの転送が無効',
+    deployModeTransferDisabled:
+      '展開モードでは、転送ホットスポットは無効になります。',
     cancel: {
       button_title: '転送を保留しています。タップしてキャンセルします。',
       failed_alert_title: '転送をキャンセルできません',
@@ -883,7 +907,7 @@ export default {
       success: 'Hotspotが{{count}}ブロック前にChallengeを発行しました。',
       success_plural: 'Hotspotが{{count}}ブロック前にChallengeを発行しました。',
       fail:
-        'HotspotはまだChallengeを発行していません。Hotspotは360ブロックごと（約6時間ごと）にChallengeを自動的に作成します。',
+        'HotspotはまだChallengeを発行していません。Hotspotは240ブロックごと（約4時間ごと）にChallengeを自動的に作成します。',
       title: 'Challengeを作成',
     },
     challenge_witness: {
@@ -906,7 +930,7 @@ export default {
       success_plural:
         'Hotspotは{{count}}ブロック前のChallengeに最後に追加されました。',
       fail:
-        'オンラインHotspotは360ブロック（6時間）ごとにChallengeが作成され、次にChallengeが作成されるまでに時間がかかる場合があります。',
+        'オンラインHotspotは240ブロック（4時間）ごとにChallengeが作成され、次にChallengeが作成されるまでに時間がかかる場合があります。',
       title: 'Challengeを渡す',
     },
     data_transfer: {

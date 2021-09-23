@@ -61,7 +61,6 @@ const useBluetooth = () => {
         { allowDuplicates: false },
         (error, device) => {
           if (error) {
-            Logger.error(error)
             throw error
           }
 
@@ -86,16 +85,11 @@ const useBluetooth = () => {
       `Discover All Services and Characteristics for device: ${hotspotDevice.id}`,
     )
 
-    try {
-      const device = await hotspotDevice.discoverAllServicesAndCharacteristics()
-      Logger.breadcrumb(
-        `Successfully discovered All Services and Characteristics for device: ${device.id}`,
-      )
-      return device
-    } catch (e) {
-      Logger.error(e)
-      throw e
-    }
+    const device = await hotspotDevice.discoverAllServicesAndCharacteristics()
+    Logger.breadcrumb(
+      `Successfully discovered All Services and Characteristics for device: ${device.id}`,
+    )
+    return device
   }
 
   const findCharacteristic = async (
@@ -106,25 +100,18 @@ const useBluetooth = () => {
     Logger.breadcrumb(
       `Find Characteristic: ${characteristicUuid} for service: ${service}`,
     )
-    try {
-      const characteristics = await hotspotDevice.characteristicsForService(
-        service,
-      )
-      const characteristic = characteristics.find(
-        (c) => c.uuid === characteristicUuid,
-      )
-      Logger.breadcrumb(
-        `${
-          characteristic
-            ? 'Found characteristic'
-            : 'Did not find characteristic'
-        } for service: ${service}`,
-      )
-      return characteristic
-    } catch (e) {
-      Logger.error(e)
-      throw e
-    }
+    const characteristics = await hotspotDevice.characteristicsForService(
+      service,
+    )
+    const characteristic = characteristics.find(
+      (c) => c.uuid === characteristicUuid,
+    )
+    Logger.breadcrumb(
+      `${
+        characteristic ? 'Found characteristic' : 'Did not find characteristic'
+      } for service: ${service}`,
+    )
+    return characteristic
   }
 
   const readCharacteristic = async (
@@ -133,18 +120,13 @@ const useBluetooth = () => {
     Logger.breadcrumb(
       `Read Characteristic: ${characteristic.uuid} for service: ${characteristic.serviceUUID}`,
     )
-    try {
-      const readChar = await characteristic.read()
+    const readChar = await characteristic.read()
 
-      Logger.breadcrumb(
-        `Successfully read Characteristic: ${characteristic.uuid} for service: ${characteristic.serviceUUID} with value ${readChar.value}`,
-      )
+    Logger.breadcrumb(
+      `Successfully read Characteristic: ${characteristic.uuid} for service: ${characteristic.serviceUUID} with value ${readChar.value}`,
+    )
 
-      return readChar
-    } catch (e) {
-      Logger.error(e)
-      throw e
-    }
+    return readChar
   }
 
   const writeCharacteristic = async (
@@ -154,16 +136,11 @@ const useBluetooth = () => {
     Logger.breadcrumb(
       `Write Characteristic: ${characteristic.uuid} for service: ${characteristic.serviceUUID}`,
     )
-    try {
-      const writeChar = await characteristic.writeWithResponse(payload)
-      Logger.breadcrumb(
-        `Successfully wrote Characteristic: ${writeChar.uuid} for service: ${writeChar.serviceUUID} with value ${writeChar.value}`,
-      )
-      return writeChar
-    } catch (e) {
-      Logger.error(e)
-      throw e
-    }
+    const writeChar = await characteristic.writeWithResponse(payload)
+    Logger.breadcrumb(
+      `Successfully wrote Characteristic: ${writeChar.uuid} for service: ${writeChar.serviceUUID} with value ${writeChar.value}`,
+    )
+    return writeChar
   }
 
   const findAndReadCharacteristic = async (

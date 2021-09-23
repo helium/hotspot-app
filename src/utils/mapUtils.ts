@@ -1,5 +1,6 @@
 import { Hotspot } from '@helium/http'
 import { Feature, Position } from 'geojson'
+import { isFinite } from 'lodash'
 
 export const hotspotsToFeatures = (hotspots: Hotspot[]): Feature[] =>
   hotspots
@@ -43,6 +44,15 @@ export const findBounds = (
     if (lat < minLat) minLat = lat
     if (lat > maxLat) maxLat = lat
   })
+
+  if (
+    !isFinite(minLng) ||
+    !isFinite(maxLng) ||
+    !isFinite(minLat) ||
+    !isFinite(maxLat)
+  ) {
+    return
+  }
 
   return {
     ne: [maxLng, maxLat],

@@ -1,5 +1,5 @@
 import { isEqual } from 'lodash'
-import React, { useEffect, useState, memo, useCallback } from 'react'
+import React, { useEffect, useState, memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
@@ -50,8 +50,22 @@ const WelcomeOverview = ({ accountRewards }: Props) => {
     isEqual,
   )
 
+  const hiddenAddresses = useSelector(
+    (state: RootState) => state.account.settings.hiddenAddresses,
+  )
+  const showHiddenHotspots = useSelector(
+    (state: RootState) => state.account.settings.showHiddenHotspots,
+  )
+
+  const visibleHotspots = useMemo(() => {
+    if (showHiddenHotspots) {
+      return hotspots
+    }
+    return hotspots.filter((h) => !hiddenAddresses?.includes(h.address)) || []
+  }, [hiddenAddresses, hotspots, showHiddenHotspots])
+
   const hotspotsLoading = useSelector(
-    (state: RootState) => state.hotspots.loadingOrderedHotspots,
+    (state: RootState) => !state.hotspots.hotspotsLoaded,
   )
 
   const validators = useSelector(
@@ -67,7 +81,7 @@ const WelcomeOverview = ({ accountRewards }: Props) => {
 
     const nextLoaded = {
       hotspotsLoaded: hotspotsLoaded || !hotspotsLoading,
-      validatorsLoaded: validatorsLoaded || !validatorsLoaded,
+      validatorsLoaded: validatorsLoaded || !validatorsLoading,
     }
 
     if (nextLoaded.hotspotsLoaded && nextLoaded.validatorsLoaded) {
@@ -86,7 +100,7 @@ const WelcomeOverview = ({ accountRewards }: Props) => {
       Balance.fromFloat(accountRewards.total, CurrencyType.networkToken),
     )
     const validatorCount = validators.length
-    const hotspotCount = hotspots.length
+    const hotspotCount = visibleHotspots.length
     let nextBodyText = ''
     if (validatorCount === 0) {
       nextBodyText = t('hotspots.owned.reward_hotspot_summary', {
@@ -116,7 +130,7 @@ const WelcomeOverview = ({ accountRewards }: Props) => {
   }, [
     accountRewards.total,
     hntBalanceToDisplayVal,
-    hotspots.length,
+    visibleHotspots.length,
     hotspotsLoaded,
     t,
     validators.length,
