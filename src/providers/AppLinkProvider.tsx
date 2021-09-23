@@ -11,7 +11,6 @@ import { Linking } from 'react-native'
 import queryString from 'query-string'
 import { BarCodeScannerResult } from 'expo-barcode-scanner'
 import { useSelector } from 'react-redux'
-import { isEqual } from 'lodash'
 import { Address } from '@helium/crypto-react-native'
 import useMount from '../utils/useMount'
 import { getAddress } from '../utils/secureAccount'
@@ -69,8 +68,7 @@ const assertValidAddress = (
 }
 const assertCurrentSenderAddress = async (senderAddress: string) => {
   const current = await getAddress()
-  const sender = Address.fromB58(`${senderAddress}`)
-  if (!isEqual(current, sender)) {
+  if (current?.b58 !== senderAddress) {
     throw new MismatchedAddressError(AddressType.SenderAddress)
   }
 }
