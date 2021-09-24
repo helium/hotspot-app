@@ -13,6 +13,7 @@ const stringKeys = [
   'authInterval',
   'walletApiToken',
   'language',
+  'permanentPaymentAddress',
 ] as const
 type StringKey = typeof stringKeys[number]
 
@@ -23,6 +24,7 @@ const boolKeys = [
   'requirePinForPayment',
   'hapticDisabled',
   'convertHntToCurrency',
+  'deployModeEnabled',
   'fleetModeEnabled',
   'hasFleetModeAutoEnabled',
 ] as const

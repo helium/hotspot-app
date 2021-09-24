@@ -29,7 +29,7 @@ import Box from '../../../components/Box'
 import usePrevious from '../../../utils/usePrevious'
 import TouchableOpacityBox from '../../../components/BSTouchableOpacityBox'
 import { GlobalOpt, GLOBAL_OPTS } from './hotspotTypes'
-import { isGlobalOption } from '../../../utils/hotspotUtils'
+import { isGlobalOption, isHotspot } from '../../../utils/hotspotUtils'
 import { isValidator } from '../../../utils/validatorUtils'
 import animateTransition from '../../../utils/animateTransition'
 import sleep from '../../../utils/sleep'
@@ -304,7 +304,17 @@ const ShortcutNav = ({
       (item) => getItemId(item) === getItemId(propsItem),
     )
 
-    if (index === -1) return
+    if (index === -1) {
+      if (isHotspot(propsItem)) {
+        const exploreIndex = data.indexOf('explore')
+        setInternalItem({
+          index: exploreIndex,
+          id: getItemId('explore'),
+        })
+        scroll(exploreIndex)
+      }
+      return
+    }
 
     // The selected item was changed from the outside world
     // Track it and scroll to it

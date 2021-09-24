@@ -45,9 +45,9 @@ import {
 } from '../../../store/validators/validatorsSlice'
 import ValidatorDetails from '../../validators/ValidatorDetails'
 import {
-  isHotspot,
   isWitness,
   isGlobalOption,
+  isHotspot,
 } from '../../../utils/hotspotUtils'
 import { isValidator } from '../../../utils/validatorUtils'
 import ValidatorExplorer from '../../validators/explorer/ValidatorExplorer'
@@ -290,15 +290,15 @@ const HotspotsView = ({
   )
 
   const handlePresentHotspot = useCallback(
-    async (hotspot: Hotspot) => {
+    async (gateway: Hotspot | Validator) => {
       if (isGlobalOption(shortcutItem)) {
         setDetailHeight(detailSnapPoints.collapsed)
       }
-      handleShortcutItemSelected(hotspot)
+      handleShortcutItemSelected(gateway)
 
-      if (!hotspot.locationHex) return
+      if (!isHotspot(gateway) || !gateway.locationHex) return
 
-      await onMapHexSelected(hotspot.locationHex, hotspot.address)
+      await onMapHexSelected(gateway.locationHex, gateway.address)
     },
     [
       detailSnapPoints.collapsed,

@@ -275,7 +275,7 @@ const HotspotDetails = ({
           pressable={false}
           key={witness.address}
           onPress={onSelectHotspot}
-          hotspot={witness as Hotspot}
+          gateway={witness as Hotspot}
           showAddress={false}
           distanceAway={getDistance(witness)}
           showRewardScale
@@ -536,6 +536,7 @@ const HotspotDetails = ({
               )}
               <HexBadge
                 hitSlop={hitSlop}
+                hotspotId={hotspot.address}
                 rewardScale={hotspot.rewardScale}
                 backgroundColor="grayBoxLight"
               />

@@ -94,6 +94,7 @@ export default {
   generic: {
     clear: 'Clear',
     done: 'Done',
+    disabled: 'Disabled',
     readMore: 'Read More',
     witness: 'Witness',
     understand: 'I understand',
@@ -148,6 +149,8 @@ export default {
     meters: '{{distance}}m',
     kilometers: '{{distance}}km',
     owner: 'Owner',
+    one: 'one',
+    swipe_to_confirm: 'Swipe to Confirm',
   },
   hotspot_setup: {
     selection: {
@@ -469,6 +472,7 @@ export default {
     },
   },
   send: {
+    not_valid_address: 'Not a valid Helium Wallet Address.',
     title: {
       payment: 'Send HNT',
       dcBurn: 'Burn HNT',
@@ -508,6 +512,7 @@ export default {
     },
     qrInfo: 'QR INFO',
     error: 'There was an error submitting this transaction. Please try again.',
+    deployModePaymentsDisabled: 'Payments are disabled in Deploy Mode',
     hotspot_label: 'Hotspot',
     last_activity: 'LAST REPORTED ACTIVITY: {{activity}}',
     label_error: 'You do not have enough HNT in your account.',
@@ -524,6 +529,9 @@ export default {
       view_description:
         'Share your QR Code to deposit or receive HNT from others.',
       learn_more: 'Learn More',
+      parse_code_error: 'Unable to parse QR code',
+      invalid_hotspot_address:
+        'Hotspot Address in QR code is missing or invalid.',
     },
     send_max_fee: {
       error_title: 'Send Max Error',
@@ -549,6 +557,20 @@ export default {
           after_4_hr: 'After 4 hours',
         },
         revealWords: 'Reveal Words',
+        deployMode: {
+          title: 'Deploy Mode',
+          subtitle:
+            'This mode adds extra protection to your wallet, restricting some app features.',
+          inDeployMode: 'In Deploy Mode:',
+          cantViewWords: "Can't view your 12 secure words",
+          cantTransferHotspots: "Can't transfer Hotspots from this account",
+          canOnlySendFunds: 'Can only send funds to',
+          otherAccount: 'other specified account',
+          enableButton: 'Enable Deploy Mode',
+          disableInstructions:
+            'In order to disable this feature, you will have to log out. Remember to write down all 12 words now.',
+          addressLabel: 'Allowed Account Address...',
+        },
       },
       learn: {
         title: 'Learn',
@@ -614,6 +636,8 @@ export default {
         earn: 'Top Earning Hotspots',
         offline: 'Offline Hotspots',
         followed: 'Followed Hotspots',
+        followedValidators: 'Followed Validators',
+        validators: 'Validators',
         unasserted: 'Unasserted Hotspots',
       },
     },
@@ -991,6 +1015,9 @@ export default {
     fine_print:
       'Hotspot will transfer once the buyer accepts and completes the transaction.',
     notification_button: 'View Transaction',
+    deployModeTransferDisableTitle: 'Transfer Hotspot Disabled',
+    deployModeTransferDisabled:
+      'Transfer Hotspot is disabled while in Deploy Mode.',
     cancel: {
       button_title: 'Transfer Pending. Tap to Cancel.',
       failed_alert_title: 'Unable to Cancel Transfer',
@@ -1049,7 +1076,7 @@ export default {
       success: 'Hotspot issued a challenge {{count}} block ago.',
       success_plural: 'Hotspot issued a challenge {{count}} blocks ago.',
       fail:
-        "Hotspot hasn't issued a challenge yet. Hotspots create challenges automatically every 300 blocks, or approximately 5 hours.",
+        "Hotspot hasn't issued a challenge yet. Hotspots create challenges automatically every 240 blocks, or approximately 4 hours.",
       title: 'Create a Challenge',
     },
     challenge_witness: {
@@ -1070,7 +1097,7 @@ export default {
       success_plural:
         'Hotspot last participated in a challenge {{count}} blocks ago.',
       fail:
-        'Online Hotspots are challenged every 300 blocks (or 5 hours). Hotspots send a Beacon (also known as a challenge) and if other Hotspot witness, they pass.',
+        'Online Hotspots are challenged every 240 blocks (or 4 hours). Hotspots send a Beacon (also known as a challenge) and if other Hotspot witness, they pass.',
       title: 'Pass a Challenge',
     },
     data_transfer: {
