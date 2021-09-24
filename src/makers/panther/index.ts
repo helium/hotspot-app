@@ -4,6 +4,6 @@ import hotspots from './hotspots'
 export default {
   antennas,
   hotspots,
-  id: 15, // This id is TBD
+  id: 20,
   supportEmail: 'support@panther.global',
 }
