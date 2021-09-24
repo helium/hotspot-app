@@ -4,6 +4,6 @@ import hotspots from './hotspots'
 export default {
   antennas,
   hotspots,
-  id: 66, // TODO: update when maker ID is assigned
+  id: 21,
   supportEmail: 'hummingbirdminer@outlook.com',
 }
