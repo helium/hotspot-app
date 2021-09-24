@@ -532,6 +532,10 @@ export default {
       parse_code_error: 'Unable to parse QR code',
       invalid_hotspot_address:
         'Hotspot Address in QR code is missing or invalid.',
+      invalid_sender_address:
+        'Sender Address in QR code is not a valid wallet account address.',
+      mismatched_sender_address:
+        'Sender Address in QR code does not match wallet account address. Addresses must match in order to proceed.',
     },
     send_max_fee: {
       error_title: 'Send Max Error',

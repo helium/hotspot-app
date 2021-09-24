@@ -21,6 +21,7 @@ export type AppLink = {
 
 export type AppLinkPayment = {
   type: AppLinkCategoryType
+  senderAddress?: string
   payees: Array<Payee>
 }
 

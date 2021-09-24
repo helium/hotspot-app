@@ -20,6 +20,7 @@ import {
   useAppLinkContext,
   AddressType,
   InvalidAddressError,
+  MismatchedAddressError,
 } from '../../../providers/AppLinkProvider'
 import {
   AppLinkCategoryType,
@@ -85,7 +86,23 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
     const isInvalidHotspotAddress =
       error instanceof InvalidAddressError &&
       error.addressType === AddressType.HotspotAddress
-    if (isInvalidHotspotAddress) {
+    const isInvalidSender =
+      error instanceof InvalidAddressError &&
+      error.addressType === AddressType.SenderAddress
+    const isMismatchedSender =
+      error instanceof MismatchedAddressError &&
+      error.addressType === AddressType.SenderAddress
+    if (isInvalidSender) {
+      await showOKAlert({
+        titleKey: 'send.scan.parse_code_error',
+        messageKey: 'send.scan.invalid_sender_address',
+      })
+    } else if (isMismatchedSender) {
+      await showOKAlert({
+        titleKey: 'send.scan.parse_code_error',
+        messageKey: 'send.scan.mismatched_sender_address',
+      })
+    } else if (isInvalidHotspotAddress) {
       await showOKAlert({
         titleKey: 'send.scan.parse_code_error',
         messageKey: 'send.scan.invalid_hotspot_address',
