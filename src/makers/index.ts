@@ -16,6 +16,7 @@ import heltec from './heltec'
 import pisces from './pisces'
 import controllino from './controllino'
 import freedomfi from './freedomfi'
+import hummingbird from './hummingbird'
 import { LangType, supportedLangs } from '../utils/i18n/i18nTypes'
 import { HotspotMakerLangField } from './hotspotMakerTypes'
 
@@ -37,6 +38,7 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
   pisces,
   controllino,
   freedomfi,
+  hummingbird,
 }
 
 export const AntennaModels = {
@@ -58,6 +60,7 @@ export const AntennaModels = {
   ...pisces.antennas,
   ...controllino.antennas,
   ...freedomfi.antennas,
+  ...hummingbird.antennas,
 }
 
 export const HotspotMakerModels = {
@@ -78,6 +81,7 @@ export const HotspotMakerModels = {
   ...pisces.hotspots,
   ...controllino.hotspots,
   ...freedomfi.hotspots,
+  ...hummingbird.hotspots,
 }
 
 export type HotspotType = keyof typeof HotspotMakerModels
