@@ -22,7 +22,7 @@ import { fetchData } from './store/account/accountSlice'
 import BluetoothProvider from './providers/BluetoothProvider'
 import ConnectedHotspotProvider from './providers/ConnectedHotspotProvider'
 import * as Logger from './utils/logger'
-import { configChainVars } from './utils/appDataClient'
+import { configChainVars, updateClient } from './utils/appDataClient'
 import {
   fetchBlockHeight,
   fetchInitialData,
@@ -72,6 +72,10 @@ const App = () => {
     isRequestingPermission,
     isLocked,
   } = useSelector((state: RootState) => state.app)
+  const {
+    settingsLoaded,
+    settings: { network },
+  } = useSelector((state: RootState) => state.account)
 
   useSettingsRestore()
 
@@ -86,9 +90,19 @@ const App = () => {
 
   useMount(() => {
     dispatch(restoreAppSettings())
+  })
+
+  useEffect(() => {
+    if (!settingsLoaded || !network) return
+    updateClient(network)
+  }, [network, settingsLoaded])
+
+  useEffect(() => {
+    if (!settingsLoaded) return
+
     dispatch(fetchInitialData())
     configChainVars()
-  })
+  }, [dispatch, settingsLoaded])
 
   useEffect(() => {
     OneSignal.setAppId(Config.ONE_SIGNAL_APP_ID)
@@ -106,7 +120,7 @@ const App = () => {
     Logger.init()
   }, [dispatch])
 
-  // fetch feature flags for the app
+  // fetch feature flags and notifications for the app
   useEffect(() => {
     if (!isBackedUp) return
     dispatch(fetchFeatures())
@@ -148,13 +162,14 @@ const App = () => {
     const loggedInAndLoaded =
       isRestored &&
       isBackedUp &&
+      settingsLoaded &&
       fetchDataStatus !== 'pending' &&
       fetchDataStatus !== 'idle'
 
     if (loggedOut || loggedInAndLoaded) {
       await SplashScreen.hideAsync()
     }
-  }, [fetchDataStatus, isBackedUp, isRestored])
+  }, [fetchDataStatus, isBackedUp, isRestored, settingsLoaded])
 
   useEffect(() => {
     // Hide splash after 5 seconds, deal with the consequences?
@@ -166,18 +181,19 @@ const App = () => {
 
   // poll block height to update realtime data throughout the app
   useEffect(() => {
+    if (!settingsLoaded) return
     const interval = setInterval(() => {
       dispatch(fetchBlockHeight())
     }, 30000)
     return () => clearInterval(interval)
-  }, [dispatch])
+  }, [dispatch, settingsLoaded])
 
   // fetch account data when logged in and block changes (called whenever block height updates)
   useEffect(() => {
-    if (isBackedUp && blockHeight) {
+    if (isBackedUp && blockHeight && settingsLoaded) {
       dispatch(fetchData())
     }
-  }, [blockHeight, dispatch, isBackedUp])
+  }, [blockHeight, dispatch, isBackedUp, settingsLoaded])
 
   return (
     <ThemeProvider theme={theme}>

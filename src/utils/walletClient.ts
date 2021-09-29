@@ -19,6 +19,7 @@ const makeRequest = async (url: string, opts: RequestInit) => {
     const response = await fetch(route, {
       ...opts,
       headers: {
+        // TODO: add "network" setting to requests
         ...opts.headers,
         'Cache-Control': 'no-cache',
         'Content-Type': 'application/json',

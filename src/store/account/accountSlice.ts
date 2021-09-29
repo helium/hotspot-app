@@ -23,7 +23,7 @@ const boolKeys = [
   'showHiddenHotspots',
 ] as const
 type BooleanKey = typeof boolKeys[number]
-const stringKeys = ['hiddenAddresses'] as const
+const stringKeys = ['hiddenAddresses', 'network'] as const
 type StringKey = typeof stringKeys[number]
 
 export type AccountState = {
@@ -38,6 +38,7 @@ export type AccountState = {
     convertHntToCurrency?: boolean
     showHiddenHotspots?: boolean
     hiddenAddresses?: string
+    network?: string
   }
   settingsLoaded?: boolean
   settingsTransferRequired?: boolean
@@ -48,7 +49,7 @@ const initialState: AccountState = {
   activityChart: {} as Record<FilterType, ActivityChart>,
   activityChartRange: 'daily',
   rewardsSum: { loading: true } as CacheRecord<Sum>,
-  settings: {},
+  settings: { network: 'stakejoy' },
 }
 
 type AccountData = {
@@ -240,7 +241,11 @@ const accountSlice = createSlice({
     })
     builder.addCase(fetchAccountSettings.fulfilled, (state, { payload }) => {
       const settings = settingsBagToKeyValue(payload)
-      return { ...state, settings, settingsLoaded: true }
+      return {
+        ...state,
+        settings: { ...state.settings, ...settings },
+        settingsLoaded: true,
+      }
     })
     builder.addCase(
       transferAppSettingsToAccount.fulfilled,

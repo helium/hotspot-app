@@ -3,6 +3,7 @@ import Client, {
   Bucket,
   Hotspot,
   NaturalDate,
+  Network,
   PendingTransaction,
   PocReceiptsV1,
   ResourceList,
@@ -24,7 +25,23 @@ import { fromNow } from './timeUtils'
 import * as Logger from './logger'
 
 const MAX = 100000
-const client = new Client()
+let client = new Client(Network.stakejoy)
+
+const compareNetwork = (network: string) => {
+  return (
+    (network === 'stakejoy' && client.network === Network.stakejoy) ||
+    (network === 'mainnet' && client.network === Network.production)
+  )
+}
+
+export const updateClient = (network: string) => {
+  const isSame = compareNetwork(network)
+  if (!isSame) {
+    client = new Client(
+      network === 'mainnet' ? Network.production : Network.stakejoy,
+    )
+  }
+}
 
 const breadcrumbOpts = { type: 'HTTP Request', category: 'appDataClient' }
 
@@ -285,5 +302,3 @@ export const initFetchers = async () => {
     txnFetchers[key] = fetcher
   })
 }
-
-export default client
