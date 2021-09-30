@@ -27,6 +27,9 @@ import * as Logger from './logger'
 const MAX = 100000
 let client = new Client(Network.stakejoy)
 
+// Always read pending txns from mainnet
+const pendingTxnsClient = new Client(Network.production)
+
 const compareNetwork = (network: string) => {
   return (
     (network === 'stakejoy' && client.network === Network.stakejoy) ||
@@ -248,7 +251,7 @@ export const getAccountTxnsList = async (filterType: FilterType) => {
   if (!address) return
 
   if (filterType === 'pending') {
-    return client.account(address).pendingTransactions.list()
+    return pendingTxnsClient.account(address).pendingTransactions.list()
   }
 
   const params = { filterTypes: Filters[filterType] }
