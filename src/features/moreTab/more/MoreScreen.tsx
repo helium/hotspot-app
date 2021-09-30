@@ -46,6 +46,7 @@ import { EXPLORER_BASE_URL } from '../../../utils/config'
 import { SUPPORTED_LANGUAGUES } from '../../../utils/i18n/i18nTypes'
 import Articles from '../../../constants/articles'
 import useAlert from '../../../utils/useAlert'
+import validatorsSlice from '../../../store/validators/validatorsSlice'
 
 type Route = RouteProp<RootStackParamList & MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
@@ -204,6 +205,7 @@ const MoreScreen = () => {
             dispatch(accountSlice.actions.signOut())
             dispatch(activitySlice.actions.signOut())
             dispatch(hotspotsSlice.actions.signOut())
+            dispatch(validatorsSlice.actions.signOut())
             dispatch(connectedHotspotSlice.actions.signOut())
           },
         },
@@ -216,6 +218,18 @@ const MoreScreen = () => {
       changeLanguage(lng)
     },
     [changeLanguage],
+  )
+
+  const handleNetworkChange = useCallback(
+    (network: string) => {
+      dispatch(
+        updateSetting({
+          key: 'network',
+          value: network,
+        }),
+      )
+    },
+    [dispatch],
   )
 
   const handleIntervalSelected = useCallback(
@@ -330,6 +344,17 @@ const MoreScreen = () => {
             },
           },
           {
+            title: t('more.sections.app.network'),
+            value: account.settings.network,
+            select: {
+              items: [
+                { label: 'StakeJoy API', value: 'stakejoy' },
+                { label: 'Helium API', value: 'mainnet' },
+              ],
+              onValueSelect: handleNetworkChange,
+            },
+          },
+          {
             title: t('more.sections.app.enableHapticFeedback'),
             onToggle: handleHaptic,
             value: !app.isHapticDisabled,
@@ -361,29 +386,24 @@ const MoreScreen = () => {
   }, [
     t,
     handlePinRequired,
-    app.isPinRequired,
-    app.isHapticDisabled,
-    app.authInterval,
-    app.isPinRequiredForPayment,
-    app.isDeployModeEnabled,
-    showingDeployModeConfirmation,
-    setShowingDeployModeConfirmation,
-    showHiddenHotspots,
+    app,
     handleRevealWords,
     language,
     handleLanguageChange,
+    account,
+    handleNetworkChange,
     handleHaptic,
     handleConvertHntToCurrency,
-    account.settings.convertHntToCurrency,
-    account.settings.isFleetModeEnabled,
     handleFleetMode,
     handleShowHiddenHotspots,
+    showHiddenHotspots,
     handleSignOut,
     version,
     authIntervals,
     handleIntervalSelected,
     handleResetPin,
     handlePinRequiredForPayment,
+    showingDeployModeConfirmation,
   ])
 
   const contentContainer = useMemo(

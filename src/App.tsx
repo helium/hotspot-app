@@ -22,7 +22,7 @@ import { fetchData } from './store/account/accountSlice'
 import BluetoothProvider from './providers/BluetoothProvider'
 import ConnectedHotspotProvider from './providers/ConnectedHotspotProvider'
 import * as Logger from './utils/logger'
-import { configChainVars, updateClient } from './utils/appDataClient'
+import { configChainVars } from './utils/appDataClient'
 import {
   fetchBlockHeight,
   fetchInitialData,
@@ -72,10 +72,7 @@ const App = () => {
     isRequestingPermission,
     isLocked,
   } = useSelector((state: RootState) => state.app)
-  const {
-    settingsLoaded,
-    settings: { network },
-  } = useSelector((state: RootState) => state.account)
+  const { settingsLoaded } = useSelector((state: RootState) => state.account)
 
   useSettingsRestore()
 
@@ -91,11 +88,6 @@ const App = () => {
   useMount(() => {
     dispatch(restoreAppSettings())
   })
-
-  useEffect(() => {
-    if (!settingsLoaded || !network) return
-    updateClient(network)
-  }, [network, settingsLoaded])
 
   useEffect(() => {
     if (!settingsLoaded) return

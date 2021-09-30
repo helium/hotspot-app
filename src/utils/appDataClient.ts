@@ -37,12 +37,13 @@ const compareNetwork = (network: string) => {
   )
 }
 
-export const updateClient = (network: string) => {
-  const isSame = compareNetwork(network)
+export const updateClient = (nextNetwork: string) => {
+  const isSame = compareNetwork(nextNetwork)
   if (!isSame) {
-    client = new Client(
-      network === 'mainnet' ? Network.production : Network.stakejoy,
-    )
+    const network =
+      nextNetwork === 'mainnet' ? Network.production : Network.stakejoy
+    client = new Client(network)
+    initFetchers()
   }
 }
 
