@@ -27,13 +27,13 @@ import * as Logger from './logger'
 const MAX = 100000
 let client = new Client(Network.stakejoy)
 
-// Always read pending txns from mainnet
+// Always read pending txns from helium
 const pendingTxnsClient = new Client(Network.production)
 
 const compareNetwork = (network: string) => {
   return (
     (network === 'stakejoy' && client.network === Network.stakejoy) ||
-    (network === 'mainnet' && client.network === Network.production)
+    (network === 'helium' && client.network === Network.production)
   )
 }
 
@@ -41,7 +41,7 @@ export const updateClient = (nextNetwork: string) => {
   const isSame = compareNetwork(nextNetwork)
   if (!isSame) {
     const network =
-      nextNetwork === 'mainnet' ? Network.production : Network.stakejoy
+      nextNetwork === 'helium' ? Network.production : Network.stakejoy
     client = new Client(network)
     initFetchers()
   }

@@ -349,7 +349,7 @@ const MoreScreen = () => {
             select: {
               items: [
                 { label: 'StakeJoy API', value: 'stakejoy' },
-                { label: 'Helium API', value: 'mainnet' },
+                { label: 'Helium API', value: 'helium' },
               ],
               onValueSelect: handleNetworkChange,
             },
