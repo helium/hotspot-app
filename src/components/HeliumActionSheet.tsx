@@ -87,7 +87,7 @@ const HeliumActionSheet = ({
       return initialValue
     }
     const item = data.find((d) => d.value === selectedValue)
-    return item?.label || ''
+    return item?.labelShort || item?.label || ''
   }, [data, initialValue, selectedValue])
 
   const selected = useCallback(

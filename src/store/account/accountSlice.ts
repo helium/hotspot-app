@@ -12,6 +12,7 @@ import {
   hasValidCache,
 } from '../../utils/cacheUtils'
 import { getSecureItem } from '../../utils/secureAccount'
+import { currencyType } from '../../utils/i18n'
 
 export type ChartRangeData = { data: ChartData[]; loading: Loading }
 type ActivityChart = Record<ChartRange, ChartRangeData>
@@ -23,7 +24,7 @@ const boolKeys = [
   'showHiddenHotspots',
 ] as const
 type BooleanKey = typeof boolKeys[number]
-const stringKeys = ['hiddenAddresses', 'network'] as const
+const stringKeys = ['hiddenAddresses', 'network', 'currencyType'] as const
 type StringKey = typeof stringKeys[number]
 
 export type AccountState = {
@@ -39,6 +40,7 @@ export type AccountState = {
     showHiddenHotspots?: boolean
     hiddenAddresses?: string
     network?: string
+    currencyType?: string
   }
   settingsLoaded?: boolean
   settingsTransferRequired?: boolean
@@ -49,7 +51,7 @@ const initialState: AccountState = {
   activityChart: {} as Record<FilterType, ActivityChart>,
   activityChartRange: 'daily',
   rewardsSum: { loading: true } as CacheRecord<Sum>,
-  settings: { network: 'stakejoy' },
+  settings: { network: 'stakejoy', currencyType },
 }
 
 type AccountData = {
