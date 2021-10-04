@@ -47,6 +47,7 @@ import { SUPPORTED_LANGUAGUES } from '../../../utils/i18n/i18nTypes'
 import Articles from '../../../constants/articles'
 import useAlert from '../../../utils/useAlert'
 import validatorsSlice from '../../../store/validators/validatorsSlice'
+import { SUPPORTED_CURRENCIES } from '../../../utils/useCurrency'
 
 type Route = RouteProp<RootStackParamList & MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
@@ -232,6 +233,18 @@ const MoreScreen = () => {
     [dispatch],
   )
 
+  const handleCurrencyTypeChange = useCallback(
+    (currencyType: string) => {
+      dispatch(
+        updateSetting({
+          key: 'currencyType',
+          value: currencyType,
+        }),
+      )
+    },
+    [dispatch],
+  )
+
   const handleIntervalSelected = useCallback(
     (value: ReactText) => {
       const number = typeof value === 'number' ? value : parseInt(value, 10)
@@ -344,6 +357,20 @@ const MoreScreen = () => {
             },
           },
           {
+            title: t('more.sections.app.currency'),
+            value: account.settings.currencyType,
+            select: {
+              items: Object.keys(SUPPORTED_CURRENCIES).map((p) => {
+                return {
+                  label: `${p} ${SUPPORTED_CURRENCIES[p]}`,
+                  labelShort: p,
+                  value: p,
+                }
+              }),
+              onValueSelect: handleCurrencyTypeChange,
+            },
+          },
+          {
             title: t('more.sections.app.network'),
             value: account.settings.network,
             select: {
@@ -386,11 +413,19 @@ const MoreScreen = () => {
   }, [
     t,
     handlePinRequired,
-    app,
+    app.isPinRequired,
+    app.isDeployModeEnabled,
+    app.isHapticDisabled,
+    app.authInterval,
+    app.isPinRequiredForPayment,
     handleRevealWords,
     language,
     handleLanguageChange,
-    account,
+    account.settings.currencyType,
+    account.settings.network,
+    account.settings.convertHntToCurrency,
+    account.settings.isFleetModeEnabled,
+    handleCurrencyTypeChange,
     handleNetworkChange,
     handleHaptic,
     handleConvertHntToCurrency,

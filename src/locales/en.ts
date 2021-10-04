@@ -593,6 +593,7 @@ export default {
         showHiddenHotspots: 'Show Hidden Hotspots',
         convertHntToCurrency: 'Convert HNT to Currency',
         language: 'Language',
+        currency: 'Currency',
         network: 'Choose API Provider',
         signOut: 'Sign Out',
         signOutAlert: {

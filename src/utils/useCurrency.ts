@@ -9,8 +9,56 @@ import { OraclePrice } from '@helium/http'
 import { fetchCurrentOraclePrice } from '../store/helium/heliumDataSlice'
 import { RootState } from '../store/rootReducer'
 import { useAppDispatch } from '../store/store'
-import { currencyType, decimalSeparator, groupSeparator, locale } from './i18n'
+import {
+  currencyType as defaultCurrencyType,
+  decimalSeparator,
+  groupSeparator,
+  locale,
+} from './i18n'
 import { updateSetting } from '../store/account/accountSlice'
+
+export const SUPPORTED_CURRENCIES = {
+  AED: 'United Arab Emirates Dirham',
+  ARS: 'Argentine Peso',
+  AUD: 'Australian Dollar',
+  BDT: 'Bangladeshi Taka',
+  BHD: 'Bahraini Dinar',
+  BMD: 'Bermudian Dollar',
+  BRL: 'Brazil Real',
+  CAD: 'Canadian Dollar',
+  CHF: 'Swiss Franc',
+  CLP: 'Chilean Peso',
+  CZK: 'Czech Koruna',
+  DKK: 'Danish Krone',
+  EUR: 'Euro',
+  GBP: 'British Pound Sterling',
+  HKD: 'Hong Kong Dollar',
+  HUF: 'Hungarian Forint',
+  ILS: 'Israeli New Shekel',
+  INR: 'Indian Rupee',
+  KWD: 'Kuwaiti Dinar',
+  LKR: 'Sri Lankan Rupee',
+  MMK: 'Burmese Kyat',
+  MXN: 'Mexican Peso',
+  MYR: 'Malaysian Ringgit',
+  NGN: 'Nigerian Naira',
+  NOK: 'Norwegian Krone',
+  NZD: 'New Zealand Dolloar',
+  PHP: 'Philippine Peso',
+  PKR: 'Pakistani Rupee',
+  PLN: 'Polish Zloty',
+  SAR: 'Saudi Riyal',
+  SEK: 'Swedish Krona',
+  SGD: 'Singapore Dollar',
+  THB: 'Thai Baht',
+  TRY: 'Turkish Lira',
+  UAH: 'Ukrainian hryvnia',
+  USD: 'United States Dollar',
+  VEF: 'Venezuelan bolívar fuerte',
+  VND: 'Vietnamese đồng',
+  XDR: 'IMF Special Drawing Rights',
+  ZAR: 'South African Rand',
+} as Record<string, string>
 
 const useCurrency = () => {
   const { t } = useTranslation()
@@ -19,6 +67,9 @@ const useCurrency = () => {
     (state: RootState) => state.heliumData.currentPrices,
     isEqual,
   )
+  const currencyType =
+    useSelector((state: RootState) => state.account.settings.currencyType) ||
+    defaultCurrencyType
 
   const convert = useSelector(
     (state: RootState) => state.account.settings.convertHntToCurrency,
@@ -30,13 +81,16 @@ const useCurrency = () => {
     [convert, dispatch],
   )
 
-  const formatCurrency = useCallback(async (value: number) => {
-    const formattedCurrency = await CurrencyFormatter.format(
-      value,
-      currencyType,
-    )
-    return formattedCurrency
-  }, [])
+  const formatCurrency = useCallback(
+    async (value: number) => {
+      const formattedCurrency = await CurrencyFormatter.format(
+        value,
+        currencyType,
+      )
+      return formattedCurrency
+    },
+    [currencyType],
+  )
 
   const toggleConvertHntToCurrency = useDebouncedCallback(toggle, 700, {
     leading: true,
@@ -64,7 +118,7 @@ const useCurrency = () => {
       const convertedValue = multiplier * amount
       return formatCurrency(convertedValue)
     },
-    [convert, currentPrices, formatCurrency],
+    [convert, currencyType, currentPrices, formatCurrency],
   )
 
   type StringReturn = (
@@ -121,7 +175,7 @@ const useCurrency = () => {
       }
       return formattedValue
     },
-    [convert, currentPrices, formatCurrency, t],
+    [convert, currencyType, currentPrices, formatCurrency, t],
   ) as StringReturn & PartsReturn
 
   return {
