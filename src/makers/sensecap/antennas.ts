@@ -10,4 +10,9 @@ const SENSECAP_EU = {
   gain: 2.8,
 } as MakerAntenna
 
-export default { SENSECAP_US, SENSECAP_EU }
+const SENSECAP_AU = {
+  name: 'SenseCAP M1 (AU 915)',
+  gain: 2.6,
+} as MakerAntenna
+
+export default { SENSECAP_US, SENSECAP_EU, SENSECAP_AU }
