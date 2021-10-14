@@ -114,7 +114,7 @@ const SendForm = ({
       </ScrollView>
       {hasValidActivity === false && (
         <Text
-          variant="body3"
+          variant="body2"
           color="redMedium"
           marginVertical="s"
           textAlign="center"

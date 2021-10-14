@@ -507,7 +507,7 @@ export default {
     button: {
       payment: 'Send HNT',
       dcBurn: 'Burn HNT',
-      transfer_request: 'Send Transfer Request',
+      transfer_request: 'Transfer Hotspot',
       transfer_complete: 'Complete Transfer',
     },
     qrInfo: 'QR INFO',
@@ -517,7 +517,7 @@ export default {
     last_activity: 'LAST REPORTED ACTIVITY: {{activity}}',
     label_error: 'You do not have enough HNT in your account.',
     stale_error:
-      'Hotspot has not had Beacon or Witness activity in the last {{blocks}} blocks.',
+      'Hotspot has not participated in Proof-of-Coverage in the last {{blocks}} blocks. Unable to proceed with transfer.',
     scan: {
       title: 'Ways to use a QR Code',
       send: 'Send HNT',
@@ -1019,7 +1019,7 @@ export default {
     canceled_alert_body:
       'This transfer is no longer active. Please contact the seller for more information.',
     fine_print:
-      'Hotspot will transfer once the buyer accepts and completes the transaction.',
+      'Hotspot will transfer immediately. Buyer acceptance not required.',
     notification_button: 'View Transaction',
     deployModeTransferDisableTitle: 'Transfer Hotspot Disabled',
     deployModeTransferDisabled:

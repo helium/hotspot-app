@@ -1533,10 +1533,10 @@
     react-native-sodium "^0.3.8"
     safe-buffer "^5.2.1"
 
-"@helium/crypto@^3.24.0":
-  version "3.24.0"
-  resolved "https://registry.yarnpkg.com/@helium/crypto/-/crypto-3.24.0.tgz#5aa88945a0c646ae5f38e5bd8560a5fd18ee2157"
-  integrity sha512-XUk2oJOEPYx5LN+NyNw1Y/jhIum+NaZEeZLjvqNAtgEqgVlEkPKcZNc1vJwb7r1qftY92O6P0owRTC2vhexmUg==
+"@helium/crypto@^3.38.0":
+  version "3.38.0"
+  resolved "https://registry.yarnpkg.com/@helium/crypto/-/crypto-3.38.0.tgz#b321f9a42b0e6144eb2044f0d05f6874d731fa85"
+  integrity sha512-dvmVaeTsk+05nBhbeqqWu0nugCeCrdX9A61YNxNxnb5NWYW6cAuIOuzutgTjr3v4MxZPtLEVyH9g8eWTQuCsug==
   dependencies:
     bs58 "^4.0.1"
     create-hash "^1.2.0"
@@ -1567,20 +1567,19 @@
   dependencies:
     protobufjs "^6.8.9"
 
-"@helium/proto@^1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@helium/proto/-/proto-1.4.0.tgz#7a0ce268642173966519c2fb5f6e57508bff76d1"
-  integrity sha512-0yzzwfwpygowZNqB/9+vI/0gq5TV55ALAUqVuX6TbZZd9DGv4+AHICLiaIandLBBmNPpFzJ0c/IBdBcHJS/g1w==
+"@helium/proto@^1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@helium/proto/-/proto-1.5.0.tgz#bf42fad97d46c3e08653176dcf93b0d6b9633212"
+  integrity sha512-dP3M6rApsNG0fl7IZgYu0R0kxEbhZ/z6BhBoYdmCQDyX9FX+kNlzuPWMji4P9jUFcAs7UAXTZLHR5XATJifVPw==
   dependencies:
     protobufjs "^6.8.9"
 
-"@helium/transactions@^3.34.0":
-  version "3.34.0"
-  resolved "https://registry.yarnpkg.com/@helium/transactions/-/transactions-3.34.0.tgz#2c568c2cbd67a8bf0e097d2f0e52f9270e6d8eac"
-  integrity sha512-7ICGl56FGQi8SllnbpTzpoGzQuy4NYMQMs2XjgxXXlcAVjt/y444+zBQ8OKhrUyr76a0PELFplNc/eidCiWJgQ==
+"@helium/transactions@file:../helium-js/packages/transactions/helium-transactions-v3.38.0-test.1.tgz":
+  version "3.38.0-test.1"
+  resolved "file:../helium-js/packages/transactions/helium-transactions-v3.38.0-test.1.tgz#82f46392a859895305cda468acce3bc37c4c229d"
   dependencies:
-    "@helium/crypto" "^3.24.0"
-    "@helium/proto" "^1.4.0"
+    "@helium/crypto" "^3.38.0"
+    "@helium/proto" "^1.5.0"
     "@types/libsodium-wrappers" "^0.7.8"
     long "^4.0.0"
     path "^0.12.7"

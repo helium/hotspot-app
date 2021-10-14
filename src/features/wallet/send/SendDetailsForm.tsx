@@ -371,39 +371,28 @@ const SendDetailsForm = ({
   )
 
   const renderSellerTransferForm = () => (
-    <>
-      <InputField
-        defaultValue={address}
-        onChange={setAddress}
-        label={t('send.address.label_transfer')}
-        placeholder={t('send.address.placeholder')}
-        extra={
-          Address.isValid(address) ? (
-            <Box padding="s" position="absolute" right={0}>
-              <Check />
-            </Box>
-          ) : (
-            <TouchableOpacityBox
-              onPress={onScanPress}
-              padding="s"
-              position="absolute"
-              right={0}
-            >
-              <QrCode width={16} color={primaryMain} />
-            </TouchableOpacityBox>
-          )
-        }
-      />
-      <InputField
-        type="decimal-pad"
-        defaultValue={amount}
-        onChange={setFormAmount}
-        value={amount}
-        numberOfLines={2}
-        label={t('send.amount.label_transfer')}
-        placeholder={t('send.amount.placeholder_transfer')}
-      />
-    </>
+    <InputField
+      defaultValue={address}
+      onChange={setAddress}
+      label={t('send.address.label_transfer')}
+      placeholder={t('send.address.placeholder')}
+      extra={
+        Address.isValid(address) ? (
+          <Box padding="s" position="absolute" right={0}>
+            <Check />
+          </Box>
+        ) : (
+          <TouchableOpacityBox
+            onPress={onScanPress}
+            padding="s"
+            position="absolute"
+            right={0}
+          >
+            <QrCode width={16} color={primaryMain} />
+          </TouchableOpacityBox>
+        )
+      }
+    />
   )
 
   const renderBuyerTransferForm = () => (

@@ -33,18 +33,18 @@ import {
   makeBurnTxn,
   makeBuyerTransferHotspotTxn,
   makePaymentTxn,
-  makeSellerTransferHotspotTxn,
   getMemoBytesLeft,
+  makeTransferV2Txn,
 } from '../../../utils/transactions'
 import {
   getAccount,
   getChainVars,
+  getHotspotDetails,
   getHotspotsLastChallengeActivity,
 } from '../../../utils/appDataClient'
 import * as Logger from '../../../utils/logger'
 import TransferBanner from '../../hotspots/transfers/TransferBanner'
 import {
-  createTransfer,
   deleteTransfer,
   getTransfer,
   Transfer,
@@ -385,37 +385,22 @@ const SendView = ({
   }
 
   const handleSellerTransfer = useCallback(async () => {
-    const { address, balanceAmount } = sendDetails[0]
-    const seller = await getAddress()
-    if (!hotspotAddress || !seller) {
-      throw new Error('missing hotspot or seller for transfer')
+    const { address } = sendDetails[0]
+    const owner = await getAddress()
+    if (!hotspotAddress || !owner) {
+      throw new Error('TransferV2: missing hotspot or seller for transfer')
     }
-    const partialTxn = await makeSellerTransferHotspotTxn(
+    const gateway = await getHotspotDetails(hotspotAddress)
+    if (!gateway?.speculativeNonce) {
+      throw new Error('TransferV2: missing gateway speculativeNonce')
+    }
+    return makeTransferV2Txn(
       hotspotAddress,
+      owner,
       address,
-      seller,
-      balanceAmount.integerBalance,
+      gateway.speculativeNonce,
     )
-    if (!partialTxn) {
-      Alert.alert(t('generic.error'), t('send.error'))
-      throw new Error('failed to create seller TransferHotspotV1 transaction')
-    }
-    const transfer = await createTransfer(
-      hotspotAddress,
-      seller?.b58,
-      address,
-      partialTxn.toString(),
-      balanceAmount.integerBalance,
-    )
-    if (!transfer) {
-      Alert.alert(
-        t('transfer.exists_alert_title'),
-        t('transfer.exists_alert_body'),
-      )
-      throw new Error('transfer already exists')
-    }
-    return undefined
-  }, [sendDetails, hotspotAddress, t])
+  }, [sendDetails, hotspotAddress])
 
   const checkTransferAmountChanged = useCallback(
     (transfer: Transfer) => {
@@ -580,10 +565,10 @@ const SendView = ({
       </Box>
       {isSeller && (
         <Text
-          variant="body3"
+          variant="body2"
           color="gray"
           paddingBottom="xl"
-          paddingHorizontal="l"
+          paddingHorizontal="xl"
           textAlign="center"
         >
           {t('transfer.fine_print')}
