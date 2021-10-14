@@ -10,7 +10,7 @@ import { Pressable } from 'react-native'
 import Box from './Box'
 import Text from './Text'
 import useCurrency from '../utils/useCurrency'
-import { isRelay } from '../utils/hotspotUtils'
+import { isDataOnly, isRelay } from '../utils/hotspotUtils'
 import HexBadge from '../features/hotspots/details/HexBadge'
 import { useColors } from '../theme/themeHooks'
 import Signal from '../assets/images/signal.svg'
@@ -75,9 +75,9 @@ const HotspotListItem = ({
   ])
 
   const statusBackgroundColor = useMemo(() => {
-    if (hidden) return 'grayLightText'
+    if (hidden || isDataOnly(gateway)) return 'grayLightText'
     return gateway.status?.online === 'online' ? 'greenOnline' : 'yellow'
-  }, [hidden, gateway.status?.online])
+  }, [hidden, gateway])
 
   return (
     <Box marginBottom="xxs">

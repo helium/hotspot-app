@@ -539,6 +539,7 @@ const HotspotDetails = ({
                 hotspotId={hotspot.address}
                 rewardScale={hotspot.rewardScale}
                 backgroundColor="grayBoxLight"
+                visible={!isDataOnly(hotspot)}
               />
             </Box>
           </Box>
