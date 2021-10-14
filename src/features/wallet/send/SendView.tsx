@@ -38,7 +38,6 @@ import {
 } from '../../../utils/transactions'
 import {
   getAccount,
-  getChainVars,
   getHotspotDetails,
   getHotspotsLastChallengeActivity,
 } from '../../../utils/appDataClient'
@@ -64,6 +63,7 @@ import {
   AppLinkCategoryType,
 } from '../../../providers/appLinkTypes'
 import { MainTabNavigationProp } from '../../../navigation/main/tabTypes'
+import { isDataOnly } from '../../../utils/hotspotUtils'
 
 type Props = {
   scanResult?: AppLink
@@ -156,8 +156,14 @@ const SendView = ({
 
   useAsync(async () => {
     if (type === 'transfer' && hotspotAddress && blockHeight) {
-      const chainVars = await getChainVars()
-      const staleBlockCount = chainVars.transferHotspotStalePocBlocks as number
+      const gateway = await getHotspotDetails(hotspotAddress)
+      if (isDataOnly(gateway)) {
+        setLastReportedActivity('')
+        setHasValidActivity(true)
+        setStalePocBlockCount(0)
+        return
+      }
+      const staleBlockCount = 1500
       const reportedActivity = await getHotspotsLastChallengeActivity(
         hotspotAddress,
       )
