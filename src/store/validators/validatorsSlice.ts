@@ -42,6 +42,7 @@ export type WalletValidator = Validator & {
 }
 export type ValidatorsSliceState = {
   validators: CacheRecord<{ data: Validator[] }>
+  validatorsObj: Record<string, Validator>
   walletValidators: Record<string, CacheRecord<WalletValidator>>
   networkValidators: Record<string, CacheRecord<Validator>>
   electedValidators: CacheRecord<{ data: Validator[] }>
@@ -59,6 +60,7 @@ const initialState: ValidatorsSliceState = {
   myValidatorsLoaded: false,
   followedValidatorsLoaded: false,
   validators: { lastFetchedTimestamp: 0, loading: false, data: [] },
+  validatorsObj: {},
   walletValidators: {},
   networkValidators: {},
   electedValidators: { lastFetchedTimestamp: 0, loading: false, data: [] },
@@ -224,6 +226,7 @@ const validatorsSlice = createSlice({
       state.validators.loading = true
     })
     builder.addCase(fetchMyValidators.fulfilled, (state, action) => {
+      state.validatorsObj = validatorsToObj(action.payload)
       state.validators = handleCacheFulfilled({ data: action.payload })
       state.myValidatorsLoaded = true
     })

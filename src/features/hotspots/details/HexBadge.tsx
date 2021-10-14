@@ -7,10 +7,10 @@ import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { decimalSeparator, locale } from '../../../utils/i18n'
 import { useColors } from '../../../theme/themeHooks'
 import { generateRewardScaleColor } from '../../../utils/hotspotUtils'
-import Articles from '../../../constants/articles'
 import { Colors } from '../../../theme/theme'
 
 type Props = {
+  hotspotId?: string
   rewardScale?: number
   pressable?: boolean
   badge?: boolean
@@ -19,6 +19,7 @@ type Props = {
   hitSlop?: Insets
 }
 const HexBadge = ({
+  hotspotId,
   rewardScale,
   pressable = true,
   backgroundColor,
@@ -40,13 +41,15 @@ const HexBadge = ({
           text: t('generic.readMore'),
           style: 'cancel',
           onPress: () => {
-            if (Linking.canOpenURL(Articles.Reward_Scaling))
-              Linking.openURL(Articles.Reward_Scaling)
+            const url = `https://app.hotspotty.net/hotspots/${hotspotId}/reward-scaling`
+            if (Linking.canOpenURL(url)) {
+              Linking.openURL(url)
+            }
           },
         },
       ],
     )
-  }, [t])
+  }, [hotspotId, t])
 
   const color = useMemo(() => {
     if (!rewardScale) return 'white'

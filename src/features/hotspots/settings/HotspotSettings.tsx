@@ -93,7 +93,10 @@ const HotspotSettings = ({ hotspot }: Props) => {
   const { permissionResponse, locationBlocked } = useSelector(
     (state: RootState) => state.location,
   )
-  const { showOKCancelAlert } = useAlert()
+  const isDeployModeEnabled = useSelector(
+    (state: RootState) => state.app.isDeployModeEnabled,
+  )
+  const { showOKAlert, showOKCancelAlert } = useAlert()
 
   const dataOnly = useMemo(() => isDataOnly(hotspot), [hotspot])
 
@@ -218,15 +221,22 @@ const HotspotSettings = ({ hotspot }: Props) => {
           },
         ],
       )
+    } else if (isDeployModeEnabled) {
+      showOKAlert({
+        titleKey: 'transfer.deployModeTransferDisableTitle',
+        messageKey: 'transfer.deployModeTransferDisabled',
+      })
     } else {
       setNextState('transfer')
     }
   }, [
+    isDeployModeEnabled,
     activeTransfer?.buyer,
     activeTransfer?.gateway,
     cancelTransfer,
     hasActiveTransfer,
     setNextState,
+    showOKAlert,
     t,
   ])
 

@@ -3,6 +3,7 @@ import { useNavigation } from '@react-navigation/native'
 import { useAsync } from 'react-async-hook'
 import { StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import Box from '../../../components/Box'
@@ -11,11 +12,21 @@ import Crosshair from './Crosshair'
 import { wp } from '../../../utils/layout'
 import Close from '../../../assets/images/close.svg'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import useAlert from '../../../utils/useAlert'
 import useHaptic from '../../../utils/useHaptic'
 import BSHandle from '../../../components/BSHandle'
 import { useSpacing } from '../../../theme/themeHooks'
-import { useAppLinkContext } from '../../../providers/AppLinkProvider'
-import { AppLinkCategoryType } from '../../../providers/appLinkTypes'
+import {
+  useAppLinkContext,
+  AddressType,
+  InvalidAddressError,
+  MismatchedAddressError,
+} from '../../../providers/AppLinkProvider'
+import {
+  AppLinkCategoryType,
+  AppLinkLocation,
+} from '../../../providers/appLinkTypes'
+import { RootState } from '../../../store/rootReducer'
 
 type Props = {
   scanType?: AppLinkCategoryType
@@ -24,9 +35,11 @@ type Props = {
 const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
   const { t } = useTranslation()
   const { triggerNavHaptic, triggerNotification } = useHaptic()
+  const { showOKAlert } = useAlert()
   const [scanned, setScanned] = useState(false)
   const navigation = useNavigation()
   const spacing = useSpacing()
+  const hotspots = useSelector((state: RootState) => state.hotspots.hotspots)
 
   const { handleBarCode } = useAppLinkContext()
 
@@ -52,19 +65,52 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
     if (scanned) return
 
     try {
-      await handleBarCode(result, scanType)
+      await handleBarCode(result, scanType, undefined, (scanResult) => {
+        if (scanResult.type === 'hotspot_location') {
+          const { hotspotAddress } = scanResult as AppLinkLocation
+          const hotspot = hotspots.find((h) => h.address === hotspotAddress)
+          if (!hotspot) throw new InvalidAddressError()
+        }
+      })
 
       setScanned(true)
       triggerNotification('success')
     } catch (error) {
-      handleFailedScan()
+      handleFailedScan(error)
     }
   }
 
-  const handleFailedScan = () => {
+  const handleFailedScan = async (error: Error) => {
     setScanned(true)
     setTimeout(() => setScanned(false), 2000)
-    triggerNotification('error')
+    const isInvalidHotspotAddress =
+      error instanceof InvalidAddressError &&
+      error.addressType === AddressType.HotspotAddress
+    const isInvalidSender =
+      error instanceof InvalidAddressError &&
+      error.addressType === AddressType.SenderAddress
+    const isMismatchedSender =
+      error instanceof MismatchedAddressError &&
+      error.addressType === AddressType.SenderAddress
+    if (isInvalidSender) {
+      await showOKAlert({
+        titleKey: 'send.scan.parse_code_error',
+        messageKey: 'send.scan.invalid_sender_address',
+      })
+    } else if (isMismatchedSender) {
+      await showOKAlert({
+        titleKey: 'send.scan.parse_code_error',
+        messageKey: 'send.scan.mismatched_sender_address',
+      })
+    } else if (isInvalidHotspotAddress) {
+      await showOKAlert({
+        titleKey: 'send.scan.parse_code_error',
+        messageKey: 'send.scan.invalid_hotspot_address',
+      })
+    } else {
+      // Default to haptic error notification
+      triggerNotification('error')
+    }
   }
 
   if (!permissions) {

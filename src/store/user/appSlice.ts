@@ -12,6 +12,8 @@ import { Intervals } from '../../features/moreTab/more/useAuthIntervals'
 export type AppState = {
   isBackedUp: boolean
   isHapticDisabled: boolean
+  isDeployModeEnabled: boolean
+  permanentPaymentAddress: string
   isSettingUpHotspot: boolean
   isRestored: boolean
   isPinRequired: boolean
@@ -24,6 +26,8 @@ export type AppState = {
 const initialState: AppState = {
   isBackedUp: false,
   isHapticDisabled: false,
+  isDeployModeEnabled: false,
+  permanentPaymentAddress: '',
   isSettingUpHotspot: false,
   isRestored: false,
   isPinRequired: false,
@@ -38,6 +42,8 @@ type Restore = {
   isBackedUp: boolean
   isPinRequired: boolean
   isPinRequiredForPayment: boolean
+  isDeployModeEnabled: boolean
+  permanentPaymentAddress: string
   authInterval: number
   isLocked: boolean
   isHapticDisabled: boolean
@@ -53,6 +59,8 @@ export const restoreAppSettings = createAsyncThunk<Restore>(
       authInterval,
       isHapticDisabled,
       address,
+      isDeployModeEnabled,
+      permanentPaymentAddress,
     ] = await Promise.all([
       getSecureItem('accountBackedUp'),
       getSecureItem('requirePin'),
@@ -60,6 +68,8 @@ export const restoreAppSettings = createAsyncThunk<Restore>(
       getSecureItem('authInterval'),
       getSecureItem('hapticDisabled'),
       getSecureItem('address'),
+      getSecureItem('deployModeEnabled'),
+      getSecureItem('permanentPaymentAddress'),
     ])
 
     if (isBackedUp && address) {
@@ -75,6 +85,8 @@ export const restoreAppSettings = createAsyncThunk<Restore>(
         : Intervals.IMMEDIATELY,
       isLocked: isPinRequired,
       isHapticDisabled,
+      isDeployModeEnabled,
+      permanentPaymentAddress,
     } as Restore
   },
 )
@@ -101,6 +113,14 @@ const appSlice = createSlice({
     requirePinForPayment: (state, action: PayloadAction<boolean>) => {
       state.isPinRequiredForPayment = action.payload
       setSecureItem('requirePinForPayment', action.payload)
+    },
+    enableDeployMode: (state, action: PayloadAction<boolean>) => {
+      state.isDeployModeEnabled = action.payload
+      setSecureItem('deployModeEnabled', action.payload)
+    },
+    setPermanentPaymentAddress: (state, action: PayloadAction<string>) => {
+      state.permanentPaymentAddress = action.payload
+      setSecureItem('permanentPaymentAddress', action.payload)
     },
     updateHapticEnabled: (state, action: PayloadAction<boolean>) => {
       state.isHapticDisabled = action.payload

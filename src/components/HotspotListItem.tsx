@@ -18,7 +18,7 @@ import VisibilityOff from '../assets/images/visibility_off.svg'
 
 type HotspotListItemProps = {
   onPress?: (hotspot: Hotspot) => void
-  hotspot: Hotspot
+  gateway: Hotspot
   totalReward?: Balance<NetworkTokens>
   showCarot?: boolean
   loading?: boolean
@@ -33,7 +33,7 @@ type HotspotListItemProps = {
 
 const HotspotListItem = ({
   onPress,
-  hotspot,
+  gateway,
   totalReward,
   loading = false,
   showCarot = false,
@@ -48,7 +48,7 @@ const HotspotListItem = ({
   const { t } = useTranslation()
   const colors = useColors()
   const { toggleConvertHntToCurrency, hntBalanceToDisplayVal } = useCurrency()
-  const handlePress = useCallback(() => onPress?.(hotspot), [hotspot, onPress])
+  const handlePress = useCallback(() => onPress?.(gateway), [gateway, onPress])
   const [reward, setReward] = useState('')
 
   const updateReward = useCallback(async () => {
@@ -63,21 +63,21 @@ const HotspotListItem = ({
   }, [updateReward])
 
   const locationText = useMemo(() => {
-    const { geocode: geo } = hotspot
+    const { geocode: geo } = gateway as Hotspot
     if (!geo || (!geo.longStreet && !geo.longCity && !geo.shortCountry)) {
       return t('hotspot_details.no_location_title')
     }
     return `${geo.longStreet}, ${geo.longCity}, ${geo.shortCountry}`
-  }, [hotspot, t])
+  }, [gateway, t])
 
-  const isRelayed = useMemo(() => isRelay(hotspot?.status?.listenAddrs), [
-    hotspot?.status,
+  const isRelayed = useMemo(() => isRelay(gateway?.status?.listenAddrs), [
+    gateway?.status,
   ])
 
   const statusBackgroundColor = useMemo(() => {
     if (hidden) return 'grayLightText'
-    return hotspot.status?.online === 'online' ? 'greenOnline' : 'yellow'
-  }, [hidden, hotspot.status?.online])
+    return gateway.status?.online === 'online' ? 'greenOnline' : 'yellow'
+  }, [hidden, gateway.status?.online])
 
   return (
     <Box marginBottom="xxs">
@@ -108,7 +108,7 @@ const HotspotListItem = ({
                   numberOfLines={2}
                   maxWidth={220}
                 >
-                  {animalName(hotspot.address)}
+                  {animalName(gateway.address)}
                 </Text>
                 {hidden && <VisibilityOff height={10} width={10} />}
               </Box>
@@ -164,7 +164,8 @@ const HotspotListItem = ({
                 )}
                 {showRewardScale && (
                   <HexBadge
-                    rewardScale={hotspot.rewardScale}
+                    hotspotId={gateway.address}
+                    rewardScale={(gateway as Hotspot).rewardScale}
                     pressable={false}
                     badge={false}
                     fontSize={12}
@@ -180,17 +181,17 @@ const HotspotListItem = ({
                       marginLeft="xs"
                     >
                       {t('generic.meters', {
-                        distance: hotspot?.elevation || 0,
+                        distance: (gateway as Hotspot)?.elevation || 0,
                       })}
                     </Text>
-                    {hotspot?.gain !== undefined && (
+                    {(gateway as Hotspot)?.gain !== undefined && (
                       <Text
                         color="grayText"
                         variant="regular"
                         fontSize={12}
                         marginLeft="xs"
                       >
-                        {(hotspot.gain / 10).toFixed(1) +
+                        {(((gateway as Hotspot).gain || 0) / 10).toFixed(1) +
                           t('antennas.onboarding.dbi')}
                       </Text>
                     )}

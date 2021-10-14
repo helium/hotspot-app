@@ -30,6 +30,13 @@ const viewValidator = (address: string) => {
   })
 }
 
+const updateHotspotLocation = (params: {
+  hotspotAddress: string
+  location: { longitude: number; latitude: number }
+}) => {
+  navigationRef.current?.navigate('HotspotLocationUpdateScreen', params)
+}
+
 const confirmAddGateway = (addGatewayTxn: string) => {
   const params = {
     addGatewayTxn,
@@ -41,4 +48,11 @@ const confirmAddGateway = (addGatewayTxn: string) => {
   })
 }
 
-export default { lock, send, viewHotspot, viewValidator, confirmAddGateway }
+export default {
+  lock,
+  send,
+  viewHotspot,
+  viewValidator,
+  confirmAddGateway,
+  updateHotspotLocation,
+}

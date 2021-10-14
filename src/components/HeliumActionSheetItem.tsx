@@ -6,6 +6,7 @@ import TouchableOpacityBox from './TouchableOpacityBox'
 
 export type HeliumActionSheetItemType = {
   label: string
+  labelShort?: string
   value: string | number
   Icon?: React.FC<SvgProps>
   action?: () => void

@@ -1,4 +1,11 @@
-import React, { memo, ReactText, useCallback, useEffect, useMemo } from 'react'
+import React, {
+  memo,
+  ReactText,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, SectionList } from 'react-native'
 import { useSelector } from 'react-redux'
@@ -31,6 +38,7 @@ import Account from '../../../assets/images/account.svg'
 import Box from '../../../components/Box'
 import DiscordItem from './DiscordItem'
 import AppInfoItem from './AppInfoItem'
+import DeployModeModal from './DeployModeModal'
 import activitySlice from '../../../store/activity/activitySlice'
 import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
 import { useLanguageContext } from '../../../providers/LanguageProvider'
@@ -38,6 +46,8 @@ import { EXPLORER_BASE_URL } from '../../../utils/config'
 import { SUPPORTED_LANGUAGUES } from '../../../utils/i18n/i18nTypes'
 import Articles from '../../../constants/articles'
 import useAlert from '../../../utils/useAlert'
+import validatorsSlice from '../../../store/validators/validatorsSlice'
+import { SUPPORTED_CURRENCIES } from '../../../utils/useCurrency'
 
 type Route = RouteProp<RootStackParamList & MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
@@ -58,6 +68,10 @@ const MoreScreen = () => {
   const { changeLanguage, language } = useLanguageContext()
   const navigation = useNavigation<MoreNavigationProp & RootNavigationProp>()
   const spacing = useSpacing()
+  const [
+    showingDeployModeConfirmation,
+    setShowingDeployModeConfirmation,
+  ] = useState(false)
 
   useEffect(
     () =>
@@ -192,6 +206,7 @@ const MoreScreen = () => {
             dispatch(accountSlice.actions.signOut())
             dispatch(activitySlice.actions.signOut())
             dispatch(hotspotsSlice.actions.signOut())
+            dispatch(validatorsSlice.actions.signOut())
             dispatch(connectedHotspotSlice.actions.signOut())
           },
         },
@@ -204,6 +219,30 @@ const MoreScreen = () => {
       changeLanguage(lng)
     },
     [changeLanguage],
+  )
+
+  const handleNetworkChange = useCallback(
+    (network: string) => {
+      dispatch(
+        updateSetting({
+          key: 'network',
+          value: network,
+        }),
+      )
+    },
+    [dispatch],
+  )
+
+  const handleCurrencyTypeChange = useCallback(
+    (currencyType: string) => {
+      dispatch(
+        updateSetting({
+          key: 'currencyType',
+          value: currencyType,
+        }),
+      )
+    },
+    [dispatch],
   )
 
   const handleIntervalSelected = useCallback(
@@ -259,6 +298,21 @@ const MoreScreen = () => {
       {
         title: t('more.sections.security.revealWords'),
         onPress: handleRevealWords,
+        disabled: app.isDeployModeEnabled,
+      },
+      {
+        title: t('more.sections.security.deployMode.enableButton'),
+        value: app.isDeployModeEnabled,
+        onToggle: () => {
+          setShowingDeployModeConfirmation(true)
+        },
+        renderModal: () => (
+          <DeployModeModal
+            isVisible={showingDeployModeConfirmation}
+            onClose={() => setShowingDeployModeConfirmation(false)}
+          />
+        ),
+        disabled: app.isDeployModeEnabled,
       },
     ]
     return [
@@ -303,6 +357,31 @@ const MoreScreen = () => {
             },
           },
           {
+            title: t('more.sections.app.currency'),
+            value: account.settings.currencyType,
+            select: {
+              items: Object.keys(SUPPORTED_CURRENCIES).map((p) => {
+                return {
+                  label: `${p} ${SUPPORTED_CURRENCIES[p]}`,
+                  labelShort: p,
+                  value: p,
+                }
+              }),
+              onValueSelect: handleCurrencyTypeChange,
+            },
+          },
+          {
+            title: t('more.sections.app.network'),
+            value: account.settings.network,
+            select: {
+              items: [
+                { label: 'StakeJoy API', value: 'stakejoy' },
+                { label: 'Helium API', value: 'helium' },
+              ],
+              onValueSelect: handleNetworkChange,
+            },
+          },
+          {
             title: t('more.sections.app.enableHapticFeedback'),
             onToggle: handleHaptic,
             value: !app.isHapticDisabled,
@@ -335,25 +414,31 @@ const MoreScreen = () => {
     t,
     handlePinRequired,
     app.isPinRequired,
+    app.isDeployModeEnabled,
     app.isHapticDisabled,
     app.authInterval,
     app.isPinRequiredForPayment,
-    showHiddenHotspots,
     handleRevealWords,
     language,
     handleLanguageChange,
-    handleHaptic,
-    handleConvertHntToCurrency,
+    account.settings.currencyType,
+    account.settings.network,
     account.settings.convertHntToCurrency,
     account.settings.isFleetModeEnabled,
+    handleCurrencyTypeChange,
+    handleNetworkChange,
+    handleHaptic,
+    handleConvertHntToCurrency,
     handleFleetMode,
     handleShowHiddenHotspots,
+    showHiddenHotspots,
     handleSignOut,
     version,
     authIntervals,
     handleIntervalSelected,
     handleResetPin,
     handlePinRequiredForPayment,
+    showingDeployModeConfirmation,
   ])
 
   const contentContainer = useMemo(

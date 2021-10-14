@@ -69,16 +69,22 @@ type Props = {
   scanResult?: AppLink
   sendType?: AppLinkCategoryType
   hotspotAddress?: string
+  isDisabled: boolean
   isSeller?: boolean
   canSubmit?: boolean
+  lockedPaymentAddress?: string
+  warning?: string
 }
 
 const SendView = ({
   scanResult,
   sendType,
   hotspotAddress,
+  isDisabled,
   isSeller,
   canSubmit = true,
+  lockedPaymentAddress,
+  warning,
 }: Props) => {
   const tabNavigation = useNavigation<MainTabNavigationProp>()
   const sendNavigation = useNavigation<SendNavigationProps>()
@@ -92,8 +98,11 @@ const SendView = ({
   const currentOraclePrice = useSelector(
     (state: RootState) => state.heliumData.currentOraclePrice,
   )
+  const isDeployModeEnabled = useSelector(
+    (state: RootState) => state.app.isDeployModeEnabled,
+  )
   const [type, setType] = useState<AppLinkCategoryType>(sendType || 'payment')
-  const [isLocked, setIsLocked] = useState(false)
+  const [isLocked, setIsLocked] = useState(isDisabled)
   const [isValid, setIsValid] = useState(false)
   const [hasSufficientBalance, setHasSufficientBalance] = useState(false)
   const [transferData, setTransferData] = useState<Transfer>()
@@ -116,7 +125,7 @@ const SendView = ({
   const [sendDetails, setSendDetails] = useState<Array<SendDetails>>([
     {
       id: '0',
-      address: '',
+      address: lockedPaymentAddress || '',
       addressAlias: '',
       addressLoading: false,
       amount: '',
@@ -188,7 +197,7 @@ const SendView = ({
 
   // process scan results
   useEffect(() => {
-    if (!scanResult) return
+    if (!scanResult || isDeployModeEnabled) return
     setType(scanResult.type)
     const getAmountAndBalance = (scanAmount?: string | number) => {
       let amount = ''
@@ -552,7 +561,9 @@ const SendView = ({
           fee={fee}
           hasSufficientBalance={hasSufficientBalance}
           hasValidActivity={hasValidActivity}
+          isDisabled={isDisabled}
           isLocked={isLocked}
+          isLockedAddress={!!lockedPaymentAddress}
           isSeller={isSeller}
           isValid={isValid}
           lastReportedActivity={lastReportedActivity}
@@ -564,6 +575,7 @@ const SendView = ({
           type={type}
           unlockForm={unlockForm}
           updateSendDetails={updateSendDetails}
+          warning={warning}
         />
       </Box>
       {isSeller && (

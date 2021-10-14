@@ -1,31 +1,38 @@
-import React, { memo, useCallback } from 'react'
+import React, { memo, useCallback, useMemo, useState } from 'react'
 import animalName from 'angry-purple-tiger'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import { useSelector } from 'react-redux'
 import { Validator } from '@helium/http'
-import { DebouncedTouchableHighlightBox } from '../../../components/TouchableHighlightBox'
-import Box from '../../../components/Box'
-import Text from '../../../components/Text'
-import RewardIcon from '../../../assets/images/heliumReward.svg'
-import PenaltyIcon from '../../../assets/images/penalty.svg'
-import ConsensusHistory from './ConsensusHistory'
-import CarotRight from '../../../assets/images/carot-right.svg'
-import { RootState } from '../../../store/rootReducer'
-import { useColors, useSpacing } from '../../../theme/themeHooks'
+import tinycolor from 'tinycolor2'
+import RewardIcon from '@assets/images/heliumReward.svg'
+import PenaltyIcon from '@assets/images/penalty.svg'
+import CarotRight from '@assets/images/carot-right.svg'
+import { useAsync } from 'react-async-hook'
+import { DebouncedTouchableHighlightBox } from '../../components/TouchableHighlightBox'
+import Box from '../../components/Box'
+import Text from '../../components/Text'
+import ConsensusHistory from './explorer/ConsensusHistory'
+import { RootState } from '../../store/rootReducer'
+import { useColors, useSpacing } from '../../theme/themeHooks'
+import useCurrency from '../../utils/useCurrency'
 
 type Props = {
   validator: Validator
   onSelectValidator: (validator: Validator) => void
   rewardsLoading: boolean
 }
-const ElectedValidatorItem = ({
+const ValidatorListItem = ({
   validator,
   onSelectValidator,
   rewardsLoading,
 }: Props) => {
+  const { toggleConvertHntToCurrency, hntBalanceToDisplayVal } = useCurrency()
   const colors = useColors()
   const spacing = useSpacing()
-  const rewards = useSelector((state: RootState) => state.validators.rewards)
+  const [reward, setReward] = useState('')
+  const { rewards, followedValidatorsObj, validatorsObj } = useSelector(
+    (state: RootState) => state.validators,
+  )
   const elections = useSelector(
     (state: RootState) => state.validators.elections,
   )
@@ -34,6 +41,31 @@ const ElectedValidatorItem = ({
   const onPress = useCallback(() => onSelectValidator(validator), [
     onSelectValidator,
     validator,
+  ])
+
+  useAsync(async () => {
+    if (!earnings) return
+
+    const nextReward = await hntBalanceToDisplayVal(earnings, false)
+    setReward(`+${nextReward}`)
+  }, [earnings, hntBalanceToDisplayVal])
+
+  const style = useMemo(() => {
+    let borderLeftColor = colors.purpleBright
+    if (
+      !validatorsObj[validator.address] &&
+      !followedValidatorsObj[validator.address]
+    ) {
+      borderLeftColor = tinycolor(borderLeftColor).setAlpha(0).toRgbString()
+    } else if (followedValidatorsObj[validator.address]) {
+      borderLeftColor = tinycolor(borderLeftColor).setAlpha(0.5).toRgbString()
+    }
+    return { borderLeftColor }
+  }, [
+    colors.purpleBright,
+    followedValidatorsObj,
+    validator.address,
+    validatorsObj,
   ])
 
   return (
@@ -47,7 +79,7 @@ const ElectedValidatorItem = ({
       backgroundColor="grayBox"
       marginBottom="xxs"
       borderLeftWidth={6}
-      borderLeftColor="purpleBright"
+      style={style}
     >
       <>
         <Box>
@@ -75,12 +107,13 @@ const ElectedValidatorItem = ({
             ) : (
               <Text
                 color="grayText"
+                onPress={toggleConvertHntToCurrency}
                 variant="regular"
                 fontSize={12}
                 marginLeft="xs"
                 minWidth={90}
               >
-                {`+${earnings?.toString(2)}`}
+                {reward}
               </Text>
             )}
             <PenaltyIcon />
@@ -107,4 +140,4 @@ const ElectedValidatorItem = ({
   )
 }
 
-export default memo(ElectedValidatorItem)
+export default memo(ValidatorListItem)

@@ -4,6 +4,10 @@ export type HotspotStackParamList = {
   HotspotsScreen:
     | undefined
     | { address: string; resource: 'validator' | 'hotspot' }
+  HotspotLocationUpdateScreen: {
+    hotspotAddress: string
+    location: { longitude: number; latitude: number }
+  }
 }
 
 export type HotspotNavigationProp = StackNavigationProp<HotspotStackParamList>
