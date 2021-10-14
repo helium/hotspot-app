@@ -126,8 +126,11 @@ const HotspotDetails = ({
 
   useEffect(() => {
     if (!visible) return
-
-    setIsRelayed(isRelay(hotspot?.status?.listenAddrs || []))
+    if (isDataOnly(hotspot)) {
+      setIsRelayed(false)
+    } else {
+      setIsRelayed(isRelay(hotspot?.status?.listenAddrs || []))
+    }
   }, [hotspot, visible])
 
   const rewardChartData = useMemo(() => {
