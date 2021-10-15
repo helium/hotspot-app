@@ -46,7 +46,10 @@ const RISINGHF_OUTDOOR = {
     zh: {
       diagnostic:
         '<b><white>诊断支持帮助 RisingHF Ltd 安全确认您的 Hotspot 问题。</white></b>\n\nRisingHF 绝不会访问私人密钥，且仅可访问您的 Hotspot，无法访问您网络中的任何其他设备。\n\n若选择退出诊断支持，请使用购买 Hotspot 时提供的电子邮箱发送请求至 <purple><b>support@risinghf.com</b></purple>。',
-      power: ['根据产品安装手册组装好Hotspot。', '接入DC电源和网线。'],
+      power: [
+        '根据产品安装手册组装好Hotspot。',
+        '接入DC电源和网线。',
+      ],
       bluetooth: [
         'RisingHF Outdoor Hotspot 上没有配对按钮。',
         'RisingHF Outdoor Hotspot 开机后，蓝牙会自动启用 5 分钟。',
