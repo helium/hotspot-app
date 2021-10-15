@@ -9,6 +9,7 @@ import linxdot from './linxdot'
 import longAP from './longAP'
 import nebra from './nebra'
 import rak from './rak'
+import risinghf from './risinghf'
 import sensecap from './sensecap'
 import syncrobit from './syncrobit'
 import kerlink from './kerlink'
@@ -31,6 +32,7 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
   longAP,
   nebra,
   rak,
+  risinghf,
   sensecap,
   syncrobit,
   kerlink,
@@ -53,6 +55,7 @@ export const AntennaModels = {
   ...longAP.antennas,
   ...nebra.antennas,
   ...rak.antennas,
+  ...risinghf.antennas,
   ...sensecap.antennas,
   ...syncrobit.antennas,
   ...kerlink.antennas,
@@ -74,6 +77,7 @@ export const HotspotMakerModels = {
   ...longAP.hotspots,
   ...nebra.hotspots,
   ...rak.hotspots,
+  ...risinghf.hotspots,
   ...sensecap.hotspots,
   ...syncrobit.hotspots,
   ...kerlink.hotspots,
