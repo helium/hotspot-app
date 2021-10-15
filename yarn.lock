@@ -1533,10 +1533,10 @@
     react-native-sodium "^0.3.8"
     safe-buffer "^5.2.1"
 
-"@helium/crypto@^3.38.0":
-  version "3.38.0"
-  resolved "https://registry.yarnpkg.com/@helium/crypto/-/crypto-3.38.0.tgz#b321f9a42b0e6144eb2044f0d05f6874d731fa85"
-  integrity sha512-dvmVaeTsk+05nBhbeqqWu0nugCeCrdX9A61YNxNxnb5NWYW6cAuIOuzutgTjr3v4MxZPtLEVyH9g8eWTQuCsug==
+"@helium/crypto@^3.45.0":
+  version "3.45.0"
+  resolved "https://registry.yarnpkg.com/@helium/crypto/-/crypto-3.45.0.tgz#2892aaac8f35865cd32a91222fd5ffbe9f973e08"
+  integrity sha512-J89U4GsLLjODPEPTD5m6q6w6zjbtJjYTxrXAF+Sp+Aqq9nPSOTvQ4gx12dfKXfPT/Rq1vrZ5/CIVXYPhQ7PTJQ==
   dependencies:
     bs58 "^4.0.1"
     create-hash "^1.2.0"
@@ -1574,11 +1574,12 @@
   dependencies:
     protobufjs "^6.8.9"
 
-"@helium/transactions@file:../helium-js/packages/transactions/helium-transactions-v3.38.0-test.1.tgz":
-  version "3.38.0-test.1"
-  resolved "file:../helium-js/packages/transactions/helium-transactions-v3.38.0-test.1.tgz#82f46392a859895305cda468acce3bc37c4c229d"
+"@helium/transactions@^3.46.0":
+  version "3.46.0"
+  resolved "https://registry.yarnpkg.com/@helium/transactions/-/transactions-3.46.0.tgz#09e13f2f4d1c6043ebffbe0fb80231276fd60245"
+  integrity sha512-P3+d7JhLADVxpdBGqZxDJpUPSGeYN21hk60ezP3rG44uprTNwkD5fnJ80qdPxe01SxhTtAiXPB4ctXiDYRpcLg==
   dependencies:
-    "@helium/crypto" "^3.38.0"
+    "@helium/crypto" "^3.45.0"
     "@helium/proto" "^1.5.0"
     "@types/libsodium-wrappers" "^0.7.8"
     long "^4.0.0"
