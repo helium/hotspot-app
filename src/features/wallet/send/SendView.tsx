@@ -98,6 +98,9 @@ const SendView = ({
   const currentOraclePrice = useSelector(
     (state: RootState) => state.heliumData.currentOraclePrice,
   )
+  const isDeployModeEnabled = useSelector(
+    (state: RootState) => state.app.isDeployModeEnabled,
+  )
   const [type, setType] = useState<AppLinkCategoryType>(sendType || 'payment')
   const [isLocked, setIsLocked] = useState(isDisabled)
   const [isValid, setIsValid] = useState(false)
@@ -194,7 +197,7 @@ const SendView = ({
 
   // process scan results
   useEffect(() => {
-    if (!scanResult) return
+    if (!scanResult || isDeployModeEnabled) return
     setType(scanResult.type)
     const getAmountAndBalance = (scanAmount?: string | number) => {
       let amount = ''

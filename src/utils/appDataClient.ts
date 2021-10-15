@@ -3,6 +3,7 @@ import Client, {
   Bucket,
   Hotspot,
   NaturalDate,
+  Network,
   PendingTransaction,
   PocReceiptsV1,
   ResourceList,
@@ -24,7 +25,27 @@ import { fromNow } from './timeUtils'
 import * as Logger from './logger'
 
 const MAX = 100000
-const client = new Client()
+let client = new Client(Network.stakejoy)
+
+// Always read pending txns from helium
+const pendingTxnsClient = new Client(Network.production)
+
+const compareNetwork = (network: string) => {
+  return (
+    (network === 'stakejoy' && client.network === Network.stakejoy) ||
+    (network === 'helium' && client.network === Network.production)
+  )
+}
+
+export const updateClient = (nextNetwork: string) => {
+  const isSame = compareNetwork(nextNetwork)
+  if (!isSame) {
+    const network =
+      nextNetwork === 'helium' ? Network.production : Network.stakejoy
+    client = new Client(network)
+    initFetchers()
+  }
+}
 
 const breadcrumbOpts = { type: 'HTTP Request', category: 'appDataClient' }
 
@@ -231,7 +252,7 @@ export const getAccountTxnsList = async (filterType: FilterType) => {
   if (!address) return
 
   if (filterType === 'pending') {
-    return client.account(address).pendingTransactions.list()
+    return pendingTxnsClient.account(address).pendingTransactions.list()
   }
 
   const params = { filterTypes: Filters[filterType] }
@@ -285,5 +306,3 @@ export const initFetchers = async () => {
     txnFetchers[key] = fetcher
   })
 }
-
-export default client

@@ -7,6 +7,8 @@ import accountSlice, {
 } from '../store/account/accountSlice'
 import { RootState } from '../store/rootReducer'
 import { useAppDispatch } from '../store/store'
+import { updateClient } from './appDataClient'
+import { updateNetwork } from './walletClient'
 
 const settingsToTransfer = [
   'isFleetModeEnabled',
@@ -32,6 +34,13 @@ export default () => {
     () => dispatch(fetchAccountSettings()),
     [dispatch],
   )
+
+  useEffect(() => {
+    if (!accountSettings.network || !accountSettingsLoaded) return
+
+    updateNetwork(accountSettings.network)
+    updateClient(accountSettings.network)
+  }, [accountSettings.network, accountSettingsLoaded])
 
   useEffect(() => {
     if (!accountBackedUp) return

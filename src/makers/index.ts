@@ -1,3 +1,4 @@
+import PantherX from './panther'
 import bobcat from './bobcat'
 import cotx from './cotx'
 import clodpi from './clodpi'
@@ -15,10 +16,12 @@ import heltec from './heltec'
 import pisces from './pisces'
 import controllino from './controllino'
 import freedomfi from './freedomfi'
+import hummingbird from './hummingbird'
 import { LangType, supportedLangs } from '../utils/i18n/i18nTypes'
 import { HotspotMakerLangField } from './hotspotMakerTypes'
 
 export const Makers: Record<string, { id: number; supportEmail: string }> = {
+  PantherX,
   bobcat,
   cotx,
   clodpi,
@@ -35,9 +38,11 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
   pisces,
   controllino,
   freedomfi,
+  hummingbird,
 }
 
 export const AntennaModels = {
+  ...PantherX.antennas,
   ...bobcat.antennas,
   ...cotx.antennas,
   ...clodpi.antennas,
@@ -55,9 +60,11 @@ export const AntennaModels = {
   ...pisces.antennas,
   ...controllino.antennas,
   ...freedomfi.antennas,
+  ...hummingbird.antennas,
 }
 
 export const HotspotMakerModels = {
+  ...PantherX.hotspots,
   ...bobcat.hotspots,
   ...cotx.hotspots,
   ...clodpi.hotspots,
@@ -74,6 +81,7 @@ export const HotspotMakerModels = {
   ...pisces.hotspots,
   ...controllino.hotspots,
   ...freedomfi.hotspots,
+  ...hummingbird.hotspots,
 }
 
 export type HotspotType = keyof typeof HotspotMakerModels

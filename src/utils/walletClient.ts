@@ -4,6 +4,13 @@ import { getWalletApiToken } from './secureAccount'
 import * as Logger from './logger'
 
 const breadcrumbOpts = { type: 'HTTP Request', category: 'walletClient' }
+
+let network = 'stakejoy'
+
+export const updateNetwork = (nextNetwork: string) => {
+  network = nextNetwork
+}
+
 const makeRequest = async (url: string, opts: RequestInit) => {
   Logger.breadcrumb(`httpRequest ${opts.method} ${url}`, breadcrumbOpts)
   try {
@@ -20,6 +27,7 @@ const makeRequest = async (url: string, opts: RequestInit) => {
       ...opts,
       headers: {
         ...opts.headers,
+        network,
         'Cache-Control': 'no-cache',
         'Content-Type': 'application/json',
         Authorization: token,

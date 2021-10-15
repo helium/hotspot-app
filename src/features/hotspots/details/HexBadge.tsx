@@ -14,6 +14,7 @@ type Props = {
   rewardScale?: number
   pressable?: boolean
   badge?: boolean
+  visible?: boolean
   backgroundColor?: Colors
   fontSize?: number
   hitSlop?: Insets
@@ -25,6 +26,7 @@ const HexBadge = ({
   backgroundColor,
   badge = true,
   fontSize = 13,
+  visible = true,
   hitSlop,
 }: Props) => {
   const colors = useColors()
@@ -68,7 +70,7 @@ const HexBadge = ({
     })
   }, [rewardScale])
 
-  if (!rewardScale) return null
+  if (!rewardScale || !visible) return null
   return (
     <TouchableOpacityBox
       onPress={handlePress}
