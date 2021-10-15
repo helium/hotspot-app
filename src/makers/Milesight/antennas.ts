@@ -1,22 +1,22 @@
 import { MakerAntenna } from '../antennaMakerTypes'
 
 const MILESIGHT_UG65 = {
-  name: 'Milesight Hotspot UG65',
-  gain: 1,
+  name: 'Milesight Hotspot（2dBi）',
+  gain: 2,
 } as MakerAntenna
 
 const MILESIGHT_UG67 = {
-  name: 'Milesight Hotspot UG67',
+  name: 'Milesight Hotspot（5dBi）',
   gain: 5,
 } as MakerAntenna
 
 const Custom7dBi = {
-  name: 'Custom 7dBi',
+  name: 'Milesight Hotspot（7dBi）',
   gain: 7,
 } as MakerAntenna
 
 const Custom8dBi = {
-  name: 'Custom 8dBi',
+  name: 'Milesight Hotspot（8dBi）',
   gain: 8,
 } as MakerAntenna
 
