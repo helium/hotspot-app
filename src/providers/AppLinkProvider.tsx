@@ -170,12 +170,12 @@ const useAppLink = () => {
           break
 
         case 'hotspot_antenna': {
-          // const { hotspotAddress, gain, elevation } = record as AppLinkAntenna
-          // navigator.updateHotspotAntenna({
-          //   hotspotAddress,
-          //   gain,
-          //   elevation,
-          // })
+          const { hotspotAddress, gain, elevation } = record as AppLinkAntenna
+          navigator.updateHotspotAntenna({
+            hotspotAddress,
+            gain,
+            elevation,
+          })
           break
         }
       }
@@ -361,9 +361,11 @@ const useAppLink = () => {
       }
 
       if (type === 'antenna_update') {
-        const { hotspot_address: hotspotAddress, gain, elevation } = JSON.parse(
-          data,
-        )
+        const {
+          hotspot_address: hotspotAddress,
+          gain,
+          elevation,
+        } = rawScanResult
         assertValidAddress(hotspotAddress)
         return {
           type: 'hotspot_antenna',
