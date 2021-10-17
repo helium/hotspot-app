@@ -119,7 +119,11 @@ const HotspotConfigurationPicker = ({
   const onDoneEditingGain = () => {
     setIsEditingGain(false)
     const gainStrRaw = tmpGain
-    const gainFloat = gainStringToFloat(gainStrRaw)
+    let gainFloat = gainStringToFloat(gainStrRaw)
+    if (gainFloat) {
+      if (gainFloat < 1) gainFloat = 1
+      if (gainFloat >= 15) gainFloat = 15
+    }
     const gainStr = gainFloatToString(gainFloat)
     setTmpGain(gainStr)
     onGainUpdated(gainFloat)
