@@ -39,20 +39,36 @@ type Props = {
   onClose: () => void
   onCloseSettings: () => void
   hotspot: Hotspot | Witness
+  antennaGain?: number
+  antennaElevation?: number
+  initState?: State
 }
 
 type State = 'antenna' | 'location' | 'confirm'
 
-const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
+const UpdateHotspotConfig = ({
+  onClose,
+  onCloseSettings,
+  hotspot,
+  antennaGain,
+  antennaElevation,
+  initState,
+}: Props) => {
   const { t } = useTranslation()
   const submitTxn = useSubmitTxn()
   const navigation = useNavigation()
   const [state, setState] = useState<State>(
-    isDataOnly(hotspot) ? 'location' : 'antenna',
+    initState ?? (isDataOnly(hotspot) ? 'location' : 'antenna'),
   )
-  const [antenna, setAntenna] = useState<MakerAntenna>()
-  const [gain, setGain] = useState<number>()
-  const [elevation, setElevation] = useState<number>(0)
+  const [antenna, setAntenna] = useState<MakerAntenna | undefined>(
+    antennaGain != null
+      ? ({ name: 'Custom Antenna', gain: antennaGain } as MakerAntenna)
+      : undefined,
+  )
+  const [gain, setGain] = useState<number | undefined>(antennaGain)
+  const [elevation, setElevation] = useState<number | undefined>(
+    antennaElevation,
+  )
   const [location, setLocation] = useState<Coords>()
   const [locationName, setLocationName] = useState<string>()
   const [fullScreen, setFullScreen] = useState(false)
@@ -340,6 +356,8 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
               onGainUpdated={setGain}
               onElevationUpdated={setElevation}
               selectedAntenna={antenna}
+              gain={gain}
+              elevation={elevation}
             />
             <Button
               title={t('hotspot_settings.reassert.update_antenna')}
