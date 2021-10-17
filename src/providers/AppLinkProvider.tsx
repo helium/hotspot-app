@@ -24,6 +24,7 @@ import {
   AppLinkPayment,
   Payee,
   AppLinkLocation,
+  AppLinkAntenna,
 } from './appLinkTypes'
 
 const APP_LINK_PROTOCOL = 'helium://'
@@ -108,7 +109,7 @@ const useAppLink = () => {
   })
 
   const navToAppLink = useCallback(
-    (record: AppLink | AppLinkPayment | AppLinkLocation) => {
+    (record: AppLink | AppLinkPayment | AppLinkLocation | AppLinkAntenna) => {
       if (isLocked || !isBackedUp) {
         setUnhandledLink(record as AppLink)
         return
@@ -147,6 +148,16 @@ const useAppLink = () => {
             hotspotAddress,
             location: { latitude, longitude },
           })
+          break
+        }
+
+        case 'hotspot_antenna': {
+          // const { hotspotAddress, gain, elevation } = record as AppLinkAntenna
+          // navigator.updateHotspotAntenna({
+          //   hotspotAddress,
+          //   gain,
+          //   elevation,
+          // })
           break
         }
       }
@@ -206,17 +217,18 @@ const useAppLink = () => {
   /**
    * The data scanned from the QR code is expected to be one of these possibilities:
    * (1) A helium deeplink URL
-   * (2) A lat/lng pair + hotspot address for hotspot location updates
+   * (2) stringified JSON object { address, lat, lng } (for hotspot location updates)
    * (3) address string
    * (4) stringified JSON object { type, senderAddress?, address, amount?, memo? }
    * (5) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: amount} }
    * (6) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: { amount, memo? }} }
+   * (7) stringified JSON object { type: "antenna_update", hotspot_address, elevation, gain }
    */
   const parseBarCodeData = useCallback(
     async (
       data: string,
       scanType: AppLinkCategoryType,
-    ): Promise<AppLink | AppLinkPayment | AppLinkLocation> => {
+    ): Promise<AppLink | AppLinkPayment | AppLinkLocation | AppLinkAntenna> => {
       // Case (1) helium deeplink URL
       const urlParams = parseUrl(data)
       if (urlParams) {
@@ -320,6 +332,19 @@ const useAppLink = () => {
         )
         return scanResult
       }
+
+      if (type === 'antenna_update') {
+        const { hotspot_address: hotspotAddress, gain, elevation } = JSON.parse(
+          data,
+        )
+        assertValidAddress(hotspotAddress)
+        return {
+          type: 'hotspot_antenna',
+          hotspotAddress,
+          gain,
+          elevation,
+        }
+      }
       throw new Error('Unknown scan type')
     },
     [parseUrl],
@@ -331,7 +356,7 @@ const useAppLink = () => {
       scanType: AppLinkCategoryType,
       opts?: Record<string, string>,
       assertScanResult?: (
-        scanResult: AppLink | AppLinkPayment | AppLinkLocation,
+        scanResult: AppLink | AppLinkPayment | AppLinkLocation | AppLinkAntenna,
       ) => void,
     ) => {
       const scanResult = await parseBarCodeData(data, scanType)
