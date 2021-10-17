@@ -6,6 +6,7 @@ export const AppLinkCategories = [
   'validator',
   'add_gateway',
   'hotspot_location',
+  'hotspot_antenna',
 ] as const
 export type AppLinkCategoryType = typeof AppLinkCategories[number]
 
@@ -37,4 +38,11 @@ export type AppLinkLocation = {
   hotspotAddress: string
   latitude: number
   longitude: number
+}
+
+export type AppLinkAntenna = {
+  type: AppLinkCategoryType
+  hotspotAddress: string
+  gain: number
+  elevation?: number
 }
