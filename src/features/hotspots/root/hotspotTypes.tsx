@@ -8,6 +8,11 @@ export type HotspotStackParamList = {
     hotspotAddress: string
     location: { longitude: number; latitude: number }
   }
+  HotspotAntennaUpdateScreen: {
+    hotspotAddress: string
+    gain?: number
+    elevation?: number
+  }
 }
 
 export type HotspotNavigationProp = StackNavigationProp<HotspotStackParamList>

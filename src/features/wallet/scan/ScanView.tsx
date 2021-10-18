@@ -23,6 +23,7 @@ import {
   MismatchedAddressError,
 } from '../../../providers/AppLinkProvider'
 import {
+  AppLinkAntenna,
   AppLinkCategoryType,
   AppLinkLocation,
 } from '../../../providers/appLinkTypes'
@@ -66,8 +67,14 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
 
     try {
       await handleBarCode(result, scanType, undefined, (scanResult) => {
-        if (scanResult.type === 'hotspot_location') {
-          const { hotspotAddress } = scanResult as AppLinkLocation
+        const shouldAssertHotspotOwnership = [
+          'hotspot_location',
+          'hotspot_antenna',
+        ].includes(scanResult.type)
+        if (shouldAssertHotspotOwnership) {
+          const { hotspotAddress } = scanResult as
+            | AppLinkLocation
+            | AppLinkAntenna
           const hotspot = hotspots.find((h) => h.address === hotspotAddress)
           if (!hotspot) throw new InvalidAddressError()
         }
@@ -76,7 +83,7 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
       setScanned(true)
       triggerNotification('success')
     } catch (error) {
-      handleFailedScan(error)
+      handleFailedScan(error as Error)
     }
   }
 
