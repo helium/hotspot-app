@@ -86,6 +86,24 @@ const UpdateHotspotConfig = ({
     enableBack(onClose)
   }, [enableBack, onClose])
 
+  useEffect(() => {
+    if (!!(antennaGain || antennaElevation) && initState === 'confirm') {
+      updateLocationFeeForUpdatingAntenna()
+      setIsLocationChange(false)
+    }
+  }, [antennaGain, antennaElevation, initState])
+
+  const updateLocationFeeForUpdatingAntenna = () => {
+    const feeData = calculateAssertLocFee(undefined, undefined, undefined)
+    const feeDc = new Balance(feeData.fee, CurrencyType.dataCredit)
+    setLocationFee(
+      feeDc.toString(0, {
+        groupSeparator,
+        decimalSeparator,
+      }),
+    )
+  }
+
   const toggleUpdateAntenna = () => {
     animateTransition('UpdateHotspotConfig.ToggleUpdateAntenna', {
       enabledOnAndroid: false,
@@ -104,14 +122,7 @@ const UpdateHotspotConfig = ({
     animateTransition('UpdateHotspotConfig.OnConfirm', {
       enabledOnAndroid: false,
     })
-    const feeData = calculateAssertLocFee(undefined, undefined, undefined)
-    const feeDc = new Balance(feeData.fee, CurrencyType.dataCredit)
-    setLocationFee(
-      feeDc.toString(0, {
-        groupSeparator,
-        decimalSeparator,
-      }),
-    )
+    updateLocationFeeForUpdatingAntenna()
     setState('confirm')
   }
   const updatingAntenna = useMemo(() => state === 'antenna', [state])

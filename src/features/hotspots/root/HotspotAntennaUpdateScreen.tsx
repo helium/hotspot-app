@@ -65,7 +65,7 @@ function HotspotAntennaUpdateScreen({ route }: Props) {
                   antennaElevation={elevation}
                   antennaGain={gain}
                   hotspot={hotspot}
-                  initState="antenna"
+                  initState="confirm"
                   onClose={onClose}
                   onCloseSettings={onClose}
                 />
