@@ -52,6 +52,7 @@ export const TxnTypeKeys = [
   'assert_location_v1',
   'assert_location_v2',
   'transfer_hotspot_v1',
+  'transfer_hotspot_v2',
   'token_burn_v1',
   'unstake_validator_v1',
   'stake_validator_v1',

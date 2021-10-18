@@ -6,6 +6,7 @@ import {
   AssertLocationV2,
   PendingTransaction,
   TransferHotspotV1,
+  TransferHotspotV2,
 } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { LocationGeocodedAddress } from 'expo-location'
@@ -26,9 +27,12 @@ const isAssertV2 = (
 const isGateway = (
   arg: AnyTransaction | PendingTransaction,
 ): arg is AddGatewayV1 => 'gateway' in arg
-const isTransfer = (
+const isTransferV1 = (
   arg: AnyTransaction | PendingTransaction,
 ): arg is TransferHotspotV1 => 'seller' in arg
+const isTransferV2 = (
+  arg: AnyTransaction | PendingTransaction,
+): arg is TransferHotspotV2 => 'newOwner' in arg
 
 type Props = { item: AnyTransaction | PendingTransaction; address: string }
 const HotspotTransaction = ({ item, address }: Props) => {
@@ -53,11 +57,15 @@ const HotspotTransaction = ({ item, address }: Props) => {
     addGateway = item.txn
   }
 
-  let transferHotspot: TransferHotspotV1 | null = null
-  if (isTransfer(item)) {
+  let transferHotspot: TransferHotspotV1 | TransferHotspotV2 | null = null
+  if (isTransferV1(item)) {
     transferHotspot = item as TransferHotspotV1
-  } else if ('txn' in item && isTransfer(item.txn)) {
-    transferHotspot = item.txn
+  } else if ('txn' in item && isTransferV1(item.txn)) {
+    transferHotspot = item.txn as TransferHotspotV1
+  } else if (isTransferV2(item)) {
+    transferHotspot = item as TransferHotspotV2
+  } else if ('txn' in item && isTransferV2(item.txn)) {
+    transferHotspot = item.txn as TransferHotspotV2
   }
 
   const type = item.type as
@@ -65,6 +73,7 @@ const HotspotTransaction = ({ item, address }: Props) => {
     | 'assert_location_v2'
     | 'add_gateway_v1'
     | 'transfer_hotspot_v1'
+    | 'transfer_hotspot_v2'
 
   useEffect(() => {
     const geoCode = async (lat: number, lng: number) => {
@@ -85,7 +94,8 @@ const HotspotTransaction = ({ item, address }: Props) => {
     type !== 'add_gateway_v1' &&
     type !== 'assert_location_v1' &&
     type !== 'assert_location_v2' &&
-    type !== 'transfer_hotspot_v1'
+    type !== 'transfer_hotspot_v1' &&
+    type !== 'transfer_hotspot_v2'
   )
     return null
 
@@ -151,16 +161,39 @@ const HotspotTransaction = ({ item, address }: Props) => {
         <>
           <PaymentItem
             isFirst
-            isLast
-            text={transferHotspot?.seller || ''}
-            isMyAccount={transferHotspot?.seller === address}
+            text={(transferHotspot as TransferHotspotV1)?.seller || ''}
+            isMyAccount={
+              (transferHotspot as TransferHotspotV1)?.seller === address
+            }
             mode="seller"
           />
           <PaymentItem
-            isFirst
             isLast
-            text={transferHotspot?.buyer || ''}
-            isMyAccount={transferHotspot?.buyer === address}
+            text={(transferHotspot as TransferHotspotV1)?.buyer || ''}
+            isMyAccount={
+              (transferHotspot as TransferHotspotV1)?.buyer === address
+            }
+            mode="buyer"
+          />
+        </>
+      )}
+
+      {type === 'transfer_hotspot_v2' && (
+        <>
+          <PaymentItem
+            isFirst
+            text={(transferHotspot as TransferHotspotV2)?.owner || ''}
+            isMyAccount={
+              (transferHotspot as TransferHotspotV2)?.owner === address
+            }
+            mode="seller"
+          />
+          <PaymentItem
+            isLast
+            text={(transferHotspot as TransferHotspotV2)?.newOwner || ''}
+            isMyAccount={
+              (transferHotspot as TransferHotspotV2)?.newOwner === address
+            }
             mode="buyer"
           />
         </>

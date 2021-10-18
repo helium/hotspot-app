@@ -1549,12 +1549,18 @@
   dependencies:
     bignumber.js "^9.0.0"
 
-"@helium/http@^3.43.1":
-  version "3.43.1"
-  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.43.1.tgz#33f3985cd8f0e00fb50d2105b1c2e9903380ce6c"
-  integrity sha512-9vioOca/jR1fIV/kD5de8/0l03kz03cqdh7PAH+NTitqW1I+rwfcfLkv6Qg9hjSCdWu99xHOYmuhyhKJ4IASTA==
+"@helium/currency@^3.45.0":
+  version "3.45.0"
+  resolved "https://registry.yarnpkg.com/@helium/currency/-/currency-3.45.0.tgz#326933225047601f447209fb9c77c6d4b114c381"
+  integrity sha512-6hajnB+L5OQgbQJyGzzYrHlcpRnt1j9thjt+zKhLP672VgfqJWaBs5unI+yhqHvF3JPB2/DsLj3/oT4hL0z84A==
   dependencies:
-    "@helium/currency" "^3.25.1"
+    bignumber.js "^9.0.0"
+
+"@helium/http@file:../helium-js/packages/http/helium-http-v3.45.0-test.1.tgz":
+  version "3.45.0-test.1"
+  resolved "file:../helium-js/packages/http/helium-http-v3.45.0-test.1.tgz#0f5aa92c1065463bfc4c0ed9b21a9f3ff5699578"
+  dependencies:
+    "@helium/currency" "^3.45.0"
     axios "^0.21.1"
     camelcase-keys "^6.2.2"
     qs "^6.9.3"
