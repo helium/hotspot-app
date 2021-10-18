@@ -12,6 +12,7 @@ import rak from './rak'
 import sensecap from './sensecap'
 import syncrobit from './syncrobit'
 import kerlink from './kerlink'
+import Milesight from './Milesight'
 import heltec from './heltec'
 import pisces from './pisces'
 import controllino from './controllino'
@@ -34,6 +35,7 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
   sensecap,
   syncrobit,
   kerlink,
+  Milesight,
   heltec,
   pisces,
   controllino,
@@ -56,11 +58,13 @@ export const AntennaModels = {
   ...sensecap.antennas,
   ...syncrobit.antennas,
   ...kerlink.antennas,
+  ...Milesight.antennas,
   ...heltec.antennas,
   ...pisces.antennas,
   ...controllino.antennas,
   ...freedomfi.antennas,
   ...hummingbird.antennas,
+  
 }
 
 export const HotspotMakerModels = {
@@ -82,6 +86,7 @@ export const HotspotMakerModels = {
   ...controllino.hotspots,
   ...freedomfi.hotspots,
   ...hummingbird.hotspots,
+  ...Milesight.hotspots,
 }
 
 export type HotspotType = keyof typeof HotspotMakerModels
