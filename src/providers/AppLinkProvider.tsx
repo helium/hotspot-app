@@ -249,7 +249,7 @@ const useAppLink = () => {
    * (4) stringified JSON object { type, senderAddress?, address, amount?, memo? }
    * (5) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: amount} }
    * (6) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: { amount, memo? }} }
-   * (7) stringified JSON object { type: "antenna_update", hotspot_address, elevation, gain }
+   * (7) stringified JSON object { type: "hotspot_antenna", hotspotAddress, elevation, gain }
    */
   const parseBarCodeData = useCallback(
     async (
@@ -360,12 +360,8 @@ const useAppLink = () => {
         return scanResult
       }
 
-      if (type === 'antenna_update') {
-        const {
-          hotspot_address: hotspotAddress,
-          gain,
-          elevation,
-        } = rawScanResult
+      if (type === 'hotspot_antenna') {
+        const { hotspotAddress, gain, elevation } = rawScanResult
         assertValidAddress(hotspotAddress)
         return {
           type: 'hotspot_antenna',
