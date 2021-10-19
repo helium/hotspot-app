@@ -82,12 +82,15 @@ const HotspotConfigurationPicker = ({
     elevationInputRef.current?.focus()
   }
 
-  const parseGainFloat = (string?: string) =>
-    string
+  const parseGainFloat = (floatString?: string) =>
+    floatString
       ? parseFloat(
-          string.replace(groupSeparator, '').replace(decimalSeparator, '.'),
+          floatString
+            .replace(groupSeparator, '')
+            .replace(decimalSeparator, '.'),
         )
       : 0
+
   const onChangeGain = (text: string) => {
     let gainFloat = parseGainFloat(text)
     if (!gainFloat || gainFloat <= 1) {
@@ -98,6 +101,7 @@ const HotspotConfigurationPicker = ({
     setGain(text)
     onGainUpdated(gainFloat)
   }
+
   const onDoneEditingGain = () => {
     const gainFloat = parseGainFloat(gain)
     let gainString
