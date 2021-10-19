@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { SectionList } from 'react-native'
+import { SectionList, ViewToken } from 'react-native'
 import { Hotspot, Sum, Validator } from '@helium/http'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
@@ -50,7 +50,6 @@ const HotspotsList = ({
   const colors = useColors()
   const { top } = useSafeAreaInsets()
 
-  // TODO: Use gateway sort order to reset rewards fetch indexes
   const [gatewaySortOrder, setGatewaySortOrder] = useState<GatewaySort>(
     GatewaySort.FollowedHotspots,
   )
@@ -189,7 +188,6 @@ const HotspotsList = ({
         ])
       }
       case GatewaySort.Earn: {
-        // TODO: Must make sure to fetch all rewards
         if (!hotspotRewards) {
           return hotspots
         }
@@ -400,10 +398,7 @@ const HotspotsList = ({
   ])
 
   const onViewableItemsChanged = useCallback(
-    (info: {
-      viewableItems: Array<{ index: number | null; iteam: Hotspot }>
-      changed: Array<{ index: number | null; iteam: Hotspot }>
-    }) => {
+    (info: { viewableItems: Array<ViewToken>; changed: Array<ViewToken> }) => {
       if (!info.viewableItems?.length) {
         return
       }

@@ -65,12 +65,13 @@ const BalanceCard = ({
             />
           </SkeletonPlaceholder>
         ) : (
-          <Box onTouchStart={toggleConvertHntToCurrency}>
+          <Box onTouchStart={toggleConvertHntToCurrency} flex={1}>
             <Text
               adjustsFontSizeToFit
               maxFontSizeMultiplier={1.2}
               color="white"
               fontSize={hp(4.5)}
+              numberOfLines={1}
               fontWeight="300"
             >
               {balanceInfo.integerPart}

@@ -30,6 +30,10 @@ local.properties
 *.iml
 /android/app/release/
 
+# Android/VSCode
+android/app/.project
+android/.project
+
 # Visual Studio Code
 #
 .vscode/
