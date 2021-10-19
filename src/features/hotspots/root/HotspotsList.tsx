@@ -228,6 +228,8 @@ const HotspotsList = ({
     )
   }, [hiddenAddresses, orderedGateways, showHiddenHotspots])
 
+  const prevVisibleHotspots = usePrevious(visibleHotspots)
+
   const handlePress = useCallback(
     (hotspot: Hotspot | Validator) => {
       onSelectHotspot(hotspot, visibleHotspots.length > 1)
@@ -362,8 +364,12 @@ const HotspotsList = ({
   )
 
   useEffect(() => {
-    if (prevGatewaySortOrder !== gatewaySortOrder) {
-      // Sort order has changed, need to reset or requested index
+    if (
+      prevGatewaySortOrder !== gatewaySortOrder ||
+      prevVisibleHotspots.length !== visibleHotspots.length
+    ) {
+      // Sort order has changed or new followed hotspots removed/added,
+      // need to reset rewards requested index
       setRewardsRequestedIndex(undefined)
       return
     }
@@ -389,6 +395,7 @@ const HotspotsList = ({
     setRewardsRequestedIndex(indexToFetch)
   }, [
     visibleHotspots,
+    prevVisibleHotspots,
     dispatch,
     fleetModeEnabled,
     rewardsRequestedIndex,
