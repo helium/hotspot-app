@@ -30,7 +30,9 @@ import ValidatorListItem from '../../validators/ValidatorListItem'
 import { fetchValidatorRewards } from '../../../store/validators/validatorsSlice'
 import { useAppDispatch } from '../../../store/store'
 import { isValidator } from '../../../utils/validatorUtils'
+import { fetchRewards } from '../../../store/hotspots/hotspotsSlice'
 
+const REWARDS_BATCH_SIZE = 10
 const HotspotsList = ({
   onSelectHotspot,
   visible,
@@ -50,6 +52,9 @@ const HotspotsList = ({
   const [gatewaySortOrder, setGatewaySortOrder] = useState<GatewaySort>(
     GatewaySort.FollowedHotspots,
   )
+  const [rewardsRequestedIndex, setRewardsRequestedIndex] = useState<number>()
+  const [rewardsFetchIndex, setRewardsFetchIndex] = useState<number>()
+
   const dispatch = useAppDispatch()
   const loadingHotspotRewards = useSelector(
     (state: RootState) => state.hotspots.loadingRewards,
@@ -182,6 +187,7 @@ const HotspotsList = ({
         ])
       }
       case GatewaySort.Earn: {
+        // TODO: Must make sure to fetch all rewards
         if (!hotspotRewards) {
           return hotspots
         }
@@ -355,6 +361,55 @@ const HotspotsList = ({
     [],
   )
 
+  useEffect(() => {
+    if (
+      !rewardsFetchIndex ||
+      rewardsFetchIndex === rewardsRequestedIndex ||
+      visibleHotspots.length - 1 === rewardsRequestedIndex
+    ) {
+      return
+    }
+    const rewardsToFetch = visibleHotspots.slice(
+      rewardsRequestedIndex,
+      rewardsFetchIndex,
+    )
+
+    dispatch(fetchRewards({ addresses: rewardsToFetch.map((r) => r.address) }))
+    setRewardsRequestedIndex(rewardsFetchIndex)
+  }, [
+    visibleHotspots,
+    dispatch,
+    fleetModeEnabled,
+    rewardsRequestedIndex,
+    rewardsFetchIndex,
+  ])
+
+  const onViewableItemsChanged = useCallback(
+    (info: {
+      viewableItems: Array<{ index: number | null; iteam: Hotspot }>
+      changed: Array<{ index: number | null; iteam: Hotspot }>
+    }) => {
+      if (!info.viewableItems?.length) {
+        return
+      }
+
+      const maxVisibleIndex =
+        info.viewableItems[info.viewableItems.length - 1].index
+
+      if (!maxVisibleIndex || (rewardsFetchIndex || 0) >= maxVisibleIndex) {
+        return
+      }
+
+      const roundedIndex =
+        Math.ceil(maxVisibleIndex / REWARDS_BATCH_SIZE) * REWARDS_BATCH_SIZE
+
+      setRewardsFetchIndex(
+        Math.ceil(Math.min(roundedIndex, visibleHotspots.length)),
+      )
+    },
+    [rewardsFetchIndex, visibleHotspots.length],
+  )
+
   return (
     <Box
       backgroundColor="white"
@@ -394,6 +449,7 @@ const HotspotsList = ({
         renderItem={renderItem}
         contentContainerStyle={contentContainerStyle}
         showsVerticalScrollIndicator={false}
+        onViewableItemsChanged={onViewableItemsChanged}
       />
     </Box>
   )
