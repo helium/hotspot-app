@@ -49,6 +49,8 @@ const HotspotsList = ({
   const { t } = useTranslation()
   const colors = useColors()
   const { top } = useSafeAreaInsets()
+
+  // TODO: Use gateway sort order to reset rewards fetch indexes
   const [gatewaySortOrder, setGatewaySortOrder] = useState<GatewaySort>(
     GatewaySort.FollowedHotspots,
   )
@@ -93,7 +95,7 @@ const HotspotsList = ({
   const { currentLocation, locationBlocked } = useSelector(
     (state: RootState) => state.location,
   )
-  const prevOrder = usePrevious(gatewaySortOrder)
+  const prevGatewaySortOrder = usePrevious(gatewaySortOrder)
 
   const isDeployModeEnabled = useSelector(
     (state: RootState) => state.app.isDeployModeEnabled,
@@ -156,7 +158,7 @@ const HotspotsList = ({
     if (
       currentLocation ||
       gatewaySortOrder !== GatewaySort.Near ||
-      prevOrder === GatewaySort.Near
+      prevGatewaySortOrder === GatewaySort.Near
     )
       return
 
@@ -167,7 +169,7 @@ const HotspotsList = ({
     gatewaySortOrder,
     locationDeniedHandler,
     maybeGetLocation,
-    prevOrder,
+    prevGatewaySortOrder,
   ])
 
   const orderedGateways = useMemo((): (Hotspot | Validator)[] => {
@@ -362,26 +364,39 @@ const HotspotsList = ({
   )
 
   useEffect(() => {
+    if (prevGatewaySortOrder !== gatewaySortOrder) {
+      // Sort order has changed, need to reset or requested index
+      setRewardsRequestedIndex(undefined)
+      return
+    }
+    let indexToFetch = rewardsFetchIndex
+
+    if (gatewaySortOrder === GatewaySort.Earn) {
+      indexToFetch = visibleHotspots.length
+    }
+
     if (
-      !rewardsFetchIndex ||
-      rewardsFetchIndex === rewardsRequestedIndex ||
+      !indexToFetch ||
+      indexToFetch === rewardsRequestedIndex ||
       visibleHotspots.length - 1 === rewardsRequestedIndex
     ) {
       return
     }
     const rewardsToFetch = visibleHotspots.slice(
       rewardsRequestedIndex,
-      rewardsFetchIndex,
+      indexToFetch,
     )
 
     dispatch(fetchRewards({ addresses: rewardsToFetch.map((r) => r.address) }))
-    setRewardsRequestedIndex(rewardsFetchIndex)
+    setRewardsRequestedIndex(indexToFetch)
   }, [
     visibleHotspots,
     dispatch,
     fleetModeEnabled,
     rewardsRequestedIndex,
     rewardsFetchIndex,
+    gatewaySortOrder,
+    prevGatewaySortOrder,
   ])
 
   const onViewableItemsChanged = useCallback(
