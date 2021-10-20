@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { SectionList } from 'react-native'
+import { SectionList, ViewToken } from 'react-native'
 import { Hotspot, Sum, Validator } from '@helium/http'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
@@ -30,7 +30,9 @@ import ValidatorListItem from '../../validators/ValidatorListItem'
 import { fetchValidatorRewards } from '../../../store/validators/validatorsSlice'
 import { useAppDispatch } from '../../../store/store'
 import { isValidator } from '../../../utils/validatorUtils'
+import { fetchRewards } from '../../../store/hotspots/hotspotsSlice'
 
+const REWARDS_BATCH_SIZE = 10
 const HotspotsList = ({
   onSelectHotspot,
   visible,
@@ -47,9 +49,13 @@ const HotspotsList = ({
   const { t } = useTranslation()
   const colors = useColors()
   const { top } = useSafeAreaInsets()
+
   const [gatewaySortOrder, setGatewaySortOrder] = useState<GatewaySort>(
     GatewaySort.FollowedHotspots,
   )
+  const [rewardsRequestedIndex, setRewardsRequestedIndex] = useState<number>()
+  const [rewardsFetchIndex, setRewardsFetchIndex] = useState<number>()
+
   const dispatch = useAppDispatch()
   const loadingHotspotRewards = useSelector(
     (state: RootState) => state.hotspots.loadingRewards,
@@ -88,7 +94,7 @@ const HotspotsList = ({
   const { currentLocation, locationBlocked } = useSelector(
     (state: RootState) => state.location,
   )
-  const prevOrder = usePrevious(gatewaySortOrder)
+  const prevGatewaySortOrder = usePrevious(gatewaySortOrder)
 
   const isDeployModeEnabled = useSelector(
     (state: RootState) => state.app.isDeployModeEnabled,
@@ -151,7 +157,7 @@ const HotspotsList = ({
     if (
       currentLocation ||
       gatewaySortOrder !== GatewaySort.Near ||
-      prevOrder === GatewaySort.Near
+      prevGatewaySortOrder === GatewaySort.Near
     )
       return
 
@@ -162,7 +168,7 @@ const HotspotsList = ({
     gatewaySortOrder,
     locationDeniedHandler,
     maybeGetLocation,
-    prevOrder,
+    prevGatewaySortOrder,
   ])
 
   const orderedGateways = useMemo((): (Hotspot | Validator)[] => {
@@ -221,6 +227,8 @@ const HotspotsList = ({
       ) || []
     )
   }, [hiddenAddresses, orderedGateways, showHiddenHotspots])
+
+  const prevVisibleHotspots = usePrevious(visibleHotspots)
 
   const handlePress = useCallback(
     (hotspot: Hotspot | Validator) => {
@@ -355,6 +363,70 @@ const HotspotsList = ({
     [],
   )
 
+  useEffect(() => {
+    if (
+      prevGatewaySortOrder !== gatewaySortOrder ||
+      prevVisibleHotspots.length !== visibleHotspots.length
+    ) {
+      // Sort order has changed or new followed hotspots removed/added,
+      // need to reset rewards requested index
+      setRewardsRequestedIndex(undefined)
+      return
+    }
+    let indexToFetch = rewardsFetchIndex
+
+    if (gatewaySortOrder === GatewaySort.Earn) {
+      indexToFetch = visibleHotspots.length
+    }
+
+    if (
+      !indexToFetch ||
+      indexToFetch === rewardsRequestedIndex ||
+      visibleHotspots.length - 1 === rewardsRequestedIndex
+    ) {
+      return
+    }
+    const rewardsToFetch = visibleHotspots.slice(
+      rewardsRequestedIndex,
+      indexToFetch,
+    )
+
+    dispatch(fetchRewards({ addresses: rewardsToFetch.map((r) => r.address) }))
+    setRewardsRequestedIndex(indexToFetch)
+  }, [
+    visibleHotspots,
+    prevVisibleHotspots,
+    dispatch,
+    fleetModeEnabled,
+    rewardsRequestedIndex,
+    rewardsFetchIndex,
+    gatewaySortOrder,
+    prevGatewaySortOrder,
+  ])
+
+  const onViewableItemsChanged = useCallback(
+    (info: { viewableItems: Array<ViewToken>; changed: Array<ViewToken> }) => {
+      if (!info.viewableItems?.length) {
+        return
+      }
+
+      const maxVisibleIndex =
+        info.viewableItems[info.viewableItems.length - 1].index
+
+      if (!maxVisibleIndex || (rewardsFetchIndex || 0) >= maxVisibleIndex) {
+        return
+      }
+
+      const roundedIndex =
+        Math.ceil(maxVisibleIndex / REWARDS_BATCH_SIZE) * REWARDS_BATCH_SIZE
+
+      setRewardsFetchIndex(
+        Math.ceil(Math.min(roundedIndex, visibleHotspots.length)),
+      )
+    },
+    [rewardsFetchIndex, visibleHotspots.length],
+  )
+
   return (
     <Box
       backgroundColor="white"
@@ -394,6 +466,7 @@ const HotspotsList = ({
         renderItem={renderItem}
         contentContainerStyle={contentContainerStyle}
         showsVerticalScrollIndicator={false}
+        onViewableItemsChanged={onViewableItemsChanged}
       />
     </Box>
   )
