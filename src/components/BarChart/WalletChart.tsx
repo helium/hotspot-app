@@ -133,7 +133,7 @@ const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
   const { greenBright, blueBright } = useColors()
 
   return (
-    <Box {...boxProps} height={hasData ? height : 0}>
+    <Box {...boxProps} height={hasData || showSkeleton ? height : 0}>
       <Box flexDirection="column" onLayout={handleHeaderLayout}>
         <Box flexDirection="row" justifyContent="space-between">
           <Text
