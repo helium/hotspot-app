@@ -31,7 +31,14 @@ type Props = Omit<BoxProps<Theme>, 'backgroundColor'> & {
   backgroundColor?: Colors
   itemPadding?: Spacing
   inverted?: boolean
-  visible?: boolean
+  visible?:
+    | boolean
+    | {
+        smallPhone?: boolean | undefined
+        phone?: boolean | undefined
+        tablet?: boolean | undefined
+      }
+    | undefined
 }
 
 const HeliumSelect = ({
