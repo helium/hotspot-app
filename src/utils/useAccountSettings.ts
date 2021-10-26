@@ -29,6 +29,9 @@ export default () => {
   const accountBackedUp = useSelector(
     (state: RootState) => state.app.isBackedUp,
   )
+  const retryCount = useSelector(
+    (state: RootState) => state.features.appRetryCount,
+  )
 
   const refreshAccountSettings = useCallback(
     () => dispatch(fetchAccountSettings()),
@@ -39,8 +42,8 @@ export default () => {
     if (!accountSettings.network || !accountSettingsLoaded) return
 
     updateNetwork(accountSettings.network)
-    updateClient(accountSettings.network)
-  }, [accountSettings.network, accountSettingsLoaded])
+    updateClient(accountSettings.network, retryCount)
+  }, [accountSettings.network, accountSettingsLoaded, retryCount])
 
   useEffect(() => {
     if (!accountBackedUp) return

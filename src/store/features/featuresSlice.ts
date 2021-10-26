@@ -6,6 +6,7 @@ export type FeaturesState = {
   hotspotSyncBuffer?: number
   tileServerRes8Url?: string
   tileServerPointsUrl?: string
+  appRetryCount: number
 }
 
 const initialState: FeaturesState = {
@@ -13,6 +14,7 @@ const initialState: FeaturesState = {
     'https://helium-hotspots.s3.us-west-2.amazonaws.com/public.h3_res8.json',
   tileServerPointsUrl:
     'https://helium-hotspots.s3.us-west-2.amazonaws.com/public.points.json',
+  appRetryCount: 1,
 }
 
 export const fetchFeatures = createAsyncThunk<FeaturesState>(
@@ -29,6 +31,7 @@ const featuresSlice = createSlice({
     builder.addCase(fetchFeatures.fulfilled, (state, { payload }) => {
       state.fleetModeLowerLimit = payload.fleetModeLowerLimit
       state.hotspotSyncBuffer = payload.hotspotSyncBuffer
+      state.appRetryCount = payload.appRetryCount
       if (payload.tileServerRes8Url) {
         state.tileServerRes8Url = payload.tileServerRes8Url
       }
