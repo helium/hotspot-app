@@ -156,6 +156,7 @@ const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
             selectedValue={activityChartRange}
             onValueChanged={handleChartRangeChanged}
             marginBottom="l"
+            visible={!showSkeleton}
           />
         </Box>
         <Box

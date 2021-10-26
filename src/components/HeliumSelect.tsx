@@ -31,6 +31,7 @@ type Props = Omit<BoxProps<Theme>, 'backgroundColor'> & {
   backgroundColor?: Colors
   itemPadding?: Spacing
   inverted?: boolean
+  visible?: boolean
 }
 
 const HeliumSelect = ({
@@ -44,6 +45,7 @@ const HeliumSelect = ({
   scrollEnabled = true,
   itemPadding,
   inverted,
+  visible = true,
   ...boxProps
 }: Props) => {
   const colors = useColors()
@@ -124,6 +126,7 @@ const HeliumSelect = ({
       return (
         <HeliumSelectItem
           handleLayout={handleLayout(index)}
+          disabled={!visible}
           key={item.value}
           variant={variant}
           item={item}
@@ -141,6 +144,7 @@ const HeliumSelect = ({
       itemPadding,
       selectedValue,
       variant,
+      visible,
     ],
   )
 
@@ -150,7 +154,14 @@ const HeliumSelect = ({
   )
 
   return (
-    <Box width="100%" flexDirection="row" flex={1} height={33} {...boxProps}>
+    <Box
+      width="100%"
+      flexDirection="row"
+      flex={1}
+      height={33}
+      opacity={visible ? 100 : 0}
+      {...boxProps}
+    >
       <FlatList
         inverted={inverted}
         contentContainerStyle={contentContainerStyle}
