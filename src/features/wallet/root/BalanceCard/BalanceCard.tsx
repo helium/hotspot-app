@@ -107,15 +107,15 @@ const BalanceCard = ({
       <Box flexDirection="row" paddingVertical="m">
         <CurrencyBadge
           variant="dc"
-          amount={account?.dcBalance?.integerBalance || 0}
+          amount={account?.dcBalance?.integerBalance}
         />
         <CurrencyBadge
           variant="hst"
-          amount={account?.secBalance?.floatBalance || 0}
+          amount={account?.secBalance?.floatBalance}
         />
         <CurrencyBadge
           variant="stake"
-          amount={account?.stakedBalance?.floatBalance || 0}
+          amount={account?.stakedBalance?.floatBalance}
         />
       </Box>
     </Box>
