@@ -1,43 +1,122 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import { PendingTransaction, AnyTransaction } from '@helium/http'
 import { differenceBy, unionBy } from 'lodash'
-import { initFetchers, txnFetchers } from '../../utils/appDataClient'
-import { FilterType } from '../../features/wallet/root/walletTypes'
+import { Filters, FilterType } from '../../features/wallet/root/walletTypes'
+import { getWallet } from '../../utils/walletClient'
+
+export type Reward = {
+  account: string
+  amount: number
+  gateway: string
+  type: string
+}
+
+export type Payment = {
+  payee: string
+  amount: number
+}
+
+type TxnType =
+  | 'rewards_v1'
+  | 'rewards_v2'
+  | 'transfer_hotspot_v1'
+  | 'add_gateway_v1'
+  | 'payment_v1'
+  | 'payment_v2'
+  | 'assert_location_v1'
+  | 'assert_location_v2'
+  | 'stake_validator_v1'
+  | 'transfer_validator_stake_v1'
+  | 'token_burn_v1'
+  | 'unstake_validator_v1'
+
+export type Transaction = {
+  time: number
+  memo: string | null
+  type: TxnType
+  hash: string
+  endEpoch: number | null
+  startEpoch: number | null
+  height: number
+  seller: string | null
+  amountToSeller: number | null
+  rewards: Reward[] | null
+  payer: string | null
+  nonce: number | null
+  fee: number | null
+  amount: number | null
+  stakingFee: number | null
+  stake: number | null
+  stakeAmount: number | null
+  payments: Payment[] | null
+}
+
+export type AccountTransactions = {
+  cursor: string | null
+  data: Transaction[] | null
+}
+
+export type PendingTransaction = {
+  created_at: string
+  failed_reason: string
+  hash: string
+  status: string
+  txn: Transaction
+  type: TxnType
+  updated_at: string
+}
 
 export type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
 
 export type ActivityState = {
   txns: {
-    all: { data: AnyTransaction[]; status: Loading; hasInitialLoad: boolean }
-    hotspot: {
-      data: AnyTransaction[]
+    all: {
+      cursor: string | null
+      data: Transaction[] | null
       status: Loading
       hasInitialLoad: boolean
     }
-    mining: { data: AnyTransaction[]; status: Loading; hasInitialLoad: boolean }
+    hotspot: {
+      cursor: string | null
+      data: Transaction[] | null
+      status: Loading
+      hasInitialLoad: boolean
+    }
+    mining: {
+      cursor: string | null
+      data: Transaction[] | null
+      status: Loading
+      hasInitialLoad: boolean
+    }
     payment: {
-      data: AnyTransaction[]
+      cursor: string | null
+      data: Transaction[] | null
       status: Loading
       hasInitialLoad: boolean
     }
     pending: {
+      cursor: string | null
       data: PendingTransaction[]
       status: Loading
       hasInitialLoad: boolean
     }
   }
   filter: FilterType
-  detailTxn?: AnyTransaction | PendingTransaction
+  detailTxn?: Transaction | PendingTransaction
   requestMore: boolean
 }
 
 const initialState: ActivityState = {
   txns: {
-    all: { data: [], status: 'idle', hasInitialLoad: false },
-    hotspot: { data: [], status: 'idle', hasInitialLoad: false },
-    mining: { data: [], status: 'idle', hasInitialLoad: false },
-    payment: { data: [], status: 'idle', hasInitialLoad: false },
-    pending: { data: [], status: 'idle', hasInitialLoad: false },
+    all: {
+      data: [],
+      cursor: null,
+      status: 'idle',
+      hasInitialLoad: false,
+    },
+    hotspot: { data: [], cursor: null, status: 'idle', hasInitialLoad: false },
+    mining: { data: [], cursor: null, status: 'idle', hasInitialLoad: false },
+    payment: { data: [], cursor: null, status: 'idle', hasInitialLoad: false },
+    pending: { data: [], cursor: null, status: 'idle', hasInitialLoad: false },
   },
   filter: 'all',
   requestMore: false,
@@ -47,20 +126,28 @@ export const ACTIVITY_FETCH_SIZE = 15
 
 type FetchTxns = { filter: FilterType; reset?: boolean }
 export const fetchTxns = createAsyncThunk<
-  AnyTransaction[] | PendingTransaction[],
+  AccountTransactions | PendingTransaction[],
   FetchTxns
 >(
   'activity/fetchAccountActivity',
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  async ({ filter, reset }, { dispatch }) => {
+  async ({ filter, reset }, { dispatch, getState }) => {
+    let { cursor } = (getState() as {
+      activity: ActivityState
+    }).activity.txns[filter]
     if (reset) {
-      await initFetchers()
-      dispatch(activitySlice.actions.resetTxnStatuses(filter))
+      dispatch(activitySlice.actions.resetTxns(filter))
+      cursor = null
     }
 
-    const list = txnFetchers[filter]
-    return list.takeJSON(filter === 'pending' ? 1000 : ACTIVITY_FETCH_SIZE)
+    if (filter === 'pending') {
+      return getWallet('accounts/activity/pending', null, { camelCase: true })
+    }
+
+    return getWallet(
+      'accounts/activity',
+      { cursor, filter: Filters[filter].join(',') },
+      { camelCase: true },
+    )
   },
 )
 
@@ -74,13 +161,15 @@ const activitySlice = createSlice({
     requestMoreActivity: (state) => {
       state.requestMore = true
     },
-    resetTxnStatuses: (state, action: PayloadAction<FilterType>) => {
+    resetTxns: (state, action: PayloadAction<FilterType>) => {
       Object.keys(state.txns).forEach((key) => {
         const filterType = key as FilterType
         if (filterType !== 'pending' && filterType !== action.payload) {
           // Don't reset pending, it updates on an interval, and we clear it manually
           // Don't reset the requested filter type. We want that one to stay pending
           state.txns[filterType].status = 'idle'
+          state.txns[filterType].cursor = null
+          state.txns[filterType].data = []
         }
       })
     },
@@ -92,7 +181,7 @@ const activitySlice = createSlice({
     },
     setDetailTxn: (
       state,
-      action: PayloadAction<AnyTransaction | PendingTransaction>,
+      action: PayloadAction<Transaction | PendingTransaction>,
     ) => {
       state.detailTxn = action.payload
     },
@@ -161,19 +250,21 @@ const activitySlice = createSlice({
           })
         }
 
-        if (payload.length === 0) return
-
         if (filter === 'pending') {
           const pending = payload as PendingTransaction[]
+          // if (pending.length === 0) return // TODO: Is this needed?
           const filtered = pending.filter((txn) => txn.status === 'pending')
           const joined = unionBy(filtered, state.txns.pending.data, 'hash')
           state.txns.pending.data = joined
         } else {
+          const accountTransactions = payload as AccountTransactions
+          // if (accountTransactions.data?.length === 0) return // TODO: Is this needed?
           const nextTxns = [
-            ...state.txns[filter].data,
-            ...(payload as AnyTransaction[]),
+            ...(state.txns[filter].data || []),
+            ...(accountTransactions.data || []),
           ]
           state.txns[filter].data = nextTxns
+          state.txns[filter].cursor = accountTransactions.cursor
 
           // remove any pending txns with the same hash
           const nextPending = differenceBy(
