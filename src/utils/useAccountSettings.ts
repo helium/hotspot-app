@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react'
 import useAppState from 'react-native-appstate-hook'
 import { useSelector } from 'react-redux'
+import { useAsync } from 'react-async-hook'
 import accountSlice, {
   fetchAccountSettings,
   transferAppSettingsToAccount,
@@ -9,6 +10,7 @@ import { RootState } from '../store/rootReducer'
 import { useAppDispatch } from '../store/store'
 import { updateClient } from './appDataClient'
 import { updateNetwork } from './walletClient'
+import { fetchFeatures } from '../store/features/featuresSlice'
 
 const settingsToTransfer = [
   'isFleetModeEnabled',
@@ -32,27 +34,36 @@ export default () => {
   const retryCount = useSelector(
     (state: RootState) => state.features.appRetryCount,
   )
-
-  const refreshAccountSettings = useCallback(
-    () => dispatch(fetchAccountSettings()),
-    [dispatch],
+  const featuresLoaded = useSelector(
+    (state: RootState) => state.features.featuresLoaded,
   )
 
+  const refreshAccountSettingsAndFeatures = useCallback(async () => {
+    await dispatch(fetchFeatures())
+    await dispatch(fetchAccountSettings())
+  }, [dispatch])
+
   useEffect(() => {
-    if (!accountSettings.network || !accountSettingsLoaded) return
+    if (!accountSettings.network || !accountSettingsLoaded || !featuresLoaded)
+      return
 
     updateNetwork(accountSettings.network)
     updateClient(accountSettings.network, retryCount)
-  }, [accountSettings.network, accountSettingsLoaded, retryCount])
+  }, [
+    accountSettings.network,
+    accountSettingsLoaded,
+    retryCount,
+    featuresLoaded,
+  ])
 
-  useEffect(() => {
+  useAsync(async () => {
     if (!accountBackedUp) return
 
-    refreshAccountSettings()
-  }, [accountBackedUp, refreshAccountSettings])
+    await refreshAccountSettingsAndFeatures()
+  }, [accountBackedUp, refreshAccountSettingsAndFeatures])
 
   useAppState({
-    onForeground: () => refreshAccountSettings(),
+    onForeground: async () => refreshAccountSettingsAndFeatures(),
   })
 
   useEffect(() => {
