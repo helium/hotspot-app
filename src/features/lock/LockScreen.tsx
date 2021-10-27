@@ -22,7 +22,7 @@ type Route = RouteProp<RootStackParamList, 'LockScreen'>
 const LockScreen = () => {
   const { t } = useTranslation()
   const {
-    params: { lock: shouldLock, requestType },
+    params: { lock: shouldLock, requestType, sendParams },
   } = useRoute<Route>()
   const rootNav = useNavigation<RootNavigationProp>()
   const moreNav = useNavigation<MoreNavigationProp>()
@@ -39,13 +39,22 @@ const LockScreen = () => {
         rootNav.goBack()
       })
     } else if (requestType === 'send') {
-      sendNav.navigate('Send', { pinVerified: 'pass' })
+      sendNav.navigate('Send', { pinVerified: 'pass', ...sendParams })
     } else {
       moreNav.navigate('MoreScreen', {
         pinVerifiedFor: requestType,
       })
     }
-  }, [shouldLock, requestType, setLocked, dispatch, rootNav, sendNav, moreNav])
+  }, [
+    shouldLock,
+    requestType,
+    setLocked,
+    dispatch,
+    rootNav,
+    sendNav,
+    sendParams,
+    moreNav,
+  ])
 
   const handleSignOut = useCallback(() => {
     Alert.alert(
@@ -71,11 +80,11 @@ const LockScreen = () => {
     if (shouldLock) {
       handleSignOut()
     } else if (requestType === 'send') {
-      sendNav.navigate('Send', { pinVerified: 'fail' })
+      sendNav.navigate('Send', { pinVerified: 'fail', ...sendParams })
     } else {
       rootNav.goBack()
     }
-  }, [handleSignOut, requestType, rootNav, sendNav, shouldLock])
+  }, [handleSignOut, requestType, rootNav, sendNav, sendParams, shouldLock])
 
   useEffect(() => {
     const unsubscribe = rootNav.addListener('beforeRemove', (e) => {
