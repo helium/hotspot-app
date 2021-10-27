@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { SectionList, ViewToken } from 'react-native'
-import { Hotspot, Sum, Validator } from '@helium/http'
+import { Hotspot, Validator } from '@helium/http'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import Search from '@assets/images/search.svg'
@@ -31,6 +31,7 @@ import { fetchValidatorRewards } from '../../../store/validators/validatorsSlice
 import { useAppDispatch } from '../../../store/store'
 import { isValidator } from '../../../utils/validatorUtils'
 import { fetchRewards } from '../../../store/hotspots/hotspotsSlice'
+import { AccountReward } from '../../../store/account/accountSlice'
 
 const REWARDS_BATCH_SIZE = 10
 const HotspotsList = ({
@@ -44,7 +45,7 @@ const HotspotsList = ({
   visible: boolean
   searchPressed?: () => void
   addHotspotPressed?: () => void
-  accountRewards: CacheRecord<Sum>
+  accountRewards: CacheRecord<AccountReward>
 }) => {
   const { t } = useTranslation()
   const colors = useColors()
