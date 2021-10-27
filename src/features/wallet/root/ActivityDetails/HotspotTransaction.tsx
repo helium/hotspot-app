@@ -16,6 +16,7 @@ import Text from '../../../../components/Text'
 import PaymentItem from './PaymentItem'
 import { reverseGeocode } from '../../../../utils/location'
 import { getGeoFromH3 } from '../../../../utils/h3Utils'
+import { locale } from '../../../../utils/i18n'
 
 const isAssertV1 = (
   arg: AnyTransaction | PendingTransaction,
@@ -122,7 +123,12 @@ const HotspotTransaction = ({ item, address }: Props) => {
           <PaymentItem
             isFirst={false}
             text={t('hotspot_setup.location_fee.gain', {
-              gain: (assertLoc as AssertLocationV2).gain / 10,
+              gain: ((assertLoc as AssertLocationV2).gain / 10).toLocaleString(
+                locale,
+                {
+                  maximumFractionDigits: 1,
+                },
+              ),
             })}
             mode="antenna"
           />

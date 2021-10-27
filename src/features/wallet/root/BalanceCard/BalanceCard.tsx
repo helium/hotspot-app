@@ -65,12 +65,13 @@ const BalanceCard = ({
             />
           </SkeletonPlaceholder>
         ) : (
-          <Box onTouchStart={toggleConvertHntToCurrency}>
+          <Box onTouchStart={toggleConvertHntToCurrency} flex={1}>
             <Text
               adjustsFontSizeToFit
               maxFontSizeMultiplier={1.2}
               color="white"
               fontSize={hp(4.5)}
+              numberOfLines={1}
               fontWeight="300"
             >
               {balanceInfo.integerPart}
@@ -106,15 +107,15 @@ const BalanceCard = ({
       <Box flexDirection="row" paddingVertical="m">
         <CurrencyBadge
           variant="dc"
-          amount={account?.dcBalance?.integerBalance || 0}
+          amount={account?.dcBalance?.integerBalance}
         />
         <CurrencyBadge
           variant="hst"
-          amount={account?.secBalance?.floatBalance || 0}
+          amount={account?.secBalance?.floatBalance}
         />
         <CurrencyBadge
           variant="stake"
-          amount={account?.stakedBalance?.floatBalance || 0}
+          amount={account?.stakedBalance?.floatBalance}
         />
       </Box>
     </Box>

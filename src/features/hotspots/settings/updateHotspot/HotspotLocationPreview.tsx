@@ -26,12 +26,17 @@ const HotspotLocationPreview = ({
 }: Props) => {
   return (
     <Box borderRadius="l" overflow="hidden" height={180}>
-      <Map zoomLevel={13} interactive={false} mapCenter={mapCenter} />
+      <Map
+        zoomLevel={13}
+        interactive={false}
+        mapCenter={mapCenter}
+        cameraBottomOffset={55}
+      />
       <ImageBox
         position="absolute"
         top="50%"
         left="50%"
-        style={{ marginTop: -45, marginLeft: -25 / 2 }}
+        style={{ marginTop: -40, marginLeft: -25 / 2 }}
         width={25}
         height={29}
         source={require('../../../../assets/images/locationWhite.png')}
