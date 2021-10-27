@@ -43,7 +43,7 @@ const initialState: ActivityState = {
   requestMore: false,
 }
 
-export const ACTIVITY_FETCH_SIZE = 50
+export const ACTIVITY_FETCH_SIZE = 15
 
 type FetchTxns = { filter: FilterType; reset?: boolean }
 export const fetchTxns = createAsyncThunk<

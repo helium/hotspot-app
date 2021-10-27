@@ -94,7 +94,13 @@ const WelcomeOverview = ({ accountRewards }: Props) => {
   }, [hotspotsLoaded, hotspotsLoading, validatorsLoaded, validatorsLoading])
 
   const updateBodyText = useCallback(async () => {
-    if (!hotspotsLoaded || !validatorsLoaded) return
+    if (
+      !hotspotsLoaded ||
+      !validatorsLoaded ||
+      accountRewards.loading ||
+      accountRewards.total === undefined
+    )
+      return
 
     const hntAmount = await hntBalanceToDisplayVal(
       Balance.fromFloat(accountRewards.total, CurrencyType.networkToken),
@@ -128,13 +134,14 @@ const WelcomeOverview = ({ accountRewards }: Props) => {
     }
     setBodyText(nextBodyText)
   }, [
+    hotspotsLoaded,
+    validatorsLoaded,
+    accountRewards.loading,
     accountRewards.total,
     hntBalanceToDisplayVal,
-    visibleHotspots.length,
-    hotspotsLoaded,
-    t,
     validators.length,
-    validatorsLoaded,
+    visibleHotspots.length,
+    t,
   ])
 
   useEffect(() => {

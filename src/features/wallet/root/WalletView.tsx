@@ -105,6 +105,11 @@ const WalletView = ({
     triggerNavHaptic()
   }, [activityCardIndex, triggerNavHaptic])
 
+  const balanceLoaded = useMemo(
+    () => account?.balance?.integerBalance !== undefined,
+    [account?.balance?.integerBalance],
+  )
+
   useEffect(() => {
     const updateBalanceInfo = async () => {
       const hasBalance = account?.balance?.integerBalance !== 0
@@ -213,7 +218,9 @@ const WalletView = ({
         />
       </Animated.View>
       <Box flex={1}>
-        {(activityViewState === 'activity' || balanceInfoSplit.hasBalance) && (
+        {(activityViewState === 'activity' ||
+          balanceInfoSplit.hasBalance ||
+          !balanceLoaded) && (
           <Box onLayout={handleLayout('header')}>
             <WalletHeader handleScanPressed={navScan} />
             <BalanceCard
@@ -230,21 +237,18 @@ const WalletView = ({
         )}
 
         {activityViewState === 'no_activity' &&
-          !balanceInfoSplit.hasBalance && (
-            <WalletEmpty handleScanPressed={navScan} />
-          )}
+          !balanceInfoSplit.hasBalance &&
+          balanceLoaded && <WalletEmpty handleScanPressed={navScan} />}
 
         <WalletAddress
           flex={1}
           loading={activityViewState === 'undetermined'}
           alignItems="center"
-          justifyContent={
-            activityViewState === 'no_activity' ? 'flex-start' : 'center'
-          }
+          justifyContent="center"
         />
       </Box>
 
-      {activityViewState === 'activity' && (
+      {activityViewState !== 'no_activity' && (
         <ActivityCard
           ref={activityCardRef}
           showSkeleton={showSkeleton}

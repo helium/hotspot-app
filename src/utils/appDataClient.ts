@@ -11,6 +11,7 @@ import Client, {
 } from '@helium/http'
 import { Transaction } from '@helium/transactions'
 import { subDays } from 'date-fns'
+import { Platform } from 'react-native'
 import {
   HotspotActivityFilters,
   HotspotActivityType,
@@ -25,10 +26,12 @@ import { fromNow } from './timeUtils'
 import * as Logger from './logger'
 
 const MAX = 100000
-let client = new Client(Network.stakejoy)
+const name =
+  Platform.OS === 'android' ? 'helium-wallet-android' : 'helium-wallet-ios'
+let client = new Client(Network.stakejoy, { retry: 1, name })
 
 // Always read pending txns from helium
-const pendingTxnsClient = new Client(Network.production)
+const pendingTxnsClient = new Client(Network.production, { retry: 1, name })
 
 const compareNetwork = (network: string) => {
   return (
@@ -37,12 +40,12 @@ const compareNetwork = (network: string) => {
   )
 }
 
-export const updateClient = (nextNetwork: string) => {
+export const updateClient = (nextNetwork: string, retry: number) => {
   const isSame = compareNetwork(nextNetwork)
   if (!isSame) {
     const network =
       nextNetwork === 'helium' ? Network.production : Network.stakejoy
-    client = new Client(network)
+    client = new Client(network, { retry, name })
     initFetchers()
   }
 }
