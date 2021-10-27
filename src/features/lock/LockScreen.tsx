@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect } from 'react'
+import React, { memo, useCallback, useEffect, useMemo } from 'react'
 import { Alert } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
@@ -29,6 +29,7 @@ const LockScreen = () => {
   const sendNav = useNavigation<SendNavigationProps>()
   const [locked, setLocked] = useStateWithCallbackLazy(shouldLock)
   const dispatch = useAppDispatch()
+  const prevSendParams = useMemo(() => sendParams || {}, [sendParams])
 
   const { result: pin } = useAsync(getSecureItem, ['userPin'])
 
@@ -39,7 +40,7 @@ const LockScreen = () => {
         rootNav.goBack()
       })
     } else if (requestType === 'send') {
-      sendNav.navigate('Send', { pinVerified: 'pass', ...sendParams })
+      sendNav.navigate('Send', { pinVerified: 'pass', ...prevSendParams })
     } else {
       moreNav.navigate('MoreScreen', {
         pinVerifiedFor: requestType,
@@ -52,7 +53,7 @@ const LockScreen = () => {
     dispatch,
     rootNav,
     sendNav,
-    sendParams,
+    prevSendParams,
     moreNav,
   ])
 
@@ -80,11 +81,11 @@ const LockScreen = () => {
     if (shouldLock) {
       handleSignOut()
     } else if (requestType === 'send') {
-      sendNav.navigate('Send', { pinVerified: 'fail', ...sendParams })
+      sendNav.navigate('Send', { pinVerified: 'fail', ...prevSendParams })
     } else {
       rootNav.goBack()
     }
-  }, [handleSignOut, requestType, rootNav, sendNav, sendParams, shouldLock])
+  }, [handleSignOut, requestType, rootNav, sendNav, prevSendParams, shouldLock])
 
   useEffect(() => {
     const unsubscribe = rootNav.addListener('beforeRemove', (e) => {
