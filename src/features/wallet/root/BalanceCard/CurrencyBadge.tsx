@@ -8,7 +8,7 @@ import { locale } from '../../../../utils/i18n'
 
 type Props = {
   variant: 'dc' | 'hst' | 'stake'
-  amount: number
+  amount?: number
 }
 
 const CurrencyBadge = ({ variant, amount }: Props) => (
@@ -25,8 +25,13 @@ const CurrencyBadge = ({ variant, amount }: Props) => (
     {variant === 'dc' && <DC height={16} />}
     {variant === 'hst' && <HST width={16} />}
     {variant === 'stake' && <STAKE width={16} color="#A667F6" />}
-    <Text color="white" marginLeft="xs" fontSize={14}>
-      {amount.toLocaleString(locale)}
+    <Text
+      color="white"
+      marginLeft="xs"
+      fontSize={14}
+      visible={amount !== undefined}
+    >
+      {amount?.toLocaleString(locale)}
     </Text>
   </Box>
 )
