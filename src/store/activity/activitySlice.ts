@@ -282,20 +282,21 @@ const activitySlice = createSlice({
         } else {
           const accountTransactions = payload as AccountTransactions
           // if (accountTransactions.data?.length === 0) return // TODO: Is this needed?
-          const nextTxns = [
-            ...state.txns[filter].data,
-            ...accountTransactions.data,
-          ]
+
+          let nextTxns = accountTransactions.data
+          if (filter !== 'all') {
+            // The "all" filter is not paginated
+            nextTxns = [...state.txns[filter].data, ...accountTransactions.data]
+            // remove any pending txns with the same hash
+            const nextPending = differenceBy(
+              state.txns.pending.data,
+              nextTxns,
+              'hash',
+            )
+            state.txns.pending.data = nextPending
+          }
           state.txns[filter].data = nextTxns
           state.txns[filter].cursor = accountTransactions.cursor
-
-          // remove any pending txns with the same hash
-          const nextPending = differenceBy(
-            state.txns.pending.data,
-            nextTxns,
-            'hash',
-          )
-          state.txns.pending.data = nextPending
         }
       },
     )

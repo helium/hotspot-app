@@ -1,5 +1,4 @@
 import { Address } from '@helium/crypto-react-native'
-import { AnyTransaction, PendingTransaction } from '@helium/http'
 import {
   AddGatewayV1,
   AssertLocationV2,
@@ -150,31 +149,6 @@ export const makeBuyerTransferHotspotTxn = async (
   const keypair = await getKeypair()
   return transferHotspotTxn.sign({ buyer: keypair })
 }
-
-export const getPayer = (txn: AnyTransaction | PendingTransaction) => {
-  const pending = txn as PendingTransaction
-  if (pending.txn) {
-    return pending.txn.payer?.b58 || pending.txn.payer
-  }
-
-  const nonPending = (txn as unknown) as PaymentV2
-  return nonPending.payer?.b58 || nonPending.payer
-}
-
-export const isPayer = (
-  address: string | null = null,
-  txn: AnyTransaction | PendingTransaction,
-) => {
-  if (!address) return false
-
-  const payer = getPayer(txn)
-  if (!payer) return false
-
-  return payer === address
-}
-
-export const isPendingTransaction = (item: unknown) =>
-  !!(item as PendingTransaction).createdAt
 
 export const getInteger = (stringAmount: string) => {
   return (stringAmount.split(decimalSeparator)[0] || '0')
