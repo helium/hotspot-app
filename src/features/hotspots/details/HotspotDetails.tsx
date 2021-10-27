@@ -52,6 +52,7 @@ import sleep from '../../../utils/sleep'
 import usePrevious from '../../../utils/usePrevious'
 import useHotspotSync from '../useHotspotSync'
 import useAlert from '../../../utils/useAlert'
+import { locale } from '../../../utils/i18n'
 
 const hitSlop = { top: 24, bottom: 24 } as Insets
 
@@ -126,8 +127,11 @@ const HotspotDetails = ({
 
   useEffect(() => {
     if (!visible) return
-
-    setIsRelayed(isRelay(hotspot?.status?.listenAddrs || []))
+    if (isDataOnly(hotspot)) {
+      setIsRelayed(false)
+    } else {
+      setIsRelayed(isRelay(hotspot?.status?.listenAddrs || []))
+    }
   }, [hotspot, visible])
 
   const rewardChartData = useMemo(() => {
@@ -473,8 +477,9 @@ const HotspotDetails = ({
                   color={isHidden ? 'grayLightText' : 'grayText'}
                   marginLeft="xs"
                 >
-                  {(hotspot.gain / 10).toFixed(1) +
-                    t('antennas.onboarding.dbi')}
+                  {(hotspot.gain / 10).toLocaleString(locale, {
+                    maximumFractionDigits: 1,
+                  }) + t('antennas.onboarding.dbi')}
                 </Text>
               )}
               {makerName && (

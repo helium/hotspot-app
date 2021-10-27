@@ -128,10 +128,12 @@ const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
     [],
   )
 
+  const hasData = useMemo(() => data?.data?.length !== 0, [data?.data])
+
   const { greenBright, blueBright } = useColors()
 
   return (
-    <Box {...boxProps} height={height}>
+    <Box {...boxProps} height={hasData || showSkeleton ? height : 0}>
       <Box flexDirection="column" onLayout={handleHeaderLayout}>
         <Box flexDirection="row" justifyContent="space-between">
           <Text
@@ -156,6 +158,7 @@ const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
             selectedValue={activityChartRange}
             onValueChanged={handleChartRangeChanged}
             marginBottom="l"
+            visible={!showSkeleton && hasData}
           />
         </Box>
         <Box

@@ -12,10 +12,12 @@ import { Hotspot, Witness } from '@helium/http'
 import { Feature, FeatureCollection, Position } from 'geojson'
 import geojson2h3 from 'geojson2h3'
 import Config from 'react-native-config'
+import { useSelector } from 'react-redux'
 import { DiscoveryResponse } from '../store/discovery/discoveryTypes'
 import { Colors } from '../theme/theme'
 import { useColors } from '../theme/themeHooks'
 import { boundsToFeature } from '../utils/mapUtils'
+import { RootState } from '../store/rootReducer'
 
 export type HexProperties = {
   avg_reward_scale: number
@@ -79,6 +81,12 @@ const Coverage = ({
   showRewardScale,
   showGrid = true,
 }: Props) => {
+  const tileServerRes8Url = useSelector(
+    (state: RootState) => state.features.tileServerRes8Url,
+  )
+  const tileServerPointsUrl = useSelector(
+    (state: RootState) => state.features.tileServerPointsUrl,
+  )
   const boundingBox = useMemo(() => {
     if (!showGrid || !mapZoom || mapZoom < 11)
       return { type: 'Feature' } as Feature
@@ -179,7 +187,7 @@ const Coverage = ({
       </MapboxGL.ShapeSource>
       <MapboxGL.VectorSource
         id="network"
-        url="https://helium-hotspots.s3-us-west-2.amazonaws.com/public.h3_res8.json"
+        url={tileServerRes8Url}
         onPress={onPress}
       >
         <MapboxGL.FillLayer
@@ -207,7 +215,7 @@ const Coverage = ({
       </MapboxGL.VectorSource>
       <MapboxGL.VectorSource
         id="tileServerPoints"
-        url="https://helium-hotspots.s3-us-west-2.amazonaws.com/public.points.json"
+        url={tileServerPointsUrl}
         onPress={onPress}
       >
         <MapboxGL.SymbolLayer
