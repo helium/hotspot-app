@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import Balance, { NetworkTokens } from '@helium/currency'
+import Balance, { CurrencyType } from '@helium/currency'
 import animalHash from 'angry-purple-tiger'
 import HeliumReward from '@assets/images/heliumReward.svg'
 import LittleHotspot from '@assets/images/littleHotspot.svg'
@@ -8,13 +8,7 @@ import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
 import useCurrency from '../../../../utils/useCurrency'
 import { useColors } from '../../../../theme/themeHooks'
-
-type Reward = {
-  type: string
-  gateway: string
-  amount: Balance<NetworkTokens>
-  account: string
-}
+import { Reward } from '../../../../store/activity/activitySlice'
 
 type Props = {
   reward: Reward
@@ -33,7 +27,11 @@ const ActivityRewardLine = ({
   const [reward, setReward] = useState('')
 
   const updateReward = useCallback(async () => {
-    const nextReward = await hntBalanceToDisplayVal(amount, false)
+    const nextReward = await hntBalanceToDisplayVal(
+      new Balance(amount, CurrencyType.networkToken),
+      false,
+      3,
+    )
     setReward(`+${nextReward}`)
   }, [hntBalanceToDisplayVal, amount])
 

@@ -1,16 +1,5 @@
-import Balance, { CurrencyType } from '@helium/currency'
-import {
-  AddGatewayV1 as HttpAddGatewayV1,
-  AssertLocationV1 as HttpAssertLocationV1,
-  AssertLocationV2 as HttpAssertLocationV2,
-  PaymentV2 as HttpPaymentV2,
-  PendingTransaction as PendingTransactionType,
-  TransferHotspotV1 as HttpTransferHotspotV1,
-} from '@helium/http'
-import PendingTransaction from '@helium/http/build/models/PendingTransaction'
 import {
   AddGatewayV1,
-  AssertLocationV1,
   AssertLocationV2,
   PaymentV2,
   TokenBurnV1,
@@ -18,7 +7,11 @@ import {
 } from '@helium/transactions'
 import { useSelector } from 'react-redux'
 
-import activitySlice from '../store/activity/activitySlice'
+import activitySlice, {
+  Transaction,
+  PendingTransaction,
+  TxnType,
+} from '../store/activity/activitySlice'
 import { RootState } from '../store/rootReducer'
 import { useAppDispatch } from '../store/store'
 import { postWallet } from '../utils/walletClient'
@@ -30,7 +23,7 @@ type SignableTransaction =
   | TokenBurnV1
   | TransferHotspotV1
 
-type Submitter = (txn: SignableTransaction) => Promise<PendingTransactionType>
+type Submitter = (txn: SignableTransaction) => Promise<PendingTransaction>
 
 const useSubmitTxn = (): Submitter => {
   const dispatch = useAppDispatch()
@@ -47,10 +40,10 @@ const useSubmitTxn = (): Submitter => {
     const apiResponse = await postWallet('transactions', {
       txn: serializedTxn,
     })
-    const pendingTxn = new PendingTransaction(apiResponse)
+    const pendingTxn = apiResponse as PendingTransaction
 
     // construct mock pending txn
-    pendingTxn.type = txn.type
+    pendingTxn.type = txn.type as TxnType
     pendingTxn.status = 'pending'
     pendingTxn.txn = populatePendingTxn(txn, blockHeight || 0, pendingTxn.hash)
 
@@ -66,51 +59,23 @@ const populatePendingTxn = (
   txn: SignableTransaction,
   blockHeight: number,
   hash: string,
-) => {
+): Transaction => {
   if (txn instanceof PaymentV2) {
     const pending = txn as PaymentV2
 
     const data = {
+      time: 0,
       type: pending.type,
-      fee: new Balance(pending.fee, CurrencyType.dataCredit),
-      payer: txn.payer?.b58 || '',
+      fee: pending.fee,
+      payer: pending.payer?.b58 || '',
       signature: '',
-      payments: txn.payments.map((p) => ({
+      payments: pending.payments.map((p) => ({
         payee: p.payee.b58,
-        amount: new Balance(p.amount, CurrencyType.networkToken),
+        amount: p.amount,
       })),
       height: blockHeight,
       hash,
-    } as HttpPaymentV2
-
-    let totalAmount = new Balance(0, CurrencyType.networkToken)
-    data.payments.forEach((p) => {
-      totalAmount = totalAmount.plus(p.amount)
-    })
-
-    data.totalAmount = totalAmount
-
-    return data
-  }
-
-  if (txn instanceof AssertLocationV1) {
-    const pending = txn as AssertLocationV1
-
-    const data = {
-      type: pending.type,
-      stakingFee: new Balance(pending.stakingFee, CurrencyType.dataCredit),
-      payerSignature: '',
-      payer: pending.payer?.b58 || '',
-      ownerSignature: '',
-      owner: pending.owner?.b58 || '',
-      nonce: pending.nonce,
-      location: pending.location,
-      height: blockHeight,
-      hash,
-      gateway: pending.gateway?.b58 || '',
-      gatewaySignature: '',
-      fee: new Balance(pending.fee, CurrencyType.dataCredit),
-    } as HttpAssertLocationV1
+    } as Transaction
 
     return data
   }
@@ -118,8 +83,9 @@ const populatePendingTxn = (
   if (txn instanceof AssertLocationV2) {
     const pending = txn as AssertLocationV2
     return {
+      time: 0,
       type: pending.type,
-      stakingFee: new Balance(pending.stakingFee, CurrencyType.dataCredit),
+      stakingFee: pending.stakingFee,
       payerSignature: '',
       payer: pending.payer?.b58 || '',
       ownerSignature: '',
@@ -129,18 +95,19 @@ const populatePendingTxn = (
       height: blockHeight,
       hash,
       gateway: pending.gateway?.b58 || '',
-      fee: new Balance(pending.fee, CurrencyType.dataCredit),
+      fee: pending.fee,
       gain: pending.gain || 0,
       elevation: pending.elevation || 0,
-    } as HttpAssertLocationV2
+    } as Transaction
   }
 
   if (txn instanceof AddGatewayV1) {
     const pending = txn as AddGatewayV1
 
     const data = {
+      time: 0,
       type: pending.type,
-      stakingFee: new Balance(pending.stakingFee, CurrencyType.dataCredit),
+      stakingFee: pending.stakingFee,
       payerSignature: '',
       payer: pending.payer?.b58 || '',
       ownerSignature: '',
@@ -149,8 +116,8 @@ const populatePendingTxn = (
       hash,
       gateway: pending.gateway?.b58 || '',
       gatewaySignature: '',
-      fee: new Balance(pending.fee, CurrencyType.dataCredit),
-    } as HttpAddGatewayV1
+      fee: pending.fee,
+    } as Transaction
 
     return data
   }
@@ -159,18 +126,20 @@ const populatePendingTxn = (
     const pending = txn as TransferHotspotV1
 
     const data = {
+      time: 0,
       type: pending.type,
       buyer: pending.buyer?.b58 || '',
       seller: pending.seller?.b58 || '',
       height: blockHeight,
       hash,
       gateway: pending.gateway?.b58 || '',
-      fee: new Balance(pending.fee, CurrencyType.dataCredit),
-    } as HttpTransferHotspotV1
+      fee: pending.fee,
+    } as Transaction
 
     return data
   }
-  return txn
+
+  return {} as Transaction
 }
 
 export default useSubmitTxn

@@ -1,16 +1,19 @@
 import React, { memo, useMemo, forwardRef, Ref } from 'react'
 import BottomSheet from '@gorhom/bottom-sheet'
 import Animated from 'react-native-reanimated'
-import { AnyTransaction, PendingTransaction } from '@helium/http'
 import ActivityCardHeader from './ActivityCardHeader'
 import { FilterType } from '../walletTypes'
 import ActivityCardListView from './ActivityCardListView'
 import { Spacing } from '../../../../theme/theme'
+import {
+  PendingTransaction,
+  Transaction,
+} from '../../../../store/activity/activitySlice'
 
 type Props = {
   animatedIndex?: Animated.SharedValue<number>
   onChange?: (index: number) => void
-  txns: AnyTransaction[]
+  txns: Transaction[]
   pendingTxns: PendingTransaction[]
   filter: FilterType
   hasNoResults: boolean
@@ -35,7 +38,7 @@ const ActivityCard = forwardRef(
     ref: Ref<BottomSheet>,
   ) => {
     const getData = useMemo(() => {
-      let data: (AnyTransaction | PendingTransaction)[] = txns
+      let data: (Transaction | PendingTransaction)[] = txns
       if (filter === 'pending') {
         data = pendingTxns
       }

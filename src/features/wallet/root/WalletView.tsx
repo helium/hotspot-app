@@ -12,7 +12,6 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated'
-import { AnyTransaction, PendingTransaction } from '@helium/http'
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
 import {
   useSafeAreaInsets,
@@ -38,11 +37,15 @@ import animateTransition from '../../../utils/animateTransition'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 import useHaptic from '../../../utils/useHaptic'
 import WalletEmpty from './WalletEmpty'
+import {
+  PendingTransaction,
+  Transaction,
+} from '../../../store/activity/activitySlice'
 
 type Props = {
   showSkeleton: boolean
   activityViewState: ActivityViewState
-  txns: AnyTransaction[]
+  txns: Transaction[]
   pendingTxns: PendingTransaction[]
 }
 

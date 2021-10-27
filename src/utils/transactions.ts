@@ -22,7 +22,7 @@ export const encodeMemoString = (utf8Input: string | undefined) => {
   return buff.toString('base64')
 }
 
-export const decodeMemoString = (base64String: string | undefined) => {
+export const decodeMemoString = (base64String: string | undefined | null) => {
   if (!base64String) return ''
   const buff = Buffer.from(base64String, 'base64')
   return buff.toString('utf8')

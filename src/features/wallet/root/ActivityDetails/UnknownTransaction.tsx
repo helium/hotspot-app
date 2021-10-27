@@ -1,10 +1,12 @@
 import React from 'react'
-import { AnyTransaction, PendingTransaction } from '@helium/http'
-import { TxnTypeKeys } from '../useActivityItem'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
+import {
+  Transaction,
+  TxnTypeKeys,
+} from '../../../../store/activity/activitySlice'
 
-type Props = { item: AnyTransaction | PendingTransaction }
+type Props = { item: Transaction }
 const UnknownTransaction = ({ item }: Props) => {
   if (TxnTypeKeys.find((k) => k === item.type)) {
     return null

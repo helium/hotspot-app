@@ -1,12 +1,15 @@
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { AnyTransaction, PendingTransaction, PaymentV1 } from '@helium/http'
 import ActivityDetails from './ActivityDetails/ActivityDetails'
 import useVisible from '../../../utils/useVisible'
 import usePrevious from '../../../utils/usePrevious'
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
-import { fetchTxns } from '../../../store/activity/activitySlice'
+import {
+  AccountTransactions,
+  fetchTxns,
+  PendingTransaction,
+} from '../../../store/activity/activitySlice'
 import animateTransition from '../../../utils/animateTransition'
 import { ActivityViewState } from './walletTypes'
 import SafeAreaBox from '../../../components/SafeAreaBox'
@@ -14,7 +17,10 @@ import WalletView from './WalletView'
 
 const WalletScreen = () => {
   const dispatch = useAppDispatch()
-  const [transactionData, setTransactionData] = useState<AnyTransaction[]>([])
+  const [transactionData, setTransactionData] = useState<AccountTransactions>({
+    data: [],
+    cursor: null,
+  })
   const [pendingTxns, setPendingTxns] = useState<PendingTransaction[]>([])
   const [showSkeleton, setShowSkeleton] = useState(true)
   const [activityViewState, setActivityViewState] = useState<ActivityViewState>(
@@ -31,7 +37,7 @@ const WalletScreen = () => {
   const prevVisible = usePrevious(visible)
   const prevBlockHeight = usePrevious(blockHeight)
 
-  const updateTxnData = useCallback((data: AnyTransaction[]) => {
+  const updateTxnData = useCallback((data: AccountTransactions) => {
     animateTransition('WalletScreen.UpdateTxnData', { enabledOnAndroid: false })
     setTransactionData(data)
   }, [])
@@ -46,31 +52,29 @@ const WalletScreen = () => {
 
   useEffect(() => {
     if (filter === 'pending') {
-      setTransactionData([])
+      setTransactionData({ cursor: null, data: [] })
       return
     }
     if (txns[filter].status === 'pending' || txns[filter].status === 'idle') {
       return
     }
     const { data } = txns[filter]
-    if (data.length !== transactionData.length) {
-      updateTxnData(data)
+    if (data.length !== transactionData.data.length) {
+      updateTxnData(txns[filter])
     } else if (data.length) {
       const needsUpdate = data.find((txn, index) => {
-        const prevTxn = txn as PaymentV1
-        const nextTxn = transactionData[index] as PaymentV1
+        const prevTxn = txn
+        const nextTxn = transactionData.data[index]
 
         return nextTxn.hash !== prevTxn.hash
       })
 
       if (!needsUpdate) return
 
-      updateTxnData(data)
+      updateTxnData(txns[filter])
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txns[filter]])
-
-  useEffect(() => {}, [showSkeleton, activityViewState])
 
   useEffect(() => {
     if (!txns.pending.data.length && !pendingTxns.length) return
@@ -155,7 +159,7 @@ const WalletScreen = () => {
 
   useEffect(() => {
     if (!visible) return
-    if (requestMore && txns[filter].status !== 'pending') {
+    if (requestMore && txns[filter].status !== 'pending' && filter !== 'all') {
       dispatch(fetchTxns({ filter }))
     }
   }, [dispatch, filter, requestMore, txns, visible])
@@ -166,7 +170,7 @@ const WalletScreen = () => {
         <WalletView
           activityViewState={activityViewState}
           showSkeleton={showSkeleton}
-          txns={transactionData}
+          txns={transactionData.data}
           pendingTxns={pendingTxns}
         />
       </SafeAreaBox>

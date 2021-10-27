@@ -3,6 +3,22 @@ import { differenceBy, unionBy } from 'lodash'
 import { Filters, FilterType } from '../../features/wallet/root/walletTypes'
 import { getWallet } from '../../utils/walletClient'
 
+export const TxnTypeKeys = [
+  'rewards_v1',
+  'rewards_v2',
+  'payment_v1',
+  'payment_v2',
+  'add_gateway_v1',
+  'assert_location_v1',
+  'assert_location_v2',
+  'transfer_hotspot_v1',
+  'token_burn_v1',
+  'unstake_validator_v1',
+  'stake_validator_v1',
+  'transfer_validator_stake_v1',
+] as const
+export type TxnType = typeof TxnTypeKeys[number]
+
 export type Reward = {
   account: string
   amount: number
@@ -13,46 +29,47 @@ export type Reward = {
 export type Payment = {
   payee: string
   amount: number
+  memo?: string | null
 }
-
-type TxnType =
-  | 'rewards_v1'
-  | 'rewards_v2'
-  | 'transfer_hotspot_v1'
-  | 'add_gateway_v1'
-  | 'payment_v1'
-  | 'payment_v2'
-  | 'assert_location_v1'
-  | 'assert_location_v2'
-  | 'stake_validator_v1'
-  | 'transfer_validator_stake_v1'
-  | 'token_burn_v1'
-  | 'unstake_validator_v1'
 
 export type Transaction = {
   time: number
-  memo: string | null
+  memo?: string | null
   type: TxnType
   hash: string
-  endEpoch: number | null
-  startEpoch: number | null
-  height: number
-  seller: string | null
-  amountToSeller: number | null
-  rewards: Reward[] | null
-  payer: string | null
-  nonce: number | null
-  fee: number | null
-  amount: number | null
-  stakingFee: number | null
-  stake: number | null
-  stakeAmount: number | null
-  payments: Payment[] | null
+  endEpoch?: number | null
+  startEpoch?: number | null
+  height?: number
+  seller?: string | null
+  amountToSeller?: number | null
+  rewards?: Reward[] | null
+  payer?: string | null
+  payee?: string | null
+  nonce?: number | null
+  fee?: number | null
+  amount?: number | null
+  stakingFee?: number | null
+  stake?: number | null
+  stakeAmount?: number | null
+  payments?: Payment[] | null
+  gateway?: string | null
+  address?: string | null
+  oldAddress?: string | null
+  newAddress?: string | null
+  oldOwner?: string | null
+  newOwner?: string | null
+  lat?: number | null
+  lng?: number | null
+  gain?: number | null
+  elevation?: number | null
+  location?: string | null
+  owner?: string | null
+  buyer?: string | null
 }
 
 export type AccountTransactions = {
   cursor: string | null
-  data: Transaction[] | null
+  data: Transaction[]
 }
 
 export type PendingTransaction = {
@@ -71,25 +88,25 @@ export type ActivityState = {
   txns: {
     all: {
       cursor: string | null
-      data: Transaction[] | null
+      data: Transaction[]
       status: Loading
       hasInitialLoad: boolean
     }
     hotspot: {
       cursor: string | null
-      data: Transaction[] | null
+      data: Transaction[]
       status: Loading
       hasInitialLoad: boolean
     }
     mining: {
       cursor: string | null
-      data: Transaction[] | null
+      data: Transaction[]
       status: Loading
       hasInitialLoad: boolean
     }
     payment: {
       cursor: string | null
-      data: Transaction[] | null
+      data: Transaction[]
       status: Loading
       hasInitialLoad: boolean
     }
@@ -142,12 +159,18 @@ export const fetchTxns = createAsyncThunk<
     if (filter === 'pending') {
       return getWallet('accounts/activity/pending', null, { camelCase: true })
     }
+    let params = {}
+    if (cursor) {
+      params = { cursor }
+    }
+    if (filter) {
+      params = { ...params, filter: Filters[filter].join(',') }
+    }
 
-    return getWallet(
-      'accounts/activity',
-      { cursor, filter: Filters[filter].join(',') },
-      { camelCase: true },
-    )
+    return getWallet('accounts/activity', params, {
+      camelCase: true,
+      showCursor: true,
+    })
   },
 )
 
@@ -260,8 +283,8 @@ const activitySlice = createSlice({
           const accountTransactions = payload as AccountTransactions
           // if (accountTransactions.data?.length === 0) return // TODO: Is this needed?
           const nextTxns = [
-            ...(state.txns[filter].data || []),
-            ...(accountTransactions.data || []),
+            ...state.txns[filter].data,
+            ...accountTransactions.data,
           ]
           state.txns[filter].data = nextTxns
           state.txns[filter].cursor = accountTransactions.cursor

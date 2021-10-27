@@ -747,6 +747,8 @@ export default {
   transactions: {
     pending: 'Pending',
     mining: 'Mining Rewards',
+    all_footer:
+      "You've reached the end of your recent activity. Select a filter or go to the explorer to view more.",
     sent: 'Sent HNT',
     stakeValidator: 'Stake HNT',
     unstakeValidator: 'Unstake HNT',
