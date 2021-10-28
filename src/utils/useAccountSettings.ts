@@ -99,7 +99,11 @@ export default () => {
   }, [accountBackedUp, refreshAccountSettingsAndFeatures])
 
   useAppState({
-    onForeground: async () => refreshAccountSettingsAndFeatures(),
+    onForeground: async () => {
+      if (accountBackedUp) {
+        await refreshAccountSettingsAndFeatures()
+      }
+    },
   })
 
   useEffect(() => {

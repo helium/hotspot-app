@@ -1,7 +1,13 @@
 import 'react-native-gesture-handler'
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
-import { LogBox, Platform, StatusBar, UIManager } from 'react-native'
+import {
+  ActivityIndicator,
+  LogBox,
+  Platform,
+  StatusBar,
+  UIManager,
+} from 'react-native'
 import useAppState from 'react-native-appstate-hook'
 import { ThemeProvider } from '@shopify/restyle'
 import OneSignal, { OpenedEvent } from 'react-native-onesignal'
@@ -37,6 +43,7 @@ import AppLinkProvider from './providers/AppLinkProvider'
 import { navigationRef } from './navigation/navigator'
 import useSettingsRestore from './utils/useAccountSettings'
 import useMount from './utils/useMount'
+import Box from './components/Box'
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
@@ -94,11 +101,11 @@ const App = () => {
   })
 
   useEffect(() => {
-    if (!settingsLoaded && !featuresLoaded) return
+    if (!isBackedUp || !settingsLoaded || !featuresLoaded) return
 
     dispatch(fetchInitialData())
     configChainVars()
-  }, [dispatch, featuresLoaded, settingsLoaded])
+  }, [isBackedUp, dispatch, featuresLoaded, settingsLoaded])
 
   useEffect(() => {
     OneSignal.setAppId(Config.ONE_SIGNAL_APP_ID)
@@ -144,12 +151,12 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appState])
 
-  // update initial data when account is restored or app comes into foreground from background
+  // update initial data when app comes into foreground from background and is logged in
   useEffect(() => {
-    if (prevAppState === 'background' && appState === 'active') {
+    if (prevAppState === 'background' && appState === 'active' && isBackedUp) {
       dispatch(fetchInitialData())
     }
-  }, [appState, dispatch, prevAppState])
+  }, [isBackedUp, appState, dispatch, prevAppState])
 
   // hide splash screen
   useAsync(async () => {
@@ -191,6 +198,11 @@ const App = () => {
     }
   }, [blockHeight, dispatch, isBackedUp, settingsLoaded, featuresLoaded])
 
+  const initialized = useMemo(() => {
+    const loggedOut = isRestored && !isBackedUp
+    return loggedOut || (featuresLoaded && settingsLoaded)
+  }, [featuresLoaded, isBackedUp, isRestored, settingsLoaded])
+
   return (
     <ThemeProvider theme={theme}>
       <BottomSheetModalProvider>
@@ -205,21 +217,21 @@ const App = () => {
                 {Platform.OS === 'android' && (
                   <StatusBar translucent backgroundColor="transparent" />
                 )}
-                {featuresLoaded && settingsLoaded && (
+                {initialized ? (
                   <NavigationContainer ref={navigationRef}>
                     <AppLinkProvider>
                       <NavigationRoot />
                     </AppLinkProvider>
                   </NavigationContainer>
+                ) : (
+                  <Box flex={1} justifyContent="center" alignItems="center">
+                    <ActivityIndicator color="white" />
+                  </Box>
                 )}
               </SafeAreaProvider>
               <StatusBanner />
               <SecurityScreen
-                visible={
-                  (appState !== 'active' && appState !== 'unknown') ||
-                  !featuresLoaded ||
-                  !settingsLoaded
-                }
+                visible={appState !== 'active' && appState !== 'unknown'}
               />
             </ConnectedHotspotProvider>
           </BluetoothProvider>
