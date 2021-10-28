@@ -9,15 +9,6 @@ export const FilterKeys = [
 ] as const
 export type FilterType = typeof FilterKeys[number]
 
-export const FilterPagingKeys = [
-  'mining',
-  'payment',
-  'hotspot',
-  'burn',
-  'validator',
-] as const
-export type FilterPagingType = typeof FilterPagingKeys[number]
-
 export const Filters = {
   all: ['all'],
   mining: ['rewards_v1', 'rewards_v2'],

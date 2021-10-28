@@ -11,7 +11,6 @@ import {
 } from '../../../../store/activity/activitySlice'
 import { RootState } from '../../../../store/rootReducer'
 import { useAppDispatch } from '../../../../store/store'
-import { FilterPagingKeys, FilterPagingType } from '../walletTypes'
 
 const ActivityCardLoading = ({
   hasNoResults = false,
@@ -26,17 +25,18 @@ const ActivityCardLoading = ({
   const dispatch = useAppDispatch()
 
   const handleRetry = useCallback(() => {
-    if (
-      txns[filter].cursor &&
-      FilterPagingKeys.includes(filter as FilterPagingType)
-    ) {
-      dispatch(fetchMoreTxns({ filter: filter as FilterPagingType }))
+    if (txns[filter].cursor && filter !== 'pending') {
+      dispatch(fetchMoreTxns({ filter }))
     } else {
       dispatch(fetchTxnsHead({ filter }))
     }
   }, [dispatch, filter, txns])
 
-  if (filter === 'all' && txns[filter].status === 'fulfilled')
+  if (
+    filter === 'all' &&
+    txns[filter].status === 'fulfilled' &&
+    !txns[filter].cursor
+  ) {
     return (
       <Text
         padding="l"
@@ -48,6 +48,7 @@ const ActivityCardLoading = ({
         {t('transactions.all_footer')}
       </Text>
     )
+  }
 
   if (
     txns[filter].status === 'rejected' ||

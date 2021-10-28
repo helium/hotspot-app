@@ -11,11 +11,7 @@ import activitySlice, {
   fetchTxnsHead,
 } from '../../../store/activity/activitySlice'
 import animateTransition from '../../../utils/animateTransition'
-import {
-  ActivityViewState,
-  FilterPagingKeys,
-  FilterPagingType,
-} from './walletTypes'
+import { ActivityViewState } from './walletTypes'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import WalletView from './WalletView'
 
@@ -132,12 +128,12 @@ const WalletScreen = () => {
     if (!visible) return
     if (
       requestMore &&
-      FilterPagingKeys.includes(filter as FilterPagingType) &&
+      filter !== 'pending' &&
       txns[filter].status !== 'pending' &&
       txns[filter].status !== 'more_rejected' &&
       txns[filter].cursor
     ) {
-      dispatch(fetchMoreTxns({ filter: filter as FilterPagingType }))
+      dispatch(fetchMoreTxns({ filter }))
     }
   }, [dispatch, filter, requestMore, txns, visible])
 

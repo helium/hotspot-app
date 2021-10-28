@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { differenceBy, unionBy, uniqBy } from 'lodash'
 import {
-  FilterPagingType,
   Filters,
   FilterType,
   TxnType,
@@ -145,7 +144,7 @@ export const ACTIVITY_FETCH_SIZE = 15
 
 export const fetchMoreTxns = createAsyncThunk<
   AccountTransactions,
-  { filter: FilterPagingType }
+  { filter: Exclude<FilterType, 'pending'> }
 >('activity/fetchMoreTxns', async ({ filter }, { getState }) => {
   const { cursor } = (getState() as {
     activity: ActivityState
