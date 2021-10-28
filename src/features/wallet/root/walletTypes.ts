@@ -3,11 +3,19 @@ export const FilterKeys = [
   'mining',
   'payment',
   'hotspot',
+  'burn',
+  'validator',
   'pending',
 ] as const
 export type FilterType = typeof FilterKeys[number]
 
-export const FilterPagingKeys = ['mining', 'payment', 'hotspot'] as const
+export const FilterPagingKeys = [
+  'mining',
+  'payment',
+  'hotspot',
+  'burn',
+  'validator',
+] as const
 export type FilterPagingType = typeof FilterPagingKeys[number]
 
 export const Filters = {
@@ -20,6 +28,12 @@ export const Filters = {
     'assert_location_v2',
     'transfer_hotspot_v1',
   ],
+  validator: [
+    'unstake_validator_v1',
+    'stake_validator_v1',
+    'transfer_validator_stake_v1',
+  ],
+  burn: ['token_burn_v1'],
   pending: [],
 } as Record<FilterType, string[]>
 

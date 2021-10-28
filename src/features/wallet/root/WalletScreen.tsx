@@ -134,6 +134,7 @@ const WalletScreen = () => {
       requestMore &&
       FilterPagingKeys.includes(filter as FilterPagingType) &&
       txns[filter].status !== 'pending' &&
+      txns[filter].status !== 'more_rejected' &&
       txns[filter].cursor
     ) {
       dispatch(fetchMoreTxns({ filter: filter as FilterPagingType }))

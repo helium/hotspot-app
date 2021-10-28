@@ -99,10 +99,14 @@ const ActivityCardListView = ({
     }
   }, [m])
 
-  const footer = useMemo(
-    () => <ActivityCardLoading hasNoResults={hasNoResults} />,
-    [hasNoResults],
-  )
+  const footer = useMemo(() => {
+    return (
+      <ActivityCardLoading
+        hasNoResults={hasNoResults}
+        showSkeleton={showSkeleton}
+      />
+    )
+  }, [hasNoResults, showSkeleton])
 
   const header = useMemo(() => {
     return (

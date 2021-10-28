@@ -59,7 +59,10 @@ import useAlert from '../../../utils/useAlert'
 import { getLocationPermission } from '../../../store/location/locationSlice'
 import { isDataOnly } from '../../../utils/hotspotUtils'
 import { updateSetting } from '../../../store/account/accountSlice'
-import { fetchTxns, Transaction } from '../../../store/activity/activitySlice'
+import {
+  fetchTxnsHead,
+  Transaction,
+} from '../../../store/activity/activitySlice'
 import { isPendingTransaction } from '../../wallet/root/useActivityItem'
 
 type State = 'init' | 'scan' | 'transfer' | 'discoveryMode' | 'updateHotspot'
@@ -187,7 +190,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
 
   const onPressUpdateHotspot = useCallback(async () => {
     // Check for pending assert
-    const pending = (await dispatch(fetchTxns({ filter: 'pending' }))) as {
+    const pending = (await dispatch(fetchTxnsHead({ filter: 'pending' }))) as {
       payload?: Transaction[]
     }
     const txns = pending.payload

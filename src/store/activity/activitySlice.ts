@@ -86,7 +86,12 @@ export type PendingTransaction = {
   updated_at: string
 }
 
-export type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
+export type Loading =
+  | 'idle'
+  | 'pending'
+  | 'fulfilled'
+  | 'rejected'
+  | 'more_rejected'
 
 export type Activity<T> = {
   cursor?: string | null
@@ -100,6 +105,8 @@ export type ActivityState = {
     hotspot: Activity<Transaction>
     mining: Activity<Transaction>
     payment: Activity<Transaction>
+    burn: Activity<Transaction>
+    validator: Activity<Transaction>
     pending: Activity<PendingTransaction>
   }
   filter: FilterType
@@ -115,6 +122,16 @@ const initialState: ActivityState = {
       hasInitialLoad: false,
     },
     hotspot: {
+      data: [],
+      status: 'idle',
+      hasInitialLoad: false,
+    },
+    burn: {
+      data: [],
+      status: 'idle',
+      hasInitialLoad: false,
+    },
+    validator: {
       data: [],
       status: 'idle',
       hasInitialLoad: false,
@@ -236,6 +253,7 @@ const activitySlice = createSlice({
           state.txns[filter].hasInitialLoad = true
         }
         state.requestMore = false
+        state.txns[filter].status = 'more_rejected'
         console.error(`Request to fetchMoreTxns with ${filter} was rejected`)
       },
     )

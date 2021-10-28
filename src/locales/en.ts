@@ -747,8 +747,6 @@ export default {
   transactions: {
     pending: 'Pending',
     mining: 'Mining Rewards',
-    all_footer:
-      "You've reached the end of your recent activity. Select a filter or go to the explorer to view more.",
     sent: 'Sent HNT',
     stakeValidator: 'Stake HNT',
     unstakeValidator: 'Unstake HNT',
@@ -768,9 +766,14 @@ export default {
       mining: 'Mining Rewards',
       payment: 'Payment Transactions',
       hotspot: 'Hotspot Transactions',
+      burn: 'Burn Transactions',
+      validator: 'Validator Transactions',
       pending: 'Pending Transactions',
     },
     no_results: 'No Results',
+    all_footer:
+      "You've reached the end of your recent activity. Select a filter or go to the explorer to view more.",
+    rejected: 'Failed to load. Tap to try again',
   },
   hotspot_settings: {
     title: 'Hotspot Settings',
