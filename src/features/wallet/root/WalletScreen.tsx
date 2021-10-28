@@ -1,27 +1,26 @@
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react'
+import React, { memo, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
+import useAppState from 'react-native-appstate-hook'
 import ActivityDetails from './ActivityDetails/ActivityDetails'
 import useVisible from '../../../utils/useVisible'
 import usePrevious from '../../../utils/usePrevious'
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
-import {
-  AccountTransactions,
-  fetchTxns,
-  PendingTransaction,
+import activitySlice, {
+  fetchMoreTxns,
+  fetchTxnsHead,
 } from '../../../store/activity/activitySlice'
 import animateTransition from '../../../utils/animateTransition'
-import { ActivityViewState } from './walletTypes'
+import {
+  ActivityViewState,
+  FilterPagingKeys,
+  FilterPagingType,
+} from './walletTypes'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import WalletView from './WalletView'
 
 const WalletScreen = () => {
   const dispatch = useAppDispatch()
-  const [transactionData, setTransactionData] = useState<AccountTransactions>({
-    data: [],
-    cursor: null,
-  })
-  const [pendingTxns, setPendingTxns] = useState<PendingTransaction[]>([])
   const [showSkeleton, setShowSkeleton] = useState(true)
   const [activityViewState, setActivityViewState] = useState<ActivityViewState>(
     'undetermined',
@@ -37,50 +36,25 @@ const WalletScreen = () => {
   const prevVisible = usePrevious(visible)
   const prevBlockHeight = usePrevious(blockHeight)
 
-  const updateTxnData = useCallback((data: AccountTransactions) => {
-    animateTransition('WalletScreen.UpdateTxnData', { enabledOnAndroid: false })
-    setTransactionData(data)
-  }, [])
+  const { appState } = useAppState()
+  const prevAppState = usePrevious(appState)
+
+  useEffect(() => {
+    // clear the list data when coming into foreground
+    if (prevAppState && appState === 'active' && prevAppState !== 'active') {
+      dispatch(activitySlice.actions.reset())
+      dispatch(fetchTxnsHead({ filter: 'all' }))
+      dispatch(fetchTxnsHead({ filter: 'pending' }))
+    }
+  }, [appState, dispatch, filter, prevAppState])
 
   useEffect(() => {
     const preloadData = () => {
-      dispatch(fetchTxns({ filter: 'all', reset: true }))
-      dispatch(fetchTxns({ filter: 'pending' }))
+      dispatch(fetchTxnsHead({ filter: 'all' }))
+      dispatch(fetchTxnsHead({ filter: 'pending' }))
     }
     preloadData()
   }, [dispatch])
-
-  useEffect(() => {
-    if (filter === 'pending') {
-      setTransactionData({ cursor: null, data: [] })
-      return
-    }
-    if (txns[filter].status === 'pending' || txns[filter].status === 'idle') {
-      return
-    }
-    const { data } = txns[filter]
-    if (data.length !== transactionData.data.length) {
-      updateTxnData(txns[filter])
-    } else if (data.length) {
-      const needsUpdate = data.find((txn, index) => {
-        const prevTxn = txn
-        const nextTxn = transactionData.data[index]
-
-        return nextTxn.hash !== prevTxn.hash
-      })
-
-      if (!needsUpdate) return
-
-      updateTxnData(txns[filter])
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [txns[filter]])
-
-  useEffect(() => {
-    if (!txns.pending.data.length && !pendingTxns.length) return
-
-    setPendingTxns(txns.pending.data)
-  }, [pendingTxns, txns.pending.data])
 
   useEffect(() => {
     // once you have activity, you always have activity
@@ -123,10 +97,9 @@ const WalletScreen = () => {
       clearInterval(interval.current)
       interval.current = undefined
     } else if (visible && !interval.current) {
-      dispatch(fetchTxns({ filter: 'pending' }))
-
+      dispatch(fetchTxnsHead({ filter: 'pending' }))
       interval.current = setInterval(() => {
-        dispatch(fetchTxns({ filter: 'pending' }))
+        dispatch(fetchTxnsHead({ filter: 'pending' }))
       }, 5000)
     }
   }, [dispatch, visible])
@@ -138,14 +111,12 @@ const WalletScreen = () => {
 
     // Block height is being request every 30s in App.tsx
     // Reset data if block changes or view becomes visible
-    if (!prevVisible || blockHeight !== prevBlockHeight) {
-      dispatch(fetchTxns({ filter, reset: true }))
-      return
-    }
-
-    // if filter changes & there's no txn data for that filter, request
-    if (txns[filter].data.length === 0 && txns[filter].status === 'idle') {
-      dispatch(fetchTxns({ filter }))
+    if (
+      !prevVisible ||
+      blockHeight !== prevBlockHeight ||
+      txns[filter].status === 'idle'
+    ) {
+      dispatch(fetchTxnsHead({ filter }))
     }
   }, [
     visible,
@@ -159,8 +130,13 @@ const WalletScreen = () => {
 
   useEffect(() => {
     if (!visible) return
-    if (requestMore && txns[filter].status !== 'pending' && filter !== 'all') {
-      dispatch(fetchTxns({ filter }))
+    if (
+      requestMore &&
+      FilterPagingKeys.includes(filter as FilterPagingType) &&
+      txns[filter].status !== 'pending' &&
+      txns[filter].cursor
+    ) {
+      dispatch(fetchMoreTxns({ filter: filter as FilterPagingType }))
     }
   }, [dispatch, filter, requestMore, txns, visible])
 
@@ -170,8 +146,8 @@ const WalletScreen = () => {
         <WalletView
           activityViewState={activityViewState}
           showSkeleton={showSkeleton}
-          txns={transactionData.data}
-          pendingTxns={pendingTxns}
+          txns={filter === 'pending' ? [] : txns[filter].data}
+          pendingTxns={txns.pending.data}
         />
       </SafeAreaBox>
       {detailTxn && <ActivityDetails detailTxn={detailTxn} />}

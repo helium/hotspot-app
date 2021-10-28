@@ -1,6 +1,10 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import { differenceBy, unionBy } from 'lodash'
-import { Filters, FilterType } from '../../features/wallet/root/walletTypes'
+import { differenceBy, unionBy, uniqBy } from 'lodash'
+import {
+  FilterPagingType,
+  Filters,
+  FilterType,
+} from '../../features/wallet/root/walletTypes'
 import { getWallet } from '../../utils/walletClient'
 
 export const TxnTypeKeys = [
@@ -84,38 +88,19 @@ export type PendingTransaction = {
 
 export type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
 
+export type Activity<T> = {
+  cursor?: string | null
+  data: T[]
+  status: Loading
+  hasInitialLoad: boolean
+}
 export type ActivityState = {
   txns: {
-    all: {
-      cursor: string | null
-      data: Transaction[]
-      status: Loading
-      hasInitialLoad: boolean
-    }
-    hotspot: {
-      cursor: string | null
-      data: Transaction[]
-      status: Loading
-      hasInitialLoad: boolean
-    }
-    mining: {
-      cursor: string | null
-      data: Transaction[]
-      status: Loading
-      hasInitialLoad: boolean
-    }
-    payment: {
-      cursor: string | null
-      data: Transaction[]
-      status: Loading
-      hasInitialLoad: boolean
-    }
-    pending: {
-      cursor: string | null
-      data: PendingTransaction[]
-      status: Loading
-      hasInitialLoad: boolean
-    }
+    all: Activity<Transaction>
+    hotspot: Activity<Transaction>
+    mining: Activity<Transaction>
+    payment: Activity<Transaction>
+    pending: Activity<PendingTransaction>
   }
   filter: FilterType
   detailTxn?: Transaction | PendingTransaction
@@ -126,14 +111,29 @@ const initialState: ActivityState = {
   txns: {
     all: {
       data: [],
-      cursor: null,
       status: 'idle',
       hasInitialLoad: false,
     },
-    hotspot: { data: [], cursor: null, status: 'idle', hasInitialLoad: false },
-    mining: { data: [], cursor: null, status: 'idle', hasInitialLoad: false },
-    payment: { data: [], cursor: null, status: 'idle', hasInitialLoad: false },
-    pending: { data: [], cursor: null, status: 'idle', hasInitialLoad: false },
+    hotspot: {
+      data: [],
+      status: 'idle',
+      hasInitialLoad: false,
+    },
+    mining: {
+      data: [],
+      status: 'idle',
+      hasInitialLoad: false,
+    },
+    payment: {
+      data: [],
+      status: 'idle',
+      hasInitialLoad: false,
+    },
+    pending: {
+      data: [],
+      status: 'idle',
+      hasInitialLoad: false,
+    },
   },
   filter: 'all',
   requestMore: false,
@@ -141,38 +141,40 @@ const initialState: ActivityState = {
 
 export const ACTIVITY_FETCH_SIZE = 15
 
-type FetchTxns = { filter: FilterType; reset?: boolean }
-export const fetchTxns = createAsyncThunk<
+export const fetchMoreTxns = createAsyncThunk<
+  AccountTransactions,
+  { filter: FilterPagingType }
+>('activity/fetchMoreTxns', async ({ filter }, { getState }) => {
+  const { cursor } = (getState() as {
+    activity: ActivityState
+  }).activity.txns[filter]
+
+  if (!cursor) {
+    throw new Error(`Cannot fetch more for filter ${filter} - no cursor`)
+  }
+
+  const params = { cursor, filter: Filters[filter].join(',') }
+
+  return getWallet('accounts/activity', params, {
+    camelCase: true,
+    showCursor: true,
+  })
+})
+
+export const fetchTxnsHead = createAsyncThunk<
   AccountTransactions | PendingTransaction[],
-  FetchTxns
->(
-  'activity/fetchAccountActivity',
-  async ({ filter, reset }, { dispatch, getState }) => {
-    let { cursor } = (getState() as {
-      activity: ActivityState
-    }).activity.txns[filter]
-    if (reset) {
-      dispatch(activitySlice.actions.resetTxns(filter))
-      cursor = null
-    }
+  { filter: FilterType }
+>('activity/fetchTxnsHead', async ({ filter }) => {
+  const params = { filter: Filters[filter].join(',') }
 
-    if (filter === 'pending') {
-      return getWallet('accounts/activity/pending', null, { camelCase: true })
-    }
-    let params = {}
-    if (cursor) {
-      params = { cursor }
-    }
-    if (filter) {
-      params = { ...params, filter: Filters[filter].join(',') }
-    }
-
-    return getWallet('accounts/activity', params, {
-      camelCase: true,
-      showCursor: true,
-    })
-  },
-)
+  if (filter === 'pending') {
+    return getWallet('accounts/activity/pending', null, { camelCase: true })
+  }
+  return getWallet('accounts/activity', params, {
+    camelCase: true,
+    showCursor: true,
+  })
+})
 
 const activitySlice = createSlice({
   name: 'activity',
@@ -184,17 +186,8 @@ const activitySlice = createSlice({
     requestMoreActivity: (state) => {
       state.requestMore = true
     },
-    resetTxns: (state, action: PayloadAction<FilterType>) => {
-      Object.keys(state.txns).forEach((key) => {
-        const filterType = key as FilterType
-        if (filterType !== 'pending' && filterType !== action.payload) {
-          // Don't reset pending, it updates on an interval, and we clear it manually
-          // Don't reset the requested filter type. We want that one to stay pending
-          state.txns[filterType].status = 'idle'
-          state.txns[filterType].cursor = null
-          state.txns[filterType].data = []
-        }
-      })
+    reset: () => {
+      return { ...initialState }
     },
     addPendingTransaction: (
       state,
@@ -217,7 +210,7 @@ const activitySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(
-      fetchTxns.pending,
+      fetchMoreTxns.pending,
       (
         state,
         {
@@ -230,7 +223,7 @@ const activitySlice = createSlice({
       },
     )
     builder.addCase(
-      fetchTxns.rejected,
+      fetchMoreTxns.rejected,
       (
         state,
         {
@@ -243,60 +236,109 @@ const activitySlice = createSlice({
           state.txns[filter].hasInitialLoad = true
         }
         state.requestMore = false
-        state.txns[filter].status = 'rejected'
+        console.error(`Request to fetchMoreTxns with ${filter} was rejected`)
       },
     )
     builder.addCase(
-      fetchTxns.fulfilled,
+      fetchMoreTxns.fulfilled,
       (
         state,
         {
           payload,
           meta: {
-            arg: { filter, reset },
+            arg: { filter },
           },
         },
       ) => {
         state.requestMore = false
         state.txns[filter].status = 'fulfilled'
+        state.txns[filter].hasInitialLoad = true
+
+        const nextTxns = uniqBy(
+          [...state.txns[filter].data, ...payload.data],
+          (t) => t.hash,
+        ).sort((a, b) => b.time - a.time)
+        state.txns[filter].data = nextTxns
+        state.txns[filter].cursor = payload.cursor
+
+        // remove any pending txns with the same hash
+        const nextPending = differenceBy(
+          state.txns.pending.data,
+          nextTxns,
+          'hash',
+        )
+        state.txns.pending.data = nextPending
+      },
+    )
+
+    builder.addCase(
+      fetchTxnsHead.pending,
+      (
+        state,
+        {
+          meta: {
+            arg: { filter },
+          },
+        },
+      ) => {
+        state.txns[filter].status = 'pending'
+      },
+    )
+    builder.addCase(
+      fetchTxnsHead.rejected,
+      (
+        state,
+        {
+          meta: {
+            arg: { filter },
+          },
+        },
+      ) => {
         if (!state.txns[filter].hasInitialLoad) {
           state.txns[filter].hasInitialLoad = true
         }
-
-        if (reset && state.filter === filter) {
-          Object.keys(state.txns).forEach((key) => {
-            const filterType = key as FilterType
-            if (filterType !== 'pending') {
-              // Don't reset pending, we will clear it manually
-              state.txns[filterType].data = []
-            }
-          })
-        }
+        state.txns[filter].status = 'rejected'
+        console.error(`Request to fetchTxnsHead with ${filter} was rejected`)
+      },
+    )
+    builder.addCase(
+      fetchTxnsHead.fulfilled,
+      (
+        state,
+        {
+          payload,
+          meta: {
+            arg: { filter },
+          },
+        },
+      ) => {
+        state.txns[filter].status = 'fulfilled'
+        state.txns[filter].hasInitialLoad = true
 
         if (filter === 'pending') {
           const pending = payload as PendingTransaction[]
-          // if (pending.length === 0) return // TODO: Is this needed?
           const filtered = pending.filter((txn) => txn.status === 'pending')
           const joined = unionBy(filtered, state.txns.pending.data, 'hash')
           state.txns.pending.data = joined
         } else {
-          const accountTransactions = payload as AccountTransactions
-          // if (accountTransactions.data?.length === 0) return // TODO: Is this needed?
-
-          let nextTxns = accountTransactions.data
-          if (filter !== 'all') {
-            // The "all" filter is not paginated
-            nextTxns = [...state.txns[filter].data, ...accountTransactions.data]
-            // remove any pending txns with the same hash
-            const nextPending = differenceBy(
-              state.txns.pending.data,
-              nextTxns,
-              'hash',
-            )
-            state.txns.pending.data = nextPending
+          const txns = payload as AccountTransactions
+          if (state.txns[filter].cursor === undefined) {
+            state.txns[filter].cursor = txns.cursor
           }
+
+          const nextTxns = uniqBy(
+            [...txns.data, ...state.txns[filter].data],
+            (t) => t.hash,
+          ).sort((a, b) => b.time - a.time)
           state.txns[filter].data = nextTxns
-          state.txns[filter].cursor = accountTransactions.cursor
+
+          // remove any pending txns with the same hash
+          const nextPending = differenceBy(
+            state.txns.pending.data,
+            nextTxns,
+            'hash',
+          )
+          state.txns.pending.data = nextPending
         }
       },
     )
