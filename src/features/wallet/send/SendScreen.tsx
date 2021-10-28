@@ -6,7 +6,10 @@ import Box from '../../../components/Box'
 import { SendStackParamList } from './sendTypes'
 import SendView from './SendView'
 import { RootState } from '../../../store/rootReducer'
-import { RootNavigationProp } from '../../../navigation/main/tabTypes'
+import {
+  MainTabNavigationProp,
+  RootNavigationProp,
+} from '../../../navigation/main/tabTypes'
 
 type Route = RouteProp<SendStackParamList, 'Send'>
 
@@ -17,6 +20,7 @@ type Props = {
 const SendScreen = ({ route }: Props) => {
   const { t } = useTranslation()
   const rootNavigation = useNavigation<RootNavigationProp>()
+  const tabNavigation = useNavigation<MainTabNavigationProp>()
   const scanResult = route?.params?.scanResult
   const hotspotAddress = route?.params?.hotspotAddress
   const isSeller = route?.params?.isSeller
@@ -39,17 +43,18 @@ const SendScreen = ({ route }: Props) => {
   useEffect(() => {
     // Check if pin is required, show lock screen if so
     if (isPinRequiredForPayment && !isPinVerified) {
-      setTimeout(() => {
-        rootNavigation.push('LockScreen', { requestType: 'send' })
-      }, 300)
+      rootNavigation.push('LockScreen', {
+        requestType: 'send',
+        sendParams: route?.params,
+      })
     }
-  }, [isPinRequiredForPayment, isPinVerified, rootNavigation])
+  }, [isPinRequiredForPayment, isPinVerified, rootNavigation, route?.params])
 
   useEffect(() => {
     if (isPinVerified === 'fail') {
-      rootNavigation.goBack()
+      tabNavigation.navigate('Wallet')
     }
-  }, [isPinVerified, rootNavigation])
+  }, [isPinVerified, tabNavigation])
 
   const canSubmit = useMemo(() => {
     if (!isPinRequiredForPayment) return true
