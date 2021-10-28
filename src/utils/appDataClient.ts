@@ -21,7 +21,7 @@ const MAX = 100000
 const name =
   Platform.OS === 'android' ? 'helium-wallet-android' : 'helium-wallet-ios'
 
-const baseURL = Config.WALLET_API_BASE_URL.replace('api', 'proxy')
+const baseURL = (Config.WALLET_API_BASE_URL || '').replace('api', 'proxy')
 
 let client = new Client(new Network({ baseURL, version: 1 }), {
   retry: 1,
