@@ -2,9 +2,9 @@ import React, { useMemo } from 'react'
 import Box from '../../../../components/Box'
 import PaymentItem from './PaymentItem'
 import { decodeMemoString, DEFAULT_MEMO } from '../../../../utils/transactions'
-import { Transaction } from '../../../../store/activity/activitySlice'
+import { HttpTransaction } from '../../../../store/activity/activitySlice'
 
-type Props = { item: Transaction; address: string }
+type Props = { item: HttpTransaction; address: string }
 const Payment = ({ item, address }: Props) => {
   const payments = useMemo((): {
     payee?: string | null

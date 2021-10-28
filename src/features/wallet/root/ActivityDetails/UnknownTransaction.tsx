@@ -1,12 +1,10 @@
 import React from 'react'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
-import {
-  Transaction,
-  TxnTypeKeys,
-} from '../../../../store/activity/activitySlice'
+import { HttpTransaction } from '../../../../store/activity/activitySlice'
+import { TxnTypeKeys } from '../walletTypes'
 
-type Props = { item: Transaction }
+type Props = { item: HttpTransaction }
 const UnknownTransaction = ({ item }: Props) => {
   if (TxnTypeKeys.find((k) => k === item.type)) {
     return null

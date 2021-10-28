@@ -61,7 +61,7 @@ import { isDataOnly } from '../../../utils/hotspotUtils'
 import { updateSetting } from '../../../store/account/accountSlice'
 import {
   fetchTxnsHead,
-  Transaction,
+  HttpTransaction,
 } from '../../../store/activity/activitySlice'
 import { isPendingTransaction } from '../../wallet/root/useActivityItem'
 
@@ -191,7 +191,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
   const onPressUpdateHotspot = useCallback(async () => {
     // Check for pending assert
     const pending = (await dispatch(fetchTxnsHead({ filter: 'pending' }))) as {
-      payload?: Transaction[]
+      payload?: HttpTransaction[]
     }
     const txns = pending.payload
     const hasPending = txns?.find((pendingTxn) => {

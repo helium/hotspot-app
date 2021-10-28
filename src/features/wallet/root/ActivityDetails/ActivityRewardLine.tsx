@@ -8,10 +8,10 @@ import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
 import useCurrency from '../../../../utils/useCurrency'
 import { useColors } from '../../../../theme/themeHooks'
-import { Reward } from '../../../../store/activity/activitySlice'
+import { HttpReward } from '../../../../store/activity/activitySlice'
 
 type Props = {
-  reward: Reward
+  reward: HttpReward
   isSecurityToken?: boolean
   showTitle: boolean
 }

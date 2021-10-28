@@ -27,10 +27,10 @@ import { Colors } from '../../../theme/theme'
 import { getMakerName } from '../../../utils/stakingClient'
 import { RootState } from '../../../store/rootReducer'
 import {
-  PendingTransaction,
-  Transaction,
-  TxnTypeKeys,
+  HttpPendingTransaction,
+  HttpTransaction,
 } from '../../../store/activity/activitySlice'
+import { TxnTypeKeys } from './walletTypes'
 
 type TxnDisplayVals = {
   backgroundColor: string
@@ -58,10 +58,11 @@ const dcBalance = (v: number | undefined | null) => {
 
 export const isPendingTransaction = (
   item: unknown,
-): item is PendingTransaction => (item as PendingTransaction)?.txn !== undefined
+): item is HttpPendingTransaction =>
+  (item as HttpPendingTransaction)?.txn !== undefined
 
 const useActivityItem = (
-  item: Transaction | PendingTransaction,
+  item: HttpTransaction | HttpPendingTransaction,
   address: string,
   dateFormat?: string,
 ) => {

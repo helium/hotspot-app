@@ -5,8 +5,8 @@ import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
 import { Theme } from '../../../../theme/theme'
 import useActivityItem from '../useActivityItem'
 import {
-  Transaction,
-  PendingTransaction,
+  HttpTransaction,
+  HttpPendingTransaction,
 } from '../../../../store/activity/activitySlice'
 
 export const ACTIVITY_ITEM_ROW_HEIGHT = 58
@@ -15,7 +15,7 @@ type Props = {
   isFirst: boolean
   isLast: boolean
   handlePress: () => void
-  item: Transaction | PendingTransaction
+  item: HttpTransaction | HttpPendingTransaction
   address: string
 }
 

@@ -9,9 +9,9 @@ import PaymentItem from './PaymentItem'
 import { reverseGeocode } from '../../../../utils/location'
 import { getGeoFromH3 } from '../../../../utils/h3Utils'
 import { locale } from '../../../../utils/i18n'
-import { Transaction } from '../../../../store/activity/activitySlice'
+import { HttpTransaction } from '../../../../store/activity/activitySlice'
 
-type Props = { item: Transaction; address: string }
+type Props = { item: HttpTransaction; address: string }
 const HotspotTransaction = ({ item, address }: Props) => {
   const { t } = useTranslation()
   const [geoInfo, setGeoInfo] = useState<LocationGeocodedAddress | undefined>()

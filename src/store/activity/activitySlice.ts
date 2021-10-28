@@ -4,39 +4,24 @@ import {
   FilterPagingType,
   Filters,
   FilterType,
+  TxnType,
 } from '../../features/wallet/root/walletTypes'
 import { getWallet } from '../../utils/walletClient'
 
-export const TxnTypeKeys = [
-  'rewards_v1',
-  'rewards_v2',
-  'payment_v1',
-  'payment_v2',
-  'add_gateway_v1',
-  'assert_location_v1',
-  'assert_location_v2',
-  'transfer_hotspot_v1',
-  'token_burn_v1',
-  'unstake_validator_v1',
-  'stake_validator_v1',
-  'transfer_validator_stake_v1',
-] as const
-export type TxnType = typeof TxnTypeKeys[number]
-
-export type Reward = {
+export type HttpReward = {
   account: string
   amount: number
   gateway: string
   type: string
 }
 
-export type Payment = {
+export type HttpPayment = {
   payee: string
   amount: number
   memo?: string | null
 }
 
-export type Transaction = {
+export type HttpTransaction = {
   time: number
   memo?: string | null
   type: TxnType
@@ -46,7 +31,7 @@ export type Transaction = {
   height?: number
   seller?: string | null
   amountToSeller?: number | null
-  rewards?: Reward[] | null
+  rewards?: HttpReward[] | null
   payer?: string | null
   payee?: string | null
   nonce?: number | null
@@ -55,7 +40,7 @@ export type Transaction = {
   stakingFee?: number | null
   stake?: number | null
   stakeAmount?: number | null
-  payments?: Payment[] | null
+  payments?: HttpPayment[] | null
   gateway?: string | null
   address?: string | null
   oldAddress?: string | null
@@ -73,15 +58,15 @@ export type Transaction = {
 
 export type AccountTransactions = {
   cursor: string | null
-  data: Transaction[]
+  data: HttpTransaction[]
 }
 
-export type PendingTransaction = {
+export type HttpPendingTransaction = {
   created_at: string
   failed_reason: string
   hash: string
   status: string
-  txn: Transaction
+  txn: HttpTransaction
   type: TxnType
   updated_at: string
 }
@@ -101,16 +86,16 @@ export type Activity<T> = {
 }
 export type ActivityState = {
   txns: {
-    all: Activity<Transaction>
-    hotspot: Activity<Transaction>
-    mining: Activity<Transaction>
-    payment: Activity<Transaction>
-    burn: Activity<Transaction>
-    validator: Activity<Transaction>
-    pending: Activity<PendingTransaction>
+    all: Activity<HttpTransaction>
+    hotspot: Activity<HttpTransaction>
+    mining: Activity<HttpTransaction>
+    payment: Activity<HttpTransaction>
+    burn: Activity<HttpTransaction>
+    validator: Activity<HttpTransaction>
+    pending: Activity<HttpPendingTransaction>
   }
   filter: FilterType
-  detailTxn?: Transaction | PendingTransaction
+  detailTxn?: HttpTransaction | HttpPendingTransaction
   requestMore: boolean
 }
 
@@ -179,7 +164,7 @@ export const fetchMoreTxns = createAsyncThunk<
 })
 
 export const fetchTxnsHead = createAsyncThunk<
-  AccountTransactions | PendingTransaction[],
+  AccountTransactions | HttpPendingTransaction[],
   { filter: FilterType }
 >('activity/fetchTxnsHead', async ({ filter }) => {
   const params = { filter: Filters[filter].join(',') }
@@ -208,13 +193,13 @@ const activitySlice = createSlice({
     },
     addPendingTransaction: (
       state,
-      action: PayloadAction<PendingTransaction>,
+      action: PayloadAction<HttpPendingTransaction>,
     ) => {
       state.txns.pending.data.push(action.payload)
     },
     setDetailTxn: (
       state,
-      action: PayloadAction<Transaction | PendingTransaction>,
+      action: PayloadAction<HttpTransaction | HttpPendingTransaction>,
     ) => {
       state.detailTxn = action.payload
     },
@@ -334,7 +319,7 @@ const activitySlice = createSlice({
         state.txns[filter].hasInitialLoad = true
 
         if (filter === 'pending') {
-          const pending = payload as PendingTransaction[]
+          const pending = payload as HttpPendingTransaction[]
           const filtered = pending.filter((txn) => txn.status === 'pending')
           const joined = unionBy(filtered, state.txns.pending.data, 'hash')
           state.txns.pending.data = joined

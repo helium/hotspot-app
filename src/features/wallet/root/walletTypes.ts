@@ -38,3 +38,19 @@ export const Filters = {
 } as Record<FilterType, string[]>
 
 export type ActivityViewState = 'undetermined' | 'no_activity' | 'activity'
+
+export const TxnTypeKeys = [
+  'rewards_v1',
+  'rewards_v2',
+  'payment_v1',
+  'payment_v2',
+  'add_gateway_v1',
+  'assert_location_v1',
+  'assert_location_v2',
+  'transfer_hotspot_v1',
+  'token_burn_v1',
+  'unstake_validator_v1',
+  'stake_validator_v1',
+  'transfer_validator_stake_v1',
+] as const
+export type TxnType = typeof TxnTypeKeys[number]

@@ -2,9 +2,9 @@ import React from 'react'
 import { groupBy } from 'lodash'
 import ActivityRewardItem from './ActivityRewardItem'
 import Box from '../../../../components/Box'
-import { Transaction } from '../../../../store/activity/activitySlice'
+import { HttpTransaction } from '../../../../store/activity/activitySlice'
 
-type Props = { item: Transaction }
+type Props = { item: HttpTransaction }
 const Rewards = ({ item }: Props) => {
   if (!['rewards_v1', 'rewards_v2'].includes(item.type) || !item.rewards)
     return null

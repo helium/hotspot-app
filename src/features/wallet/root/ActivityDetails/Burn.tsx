@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react'
 import Box from '../../../../components/Box'
 import PaymentItem from './PaymentItem'
-import { Transaction } from '../../../../store/activity/activitySlice'
+import { HttpTransaction } from '../../../../store/activity/activitySlice'
 
-type Props = { item: Transaction; address: string }
+type Props = { item: HttpTransaction; address: string }
 const Burn = ({ item, address }: Props) => {
   const isPayer = useMemo(() => item.payer === address, [address, item.payer])
 

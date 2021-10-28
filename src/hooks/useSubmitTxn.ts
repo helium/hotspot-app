@@ -6,11 +6,11 @@ import {
   TransferHotspotV1,
 } from '@helium/transactions'
 import { useSelector } from 'react-redux'
+import { TxnType } from '../features/wallet/root/walletTypes'
 
 import activitySlice, {
-  Transaction,
-  PendingTransaction,
-  TxnType,
+  HttpTransaction,
+  HttpPendingTransaction,
 } from '../store/activity/activitySlice'
 import { RootState } from '../store/rootReducer'
 import { useAppDispatch } from '../store/store'
@@ -23,7 +23,7 @@ type SignableTransaction =
   | TokenBurnV1
   | TransferHotspotV1
 
-type Submitter = (txn: SignableTransaction) => Promise<PendingTransaction>
+type Submitter = (txn: SignableTransaction) => Promise<HttpPendingTransaction>
 
 const useSubmitTxn = (): Submitter => {
   const dispatch = useAppDispatch()
@@ -40,7 +40,7 @@ const useSubmitTxn = (): Submitter => {
     const apiResponse = await postWallet('transactions', {
       txn: serializedTxn,
     })
-    const pendingTxn = apiResponse as PendingTransaction
+    const pendingTxn = apiResponse as HttpPendingTransaction
 
     // construct mock pending txn
     pendingTxn.type = txn.type as TxnType
@@ -59,7 +59,7 @@ const populatePendingTxn = (
   txn: SignableTransaction,
   blockHeight: number,
   hash: string,
-): Transaction => {
+): HttpTransaction => {
   if (txn instanceof PaymentV2) {
     const pending = txn as PaymentV2
 
@@ -75,7 +75,7 @@ const populatePendingTxn = (
       })),
       height: blockHeight,
       hash,
-    } as Transaction
+    } as HttpTransaction
 
     return data
   }
@@ -98,7 +98,7 @@ const populatePendingTxn = (
       fee: pending.fee,
       gain: pending.gain || 0,
       elevation: pending.elevation || 0,
-    } as Transaction
+    } as HttpTransaction
   }
 
   if (txn instanceof AddGatewayV1) {
@@ -117,7 +117,7 @@ const populatePendingTxn = (
       gateway: pending.gateway?.b58 || '',
       gatewaySignature: '',
       fee: pending.fee,
-    } as Transaction
+    } as HttpTransaction
 
     return data
   }
@@ -134,12 +134,12 @@ const populatePendingTxn = (
       hash,
       gateway: pending.gateway?.b58 || '',
       fee: pending.fee,
-    } as Transaction
+    } as HttpTransaction
 
     return data
   }
 
-  return {} as Transaction
+  return {} as HttpTransaction
 }
 
 export default useSubmitTxn

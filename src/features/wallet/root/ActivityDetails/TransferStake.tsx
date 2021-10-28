@@ -1,8 +1,8 @@
 import React from 'react'
-import { Transaction } from '../../../../store/activity/activitySlice'
+import { HttpTransaction } from '../../../../store/activity/activitySlice'
 import PaymentItem from './PaymentItem'
 
-type Props = { item: Transaction; address: string }
+type Props = { item: HttpTransaction; address: string }
 const TransferValidator = ({ item, address }: Props) => {
   if (
     item.type !== 'transfer_validator_stake_v1' ||

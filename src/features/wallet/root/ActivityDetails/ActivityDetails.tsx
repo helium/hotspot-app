@@ -16,8 +16,8 @@ import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
 import { getSecureItem } from '../../../../utils/secureAccount'
 import { useAppDispatch } from '../../../../store/store'
 import activitySlice, {
-  PendingTransaction,
-  Transaction,
+  HttpPendingTransaction,
+  HttpTransaction,
 } from '../../../../store/activity/activitySlice'
 import { locale } from '../../../../utils/i18n'
 import { EXPLORER_BASE_URL } from '../../../../utils/config'
@@ -33,7 +33,7 @@ import UnstakeValidator from './UnstakeValidator'
 import TransferValidator from './TransferStake'
 
 const DF = 'MM/dd/yyyy hh:mm a'
-type Props = { detailTxn: Transaction | PendingTransaction }
+type Props = { detailTxn: HttpTransaction | HttpPendingTransaction }
 const ActivityDetails = ({ detailTxn }: Props) => {
   const sheet = useRef<BottomSheetModal>(null)
   const { result: address } = useAsync(getSecureItem, ['address'])

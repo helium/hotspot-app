@@ -5,8 +5,8 @@ import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
 import ActivityItem, { ACTIVITY_ITEM_ROW_HEIGHT } from './ActivityItem'
 import { getSecureItem } from '../../../../utils/secureAccount'
 import activitySlice, {
-  Transaction,
-  PendingTransaction,
+  HttpTransaction,
+  HttpPendingTransaction,
 } from '../../../../store/activity/activitySlice'
 import { useAppDispatch } from '../../../../store/store'
 import { useSpacing } from '../../../../theme/themeHooks'
@@ -16,7 +16,7 @@ import SkeletonActivityItem from './SkeletonActivityItem'
 
 type Props = {
   hasNoResults: boolean
-  data: (Transaction | PendingTransaction)[]
+  data: (HttpTransaction | HttpPendingTransaction)[]
   showSkeleton: boolean
 }
 
@@ -29,14 +29,18 @@ const ActivityCardListView = ({
   const dispatch = useAppDispatch()
   const { result: address, loading } = useAsync(getSecureItem, ['address'])
 
-  const data = useMemo((): (Transaction | PendingTransaction | false)[] => {
+  const data = useMemo((): (
+    | HttpTransaction
+    | HttpPendingTransaction
+    | false
+  )[] => {
     if (showSkeleton) return new Array(10).map(() => false)
 
     return propsData
   }, [propsData, showSkeleton])
 
   const handleActivityItemPressed = useCallback(
-    (item: Transaction | PendingTransaction) => () => {
+    (item: HttpTransaction | HttpPendingTransaction) => () => {
       dispatch(activitySlice.actions.setDetailTxn(item))
     },
     [dispatch],
@@ -47,7 +51,7 @@ const ActivityCardListView = ({
   }, [dispatch])
 
   type Item = {
-    item: Transaction | PendingTransaction | false
+    item: HttpTransaction | HttpPendingTransaction | false
     index: number
   }
 
@@ -75,9 +79,9 @@ const ActivityCardListView = ({
   )
 
   const keyExtractor = useCallback(
-    (item: Transaction | PendingTransaction | false, index: number) => {
+    (item: HttpTransaction | HttpPendingTransaction | false, index: number) => {
       if (!item) return `${index}`
-      const txn = item as PendingTransaction
+      const txn = item as HttpPendingTransaction
       return `${txn.hash}${txn.status}`
     },
     [],

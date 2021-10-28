@@ -1,10 +1,10 @@
 import React from 'react'
 import Box from '../../../../components/Box'
 import ActivityRewardLine from './ActivityRewardLine'
-import { Reward } from '../../../../store/activity/activitySlice'
+import { HttpReward } from '../../../../store/activity/activitySlice'
 
 type Props = {
-  rewards: Reward[]
+  rewards: HttpReward[]
   isFirst: boolean
   isLast: boolean
   isSecurityToken?: boolean

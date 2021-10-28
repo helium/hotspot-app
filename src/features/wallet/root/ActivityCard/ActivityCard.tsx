@@ -6,15 +6,15 @@ import { FilterType } from '../walletTypes'
 import ActivityCardListView from './ActivityCardListView'
 import { Spacing } from '../../../../theme/theme'
 import {
-  PendingTransaction,
-  Transaction,
+  HttpPendingTransaction,
+  HttpTransaction,
 } from '../../../../store/activity/activitySlice'
 
 type Props = {
   animatedIndex?: Animated.SharedValue<number>
   onChange?: (index: number) => void
-  txns: Transaction[]
-  pendingTxns: PendingTransaction[]
+  txns: HttpTransaction[]
+  pendingTxns: HttpPendingTransaction[]
   filter: FilterType
   hasNoResults: boolean
   showSkeleton: boolean
@@ -38,7 +38,7 @@ const ActivityCard = forwardRef(
     ref: Ref<BottomSheet>,
   ) => {
     const getData = useMemo(() => {
-      let data: (Transaction | PendingTransaction)[] = txns
+      let data: (HttpTransaction | HttpPendingTransaction)[] = txns
       if (filter === 'pending') {
         data = pendingTxns
       }

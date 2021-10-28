@@ -38,15 +38,15 @@ import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 import useHaptic from '../../../utils/useHaptic'
 import WalletEmpty from './WalletEmpty'
 import {
-  PendingTransaction,
-  Transaction,
+  HttpPendingTransaction,
+  HttpTransaction,
 } from '../../../store/activity/activitySlice'
 
 type Props = {
   showSkeleton: boolean
   activityViewState: ActivityViewState
-  txns: Transaction[]
-  pendingTxns: PendingTransaction[]
+  txns: HttpTransaction[]
+  pendingTxns: HttpPendingTransaction[]
 }
 
 const WalletView = ({
