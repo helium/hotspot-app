@@ -40,6 +40,10 @@ const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
     heliumData: { blockHeight },
   } = useSelector((state: RootState) => state, selectorIsEqual)
 
+  const chartEnabled = useSelector(
+    (state: RootState) => state.features.walletChartEnabled,
+  )
+
   const { t } = useTranslation()
 
   const { hntToDisplayVal } = useCurrency()
@@ -128,12 +132,18 @@ const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
     [],
   )
 
-  const hasData = useMemo(() => data?.data?.length !== 0, [data?.data])
+  const hasData = useMemo(() => {
+    if (filter === 'pending') return false
+    return data?.data?.length !== 0
+  }, [data?.data?.length, filter])
 
   const { greenBright, blueBright } = useColors()
 
   return (
-    <Box {...boxProps} height={hasData || showSkeleton ? height : 0}>
+    <Box
+      {...boxProps}
+      height={chartEnabled && filter !== 'pending' ? height : 0}
+    >
       <Box flexDirection="column" onLayout={handleHeaderLayout}>
         <Box flexDirection="row" justifyContent="space-between">
           <Text

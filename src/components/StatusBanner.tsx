@@ -25,10 +25,13 @@ const StatusBanner = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const incidents = useSelector((state: RootState) => state.status.incidents)
+  const isBackedUp = useSelector((state: RootState) => state.app.isBackedUp)
 
   useAppState({
     onForeground: () => {
-      dispatch(fetchIncidents())
+      if (isBackedUp) {
+        dispatch(fetchIncidents())
+      }
     },
   })
 

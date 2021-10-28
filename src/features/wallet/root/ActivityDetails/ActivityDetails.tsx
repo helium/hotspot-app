@@ -1,4 +1,3 @@
-import { AnyTransaction, PaymentV1, PendingTransaction } from '@helium/http'
 import React, { memo, useCallback, useEffect, useRef, useMemo } from 'react'
 import { Linking } from 'react-native'
 import {
@@ -13,25 +12,28 @@ import LinkImg from '@assets/images/link.svg'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
 import ActivityDetailsHeader from './ActivityDetailsHeader'
+import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
+import { getSecureItem } from '../../../../utils/secureAccount'
+import { useAppDispatch } from '../../../../store/store'
+import activitySlice, {
+  HttpPendingTransaction,
+  HttpTransaction,
+} from '../../../../store/activity/activitySlice'
+import { locale } from '../../../../utils/i18n'
+import { EXPLORER_BASE_URL } from '../../../../utils/config'
+import useCurrency from '../../../../utils/useCurrency'
+import useActivityItem, { isPendingTransaction } from '../useActivityItem'
 import Rewards from './Rewards'
 import StakeValidator from './StakeValidator'
 import HotspotTransaction from './HotspotTransaction'
 import Payment from './Payment'
 import Burn from './Burn'
-import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
-import { getSecureItem } from '../../../../utils/secureAccount'
 import UnknownTransaction from './UnknownTransaction'
-import { useAppDispatch } from '../../../../store/store'
-import activitySlice from '../../../../store/activity/activitySlice'
-import { locale } from '../../../../utils/i18n'
-import { EXPLORER_BASE_URL } from '../../../../utils/config'
-import useCurrency from '../../../../utils/useCurrency'
-import useActivityItem from '../useActivityItem'
 import UnstakeValidator from './UnstakeValidator'
 import TransferValidator from './TransferStake'
 
 const DF = 'MM/dd/yyyy hh:mm a'
-type Props = { detailTxn: AnyTransaction | PendingTransaction }
+type Props = { detailTxn: HttpTransaction | HttpPendingTransaction }
 const ActivityDetails = ({ detailTxn }: Props) => {
   const sheet = useRef<BottomSheetModal>(null)
   const { result: address } = useAsync(getSecureItem, ['address'])
@@ -40,11 +42,14 @@ const ActivityDetails = ({ detailTxn }: Props) => {
   const dispatch = useAppDispatch()
   const txnDisplayVals = useActivityItem(detailTxn, address || '', DF)
 
-  let block: number | undefined
-  if (detailTxn) {
-    const asPayment = detailTxn as PaymentV1
-    block = asPayment.height
-  }
+  const txn = useMemo(() => {
+    if (isPendingTransaction(detailTxn)) {
+      return detailTxn.txn
+    }
+    return detailTxn
+  }, [detailTxn])
+
+  const block = useMemo(() => txn.height, [txn.height])
 
   useEffect(() => {
     if (detailTxn) {
@@ -133,14 +138,14 @@ const ActivityDetails = ({ detailTxn }: Props) => {
               </Text>
             )}
 
-            <StakeValidator item={detailTxn} />
-            <UnstakeValidator item={detailTxn} />
-            <TransferValidator item={detailTxn} address={address || ''} />
-            <Rewards item={detailTxn} />
-            <Payment item={detailTxn} address={address || ''} />
-            <Burn item={detailTxn} address={address || ''} />
-            <HotspotTransaction item={detailTxn} address={address || ''} />
-            <UnknownTransaction item={detailTxn} />
+            <StakeValidator item={txn} />
+            <UnstakeValidator item={txn} />
+            <TransferValidator item={txn} address={address || ''} />
+            <Rewards item={txn} />
+            <Payment item={txn} address={address || ''} />
+            <Burn item={txn} address={address || ''} />
+            <HotspotTransaction item={txn} address={address || ''} />
+            <UnknownTransaction item={txn} />
             {block && (
               <TouchableOpacityBox
                 backgroundColor={txnDisplayVals.backgroundColorKey}

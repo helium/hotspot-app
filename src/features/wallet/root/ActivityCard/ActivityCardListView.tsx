@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import React, { useCallback, memo, useMemo } from 'react'
 import { useAsync } from 'react-async-hook'
-import { AnyTransaction, PendingTransaction } from '@helium/http'
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
 import ActivityItem, { ACTIVITY_ITEM_ROW_HEIGHT } from './ActivityItem'
 import { getSecureItem } from '../../../../utils/secureAccount'
-import activitySlice from '../../../../store/activity/activitySlice'
+import activitySlice, {
+  HttpTransaction,
+  HttpPendingTransaction,
+} from '../../../../store/activity/activitySlice'
 import { useAppDispatch } from '../../../../store/store'
 import { useSpacing } from '../../../../theme/themeHooks'
 import ActivityCardLoading from './ActivityCardLoading'
@@ -14,7 +16,7 @@ import SkeletonActivityItem from './SkeletonActivityItem'
 
 type Props = {
   hasNoResults: boolean
-  data: (AnyTransaction | PendingTransaction)[]
+  data: (HttpTransaction | HttpPendingTransaction)[]
   showSkeleton: boolean
 }
 
@@ -27,14 +29,18 @@ const ActivityCardListView = ({
   const dispatch = useAppDispatch()
   const { result: address, loading } = useAsync(getSecureItem, ['address'])
 
-  const data = useMemo((): (AnyTransaction | PendingTransaction | false)[] => {
+  const data = useMemo((): (
+    | HttpTransaction
+    | HttpPendingTransaction
+    | false
+  )[] => {
     if (showSkeleton) return new Array(10).map(() => false)
 
     return propsData
   }, [propsData, showSkeleton])
 
   const handleActivityItemPressed = useCallback(
-    (item: AnyTransaction | PendingTransaction) => () => {
+    (item: HttpTransaction | HttpPendingTransaction) => () => {
       dispatch(activitySlice.actions.setDetailTxn(item))
     },
     [dispatch],
@@ -45,7 +51,7 @@ const ActivityCardListView = ({
   }, [dispatch])
 
   type Item = {
-    item: AnyTransaction | PendingTransaction | false
+    item: HttpTransaction | HttpPendingTransaction | false
     index: number
   }
 
@@ -73,9 +79,9 @@ const ActivityCardListView = ({
   )
 
   const keyExtractor = useCallback(
-    (item: AnyTransaction | PendingTransaction | false, index: number) => {
+    (item: HttpTransaction | HttpPendingTransaction | false, index: number) => {
       if (!item) return `${index}`
-      const txn = item as PendingTransaction
+      const txn = item as HttpPendingTransaction
       return `${txn.hash}${txn.status}`
     },
     [],
@@ -97,10 +103,14 @@ const ActivityCardListView = ({
     }
   }, [m])
 
-  const footer = useMemo(
-    () => <ActivityCardLoading hasNoResults={hasNoResults} />,
-    [hasNoResults],
-  )
+  const footer = useMemo(() => {
+    return (
+      <ActivityCardLoading
+        hasNoResults={hasNoResults}
+        showSkeleton={showSkeleton}
+      />
+    )
+  }, [hasNoResults, showSkeleton])
 
   const header = useMemo(() => {
     return (

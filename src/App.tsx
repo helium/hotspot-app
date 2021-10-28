@@ -1,7 +1,13 @@
 import 'react-native-gesture-handler'
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
-import { LogBox, Platform, StatusBar, UIManager } from 'react-native'
+import {
+  ActivityIndicator,
+  LogBox,
+  Platform,
+  StatusBar,
+  UIManager,
+} from 'react-native'
 import useAppState from 'react-native-appstate-hook'
 import { ThemeProvider } from '@shopify/restyle'
 import OneSignal, { OpenedEvent } from 'react-native-onesignal'
@@ -28,7 +34,6 @@ import {
   fetchInitialData,
 } from './store/helium/heliumDataSlice'
 import SecurityScreen from './features/security/SecurityScreen'
-import { fetchFeatures } from './store/features/featuresSlice'
 import usePrevious from './utils/usePrevious'
 import StatusBanner from './components/StatusBanner'
 import notificationSlice, {
@@ -38,6 +43,7 @@ import AppLinkProvider from './providers/AppLinkProvider'
 import { navigationRef } from './navigation/navigator'
 import useSettingsRestore from './utils/useAccountSettings'
 import useMount from './utils/useMount'
+import Box from './components/Box'
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
@@ -72,7 +78,12 @@ const App = () => {
     isRequestingPermission,
     isLocked,
   } = useSelector((state: RootState) => state.app)
-  const { settingsLoaded } = useSelector((state: RootState) => state.account)
+  const settingsLoaded = useSelector(
+    (state: RootState) => state.account.settingsLoaded,
+  )
+  const featuresLoaded = useSelector(
+    (state: RootState) => state.features.featuresLoaded,
+  )
 
   useSettingsRestore()
 
@@ -90,11 +101,11 @@ const App = () => {
   })
 
   useEffect(() => {
-    if (!settingsLoaded) return
+    if (!isBackedUp || !settingsLoaded || !featuresLoaded) return
 
     dispatch(fetchInitialData())
     configChainVars()
-  }, [dispatch, settingsLoaded])
+  }, [isBackedUp, dispatch, featuresLoaded, settingsLoaded])
 
   useEffect(() => {
     OneSignal.setAppId(Config.ONE_SIGNAL_APP_ID)
@@ -112,10 +123,9 @@ const App = () => {
     Logger.init()
   }, [dispatch])
 
-  // fetch feature flags and notifications for the app
+  // fetch notifications for the app
   useEffect(() => {
     if (!isBackedUp) return
-    dispatch(fetchFeatures())
     dispatch(fetchNotifications())
   }, [dispatch, isBackedUp])
 
@@ -141,12 +151,12 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appState])
 
-  // update initial data when account is restored or app comes into foreground from background
+  // update initial data when app comes into foreground from background and is logged in
   useEffect(() => {
-    if (prevAppState === 'background' && appState === 'active') {
+    if (prevAppState === 'background' && appState === 'active' && isBackedUp) {
       dispatch(fetchInitialData())
     }
-  }, [appState, dispatch, prevAppState])
+  }, [isBackedUp, appState, dispatch, prevAppState])
 
   // hide splash screen
   useAsync(async () => {
@@ -155,13 +165,14 @@ const App = () => {
       isRestored &&
       isBackedUp &&
       settingsLoaded &&
+      featuresLoaded &&
       fetchDataStatus !== 'pending' &&
       fetchDataStatus !== 'idle'
 
     if (loggedOut || loggedInAndLoaded) {
       await SplashScreen.hideAsync()
     }
-  }, [fetchDataStatus, isBackedUp, isRestored, settingsLoaded])
+  }, [fetchDataStatus, isBackedUp, isRestored, settingsLoaded, featuresLoaded])
 
   useEffect(() => {
     // Hide splash after 5 seconds, deal with the consequences?
@@ -173,19 +184,24 @@ const App = () => {
 
   // poll block height to update realtime data throughout the app
   useEffect(() => {
-    if (!settingsLoaded) return
+    if (!settingsLoaded && !featuresLoaded) return
     const interval = setInterval(() => {
       dispatch(fetchBlockHeight())
     }, 30000)
     return () => clearInterval(interval)
-  }, [dispatch, settingsLoaded])
+  }, [dispatch, featuresLoaded, settingsLoaded])
 
   // fetch account data when logged in and block changes (called whenever block height updates)
   useEffect(() => {
-    if (isBackedUp && blockHeight && settingsLoaded) {
+    if (isBackedUp && blockHeight && settingsLoaded && featuresLoaded) {
       dispatch(fetchData())
     }
-  }, [blockHeight, dispatch, isBackedUp, settingsLoaded])
+  }, [blockHeight, dispatch, isBackedUp, settingsLoaded, featuresLoaded])
+
+  const initialized = useMemo(() => {
+    const loggedOut = isRestored && !isBackedUp
+    return loggedOut || (featuresLoaded && settingsLoaded)
+  }, [featuresLoaded, isBackedUp, isRestored, settingsLoaded])
 
   return (
     <ThemeProvider theme={theme}>
@@ -201,11 +217,17 @@ const App = () => {
                 {Platform.OS === 'android' && (
                   <StatusBar translucent backgroundColor="transparent" />
                 )}
-                <NavigationContainer ref={navigationRef}>
-                  <AppLinkProvider>
-                    <NavigationRoot />
-                  </AppLinkProvider>
-                </NavigationContainer>
+                {initialized ? (
+                  <NavigationContainer ref={navigationRef}>
+                    <AppLinkProvider>
+                      <NavigationRoot />
+                    </AppLinkProvider>
+                  </NavigationContainer>
+                ) : (
+                  <Box flex={1} justifyContent="center" alignItems="center">
+                    <ActivityIndicator color="white" />
+                  </Box>
+                )}
               </SafeAreaProvider>
               <StatusBanner />
               <SecurityScreen

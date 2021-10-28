@@ -1,17 +1,13 @@
 import React, { memo, useMemo } from 'react'
 import { createText } from '@shopify/restyle'
-import {
-  AnyTransaction,
-  PendingTransaction,
-  AddGatewayV1,
-  AssertLocationV1,
-  AssertLocationV2,
-} from '@helium/http'
-import animalName from 'angry-purple-tiger'
 import Box from '../../../../components/Box'
 import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
 import { Theme } from '../../../../theme/theme'
 import useActivityItem from '../useActivityItem'
+import {
+  HttpTransaction,
+  HttpPendingTransaction,
+} from '../../../../store/activity/activitySlice'
 
 export const ACTIVITY_ITEM_ROW_HEIGHT = 58
 
@@ -19,7 +15,7 @@ type Props = {
   isFirst: boolean
   isLast: boolean
   handlePress: () => void
-  item: AnyTransaction | PendingTransaction
+  item: HttpTransaction | HttpPendingTransaction
   address: string
 }
 
@@ -39,20 +35,6 @@ const ActivityItem = ({
     }),
     [txn.backgroundColor],
   )
-
-  const subtitle = useMemo(() => {
-    if (
-      item instanceof AssertLocationV1 ||
-      item instanceof AddGatewayV1 ||
-      item instanceof AssertLocationV2
-    ) {
-      return animalName(item.gateway)
-    }
-    if ('txn' in item && item?.txn?.gateway) {
-      return animalName(item.txn.gateway)
-    }
-    return txn.amount
-  }, [txn.amount, item])
 
   return (
     <TouchableOpacityBox
@@ -94,7 +76,7 @@ const ActivityItem = ({
           numberOfLines={1}
           adjustsFontSizeToFit
         >
-          {subtitle}
+          {txn.subtitle || txn.amount}
         </Text>
       </Box>
       <Box paddingHorizontal="m">

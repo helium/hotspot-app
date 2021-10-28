@@ -18,7 +18,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import animalName from 'angry-purple-tiger'
-import { Hotspot, PendingTransaction, Witness } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
 import Toast from 'react-native-simple-toast'
 import { visible } from '@shopify/restyle'
 import Visibility from '@assets/images/visibility.svg'
@@ -54,12 +54,16 @@ import DiscoveryModeIcon from '../../../assets/images/discovery_mode_icon.svg'
 import DiscoveryModeRoot from './discovery/DiscoveryModeRoot'
 import UpdateIcon from '../../../assets/images/update_hotspot_icon.svg'
 import UpdateHotspotConfig from './updateHotspot/UpdateHotspotConfig'
-import { getAccountTxnsList } from '../../../utils/appDataClient'
 import usePermissionManager from '../../../utils/usePermissionManager'
 import useAlert from '../../../utils/useAlert'
 import { getLocationPermission } from '../../../store/location/locationSlice'
 import { isDataOnly } from '../../../utils/hotspotUtils'
 import { updateSetting } from '../../../store/account/accountSlice'
+import {
+  fetchTxnsHead,
+  HttpTransaction,
+} from '../../../store/activity/activitySlice'
+import { isPendingTransaction } from '../../wallet/root/useActivityItem'
 
 type State = 'init' | 'scan' | 'transfer' | 'discoveryMode' | 'updateHotspot'
 
@@ -186,20 +190,25 @@ const HotspotSettings = ({ hotspot }: Props) => {
 
   const onPressUpdateHotspot = useCallback(async () => {
     // Check for pending assert
-    const pendingTxns = await getAccountTxnsList('pending')
-    const txns = (await pendingTxns?.take(20)) as PendingTransaction[]
-    const hasPending = txns?.find(
-      (tnx: PendingTransaction) =>
-        tnx.txn.type === 'assert_location_v2' &&
-        tnx.status === 'pending' &&
-        tnx.txn.gateway === hotspot?.address,
-    )
+    const pending = (await dispatch(fetchTxnsHead({ filter: 'pending' }))) as {
+      payload?: HttpTransaction[]
+    }
+    const txns = pending.payload
+    const hasPending = txns?.find((pendingTxn) => {
+      if (!isPendingTransaction(pendingTxn)) return
+
+      return (
+        pendingTxn.txn.type === 'assert_location_v2' &&
+        pendingTxn.status === 'pending' &&
+        pendingTxn.txn.gateway === hotspot?.address
+      )
+    })
     if (hasPending) {
       Toast.show(t('hotspot_settings.reassert.already_pending'), Toast.LONG)
     } else {
       setNextState('updateHotspot')
     }
-  }, [hotspot?.address, setNextState, t])
+  }, [dispatch, hotspot?.address, setNextState, t])
 
   const onPressTransferSetting = useCallback(() => {
     if (hasActiveTransfer) {
