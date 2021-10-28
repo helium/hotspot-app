@@ -1556,10 +1556,9 @@
   dependencies:
     bignumber.js "^9.0.0"
 
-"@helium/http@^3.47.0":
+"@helium/http@file:../helium-js/packages/http/helium-http-3.47.4.tgz":
   version "3.47.0"
-  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.47.0.tgz#c049d36fab4fd30cab223bf67328bc2dfa2177a5"
-  integrity sha512-7nNjXm5becr5ykdFkeihUJMJL51nvuOA1yt8zslwGvQoOFZAp1zoWnb4/n3NyHwUY6vNNMD9EwCvGtiCPRnZCg==
+  resolved "file:../helium-js/packages/http/helium-http-3.47.4.tgz#754bb64d5363ed9cc75c15dbfa1323a2809b80b3"
   dependencies:
     "@helium/currency" "^3.45.0"
     axios "^0.21.1"
@@ -12961,9 +12960,9 @@ type-fest@^0.8.1:
   integrity sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==
 
 type-fest@^2.3.4:
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-2.5.1.tgz#17ba4f36a6abfabf0a92005d045dca77564607b0"
-  integrity sha512-JDcsxbLR6Z6OcL7TnGAAAGQrY4g7Q4EEALMT4Kp6FQuIc0JLQvOF3l7ejFvx8o5GmLlfMseTWUL++sYFP+o8kw==
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-2.5.2.tgz#d6a5247b8019716b300d9023fa7b1b02016dd864"
+  integrity sha512-WMbytmAs5PUTqwGJRE+WoRrD2S0bYFtHX8k4Y/1l18CG5kqA3keJud9pPQ/r30FE9n8XRFCXF9BbccHIZzRYJw==
 
 typedarray-to-buffer@^3.1.2, typedarray-to-buffer@^3.1.5:
   version "3.1.5"
