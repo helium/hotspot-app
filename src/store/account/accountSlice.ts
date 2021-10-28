@@ -55,6 +55,7 @@ export type AccountState = {
   }
   settingsLoaded?: boolean
   settingsTransferRequired?: boolean
+  fetchAccountSettingsFailed: boolean
 }
 
 const initialState: AccountState = {
@@ -63,6 +64,7 @@ const initialState: AccountState = {
   activityChartRange: 'daily',
   rewardsSum: { loading: true } as CacheRecord<AccountReward>,
   settings: { network: 'stakejoy', currencyType },
+  fetchAccountSettingsFailed: false,
 }
 
 type AccountData = {
@@ -84,6 +86,7 @@ const settingsBagToKeyValue = (payload: SettingsBag) =>
     return { ...obj, [key]: val }
   }, {})
 
+// if this call fails we load the app with default settings and retry every 30 seconds
 export const fetchAccountSettings = createAsyncThunk<SettingsBag>(
   'account/fetchAccountSettings',
   async () => getWallet('accounts/settings'),
@@ -260,7 +263,12 @@ const accountSlice = createSlice({
         ...state,
         settings: { ...state.settings, ...settings },
         settingsLoaded: true,
+        fetchAccountSettingsFailed: false,
       }
+    })
+    builder.addCase(fetchAccountSettings.rejected, (state) => {
+      state.settingsLoaded = true
+      state.fetchAccountSettingsFailed = true
     })
     builder.addCase(
       transferAppSettingsToAccount.fulfilled,

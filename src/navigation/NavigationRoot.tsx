@@ -14,7 +14,7 @@ const OnboardingStack = createStackNavigator()
 const MainStack = createStackNavigator()
 
 const NavigationRoot = () => {
-  const { isBackedUp } = useSelector((state: RootState) => state.app)
+  const isBackedUp = useSelector((state: RootState) => state.app.isBackedUp)
   const colors = useColors()
 
   useEffect(() => {

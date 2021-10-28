@@ -28,7 +28,6 @@ import {
   fetchInitialData,
 } from './store/helium/heliumDataSlice'
 import SecurityScreen from './features/security/SecurityScreen'
-import { fetchFeatures } from './store/features/featuresSlice'
 import usePrevious from './utils/usePrevious'
 import StatusBanner from './components/StatusBanner'
 import notificationSlice, {
@@ -72,7 +71,12 @@ const App = () => {
     isRequestingPermission,
     isLocked,
   } = useSelector((state: RootState) => state.app)
-  const { settingsLoaded } = useSelector((state: RootState) => state.account)
+  const settingsLoaded = useSelector(
+    (state: RootState) => state.account.settingsLoaded,
+  )
+  const featuresLoaded = useSelector(
+    (state: RootState) => state.features.featuresLoaded,
+  )
 
   useSettingsRestore()
 
@@ -90,11 +94,11 @@ const App = () => {
   })
 
   useEffect(() => {
-    if (!settingsLoaded) return
+    if (!settingsLoaded && !featuresLoaded) return
 
     dispatch(fetchInitialData())
     configChainVars()
-  }, [dispatch, settingsLoaded])
+  }, [dispatch, featuresLoaded, settingsLoaded])
 
   useEffect(() => {
     OneSignal.setAppId(Config.ONE_SIGNAL_APP_ID)
@@ -112,10 +116,9 @@ const App = () => {
     Logger.init()
   }, [dispatch])
 
-  // fetch feature flags and notifications for the app
+  // fetch notifications for the app
   useEffect(() => {
     if (!isBackedUp) return
-    dispatch(fetchFeatures())
     dispatch(fetchNotifications())
   }, [dispatch, isBackedUp])
 
@@ -155,13 +158,14 @@ const App = () => {
       isRestored &&
       isBackedUp &&
       settingsLoaded &&
+      featuresLoaded &&
       fetchDataStatus !== 'pending' &&
       fetchDataStatus !== 'idle'
 
     if (loggedOut || loggedInAndLoaded) {
       await SplashScreen.hideAsync()
     }
-  }, [fetchDataStatus, isBackedUp, isRestored, settingsLoaded])
+  }, [fetchDataStatus, isBackedUp, isRestored, settingsLoaded, featuresLoaded])
 
   useEffect(() => {
     // Hide splash after 5 seconds, deal with the consequences?
@@ -173,19 +177,19 @@ const App = () => {
 
   // poll block height to update realtime data throughout the app
   useEffect(() => {
-    if (!settingsLoaded) return
+    if (!settingsLoaded && !featuresLoaded) return
     const interval = setInterval(() => {
       dispatch(fetchBlockHeight())
     }, 30000)
     return () => clearInterval(interval)
-  }, [dispatch, settingsLoaded])
+  }, [dispatch, featuresLoaded, settingsLoaded])
 
   // fetch account data when logged in and block changes (called whenever block height updates)
   useEffect(() => {
-    if (isBackedUp && blockHeight && settingsLoaded) {
+    if (isBackedUp && blockHeight && settingsLoaded && featuresLoaded) {
       dispatch(fetchData())
     }
-  }, [blockHeight, dispatch, isBackedUp, settingsLoaded])
+  }, [blockHeight, dispatch, isBackedUp, settingsLoaded, featuresLoaded])
 
   return (
     <ThemeProvider theme={theme}>
@@ -201,15 +205,21 @@ const App = () => {
                 {Platform.OS === 'android' && (
                   <StatusBar translucent backgroundColor="transparent" />
                 )}
-                <NavigationContainer ref={navigationRef}>
-                  <AppLinkProvider>
-                    <NavigationRoot />
-                  </AppLinkProvider>
-                </NavigationContainer>
+                {featuresLoaded && settingsLoaded && (
+                  <NavigationContainer ref={navigationRef}>
+                    <AppLinkProvider>
+                      <NavigationRoot />
+                    </AppLinkProvider>
+                  </NavigationContainer>
+                )}
               </SafeAreaProvider>
               <StatusBanner />
               <SecurityScreen
-                visible={appState !== 'active' && appState !== 'unknown'}
+                visible={
+                  (appState !== 'active' && appState !== 'unknown') ||
+                  !featuresLoaded ||
+                  !settingsLoaded
+                }
               />
             </ConnectedHotspotProvider>
           </BluetoothProvider>

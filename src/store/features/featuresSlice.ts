@@ -10,6 +10,7 @@ export type FeaturesState = {
   featuresLoaded: boolean
   walletChartEnabled: boolean
   proxyEnabled: boolean
+  fetchFeaturesFailed: boolean
 }
 
 const initialState: FeaturesState = {
@@ -21,8 +22,10 @@ const initialState: FeaturesState = {
   featuresLoaded: false,
   walletChartEnabled: false,
   proxyEnabled: false,
+  fetchFeaturesFailed: false,
 }
 
+// if this call fails we load the app with default settings and retry every 30 seconds
 export const fetchFeatures = createAsyncThunk<FeaturesState>(
   'features/get',
   async () => getWallet('features'),
@@ -34,9 +37,6 @@ const featuresSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchFeatures.pending, (state) => {
-      state.featuresLoaded = false
-    })
     builder.addCase(fetchFeatures.fulfilled, (state, { payload }) => {
       state.fleetModeLowerLimit = payload.fleetModeLowerLimit
       state.hotspotSyncBuffer = payload.hotspotSyncBuffer
@@ -50,9 +50,11 @@ const featuresSlice = createSlice({
         state.tileServerPointsUrl = payload.tileServerPointsUrl
       }
       state.featuresLoaded = true
+      state.fetchFeaturesFailed = false
     })
     builder.addCase(fetchFeatures.rejected, (state) => {
-      state.featuresLoaded = false
+      state.featuresLoaded = true
+      state.fetchFeaturesFailed = true
     })
   },
 })
