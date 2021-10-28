@@ -66,7 +66,8 @@ const WalletScreen = () => {
     } else if (
       !pendingData.length &&
       !allData.length &&
-      activityViewState !== 'no_activity'
+      activityViewState !== 'no_activity' &&
+      txns[filter].status === 'fulfilled'
     ) {
       animateTransition('WalletScreen.NoActivity')
       setActivityViewState('no_activity')
