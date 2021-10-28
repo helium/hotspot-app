@@ -38,6 +38,9 @@ export default () => {
   const featuresLoaded = useSelector(
     (state: RootState) => state.features.featuresLoaded,
   )
+  const proxyEnabled = useSelector(
+    (state: RootState) => state.features.proxyEnabled,
+  )
 
   const refreshAccountSettingsAndFeatures = useCallback(async () => {
     await dispatch(fetchFeatures())
@@ -46,7 +49,7 @@ export default () => {
 
   useAsync(async () => {
     const token = await getWalletApiToken()
-    updateClient({ network: accountSettings.network, retryCount, token })
+    updateClient({ networkName: accountSettings.network, retryCount, token })
   }, [accountBackedUp])
 
   useAsync(async () => {
@@ -55,7 +58,12 @@ export default () => {
 
     const token = await getWalletApiToken()
     updateNetwork(accountSettings.network)
-    updateClient({ network: accountSettings.network, retryCount, token })
+    updateClient({
+      networkName: accountSettings.network,
+      retryCount,
+      token,
+      proxyEnabled,
+    })
   }, [
     accountSettings.network,
     accountSettingsLoaded,

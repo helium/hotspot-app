@@ -9,6 +9,7 @@ export type FeaturesState = {
   appRetryCount: number
   featuresLoaded: boolean
   walletChartEnabled: boolean
+  proxyEnabled: boolean
 }
 
 const initialState: FeaturesState = {
@@ -19,6 +20,7 @@ const initialState: FeaturesState = {
   appRetryCount: 1,
   featuresLoaded: false,
   walletChartEnabled: false,
+  proxyEnabled: false,
 }
 
 export const fetchFeatures = createAsyncThunk<FeaturesState>(
@@ -40,6 +42,7 @@ const featuresSlice = createSlice({
       state.hotspotSyncBuffer = payload.hotspotSyncBuffer
       state.appRetryCount = payload.appRetryCount
       state.walletChartEnabled = payload.walletChartEnabled
+      state.proxyEnabled = payload.proxyEnabled
       if (payload.tileServerRes8Url) {
         state.tileServerRes8Url = payload.tileServerRes8Url
       }

@@ -23,25 +23,31 @@ const name =
 
 const baseURL = Config.HTTP_CLIENT_PROXY_URL
 
-let client = new Client(new Network({ baseURL, version: 1 }), {
+let client = new Client(Network.production, {
   retry: 1,
   name,
 })
 
 export const updateClient = ({
-  network: nextNetwork,
+  networkName,
   retryCount,
   token,
+  proxyEnabled,
 }: {
-  network?: string
+  networkName?: string
   retryCount: number
   token?: string
+  proxyEnabled?: boolean
 }) => {
-  const headers = { network: nextNetwork } as Record<string, string>
+  const headers = { network: networkName } as Record<string, string>
   if (token) {
     headers.Authorization = token
   }
-  client = new Client(new Network({ baseURL, version: 1 }), {
+  let network = networkName === 'helium' ? Network.production : Network.stakejoy
+  if (proxyEnabled) {
+    network = new Network({ baseURL, version: 1 })
+  }
+  client = new Client(network, {
     retry: retryCount,
     name,
     headers,
