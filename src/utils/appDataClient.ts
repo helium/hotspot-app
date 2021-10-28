@@ -8,6 +8,7 @@ import Client, {
 } from '@helium/http'
 import { Transaction } from '@helium/transactions'
 import { Platform } from 'react-native'
+import Config from 'react-native-config'
 import {
   HotspotActivityFilters,
   HotspotActivityType,
@@ -19,22 +20,32 @@ import * as Logger from './logger'
 const MAX = 100000
 const name =
   Platform.OS === 'android' ? 'helium-wallet-android' : 'helium-wallet-ios'
-let client = new Client(Network.stakejoy, { retry: 1, name })
 
-const compareNetwork = (network: string) => {
-  return (
-    (network === 'stakejoy' && client.network === Network.stakejoy) ||
-    (network === 'helium' && client.network === Network.production)
-  )
-}
+const baseURL = Config.WALLET_API_BASE_URL.replace('api', 'proxy')
 
-export const updateClient = (nextNetwork: string, retry: number) => {
-  const isSame = compareNetwork(nextNetwork)
-  if (!isSame) {
-    const network =
-      nextNetwork === 'helium' ? Network.production : Network.stakejoy
-    client = new Client(network, { retry, name })
+let client = new Client(new Network({ baseURL, version: 1 }), {
+  retry: 1,
+  name,
+})
+
+export const updateClient = ({
+  network: nextNetwork,
+  retryCount,
+  token,
+}: {
+  network?: string
+  retryCount: number
+  token?: string
+}) => {
+  const headers = { network: nextNetwork } as Record<string, string>
+  if (token) {
+    headers.Authorization = token
   }
+  client = new Client(new Network({ baseURL, version: 1 }), {
+    retry: retryCount,
+    name,
+    headers,
+  })
 }
 
 const breadcrumbOpts = { type: 'HTTP Request', category: 'appDataClient' }

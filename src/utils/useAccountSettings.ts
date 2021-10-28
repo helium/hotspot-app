@@ -11,6 +11,7 @@ import { useAppDispatch } from '../store/store'
 import { updateClient } from './appDataClient'
 import { updateNetwork } from './walletClient'
 import { fetchFeatures } from '../store/features/featuresSlice'
+import { getWalletApiToken } from './secureAccount'
 
 const settingsToTransfer = [
   'isFleetModeEnabled',
@@ -43,12 +44,18 @@ export default () => {
     await dispatch(fetchAccountSettings())
   }, [dispatch])
 
-  useEffect(() => {
+  useAsync(async () => {
+    const token = await getWalletApiToken()
+    updateClient({ network: accountSettings.network, retryCount, token })
+  }, [accountBackedUp])
+
+  useAsync(async () => {
     if (!accountSettings.network || !accountSettingsLoaded || !featuresLoaded)
       return
 
+    const token = await getWalletApiToken()
     updateNetwork(accountSettings.network)
-    updateClient(accountSettings.network, retryCount)
+    updateClient({ network: accountSettings.network, retryCount, token })
   }, [
     accountSettings.network,
     accountSettingsLoaded,
