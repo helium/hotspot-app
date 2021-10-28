@@ -772,7 +772,7 @@ export default {
     },
     no_results: 'No Results',
     all_footer:
-      "You've reached the end of your recent activity. Select a filter or go to the explorer to view more.",
+      "You've reached the end of your recent activity. Select a filter or <b><purple>go to the explorer</purple></b> to view more.",
     rejected: 'Failed to load. Tap to try again',
   },
   hotspot_settings: {
