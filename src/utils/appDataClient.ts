@@ -1,26 +1,18 @@
 import Client, {
-  AnyTransaction,
   Bucket,
   Hotspot,
   NaturalDate,
   Network,
-  PendingTransaction,
   PocReceiptsV1,
-  ResourceList,
   Validator,
 } from '@helium/http'
 import { Transaction } from '@helium/transactions'
-import { subDays } from 'date-fns'
 import { Platform } from 'react-native'
+import Config from 'react-native-config'
 import {
   HotspotActivityFilters,
   HotspotActivityType,
 } from '../features/hotspots/root/hotspotTypes'
-import {
-  FilterKeys,
-  Filters,
-  FilterType,
-} from '../features/wallet/root/walletTypes'
 import { getSecureItem } from './secureAccount'
 import { fromNow } from './timeUtils'
 import * as Logger from './logger'
@@ -28,26 +20,38 @@ import * as Logger from './logger'
 const MAX = 100000
 const name =
   Platform.OS === 'android' ? 'helium-wallet-android' : 'helium-wallet-ios'
-let client = new Client(Network.stakejoy, { retry: 1, name })
 
-// Always read pending txns from helium
-const pendingTxnsClient = new Client(Network.production, { retry: 1, name })
+const baseURL = Config.HTTP_CLIENT_PROXY_URL
 
-const compareNetwork = (network: string) => {
-  return (
-    (network === 'stakejoy' && client.network === Network.stakejoy) ||
-    (network === 'helium' && client.network === Network.production)
-  )
-}
+let client = new Client(Network.production, {
+  retry: 1,
+  name,
+})
 
-export const updateClient = (nextNetwork: string, retry: number) => {
-  const isSame = compareNetwork(nextNetwork)
-  if (!isSame) {
-    const network =
-      nextNetwork === 'helium' ? Network.production : Network.stakejoy
-    client = new Client(network, { retry, name })
-    initFetchers()
+export const updateClient = ({
+  networkName,
+  retryCount,
+  token,
+  proxyEnabled,
+}: {
+  networkName?: string
+  retryCount: number
+  token?: string
+  proxyEnabled?: boolean
+}) => {
+  const headers = { network: networkName } as Record<string, string>
+  if (token) {
+    headers.Authorization = token
   }
+  let network = networkName === 'helium' ? Network.production : Network.stakejoy
+  if (proxyEnabled) {
+    network = new Network({ baseURL, version: 1 })
+  }
+  client = new Client(network, {
+    retry: retryCount,
+    name,
+    headers,
+  })
 }
 
 const breadcrumbOpts = { type: 'HTTP Request', category: 'appDataClient' }
@@ -211,19 +215,6 @@ export const getAccount = async (address?: string) => {
   return data
 }
 
-export const getAccountRewards = async (opts?: {
-  address?: string
-  numDaysBack?: number
-}) => {
-  Logger.breadcrumb('getAccountRewards', breadcrumbOpts)
-  const accountAddress = opts?.address || (await getAddress())
-  if (!accountAddress) return
-
-  const initialDate = new Date()
-  const endDate = subDays(initialDate, opts?.numDaysBack || 1)
-  return client.account(accountAddress).rewards.sum.get(endDate, initialDate)
-}
-
 export const getBlockHeight = (params?: { maxTime?: string }) => {
   Logger.breadcrumb('getBlockHeight', breadcrumbOpts)
   return client.blocks.getHeight(params)
@@ -247,19 +238,6 @@ export const getCurrentOraclePrice = async () => {
 export const getPredictedOraclePrice = async () => {
   Logger.breadcrumb('getPredictedOraclePrice', breadcrumbOpts)
   return client.oracle.getPredictedPrice()
-}
-
-export const getAccountTxnsList = async (filterType: FilterType) => {
-  Logger.breadcrumb('getAccountTxnsList', breadcrumbOpts)
-  const address = await getAddress()
-  if (!address) return
-
-  if (filterType === 'pending') {
-    return pendingTxnsClient.account(address).pendingTransactions.list()
-  }
-
-  const params = { filterTypes: Filters[filterType] }
-  return client.account(address).activity.list(params)
 }
 
 export const getHotspotActivityList = async (
@@ -291,21 +269,4 @@ export const getHotspotsLastChallengeActivity = async (
     }
   }
   return {}
-}
-
-export const txnFetchers = {} as Record<
-  FilterType,
-  ResourceList<AnyTransaction | PendingTransaction>
->
-
-export const initFetchers = async () => {
-  Logger.breadcrumb('initFetchers', breadcrumbOpts)
-  const lists = await Promise.all(
-    FilterKeys.map((key) => getAccountTxnsList(key)),
-  )
-  FilterKeys.forEach((key, index) => {
-    const fetcher = lists[index]
-    if (!fetcher) return
-    txnFetchers[key] = fetcher
-  })
 }

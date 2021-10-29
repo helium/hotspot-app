@@ -23,6 +23,7 @@ export type RootStackParamList = {
   MainTabs: undefined | { pinVerifiedFor: LockScreenRequestType }
   LockScreen: {
     requestType: LockScreenRequestType
+    sendParams?: undefined | SendRouteType
     lock?: boolean
   }
   HotspotSetup: undefined
