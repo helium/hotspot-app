@@ -129,9 +129,12 @@ const WalletView = ({
         }
 
         if (isEqual(balanceInfoSplit, nextBalanceInfoSplit)) return
-        animateTransition('WalletView.BalanceInfoUpdated', {
-          enabledOnAndroid: false,
-        })
+        if (!balanceInfoSplit.hasBalance) {
+          // Only animate if they didn't previously have balance info
+          animateTransition('WalletView.BalanceInfoUpdated', {
+            enabledOnAndroid: false,
+          })
+        }
         setBalanceInfoSplit(nextBalanceInfoSplit)
       }
     }
