@@ -596,6 +596,12 @@ export default {
         currency: 'Currency',
         network: 'Choose API Provider',
         signOut: 'Sign Out',
+        clearMapCache: 'Clear Map Cache',
+        clearMapCacheAlert: {
+          title: 'Clear Map Cache?',
+          body:
+            'This will clear your map cache which may help resolve map issues.',
+        },
         signOutAlert: {
           title: 'Warning!',
           body:

@@ -44,6 +44,7 @@ import { navigationRef } from './navigation/navigator'
 import useSettingsRestore from './utils/useAccountSettings'
 import useMount from './utils/useMount'
 import Box from './components/Box'
+import { guardedClearMapCache } from './utils/mapUtils'
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
@@ -99,6 +100,13 @@ const App = () => {
   useMount(() => {
     dispatch(restoreAppSettings())
   })
+
+  // if user is logged in clear mapbox cache to invalidate any old vector tiles
+  useAsync(async () => {
+    if (isBackedUp) {
+      await guardedClearMapCache()
+    }
+  }, [isBackedUp])
 
   useEffect(() => {
     if (!isBackedUp || !settingsLoaded || !featuresLoaded) return
