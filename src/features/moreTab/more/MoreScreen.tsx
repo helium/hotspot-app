@@ -48,6 +48,7 @@ import Articles from '../../../constants/articles'
 import useAlert from '../../../utils/useAlert'
 import validatorsSlice from '../../../store/validators/validatorsSlice'
 import { SUPPORTED_CURRENCIES } from '../../../utils/useCurrency'
+import { clearMapCache } from '../../../utils/mapUtils'
 
 type Route = RouteProp<RootStackParamList & MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
@@ -188,6 +189,15 @@ const MoreScreen = () => {
       }),
     )
   }, [dispatch, showHiddenHotspots])
+
+  const handleClearMapCache = useCallback(async () => {
+    const decision = await showOKCancelAlert({
+      titleKey: 'more.sections.app.clearMapCacheAlert.title',
+      messageKey: 'more.sections.app.clearMapCacheAlert.body',
+    })
+    if (!decision) return
+    await clearMapCache()
+  }, [showOKCancelAlert])
 
   const handleSignOut = useCallback(() => {
     Alert.alert(
@@ -402,6 +412,10 @@ const MoreScreen = () => {
             value: showHiddenHotspots,
           },
           {
+            title: t('more.sections.app.clearMapCache'),
+            onPress: handleClearMapCache,
+          },
+          {
             title: t('more.sections.app.signOut'),
             onPress: handleSignOut,
             destructive: true,
@@ -439,6 +453,7 @@ const MoreScreen = () => {
     handleResetPin,
     handlePinRequiredForPayment,
     showingDeployModeConfirmation,
+    handleClearMapCache,
   ])
 
   const contentContainer = useMemo(
