@@ -1,0 +1,17 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "PVM9KJZ2AD.com.helium.mobile.wallet"
+        ],
+        "components": [
+          {
+            "/": "/link_wallet/*",
+            "comment": "Matches any URL whose path starts with /link_wallet/"
+          }
+        ]
+      }
+    ]
+  }
+}
