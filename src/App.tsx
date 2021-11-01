@@ -65,6 +65,8 @@ const App = () => {
     'No Native splash screen',
     'RCTBridge required dispatch_sync to load',
     'Require cycle',
+    'EventEmitter.removeListener',
+    '`new NativeEventEmitter()` was called with a non-null argument',
   ])
 
   const { appState } = useAppState()
