@@ -10,6 +10,9 @@ target 'Helium' do
 
   pod 'OneSignal', '>= 3.0.0', '< 4.0'
 
+  # temp fix for xcode 13 until https://github.com/dotintent/react-native-ble-plx/pull/900 merges
+  pod 'MultiplatformBleAdapter', :git => 'https://github.com/below/MultiPlatformBleAdapter', :tag => '0.1.9'
+
   use_react_native!(
     :path => config[:reactNativePath],
     # to enable hermes on iOS, change `false` to `true` and then install pods
@@ -34,6 +37,7 @@ target 'Helium' do
   post_install do |installer|
     $RNMBGL.post_install(installer)
     react_native_post_install(installer)
+    __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
 end
 
