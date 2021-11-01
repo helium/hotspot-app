@@ -11,7 +11,10 @@ export const updateNetwork = (nextNetwork: string) => {
   network = nextNetwork
 }
 
-const makeRequest = async (url: string, opts: RequestInit) => {
+const makeRequest = async (
+  url: string,
+  opts: RequestInit & { showCursor?: boolean },
+) => {
   Logger.breadcrumb(`httpRequest ${opts.method} ${url}`, breadcrumbOpts)
   try {
     const token = await getWalletApiToken()
@@ -43,7 +46,8 @@ const makeRequest = async (url: string, opts: RequestInit) => {
     const text = await response.text()
     try {
       const json = JSON.parse(text)
-      const data = json.data || json
+      const responseData = json.data || json
+      const data = opts.showCursor ? json : responseData
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       data.serverDate = response.headers.map?.date
@@ -57,10 +61,17 @@ const makeRequest = async (url: string, opts: RequestInit) => {
   }
 }
 
+type WalletOpts = {
+  camelCase?: boolean
+  showCursor?: boolean
+}
 export const getWallet = async (
   url: string,
   params?: unknown,
-  { camelCase } = { camelCase: false },
+  { camelCase, showCursor } = {
+    camelCase: false,
+    showCursor: false,
+  } as WalletOpts,
 ) => {
   let fullUrl = url
   if (params) {
@@ -69,6 +80,7 @@ export const getWallet = async (
   }
   const opts = {
     method: 'GET',
+    showCursor,
   } as RequestInit
   if (camelCase) {
     opts.headers = { Accent: 'camel' }

@@ -1,35 +1,24 @@
 import React from 'react'
-import {
-  AnyTransaction,
-  PendingTransaction,
-  StakeValidatorV1,
-} from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import Cloud from '@assets/images/stakeCloud.svg'
 import PaymentItem from './PaymentItem'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
+import { HttpTransaction } from '../../../../store/activity/activitySlice'
 
-type Props = { item: AnyTransaction | PendingTransaction }
+type Props = { item: HttpTransaction }
 const StakeValidator = ({ item }: Props) => {
-  if (item.type !== 'stake_validator_v1') return null
+  if (item.type !== 'stake_validator_v1' || !item.address) return null
 
-  const stakeValidator = item as StakeValidatorV1
   return (
     <>
       <Box flexDirection="row" marginBottom="s">
         <Cloud color="#A667F6" />
         <Text variant="medium" fontSize={15} color="black" marginLeft="s">
-          {animalName(stakeValidator.address)}
+          {animalName(item.address)}
         </Text>
       </Box>
-      <PaymentItem
-        text={stakeValidator.address}
-        mode="from"
-        isMyAccount
-        isLast
-        isFirst
-      />
+      <PaymentItem text={item.address} mode="from" isMyAccount isLast isFirst />
     </>
   )
 }

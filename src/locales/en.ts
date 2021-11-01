@@ -596,6 +596,12 @@ export default {
         currency: 'Currency',
         network: 'Choose API Provider',
         signOut: 'Sign Out',
+        clearMapCache: 'Clear Map Cache',
+        clearMapCacheAlert: {
+          title: 'Clear Map Cache?',
+          body:
+            'This will clear your map cache which may help resolve map issues.',
+        },
         signOutAlert: {
           title: 'Warning!',
           body:
@@ -766,9 +772,14 @@ export default {
       mining: 'Mining Rewards',
       payment: 'Payment Transactions',
       hotspot: 'Hotspot Transactions',
+      burn: 'Burn Transactions',
+      validator: 'Validator Transactions',
       pending: 'Pending Transactions',
     },
     no_results: 'No Results',
+    all_footer:
+      "You've reached the end of your recent activity. Select a filter or <b><purple>go to the explorer</purple></b> to view more.",
+    rejected: 'Failed to load. Tap to try again',
   },
   hotspot_settings: {
     title: 'Hotspot Settings',

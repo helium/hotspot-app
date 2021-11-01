@@ -1,16 +1,15 @@
-import { AnyTransaction, PendingTransaction, RewardsV1 } from '@helium/http'
 import React from 'react'
 import { groupBy } from 'lodash'
 import ActivityRewardItem from './ActivityRewardItem'
 import Box from '../../../../components/Box'
+import { HttpTransaction } from '../../../../store/activity/activitySlice'
 
-type Props = { item: AnyTransaction | PendingTransaction }
+type Props = { item: HttpTransaction }
 const Rewards = ({ item }: Props) => {
-  if (!['rewards_v1', 'rewards_v2'].includes(item.type)) return null
+  if (!['rewards_v1', 'rewards_v2'].includes(item.type) || !item.rewards)
+    return null
 
-  const rewards = item as RewardsV1
-
-  const grouped = groupBy(rewards.rewards, (reward) => {
+  const grouped = groupBy(item.rewards, (reward) => {
     if (reward.type === 'securities') return reward.type
 
     return reward.gateway
@@ -23,7 +22,6 @@ const Rewards = ({ item }: Props) => {
       {securities && securities.length > 0 && (
         <ActivityRewardItem
           rewards={securities}
-          // eslint-disable-next-line react/no-array-index-key
           isFirst
           isSecurityToken
           isLast

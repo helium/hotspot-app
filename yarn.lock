@@ -1556,10 +1556,10 @@
   dependencies:
     bignumber.js "^9.0.0"
 
-"@helium/http@^3.47.0":
-  version "3.47.0"
-  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.47.0.tgz#c049d36fab4fd30cab223bf67328bc2dfa2177a5"
-  integrity sha512-7nNjXm5becr5ykdFkeihUJMJL51nvuOA1yt8zslwGvQoOFZAp1zoWnb4/n3NyHwUY6vNNMD9EwCvGtiCPRnZCg==
+"@helium/http@^3.48.0":
+  version "3.48.0"
+  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.48.0.tgz#26076de27cd76eeca297534d64d64dbe2a1b87f7"
+  integrity sha512-lbV2VOb28ctJN7GAxV8KqnPTMwUaUtVBRoDFEMx0NWXp9nT1x39Myi3/2rTRkaM2ZpwW6tpA/I7pHo2jZctiSg==
   dependencies:
     "@helium/currency" "^3.45.0"
     axios "^0.21.1"
@@ -11078,7 +11078,7 @@ react-is@^16.12.0, react-is@^16.13.0, react-is@^16.13.1, react-is@^16.7.0, react
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
-react-native-appstate-hook@^1.0.5:
+react-native-appstate-hook@1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/react-native-appstate-hook/-/react-native-appstate-hook-1.0.5.tgz#2cb53bcee170ccd58e49d02d1649229fb263896d"
   integrity sha512-vwt4ZrBvrxMIJuyzo5D8u/TvazxkJNX7AI6xKAh08LWMfLtIFstnuEzxwKN0joXLITS9NJbC6ayKxUFH2gLNrQ==

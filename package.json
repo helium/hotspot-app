@@ -1,6 +1,6 @@
 {
   "name": "Helium",
-  "version": "3.7.0",
+  "version": "3.7.1",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -41,7 +41,7 @@
     "@gorhom/bottom-sheet": "^3.6.5",
     "@helium/crypto-react-native": "^3.9.0",
     "@helium/currency": "^3.25.1",
-    "@helium/http": "^3.47.0",
+    "@helium/http": "^3.48.0",
     "@helium/proto-ble": "3.10.0",
     "@helium/transactions": "^3.46.0",
     "@react-native-community/art": "^1.2.0",
@@ -95,7 +95,7 @@
     "react-async-hook": "^3.6.2",
     "react-i18next": "^11.7.3",
     "react-native": "0.64.0",
-    "react-native-appstate-hook": "^1.0.5",
+    "react-native-appstate-hook": "1.0.5",
     "react-native-ble-plx": "^2.0.2",
     "react-native-config": "^1.4.1",
     "react-native-currency-format": "^1.0.19",
