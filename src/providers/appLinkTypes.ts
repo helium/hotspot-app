@@ -42,6 +42,7 @@ export type AppLinkLocation = {
 
 export type LinkWalletRequest = {
   type: AppLinkCategoryType
-  appId: number
+  requestAppId: string
+  requestAppName: string
   callbackUrl: string
 }
