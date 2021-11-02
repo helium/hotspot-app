@@ -104,6 +104,8 @@ const WalletView = ({
 
   const toggleShowReceive = useCallback(() => {
     const snapToIndex = activityCardIndex >= 1 ? 0 : 1
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore bottom sheet type bug https://github.com/gorhom/react-native-bottom-sheet/issues/708
     activityCardRef.current?.snapTo(snapToIndex)
     triggerNavHaptic()
   }, [activityCardIndex, triggerNavHaptic])
