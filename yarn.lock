@@ -7446,6 +7446,13 @@ expo-permissions@^13.0.3:
   dependencies:
     expo-modules-core "~0.4.4"
 
+expo-screen-capture@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/expo-screen-capture/-/expo-screen-capture-4.0.3.tgz#ba60f2462c40d67cc1908b468dc2584fc8aff281"
+  integrity sha512-sN95T/mEGIT8aRgvmFobln0ALBNT0mSQ2fPxzpWYnd2WTsBt5IVZoUPf/8cGvEfNr1MIRhcNeVmQr2Af8ScARA==
+  dependencies:
+    expo-modules-core "~0.4.4"
+
 expo-secure-store@^11.0.3:
   version "11.0.3"
   resolved "https://registry.yarnpkg.com/expo-secure-store/-/expo-secure-store-11.0.3.tgz#b71c7837925ac7811ed4d25dfb6a61dbdb2eb3b9"

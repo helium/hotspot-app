@@ -32,12 +32,6 @@ public class MainActivity extends ReactActivity {
   }
 
   @Override
-  protected void onResume() {
-    super.onResume();
-    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
-  }
-
-  @Override
   protected ReactActivityDelegate createReactActivityDelegate() {
     return new ReactActivityDelegateWrapper(
         this,

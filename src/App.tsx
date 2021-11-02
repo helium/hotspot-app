@@ -19,6 +19,7 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import * as SplashScreen from 'expo-splash-screen'
 import { NavigationContainer } from '@react-navigation/native'
+import * as ScreenCapture from 'expo-screen-capture'
 import { theme } from './theme/theme'
 import NavigationRoot from './navigation/NavigationRoot'
 import { useAppDispatch } from './store/store'
@@ -101,6 +102,7 @@ const App = () => {
   )
 
   useMount(() => {
+    ScreenCapture.preventScreenCaptureAsync('app') // enables security screen on Android
     dispatch(restoreAppSettings())
   })
 
