@@ -102,7 +102,7 @@ const App = () => {
   )
 
   useMount(() => {
-    if (Platform.OS === 'ios') {
+    if (Platform.OS === 'android') {
       ScreenCapture.preventScreenCaptureAsync('app') // enables security screen on Android
     }
     dispatch(restoreAppSettings())
