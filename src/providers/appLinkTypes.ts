@@ -6,6 +6,7 @@ export const AppLinkCategories = [
   'validator',
   'add_gateway',
   'hotspot_location',
+  'link_wallet',
 ] as const
 export type AppLinkCategoryType = typeof AppLinkCategories[number]
 
@@ -37,4 +38,10 @@ export type AppLinkLocation = {
   hotspotAddress: string
   latitude: number
   longitude: number
+}
+
+export type LinkWalletRequest = {
+  type: AppLinkCategoryType
+  appId: number
+  callbackUrl: string
 }
