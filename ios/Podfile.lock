@@ -691,14 +691,14 @@ SPEC CHECKSUMS:
   FBLazyVector: 500821d196c3d1bd10e7e828bc93ce075234080f
   FBReactNativeSpec: 74c869e2cffa2ffec685cd1bac6788c021da6005
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 5337263514dd6f09803962437687240c5dc39aa4
+  glog: 43737235ae6a21de4f45297f4f73b6420fc2ecb2
   lottie-ios: 48fac6be217c76937e36e340e2d09cf7b10b7f5f
   lottie-react-native: 4dff8fe8d10ddef9e7880e770080f4a56121397e
   Mapbox-iOS-SDK: a5915700ec84bc1a7f8b3e746d474789e35b7956
   MapboxMobileEvents: 2bc0ca2eedb627b73cf403258dce2b2fa98074a6
-  MultiplatformBleAdapter: 5a6a897b006764392f9cef785e4360f54fb9477d
+  MultiplatformBleAdapter: ec28c1eac17cdb9ca0ba55ba0c2cad3de8e9c01a
   OneSignal: e4dfb1912410f302dc9661ce98fc829f6c18ff6a
-  RCT-Folly: a21c126816d8025b547704b777a2ba552f3d9fa9
+  RCT-Folly: e2636706cc3fded205cf0d380428ec0ea7455f80
   RCTRequired: 3cc065b52aa18db729268b9bd78a2feffb4d0f91
   RCTTypeSafety: 3c4fc37d5dea452d2ef17324db5504ec2f05083a
   React: 4a00720816c52a213424442954acb7e4b724804a

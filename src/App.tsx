@@ -67,6 +67,7 @@ const App = () => {
     'Require cycle',
     'EventEmitter.removeListener',
     '`new NativeEventEmitter()` was called with a non-null argument',
+    'expo-permissions is now deprecated',
   ])
 
   const { appState } = useAppState()
