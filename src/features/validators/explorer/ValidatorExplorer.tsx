@@ -53,7 +53,7 @@ const ValidatorExplorer = ({ visible, onSelectValidator }: Props) => {
   }, [loadElectedValidators])
 
   useAsync(async () => {
-    const chainVars = await getChainVars()
+    const chainVars = await getChainVars(['num_consensus_members'])
     setConsensusMembers(chainVars.numConsensusMembers)
   }, [])
 

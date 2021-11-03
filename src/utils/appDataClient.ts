@@ -58,13 +58,13 @@ const breadcrumbOpts = { type: 'HTTP Request', category: 'appDataClient' }
 
 export const configChainVars = async () => {
   Logger.breadcrumb('configChainVars', breadcrumbOpts)
-  const vars = await client.vars.get()
+  const vars = await client.vars.getTransactionVars()
   Transaction.config(vars)
 }
 
-export const getChainVars = async () => {
+export const getChainVars = async (keys?: string[]) => {
   Logger.breadcrumb('getChainVars', breadcrumbOpts)
-  return client.vars.get()
+  return client.vars.get(keys)
 }
 
 export const getAddress = async () => {
