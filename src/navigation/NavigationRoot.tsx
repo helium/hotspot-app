@@ -10,6 +10,7 @@ import { useColors } from '../theme/themeHooks'
 import SendScreen from '../features/wallet/send/SendScreen'
 import SendCompleteScreen from '../features/wallet/send/SendCompleteScreen'
 import LinkWallet from '../features/txnDelegatation/LinkWallet'
+import SignHotspot from '../features/txnDelegatation/SignHotspot'
 
 const OnboardingStack = createStackNavigator()
 const MainStack = createStackNavigator()
@@ -47,6 +48,7 @@ const NavigationRoot = () => {
         <MainStack.Screen name="Send" component={SendScreen} />
         <MainStack.Screen name="SendComplete" component={SendCompleteScreen} />
         <MainStack.Screen name="LinkWallet" component={LinkWallet} />
+        <MainStack.Screen name="SignHotspot" component={SignHotspot} />
       </MainStack.Navigator>
     )
   }, [isBackedUp])

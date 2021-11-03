@@ -5,6 +5,7 @@ import {
   AppLink,
   AppLinkPayment,
   LinkWalletRequest,
+  SignHotspotRequest,
 } from '../providers/appLinkTypes'
 
 export const navigationRef = React.createRef<NavigationContainerRef>()
@@ -56,6 +57,10 @@ const linkWallet = (request: LinkWalletRequest) => {
   navigationRef.current?.navigate('LinkWallet', request)
 }
 
+const signHotspot = (request: SignHotspotRequest) => {
+  navigationRef.current?.navigate('SignHotspot', request)
+}
+
 export default {
   lock,
   send,
@@ -64,4 +69,5 @@ export default {
   confirmAddGateway,
   updateHotspotLocation,
   linkWallet,
+  signHotspot,
 }

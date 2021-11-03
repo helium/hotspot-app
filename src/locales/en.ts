@@ -1261,4 +1261,11 @@ export default {
     body:
       'by linking helium to {{appName}}, you can safely sign blockchain transactions without re-entering your seed phrase.',
   },
+  signHotspot: {
+    title: 'Add Hotspot to\nblockchain?',
+    name: 'Hostpot Name: {{name}}',
+    location: 'Location: {{location}}',
+    owner: 'Owner: {{owner}}',
+    maker: 'Maker: {{maker}}',
+  },
 }

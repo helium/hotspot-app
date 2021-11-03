@@ -25,6 +25,7 @@ import {
   Payee,
   AppLinkLocation,
   LinkWalletRequest,
+  SignHotspotRequest,
 } from './appLinkTypes'
 
 const APP_LINK_PROTOCOL = 'helium://'
@@ -155,6 +156,9 @@ const useAppLink = () => {
         }
         case 'link_wallet':
           navigator.linkWallet(record as LinkWalletRequest)
+          break
+        case 'sign_hotspot':
+          navigator.signHotspot(record as SignHotspotRequest)
           break
       }
     },

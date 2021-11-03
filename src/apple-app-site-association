@@ -9,6 +9,10 @@
           {
             "/": "/link_wallet/*",
             "comment": "Matches any URL whose path starts with /link_wallet/"
+          },
+          {
+            "/": "/sign_hotspot/*",
+            "comment": "Matches any URL whose path starts with /sign_hotspot/"
           }
         ]
       }
