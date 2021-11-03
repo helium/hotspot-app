@@ -58,7 +58,7 @@ const MIDAS_926_B = {
   },
   antenna: {
     us: ANTENNAS.MIDAS_GATEWAY_US,
-    default: ANTENNAS.MIDAS_GATEWAY_EU,
+    default: ANTENNAS.MIDAS_GATEWAY_CN,
   },
 } as MakerHotspot
 
