@@ -83,7 +83,7 @@ const Address = ({
           cancelButtonIndex: opts.length - 1,
         },
         (buttonIndex) => {
-          opts[buttonIndex].action?.()
+          opts[buttonIndex || 0].action?.()
         },
       )
     }

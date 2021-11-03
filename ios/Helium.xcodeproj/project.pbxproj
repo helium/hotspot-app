@@ -44,8 +44,10 @@
 		B00ACFD501FB43A3A089F37C /* Inter-Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = F1047DD27662496F85C8B66C /* Inter-Italic.otf */; };
 		B49CB391F0F24551BC6FBB93 /* Inter-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9863D0E9676144BB8873C9FF /* Inter-Light.otf */; };
 		BB0BE1BCD9864DCB883950E8 /* Inter-SemiBoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 42F8FDE2399B4FA8B34EE3CA /* Inter-SemiBoldItalic.otf */; };
+		BC8AE2F359263CFDB1F5DAD7 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7565F29080B0AA051E97D07 /* ExpoModulesProvider.swift */; };
 		C1138FCE1DD142E093DA4395 /* Inter-LightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 5D2A1FCF497741BD8DB14DBF /* Inter-LightItalic.otf */; };
 		C7840AAA72F848BEBD73CBA8 /* InputMono-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D1EC077532EF40BCA6430610 /* InputMono-Bold.ttf */; };
+		D03C7CF3723D24414EB8F328 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED37DC34EDED14E17A7A9033 /* ExpoModulesProvider.swift */; };
 		E723BBC12AB04A1D9CC9C7A5 /* Inter-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = AEFA142C9A4E488C8FB53FDE /* Inter-Medium.otf */; };
 		EC4546F4E5CF416C9D630B0A /* Inter-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = F5D6ECE844F84ECABC681059 /* Inter-Regular.otf */; };
 		F6789F5F69A34F20B503AC2E /* Inter-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = 5BE0F3C218C340DEB451FC32 /* Inter-Thin.otf */; };
@@ -135,11 +137,13 @@
 		E3B07B1489E74A128A3C96AB /* Inter-ExtraLight.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraLight.otf"; path = "../src/assets/fonts/Inter-ExtraLight.otf"; sourceTree = "<group>"; };
 		E60DB270CEE74027B4039F4A /* Soleil-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Soleil-Regular.otf"; path = "../src/assets/fonts/Soleil-Regular.otf"; sourceTree = "<group>"; };
 		E61F2B2B732547DEB1C3219F /* Inter-ExtraBold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraBold.otf"; path = "../src/assets/fonts/Inter-ExtraBold.otf"; sourceTree = "<group>"; };
+		E7565F29080B0AA051E97D07 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Helium/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		E8F391FD281F4727B9C1681A /* Soleil-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Soleil-Light.otf"; path = "../src/assets/fonts/Soleil-Light.otf"; sourceTree = "<group>"; };
 		EAF9784B2EC76EB219FE69E9 /* Pods-Helium-HeliumTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Helium-HeliumTests.release.xcconfig"; path = "Target Support Files/Pods-Helium-HeliumTests/Pods-Helium-HeliumTests.release.xcconfig"; sourceTree = "<group>"; };
 		EB40A7C9F9344DC7A09F6876 /* InputMono-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InputMono-Medium.ttf"; path = "../src/assets/fonts/InputMono-Medium.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
+		ED37DC34EDED14E17A7A9033 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Helium-HeliumTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		F1047DD27662496F85C8B66C /* Inter-Italic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Italic.otf"; path = "../src/assets/fonts/Inter-Italic.otf"; sourceTree = "<group>"; };
 		F4F0344FC9EB4979AA504A35 /* Inter-ThinItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ThinItalic.otf"; path = "../src/assets/fonts/Inter-ThinItalic.otf"; sourceTree = "<group>"; };
 		F5D6ECE844F84ECABC681059 /* Inter-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Regular.otf"; path = "../src/assets/fonts/Inter-Regular.otf"; sourceTree = "<group>"; };
@@ -265,6 +269,14 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
+		686A357C2CC4DBC6BD6972A2 /* Helium */ = {
+			isa = PBXGroup;
+			children = (
+				E7565F29080B0AA051E97D07 /* ExpoModulesProvider.swift */,
+			);
+			name = Helium;
+			sourceTree = "<group>";
+		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -283,6 +295,7 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBB8A579C848048078120971 /* Pods */,
 				4E395C02883C4FB2ADE7CF53 /* Resources */,
+				D0368883646D5FA18C326B5F /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -299,6 +312,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		B76ACDA5BE791373FE56B1B5 /* HeliumTests */ = {
+			isa = PBXGroup;
+			children = (
+				ED37DC34EDED14E17A7A9033 /* ExpoModulesProvider.swift */,
+			);
+			name = HeliumTests;
+			sourceTree = "<group>";
+		};
 		BBB8A579C848048078120971 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -310,6 +331,15 @@
 				1ED42C0AD18670C2DEA530AA /* Pods-OneSignalNotificationServiceExtension.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		D0368883646D5FA18C326B5F /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				686A357C2CC4DBC6BD6972A2 /* Helium */,
+				B76ACDA5BE791373FE56B1B5 /* HeliumTests */,
+			);
+			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 		F8B0E21B256300AD00EB1E73 /* OneSignalNotificationServiceExtension */ = {
@@ -513,10 +543,12 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Helium-HeliumTests/Pods-Helium-HeliumTests-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -651,10 +683,12 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Helium/Pods-Helium-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -689,6 +723,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				00E356F31AD99517003FC87E /* HeliumTests.m in Sources */,
+				D03C7CF3723D24414EB8F328 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -700,6 +735,7 @@
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				50220074260B81B500BE34C9 /* RCTDateModule.m in Sources */,
+				BC8AE2F359263CFDB1F5DAD7 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -738,7 +774,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = HeliumTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -759,7 +795,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = HeliumTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"-ObjC",

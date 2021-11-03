@@ -4,10 +4,7 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import <React/RCTLinkingManager.h>
-
-#import <UMCore/UMModuleRegistry.h>
-#import <UMReactNativeAdapter/UMNativeModulesProxy.h>
-#import <UMReactNativeAdapter/UMModuleRegistryAdapter.h>
+#import <React/RCTConvert.h>
 
 #ifdef FB_SONARKIT_ENABLED
 #import <FlipperKit/FlipperClient.h>
@@ -28,12 +25,6 @@ static void InitializeFlipper(UIApplication *application) {
 }
 #endif
 
-@interface AppDelegate () <RCTBridgeDelegate>
-
-@property (nonatomic, strong) UMModuleRegistryAdapter *moduleRegistryAdapter;
-
-@end
-
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -42,13 +33,8 @@ static void InitializeFlipper(UIApplication *application) {
   InitializeFlipper(application);
 #endif
 
-  self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
-
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
-                                                   moduleName:@"Helium"
-                                            initialProperties:nil];
-
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"Helium" initialProperties:nil];
   rootView.backgroundColor = [UIColor colorWithRed: 0.07 green: 0.09 blue: 0.18 alpha: 1.00];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -56,6 +42,7 @@ static void InitializeFlipper(UIApplication *application) {
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+
   [super application:application didFinishLaunchingWithOptions:launchOptions];
 
   return YES;
@@ -63,9 +50,8 @@ static void InitializeFlipper(UIApplication *application) {
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
-    NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge];
     // If you'd like to export some custom RCTBridgeModules that are not Expo modules, add them here!
-    return extraModules;
+    return @[];
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
