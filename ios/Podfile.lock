@@ -38,6 +38,8 @@ PODS:
     - ExpoModulesCore
   - ExpoModulesCore (0.4.7):
     - React-Core
+  - EXScreenCapture (4.0.3):
+    - ExpoModulesCore
   - EXSecureStore (11.0.3):
     - ExpoModulesCore
   - EXSplashScreen (0.13.4):
@@ -444,6 +446,7 @@ DEPENDENCIES:
   - EXPermissions (from `../node_modules/expo-permissions/ios`)
   - Expo (from `../node_modules/expo/ios`)
   - ExpoModulesCore (from `../node_modules/expo-modules-core/ios`)
+  - EXScreenCapture (from `../node_modules/expo-screen-capture/ios`)
   - EXSecureStore (from `../node_modules/expo-secure-store/ios`)
   - EXSplashScreen (from `../node_modules/expo-splash-screen/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
@@ -550,6 +553,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo/ios"
   ExpoModulesCore:
     :path: "../node_modules/expo-modules-core/ios"
+  EXScreenCapture:
+    :path: "../node_modules/expo-screen-capture/ios"
   EXSecureStore:
     :path: "../node_modules/expo-secure-store/ios"
   EXSplashScreen:
@@ -686,19 +691,20 @@ SPEC CHECKSUMS:
   EXPermissions: 7696f4c16e89981f84c04d96327f7e1e592373c0
   Expo: cb542da0f7c8565a58231488066262f079eb1831
   ExpoModulesCore: c353a3bed60c3b83dbe63f134aaa7bf4733ffa16
+  EXScreenCapture: aa7292f963ccfde7aed4ba6bb6e822e95ef5153e
   EXSecureStore: 919bf7c28472862020d2cd7b59b69aae160b5d40
   EXSplashScreen: 68390ddb65a5def66ce8cf46a1e14a9b33cdac70
   FBLazyVector: 500821d196c3d1bd10e7e828bc93ce075234080f
   FBReactNativeSpec: 74c869e2cffa2ffec685cd1bac6788c021da6005
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 5337263514dd6f09803962437687240c5dc39aa4
+  glog: 43737235ae6a21de4f45297f4f73b6420fc2ecb2
   lottie-ios: 48fac6be217c76937e36e340e2d09cf7b10b7f5f
   lottie-react-native: 4dff8fe8d10ddef9e7880e770080f4a56121397e
   Mapbox-iOS-SDK: a5915700ec84bc1a7f8b3e746d474789e35b7956
   MapboxMobileEvents: 2bc0ca2eedb627b73cf403258dce2b2fa98074a6
-  MultiplatformBleAdapter: 5a6a897b006764392f9cef785e4360f54fb9477d
+  MultiplatformBleAdapter: ec28c1eac17cdb9ca0ba55ba0c2cad3de8e9c01a
   OneSignal: e4dfb1912410f302dc9661ce98fc829f6c18ff6a
-  RCT-Folly: a21c126816d8025b547704b777a2ba552f3d9fa9
+  RCT-Folly: e2636706cc3fded205cf0d380428ec0ea7455f80
   RCTRequired: 3cc065b52aa18db729268b9bd78a2feffb4d0f91
   RCTTypeSafety: 3c4fc37d5dea452d2ef17324db5504ec2f05083a
   React: 4a00720816c52a213424442954acb7e4b724804a
