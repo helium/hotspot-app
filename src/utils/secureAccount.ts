@@ -14,6 +14,7 @@ const stringKeys = [
   'walletApiToken',
   'language',
   'permanentPaymentAddress',
+  'appLinkAuthTokens',
 ] as const
 type StringKey = typeof stringKeys[number]
 
@@ -141,6 +142,19 @@ export const getWalletApiToken = async () => {
   const apiToken = await makeWalletApiToken(address)
   await setSecureItem('walletApiToken', apiToken)
   return apiToken
+}
+
+export const addAppLinkAuthToken = async (token: string) => {
+  const tokens = await getSecureItem('appLinkAuthTokens')
+  const tokenArr: string[] = tokens ? JSON.parse(tokens) : []
+  const nextTokens = [token, ...tokenArr]
+  return setSecureItem('appLinkAuthTokens', JSON.stringify(nextTokens))
+}
+
+export const hasAppLinkAuthToken = async (token: string) => {
+  const tokens = await getSecureItem('appLinkAuthTokens')
+  const tokenArr: string[] = tokens ? JSON.parse(tokens) : []
+  return !!tokenArr.find((t) => t === token)
 }
 
 export const signOut = async () => {
