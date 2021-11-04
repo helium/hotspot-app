@@ -1,10 +1,10 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { useAsync } from 'react-async-hook'
 import { useTranslation } from 'react-i18next'
 import { Linking } from 'react-native'
 import { AddGateway, WalletLink, Location } from '@helium/react-native-sdk'
 import animalHash from 'angry-purple-tiger'
+import qs from 'qs'
 import Box from '../../components/Box'
 import SafeAreaBox from '../../components/SafeAreaBox'
 import Text from '../../components/Text'
@@ -13,7 +13,8 @@ import {
   RootNavigationProp,
   RootStackParamList,
 } from '../../navigation/main/tabTypes'
-import { getSecureItem, hasAppLinkAuthToken } from '../../utils/secureAccount'
+import { getKeypair, hasAppLinkAuthToken } from '../../utils/secureAccount'
+import { getStakingSignedTransaction } from '../../utils/stakingClient'
 
 type Route = RouteProp<RootStackParamList, 'SignHotspot'>
 const SignHotspot = () => {
@@ -24,19 +25,40 @@ const SignHotspot = () => {
       token,
       addGatewayTxn,
       assertLocationTxn,
-      qrAddGatewayTxn,
       makerName,
     },
   } = useRoute<Route>()
   const navigation = useNavigation<RootNavigationProp>()
   const { t } = useTranslation()
-  const { result: address } = useAsync(getSecureItem, ['address'])
-  const [hasStoredToken, setHasStoredToken] = useState(false)
+  const [hasStoredToken, setHasStoredToken] = useState<boolean>()
+
+  const callback = useCallback(
+    async (responseParams: WalletLink.SignHotspotResponse) => {
+      try {
+        const url = `${callbackUrl}sign_hotspot?${qs.stringify(responseParams)}`
+        const canOpen = await Linking.canOpenURL(url)
+        if (canOpen) {
+          Linking.openURL(url)
+        }
+      } catch (e) {
+        console.error(e)
+      }
+
+      navigation.goBack()
+    },
+    [callbackUrl, navigation],
+  )
+
+  useEffect(() => {
+    if (hasStoredToken === false) {
+      callback({ status: 'token_not_found' })
+    }
+  }, [callback, hasStoredToken])
 
   const gatewayTxn = useMemo(() => {
-    if (!qrAddGatewayTxn || !addGatewayTxn) return
-    return AddGateway.txnFromString(qrAddGatewayTxn || addGatewayTxn)
-  }, [addGatewayTxn, qrAddGatewayTxn])
+    if (!addGatewayTxn) return
+    return AddGateway.txnFromString(addGatewayTxn)
+  }, [addGatewayTxn])
 
   const locationTxn = useMemo(() => {
     if (!assertLocationTxn) return
@@ -45,37 +67,57 @@ const SignHotspot = () => {
 
   const handleLink = useCallback(async () => {
     try {
-      const canOpen = await Linking.canOpenURL(callbackUrl)
-      if (!canOpen || !address) return
+      const ownerKeypair = await getKeypair()
 
-      // const time = getUnixTime(new Date())
-      // const token = WalletLink.createWalletLinkToken({
-      //   time,
-      //   address,
-      //   requestAppId,
-      //   signingAppId: getBundleId(),
-      // })
-      // await addAppLinkAuthToken(token)
-      // const url = `${callbackUrl}link_wallet/${address}?token=${token}&status=success`
-      // Linking.openURL(url)
+      const responseParams = {
+        status: 'success',
+      } as WalletLink.SignHotspotResponse
+
+      if (gatewayTxn) {
+        const txnOwnerSigned = await gatewayTxn.sign({
+          owner: ownerKeypair,
+        })
+
+        if (!txnOwnerSigned.gateway?.b58) {
+          callback({ status: 'gateway_not_found' })
+          throw new Error('Failed to sign gateway txn')
+        }
+
+        const signedGatewayTxn = await getStakingSignedTransaction(
+          txnOwnerSigned.gateway.b58,
+          txnOwnerSigned.toString(),
+        )
+        responseParams.gatewayTxn = signedGatewayTxn
+      }
+
+      if (locationTxn && locationTxn.gateway?.b58) {
+        const ownerIsPayer = locationTxn.payer?.b58 === locationTxn.owner?.b58
+        const txnOwnerSigned = await locationTxn.sign({
+          owner: ownerKeypair,
+          payer: ownerIsPayer ? ownerKeypair : undefined,
+        })
+        let finalTxn = txnOwnerSigned.toString()
+        if (!ownerIsPayer) {
+          const stakingServerSignedTxn = await getStakingSignedTransaction(
+            locationTxn.gateway.b58,
+            finalTxn,
+          )
+          finalTxn = stakingServerSignedTxn
+        }
+
+        responseParams.assertTxn = finalTxn
+      }
+
+      callback(responseParams)
     } catch (e) {
       console.error(e)
     }
     navigation.goBack()
-  }, [address, callbackUrl, navigation])
+  }, [callback, gatewayTxn, locationTxn, navigation])
 
   const handleCancel = useCallback(async () => {
-    try {
-      const canOpen = await Linking.canOpenURL(callbackUrl)
-      if (canOpen) {
-        // const url = `${callbackUrl}link_wallet/${address}?status=user_cancelled`
-        // Linking.openURL(url)
-      }
-    } catch (e) {
-      console.error(e)
-    }
-    navigation.goBack()
-  }, [callbackUrl, navigation])
+    callback({ status: 'user_cancelled' })
+  }, [callback])
 
   const name = useMemo(() => {
     if (!gatewayTxn?.gateway?.b58 && !locationTxn?.gateway?.b58) return

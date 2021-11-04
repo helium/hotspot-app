@@ -6,6 +6,7 @@ import { Linking } from 'react-native'
 import { getUnixTime } from 'date-fns'
 import { WalletLink } from '@helium/react-native-sdk'
 import { getBundleId } from 'react-native-device-info'
+import qs from 'qs'
 import Box from '../../components/Box'
 import SafeAreaBox from '../../components/SafeAreaBox'
 import Text from '../../components/Text'
@@ -25,39 +26,42 @@ const LinkWallet = () => {
   const { t } = useTranslation()
   const { result: address } = useAsync(getSecureItem, ['address'])
 
-  const handleLink = useCallback(async () => {
-    try {
-      const canOpen = await Linking.canOpenURL(callbackUrl)
-      if (!canOpen || !address) return
+  const callback = useCallback(
+    async (responseParams: WalletLink.LinkWalletResponse) => {
+      try {
+        const url = `${callbackUrl}link_wallet/${address}?${qs.stringify(
+          responseParams,
+        )}`
+        const canOpen = await Linking.canOpenURL(url)
+        if (canOpen) {
+          Linking.openURL(url)
+        }
+      } catch (e) {
+        console.error(e)
+      }
 
-      const time = getUnixTime(new Date())
-      const token = WalletLink.createWalletLinkToken({
-        time,
-        address,
-        requestAppId,
-        signingAppId: getBundleId(),
-      })
-      await addAppLinkAuthToken(token)
-      const url = `${callbackUrl}link_wallet/${address}?token=${token}&status=success`
-      Linking.openURL(url)
-    } catch (e) {
-      console.error(e)
-    }
-    navigation.goBack()
-  }, [address, callbackUrl, navigation, requestAppId])
+      navigation.goBack()
+    },
+    [address, callbackUrl, navigation],
+  )
+
+  const handleLink = useCallback(async () => {
+    if (!address) return
+
+    const time = getUnixTime(new Date())
+    const token = WalletLink.createWalletLinkToken({
+      time,
+      address,
+      requestAppId,
+      signingAppId: getBundleId(),
+    })
+    await addAppLinkAuthToken(token)
+    callback({ token, status: 'success' })
+  }, [address, callback, requestAppId])
 
   const handleCancel = useCallback(async () => {
-    try {
-      const canOpen = await Linking.canOpenURL(callbackUrl)
-      if (canOpen) {
-        const url = `${callbackUrl}link_wallet/${address}?status=user_cancelled`
-        Linking.openURL(url)
-      }
-    } catch (e) {
-      console.error(e)
-    }
-    navigation.goBack()
-  }, [address, callbackUrl, navigation])
+    callback({ status: 'user_cancelled' })
+  }, [callback])
 
   return (
     <SafeAreaBox

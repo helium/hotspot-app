@@ -86,7 +86,7 @@ export const getStakingSignedTransaction = async (
   const { transaction } = await postStaking(`transactions/pay/${gateway}`, {
     transaction: txn,
   })
-  return transaction
+  return transaction as string
 }
 
 export const getMakers = async (): Promise<Maker[]> => {

@@ -45,8 +45,8 @@ export type AppLinkLocation = {
 
 export type LinkWalletRequest = {
   type: AppLinkCategoryType
-} & WalletLink.LinkWallet
+} & WalletLink.LinkWalletRequest
 
 export type SignHotspotRequest = {
   type: AppLinkCategoryType
-} & WalletLink.SignHotspot
+} & WalletLink.SignHotspotRequest
