@@ -139,10 +139,11 @@ const WalletView = ({
 
   useEffect(() => {
     const noResults =
-      activityViewState === 'activity' &&
-      !showSkeleton &&
-      pendingTxns.length === 0 &&
-      txns.length === 0
+      activityViewState === 'no_activity' ||
+      (activityViewState === 'activity' &&
+        !showSkeleton &&
+        pendingTxns.length === 0 &&
+        txns.length === 0)
     setHasNoResults(noResults)
   }, [activityViewState, pendingTxns.length, showSkeleton, txns.length])
 
