@@ -36,7 +36,6 @@ import WalletHeaderCondensed from './WalletHeaderCondensed'
 import animateTransition from '../../../utils/animateTransition'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 import useHaptic from '../../../utils/useHaptic'
-import WalletEmpty from './WalletEmpty'
 import {
   HttpPendingTransaction,
   HttpTransaction,
@@ -109,11 +108,6 @@ const WalletView = ({
     activityCardRef.current?.snapTo(snapToIndex)
     triggerNavHaptic()
   }, [activityCardIndex, triggerNavHaptic])
-
-  const balanceLoaded = useMemo(
-    () => account?.balance?.integerBalance !== undefined,
-    [account?.balance?.integerBalance],
-  )
 
   useEffect(() => {
     const updateBalanceInfo = async () => {
@@ -226,50 +220,31 @@ const WalletView = ({
         />
       </Animated.View>
       <Box flex={1}>
-        {(activityViewState === 'activity' ||
-          balanceInfoSplit.hasBalance ||
-          !balanceLoaded) && (
-          <Box onLayout={handleLayout('header')}>
-            <WalletHeader handleScanPressed={navScan} />
-            <BalanceCard
-              onReceivePress={toggleShowReceive}
-              onSendPress={handleSendPress}
-              balanceInfo={balanceInfoSplit}
-              account={account}
-              accountLoading={
-                fetchAccountState === 'idle' || fetchAccountState === 'rejected'
-              }
-              toggleConvertHntToCurrency={toggleConvertHntToCurrency}
-            />
-          </Box>
-        )}
-
-        {activityViewState === 'no_activity' &&
-          !balanceInfoSplit.hasBalance &&
-          balanceLoaded && <WalletEmpty handleScanPressed={navScan} />}
-
-        <WalletAddress
-          flex={1}
-          loading={activityViewState === 'undetermined'}
-          alignItems="center"
-          justifyContent="center"
-        />
+        <Box onLayout={handleLayout('header')}>
+          <WalletHeader handleScanPressed={navScan} />
+          <BalanceCard
+            onReceivePress={toggleShowReceive}
+            onSendPress={handleSendPress}
+            balanceInfo={balanceInfoSplit}
+            account={account}
+            accountLoading={fetchAccountState !== 'fulfilled'}
+            toggleConvertHntToCurrency={toggleConvertHntToCurrency}
+          />
+        </Box>
+        <WalletAddress flex={1} alignItems="center" justifyContent="center" />
       </Box>
-
-      {activityViewState !== 'no_activity' && (
-        <ActivityCard
-          ref={activityCardRef}
-          showSkeleton={showSkeleton}
-          filter={filter}
-          txns={txns}
-          pendingTxns={pendingTxns}
-          hasNoResults={hasNoResults}
-          paddingVertical={listTopPadding.key}
-          snapPoints={snapPoints}
-          animatedIndex={animatedCardIndex}
-          onChange={setActivityCardIndex}
-        />
-      )}
+      <ActivityCard
+        ref={activityCardRef}
+        showSkeleton={showSkeleton}
+        filter={filter}
+        txns={txns}
+        pendingTxns={pendingTxns}
+        hasNoResults={hasNoResults}
+        paddingVertical={listTopPadding.key}
+        snapPoints={snapPoints}
+        animatedIndex={animatedCardIndex}
+        onChange={setActivityCardIndex}
+      />
     </>
   )
 }

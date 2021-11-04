@@ -27,7 +27,7 @@ const ActivityCardListView = ({
 }: Props) => {
   const { m } = useSpacing()
   const dispatch = useAppDispatch()
-  const { result: address, loading } = useAsync(getSecureItem, ['address'])
+  const { result: address } = useAsync(getSecureItem, ['address'])
 
   const data = useMemo((): (
     | HttpTransaction
@@ -122,8 +122,6 @@ const ActivityCardListView = ({
       />
     )
   }, [showSkeleton])
-
-  if (loading) return null
 
   return (
     <BottomSheetFlatList
