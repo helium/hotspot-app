@@ -44,6 +44,7 @@ type Props = BoxProps<Theme> & {
   ownedHotspots?: Hotspot[]
   followedHotspots?: Hotspot[]
   selectedHotspot?: Hotspot | Witness
+  selectedHex?: string
   witnesses?: Witness[]
   animationMode?: 'flyTo' | 'easeTo' | 'moveTo'
   animationDuration?: number
@@ -79,6 +80,7 @@ const Map = ({
   followedHotspots,
   showRewardScale,
   cameraBottomOffset,
+  selectedHex,
   ...props
 }: Props) => {
   const colors = useColors()
@@ -156,9 +158,10 @@ const Map = ({
     loadMapBoundsAndZoom()
   }, [])
 
-  const selectedHex = useMemo(() => selectedHotspot?.locationHex, [
-    selectedHotspot?.locationHex,
-  ])
+  const selectedHexId = useMemo(
+    () => selectedHex || selectedHotspot?.locationHex,
+    [selectedHex, selectedHotspot?.locationHex],
+  )
 
   const onHexPress = (id: string) => {
     onHexSelected(id)
@@ -182,7 +185,7 @@ const Map = ({
     const boundsLocations: number[][] = []
     let hotspotCoords: number[] | undefined
 
-    if (mapCenter && !selectedHotspot && !selectedHex) {
+    if (mapCenter && !selectedHotspot && !selectedHexId) {
       boundsLocations.push(mapCenter)
     }
 
@@ -192,8 +195,8 @@ const Map = ({
       boundsLocations.push(hotspotCoords)
     }
 
-    if (selectedHex && !selectedHotspot) {
-      boundsLocations.push(h3ToGeo(selectedHex).reverse())
+    if (selectedHexId && !selectedHotspot) {
+      boundsLocations.push(h3ToGeo(selectedHexId).reverse())
     }
 
     if (hotspotCoords) {
@@ -217,7 +220,7 @@ const Map = ({
     }
 
     return findBounds(boundsLocations, cameraBottomOffset)
-  }, [mapCenter, cameraBottomOffset, selectedHex, selectedHotspot, witnesses])
+  }, [mapCenter, cameraBottomOffset, selectedHexId, selectedHotspot, witnesses])
 
   const defaultCameraSettings = useMemo(() => {
     const centerCoordinate =
@@ -293,7 +296,7 @@ const Map = ({
             bounds={mapBounds}
             mapZoom={mapZoomLevel}
             onHexSelected={onHexPress}
-            selectedHexId={selectedHex}
+            selectedHexId={selectedHexId}
             witnesses={witnesses}
             ownedHotspots={ownedHotspots}
             followedHotspots={followedHotspots}

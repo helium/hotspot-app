@@ -238,7 +238,6 @@ const activitySlice = createSlice({
         }
         state.requestMore = false
         state.txns[filter].status = 'more_rejected'
-        console.error(`Request to fetchMoreTxns with ${filter} was rejected`)
       },
     )
     builder.addCase(
@@ -300,7 +299,6 @@ const activitySlice = createSlice({
           state.txns[filter].hasInitialLoad = true
         }
         state.txns[filter].status = 'rejected'
-        console.error(`Request to fetchTxnsHead with ${filter} was rejected`)
       },
     )
     builder.addCase(

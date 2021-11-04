@@ -11,6 +11,7 @@ import {
 import { Hotspot, Witness } from '@helium/http'
 import Animated from 'react-native-reanimated'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import StatusBadge from './StatusBadge'
@@ -184,7 +185,7 @@ const HotspotDetails = ({
   }, [updateSyncStatus])
 
   const formattedHotspotName = useMemo(() => {
-    if (!hotspot) return ''
+    if (!hotspot || !hotspot.address) return ''
 
     const name = animalName(hotspot.address)
     const pieces = name.split(' ')
@@ -416,31 +417,49 @@ const HotspotDetails = ({
         <Box paddingBottom="l">
           <Box onLayout={handleHeaderLayout}>
             <Box marginBottom="lm" alignItems="flex-start" marginHorizontal="m">
-              <Text
-                variant="light"
-                fontSize={29}
-                lineHeight={31}
-                color={isHidden ? 'grayLightText' : 'black'}
-                numberOfLines={1}
-                width="100%"
-                adjustsFontSizeToFit
-              >
-                {formattedHotspotName[0]}
-              </Text>
-              <Box flexDirection="row" alignItems="center">
-                <Text
-                  variant="regular"
-                  fontSize={29}
-                  lineHeight={31}
-                  paddingRight="s"
-                  color={isHidden ? 'grayLightText' : 'black'}
-                  numberOfLines={1}
-                  adjustsFontSizeToFit
-                >
-                  {formattedHotspotName[1]}
-                </Text>
-                {isHidden && <VisibilityOff height={20} width={20} />}
-              </Box>
+              {hotspot.address === undefined ? (
+                <SkeletonPlaceholder>
+                  <SkeletonPlaceholder.Item
+                    height={29}
+                    width={250}
+                    borderRadius={spacing.s}
+                  />
+                  <SkeletonPlaceholder.Item
+                    height={29}
+                    marginTop={spacing.xs}
+                    width={150}
+                    borderRadius={spacing.s}
+                  />
+                </SkeletonPlaceholder>
+              ) : (
+                <>
+                  <Text
+                    variant="light"
+                    fontSize={29}
+                    lineHeight={31}
+                    color={isHidden ? 'grayLightText' : 'black'}
+                    numberOfLines={1}
+                    width="100%"
+                    adjustsFontSizeToFit
+                  >
+                    {formattedHotspotName[0]}
+                  </Text>
+                  <Box flexDirection="row" alignItems="center">
+                    <Text
+                      variant="regular"
+                      fontSize={29}
+                      lineHeight={31}
+                      paddingRight="s"
+                      color={isHidden ? 'grayLightText' : 'black'}
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                    >
+                      {formattedHotspotName[1]}
+                    </Text>
+                    {isHidden && <VisibilityOff height={20} width={20} />}
+                  </Box>
+                </>
+              )}
             </Box>
             <Box
               flexDirection="row"
@@ -448,6 +467,7 @@ const HotspotDetails = ({
               alignItems="center"
               marginBottom="m"
               marginLeft="m"
+              opacity={hotspot.address === undefined ? 0 : 100}
             >
               <Location
                 width={10}
