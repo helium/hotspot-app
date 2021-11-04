@@ -44,9 +44,9 @@ const HotspotSetupExternalScreen = () => {
   ])
 
   const handleBarCodeScanned = useDebouncedCallback(
-    (result: BarCodeScannerResult) => {
+    async (result: BarCodeScannerResult) => {
       try {
-        handleBarCode(result, 'add_gateway', {
+        await handleBarCode(result, 'add_gateway', {
           hotspotType: params.hotspotType,
         })
         triggerNotification('success')

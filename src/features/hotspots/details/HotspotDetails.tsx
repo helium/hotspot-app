@@ -11,7 +11,6 @@ import {
 import { Hotspot, Witness } from '@helium/http'
 import Animated from 'react-native-reanimated'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
-import { BottomSheetScrollViewType } from '@gorhom/bottom-sheet/lib/typescript/components/scrollView/types'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import StatusBadge from './StatusBadge'
@@ -52,6 +51,7 @@ import sleep from '../../../utils/sleep'
 import usePrevious from '../../../utils/usePrevious'
 import useHotspotSync from '../useHotspotSync'
 import useAlert from '../../../utils/useAlert'
+import { locale } from '../../../utils/i18n'
 
 const hitSlop = { top: 24, bottom: 24 } as Insets
 
@@ -93,7 +93,7 @@ const HotspotDetails = ({
 
   const { showOKAlert, showOKCancelAlert } = useAlert()
   const listRef = useRef<BottomSheet>(null)
-  const scrollViewRef = useRef<BottomSheetScrollViewType>(null)
+  const scrollViewRef = useRef<any>(null) // eslint-disable-line @typescript-eslint/no-explicit-any
   const [isRelayed, setIsRelayed] = useState(false)
   const [timelineValue, setTimelineValue] = useState(14)
   const [timelineIndex, setTimelineIndex] = useState(1)
@@ -126,8 +126,11 @@ const HotspotDetails = ({
 
   useEffect(() => {
     if (!visible) return
-
-    setIsRelayed(isRelay(hotspot?.status?.listenAddrs || []))
+    if (isDataOnly(hotspot)) {
+      setIsRelayed(false)
+    } else {
+      setIsRelayed(isRelay(hotspot?.status?.listenAddrs || []))
+    }
   }, [hotspot, visible])
 
   const rewardChartData = useMemo(() => {
@@ -333,6 +336,8 @@ const HotspotDetails = ({
     }
     if (listIndex === 0) {
       setListIndex(1)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore bottom sheet type bug https://github.com/gorhom/react-native-bottom-sheet/issues/708
       listRef.current?.snapTo(1)
       if (showStatusBanner) {
         return // banner is already showing, but was out of sight
@@ -377,6 +382,8 @@ const HotspotDetails = ({
     // contract the bottom sheet when a new hotspot is selected
     if (prevHotspotAddress && prevHotspotAddress !== propsHotspot?.address) {
       setListIndex(0)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore bottom sheet type bug https://github.com/gorhom/react-native-bottom-sheet/issues/708
       listRef.current?.snapTo(0)
       setSelectedOption(selectData[0].value)
       scrollViewRef.current?.scrollTo({ y: 0, x: 0, animated: false })
@@ -473,8 +480,9 @@ const HotspotDetails = ({
                   color={isHidden ? 'grayLightText' : 'grayText'}
                   marginLeft="xs"
                 >
-                  {(hotspot.gain / 10).toFixed(1) +
-                    t('antennas.onboarding.dbi')}
+                  {(hotspot.gain / 10).toLocaleString(locale, {
+                    maximumFractionDigits: 1,
+                  }) + t('antennas.onboarding.dbi')}
                 </Text>
               )}
               {makerName && (
@@ -539,6 +547,7 @@ const HotspotDetails = ({
                 hotspotId={hotspot.address}
                 rewardScale={hotspot.rewardScale}
                 backgroundColor="grayBoxLight"
+                visible={!isDataOnly(hotspot)}
               />
             </Box>
           </Box>

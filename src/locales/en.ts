@@ -532,6 +532,10 @@ export default {
       parse_code_error: 'Unable to parse QR code',
       invalid_hotspot_address:
         'Hotspot Address in QR code is missing or invalid.',
+      invalid_sender_address:
+        'Sender Address in QR code is not a valid wallet account address.',
+      mismatched_sender_address:
+        'Sender Address in QR code does not match wallet account address. Addresses must match in order to proceed.',
     },
     send_max_fee: {
       error_title: 'Send Max Error',
@@ -589,7 +593,15 @@ export default {
         showHiddenHotspots: 'Show Hidden Hotspots',
         convertHntToCurrency: 'Convert HNT to Currency',
         language: 'Language',
+        currency: 'Currency',
+        network: 'Choose API Provider',
         signOut: 'Sign Out',
+        clearMapCache: 'Clear Map Cache',
+        clearMapCacheAlert: {
+          title: 'Clear Map Cache?',
+          body:
+            'This will clear your map cache which may help resolve map issues.',
+        },
         signOutAlert: {
           title: 'Warning!',
           body:
@@ -760,9 +772,14 @@ export default {
       mining: 'Mining Rewards',
       payment: 'Payment Transactions',
       hotspot: 'Hotspot Transactions',
+      burn: 'Burn Transactions',
+      validator: 'Validator Transactions',
       pending: 'Pending Transactions',
     },
     no_results: 'No Results',
+    all_footer:
+      "You've reached the end of your recent activity. Select a filter or <b><purple>go to the explorer</purple></b> to view more.",
+    rejected: 'Failed to load. Tap to try again',
   },
   hotspot_settings: {
     title: 'Hotspot Settings',

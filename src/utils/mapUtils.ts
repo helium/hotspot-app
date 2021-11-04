@@ -1,6 +1,8 @@
 import { Hotspot } from '@helium/http'
 import { Feature, Position } from 'geojson'
 import { isFinite } from 'lodash'
+import AsyncStorage from '@react-native-community/async-storage'
+import MapboxGL from '@react-native-mapbox-gl/maps'
 
 export const hotspotsToFeatures = (hotspots: Hotspot[]): Feature[] =>
   hotspots
@@ -82,4 +84,17 @@ export const boundsToFeature = (bounds: Position[] | undefined): Feature => {
         : [],
     },
   } as Feature
+}
+
+const HAS_CLEARED_MAP_CACHE_KEY = 'HAS_CLEARED_MAP_CACHE'
+
+export const guardedClearMapCache = async () => {
+  const hasClearedCache = await AsyncStorage.getItem(HAS_CLEARED_MAP_CACHE_KEY)
+  if (hasClearedCache === 'true') return
+  await clearMapCache()
+  await AsyncStorage.setItem(HAS_CLEARED_MAP_CACHE_KEY, 'true')
+}
+
+export const clearMapCache = async () => {
+  return MapboxGL.offlineManager.invalidateAmbientCache()
 }

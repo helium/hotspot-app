@@ -12,7 +12,6 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated'
-import { AnyTransaction, PendingTransaction } from '@helium/http'
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
 import {
   useSafeAreaInsets,
@@ -38,12 +37,16 @@ import animateTransition from '../../../utils/animateTransition'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 import useHaptic from '../../../utils/useHaptic'
 import WalletEmpty from './WalletEmpty'
+import {
+  HttpPendingTransaction,
+  HttpTransaction,
+} from '../../../store/activity/activitySlice'
 
 type Props = {
   showSkeleton: boolean
   activityViewState: ActivityViewState
-  txns: AnyTransaction[]
-  pendingTxns: PendingTransaction[]
+  txns: HttpTransaction[]
+  pendingTxns: HttpPendingTransaction[]
 }
 
 const WalletView = ({
@@ -101,9 +104,16 @@ const WalletView = ({
 
   const toggleShowReceive = useCallback(() => {
     const snapToIndex = activityCardIndex >= 1 ? 0 : 1
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore bottom sheet type bug https://github.com/gorhom/react-native-bottom-sheet/issues/708
     activityCardRef.current?.snapTo(snapToIndex)
     triggerNavHaptic()
   }, [activityCardIndex, triggerNavHaptic])
+
+  const balanceLoaded = useMemo(
+    () => account?.balance?.integerBalance !== undefined,
+    [account?.balance?.integerBalance],
+  )
 
   useEffect(() => {
     const updateBalanceInfo = async () => {
@@ -121,9 +131,12 @@ const WalletView = ({
         }
 
         if (isEqual(balanceInfoSplit, nextBalanceInfoSplit)) return
-        animateTransition('WalletView.BalanceInfoUpdated', {
-          enabledOnAndroid: false,
-        })
+        if (!balanceInfoSplit.hasBalance) {
+          // Only animate if they didn't previously have balance info
+          animateTransition('WalletView.BalanceInfoUpdated', {
+            enabledOnAndroid: false,
+          })
+        }
         setBalanceInfoSplit(nextBalanceInfoSplit)
       }
     }
@@ -213,7 +226,9 @@ const WalletView = ({
         />
       </Animated.View>
       <Box flex={1}>
-        {(activityViewState === 'activity' || balanceInfoSplit.hasBalance) && (
+        {(activityViewState === 'activity' ||
+          balanceInfoSplit.hasBalance ||
+          !balanceLoaded) && (
           <Box onLayout={handleLayout('header')}>
             <WalletHeader handleScanPressed={navScan} />
             <BalanceCard
@@ -230,21 +245,18 @@ const WalletView = ({
         )}
 
         {activityViewState === 'no_activity' &&
-          !balanceInfoSplit.hasBalance && (
-            <WalletEmpty handleScanPressed={navScan} />
-          )}
+          !balanceInfoSplit.hasBalance &&
+          balanceLoaded && <WalletEmpty handleScanPressed={navScan} />}
 
         <WalletAddress
           flex={1}
           loading={activityViewState === 'undetermined'}
           alignItems="center"
-          justifyContent={
-            activityViewState === 'no_activity' ? 'flex-start' : 'center'
-          }
+          justifyContent="center"
         />
       </Box>
 
-      {activityViewState === 'activity' && (
+      {activityViewState !== 'no_activity' && (
         <ActivityCard
           ref={activityCardRef}
           showSkeleton={showSkeleton}

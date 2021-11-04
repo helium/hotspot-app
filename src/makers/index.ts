@@ -9,6 +9,7 @@ import linxdot from './linxdot'
 import longAP from './longAP'
 import nebra from './nebra'
 import rak from './rak'
+import risinghf from './risinghf'
 import sensecap from './sensecap'
 import syncrobit from './syncrobit'
 import kerlink from './kerlink'
@@ -16,6 +17,9 @@ import heltec from './heltec'
 import pisces from './pisces'
 import controllino from './controllino'
 import freedomfi from './freedomfi'
+import hummingbird from './hummingbird'
+import merryIoT from './merryIoT'
+import milesight from './milesight'
 import { LangType, supportedLangs } from '../utils/i18n/i18nTypes'
 import { HotspotMakerLangField } from './hotspotMakerTypes'
 
@@ -30,6 +34,7 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
   longAP,
   nebra,
   rak,
+  risinghf,
   sensecap,
   syncrobit,
   kerlink,
@@ -37,6 +42,9 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
   pisces,
   controllino,
   freedomfi,
+  hummingbird,
+  merryIoT,
+  milesight,
 }
 
 export const AntennaModels = {
@@ -51,6 +59,7 @@ export const AntennaModels = {
   ...longAP.antennas,
   ...nebra.antennas,
   ...rak.antennas,
+  ...risinghf.antennas,
   ...sensecap.antennas,
   ...syncrobit.antennas,
   ...kerlink.antennas,
@@ -58,6 +67,9 @@ export const AntennaModels = {
   ...pisces.antennas,
   ...controllino.antennas,
   ...freedomfi.antennas,
+  ...hummingbird.antennas,
+  ...merryIoT.antennas,
+  ...milesight.antennas,
 }
 
 export const HotspotMakerModels = {
@@ -71,6 +83,7 @@ export const HotspotMakerModels = {
   ...longAP.hotspots,
   ...nebra.hotspots,
   ...rak.hotspots,
+  ...risinghf.hotspots,
   ...sensecap.hotspots,
   ...syncrobit.hotspots,
   ...kerlink.hotspots,
@@ -78,6 +91,9 @@ export const HotspotMakerModels = {
   ...pisces.hotspots,
   ...controllino.hotspots,
   ...freedomfi.hotspots,
+  ...hummingbird.hotspots,
+  ...merryIoT.hotspots,
+  ...milesight.hotspots,
 }
 
 export type HotspotType = keyof typeof HotspotMakerModels

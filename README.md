@@ -154,6 +154,7 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 1. Copy the file `.env.sample` and rename it to `.env`.
 2. Once renamed update the values within the file.
 3. In order for maps to load you will need to create your own [Mapbox](https://account.mapbox.com) access token.
+4. You will also need a Mapbox download token to build the Android app. See the [Mapbox Docs](https://docs.mapbox.com/android/maps/guides/install/#configure-credentials) on creating a token with `Downloads:Read` scope. This token needs to be exported as a system environment variable `MAPBOX_DOWNLOAD_TOKEN` on your machine.
 
 ### Dependencies
 

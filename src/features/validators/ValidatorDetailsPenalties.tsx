@@ -26,7 +26,8 @@ const ValidatorDetailsPenalties = ({ validator }: Props) => {
 
   const penalties = useMemo(() => {
     if (!validator?.penalties) return [] as ValidatorPenalty[]
-    return validator.penalties.sort((l, r) => r.height - l.height)
+    const validatorPenalties = [...validator.penalties]
+    return validatorPenalties.sort((l, r) => r.height - l.height)
   }, [validator?.penalties])
 
   type PenaltyItem = { index: number; item: ValidatorPenalty }

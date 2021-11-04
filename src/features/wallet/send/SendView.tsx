@@ -11,7 +11,7 @@ import { Address } from '@helium/crypto-react-native'
 import { useAsync } from 'react-async-hook'
 import { useSelector } from 'react-redux'
 import { TransferHotspotV1 } from '@helium/transactions'
-import { some } from 'lodash'
+import { isEqual, some } from 'lodash'
 import { RootState } from '../../../store/rootReducer'
 import Box from '../../../components/Box'
 import useHaptic from '../../../utils/useHaptic'
@@ -96,7 +96,11 @@ const SendView = ({
     (state: RootState) => state.heliumData.blockHeight,
   )
   const currentOraclePrice = useSelector(
-    (state: RootState) => state.heliumData.currentOraclePrice,
+    (state: RootState) => state.heliumData.currentOraclePrice?.price,
+    isEqual,
+  )
+  const isDeployModeEnabled = useSelector(
+    (state: RootState) => state.app.isDeployModeEnabled,
   )
   const [type, setType] = useState<AppLinkCategoryType>(sendType || 'payment')
   const [isLocked, setIsLocked] = useState(isDisabled)
@@ -194,7 +198,7 @@ const SendView = ({
 
   // process scan results
   useEffect(() => {
-    if (!scanResult) return
+    if (!scanResult || isDeployModeEnabled || !currentOraclePrice) return
     setType(scanResult.type)
     const getAmountAndBalance = (scanAmount?: string | number) => {
       let amount = ''
@@ -240,7 +244,7 @@ const SendView = ({
       )
     } else {
       const { amount, balanceAmount } = getAmountAndBalance(scanResult.amount)
-      const balanceDc = balanceAmount.toDataCredits(currentOraclePrice?.price)
+      const balanceDc = balanceAmount.toDataCredits(currentOraclePrice)
       scannedSendDetails = [
         {
           id: 'transfer0',
@@ -270,7 +274,7 @@ const SendView = ({
     const hasPresetAmount = some(scannedSendDetails, ({ amount }) => !!amount)
     if (hasPresetAmount) setIsLocked(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scanResult])
+  }, [scanResult, currentOraclePrice])
 
   // validate transaction
   useEffect(() => {

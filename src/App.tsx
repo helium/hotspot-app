@@ -1,7 +1,13 @@
 import 'react-native-gesture-handler'
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
-import { LogBox, Platform, StatusBar, UIManager } from 'react-native'
+import {
+  ActivityIndicator,
+  LogBox,
+  Platform,
+  StatusBar,
+  UIManager,
+} from 'react-native'
 import useAppState from 'react-native-appstate-hook'
 import { ThemeProvider } from '@shopify/restyle'
 import OneSignal, { OpenedEvent } from 'react-native-onesignal'
@@ -13,6 +19,7 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import * as SplashScreen from 'expo-splash-screen'
 import { NavigationContainer } from '@react-navigation/native'
+import * as ScreenCapture from 'expo-screen-capture'
 import { theme } from './theme/theme'
 import NavigationRoot from './navigation/NavigationRoot'
 import { useAppDispatch } from './store/store'
@@ -28,7 +35,6 @@ import {
   fetchInitialData,
 } from './store/helium/heliumDataSlice'
 import SecurityScreen from './features/security/SecurityScreen'
-import { fetchFeatures } from './store/features/featuresSlice'
 import usePrevious from './utils/usePrevious'
 import StatusBanner from './components/StatusBanner'
 import notificationSlice, {
@@ -38,6 +44,8 @@ import AppLinkProvider from './providers/AppLinkProvider'
 import { navigationRef } from './navigation/navigator'
 import useSettingsRestore from './utils/useAccountSettings'
 import useMount from './utils/useMount'
+import Box from './components/Box'
+import { guardedClearMapCache } from './utils/mapUtils'
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
@@ -58,6 +66,9 @@ const App = () => {
     'No Native splash screen',
     'RCTBridge required dispatch_sync to load',
     'Require cycle',
+    'EventEmitter.removeListener',
+    '`new NativeEventEmitter()` was called with a non-null argument',
+    'expo-permissions is now deprecated',
   ])
 
   const { appState } = useAppState()
@@ -72,6 +83,12 @@ const App = () => {
     isRequestingPermission,
     isLocked,
   } = useSelector((state: RootState) => state.app)
+  const settingsLoaded = useSelector(
+    (state: RootState) => state.account.settingsLoaded,
+  )
+  const featuresLoaded = useSelector(
+    (state: RootState) => state.features.featuresLoaded,
+  )
 
   useSettingsRestore()
 
@@ -85,10 +102,25 @@ const App = () => {
   )
 
   useMount(() => {
+    if (Platform.OS === 'android') {
+      ScreenCapture.preventScreenCaptureAsync('app') // enables security screen on Android
+    }
     dispatch(restoreAppSettings())
+  })
+
+  // if user is logged in clear mapbox cache to invalidate any old vector tiles
+  useAsync(async () => {
+    if (isBackedUp) {
+      await guardedClearMapCache()
+    }
+  }, [isBackedUp])
+
+  useEffect(() => {
+    if (!isBackedUp || !settingsLoaded || !featuresLoaded) return
+
     dispatch(fetchInitialData())
     configChainVars()
-  })
+  }, [isBackedUp, dispatch, featuresLoaded, settingsLoaded])
 
   useEffect(() => {
     OneSignal.setAppId(Config.ONE_SIGNAL_APP_ID)
@@ -106,10 +138,9 @@ const App = () => {
     Logger.init()
   }, [dispatch])
 
-  // fetch feature flags for the app
+  // fetch notifications for the app
   useEffect(() => {
     if (!isBackedUp) return
-    dispatch(fetchFeatures())
     dispatch(fetchNotifications())
   }, [dispatch, isBackedUp])
 
@@ -135,12 +166,12 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appState])
 
-  // update initial data when account is restored or app comes into foreground from background
+  // update initial data when app comes into foreground from background and is logged in
   useEffect(() => {
-    if (prevAppState === 'background' && appState === 'active') {
+    if (prevAppState === 'background' && appState === 'active' && isBackedUp) {
       dispatch(fetchInitialData())
     }
-  }, [appState, dispatch, prevAppState])
+  }, [isBackedUp, appState, dispatch, prevAppState])
 
   // hide splash screen
   useAsync(async () => {
@@ -148,13 +179,15 @@ const App = () => {
     const loggedInAndLoaded =
       isRestored &&
       isBackedUp &&
+      settingsLoaded &&
+      featuresLoaded &&
       fetchDataStatus !== 'pending' &&
       fetchDataStatus !== 'idle'
 
     if (loggedOut || loggedInAndLoaded) {
       await SplashScreen.hideAsync()
     }
-  }, [fetchDataStatus, isBackedUp, isRestored])
+  }, [fetchDataStatus, isBackedUp, isRestored, settingsLoaded, featuresLoaded])
 
   useEffect(() => {
     // Hide splash after 5 seconds, deal with the consequences?
@@ -166,18 +199,24 @@ const App = () => {
 
   // poll block height to update realtime data throughout the app
   useEffect(() => {
+    if (!settingsLoaded && !featuresLoaded) return
     const interval = setInterval(() => {
       dispatch(fetchBlockHeight())
     }, 30000)
     return () => clearInterval(interval)
-  }, [dispatch])
+  }, [dispatch, featuresLoaded, settingsLoaded])
 
   // fetch account data when logged in and block changes (called whenever block height updates)
   useEffect(() => {
-    if (isBackedUp && blockHeight) {
+    if (isBackedUp && blockHeight && settingsLoaded && featuresLoaded) {
       dispatch(fetchData())
     }
-  }, [blockHeight, dispatch, isBackedUp])
+  }, [blockHeight, dispatch, isBackedUp, settingsLoaded, featuresLoaded])
+
+  const initialized = useMemo(() => {
+    const loggedOut = isRestored && !isBackedUp
+    return loggedOut || (featuresLoaded && settingsLoaded)
+  }, [featuresLoaded, isBackedUp, isRestored, settingsLoaded])
 
   return (
     <ThemeProvider theme={theme}>
@@ -193,11 +232,17 @@ const App = () => {
                 {Platform.OS === 'android' && (
                   <StatusBar translucent backgroundColor="transparent" />
                 )}
-                <NavigationContainer ref={navigationRef}>
-                  <AppLinkProvider>
-                    <NavigationRoot />
-                  </AppLinkProvider>
-                </NavigationContainer>
+                {initialized ? (
+                  <NavigationContainer ref={navigationRef}>
+                    <AppLinkProvider>
+                      <NavigationRoot />
+                    </AppLinkProvider>
+                  </NavigationContainer>
+                ) : (
+                  <Box flex={1} justifyContent="center" alignItems="center">
+                    <ActivityIndicator color="white" />
+                  </Box>
+                )}
               </SafeAreaProvider>
               <StatusBanner />
               <SecurityScreen

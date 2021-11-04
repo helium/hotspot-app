@@ -1,17 +1,10 @@
 import React from 'react'
-import Balance, { NetworkTokens } from '@helium/currency'
 import Box from '../../../../components/Box'
 import ActivityRewardLine from './ActivityRewardLine'
-
-type Reward = {
-  type: string
-  gateway: string
-  amount: Balance<NetworkTokens>
-  account: string
-}
+import { HttpReward } from '../../../../store/activity/activitySlice'
 
 type Props = {
-  rewards: Reward[]
+  rewards: HttpReward[]
   isFirst: boolean
   isLast: boolean
   isSecurityToken?: boolean

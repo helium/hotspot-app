@@ -13,6 +13,7 @@ import { BarCodeScannerResult } from 'expo-barcode-scanner'
 import { useSelector } from 'react-redux'
 import { Address } from '@helium/crypto-react-native'
 import useMount from '../utils/useMount'
+import { getAddress } from '../utils/secureAccount'
 import { RootState } from '../store/rootReducer'
 import navigator from '../navigation/navigator'
 import {
@@ -50,12 +51,26 @@ export class InvalidAddressError extends Error {
     this.addressType = addressType
   }
 }
+export class MismatchedAddressError extends Error {
+  addressType: AddressType
+
+  constructor(addressType: AddressType) {
+    super(`Mismatched ${addressType} for account`)
+    this.addressType = addressType
+  }
+}
 const assertValidAddress = (
   address: string,
   addressType: AddressType = AddressType.HotspotAddress,
 ) => {
   if (!address) throw new MissingAddressError(addressType)
   if (!Address.isValid(address)) throw new InvalidAddressError(addressType)
+}
+const assertCurrentSenderAddress = async (senderAddress: string) => {
+  const current = await getAddress()
+  if (current?.b58 !== senderAddress) {
+    throw new MismatchedAddressError(AddressType.SenderAddress)
+  }
 }
 
 export const createAppLink = (
@@ -193,15 +208,15 @@ const useAppLink = () => {
    * (1) A helium deeplink URL
    * (2) A lat/lng pair + hotspot address for hotspot location updates
    * (3) address string
-   * (4) stringified JSON object { type, address, amount?, memo? }
-   * (5) stringified JSON object { type, payees: {[payeeAddress]: amount} }
-   * (6) stringified JSON object { type, payees: {[payeeAddress]: { amount, memo? }} }
+   * (4) stringified JSON object { type, senderAddress?, address, amount?, memo? }
+   * (5) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: amount} }
+   * (6) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: { amount, memo? }} }
    */
   const parseBarCodeData = useCallback(
-    (
+    async (
       data: string,
       scanType: AppLinkCategoryType,
-    ): AppLink | AppLinkPayment | AppLinkLocation => {
+    ): Promise<AppLink | AppLinkPayment | AppLinkLocation> => {
       // Case (1) helium deeplink URL
       const urlParams = parseUrl(data)
       if (urlParams) {
@@ -247,9 +262,10 @@ const useAppLink = () => {
       if (type === 'payment') {
         let scanResult: AppLinkPayment
         if (rawScanResult.address) {
-          // Case (4) stringified JSON { type, address, amount?, memo? }
+          // Case (4) stringified JSON { type, senderAddress?, address, amount?, memo? }
           scanResult = {
             type,
+            senderAddress: rawScanResult.senderAddress,
             payees: [
               {
                 address: rawScanResult.address,
@@ -261,15 +277,16 @@ const useAppLink = () => {
         } else if (rawScanResult.payees) {
           scanResult = {
             type,
+            senderAddress: rawScanResult.senderAddress,
             payees: Object.entries(rawScanResult.payees).map((entries) => {
               let amount
               let memo
               if (entries[1]) {
                 if (typeof entries[1] === 'number') {
-                  // Case (5) stringified JSON object { type, payees: {[payeeAddress]: amount} }
+                  // Case (5) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: amount} }
                   amount = entries[1] as number
                 } else if (typeof entries[1] === 'object') {
-                  // Case (6) stringified JSON object { type, payees: {[payeeAddress]: { amount, memo? }} }
+                  // Case (6) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: { amount, memo? }} }
                   const scanData = entries[1] as {
                     amount: string
                     memo?: string
@@ -289,6 +306,15 @@ const useAppLink = () => {
           throw new Error('Unrecognized payload for payment scan')
         }
 
+        if (scanResult.senderAddress) {
+          // If a senderAddress is provided, ensure that it's both a valid wallet address and that
+          // it matches the current wallet address
+          assertValidAddress(
+            scanResult.senderAddress,
+            AddressType.SenderAddress,
+          )
+          await assertCurrentSenderAddress(scanResult.senderAddress)
+        }
         scanResult.payees.forEach(({ address }) =>
           assertValidAddress(address, AddressType.ReceiverAddress),
         )
@@ -300,7 +326,7 @@ const useAppLink = () => {
   )
 
   const handleBarCode = useCallback(
-    (
+    async (
       { data }: BarCodeScannerResult,
       scanType: AppLinkCategoryType,
       opts?: Record<string, string>,
@@ -308,7 +334,7 @@ const useAppLink = () => {
         scanResult: AppLink | AppLinkPayment | AppLinkLocation,
       ) => void,
     ) => {
-      const scanResult = parseBarCodeData(data, scanType)
+      const scanResult = await parseBarCodeData(data, scanType)
       if (assertScanResult) assertScanResult(scanResult)
 
       navToAppLink({ ...scanResult, ...opts })

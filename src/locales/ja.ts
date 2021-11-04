@@ -502,6 +502,10 @@ export default {
       parse_code_error: 'QRコードを解析できません',
       invalid_hotspot_address:
         'QRコードのホットスポットアドレスが見つからないか無効です。',
+      invalid_sender_address:
+        'QRコードの送信者アドレスは有効なウォレットアカウントアドレスではありません。',
+      mismatched_sender_address:
+        'QRコードの送信者アドレスがウォレットアカウントアドレスと一致しません。 続行するには、アドレスが一致している必要があります。',
     },
     send_max_fee: {
       error_title: '最大送信エラー',
