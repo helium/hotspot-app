@@ -70,3 +70,5 @@ buck-out/
 
 #
 .env
+.yalc
+yalc.lock
