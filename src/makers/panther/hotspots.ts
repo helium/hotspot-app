@@ -1,4 +1,5 @@
 import HotspotIcon from './panther.svg'
+import HotspotIconX2 from './panther-x2.svg'
 import { MakerHotspot } from '../hotspotMakerTypes'
 import ANTENNAS from './antennas'
 
@@ -112,7 +113,7 @@ const PANTHER_X2 = {
       ],
     },
   },
-  icon: HotspotIcon,
+  icon: HotspotIconX2,
   antenna: { default: ANTENNAS.PANTHER },
 } as MakerHotspot
 
