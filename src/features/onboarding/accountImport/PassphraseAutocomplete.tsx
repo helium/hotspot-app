@@ -34,7 +34,7 @@ const PassphraseAutocomplete = ({ onSelectWord, wordIdx }: Props) => {
 
   return (
     <KeyboardAvoidingView
-      keyboardVerticalOffset={38}
+      keyboardVerticalOffset={40}
       behavior="position"
       style={styles.container}
     >
@@ -75,6 +75,7 @@ const PassphraseAutocomplete = ({ onSelectWord, wordIdx }: Props) => {
           horizontal
           keyboardShouldPersistTaps="always"
           keyboardDismissMode="none"
+          style={{ height: 40 }}
           showsHorizontalScrollIndicator={false}
         >
           {matchingWords.length <= 20 &&
