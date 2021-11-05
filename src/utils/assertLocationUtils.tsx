@@ -58,7 +58,9 @@ export const assertLocationTxn = async ({
   let stakingFee = 0
   if (updatingLocation) {
     if (dataOnly) {
-      const chainVars = await getChainVars()
+      const chainVars = await getChainVars([
+        'staking_fee_txn_assert_location_dataonly_gateway_v1',
+      ])
       const { stakingFeeTxnAssertLocationDataonlyGatewayV1: fee } = chainVars
       stakingFee = fee
     } else {
@@ -125,7 +127,9 @@ export const loadLocationFeeData = async ({
       CurrencyType.dataCredit,
     )
   } else {
-    const chainVars = await getChainVars()
+    const chainVars = await getChainVars([
+      'staking_fee_txn_assert_location_dataonly_gateway_v1',
+    ])
     const { stakingFeeTxnAssertLocationDataonlyGatewayV1: fee } = chainVars
     totalStakingAmountDC = new Balance(fee, CurrencyType.dataCredit)
   }

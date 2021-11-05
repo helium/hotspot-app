@@ -157,7 +157,9 @@ const SendView = ({
 
   useAsync(async () => {
     if (type === 'transfer' && hotspotAddress && blockHeight) {
-      const chainVars = await getChainVars()
+      const chainVars = await getChainVars([
+        'transfer_hotspot_stale_poc_blocks',
+      ])
       const staleBlockCount = chainVars.transferHotspotStalePocBlocks as number
       const reportedActivity = await getHotspotsLastChallengeActivity(
         hotspotAddress,
