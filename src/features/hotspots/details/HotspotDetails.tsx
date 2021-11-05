@@ -53,6 +53,7 @@ import usePrevious from '../../../utils/usePrevious'
 import useHotspotSync from '../useHotspotSync'
 import useAlert from '../../../utils/useAlert'
 import { locale } from '../../../utils/i18n'
+import { NO_FEATURES } from '../../../components/Map'
 
 const hitSlop = { top: 24, bottom: 24 } as Insets
 
@@ -112,6 +113,7 @@ const HotspotDetails = ({
     hotspotDetailsHotspot,
     propsHotspot,
   ])
+  const prevHexId = usePrevious(hotspot?.locationHex)
 
   const { updateSyncStatus, hotspotSyncStatus } = useHotspotSync(hotspot)
 
@@ -390,6 +392,15 @@ const HotspotDetails = ({
       scrollViewRef.current?.scrollTo({ y: 0, x: 0, animated: false })
     }
   }, [prevHotspotAddress, propsHotspot, selectData])
+
+  useEffect(() => {
+    const shouldClose = hotspot?.locationHex === NO_FEATURES
+    if (!shouldClose) {
+      listRef.current?.snapTo(0)
+    } else {
+      listRef.current?.close()
+    }
+  }, [hotspot?.locationHex, prevHexId])
 
   const makerName = useMemo(() => {
     if (hotspot?.payer === HELIUM_OLD_MAKER_ADDRESS) {
