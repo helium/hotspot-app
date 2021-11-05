@@ -134,15 +134,15 @@ const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
 
   const hasData = useMemo(() => {
     if (filter === 'pending') return false
-    return data?.data?.length !== 0
-  }, [data?.data?.length, filter])
+    return data?.data !== undefined && data?.data?.length !== 0
+  }, [data?.data, filter])
 
   const { greenBright, blueBright } = useColors()
 
   return (
     <Box
       {...boxProps}
-      height={chartEnabled && filter !== 'pending' ? height : 0}
+      height={chartEnabled && filter !== 'pending' && hasData ? height : 0}
     >
       <Box flexDirection="column" onLayout={handleHeaderLayout}>
         <Box flexDirection="row" justifyContent="space-between">
