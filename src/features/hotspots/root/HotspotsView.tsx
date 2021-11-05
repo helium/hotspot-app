@@ -107,6 +107,9 @@ const HotspotsView = ({
   const followedValidatorsLoaded = useSelector(
     (state: RootState) => state.validators.followedValidatorsLoaded,
   )
+  const loadingHotspotsForHex = useSelector(
+    (state: RootState) => state.discovery.loadingHotspotsForHex,
+  )
   const [selectedHexId, setSelectedHexId] = useState<string>()
   const [selectedHotspotIndex, setSelectedHotspotIndex] = useState(0)
   const animatedIndex = useSharedValue<number>(0)
@@ -266,10 +269,17 @@ const HotspotsView = ({
 
   const onMapHexSelected = useCallback(
     async (hexId: string, address?: string) => {
+      if (loadingHotspotsForHex) return
+
+      // set UI until hotspots load
+      setSelectedHexId(hexId)
+      setShowTabs(false)
+      handleShortcutItemSelected({ address, locationHex: hexId } as Hotspot)
+
+      // load hotspots in hex and update ui
       const hotspots = (await dispatch(fetchHotspotsForHex({ hexId }))) as {
         payload?: Hotspot[]
       }
-
       let index = 0
       if (address && hotspots?.payload) {
         const foundIndex = hotspots.payload.findIndex(
@@ -279,14 +289,12 @@ const HotspotsView = ({
           index = foundIndex
         }
       }
-      setSelectedHexId(hexId)
       setSelectedHotspotIndex(index)
-      setShowTabs(false)
       if (hotspots?.payload?.length) {
         handleShortcutItemSelected(hotspots.payload[index] as Hotspot)
       }
     },
-    [dispatch, handleShortcutItemSelected],
+    [dispatch, handleShortcutItemSelected, loadingHotspotsForHex],
   )
 
   const handlePresentHotspot = useCallback(
@@ -391,7 +399,8 @@ const HotspotsView = ({
   )
 
   const hotspotHasLocation = useMemo(() => {
-    if (!hotspotAddress || !selectedHotspot) return true
+    if (!hotspotAddress || !selectedHotspot || !selectedHotspot?.owner)
+      return true
 
     return hotspotHasValidLocation(
       selectedHotspot || hotspotDetailsData.hotspot,
@@ -530,6 +539,7 @@ const HotspotsView = ({
               cameraBottomOffset={cameraBottomOffset}
               ownedHotspots={showOwned ? ownedHotspots : []}
               selectedHotspot={selectedHotspot}
+              selectedHex={selectedHexId}
               maxZoomLevel={12}
               zoomLevel={12}
               witnesses={showWitnesses ? witnesses : []}

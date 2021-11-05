@@ -11,6 +11,7 @@ import {
 import { Hotspot, Witness } from '@helium/http'
 import Animated from 'react-native-reanimated'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import StatusBadge from './StatusBadge'
@@ -52,6 +53,7 @@ import usePrevious from '../../../utils/usePrevious'
 import useHotspotSync from '../useHotspotSync'
 import useAlert from '../../../utils/useAlert'
 import { locale } from '../../../utils/i18n'
+import { NO_FEATURES } from '../../../components/Map'
 
 const hitSlop = { top: 24, bottom: 24 } as Insets
 
@@ -98,7 +100,7 @@ const HotspotDetails = ({
   const [timelineValue, setTimelineValue] = useState(14)
   const [timelineIndex, setTimelineIndex] = useState(1)
   const [snapPoints, setSnapPoints] = useState([0, 0])
-  const [listIndex, setListIndex] = useState(0)
+  const [listIndex, setListIndex] = useState(-1)
   const prevListIndex = usePrevious(listIndex)
   const prevHotspotAddress = usePrevious(propsHotspot?.address)
 
@@ -111,6 +113,7 @@ const HotspotDetails = ({
     hotspotDetailsHotspot,
     propsHotspot,
   ])
+  const prevHexId = usePrevious(hotspot?.locationHex)
 
   const { updateSyncStatus, hotspotSyncStatus } = useHotspotSync(hotspot)
 
@@ -184,7 +187,7 @@ const HotspotDetails = ({
   }, [updateSyncStatus])
 
   const formattedHotspotName = useMemo(() => {
-    if (!hotspot) return ''
+    if (!hotspot || !hotspot.address) return ''
 
     const name = animalName(hotspot.address)
     const pieces = name.split(' ')
@@ -380,15 +383,43 @@ const HotspotDetails = ({
 
   useEffect(() => {
     // contract the bottom sheet when a new hotspot is selected
-    if (prevHotspotAddress && prevHotspotAddress !== propsHotspot?.address) {
+    if (
+      propsHotspot?.address &&
+      prevHotspotAddress &&
+      prevHotspotAddress !== propsHotspot?.address &&
+      listIndex !== 0
+    ) {
       setListIndex(0)
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore bottom sheet type bug https://github.com/gorhom/react-native-bottom-sheet/issues/708
       listRef.current?.snapTo(0)
       setSelectedOption(selectData[0].value)
       scrollViewRef.current?.scrollTo({ y: 0, x: 0, animated: false })
+    } else {
+      const currentHex = hotspot?.locationHex
+      if (
+        prevHexId === undefined ||
+        currentHex === undefined ||
+        prevHexId === currentHex
+      )
+        return
+      const shouldClose = currentHex === NO_FEATURES
+      if (shouldClose && listIndex !== -1) {
+        setListIndex(-1)
+        listRef.current?.close()
+      } else if (!shouldClose && listIndex === -1) {
+        setListIndex(0)
+        listRef.current?.snapTo(0)
+      }
     }
-  }, [prevHotspotAddress, propsHotspot, selectData])
+  }, [
+    hotspot?.locationHex,
+    listIndex,
+    prevHexId,
+    prevHotspotAddress,
+    propsHotspot?.address,
+    selectData,
+  ])
 
   const makerName = useMemo(() => {
     if (hotspot?.payer === HELIUM_OLD_MAKER_ADDRESS) {
@@ -404,7 +435,6 @@ const HotspotDetails = ({
     <BottomSheet
       snapPoints={snapPoints}
       ref={listRef}
-      index={0}
       onChange={handleChange}
       handleComponent={cardHandle}
       animatedIndex={animatedPosition}
@@ -416,31 +446,49 @@ const HotspotDetails = ({
         <Box paddingBottom="l">
           <Box onLayout={handleHeaderLayout}>
             <Box marginBottom="lm" alignItems="flex-start" marginHorizontal="m">
-              <Text
-                variant="light"
-                fontSize={29}
-                lineHeight={31}
-                color={isHidden ? 'grayLightText' : 'black'}
-                numberOfLines={1}
-                width="100%"
-                adjustsFontSizeToFit
-              >
-                {formattedHotspotName[0]}
-              </Text>
-              <Box flexDirection="row" alignItems="center">
-                <Text
-                  variant="regular"
-                  fontSize={29}
-                  lineHeight={31}
-                  paddingRight="s"
-                  color={isHidden ? 'grayLightText' : 'black'}
-                  numberOfLines={1}
-                  adjustsFontSizeToFit
-                >
-                  {formattedHotspotName[1]}
-                </Text>
-                {isHidden && <VisibilityOff height={20} width={20} />}
-              </Box>
+              {hotspot.address === undefined ? (
+                <SkeletonPlaceholder>
+                  <SkeletonPlaceholder.Item
+                    height={29}
+                    width={250}
+                    borderRadius={spacing.s}
+                  />
+                  <SkeletonPlaceholder.Item
+                    height={29}
+                    marginTop={spacing.xs}
+                    width={150}
+                    borderRadius={spacing.s}
+                  />
+                </SkeletonPlaceholder>
+              ) : (
+                <>
+                  <Text
+                    variant="light"
+                    fontSize={29}
+                    lineHeight={31}
+                    color={isHidden ? 'grayLightText' : 'black'}
+                    numberOfLines={1}
+                    width="100%"
+                    adjustsFontSizeToFit
+                  >
+                    {formattedHotspotName[0]}
+                  </Text>
+                  <Box flexDirection="row" alignItems="center">
+                    <Text
+                      variant="regular"
+                      fontSize={29}
+                      lineHeight={31}
+                      paddingRight="s"
+                      color={isHidden ? 'grayLightText' : 'black'}
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                    >
+                      {formattedHotspotName[1]}
+                    </Text>
+                    {isHidden && <VisibilityOff height={20} width={20} />}
+                  </Box>
+                </>
+              )}
             </Box>
             <Box
               flexDirection="row"
@@ -448,6 +496,7 @@ const HotspotDetails = ({
               alignItems="center"
               marginBottom="m"
               marginLeft="m"
+              opacity={hotspot.address === undefined ? 0 : 100}
             >
               <Location
                 width={10}

@@ -13,6 +13,7 @@ export type DiscoveryState = {
   selectedRequest?: DiscoveryRequest | null
   requestId?: number | null
   hotspotsForHexId: Record<string, Hotspot[]>
+  loadingHotspotsForHex: boolean
 }
 
 const initialState: DiscoveryState = {
@@ -20,6 +21,7 @@ const initialState: DiscoveryState = {
   requestLoading: 'idle',
   recentDiscoveryInfos: {},
   hotspotsForHexId: {},
+  loadingHotspotsForHex: false,
 }
 
 export const fetchHotspotsForHex = createAsyncThunk<
@@ -119,8 +121,15 @@ const discoverySlice = createSlice({
       fetchHotspotsForHex.fulfilled,
       (state, { meta: { arg }, payload }) => {
         state.hotspotsForHexId[arg.hexId] = payload
+        state.loadingHotspotsForHex = false
       },
     )
+    builder.addCase(fetchHotspotsForHex.pending, (state) => {
+      state.loadingHotspotsForHex = true
+    })
+    builder.addCase(fetchHotspotsForHex.rejected, (state) => {
+      state.loadingHotspotsForHex = false
+    })
   },
 })
 
