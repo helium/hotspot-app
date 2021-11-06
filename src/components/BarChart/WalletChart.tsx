@@ -72,10 +72,12 @@ const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
   }, [filter, activityChart, activityChartRange])
 
   useEffect(() => {
-    dispatch(
-      fetchActivityChart({ range: activityChartRange, filterType: filter }),
-    )
-  }, [dispatch, filter, activityChartRange, blockHeight])
+    if (chartEnabled) {
+      dispatch(
+        fetchActivityChart({ range: activityChartRange, filterType: filter }),
+      )
+    }
+  }, [dispatch, filter, activityChartRange, blockHeight, chartEnabled])
 
   const padding = 20
   const chartHeight = useMemo(() => height - headerHeight - padding, [

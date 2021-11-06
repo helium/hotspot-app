@@ -5,7 +5,6 @@ import FlashMessage, {
   showMessage,
 } from 'react-native-flash-message'
 import { Linking } from 'react-native'
-import useAppState from 'react-native-appstate-hook'
 import { useSelector } from 'react-redux'
 import { formatDistanceToNow } from 'date-fns'
 import { useTranslation } from 'react-i18next'
@@ -16,6 +15,7 @@ import { useAppDispatch } from '../store/store'
 import { fetchIncidents } from '../store/helium/heliumStatusSlice'
 import { RootState } from '../store/rootReducer'
 import shortLocale from '../utils/formatDistance'
+import useMount from '../utils/useMount'
 
 const onTapStatusBanner = async () => {
   await Linking.openURL(HELIUM_STATUS_URL)
@@ -27,12 +27,10 @@ const StatusBanner = () => {
   const incidents = useSelector((state: RootState) => state.status.incidents)
   const isBackedUp = useSelector((state: RootState) => state.app.isBackedUp)
 
-  useAppState({
-    onForeground: () => {
-      if (isBackedUp) {
-        dispatch(fetchIncidents())
-      }
-    },
+  useMount(() => {
+    if (isBackedUp) {
+      dispatch(fetchIncidents())
+    }
   })
 
   const getAlertDescription = useCallback(

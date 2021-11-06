@@ -39,18 +39,8 @@ const WalletScreen = () => {
     // clear the list data when coming into foreground
     if (prevAppState && appState === 'active' && prevAppState !== 'active') {
       dispatch(activitySlice.actions.reset())
-      dispatch(fetchTxnsHead({ filter: 'all' }))
-      dispatch(fetchTxnsHead({ filter: 'pending' }))
     }
-  }, [appState, dispatch, filter, prevAppState])
-
-  useEffect(() => {
-    const preloadData = () => {
-      dispatch(fetchTxnsHead({ filter: 'all' }))
-      dispatch(fetchTxnsHead({ filter: 'pending' }))
-    }
-    preloadData()
-  }, [dispatch])
+  }, [appState, dispatch, prevAppState])
 
   useEffect(() => {
     // once you have activity, you always have activity
@@ -89,7 +79,7 @@ const WalletScreen = () => {
   }, [activityViewState, filter, showSkeleton, txns, visible])
 
   useEffect(() => {
-    // Fetch pending txns on an interval of 5s
+    // Fetch pending txns on an interval of 30s
     if (!visible && interval.current) {
       clearInterval(interval.current)
       interval.current = undefined
@@ -97,7 +87,7 @@ const WalletScreen = () => {
       dispatch(fetchTxnsHead({ filter: 'pending' }))
       interval.current = setInterval(() => {
         dispatch(fetchTxnsHead({ filter: 'pending' }))
-      }, 5000)
+      }, 30000)
     }
   }, [dispatch, visible])
 

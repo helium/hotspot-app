@@ -37,7 +37,6 @@ import MapFilterModal from '../../map/MapFilterModal'
 import ShortcutNav from './ShortcutNav'
 import { useAppDispatch } from '../../../store/store'
 import { fetchAccountRewards } from '../../../store/account/accountSlice'
-import useVisible from '../../../utils/useVisible'
 import {
   fetchFollowedValidators,
   fetchMyValidators,
@@ -152,12 +151,10 @@ const HotspotsView = ({
     mapFilter,
   ])
 
-  useVisible({
-    onAppear: () => {
-      dispatch(fetchAccountRewards())
-      dispatch(fetchMyValidators())
-      dispatch(fetchFollowedValidators())
-    },
+  useMount(() => {
+    dispatch(fetchAccountRewards())
+    dispatch(fetchMyValidators())
+    dispatch(fetchFollowedValidators())
   })
 
   useEffect(() => {

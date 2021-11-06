@@ -25,7 +25,11 @@ import NavigationRoot from './navigation/NavigationRoot'
 import { useAppDispatch } from './store/store'
 import appSlice, { restoreAppSettings } from './store/user/appSlice'
 import { RootState } from './store/rootReducer'
-import { fetchData } from './store/account/accountSlice'
+import {
+  fetchAccountRewards,
+  fetchAccountSettings,
+  fetchData,
+} from './store/account/accountSlice'
 import BluetoothProvider from './providers/BluetoothProvider'
 import ConnectedHotspotProvider from './providers/ConnectedHotspotProvider'
 import * as Logger from './utils/logger'
@@ -46,6 +50,13 @@ import useSettingsRestore from './utils/useAccountSettings'
 import useMount from './utils/useMount'
 import Box from './components/Box'
 import { guardedClearMapCache } from './utils/mapUtils'
+import { fetchFeatures } from './store/features/featuresSlice'
+import { fetchIncidents } from './store/helium/heliumStatusSlice'
+import { fetchHotspotsData } from './store/hotspots/hotspotsSlice'
+import {
+  fetchFollowedValidators,
+  fetchMyValidators,
+} from './store/validators/validatorsSlice'
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
@@ -94,9 +105,6 @@ const App = () => {
 
   const prevAppState = usePrevious(appState)
 
-  const fetchDataStatus = useSelector(
-    (state: RootState) => state.account.fetchDataStatus,
-  )
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
   )
@@ -146,7 +154,7 @@ const App = () => {
 
   // handle app state changes
   useEffect(() => {
-    if (appState === 'background' && !isLocked) {
+    if (appState === 'background' || appState === 'inactive') {
       dispatch(appSlice.actions.updateLastIdle())
       return
     }
@@ -166,34 +174,32 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appState])
 
-  // update initial data when app comes into foreground from background and is logged in
+  // update data when app comes into foreground from background and is logged in (only every 5 min)
   useEffect(() => {
-    if (prevAppState === 'background' && appState === 'active' && isBackedUp) {
-      dispatch(fetchInitialData())
+    if (
+      (prevAppState === 'background' || prevAppState === 'inactive') &&
+      appState === 'active' &&
+      isBackedUp
+    ) {
+      const fiveMinutesAgo = Date.now() - 300000
+      if (lastIdle && fiveMinutesAgo > lastIdle) {
+        dispatch(fetchInitialData())
+        dispatch(fetchFeatures())
+        dispatch(fetchAccountSettings())
+        dispatch(fetchIncidents())
+        dispatch(fetchHotspotsData())
+        dispatch(fetchAccountRewards())
+        dispatch(fetchMyValidators())
+        dispatch(fetchFollowedValidators())
+      }
     }
-  }, [isBackedUp, appState, dispatch, prevAppState])
+  }, [isBackedUp, appState, dispatch, prevAppState, lastIdle, isLocked])
 
-  // hide splash screen
-  useAsync(async () => {
-    const loggedOut = isRestored && !isBackedUp
-    const loggedInAndLoaded =
-      isRestored &&
-      isBackedUp &&
-      settingsLoaded &&
-      featuresLoaded &&
-      fetchDataStatus !== 'pending' &&
-      fetchDataStatus !== 'idle'
-
-    if (loggedOut || loggedInAndLoaded) {
+  // Hide splash after 1 second to prevent white screen flicker
+  useEffect(() => {
+    const timeout = setTimeout(async () => {
       await SplashScreen.hideAsync()
-    }
-  }, [fetchDataStatus, isBackedUp, isRestored, settingsLoaded, featuresLoaded])
-
-  useEffect(() => {
-    // Hide splash after 5 seconds, deal with the consequences?
-    const timeout = setTimeout(() => {
-      SplashScreen.hideAsync()
-    }, 5000)
+    }, 1000)
     return () => clearInterval(timeout)
   }, [dispatch])
 

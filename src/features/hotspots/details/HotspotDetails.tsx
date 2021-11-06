@@ -503,26 +503,50 @@ const HotspotDetails = ({
                 height={10}
                 color={isHidden ? colors.grayLightText : colors.grayText}
               />
-              <Text
-                variant="body2"
-                color={isHidden ? 'grayLightText' : 'grayText'}
-                marginLeft="xs"
-                marginRight="m"
-              >
-                {`${hotspot?.geocode?.longCity}, ${hotspot?.geocode?.shortCountry}`}
-              </Text>
+              {hotspot?.geocode?.longCity === undefined ? (
+                <SkeletonPlaceholder>
+                  <SkeletonPlaceholder.Item
+                    height={14}
+                    width={105}
+                    marginLeft={spacing.xs}
+                    marginRight={spacing.s}
+                    borderRadius={spacing.s}
+                  />
+                </SkeletonPlaceholder>
+              ) : (
+                <Text
+                  variant="body2"
+                  color={isHidden ? 'grayLightText' : 'grayText'}
+                  marginLeft="xs"
+                  marginRight="m"
+                >
+                  {`${hotspot?.geocode?.longCity}, ${hotspot?.geocode?.shortCountry}`}
+                </Text>
+              )}
               <Signal
                 width={10}
                 height={10}
                 color={isHidden ? colors.grayLightText : colors.grayText}
               />
-              <Text
-                variant="body2"
-                color={isHidden ? 'grayLightText' : 'grayText'}
-                marginLeft="xs"
-              >
-                {t('generic.meters', { distance: hotspot?.elevation || 0 })}
-              </Text>
+              {hotspot?.elevation === undefined ? (
+                <SkeletonPlaceholder>
+                  <SkeletonPlaceholder.Item
+                    height={14}
+                    width={75}
+                    marginLeft={spacing.xs}
+                    marginRight={spacing.s}
+                    borderRadius={spacing.s}
+                  />
+                </SkeletonPlaceholder>
+              ) : (
+                <Text
+                  variant="body2"
+                  color={isHidden ? 'grayLightText' : 'grayText'}
+                  marginLeft="xs"
+                >
+                  {t('generic.meters', { distance: hotspot?.elevation || 0 })}
+                </Text>
+              )}
               {hotspot?.gain !== undefined && (
                 <Text
                   variant="body2"
@@ -565,15 +589,16 @@ const HotspotDetails = ({
               marginLeft="m"
               height={24}
             >
-              {hotspot?.status && (
-                <StatusBadge
-                  hitSlop={hitSlop}
-                  online={hotspot?.status?.online}
-                  syncStatus={hotspotSyncStatus?.status}
-                  onPress={handleToggleStatus}
-                  isDataOnly={dataOnly}
-                />
-              )}
+              {hotspot?.status !== undefined &&
+                hotspotSyncStatus?.status !== undefined && (
+                  <StatusBadge
+                    hitSlop={hitSlop}
+                    online={hotspot?.status?.online}
+                    syncStatus={hotspotSyncStatus?.status}
+                    onPress={handleToggleStatus}
+                    isDataOnly={dataOnly}
+                  />
+                )}
               {isRelayed && (
                 <TouchableOpacityBox
                   hitSlop={hitSlop}
