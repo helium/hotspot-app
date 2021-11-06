@@ -10,7 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTranslation } from 'react-i18next'
 import { RootStackParamList } from '../../../navigation/main/tabTypes'
 import Box from '../../../components/Box'
-import Map from '../../../components/Map'
+import Map, { NO_FEATURES } from '../../../components/Map'
 import { RootState } from '../../../store/rootReducer'
 import hotspotDetailsSlice, {
   fetchHotspotData,
@@ -273,25 +273,30 @@ const HotspotsView = ({
 
       // set UI until hotspots load
       setSelectedHexId(hexId)
+
       setShowTabs(false)
       handleShortcutItemSelected({ address, locationHex: hexId } as Hotspot)
 
-      // load hotspots in hex and update ui
-      const hotspots = (await dispatch(fetchHotspotsForHex({ hexId }))) as {
-        payload?: Hotspot[]
+      let hotspots: Hotspot[] = []
+      if (hexId && hexId !== NO_FEATURES) {
+        // load hotspots in hex and update ui
+        const response = (await dispatch(fetchHotspotsForHex({ hexId }))) as {
+          payload?: Hotspot[]
+        }
+        if (response.payload) {
+          hotspots = response.payload
+        }
       }
       let index = 0
-      if (address && hotspots?.payload) {
-        const foundIndex = hotspots.payload.findIndex(
-          (h) => h?.address === address,
-        )
+      if (address && hotspots) {
+        const foundIndex = hotspots.findIndex((h) => h?.address === address)
         if (foundIndex >= 0) {
           index = foundIndex
         }
       }
       setSelectedHotspotIndex(index)
-      if (hotspots?.payload?.length) {
-        handleShortcutItemSelected(hotspots.payload[index] as Hotspot)
+      if (hotspots?.length) {
+        handleShortcutItemSelected(hotspots[index] as Hotspot)
       }
     },
     [dispatch, handleShortcutItemSelected, loadingHotspotsForHex],

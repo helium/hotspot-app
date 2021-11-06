@@ -148,7 +148,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
   const [activeTransfer, setActiveTransfer] = useState<Transfer>()
   useEffect(() => {
     const fetchTransfer = async () => {
-      if (!hotspot) return
+      if (!hotspot?.address) return
       try {
         const transfer = await getTransfer(hotspot.address)
         setHasActiveTransfer(transfer !== undefined)
