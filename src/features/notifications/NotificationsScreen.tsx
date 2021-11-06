@@ -11,6 +11,7 @@ import {
   markNotificationsViewed,
   NotificationFilter,
 } from '../../store/notifications/notificationSlice'
+import useMount from '../../utils/useMount'
 
 const NotificationsScreen = () => {
   const {
@@ -35,7 +36,11 @@ const NotificationsScreen = () => {
     dispatch(fetchNotifications(filter))
   }, [dispatch, filter, markNotificationStatus])
 
-  useVisible({ onAppear: refreshNotifications, onDisappear: markAsRead })
+  useMount(() => {
+    refreshNotifications()
+  })
+
+  useVisible({ onDisappear: markAsRead })
 
   const onFilterChanged = useCallback(
     (notificationFilter: NotificationFilter) => {

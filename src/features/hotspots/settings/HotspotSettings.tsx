@@ -24,6 +24,7 @@ import { visible } from '@shopify/restyle'
 import Visibility from '@assets/images/visibility.svg'
 import VisibilityOff from '@assets/images/visibility_off.svg'
 import { unwrapResult } from '@reduxjs/toolkit'
+import { useAsync } from 'react-async-hook'
 import BlurBox from '../../../components/BlurBox'
 import Card from '../../../components/Card'
 import Text from '../../../components/Text'
@@ -146,19 +147,16 @@ const HotspotSettings = ({ hotspot }: Props) => {
 
   const [hasActiveTransfer, setHasActiveTransfer] = useState<boolean>()
   const [activeTransfer, setActiveTransfer] = useState<Transfer>()
-  useEffect(() => {
-    const fetchTransfer = async () => {
-      if (!hotspot?.address) return
-      try {
-        const transfer = await getTransfer(hotspot.address)
-        setHasActiveTransfer(transfer !== undefined)
-        setActiveTransfer(transfer)
-      } catch (e) {
-        setHasActiveTransfer(false)
-      }
+  useAsync(async () => {
+    if (!hotspot?.address || !showSettings) return
+    try {
+      const transfer = await getTransfer(hotspot.address)
+      setHasActiveTransfer(transfer !== undefined)
+      setActiveTransfer(transfer)
+    } catch (e) {
+      setHasActiveTransfer(false)
     }
-    fetchTransfer()
-  }, [hotspot])
+  }, [showSettings, hotspot])
 
   const transferButtonTitle = useMemo(() => {
     if (hasActiveTransfer === undefined) {

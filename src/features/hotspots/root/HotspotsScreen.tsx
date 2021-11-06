@@ -6,11 +6,11 @@ import { RootState } from '../../../store/rootReducer'
 import HotspotsView from './HotspotsView'
 import Box from '../../../components/Box'
 import { fetchHotspotsData } from '../../../store/hotspots/hotspotsSlice'
-import useVisible from '../../../utils/useVisible'
 import { useAppDispatch } from '../../../store/store'
 import useGetLocation from '../../../utils/useGetLocation'
 import useAlert from '../../../utils/useAlert'
 import { updateFleetModeEnabled } from '../../../store/account/accountSlice'
+import useMount from '../../../utils/useMount'
 
 const HotspotsScreen = () => {
   const maybeGetLocation = useGetLocation()
@@ -96,11 +96,9 @@ const HotspotsScreen = () => {
     showOKAlert,
   ])
 
-  useVisible({
-    onAppear: () => {
-      dispatch(fetchHotspotsData())
-      maybeGetLocation(false)
-    },
+  useMount(() => {
+    dispatch(fetchHotspotsData())
+    maybeGetLocation(false)
   })
 
   const viewState = useMemo(() => {

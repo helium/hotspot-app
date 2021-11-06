@@ -121,17 +121,16 @@ const HotspotsList = ({
     },
   })
 
-  useVisible({
-    onAppear: () => {
-      maybeGetLocation(false, locationDeniedHandler)
-    },
+  useMount(() => {
+    maybeGetLocation(false, locationDeniedHandler)
   })
 
   useAsync(async () => {
     if (
       !myValidatorsLoaded ||
       !followedValidatorsLoaded ||
-      loadingValidatorRewards
+      loadingValidatorRewards ||
+      !visible
     ) {
       return
     }
@@ -152,6 +151,7 @@ const HotspotsList = ({
     validators,
     followedValidators,
     loadingValidatorRewards,
+    visible,
   ])
 
   useEffect(() => {
@@ -365,6 +365,7 @@ const HotspotsList = ({
   )
 
   useEffect(() => {
+    if (!visible) return
     if (
       prevGatewaySortOrder !== gatewaySortOrder ||
       prevVisibleHotspots.length !== visibleHotspots.length
@@ -403,6 +404,7 @@ const HotspotsList = ({
     rewardsFetchIndex,
     gatewaySortOrder,
     prevGatewaySortOrder,
+    visible,
   ])
 
   const onViewableItemsChanged = useCallback(
