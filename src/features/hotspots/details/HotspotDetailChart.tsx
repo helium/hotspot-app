@@ -1,171 +1,167 @@
-import React, { useCallback, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { TFunction } from 'i18next'
-import { ActivityIndicator, Platform } from 'react-native'
+import React, { useCallback, useMemo, useState, useEffect } from 'react'
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import { ChartData } from '../../../components/BarChart/types'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import ChartContainer from '../../../components/BarChart/ChartContainer'
-import { useColors } from '../../../theme/themeHooks'
+import { useBorderRadii, useColors } from '../../../theme/themeHooks'
 import animateTransition from '../../../utils/animateTransition'
+import { locale } from '../../../utils/i18n'
+import DateModule from '../../../utils/DateModule'
+import TimelinePicker from './TimelinePicker'
 
 type Props = {
   title: string
   number?: string
   change?: number
-  percentage?: number
   data: ChartData[]
   loading?: boolean
-  subTitle?: string
+  timelineIndex: number
+  onTimelineChanged: (value: number, index: number) => void
 }
-
-const PercentageBox = ({
-  t,
-  focusedData,
-  percentage,
-}: {
-  t: TFunction
-  focusedData: ChartData | null
-  percentage: number
-}) => (
-  <>
-    <Text variant="body3" color="grayLightText" marginBottom="s">
-      {t('hotspot_details.pass_rate')}
-    </Text>
-    <Text variant="light" fontSize={32} color="black" marginBottom="s">
-      {`${focusedData ? focusedData.up : percentage}%`}
-    </Text>
-  </>
-)
-
-const NumberBox = ({
-  negativeColor,
-  positiveColor,
-  number,
-  focusedData,
-  change,
-}: {
-  negativeColor: string
-  positiveColor: string
-  number?: string
-  focusedData: ChartData | null
-  change?: number
-}) => (
-  <>
-    <Text
-      variant="light"
-      fontSize={32}
-      color="grayDarkText"
-      marginBottom="s"
-      numberOfLines={1}
-      adjustsFontSizeToFit
-    >
-      {focusedData ? focusedData.up : number}
-    </Text>
-    {change !== undefined && !focusedData ? (
-      <Box
-        style={{
-          backgroundColor: change < 0 ? negativeColor : positiveColor,
-        }}
-        padding="xs"
-        borderRadius="s"
-        alignSelf="baseline"
-      >
-        <Text color="white" variant="body2Bold">
-          {`${change < 0 ? '' : '+'}${change.toFixed(2).toString()}%`}
-        </Text>
-      </Box>
-    ) : null}
-  </>
-)
 
 const HotspotDetailChart = ({
   title,
   number,
   change = 0,
-  percentage,
   data,
-  loading,
-  subTitle,
+  loading: propsLoading,
+  timelineIndex,
+  onTimelineChanged,
 }: Props) => {
-  const { t } = useTranslation()
-  const { black, grayLight, grayMain, purpleMain, greenOnline } = useColors()
+  const { black, grayLight, purpleMain, greenOnline } = useColors()
+  const { l } = useBorderRadii()
+  const [loading, setLoading] = useState(propsLoading)
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
 
-  const onFocus = useCallback((chartData: ChartData | null) => {
-    if (Platform.OS === 'ios') {
-      // this animation causes layout issues on Android
-      animateTransition()
+  useEffect(() => {
+    if (propsLoading === loading) return
+
+    animateTransition('HotspotDetailChart.LoadingChange', {
+      enabledOnAndroid: false,
+    })
+
+    setLoading(propsLoading)
+  }, [loading, propsLoading])
+
+  const onFocus = useCallback(async (chartData: ChartData | null) => {
+    animateTransition('HotspotDetailChart.OnFocus', { enabledOnAndroid: false })
+
+    if (!chartData) {
+      setFocusedData(null)
+      return
     }
-    setFocusedData(chartData)
+
+    const label = await DateModule.formatDate(
+      chartData.label,
+      chartData.showTime ? 'MMM d h:mma' : 'EEE MMM d',
+    )
+    setFocusedData({ ...chartData, label })
   }, [])
 
-  return (
-    <Box marginBottom="m" paddingHorizontal="l">
-      <Box
-        flexDirection="row"
-        alignItems="center"
-        marginVertical="s"
-        width="100%"
-        marginEnd="s"
-      >
-        <Text variant="body1" color="black">
-          {title}
-        </Text>
-        {subTitle && (
-          <Text variant="body3" color="grayText" paddingLeft="xs">
-            {subTitle}
+  const body = useMemo(() => {
+    if (loading)
+      return (
+        <SkeletonPlaceholder>
+          <SkeletonPlaceholder.Item
+            height={400}
+            width="100%"
+            borderRadius={l}
+          />
+        </SkeletonPlaceholder>
+      )
+
+    return (
+      <>
+        <Box flex={1}>
+          <Text color="grayLightText" fontSize={16} maxFontSizeMultiplier={1.2}>
+            {title}
           </Text>
-        )}
-      </Box>
-      <Box
-        backgroundColor="grayBox"
-        padding="l"
-        borderRadius="l"
-        flexDirection="row"
-        justifyContent={loading ? 'center' : 'space-between'}
-        alignItems="center"
-        height={136}
-      >
-        {loading ? (
-          <ActivityIndicator size="small" color={grayMain} />
-        ) : (
-          <>
-            <Box width="35%">
-              {percentage ? (
-                <PercentageBox
-                  t={t}
-                  percentage={percentage}
-                  focusedData={focusedData}
-                />
-              ) : (
-                <NumberBox
-                  negativeColor={purpleMain}
-                  positiveColor={greenOnline}
-                  focusedData={focusedData}
-                  number={number}
-                  change={change}
-                />
-              )}
-            </Box>
-            <Box width="60%">
-              <ChartContainer
-                height={90}
-                data={data}
-                onFocus={onFocus}
-                showXAxisLabel={false}
-                upColor={change >= 0 ? greenOnline : purpleMain}
-                downColor={grayLight}
-                labelColor={black}
-              />
-              {/* TODO removing this for now to fit the design better */}
-              {/* <Text variant="body3" color="black" paddingTop="xs">
-                {focusedData ? focusedData.day : ' '}
-              </Text> */}
-            </Box>
-          </>
-        )}
-      </Box>
+          <Box flexDirection="row" alignItems="center">
+            <Text
+              variant="light"
+              color="grayDarkText"
+              fontSize={37}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              maxFontSizeMultiplier={1}
+            >
+              {focusedData ? focusedData.up.toLocaleString(locale) : number}
+            </Text>
+
+            <TimelinePicker
+              flex={1}
+              index={timelineIndex}
+              onTimelineChanged={onTimelineChanged}
+            />
+          </Box>
+
+          <Box flexDirection="row" flex={1} justifyContent="flex-end">
+            {change !== undefined && !focusedData ? (
+              <Text
+                color={change < 0 ? 'purpleMain' : 'greenOnline'}
+                variant="bold"
+                fontSize={13}
+                maxFontSizeMultiplier={1.1}
+              >
+                {`${change < 0 ? '' : '+'}${change.toLocaleString(locale, {
+                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 2,
+                })}%`}
+              </Text>
+            ) : (
+              <Text
+                variant="body3"
+                color="grayDarkText"
+                fontSize={13}
+                maxFontSizeMultiplier={1.1}
+              >
+                {focusedData ? focusedData.label : ''}
+              </Text>
+            )}
+          </Box>
+        </Box>
+        <Box
+          paddingTop="m"
+          flexDirection="row"
+          justifyContent={loading ? 'center' : 'space-between'}
+          alignItems="center"
+          marginBottom="xxs"
+        >
+          <Box width="100%" height={250}>
+            <ChartContainer
+              height={100}
+              data={data}
+              onFocus={onFocus}
+              showXAxisLabel={false}
+              upColor={change >= 0 ? greenOnline : purpleMain}
+              downColor={grayLight}
+              labelColor={black}
+            />
+          </Box>
+        </Box>
+      </>
+    )
+  }, [
+    black,
+    change,
+    data,
+    focusedData,
+    grayLight,
+    greenOnline,
+    l,
+    loading,
+    number,
+    onFocus,
+    onTimelineChanged,
+    purpleMain,
+    timelineIndex,
+    title,
+  ])
+
+  return (
+    <Box backgroundColor="grayBoxLight" paddingTop="xl" padding="l">
+      {body}
     </Box>
   )
 }

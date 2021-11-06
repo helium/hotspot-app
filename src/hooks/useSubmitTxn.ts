@@ -1,27 +1,29 @@
-import Balance, { CurrencyType } from '@helium/currency'
-import { PendingTransaction, PaymentV2 as HttpPayment } from '@helium/http'
 import {
   AddGatewayV1,
-  AssertLocationV1,
-  PaymentV2 as PaymentTxn,
+  AssertLocationV2,
+  PaymentV2,
   TokenBurnV1,
   TransferHotspotV1,
 } from '@helium/transactions'
 import { useSelector } from 'react-redux'
+import { TxnType } from '../features/wallet/root/walletTypes'
 
-import activitySlice from '../store/activity/activitySlice'
+import activitySlice, {
+  HttpTransaction,
+  HttpPendingTransaction,
+} from '../store/activity/activitySlice'
 import { RootState } from '../store/rootReducer'
 import { useAppDispatch } from '../store/store'
-import { submitTransaction } from '../utils/appDataClient'
+import { postWallet } from '../utils/walletClient'
 
 type SignableTransaction =
-  | PaymentTxn
+  | PaymentV2
   | AddGatewayV1
-  | AssertLocationV1
+  | AssertLocationV2
   | TokenBurnV1
   | TransferHotspotV1
 
-type Submitter = (txn: SignableTransaction) => Promise<PendingTransaction>
+type Submitter = (txn: SignableTransaction) => Promise<HttpPendingTransaction>
 
 const useSubmitTxn = (): Submitter => {
   const dispatch = useAppDispatch()
@@ -35,10 +37,13 @@ const useSubmitTxn = (): Submitter => {
     const serializedTxn = txn.toString()
 
     // submit to blockchain
-    const pendingTxn = await submitTransaction(serializedTxn)
+    const apiResponse = await postWallet('transactions', {
+      txn: serializedTxn,
+    })
+    const pendingTxn = apiResponse as HttpPendingTransaction
 
     // construct mock pending txn
-    pendingTxn.type = txn.type
+    pendingTxn.type = txn.type as TxnType
     pendingTxn.status = 'pending'
     pendingTxn.txn = populatePendingTxn(txn, blockHeight || 0, pendingTxn.hash)
 
@@ -54,34 +59,87 @@ const populatePendingTxn = (
   txn: SignableTransaction,
   blockHeight: number,
   hash: string,
-) => {
-  if (txn instanceof PaymentTxn) {
-    const pending = txn as PaymentTxn
+): HttpTransaction => {
+  if (txn instanceof PaymentV2) {
+    const pending = txn as PaymentV2
 
     const data = {
+      time: 0,
       type: pending.type,
-      fee: new Balance(pending.fee, CurrencyType.dataCredit),
-      payer: txn.payer?.b58 || '',
+      fee: pending.fee,
+      payer: pending.payer?.b58 || '',
       signature: '',
-      payments: txn.payments.map((p) => ({
+      payments: pending.payments.map((p) => ({
         payee: p.payee.b58,
-        amount: new Balance(p.amount, CurrencyType.networkToken),
+        amount: p.amount,
       })),
       height: blockHeight,
       hash,
-    } as HttpPayment
-
-    let totalAmount = new Balance(0, CurrencyType.networkToken)
-    data.payments.forEach((p) => {
-      totalAmount = totalAmount.plus(p.amount)
-    })
-
-    data.totalAmount = totalAmount
+    } as HttpTransaction
 
     return data
   }
 
-  return txn
+  if (txn instanceof AssertLocationV2) {
+    const pending = txn as AssertLocationV2
+    return {
+      time: 0,
+      type: pending.type,
+      stakingFee: pending.stakingFee,
+      payerSignature: '',
+      payer: pending.payer?.b58 || '',
+      ownerSignature: '',
+      owner: pending.owner?.b58 || '',
+      nonce: pending.nonce,
+      location: pending.location,
+      height: blockHeight,
+      hash,
+      gateway: pending.gateway?.b58 || '',
+      fee: pending.fee,
+      gain: pending.gain || 0,
+      elevation: pending.elevation || 0,
+    } as HttpTransaction
+  }
+
+  if (txn instanceof AddGatewayV1) {
+    const pending = txn as AddGatewayV1
+
+    const data = {
+      time: 0,
+      type: pending.type,
+      stakingFee: pending.stakingFee,
+      payerSignature: '',
+      payer: pending.payer?.b58 || '',
+      ownerSignature: '',
+      owner: pending.owner?.b58 || '',
+      height: blockHeight,
+      hash,
+      gateway: pending.gateway?.b58 || '',
+      gatewaySignature: '',
+      fee: pending.fee,
+    } as HttpTransaction
+
+    return data
+  }
+
+  if (txn instanceof TransferHotspotV1) {
+    const pending = txn as TransferHotspotV1
+
+    const data = {
+      time: 0,
+      type: pending.type,
+      buyer: pending.buyer?.b58 || '',
+      seller: pending.seller?.b58 || '',
+      height: blockHeight,
+      hash,
+      gateway: pending.gateway?.b58 || '',
+      fee: pending.fee,
+    } as HttpTransaction
+
+    return data
+  }
+
+  return {} as HttpTransaction
 }
 
 export default useSubmitTxn

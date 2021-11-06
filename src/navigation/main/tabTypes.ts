@@ -1,4 +1,6 @@
 import { StackNavigationProp } from '@react-navigation/stack'
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
+import { SendRouteType } from '../../features/wallet/send/sendTypes'
 
 export type MainTabType = 'Hotspots' | 'Wallet' | 'Notifications' | 'More'
 
@@ -15,13 +17,27 @@ export type LockScreenRequestType =
   | 'resetPin'
   | 'unlock'
   | 'revealWords'
+  | 'send'
 
 export type RootStackParamList = {
   MainTabs: undefined | { pinVerifiedFor: LockScreenRequestType }
-  LockScreen: { requestType: LockScreenRequestType; lock?: boolean }
+  LockScreen: {
+    requestType: LockScreenRequestType
+    sendParams?: undefined | SendRouteType
+    lock?: boolean
+  }
   HotspotSetup: undefined
-  Scan: undefined
-  Send: undefined
+  ScanStack: undefined
+  SendStack: undefined | SendRouteType
 }
 
 export type RootNavigationProp = StackNavigationProp<RootStackParamList>
+
+export type MainTabParamList = {
+  Hotspots: undefined
+  Wallet: undefined
+  Notifications: undefined
+  More: undefined
+}
+
+export type MainTabNavigationProp = BottomTabNavigationProp<MainTabParamList>

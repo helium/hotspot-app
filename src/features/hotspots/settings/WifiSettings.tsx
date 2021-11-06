@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import animalHash from 'angry-purple-tiger'
-import { FlatList, TouchableOpacity } from 'react-native-gesture-handler'
+import { FlatList, TouchableOpacity } from 'react-native'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import { RootState } from '../../../store/rootReducer'
@@ -15,9 +15,13 @@ import { hp } from '../../../utils/layout'
 import Chevron from '../../../assets/images/chevron-right.svg'
 import useAlert from '../../../utils/useAlert'
 import animateTransition from '../../../utils/animateTransition'
+import CircleLoader from '../../../components/CircleLoader'
+import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 
-type Props = { onNetworkSelected: (wifi: string) => void }
-const WifiSettings = ({ onNetworkSelected }: Props) => {
+const ItemSeparatorComponent = () => <Box height={1} backgroundColor="white" />
+
+type Props = { onNetworkSelected: (wifi: string) => void; onError: () => void }
+const WifiSettings = ({ onNetworkSelected, onError }: Props) => {
   const [networkStatus, setNetworkStatus] = useState<
     'ethernet' | 'wifiConnected' | 'wifiConfigured' | 'notConnected'
   >('notConnected')
@@ -29,34 +33,64 @@ const WifiSettings = ({ onNetworkSelected }: Props) => {
     scanForWifiNetworks,
     removeConfiguredWifi,
   } = useConnectedHotspotContext()
-  const { showOKCancelAlert } = useAlert()
+  const { showOKCancelAlert, showOKAlert } = useAlert()
   const [networks, setNetworks] = useState<string[]>([])
   const [configuredNetworks, setConfiguredNetworks] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
+  const errorShown = useRef(false)
 
-  const scanWifi = async () => {
-    const wifiNetworks = await scanForWifiNetworks()
-    const configured = await scanForWifiNetworks(true)
-    animateTransition()
-    setNetworks(wifiNetworks || [])
-    setConfiguredNetworks(configured || [])
-  }
+  const scanWifi = useCallback(async () => {
+    try {
+      setLoading(true)
+      const wifiNetworks = await scanForWifiNetworks()
+      const configured = await scanForWifiNetworks(true)
+      animateTransition('WifiSettings.ScanWifi')
+      setNetworks(wifiNetworks || [])
+      setConfiguredNetworks(configured || [])
+      setLoading(false)
+    } catch (e) {
+      setLoading(false)
+      if (errorShown.current) return
 
-  const handleNetworkSelected = async (nextWifi: string) => {
-    if (wifi || configuredNetworks.length) {
-      const wifiName = wifi || configuredNetworks[0]
+      errorShown.current = true
+      await showOKAlert({
+        titleKey: 'generic.error',
+        messageKey: e.toString(),
+      })
+      onError()
+    }
+  }, [scanForWifiNetworks, showOKAlert, onError])
+
+  const maybeForgetConfiguredNetwork = useCallback(
+    async (networkToForget?: string) => {
+      if (!networkToForget) return
       const decision = await showOKCancelAlert({
         titleKey: 'hotspot_setup.disconnect_dialog.title',
         messageKey: 'hotspot_setup.disconnect_dialog.body',
-        messageOptions: { wifiName },
+        messageOptions: { wifiName: networkToForget },
         okKey: 'generic.forget',
       })
-      if (!decision || !wifi) {
+
+      if (!decision) {
         return
       }
-      await removeConfiguredWifi(wifi)
-    }
-    onNetworkSelected(nextWifi)
-  }
+
+      animateTransition('WifiSettings.MaybeForgetConfiguredNetwork')
+      setLoading(true)
+      await removeConfiguredWifi(networkToForget)
+    },
+    [removeConfiguredWifi, showOKCancelAlert],
+  )
+
+  const handleNetworkSelected = useCallback(
+    async (nextWifi: string) => {
+      await maybeForgetConfiguredNetwork(
+        wifi || (configuredNetworks.length ? configuredNetworks[0] : undefined),
+      )
+      onNetworkSelected(nextWifi)
+    },
+    [configuredNetworks, maybeForgetConfiguredNetwork, onNetworkSelected, wifi],
+  )
 
   useEffect(() => {
     scanWifi()
@@ -73,6 +107,7 @@ const WifiSettings = ({ onNetworkSelected }: Props) => {
       setNetworkStatus('wifiConnected')
       return
     }
+
     if (configuredNetworks.length) {
       setNetworkStatus('wifiConfigured')
       return
@@ -83,38 +118,59 @@ const WifiSettings = ({ onNetworkSelected }: Props) => {
 
   const { t } = useTranslation()
 
-  const renderItem = ({ item, index }: { item: string; index: number }) => {
-    const isFirst = index === 0
-    const isLast = index === networks?.length ? networks.length - 1 : 0
-    return (
-      <TouchableOpacity onPress={() => handleNetworkSelected(item)}>
-        <Card
-          variant="regular"
-          flexDirection="row"
-          height={52}
-          borderTopLeftRadius={isFirst ? 'm' : 'none'}
-          borderTopRightRadius={isFirst ? 'm' : 'none'}
-          borderBottomLeftRadius={isLast ? 'm' : 'none'}
-          borderBottomRightRadius={isLast ? 'm' : 'none'}
-          alignItems="center"
-        >
-          <Text flex={1} variant="body1Bold" color="black">
-            {item}
-          </Text>
-          <Chevron />
-        </Card>
-      </TouchableOpacity>
-    )
-  }
+  type ListItem = { item: string; index: number }
+  const renderItem = useCallback(
+    ({ item, index }: ListItem) => {
+      const isFirst = index === 0
+      const isLast = index === networks?.length ? networks.length - 1 : 0
+      return (
+        <TouchableOpacity onPress={() => handleNetworkSelected(item)}>
+          <Card
+            variant="regular"
+            flexDirection="row"
+            height={52}
+            borderTopLeftRadius={isFirst ? 'm' : 'none'}
+            borderTopRightRadius={isFirst ? 'm' : 'none'}
+            borderBottomLeftRadius={isLast ? 'm' : 'none'}
+            borderBottomRightRadius={isLast ? 'm' : 'none'}
+            alignItems="center"
+          >
+            <Text flex={1} variant="body1Bold" color="black">
+              {item}
+            </Text>
+            <Chevron color="#C1CFEE" />
+          </Card>
+        </TouchableOpacity>
+      )
+    },
+    [handleNetworkSelected, networks.length],
+  )
+
+  const separator = useCallback(() => <ItemSeparatorComponent />, [])
+
   return (
     <Box padding="l" minHeight={hp(66)}>
-      <Text variant="medium" fontSize={21} color="black" marginBottom="lx">
+      <Text variant="medium" fontSize={21} color="black">
         {animalHash(address || '')}
       </Text>
 
-      <Text variant="medium" fontSize={15} color="black" marginBottom="m">
-        {t('hotspot_settings.wifi.connected_via')}
-      </Text>
+      <TouchableOpacityBox marginLeft="n_m" onPress={scanWifi}>
+        <Text variant="body1Medium" padding="m" color="purpleMain">
+          {t('hotspot_settings.diagnostics.scan_again')}
+        </Text>
+      </TouchableOpacityBox>
+
+      <Box
+        flexDirection="row"
+        justifyContent="space-between"
+        height={48}
+        alignItems="center"
+      >
+        <Text variant="medium" fontSize={15} color="black">
+          {t('hotspot_settings.wifi.connected_via')}
+        </Text>
+        {loading && <CircleLoader loaderSize={24} />}
+      </Box>
 
       <Card
         variant="regular"
@@ -122,22 +178,28 @@ const WifiSettings = ({ onNetworkSelected }: Props) => {
         height={49}
         alignItems="center"
       >
-        <Text
-          variant="medium"
-          fontSize={15}
-          color={networkStatus === 'notConnected' ? 'grayMain' : 'black'}
-          flex={1}
-        >
-          {networkStatus === 'ethernet' && t('hotspot_settings.wifi.ethernet')}
-          {networkStatus === 'wifiConnected' && wifi}
-          {networkStatus === 'wifiConfigured' && configuredNetworks[0]}
-          {networkStatus === 'notConnected' &&
-            t('hotspot_settings.wifi.not_connected')}
-        </Text>
-
-        {networkStatus === 'notConnected' && <NotConnected />}
-        {networkStatus !== 'notConnected' && (
-          <Paired color={greenBright} height={18} width={18} />
+        {!loading && (
+          <>
+            <Text
+              variant="medium"
+              fontSize={15}
+              color={networkStatus === 'notConnected' ? 'grayMain' : 'black'}
+              flex={1}
+            >
+              {networkStatus === 'ethernet' &&
+                t('hotspot_settings.wifi.ethernet')}
+              {networkStatus === 'wifiConnected' && wifi}
+              {networkStatus === 'wifiConfigured' && configuredNetworks[0]}
+              {networkStatus === 'notConnected' &&
+                t('hotspot_settings.wifi.not_connected')}
+            </Text>
+            {(networkStatus === 'notConnected' ||
+              networkStatus === 'wifiConfigured') && <NotConnected />}
+            {(networkStatus === 'wifiConnected' ||
+              networkStatus === 'ethernet') && (
+              <Paired color={greenBright} height={18} width={18} />
+            )}
+          </>
         )}
       </Card>
 
@@ -155,13 +217,11 @@ const WifiSettings = ({ onNetworkSelected }: Props) => {
           data={networks}
           keyExtractor={(item) => item}
           renderItem={renderItem}
-          ItemSeparatorComponent={() => (
-            <Box height={1} backgroundColor="white" />
-          )}
+          ItemSeparatorComponent={separator}
         />
       </Box>
     </Box>
   )
 }
 
-export default WifiSettings
+export default memo(WifiSettings)

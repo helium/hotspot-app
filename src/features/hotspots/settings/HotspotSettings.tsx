@@ -1,22 +1,37 @@
-import React, { useEffect, memo, useRef, useState } from 'react'
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
-  Modal,
+  Alert,
   Animated,
   Easing,
   KeyboardAvoidingView,
-  Alert,
+  Linking,
+  Modal,
+  Platform,
 } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import animalName from 'angry-purple-tiger'
-import { Hotspot } from '@helium/http'
+import { Hotspot, Witness } from '@helium/http'
+import Toast from 'react-native-simple-toast'
+import { visible } from '@shopify/restyle'
+import Visibility from '@assets/images/visibility.svg'
+import VisibilityOff from '@assets/images/visibility_off.svg'
+import { unwrapResult } from '@reduxjs/toolkit'
+import { useAsync } from 'react-async-hook'
 import BlurBox from '../../../components/BlurBox'
 import Card from '../../../components/Card'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import CloseModal from '../../../assets/images/closeModal.svg'
 import SafeAreaBox from '../../../components/SafeAreaBox'
-import { useSpacing } from '../../../theme/themeHooks'
+import { useColors, useSpacing } from '../../../theme/themeHooks'
 import AnimatedBox from '../../../components/AnimatedBox'
 import HotspotSettingsOption from './HotspotSettingsOption'
 import HotspotDiagnostics from './HotspotDiagnostics'
@@ -34,22 +49,66 @@ import { useHotspotSettingsContext } from './HotspotSettingsProvider'
 import Box from '../../../components/Box'
 import BackButton from '../../../components/BackButton'
 import animateTransition from '../../../utils/animateTransition'
+import BluetoothIcon from '../../../assets/images/bluetooth_icon.svg'
+import TransferIcon from '../../../assets/images/transfer_icon.svg'
+import DiscoveryModeIcon from '../../../assets/images/discovery_mode_icon.svg'
+import DiscoveryModeRoot from './discovery/DiscoveryModeRoot'
+import UpdateIcon from '../../../assets/images/update_hotspot_icon.svg'
+import UpdateHotspotConfig from './updateHotspot/UpdateHotspotConfig'
+import usePermissionManager from '../../../utils/usePermissionManager'
+import useAlert from '../../../utils/useAlert'
+import { getLocationPermission } from '../../../store/location/locationSlice'
+import { isDataOnly } from '../../../utils/hotspotUtils'
+import { updateSetting } from '../../../store/account/accountSlice'
+import {
+  fetchTxnsHead,
+  HttpTransaction,
+} from '../../../store/activity/activitySlice'
+import { isPendingTransaction } from '../../wallet/root/useActivityItem'
 
-type State = 'init' | 'scan' | 'transfer'
+type State = 'init' | 'scan' | 'transfer' | 'discoveryMode' | 'updateHotspot'
 
-const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
+type Props = {
+  hotspot?: Hotspot | Witness
+}
+
+const HotspotSettings = ({ hotspot }: Props) => {
   const { t } = useTranslation()
   const [settingsState, setSettingsState] = useState<State>('init')
   const [title, setTitle] = useState<string>(t('hotspot_settings.title'))
   const { m } = useSpacing()
   const slideUpAnimRef = useRef(new Animated.Value(1000))
-  const { getState } = useBluetoothContext()
+  const { getState, enable } = useBluetoothContext()
   const dispatch = useAppDispatch()
-  const { showBack, goBack, disableBack } = useHotspotSettingsContext()
-
   const {
-    hotspotDetails: { showSettings },
-  } = useSelector((state: RootState) => state)
+    showBack,
+    goBack,
+    disableBack,
+    enableBack,
+  } = useHotspotSettingsContext()
+  const { purpleMain } = useColors()
+  const { account } = useSelector((state: RootState) => state.account)
+  const { showSettings } = useSelector(
+    (state: RootState) => state.hotspotDetails,
+  )
+  const hiddenAddresses = useSelector(
+    (state: RootState) => state.account.settings.hiddenAddresses,
+  )
+  const { requestLocationPermission } = usePermissionManager()
+  const { permissionResponse, locationBlocked } = useSelector(
+    (state: RootState) => state.location,
+  )
+  const isDeployModeEnabled = useSelector(
+    (state: RootState) => state.app.isDeployModeEnabled,
+  )
+  const { showOKAlert, showOKCancelAlert } = useAlert()
+
+  const dataOnly = useMemo(() => isDataOnly(hotspot), [hotspot])
+
+  useEffect(() => {
+    getState()
+    dispatch(getLocationPermission())
+  }, [dispatch, getState])
 
   useEffect(() => {
     Animated.timing(slideUpAnimRef.current, {
@@ -66,43 +125,50 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showSettings])
 
-  const setNextState = (s: State) => {
-    animateTransition()
-    setSettingsState(s)
-  }
+  const isHidden = useMemo(
+    () => hotspot && hiddenAddresses?.includes(hotspot.address),
+    [hiddenAddresses, hotspot],
+  )
 
-  const handleClose = () => {
+  const setNextState = useCallback(
+    (s: State) => {
+      if (!visible || s === settingsState) return
+
+      animateTransition('HotspotSettings.SetNextState')
+      setSettingsState(s)
+    },
+    [settingsState],
+  )
+
+  const handleClose = useCallback(() => {
     disableBack()
     dispatch(hotspotDetailsSlice.actions.toggleShowSettings())
-  }
+  }, [disableBack, dispatch])
 
   const [hasActiveTransfer, setHasActiveTransfer] = useState<boolean>()
   const [activeTransfer, setActiveTransfer] = useState<Transfer>()
-  useEffect(() => {
-    const fetchTransfer = async () => {
-      if (!hotspot) return
-      try {
-        const transfer = await getTransfer(hotspot.address)
-        setHasActiveTransfer(transfer !== undefined)
-        setActiveTransfer(transfer)
-      } catch (e) {
-        setHasActiveTransfer(false)
-      }
+  useAsync(async () => {
+    if (!hotspot?.address || !showSettings) return
+    try {
+      const transfer = await getTransfer(hotspot.address)
+      setHasActiveTransfer(transfer !== undefined)
+      setActiveTransfer(transfer)
+    } catch (e) {
+      setHasActiveTransfer(false)
     }
-    fetchTransfer()
-  }, [hotspot])
+  }, [showSettings, hotspot])
 
-  const getTransferButtonTitle = () => {
+  const transferButtonTitle = useMemo(() => {
     if (hasActiveTransfer === undefined) {
       return ''
     }
     if (hasActiveTransfer) {
       return t('transfer.cancel.button_title')
     }
-    return t('hotspot_settings.transfer.begin')
-  }
+    return t('hotspot_settings.transfer.subtitle')
+  }, [hasActiveTransfer, t])
 
-  const cancelTransfer = async () => {
+  const cancelTransfer = useCallback(async () => {
     if (!hotspot) return
     const deleteResponse = await deleteTransfer(hotspot.address, false)
     if (deleteResponse) {
@@ -114,9 +180,35 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
         t('transfer.cancel.failed_alert_body'),
       )
     }
-  }
+  }, [hotspot, t])
 
-  const onPressTransferSetting = () => {
+  const onPressDiscoveryMode = useCallback(() => {
+    setNextState('discoveryMode')
+  }, [setNextState])
+
+  const onPressUpdateHotspot = useCallback(async () => {
+    // Check for pending assert
+    const pending = (await dispatch(fetchTxnsHead({ filter: 'pending' }))) as {
+      payload?: HttpTransaction[]
+    }
+    const txns = pending.payload
+    const hasPending = txns?.find((pendingTxn) => {
+      if (!isPendingTransaction(pendingTxn)) return
+
+      return (
+        pendingTxn.txn.type === 'assert_location_v2' &&
+        pendingTxn.status === 'pending' &&
+        pendingTxn.txn.gateway === hotspot?.address
+      )
+    })
+    if (hasPending) {
+      Toast.show(t('hotspot_settings.reassert.already_pending'), Toast.LONG)
+    } else {
+      setNextState('updateHotspot')
+    }
+  }, [dispatch, hotspot?.address, setNextState, t])
+
+  const onPressTransferSetting = useCallback(() => {
     if (hasActiveTransfer) {
       Alert.alert(
         t('transfer.cancel.alert_title'),
@@ -136,34 +228,146 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
           },
         ],
       )
+    } else if (isDeployModeEnabled) {
+      showOKAlert({
+        titleKey: 'transfer.deployModeTransferDisableTitle',
+        messageKey: 'transfer.deployModeTransferDisabled',
+      })
     } else {
       setNextState('transfer')
     }
-  }
+  }, [
+    isDeployModeEnabled,
+    activeTransfer?.buyer,
+    activeTransfer?.gateway,
+    cancelTransfer,
+    hasActiveTransfer,
+    setNextState,
+    showOKAlert,
+    t,
+  ])
 
-  const onCloseTransfer = () => {
+  const onToggleHotspotVisibility = useCallback(async () => {
+    if (!hotspot) return
+    const addresses = new Set(
+      !hiddenAddresses ? [] : JSON.parse(hiddenAddresses),
+    )
+    if (isHidden) {
+      addresses.delete(hotspot.address)
+    } else {
+      const decision = await showOKCancelAlert({
+        titleKey: 'hotspot_settings.visibility_popup.title',
+        messageKey: 'hotspot_settings.visibility_popup.message',
+      })
+      if (!decision) return
+      addresses.add(hotspot.address)
+    }
+    try {
+      const result = await dispatch(
+        updateSetting({
+          key: 'hiddenAddresses',
+          value: JSON.stringify(Array.from(addresses)),
+        }),
+      )
+      unwrapResult(result)
+    } catch (error) {
+      Toast.show(t('generic.something_went_wrong'))
+    }
+  }, [dispatch, hiddenAddresses, hotspot, isHidden, showOKCancelAlert, t])
+
+  const onCloseOwnerSettings = useCallback(() => {
     setNextState('init')
-  }
+    disableBack()
+  }, [disableBack, setNextState])
 
   useEffect(() => {
     if (!showSettings) {
       setNextState('init')
     }
-  }, [showSettings])
+  }, [setNextState, showSettings])
 
-  useEffect(() => {
-    getState()
-  }, [getState])
+  const updateTitle = useCallback(
+    (nextTitle: string) => setTitle(nextTitle),
+    [],
+  )
 
-  if (!hotspot) return null
+  const startScan = useCallback(() => {
+    enableBack(() => {
+      onCloseOwnerSettings()
+    })
+    setNextState('scan')
+  }, [enableBack, onCloseOwnerSettings, setNextState])
 
-  const getFirstCard = () => {
+  const checkBluetooth = useCallback(async () => {
+    const state = await getState()
+
+    if (state === 'PoweredOn') {
+      return true
+    }
+
+    if (Platform.OS === 'ios') {
+      if (state === 'PoweredOff') {
+        const decision = await showOKCancelAlert({
+          titleKey: 'hotspot_setup.pair.alert_ble_off.title',
+          messageKey: 'hotspot_setup.pair.alert_ble_off.body',
+          okKey: 'generic.go_to_settings',
+        })
+        if (decision) Linking.openURL('App-Prefs:Bluetooth')
+      } else {
+        const decision = await showOKCancelAlert({
+          titleKey: 'hotspot_setup.pair.alert_ble_off.title',
+          messageKey: 'hotspot_setup.pair.alert_ble_off.body',
+          okKey: 'generic.go_to_settings',
+        })
+        if (decision) Linking.openURL('app-settings:')
+      }
+    }
+    if (Platform.OS === 'android') {
+      await enable()
+      return true
+    }
+  }, [enable, getState, showOKCancelAlert])
+
+  const checkLocation = useCallback(async () => {
+    if (Platform.OS === 'ios') return true
+
+    if (permissionResponse?.granted) {
+      return true
+    }
+
+    if (!locationBlocked) {
+      const response = await requestLocationPermission()
+      if (response && response.granted) {
+        return true
+      }
+    } else {
+      const decision = await showOKCancelAlert({
+        titleKey: 'permissions.location.title',
+        messageKey: 'permissions.location.message',
+        okKey: 'generic.go_to_settings',
+      })
+      if (decision) Linking.openSettings()
+    }
+  }, [
+    locationBlocked,
+    permissionResponse?.granted,
+    requestLocationPermission,
+    showOKCancelAlert,
+  ])
+
+  const handleScanRequest = useCallback(async () => {
+    const bluetoothReady = await checkBluetooth()
+    if (!bluetoothReady) return
+
+    const locationReady = await checkLocation()
+    if (!locationReady) return
+
+    startScan()
+  }, [checkBluetooth, checkLocation, startScan])
+
+  const pairingCard = useMemo(() => {
     if (settingsState === 'scan') {
-      return (
-        <HotspotDiagnostics
-          updateTitle={(nextTitle: string) => setTitle(nextTitle)}
-        />
-      )
+      return <HotspotDiagnostics updateTitle={updateTitle} />
     }
     return (
       <HotspotSettingsOption
@@ -171,33 +375,111 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
         subtitle={t('hotspot_settings.pairing.subtitle')}
         buttonLabel={t('hotspot_settings.pairing.scan')}
         variant="primary"
-        onPress={() => setNextState('scan')}
+        onPress={handleScanRequest}
+        buttonIcon={<BluetoothIcon color="white" height={18} width={18} />}
       />
     )
-  }
+  }, [handleScanRequest, settingsState, t, updateTitle])
 
-  const getSecondCard = () => {
+  const ownerSettings = useMemo(() => {
+    const isOwned = hotspot && hotspot.owner === account?.address
+    if (!hotspot || !isOwned) return null
+
     if (settingsState === 'transfer') {
       return (
         <HotspotTransfer
           hotspot={hotspot}
-          onCloseTransfer={onCloseTransfer}
+          onCloseTransfer={onCloseOwnerSettings}
           onCloseSettings={handleClose}
         />
       )
     }
 
+    if (settingsState === 'discoveryMode') {
+      return (
+        <DiscoveryModeRoot onClose={onCloseOwnerSettings} hotspot={hotspot} />
+      )
+    }
+
+    if (settingsState === 'updateHotspot') {
+      return (
+        <UpdateHotspotConfig
+          onClose={onCloseOwnerSettings}
+          onCloseSettings={handleClose}
+          hotspot={hotspot}
+        />
+      )
+    }
+
     return (
-      <HotspotSettingsOption
-        title={t('hotspot_settings.transfer.title')}
-        subtitle={t('hotspot_settings.transfer.subtitle')}
-        buttonLabel={getTransferButtonTitle()}
-        buttonDisabled={hasActiveTransfer === undefined}
-        variant="secondary"
-        onPress={onPressTransferSetting}
-      />
+      <Box>
+        {!dataOnly && (
+          <HotspotSettingsOption
+            title={t('hotspot_settings.transfer.title')}
+            subtitle={transferButtonTitle}
+            buttonDisabled={hasActiveTransfer === undefined}
+            onPress={onPressTransferSetting}
+            compact
+            buttonIcon={<TransferIcon />}
+          />
+        )}
+        <Box backgroundColor="black" height={0.5} />
+        <HotspotSettingsOption
+          title={t('hotspot_settings.discovery.title')}
+          subtitle={t('hotspot_settings.discovery.subtitle')}
+          onPress={onPressDiscoveryMode}
+          compact
+          buttonIcon={<DiscoveryModeIcon color={purpleMain} />}
+        />
+        <Box backgroundColor="black" height={0.5} />
+        <HotspotSettingsOption
+          title={t('hotspot_settings.update.title')}
+          subtitle={t('hotspot_settings.update.subtitle')}
+          onPress={onPressUpdateHotspot}
+          compact
+          buttonIcon={<UpdateIcon />}
+        />
+        <Box backgroundColor="black" height={0.5} />
+        <HotspotSettingsOption
+          title={t(
+            isHidden
+              ? 'hotspot_settings.visibility_on.title'
+              : 'hotspot_settings.visibility_off.title',
+          )}
+          subtitle={t(
+            isHidden
+              ? 'hotspot_settings.visibility_on.subtitle'
+              : 'hotspot_settings.visibility_off.subtitle',
+          )}
+          onPress={onToggleHotspotVisibility}
+          compact
+          buttonIcon={
+            isHidden ? (
+              <Visibility height={20} width={20} />
+            ) : (
+              <VisibilityOff height={20} width={20} />
+            )
+          }
+        />
+      </Box>
     )
-  }
+  }, [
+    hotspot,
+    account?.address,
+    settingsState,
+    dataOnly,
+    t,
+    transferButtonTitle,
+    hasActiveTransfer,
+    onPressTransferSetting,
+    onPressDiscoveryMode,
+    purpleMain,
+    onPressUpdateHotspot,
+    isHidden,
+    onToggleHotspotVisibility,
+    onCloseOwnerSettings,
+    handleClose,
+  ])
 
   return (
     <Modal
@@ -206,6 +488,7 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
       visible={showSettings}
       onRequestClose={handleClose}
       animationType="fade"
+      statusBarTranslucent
     >
       <BlurBox
         top={0}
@@ -217,12 +500,7 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
         position="absolute"
       />
 
-      <SafeAreaBox
-        flex={1}
-        flexDirection="column"
-        justifyContent="space-between"
-        marginBottom="m"
-      >
+      <SafeAreaBox flex={1} flexDirection="column" marginBottom="m">
         <Box
           flexDirection="row-reverse"
           justifyContent="space-between"
@@ -233,23 +511,37 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
             padding="l"
             alignItems="flex-end"
             justifyContent="center"
+            marginEnd={settingsState === 'discoveryMode' ? 'n_s' : undefined}
             onPress={handleClose}
           >
             <CloseModal color="white" />
           </TouchableOpacityBox>
-          {showBack && <BackButton alignSelf="center" onPress={goBack} />}
+          {showBack && (
+            <BackButton
+              alignSelf="center"
+              onPress={goBack}
+              marginStart={settingsState === 'discoveryMode' ? 'n_m' : 'n_s'}
+            />
+          )}
         </Box>
-        <Box flex={1} onTouchStart={handleClose} />
         <AnimatedBox
           marginTop="none"
-          margin="ms"
+          marginBottom="ms"
+          justifyContent="flex-end"
+          flex={1}
+          marginHorizontal={settingsState === 'discoveryMode' ? 'none' : 'ms'}
           style={{ transform: [{ translateY: slideUpAnimRef.current }] }}
         >
-          <KeyboardAvoidingView
-            behavior="position"
-            keyboardVerticalOffset={220}
-          >
-            {settingsState !== 'transfer' && (
+          <TouchableOpacityBox
+            top={0}
+            left={0}
+            bottom={0}
+            right={0}
+            position="absolute"
+            onPress={handleClose}
+          />
+          <Box alignSelf="flex-start">
+            {(settingsState === 'init' || settingsState === 'scan') && (
               <Text
                 variant="h2"
                 lineHeight={27}
@@ -259,19 +551,28 @@ const HotspotSettings = ({ hotspot }: { hotspot: Hotspot }) => {
                 {title}
               </Text>
             )}
+          </Box>
 
-            {settingsState !== 'transfer' && (
-              <Card variant="modal" backgroundColor="white">
-                {getFirstCard()}
+          {settingsState !== 'scan' && (
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            >
+              <Card variant="modal" backgroundColor="white" overflow="hidden">
+                {ownerSettings}
               </Card>
-            )}
+            </KeyboardAvoidingView>
+          )}
 
-            {settingsState !== 'scan' && (
-              <Card variant="modal" backgroundColor="white" marginTop="l">
-                {getSecondCard()}
-              </Card>
-            )}
-          </KeyboardAvoidingView>
+          {(settingsState === 'init' || settingsState === 'scan') && (
+            <Card
+              variant="modal"
+              backgroundColor="white"
+              marginTop="m"
+              overflow="hidden"
+            >
+              {pairingCard}
+            </Card>
+          )}
         </AnimatedBox>
       </SafeAreaBox>
     </Modal>

@@ -2,6 +2,17 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+<key>CFBundleURLTypes</key>
+	<array>
+ 	  <dict>
+    	<key>CFBundleTypeRole</key>
+    	<string>Editor</string>
+    	<key>CFBundleURLSchemes</key>
+    	<array>
+      	<string>helium</string>
+    	</array>
+  	</dict>
+	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -26,8 +37,6 @@
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
 			<key>localhost</key>
@@ -38,9 +47,11 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Allow Helium to use your location to add your Helium Hotspots to the network</string>
+	<string>Allow Helium to use your location to add Hotspots to the network and explore Hotspots around you</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Allow Helium to authenticate with Face ID</string>
+	<key>UIRequiresFullScreen</key>
+	<true/>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Allow Helium to connect to and manage your Hotspots</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
@@ -52,9 +63,9 @@
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Allow Helium to use your location to add your Helium Hotspots to the network</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Allow $(PRODUCT_NAME) to use the camera</string>
+	<string>Allow Helium to use the camera to scan QR codes</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Allow $(PRODUCT_NAME) to use the microphone</string>
+	<string>Allow Helium to use the microphone</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>NotoSerif-Bold.ttf</string>

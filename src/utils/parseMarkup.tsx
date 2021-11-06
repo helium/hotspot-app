@@ -2,10 +2,10 @@
 import React from 'react'
 import { ViewStyle } from 'react-native'
 import parse5, {
-  DefaultTreeParentNode,
-  DefaultTreeTextNode,
   DefaultTreeElement,
   DefaultTreeNode,
+  DefaultTreeParentNode,
+  DefaultTreeTextNode,
 } from 'parse5'
 import get from 'lodash/get'
 import isEmpty from 'lodash/isEmpty'
@@ -14,6 +14,7 @@ import { Font } from '../theme/theme'
 import Link from '../components/Link'
 import Bullet from '../components/Bullet'
 import Dropdown from '../components/Dropdown'
+import * as Logger from './logger'
 
 const symbols: Record<string, JSX.Element> = {
   b: <Text fontFamily={Font.main.semiBold} />,
@@ -54,7 +55,9 @@ const parseMarkup = (
     return rawText
   }
 
-  const doc = parse5.parse(rawText) as DefaultTreeParentNode
+  const doc = parse5.parse(
+    rawText.replace(/[“]+/g, '"'),
+  ) as DefaultTreeParentNode
   const body = (doc.childNodes[0] as DefaultTreeParentNode)
     .childNodes[1] as DefaultTreeParentNode
   const values = body.childNodes.map(parseNode).flat(Infinity)
@@ -94,7 +97,7 @@ const parseNode = (
 
   const symbol = symbols[element.tagName] || symbols.default
   if (!symbols[element.tagName]) {
-    console.warn('Unknown markup symbol', `<${element.tagName}>`)
+    Logger.breadcrumb(`Unknown markup symbol <${element.tagName}>`)
   }
 
   const attrs = element.attrs.reduce(
@@ -102,7 +105,7 @@ const parseNode = (
     {},
   )
 
-  const Component = {
+  return {
     ...symbol,
     props: {
       ...symbol.props,
@@ -111,7 +114,6 @@ const parseNode = (
     },
     key: Math.random(),
   }
-  return Component
 }
 
 export default parseMarkup

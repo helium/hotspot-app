@@ -50,7 +50,7 @@ export default {
     },
     create_pin: {
       title: 'PINコードを設定',
-      subtitle: '最後にPINコードを設定して、アカウントの保護を強化します。',
+      subtitle: 'PINコードを設定して、アカウントを保護します。',
     },
     confirm_pin: {
       title: 'PINを再入力してください',
@@ -92,7 +92,9 @@ export default {
     next: 'ガイドを読みました',
   },
   generic: {
+    clear: 'クリア',
     done: '完了',
+    disabled: '無効',
     understand: '理解しました',
     blocks: 'ブロック',
     active: 'アクティブ',
@@ -108,6 +110,9 @@ export default {
     go_to_settings: '「設定」に移動',
     hotspot: 'Hotspot',
     location: '位置情報',
+    unable_to_get_location: '位置情報を取得できませんでした',
+    location_blocked:
+      '位置情報がオフになっています。位置情報サービスを許可するには、携帯電話の設定に移動します。',
     challenger: 'Challenger',
     learn_more: '詳細',
     cancel: 'キャンセル',
@@ -125,25 +130,24 @@ export default {
     forget: '破棄',
     error: 'エラー',
     loading: '読み込んでいます...',
+    copy: 'コピー',
+    address: 'アドレス',
+    invalid_password: 'パスワードが間違っています',
+    something_went_wrong: '何らかの問題が発生しました',
+    hnt_to_currency: '{{currencyType}}。CoinGeckoのデータ',
+    search_location: 'アドレスや場所を検索する',
+    unavailable: '利用不可',
+    minutes: '{{count}}分',
+    minutes_plural: '{{count}}分',
+    seconds: '{{count}}秒',
+    seconds_plural: '{{count}}秒',
+    one: '一',
+    swipe_to_confirm: 'スワイプして確認',
   },
   hotspot_setup: {
     selection: {
       title: 'Hotspotを\n選択してください。',
       subtitle: 'どのような種類のHotspotを\n追加しますか？',
-      option_one: 'Helium\nHotspot',
-      option_two: 'RAK\nHotspot Miner',
-      third_party_header: 'その他のHotspot',
-      helium_edition: 'Helium Network向け',
-      fine_print:
-        'RAK Hotspot MinerにはRAKによって事前に読み込まれた特別なファームウェアがあります。続行する前に、ハードウェアがRAK Hotspot Minerであることを再確認してください。',
-    },
-    start: {
-      title: 'Hotspotを設定',
-      subtitle:
-        'Hotspotを使用すると、The People’s Networkを構築してHNTを獲得できます。',
-      info: 'その仕組みは？',
-      next: '開始する',
-      not_now: '今はやめておく',
     },
     education: {
       title: 'Hotspotを\n配置しています。',
@@ -173,27 +177,13 @@ export default {
     },
     diagnostics: {
       title: '診断',
-      p_1:
-        '<b><white>診断サポートにより、HeliumはHotspotの問題を安全な方法で特定できます。</white></b>\n\nHeliumが秘密キーにアクセスすることはありません。お使いのHotspotにのみアクセスし、ネットワーク上の他のデバイスにはアクセスしません。\n\n診断サポートをオプトアウトする場合は、Hotspotの購入時に使用したメールアドレスを使用して、<purple><b>support@helium.com</b></purple>までメールでご連絡ください。',
     },
     power: {
       title: '電源オン',
       next: '電源が入っています',
-      subtitle_1: 'アンテナを取り付け、付属の電源アダプターに差し込みます。',
-      rak_subtitle_1:
-        '付属の電源アダプターを窓の近くにあるコンセントに差し込みます。',
-      subtitle_2: 'Hotspotが起動し、準備が完了するとライトが緑色になります。',
-      rak_subtitle_2:
-        'RAK Hotspot Minerの電源がオンになると、赤いLEDライトが点きます。',
     },
     pair: {
       title: 'Bluetooth',
-      subtitle_1: 'Hotspotの黒いボタンを押します。ライトが青に変わります。',
-      rak_subtitle_1: 'RAK Hotspot Minerにペアリングボタンはありません。',
-      subtitle_2:
-        '続行する前に携帯電話のBluetoothがオンになっていることを確認します',
-      rak_subtitle_2:
-        'RAK Hotspot Minerの電源がオンになると、自動的にBluetoothが5分間有効になります。\n\nHotspotが完全に起動するまでに最大で1分かかる場合があります。\n\n「次へ」を押してスキャンします。',
       alert_no_permissions: {
         title: 'Bluetoothのアクセスを許可',
         body:
@@ -230,7 +220,7 @@ export default {
       connection_failed: '接続に失敗しました。もう一度実行してください',
       disconnect_failed: '切断に失敗しました。もう一度実行してください',
       connected:
-        'Hotspotは<green>オンライン</green>になっており、 %{network}に接続されています。',
+        'Hotspotは<green>オンライン</green>になっており、%{network}に接続されています。',
       scan_fail_subtitle:
         'Hotspotで近隣のWi-Fiネットワークが検出できませんでした。ルーターがオンラインになっていて近隣に設置されていることを確認してください。',
       tip:
@@ -240,6 +230,10 @@ export default {
       disconnect_help:
         'パスワードを更新するか、新しいネットワークに接続するには、まず古いネットワークを破棄してください。',
       disconnect: 'ネットワークを破棄',
+      not_found_title: 'Wi-Fiネットワークが見つかりません',
+      not_found_desc:
+        'Hotspotが起動して利用可能なネットワークを見つけるまでに、最大3分かかる場合があります。',
+      scan_networks: 'ネットワークをスキャン',
     },
     disconnect_dialog: {
       title: 'ネットワークを破棄しますか？',
@@ -280,6 +274,17 @@ export default {
         'Hotspotは更新を自動的に確認します。これには10分程度かかる場合があります。プラグを差し込んだままにして、後でもう一度確認してください。',
       next: 'OK',
     },
+    onboarding_error: {
+      title: 'オンボーディングエラー',
+      subtitle:
+        'オンボーディングサーバーでHotspotが見つかりません。次の手順については、Hotspotの製造元にお問い合わせください。',
+      next: 'セットアップを終了',
+      disconnected:
+        'Hotspotへの接続中にエラーが発生しました。もう一度実行してください。',
+      title_connect_failed: 'Hotspotのペアリングに失敗しました',
+      body_connect_failed:
+        'Hotspot Minerがリクエストに応答できません。Hotspotを再起動して、後でもう一度実行してください。',
+    },
     add_hotspot: {
       title: 'Hotspotを追加',
       subtitle:
@@ -300,6 +305,14 @@ export default {
       wait_error_title: 'もう一度実行してください',
       wait_error_body:
         'Hotspotマイナーが開始を待っています。数分後にもう一度実行してください。',
+      add_hotspot_error_body:
+        'Add Hotspotトランザクションの構築中にエラーが発生しました。もう一度実行してください。',
+      assert_loc_error_body:
+        'Assert Locationトランザクションの構築中にエラーが発生しました。もう一度実行してください。',
+      assert_loc_error_no_loc:
+        '選択した位置情報が無効です。もう一度実行してください。',
+      no_onboarding_key_title: 'オンボーディングキーが見つかりません',
+      no_onboarding_key_message: 'もう一度実行しますか？',
     },
     enable_location: {
       title: 'Hotspotの\n位置情報を設定',
@@ -334,6 +347,11 @@ export default {
         '料金データの読み込み中にエラーが発生しました。もう一度実行してください。',
       next: 'Hotspotを登録',
       fee_next: '料金の支払いとHotspotの登録',
+      gain_label: 'TX/RXゲイン：',
+      elevation_label: '高さ：',
+      gain: '{{gain}} dBi',
+      elevation: '{{count}}メートル',
+      elevation_plural: '{{count}}メートル',
     },
     location: {
       title: 'Hotspotの位置情報',
@@ -348,7 +366,29 @@ export default {
     error: {
       alertTitle: 'サーバーが応答できません',
       alertMessage:
-        'サーバーへのリクエストがタイムアウトしたため、現在Hotspotを追加できません。\n\nsupport@helium.comに連絡し、MACアドレス %{mac}をお伝えください。',
+        'サーバーへのリクエストがタイムアウトしたため、現在Hotspotを追加できません。\n\nsupport@helium.comに連絡し、MACアドレス%{mac}を伝えてください。',
+    },
+    skip_location: {
+      title: 'Hotspotを追加',
+      subtitle_1: '後で位置情報をアサートすることにしました。',
+      subtitle_2: '後で設定から位置情報を更新します。',
+    },
+    not_owner: {
+      title: 'このHotspotにはすでに所有者が存在します。',
+      subtitle_1:
+        'あなたは他のユーザーのためにこのHotspotを\nホストしてますか？',
+      subtitle_1_no_follow:
+        'Wi-Fiを更新しているホストの場合、今すぐセットアップを終了できます。',
+      subtitle_2:
+        'Hotspotをフォローすると、所有していないHotspotをアプリ内で監視できます。',
+      contact_manufacturer:
+        'あなたがホットスポットの所有者（購入者）であると思われる場合は、Hotspotの製造元に問い合わせてください。',
+    },
+    owned_hotspot: {
+      title: 'このHotspotをすでに所有しています',
+      subtitle_1: 'このHotspotはすでにオンボード済みのようです。',
+      subtitle_2:
+        'HotspotのWi-Fiまたは位置情報を更新するには、Hotspotの設定に移動します。',
     },
   },
   account_import: {
@@ -356,12 +396,12 @@ export default {
       title: '回復シードフレーズを\n入力してください',
       directions: '<b>{{ordinal}}</b>単語を入力してください',
       placeholder: '{{ordinal}}単語',
-      subtitle: '回復シードフレーズは、大文字と小文字が区別されません',
+      subtitle: '回復シードフレーズは\n大文字と小文字が区別されません',
     },
     confirm: {
-      title: 'シードフレーズを確認',
+      title: 'シードフレーズを\n確認してください',
       subtitle:
-        '入力した12個の単語は以下のとおりです。必要に応じて、単語をタップして更新できます。',
+        '入力した12個の単語は以下のとおりです。編集する必要がある場合は、これらのいずれかをタップします。',
       next: 'シードフレーズを申請',
     },
     complete: {
@@ -377,6 +417,33 @@ export default {
     title: 'ウォレット',
     copiedToClipboard: '{{address}}をクリップボードにコピーしました',
     share: '共有',
+    intro_body:
+      'このアカウントタブは、保持しているHNTまたはData Credit用の仮想ウォレットとして機能します。',
+    intro_slides: [
+      {
+        title: 'HNTを受信',
+        body: 'アドレスまたは QR コードにアクセスします。',
+      },
+      {
+        title: 'HNT を送信',
+        body: 'QRコードをスキャンするか、手動で詳細を入力します。',
+      },
+      {
+        title: 'アカウントのグラフを作成',
+        body:
+          '緑色はHNTがアカウントに<green>追加されている</green>ことを示します。',
+      },
+      {
+        title: 'アカウントのグラフを作成',
+        body:
+          '青色はHNTがアカウントから<blue>引き出されている</blue>ことを示します。',
+      },
+    ],
+    chartRanges: {
+      daily: { label: '14D', accessibilityLabel: '14 Days' },
+      weekly: { label: '12W', accessibilityLabel: '12 Weeks' },
+      monthly: { label: '12M', accessibilityLabel: '12 Months' },
+    },
   },
   send: {
     title: {
@@ -415,8 +482,36 @@ export default {
     qrInfo: 'QR情報',
     error:
       'このトランザクションの申請中にエラーが発生しました。もう一度実行してください。',
+    deployModePaymentsDisabled: 'デプロイモードでは支払いが無効になります',
     hotspot_label: 'Hotspot',
     last_activity: '最後に報告されたアクティビティ：{{activity}}',
+    label_error: 'アカウントに十分なHNTがありません。',
+    stale_error:
+      'Hotspotには、最後の{{blocks}}ブロックにBeaconまたはWitnessのアクティビティはありません。',
+    scan: {
+      title: 'QRコードの使い方',
+      send: 'HNTを送信',
+      send_description: 'HeliumアドレスをすばやくスキャンしてHNTを送信します。',
+      burn: 'HNTをDCにバーン',
+      burn_description:
+        'HNTをData Creditにバーンして、デバイスネットワークの接続料金を支払うことができます。DCは転送できません。',
+      view: 'QRコードを表示',
+      view_description:
+        'QRコードを共有して、他のユーザーからHNTを入金するか受け取ります。',
+      learn_more: '詳細',
+      parse_code_error: 'QRコードを解析できません',
+      invalid_hotspot_address:
+        'QRコードのホットスポットアドレスが見つからないか無効です。',
+      invalid_sender_address:
+        'QRコードの送信者アドレスは有効なウォレットアカウントアドレスではありません。',
+      mismatched_sender_address:
+        'QRコードの送信者アドレスがウォレットアカウントアドレスと一致しません。 続行するには、アドレスが一致している必要があります。',
+    },
+    send_max_fee: {
+      error_title: '最大送信エラー',
+      error_description:
+        '残りの最大送信にかかる手数料を計算できません。\n\n「最大送信」をタップしてもう一度実行してください。',
+    },
   },
   more: {
     title: '設定',
@@ -436,24 +531,42 @@ export default {
           after_4_hr: '4時間後',
         },
         revealWords: '単語を表示',
+        deployMode: {
+          title: 'デプロイモード',
+          subtitle:
+            'このモードはウォレットに追加の保護を追加し、一部のアプリ機能を制限します。',
+          inDeployMode: 'デプロイモードの場合：',
+          cantViewWords: 'あなたの12の安全な言葉を見ることができません',
+          cantTransferHotspots:
+            'このアカウントからホットスポットを転送できません',
+          canOnlySendFunds: 'にのみ資金を送ることができます',
+          otherAccount: '他の指定されたアカウント',
+          enableButton: 'デプロイモードを有効にする',
+          disableInstructions:
+            'この機能を無効にするには、ログアウトする必要があります。 今すぐ12語すべてを書き留めることを忘れないでください。',
+          addressLabel: '許可されたアカウントアドレス...',
+        },
       },
       learn: {
         title: '詳細',
         tokenEarnings: '獲得したトークン',
+        heliumtoken: 'Helium Token',
+        coverage: 'ネットワークカバレッジ',
         hotspotPlacement: 'Hotspotの配置',
         support: 'サポート',
         troubleshooting: 'トラブルシューティング',
         joinDiscord: 'Helium Discordに参加',
       },
-      account: {
-        title: 'アカウント',
+      app: {
+        title: 'アプリ',
+        enableHapticFeedback: '触覚フィードバックを有効にする',
+        convertHntToCurrency: 'HNTを通貨に変換する',
         language: '言語',
-        units: '単位',
         signOut: 'サインアウト',
         signOutAlert: {
           title: '警告！',
           body:
-            'これにより、このデバイスからすべてのアカウント情報が削除されます。アカウントとHotspotへのアクセスを復元するには、12個の単語で作成された回復シードフレーズを使用する必要があります。',
+            'アカウントからサインアウトしています。回復用の12個の単語をお持ちですか？お持ちでない場合、以下にアクセスできなくなります。\n\n - Hotspot\n- HNT\n - ウォレット',
         },
       },
     },
@@ -464,39 +577,68 @@ export default {
     enter_current: '現在のPINを入力して続行してください',
   },
   hotspots: {
+    sort_by: 'Hotspotを次でソートする',
     new: {
       title: '新しいHotspotを追加',
       subtitle:
         'Hotspotを追加したばかりである場合は、しっかりと設置してください。ネットワークにHotspotが伝播するまでに少し時間がかかります。',
       setup: 'Hotspotを設定',
-      explorer: 'グローバルHotspotエクスプローラー',
+      explorer: '周辺にあるHotspotを表示する',
     },
     owned: {
       title: 'Hotspot',
-      reward_summary:
-        'Hotspotは過去24時間で{{hntAmount}}HNTをマイニングしました。',
+      title_no_hotspots: 'Hotspot',
+      reward_summary: 'Hotspotは過去24時間で\n{{hntAmount}}を獲得しました。',
       reward_summary_plural:
-        '{{count}}個のHotspotは過去24時間で{{hntAmount}}HNTをマイニングしました。',
+        '{{count}}個のHotspotは過去24時間で\n{{hntAmount}}を獲得しました。',
       your_hotspots: 'Hotspot',
+      filter: {
+        new: '最新のHotspot',
+        near: '最も近いHotspot',
+        earn: '獲得数上位のHotspot',
+        offline: 'オフラインHotspot',
+        followed: 'フォローしたHotspot',
+      },
+    },
+    search: {
+      title: 'Hotspot検索',
+      my_hotspots: 'Hotspot',
+      all_hotspots: 'すべてのHotspot',
+      placeholder: '検索...',
+      recent_searches: '最近の検索',
+      tips: '検索のヒント',
+      tips_body:
+        'Hotspot名（愉快な動物の名前など）または地名（ニューヨーク市など）を入力してみてください。\n\n注：過去10分以内に追加されたHotspotは表示されない場合があります。',
     },
     empty: {
       body: 'まだHotspotを追加もフォローもしていません。',
+      failed:
+        'APIまたはネットワークの停止により、Hotspotのアクセスに問題が発生しています。後でもう一度実行してください。',
     },
+    list: {
+      no_offline: 'オフラインHotspotはありません',
+      online: 'オンラインHotspot',
+      no_results: '結果はありません',
+    },
+    ticker:
+      '{{formattedHotspotCount}}個のHotspot • Oracleの価格：{{oraclePrice}} • ブロック時間：{{formattedBlockTime}}秒 • ',
+    ticker_no_block:
+      '{{formattedHotspotCount}}個のHotspot • Oracleの価格：{{oraclePrice}} • ',
   },
   permissions: {
     location: {
       title: '位置情報のアクセス許可',
       message:
-        'Bluetooth LEを検出するため、Heliumウォレットはあなたの位置情報にアクセスする必要があります。',
+        'Bluetoothを検出して位置情報のアサートを有効にするために、Heliumはあなたの位置情報にアクセスする必要があります。この情報が販売または共有されることは決してありません。',
     },
   },
   time: {
     morning: '午前',
     evening: '夜間',
     afternoon: '午後',
-    day_header: '適切な\n{{timeOfDay}}。',
   },
   notifications: {
+    tapToReadMore: 'タップして詳細を読む',
     share: '共有',
     list: { title: 'Notifications' },
     none: {
@@ -513,10 +655,12 @@ export default {
     received: '受信済みHNT',
     added: 'Hotspotがブロックチェーンに追加されました',
     location: '位置情報を確認',
+    location_v2: 'Hotspotを更新',
     transfer: 'Hotspotのデータ転送',
     transferSell: 'Hotspotでデータを転送（販売）',
     transferBuy: 'Hotspotでデータを転送（購入）',
     view: '表示',
+    view_transactions: 'トランザクションを表示',
     filter: {
       all: 'すべてのアクティビティ',
       mining: 'マイニング報酬',
@@ -529,15 +673,32 @@ export default {
   hotspot_settings: {
     title: 'Hotspot設定',
     pairing: {
-      title: 'Hotspotのペアリングが要求されました',
-      subtitle:
-        'Helium Hotspotのボタンを押すか、RAK Hotspot Minerの電源を入れ直してください。',
-      scan: 'Hotspotをスキャン',
+      title: 'Wi-Fiまたは実行診断を更新',
+      subtitle: '続行する前にペアリングする必要があります。',
+      scan: 'ペア',
     },
     transfer: {
       title: 'Hotspotでデータを転送',
-      subtitle: 'Hotspotのデータを別のHeliumウォレットアカウントに転送します。',
+      subtitle: '別のHeliumウォレットに送信します。',
       begin: 'Hotspotでデータの転送を開始',
+    },
+    update: {
+      title: 'Hotspotを更新',
+      subtitle: 'Hotspotの位置情報またはアンテナの詳細。',
+    },
+    discovery: {
+      title: '検出モード',
+      subtitle: '理想的なHotspotの配置を特定します。',
+      no_location_error: {
+        title: '検出モードを開始できません',
+        message:
+          '検出モードを開始する前に、Hotspotの位置情報を設定してください。',
+      },
+      unasserted_hotspot_warning: {
+        title: 'Hotspotの位置情報がありません',
+        message:
+          '応答するHotspotを視覚化するため、携帯電話の位置情報がHotspotのプレースホルダーとして使用されます。',
+      },
     },
     diagnostics: {
       title: '診断レポート',
@@ -561,7 +722,7 @@ export default {
       last_challenged_help:
         '隣接するHotspotがあなたのHotspotの位置情報を確認できません。ほとんどの場合、無線信号が到達できない領域にアンテナが配置されていることが原因です（建物がブロックしている、アンテナが下を向いている、アンテナが屋内にあるなど）。',
       firmware: 'Hotspotファームウェア',
-      hotspot_type: 'Hotspotの種類',
+      hotspot_type: 'Hotspotメーカー',
       app_version: 'アプリバージョン',
       wifi_mac: 'Wi-Fi MAC',
       eth_mac: 'イーサネットMAC',
@@ -573,6 +734,8 @@ export default {
       email_client_missing:
         '互換性のあるインストール済みのメールクライアントが見つかりませんでした',
       other_info: 'その他の情報',
+      unavailable_warning:
+        '*Hotspotが完全に起動するまで、診断を利用できない場合があります。データが欠落している場合は、前に戻って、診断レポートをもう一度生成してください。',
     },
     wifi: {
       title: 'Wi-Fiネットワーク',
@@ -606,23 +769,56 @@ export default {
       assert_pending: 'アサートを保留しています...',
       failTitle: 'Hotspotの再アサートに失敗しました',
       failSubtitle: '後でもう一度実行してください',
+      current_location: '現在の位置情報',
+      new_location: '新しい位置情報',
+      antenna_details: 'アンテナ/高さの詳細',
+      update_antenna: 'アンテナを更新',
+      submit:
+        '申請を行い、現在保留になっているHotspotのトランザクションを更新します。',
+      already_pending:
+        'トランザクションが保留になっている間、Hotspotを更新することはできません。後でもう一度実行してください。',
     },
   },
   hotspot_details: {
+    checklist: 'チェックリスト',
     title: 'Hotspotの詳細',
     owner: '所有者：{{address}}',
+    owner_you: 'あなたが所有しています',
     pass_rate: '合格率',
     reward_title: 'HNT報酬',
-    witness_title: 'ウィットネス',
+    witness_title: '平均的なウィットネス',
     challenge_title: 'Challenges',
+    challenge_sub_title: '（ウィットネス、Challenger、またはChallengee）',
     picker_title: '過去',
-    picker_options: ['24時間', '7日間', '14日間', '30日間'],
+    overview: '概要',
+    no_location: '位置情報がありません',
+    picker_options: ['過去24時間', '過去14日間', '過去30日間'],
+    picker_prompt: '範囲を選択',
     status_online: 'オンライン',
     status_offline: '注意が必要',
+    status_syncing: '同期中',
+    relayed: 'リレー済み',
+    status_prompt_online: {
+      title: 'Hotspotはオンラインになっており、同期されています。',
+      subtitle_active: 'ステータス：{{hotspotBlock}}/{{currentBlock}}ブロック',
+      subtitle_starting: '同期を開始しています...',
+    },
+    status_prompt_offline: {
+      title: 'Hotspotはオフラインになっており、同期されていません。',
+    },
     options: {
       settings: '設定',
       viewExplorer: 'エクスプローラーで表示',
       share: '共有',
+    },
+    no_location_title: 'アサート済みの位置情報はありません',
+    no_location_body: 'Hotspotとペアリングをして開始します。',
+    percent_synced: '{{percent}}%同期されました',
+    starting_sync: '同期を開始しています...',
+    relay_prompt: {
+      title: 'Hotspotはリレーされています',
+      message:
+        'Hotspotの接続はネットワーク上の別のHotspotを介してリレーされており、マイニングに影響する可能性があります。Hotspotがリレーされないようにするには、トラブルシューティングガイドにアクセスしてください。',
     },
   },
   transfer: {
@@ -650,8 +846,11 @@ export default {
     fine_print:
       '購入者がトランザクションを承諾して完了すると、Hotspotでデータが転送されます。',
     notification_button: 'トランザクションを表示',
+    deployModeTransferDisableTitle: 'ホットスポットの転送が無効',
+    deployModeTransferDisabled:
+      '展開モードでは、転送ホットスポットは無効になります。',
     cancel: {
-      button_title: '転送をキャンセル',
+      button_title: '転送を保留しています。タップしてキャンセルします。',
       failed_alert_title: '転送をキャンセルできません',
       failed_alert_body: 'APIから応答がありません。もう一度実行してください。',
       alert_title: 'Hotspotのデータ転送をキャンセル',
@@ -674,6 +873,8 @@ export default {
     owner: '所有者',
     my_account: 'アカウント',
     view_block: 'ブロックを表示',
+    elevation: '高さ',
+    antenna: 'アンテナ',
     rewardTypes: {
       poc_challengees: 'PoC',
       poc_challengers: 'Challenger',
@@ -681,6 +882,150 @@ export default {
       consensus: 'Consensus',
       data_credits: 'パケット転送',
       securities: 'Security Token',
+    },
+    staking_fee_payer: '{{payer}}により支払われました',
+  },
+  checklist: {
+    title: 'チェックリスト',
+    blocks: {
+      not:
+        'Hotspotはマイニングする前に完全に同期する必要があります。新しいHotspotの同期には最大96時間かかる場合があります。',
+      full: 'Hotspotが完全に同期されました。',
+      partial:
+        'HotspotはHeliumブロックチェーンの{{count}}ブロック手前で、約{{percent}}%同期されました。',
+      partial_plural:
+        'HotspotはHeliumブロックチェーンの{{count}}ブロック手前で、約{{percent}}%同期されました。',
+      title: 'ブロックチェーンを同期',
+    },
+    status: {
+      online: 'Hotspotはインターネットに接続されています。',
+      offline:
+        'Hotspotがオンラインではありません。同期してマイニングするにはHotspotをオンラインにする必要があります。',
+      title: 'Hotspotのステータス',
+    },
+    challenger: {
+      success: 'Hotspotが{{count}}ブロック前にChallengeを発行しました。',
+      success_plural: 'Hotspotが{{count}}ブロック前にChallengeを発行しました。',
+      fail:
+        'HotspotはまだChallengeを発行していません。Hotspotは240ブロックごと（約4時間ごと）にChallengeを自動的に作成します。',
+      title: 'Challengeを作成',
+    },
+    challenge_witness: {
+      success: 'Hotspotは最近Challengeをウィットネスしました。',
+      fail: 'Hotspotは近隣にあるHotspotのChallengeをリッスンします。',
+      title: 'Challengeをウィットネスする',
+    },
+    witness: {
+      success:
+        'このHotspotはウィットネスリストに{{count}}個のHotspotがあります。',
+      success_plural:
+        'このHotspotはウィットネスリストに{{count}}個のHotspotがあります。',
+      fail:
+        'ウィットネスはまだありません。新しいHotspot、および位置情報やアンテナの設定が最近更新されたHotspotのウィットネスはゼロになります。',
+      title: 'ウィットネスリスト',
+    },
+    challengee: {
+      success:
+        'Hotspotは{{count}}ブロック前のChallengeに最後に追加されました。',
+      success_plural:
+        'Hotspotは{{count}}ブロック前のChallengeに最後に追加されました。',
+      fail:
+        'オンラインHotspotは240ブロック（4時間）ごとにChallengeが作成され、次にChallengeが作成されるまでに時間がかかる場合があります。',
+      title: 'Challengeを渡す',
+    },
+    data_transfer: {
+      success: 'Hotspotは最近データパケットを転送しました。',
+      fail:
+        'Hotspotは自動的にデバイスデータを転送してHNTを獲得します。このHotspotはまだデータを転送していません。',
+      title: 'データを転送',
+    },
+    auto: '自動',
+    auto_hours: '数時間ごと',
+    complete: '完了',
+    online: 'オンライン',
+  },
+  discovery: {
+    troubleshooting_guide: 'トラブルシューティングガイド',
+    syncing_prompt: {
+      title: '検出モードを開始できません',
+      message:
+        'Hotspotは完全に同期する必要があります。後でもう一度実行してください。',
+    },
+    offline_prompt: {
+      title: '検出モードを開始できません',
+      message:
+        'Hotspotはオフラインになっています。インターネットに接続して、もう一度実行してください。',
+    },
+    relay_prompt: {
+      title: 'Hotspotはリレーされています',
+      message:
+        '検出モードで実行されているHotspotがリレーされている場合、隣接するHotspotからの応答を受信しない可能性があります。Hotspotがリレーされないようにするには、トラブルシューティングガイドにアクセスしてください。',
+    },
+    session_error_prompt: {
+      title: '検出モードを開始できません',
+      message:
+        'Hotspotのリレーが遅れており、応答していない可能性があります。ルーターの設定を確認し、もう一度実行してください。',
+    },
+    begin: {
+      title: '検出モード',
+      subtitle:
+        '無線パケットを{{duration}}送信して、どのHotspotがあなたを検知するかを調べます。',
+      body:
+        '検出モードは1日あたり最大{{requestsPerDay}}セッションで、現時点では無料で使用できます。',
+      previous_sessions: '前回のセッション',
+      last_30_days: '(過去30日間)',
+      start_session: '新しいセッションを開始する',
+      no_sessions:
+        '本日分のセッションはすべてなくなりました。\n明日もう一度やり直してください。',
+      responses: '{{count}}件の応答',
+      responses_plural: '{{count}}件の応答',
+      initiation_error: 'セッションを開始できません',
+      error: {
+        title: 'エラー',
+        subtitle:
+          '検出モードの読み込み中に問題が発生しました。後でもう一度実行してください',
+      },
+      location_opts: {
+        hotspot: '一時的な位置情報を使用*',
+        asserted: 'アサート済みの位置情報を使用',
+        info:
+          '*位置情報を設定する前にHotspotのカバレッジをテストしたい場合に便利です',
+      },
+    },
+    results: {
+      title: '検出モードの結果',
+      share: '結果を共有',
+      responded: 'Hotspotが応答しました',
+      elapsed_time: '経過時間',
+      result_time: '結果の時間',
+      searching: '検索中',
+      distance: '{{distance}} {{unit}}離れています',
+      added_to_followed: 'フォローしたHotspotに追加しました',
+    },
+    share: {
+      subject: '検出結果',
+      hotspot_name: 'Hotspot名',
+      packets_heard: '検知されたパケット',
+    },
+  },
+  antennas: {
+    onboarding: {
+      title: 'アンテナのセットアップ',
+      subtitle: 'Hotspotのアンテナと高さの詳細を申請します。',
+      gain: 'TX/RXゲイン',
+      dbi: 'dBi',
+      elevation: '高さ（メートル）',
+      select: 'アンテナを選択',
+    },
+    elevation_info: {
+      title: 'Hotspotの高さ',
+      desc:
+        'アンテナを地面からどのくらいの高さに配置するかを見積もります。平屋家屋の屋根にアンテナを配置する場合、高さは通常、5メートルになります。',
+    },
+    gain_info: {
+      title: 'アンテナのTX/RXゲイン',
+      desc:
+        '1から15までの小数点以下1桁の値。これはHotspotまたはアンテナの製造元で確認できます。',
     },
   },
 }

@@ -1,24 +1,19 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Linking, Platform } from 'react-native'
 import { Device } from 'react-native-ble-plx'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Box from '../../../components/Box'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import HotspotItem from './HotspotItem'
-import { useBluetoothContext } from '../../../providers/BluetoothProvider'
 import useAlert from '../../../utils/useAlert'
 import CircleLoader from '../../../components/CircleLoader'
-import usePermissionManager from '../../../utils/usePermissionManager'
 import animateTransition from '../../../utils/animateTransition'
 import sleep from '../../../utils/sleep'
 
 type Props = { onConnected: (hotspot: Device) => void }
 const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
   const [scanComplete, setScanComplete] = useState(false)
-  const [bleEnabled, setBleEnabled] = useState(false)
-  const [locationEnabled, setLocationEnabled] = useState(false)
   const [selectedHotspot, setSelectedHotspot] = useState<Device | null>(null)
   const [connected, setConnected] = useState(false)
   const {
@@ -26,94 +21,59 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
     availableHotspots,
     connectAndConfigHotspot,
   } = useConnectedHotspotContext()
-  const { enable, getState } = useBluetoothContext()
-  const { showOKCancelAlert, showOKAlert } = useAlert()
-  const { requestLocationPermission } = usePermissionManager()
+  const { showOKAlert } = useAlert()
   const hotspotCount = Object.keys(availableHotspots).length
   const keys = Object.keys(availableHotspots)
   const { t } = useTranslation()
 
-  // const { connectedHotspot } = useSelector((state: RootState) => state)
-
-  const checkLocation = async () => {
-    if (Platform.OS === 'android') {
-      const hasPermission = await requestLocationPermission()
-      setLocationEnabled(hasPermission)
-    } else {
-      setLocationEnabled(true)
-    }
-  }
-
-  useEffect(() => {
-    if (locationEnabled) {
-      checkBluetooth()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locationEnabled])
-
-  const checkBluetooth = async () => {
-    const state = await getState()
-
-    if (state === 'PoweredOn') {
-      setBleEnabled(true)
-      return
-    }
-
-    if (Platform.OS === 'ios') {
-      if (state === 'PoweredOff') {
-        const decision = await showOKCancelAlert({
-          titleKey: 'hotspot_setup.pair.alert_ble_off.title',
-          messageKey: 'hotspot_setup.pair.alert_ble_off.body',
-          okKey: 'generic.go_to_settings',
-        })
-        if (decision) Linking.openURL('App-Prefs:Bluetooth')
-      } else {
-        const decision = await showOKCancelAlert({
-          titleKey: 'hotspot_setup.pair.alert_ble_off.title',
-          messageKey: 'hotspot_setup.pair.alert_ble_off.body',
-          okKey: 'generic.go_to_settings',
-        })
-        if (decision) Linking.openURL('app-settings:')
-      }
-    }
-    if (Platform.OS === 'android') {
-      await enable()
-    }
-    setBleEnabled(true)
-  }
-
-  useEffect(() => {
-    checkLocation()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  const rescan = useCallback(async () => {
+    animateTransition('HotspotDiagnosticsConnection.Rescan')
+    setScanComplete(false)
   }, [])
+
+  const handleConnectFailure = useCallback(
+    async (messageKey?: string, titleKey = 'something went wrong') => {
+      await showOKAlert({ titleKey, messageKey })
+      setSelectedHotspot(null)
+      rescan()
+    },
+    [rescan, showOKAlert],
+  )
 
   useEffect(() => {
     const scan = async () => {
-      await scanForHotspots(2000)
-      animateTransition()
+      await scanForHotspots(6000)
+      animateTransition('HotspotDiagnosticsConnection.ScanComplete')
       setScanComplete(true)
     }
-    if (!scanComplete && bleEnabled && locationEnabled) {
+    if (!scanComplete) {
       scan()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scanComplete, bleEnabled, locationEnabled])
+  }, [scanComplete])
 
   const handleConnect = (hotspot: Device) => async () => {
-    setSelectedHotspot(hotspot)
-    const connectHotspotSuccess = await connectAndConfigHotspot(hotspot)
-    setConnected(!!connectHotspotSuccess)
-    if (connectHotspotSuccess) {
-      await sleep(500)
-      onConnected(hotspot)
-    } else {
-      showOKAlert({ titleKey: 'something went wrong' })
-      setSelectedHotspot(null)
+    try {
+      setSelectedHotspot(hotspot)
+      const connectStatus = await connectAndConfigHotspot(hotspot)
+      const connectHotspotSuccess = connectStatus === 'success'
+      setConnected(connectHotspotSuccess)
+      if (connectHotspotSuccess) {
+        await sleep(500)
+        onConnected(hotspot)
+      } else {
+        handleConnectFailure(
+          'hotspot_setup.onboarding_error.body_connect_failed',
+          'hotspot_setup.onboarding_error.title_connect_failed',
+        )
+      }
+    } catch (e) {
+      handleConnectFailure(e.toString())
     }
   }
 
   return (
-    <Box padding="l" minHeight={413}>
+    <Box padding="l" minHeight={483}>
       <Text variant="h4" color="black">
         {t('hotspot_settings.pairing.title')}
       </Text>
@@ -144,13 +104,7 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
       )}
       {!scanComplete && <CircleLoader marginTop="l" />}
       {scanComplete && (
-        <TouchableOpacityBox
-          marginLeft="n_m"
-          onPress={() => {
-            animateTransition()
-            setScanComplete(false)
-          }}
-        >
+        <TouchableOpacityBox marginLeft="n_m" onPress={rescan}>
           <Text variant="body1Medium" padding="m" color="purpleMain">
             {t('hotspot_settings.diagnostics.scan_again')}
           </Text>

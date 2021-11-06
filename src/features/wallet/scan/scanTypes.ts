@@ -1,6 +1,7 @@
-export interface QrScanResult {
-  type: 'payment' | 'dc_burn'
-  address: string
-  amount?: string
-  memo?: string
+import { AppLinkCategoryType } from '../../../providers/appLinkTypes'
+
+export type ScanStackParamList = {
+  Scan: {
+    type?: AppLinkCategoryType
+  }
 }

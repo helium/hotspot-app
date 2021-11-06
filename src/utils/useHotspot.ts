@@ -1,42 +1,53 @@
-import { useState, useRef } from 'react'
-import { Device } from 'react-native-ble-plx'
-import validator from 'validator'
+import { useRef, useState } from 'react'
+import { BleError, Device, Subscription } from 'react-native-ble-plx'
 import compareVersions from 'compare-versions'
-import { Balance, CurrencyType } from '@helium/currency'
 import { useSelector } from 'react-redux'
-import {
-  AddGatewayV1,
-  AssertLocationV1,
-  Transaction,
-} from '@helium/transactions'
+import { AddGatewayV1 } from '@helium/transactions'
+import { decode } from 'base-64'
+import { Hotspot } from '@helium/http'
 import { useBluetoothContext } from '../providers/BluetoothProvider'
 import {
   FirmwareCharacteristic,
   HotspotCharacteristic,
   Service,
 } from './bluetooth/bluetoothTypes'
-import { getStaking, postStaking } from './stakingClient'
+import { getStaking, getStakingSignedTransaction } from './stakingClient'
 import {
-  parseChar,
+  encodeAddGateway,
   encodeWifiConnect,
   encodeWifiRemove,
-  encodeAddGateway,
-  encodeAssertLoc,
+  parseChar,
 } from './bluetooth/bluetoothDataParser'
-import { getCurrentOraclePrice, getHotspotDetails } from './appDataClient'
+import { getAddress } from './appDataClient'
 import { getSecureItem } from './secureAccount'
-import { makeAddGatewayTxn, makeAssertLocTxn } from './transactions'
-import { calculateAddGatewayFee, calculateAssertLocFee } from './fees'
+import { makeAddGatewayTxn } from './transactions'
+import { calculateAddGatewayFee } from './fees'
 import connectedHotspotSlice, {
-  fetchHotspotDetails,
-  HotspotName,
+  AllHotspotDetails,
+  fetchConnectedHotspotDetails,
   HotspotStatus,
-  HotspotType,
 } from '../store/connectedHotspot/connectedHotspotSlice'
 import { useAppDispatch } from '../store/store'
 import { RootState } from '../store/rootReducer'
 import * as Logger from './logger'
 import useSubmitTxn from '../hooks/useSubmitTxn'
+
+export type HotspotConnectStatus =
+  | 'success'
+  | 'no_device_found'
+  | 'no_services_found'
+  | 'invalid_onboarding_address'
+  | 'no_onboarding_key'
+  | 'service_unavailable'
+  | 'details_fetch_failure'
+
+export enum HotspotErrorCode {
+  WAIT = 'wait',
+  UNKNOWN = 'unknown',
+  BAD_ARGS = 'badargs',
+  ERROR = 'error',
+  GATEWAY_NOT_FOUND = 'gw_not_found', // This may no longer be relevant, but it's not hurting anything check for it
+}
 
 const useHotspot = () => {
   const submitTxn = useSubmitTxn()
@@ -56,13 +67,13 @@ const useHotspot = () => {
     findCharacteristic,
   } = useBluetoothContext()
   const dispatch = useAppDispatch()
-  const {
-    account: { account },
-    connectedHotspot: connectedHotspotDetails,
-  } = useSelector((state: RootState) => state)
+  const connectedHotspotDetails = useSelector(
+    (state: RootState) => state.connectedHotspot,
+  )
 
   // TODO: Move staking calls to redux
 
+<<<<<<< HEAD
   // helium hotspot uses b58 onboarding address and RAK is uuid v4
   const getHotspotType = (onboardingAddress: string): HotspotType =>
     validator.isUUID(addUuidDashes(onboardingAddress)) ? 'RAK' : 'Helium'
@@ -89,6 +100,8 @@ const useHotspot = () => {
     }
   }
 
+=======
+>>>>>>> 1f8e1c1a23096999ff6acb08aaea2f74459de002
   const scanForHotspots = async (ms: number) => {
     setAvailableHotspots({})
     await scan(ms, (hotspotDevice) =>
@@ -136,19 +149,32 @@ const useHotspot = () => {
     return parsedStr
   }
 
-  const connectAndConfigHotspot = async (hotspotDevice: Device) => {
+  const handleConnectStatus = (status: HotspotConnectStatus) => {
+    if (status !== 'success') {
+      Logger.error(new Error(`Hotspot connect failed: ${status}`))
+    }
+    return status
+  }
+
+  const connectAndConfigHotspot = async (
+    hotspotDevice: Device,
+  ): Promise<HotspotConnectStatus> => {
     let connectedDevice = hotspotDevice
     const connected = await hotspotDevice.isConnected()
     if (!connected) {
       const device = await connect(hotspotDevice)
-      if (!device) return
+      if (!device) {
+        return handleConnectStatus('no_device_found')
+      }
       connectedDevice = device
     }
 
     const deviceWithServices = await discoverAllServicesAndCharacteristics(
       connectedDevice,
     )
-    if (!deviceWithServices) return
+    if (!deviceWithServices) {
+      return handleConnectStatus('no_services_found')
+    }
 
     connectedHotspot.current = deviceWithServices
 
@@ -161,28 +187,47 @@ const useHotspot = () => {
       HotspotCharacteristic.ONBOARDING_KEY_UUID,
     )
 
-    const type = getHotspotType(onboardingAddress || '')
-    const name = getHotspotName(type)
     const mac = hotspotDevice.localName?.slice(15)
 
     if (!onboardingAddress || onboardingAddress.length < 20) {
       Logger.error(
         new Error(`Invalid onboarding address: ${onboardingAddress}`),
       )
+      return handleConnectStatus('invalid_onboarding_address')
     }
 
     const details = {
       address,
       mac,
-      type,
-      name,
       wifi,
       ethernetOnline,
       onboardingAddress,
     }
 
-    const response = await dispatch(fetchHotspotDetails(details))
-    return !!response.payload
+    Logger.breadcrumb('connectAndConfigHotspot - received details', {
+      data: details,
+    })
+    const response = await dispatch(fetchConnectedHotspotDetails(details))
+    let payload: AllHotspotDetails | null = null
+    if (response.payload) {
+      payload = response.payload as AllHotspotDetails
+    }
+
+    await updateHotspotStatus(payload?.hotspot)
+
+    if (!payload?.onboardingRecord?.onboardingKey) {
+      let err: HotspotConnectStatus = 'service_unavailable'
+      if (payload?.onboardingRecord?.code === 404) {
+        err = 'no_onboarding_key'
+      }
+      Logger.error(
+        new Error(
+          `Hotspot connect failed: ${err} - error code: ${payload?.onboardingRecord?.code}`,
+        ),
+      )
+      return handleConnectStatus(err)
+    }
+    return handleConnectStatus(payload ? 'success' : 'details_fetch_failure')
   }
 
   const scanForWifiNetworks = async (configured = false) => {
@@ -213,56 +258,74 @@ const useHotspot = () => {
       encoded,
     )
 
+    dispatch(connectedHotspotSlice.actions.setConnectedHotspotWifi(undefined))
+
     if (!characteristic?.value) return
     const response = parseChar(characteristic.value, uuid)
-    if (response) {
-      dispatch(connectedHotspotSlice.actions.setConnectedHotspotWifi(undefined))
-    }
     return response
   }
 
+  type CallbackType = (
+    success: 'invalid' | 'error' | 'connected',
+    error?: string | Error,
+  ) => void
   const setWifiCredentials = async (
     ssid: string,
     password: string,
-    callback?: (success: 'invalid' | 'error' | 'connected') => void,
+    callback?: CallbackType,
   ) => {
-    if (!connectedHotspot.current) return
-    const uuid = HotspotCharacteristic.WIFI_CONNECT_UUID
-    const encoded = encodeWifiConnect(ssid, password)
+    if (!connectedHotspot.current) throw new Error('No device found')
 
-    const characteristic = await findCharacteristic(
-      uuid,
-      connectedHotspot.current,
-    )
+    try {
+      let cb: CallbackType | null | undefined = callback
+      const doCallback = (
+        type: 'invalid' | 'error' | 'connected',
+        error?: BleError,
+      ) => {
+        if (error && subscription) {
+          // only log the error if we're still subscribed
+          Logger.error(error)
+        }
 
-    if (!characteristic) return
-
-    await writeCharacteristic(characteristic, encoded)
-
-    const subscription = characteristic?.monitor((error, c) => {
-      if (error) {
-        Logger.error(error)
+        cb?.(type, error)
+        cb = null // prevent multiple callbacks. Android throws an error when the subscription is removed.
         subscription?.remove()
-        callback?.('error')
+        subscription = null
       }
 
-      if (!c?.value) return
+      const uuid = HotspotCharacteristic.WIFI_CONNECT_UUID
+      const encoded = encodeWifiConnect(ssid, password)
 
-      const response = parseChar(c.value, uuid)
-      if (response === 'connecting') return
+      const wifiChar = await findCharacteristic(uuid, connectedHotspot.current)
 
-      if (response === 'connected') {
-        dispatch(connectedHotspotSlice.actions.setConnectedHotspotWifi(ssid))
-      }
+      if (!wifiChar) return
 
-      subscription?.remove()
-      if (response === 'connected' || response === 'invalid') {
-        callback?.(response)
-        return
-      }
+      await writeCharacteristic(wifiChar, encoded)
 
-      callback?.('error')
-    })
+      let subscription: Subscription | null = wifiChar?.monitor((error, c) => {
+        if (error) {
+          doCallback('error', error)
+        }
+
+        if (!c?.value) return
+
+        const response = parseChar(c.value, uuid)
+        if (response === 'connecting') return
+
+        if (response === 'connected') {
+          dispatch(connectedHotspotSlice.actions.setConnectedHotspotWifi(ssid))
+        }
+
+        if (response === 'connected' || response === 'invalid') {
+          doCallback(response)
+          return
+        }
+
+        doCallback('error')
+      })
+    } catch (e) {
+      callback?.('error', e)
+    }
   }
 
   const checkFirmwareCurrent = async (): Promise<boolean> => {
@@ -290,42 +353,18 @@ const useHotspot = () => {
     return compareVersions.compare(deviceFirmwareVersion, minVersion, '>=')
   }
 
-  const updateHotspotStatus = async () => {
-    const { address } = connectedHotspotDetails
-    if (!address) return
-
+  const updateHotspotStatus = async (hotspot?: Hotspot) => {
+    const address = await getAddress()
     let status: HotspotStatus = 'new'
-    try {
-      const hotspot = await getHotspotDetails(address)
-      if (hotspot.owner === address) {
-        status = 'owned'
-      } else if (hotspot && hotspot.owner !== address) {
-        status = 'global'
-      }
-    } catch (error) {
-      Logger.error(error)
-      const notFound = error?.response?.status === 404
-      if (!notFound) {
-        status = 'error'
-      }
+    if (hotspot && hotspot.owner === address) {
+      status = 'owned'
+    } else if (hotspot && hotspot.owner !== address) {
+      status = 'global'
     }
     dispatch(connectedHotspotSlice.actions.setConnectedHotspotStatus(status))
   }
 
-  const getStakingSignedTransaction = async (
-    onboardingAddress: string,
-    txn: string,
-  ) => {
-    const { transaction } = await postStaking(
-      `transactions/pay/${onboardingAddress}`,
-      {
-        transaction: txn,
-      },
-    )
-    return transaction
-  }
-
-  const addGatewayTxn = async () => {
+  const addGatewayTxn = async (): Promise<string | boolean> => {
     if (!connectedHotspot.current || !connectedHotspotDetails.onboardingAddress)
       return false
     const uuid = HotspotCharacteristic.ADD_GATEWAY_UUID
@@ -346,9 +385,12 @@ const useHotspot = () => {
     const { value } = await readCharacteristic(characteristic)
     if (!value) return false
 
-    if (value.length < 20) {
-      Logger.error(new Error(`Got error code ${value} from add_gw`))
-      return value
+    const parsedValue = decode(value)
+    if (parsedValue in HotspotErrorCode || parsedValue.length < 20) {
+      Logger.error(
+        `Got error code ${parsedValue} from add_gateway. Raw data = ${value}`,
+      )
+      return parsedValue
     }
 
     const txn = await makeAddGatewayTxn(value)
@@ -367,123 +409,8 @@ const useHotspot = () => {
       return !!pendingTransaction
     } catch (error) {
       Logger.error(error)
-      return false
+      throw error
     }
-  }
-
-  const assertLocationTxn = async (lat: number, lng: number) => {
-    if (!connectedHotspot.current || !connectedHotspotDetails.onboardingAddress)
-      return false
-
-    const isFree = hasFreeLocationAssert()
-
-    const uuid = HotspotCharacteristic.ASSERT_LOC_UUID
-    const characteristic = await findCharacteristic(
-      uuid,
-      connectedHotspot.current,
-    )
-    if (!characteristic) return false
-
-    const owner = await getSecureItem('address')
-    const payer = isFree
-      ? connectedHotspotDetails.onboardingRecord?.maker.address
-      : ''
-    if (!payer || !owner) return false
-
-    const nonce = connectedHotspotDetails?.details?.nonce || 0
-    const { fee } = calculateAssertLocFee(owner, payer, nonce)
-    const amount = Transaction.stakingFeeTxnAssertLocationV1
-
-    const encodedPayload = encodeAssertLoc(
-      lat,
-      lng,
-      nonce,
-      owner,
-      amount,
-      fee,
-      payer,
-    )
-
-    await writeCharacteristic(characteristic, encodedPayload)
-    const { value } = await readCharacteristic(characteristic)
-    if (!value) return false
-
-    const txn = await makeAssertLocTxn(value)
-
-    const stakingServerSignedTxnStr = await getStakingSignedTransaction(
-      connectedHotspotDetails.onboardingAddress,
-      txn.toString(),
-    )
-
-    const stakingServerSignedTxn = AssertLocationV1.fromString(
-      stakingServerSignedTxnStr,
-    )
-
-    try {
-      const pendingTransaction = await submitTxn(stakingServerSignedTxn)
-      return !!pendingTransaction
-    } catch (error) {
-      Logger.error(error)
-      return false
-    }
-  }
-
-  const loadLocationFeeData = async () => {
-    const isFree = hasFreeLocationAssert()
-
-    const owner = await getSecureItem('address')
-    const payer = isFree
-      ? connectedHotspotDetails.onboardingRecord?.maker.address
-      : ''
-
-    if (!owner || payer === undefined) {
-      throw new Error('Missing payer or owner')
-    }
-
-    const nonce = connectedHotspotDetails?.details?.nonce || 0
-    const { stakingFee, fee } = calculateAssertLocFee(owner, payer, nonce)
-
-    const totalStakingAmountDC = new Balance(
-      stakingFee + fee,
-      CurrencyType.dataCredit,
-    )
-    const { price: oraclePrice } = await getCurrentOraclePrice()
-    const totalStakingAmount = totalStakingAmountDC.toNetworkTokens(oraclePrice)
-    const totalStakingAmountUsd = totalStakingAmountDC.toUsd(oraclePrice)
-
-    const balance = account?.balance?.integerBalance || 0
-    const hasSufficientBalance = balance >= totalStakingAmount.integerBalance
-
-    return {
-      isFree,
-      hasSufficientBalance,
-      totalStakingAmount,
-      totalStakingAmountDC,
-      totalStakingAmountUsd,
-      remainingFreeAsserts: remainingFreeAsserts(),
-    }
-  }
-
-  const remainingFreeAsserts = () => {
-    if (!connectedHotspotDetails.onboardingRecord) {
-      return 0
-    }
-
-    const locationNonceLimit =
-      connectedHotspotDetails.onboardingRecord?.maker.locationNonceLimit || 0
-
-    return locationNonceLimit - (connectedHotspotDetails?.details?.nonce || 0)
-  }
-
-  const hasFreeLocationAssert = (): boolean => {
-    if (!connectedHotspotDetails.onboardingRecord) {
-      return false
-    }
-
-    const locationNonceLimit =
-      connectedHotspotDetails.onboardingRecord?.maker.locationNonceLimit || 0
-
-    return (connectedHotspotDetails?.details?.nonce || 0) < locationNonceLimit
   }
 
   const getDiagnosticInfo = async () => {
@@ -507,10 +434,7 @@ const useHotspot = () => {
     removeConfiguredWifi,
     setWifiCredentials,
     checkFirmwareCurrent,
-    updateHotspotStatus,
     addGatewayTxn,
-    assertLocationTxn,
-    loadLocationFeeData,
     getDiagnosticInfo,
   }
 }

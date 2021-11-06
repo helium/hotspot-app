@@ -1,4 +1,4 @@
-import React, { useEffect, memo } from 'react'
+import React, { memo, useEffect } from 'react'
 import { Platform } from 'react-native'
 import {
   createStackNavigator,
@@ -11,14 +11,20 @@ import HotspotSetup from '../../features/hotspots/setup/HotspotSetupNavigator'
 import MainTabs from './MainTabNavigator'
 import SendNavigator from '../../features/wallet/send/SendNavigator'
 import ScanNavigator from '../../features/wallet/scan/ScanNavigator'
-import TransferNavigator from '../../features/hotspots/transfers/TransferNavigator'
 
 const HomeStack = createStackNavigator()
 
 const HomeStackScreen = () => {
   useEffect(() => {
+    if (Platform.OS === 'android') return
+
     OneSignal.promptForPushNotificationsWithUserResponse(() => {})
   }, [])
+
+  const isIOS = Platform.OS === 'ios'
+  const modalTransition = isIOS
+    ? TransitionPresets.ModalPresentationIOS
+    : TransitionPresets.FadeFromBottomAndroid
 
   return (
     <HomeStack.Navigator
@@ -42,30 +48,21 @@ const HomeStackScreen = () => {
         options={{ headerShown: false, gestureEnabled: false }}
       />
       <HomeStack.Screen
-        name="Scan"
+        name="ScanStack"
         component={ScanNavigator}
         options={{
           headerShown: false,
-          cardOverlayEnabled: true,
-          ...TransitionPresets.ModalPresentationIOS,
+          cardOverlayEnabled: isIOS,
+          ...modalTransition,
         }}
       />
       <HomeStack.Screen
-        name="Send"
+        name="SendStack"
         component={SendNavigator}
         options={{
           headerShown: false,
-          cardOverlayEnabled: true,
-          ...TransitionPresets.ModalPresentationIOS,
-        }}
-      />
-      <HomeStack.Screen
-        name="Transfer"
-        component={TransferNavigator}
-        options={{
-          headerShown: false,
-          cardOverlayEnabled: true,
-          ...TransitionPresets.ModalPresentationIOS,
+          cardOverlayEnabled: isIOS,
+          ...modalTransition,
         }}
       />
       <HomeStack.Screen

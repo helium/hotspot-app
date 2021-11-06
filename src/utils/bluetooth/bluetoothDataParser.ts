@@ -4,7 +4,6 @@ import {
   wifi_remove_v1 as WifiRemoveV1,
   wifi_connect_v1 as WifiConnectV1,
   add_gateway_v1 as AddGatewayV1,
-  assert_loc_v1 as AssertLocV1,
   diagnostics_v1 as DiagnosticsV1,
 } from '@helium/proto-ble'
 import { util } from 'protobufjs'
@@ -19,6 +18,7 @@ export type DiagnosticInfo = {
   ip: string
   nat_type: string
   wifi: string
+  disk: string
 }
 
 const parseWifi = (value: string): string[] => {
@@ -104,27 +104,5 @@ export const encodeAddGateway = (
 ) => {
   const addGateway = AddGatewayV1.create({ owner, amount, fee, payer })
   const encoded = AddGatewayV1.encode(addGateway).finish()
-  return encodedToString(encoded)
-}
-
-export const encodeAssertLoc = (
-  lat: number,
-  lon: number,
-  nonce: number,
-  owner: string,
-  amount: number,
-  fee: number,
-  payer: string,
-) => {
-  const assertLoc = AssertLocV1.create({
-    lat,
-    lon,
-    owner,
-    nonce,
-    fee,
-    amount,
-    payer,
-  })
-  const encoded = AssertLocV1.encode(assertLoc).finish()
   return encodedToString(encoded)
 }

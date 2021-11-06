@@ -1,26 +1,29 @@
 import React, { memo, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { AnyTransaction, PendingTransaction, PaymentV1 } from '@helium/http'
-import WalletViewContainer from './WalletViewContainer'
-import Box from '../../../components/Box'
+import useAppState from 'react-native-appstate-hook'
 import ActivityDetails from './ActivityDetails/ActivityDetails'
 import useVisible from '../../../utils/useVisible'
 import usePrevious from '../../../utils/usePrevious'
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
-import {
-  ActivityViewState,
-  fetchTxns,
+import activitySlice, {
+  fetchMoreTxns,
+  fetchTxnsHead,
 } from '../../../store/activity/activitySlice'
 import animateTransition from '../../../utils/animateTransition'
+import { ActivityViewState } from './walletTypes'
+import SafeAreaBox from '../../../components/SafeAreaBox'
+import WalletView from './WalletView'
 
 const WalletScreen = () => {
   const dispatch = useAppDispatch()
-  const [transactionData, setTransactionData] = useState<AnyTransaction[]>([])
-  const [pendingTxns, setPendingTxns] = useState<PendingTransaction[]>([])
-  const [viewState, setViewState] = useState<ActivityViewState>('init')
+  const [showSkeleton, setShowSkeleton] = useState(true)
+  const [activityViewState, setActivityViewState] = useState<ActivityViewState>(
+    'undetermined',
+  )
+
   const {
-    activity: { txns, filter, detailTxn, requestMore, activityViewState },
+    activity: { txns, filter, detailTxn, requestMore },
     heliumData: { blockHeight },
   } = useSelector((state: RootState) => state)
 
@@ -29,63 +32,64 @@ const WalletScreen = () => {
   const prevVisible = usePrevious(visible)
   const prevBlockHeight = usePrevious(blockHeight)
 
-  const updateTxnData = (data: AnyTransaction[]) => {
-    animateTransition()
-    setTransactionData(data)
-  }
+  const { appState } = useAppState()
+  const prevAppState = usePrevious(appState)
 
   useEffect(() => {
-    if (viewState !== activityViewState) {
-      setViewState(activityViewState)
+    // clear the list data when coming into foreground
+    if (prevAppState && appState === 'active' && prevAppState !== 'active') {
+      dispatch(activitySlice.actions.reset())
     }
-  }, [activityViewState, viewState])
+  }, [appState, dispatch, prevAppState])
 
   useEffect(() => {
-    if (filter === 'pending') {
-      setTransactionData([])
-      return
-    }
-    if (txns[filter].status === 'pending' || txns[filter].status === 'idle') {
-      return
-    }
-    const { data } = txns[filter]
-    if (data.length !== transactionData.length) {
-      updateTxnData(data)
-    } else if (data.length) {
-      data.some((txn, index) => {
-        const prevTxn = txn as PaymentV1
-        const nextTxn = transactionData[index] as PaymentV1
+    // once you have activity, you always have activity
+    if (activityViewState === 'activity') return
 
-        const hashEqual = nextTxn.hash === prevTxn.hash
-        if (!hashEqual) {
-          // data has changed update
-          updateTxnData(data)
-        }
-        return hashEqual
-      })
+    const { hasInitialLoad: allLoaded, data: allData } = txns.all
+    const { hasInitialLoad: pendingLoaded, data: pendingData } = txns.pending
+
+    if (!allLoaded || !pendingLoaded) return
+
+    if (pendingData.length || allData.length) {
+      setActivityViewState('activity')
+    } else if (
+      !pendingData.length &&
+      !allData.length &&
+      activityViewState !== 'no_activity' &&
+      txns[filter].status === 'fulfilled'
+    ) {
+      animateTransition('WalletScreen.NoActivity')
+      setActivityViewState('no_activity')
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [txns[filter]])
+  }, [filter, activityViewState, txns, visible])
 
   useEffect(() => {
-    if (!txns.pending.data.length && !pendingTxns.length) return
+    const nextShowSkeleton =
+      !txns[filter].hasInitialLoad || !txns.pending.hasInitialLoad
 
-    setPendingTxns(txns.pending.data)
-  }, [pendingTxns, txns.pending.data])
+    if (nextShowSkeleton !== showSkeleton) {
+      if (visible && activityViewState !== 'no_activity') {
+        animateTransition('WalletScreen.ShowSkeleton', {
+          enabledOnAndroid: false,
+        })
+      }
+      setShowSkeleton(nextShowSkeleton)
+    }
+  }, [activityViewState, filter, showSkeleton, txns, visible])
 
   useEffect(() => {
-    // Fetch pending txns on an interval of 5s
+    // Fetch pending txns on an interval of 30s
     if (!visible && interval.current) {
       clearInterval(interval.current)
       interval.current = undefined
     } else if (visible && !interval.current) {
+      dispatch(fetchTxnsHead({ filter: 'pending' }))
       interval.current = setInterval(() => {
-        if (txns.pending.status === 'pending') return
-
-        dispatch(fetchTxns({ filter: 'pending' }))
-      }, 5000)
+        dispatch(fetchTxnsHead({ filter: 'pending' }))
+      }, 30000)
     }
-  }, [dispatch, txns.pending.status, visible])
+  }, [dispatch, visible])
 
   useEffect(() => {
     // if we're resetting wait for it to finish
@@ -94,14 +98,12 @@ const WalletScreen = () => {
 
     // Block height is being request every 30s in App.tsx
     // Reset data if block changes or view becomes visible
-    if (!prevVisible || blockHeight !== prevBlockHeight) {
-      dispatch(fetchTxns({ filter, reset: true }))
-      return
-    }
-
-    // if filter changes & there's no txn data for that filter, request
-    if (txns[filter].data.length === 0 && txns[filter].status === 'idle') {
-      dispatch(fetchTxns({ filter }))
+    if (
+      !prevVisible ||
+      blockHeight !== prevBlockHeight ||
+      txns[filter].status === 'idle'
+    ) {
+      dispatch(fetchTxnsHead({ filter }))
     }
   }, [
     visible,
@@ -115,24 +117,28 @@ const WalletScreen = () => {
 
   useEffect(() => {
     if (!visible) return
-    if (requestMore && txns[filter].status !== 'pending') {
-      dispatch(fetchTxns({ filter }))
+    if (
+      requestMore &&
+      filter !== 'pending' &&
+      txns[filter].status !== 'pending' &&
+      txns[filter].status !== 'more_rejected' &&
+      txns[filter].cursor
+    ) {
+      dispatch(fetchMoreTxns({ filter }))
     }
   }, [dispatch, filter, requestMore, txns, visible])
 
   return (
     <>
-      <Box flex={1} backgroundColor="primaryBackground">
-        <WalletViewContainer
-          txnTypeStatus={txns[filter].status}
-          activityViewState={viewState}
-          txns={transactionData}
-          pendingTxns={pendingTxns}
-          filter={filter}
+      <SafeAreaBox flex={1} backgroundColor="primaryBackground">
+        <WalletView
+          activityViewState={activityViewState}
+          showSkeleton={showSkeleton}
+          txns={filter === 'pending' ? [] : txns[filter].data}
+          pendingTxns={txns.pending.data}
         />
-      </Box>
-
-      <ActivityDetails detailTxn={detailTxn} />
+      </SafeAreaBox>
+      {detailTxn && <ActivityDetails detailTxn={detailTxn} />}
     </>
   )
 }

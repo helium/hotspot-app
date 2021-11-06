@@ -29,7 +29,7 @@ const Word = ({
         alignItems="center"
         onPress={onPress}
       >
-        <Text variant="body1Mono" color="grayMain">
+        <Text variant="body1Mono" color="grayMain" maxFontSizeMultiplier={1.1}>
           {position}
         </Text>
 
@@ -37,6 +37,7 @@ const Word = ({
           variant="body1Mono"
           numberOfLines={1}
           adjustsFontSizeToFit
+          maxFontSizeMultiplier={1.1}
           color="grayLight"
           marginLeft="s"
         >

@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react'
+import React, { memo, useCallback, useEffect, useMemo } from 'react'
 import { Alert } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
@@ -15,18 +15,21 @@ import { MoreNavigationProp } from '../moreTab/moreTypes'
 import { useAppDispatch } from '../../store/store'
 import appSlice from '../../store/user/appSlice'
 import SafeAreaBox from '../../components/SafeAreaBox'
+import { SendNavigationProps } from '../wallet/send/sendTypes'
 
 type Route = RouteProp<RootStackParamList, 'LockScreen'>
 
 const LockScreen = () => {
   const { t } = useTranslation()
   const {
-    params: { lock: shouldLock, requestType },
+    params: { lock: shouldLock, requestType, sendParams },
   } = useRoute<Route>()
   const rootNav = useNavigation<RootNavigationProp>()
   const moreNav = useNavigation<MoreNavigationProp>()
+  const sendNav = useNavigation<SendNavigationProps>()
   const [locked, setLocked] = useStateWithCallbackLazy(shouldLock)
   const dispatch = useAppDispatch()
+  const passedSendParams = useMemo(() => sendParams || {}, [sendParams])
 
   const { result: pin } = useAsync(getSecureItem, ['userPin'])
 
@@ -36,32 +39,60 @@ const LockScreen = () => {
         dispatch(appSlice.actions.lock(false))
         rootNav.goBack()
       })
+    } else if (requestType === 'send') {
+      sendNav.navigate('Send', { pinVerified: 'pass', ...passedSendParams })
     } else {
       moreNav.navigate('MoreScreen', {
         pinVerifiedFor: requestType,
       })
     }
-  }, [moreNav, requestType, rootNav, setLocked, shouldLock, dispatch])
+  }, [
+    shouldLock,
+    requestType,
+    setLocked,
+    dispatch,
+    rootNav,
+    sendNav,
+    passedSendParams,
+    moreNav,
+  ])
 
   const handleSignOut = useCallback(() => {
     Alert.alert(
-      t('more.sections.account.signOutAlert.title'),
-      t('more.sections.account.signOutAlert.body'),
+      t('more.sections.app.signOutAlert.title'),
+      t('more.sections.app.signOutAlert.body'),
       [
         {
-          text: t('generic.cancel'),
-          style: 'cancel',
-        },
-        {
-          text: t('generic.ok'),
+          text: t('more.sections.app.signOut'),
           style: 'destructive',
           onPress: () => {
             dispatch(appSlice.actions.signOut())
           },
         },
+        {
+          text: t('generic.cancel'),
+          style: 'cancel',
+        },
       ],
     )
   }, [t, dispatch])
+
+  const handleCancel = useCallback(() => {
+    if (shouldLock) {
+      handleSignOut()
+    } else if (requestType === 'send') {
+      sendNav.navigate('Send', { pinVerified: 'fail', ...passedSendParams })
+    } else {
+      rootNav.goBack()
+    }
+  }, [
+    handleSignOut,
+    requestType,
+    rootNav,
+    sendNav,
+    passedSendParams,
+    shouldLock,
+  ])
 
   useEffect(() => {
     const unsubscribe = rootNav.addListener('beforeRemove', (e) => {
@@ -92,10 +123,11 @@ const LockScreen = () => {
         title={t('auth.title')}
         subtitle={t('auth.enter_current')}
         pinSuccess={handleSuccess}
-        onCancel={shouldLock ? handleSignOut : moreNav.goBack}
+        onCancel={handleCancel}
+        clearable={requestType === 'unlock'}
       />
     </SafeAreaBox>
   )
 }
 
-export default LockScreen
+export default memo(LockScreen)

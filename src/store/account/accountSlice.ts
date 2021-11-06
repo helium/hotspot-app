@@ -1,90 +1,128 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { Account, Hotspot } from '@helium/http'
-import { getHotspots, getAccount } from '../../utils/appDataClient'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { Account } from '@helium/http'
+import { getAccount } from '../../utils/appDataClient'
 import { getWallet, postWallet } from '../../utils/walletClient'
 import { ChartData, ChartRange } from '../../components/BarChart/types'
 import { FilterType } from '../../features/wallet/root/walletTypes'
+import { Loading } from '../activity/activitySlice'
+import {
+  CacheRecord,
+  handleCacheFulfilled,
+  handleCacheRejected,
+  hasValidCache,
+} from '../../utils/cacheUtils'
+import { getSecureItem } from '../../utils/secureAccount'
+import { currencyType } from '../../utils/i18n'
+import { WalletReward } from '../rewards/rewardsSlice'
 
-export type Notification = {
-  account_address: string
-  body: string
-  color?: string | null
-  footer?: string | null
-  hotspot_address?: string | null
-  hotspot_name?: string | null
-  icon: string
-  id: number
-  share_text?: string | null
-  style: string
-  time: number
-  title: string
-  viewed_at?: string | null
-}
+export type ChartRangeData = { data: ChartData[]; loading: Loading }
+type ActivityChart = Record<ChartRange, ChartRangeData>
 
-type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
+const boolKeys = [
+  'isFleetModeEnabled',
+  'hasFleetModeAutoEnabled',
+  'convertHntToCurrency',
+  'showHiddenHotspots',
+] as const
+type BooleanKey = typeof boolKeys[number]
+const stringKeys = ['hiddenAddresses', 'network', 'currencyType'] as const
+type StringKey = typeof stringKeys[number]
 
-type ChartRangeData = { data: ChartData[]; loading: Loading }
-type ActivityChart = {
-  daily: ChartRangeData
-  weekly: ChartRangeData
-  monthly: ChartRangeData
+export type AccountReward = {
+  avg: number
+  max: number
+  median: number
+  min: number
+  stddev: number
+  sum: number
+  total: number
 }
 
 export type AccountState = {
-  hotspots: Hotspot[]
-  notifications: Notification[]
   account?: Account
   fetchDataStatus: Loading
-  markNotificationStatus: Loading
-  activityChart: ActivityChart
+  activityChart: Record<FilterType, ActivityChart>
+  activityChartRange: ChartRange
+  rewardsSum: CacheRecord<AccountReward>
+  settings: {
+    isFleetModeEnabled?: boolean
+    hasFleetModeAutoEnabled?: boolean
+    convertHntToCurrency?: boolean
+    showHiddenHotspots?: boolean
+    hiddenAddresses?: string
+    network?: string
+    currencyType?: string
+  }
+  settingsLoaded?: boolean
+  settingsTransferRequired?: boolean
+  fetchAccountSettingsFailed: boolean
 }
 
 const initialState: AccountState = {
-  hotspots: [],
-  notifications: [],
   fetchDataStatus: 'idle',
-  markNotificationStatus: 'idle',
-  activityChart: {
-    daily: { data: [], loading: 'idle' },
-    weekly: { data: [], loading: 'idle' },
-    monthly: { data: [], loading: 'idle' },
-  },
+  activityChart: {} as Record<FilterType, ActivityChart>,
+  activityChartRange: 'daily',
+  rewardsSum: { loading: true } as CacheRecord<AccountReward>,
+  settings: { network: 'stakejoy', currencyType },
+  fetchAccountSettingsFailed: false,
 }
 
 type AccountData = {
-  hotspots: Hotspot[]
   account?: Account
-  notifications: Notification[]
 }
+
+type SettingsBag = Array<{ key: string; value: string }>
+
+const settingsBagToKeyValue = (payload: SettingsBag) =>
+  payload.reduce((obj, { value, key }) => {
+    let val: string | boolean | number | undefined
+    if (boolKeys.includes(key as BooleanKey)) {
+      val = value === 'true'
+    } else if (stringKeys.includes(key as StringKey)) {
+      val = value
+    } else {
+      return obj
+    }
+    return { ...obj, [key]: val }
+  }, {})
+
+// if this call fails we load the app with default settings and retry every 30 seconds
+export const fetchAccountSettings = createAsyncThunk<SettingsBag>(
+  'account/fetchAccountSettings',
+  async () => getWallet('accounts/settings'),
+)
+
+export const transferAppSettingsToAccount = createAsyncThunk<SettingsBag>(
+  'account/transferAppSettingsToAccount ',
+  async () => {
+    const fleetEnabled = await getSecureItem('fleetModeEnabled')
+    const fleetAutoEnabled = await getSecureItem('hasFleetModeAutoEnabled')
+    const convertHnt = await getSecureItem('convertHntToCurrency')
+    const settings = [
+      {
+        key: 'isFleetModeEnabled',
+        value: String(fleetEnabled),
+      },
+      {
+        key: 'hasFleetModeAutoEnabled',
+        value: String(fleetAutoEnabled),
+      },
+      {
+        key: 'convertHntToCurrency',
+        value: String(convertHnt),
+      },
+    ]
+    return postWallet('accounts/settings', { settings })
+  },
+)
 
 export const fetchData = createAsyncThunk<AccountData>(
   'account/fetchData',
   async () => {
-    const data = await Promise.all(
-      [getHotspots(), getAccount(), getWallet('notifications')].map((p) =>
-        p.catch((e) => {
-          console.log('fetchDataError:', e)
-        }),
-      ),
-    )
+    const data = await getAccount()
     return {
-      hotspots: data[0] || [],
-      account: data[1],
-      notifications: data[2] || [],
+      account: data,
     }
-  },
-)
-
-export const fetchNotifications = createAsyncThunk<Notification[]>(
-  'account/fetchNotifications',
-  async () => getWallet('notifications'),
-)
-
-export const markNotificationsViewed = createAsyncThunk<Notification[]>(
-  'account/markNotificationsViewed',
-  async () => {
-    await postWallet('notifications/view')
-    return getWallet('notifications')
   },
 )
 
@@ -96,6 +134,54 @@ export const fetchActivityChart = createAsyncThunk<
   return getWallet('wallet/chart', { range, type: filterType })
 })
 
+export const fetchAccountRewards = createAsyncThunk(
+  'account/fetchAccountRewards',
+  async (_, { getState }) => {
+    const currentState = getState() as {
+      account: {
+        rewardsSum: CacheRecord<WalletReward>
+      }
+    }
+    const sum = currentState.account.rewardsSum
+    if (hasValidCache(sum)) {
+      return sum
+    }
+    return getWallet('accounts/rewards/sum') as Promise<
+      CacheRecord<WalletReward>
+    >
+  },
+)
+
+export const updateFleetModeEnabled = createAsyncThunk<
+  SettingsBag,
+  { enabled: boolean; autoEnabled?: boolean }
+>('account/updateFleetModeEnabled', async ({ enabled, autoEnabled }) => {
+  const settings = [
+    {
+      key: 'isFleetModeEnabled',
+      value: String(enabled),
+    },
+  ]
+  if (autoEnabled) {
+    settings.push({
+      key: 'hasFleetModeAutoEnabled',
+      value: String(autoEnabled),
+    })
+  }
+  return postWallet('accounts/settings', { settings })
+})
+
+export const updateSetting = createAsyncThunk<
+  SettingsBag,
+  { key: BooleanKey | StringKey; value: boolean | string }
+>('account/updateSetting', async ({ key, value }) => {
+  const setting = {
+    key,
+    value: String(value),
+  }
+  return postWallet('accounts/settings', setting)
+})
+
 // This slice contains data related to the user account
 const accountSlice = createSlice({
   name: 'account',
@@ -104,52 +190,131 @@ const accountSlice = createSlice({
     signOut: () => {
       return { ...initialState }
     },
+    updateSettingsTransferRequired: (state, action: PayloadAction<boolean>) => {
+      state.settingsTransferRequired = action.payload
+    },
     resetActivityChart: (state) => {
       return { ...state, activityChart: initialState.activityChart }
+    },
+    setActivityChartRange: (state, action: PayloadAction<ChartRange>) => {
+      return { ...state, activityChartRange: action.payload }
     },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchData.pending, (state, _action) => {
       state.fetchDataStatus = 'pending'
-      state.markNotificationStatus = 'pending'
     })
     builder.addCase(fetchData.fulfilled, (state, { payload }) => {
       state.fetchDataStatus = 'fulfilled'
-      state.markNotificationStatus = 'fulfilled'
-      state.hotspots = payload.hotspots
       state.account = payload.account
-      state.notifications = payload.notifications
     })
     builder.addCase(fetchData.rejected, (state, _action) => {
       state.fetchDataStatus = 'rejected'
-      state.markNotificationStatus = 'rejected'
-    })
-    builder.addCase(markNotificationsViewed.pending, (state, _action) => {
-      state.markNotificationStatus = 'pending'
-    })
-    builder.addCase(markNotificationsViewed.fulfilled, (state, { payload }) => {
-      state.markNotificationStatus = 'fulfilled'
-      state.notifications = payload
-    })
-    builder.addCase(markNotificationsViewed.rejected, (state, _action) => {
-      state.markNotificationStatus = 'rejected'
-    })
-    builder.addCase(fetchNotifications.fulfilled, (state, { payload }) => {
-      state.notifications = payload
     })
     builder.addCase(fetchActivityChart.pending, (state, { meta }) => {
-      state.activityChart[meta.arg.range].loading = 'pending'
+      const currentChart =
+        state.activityChart[meta.arg.filterType]?.[meta.arg.range] || {}
+
+      if (!state.activityChart[meta.arg.filterType]) {
+        state.activityChart[meta.arg.filterType] = {} as ActivityChart
+      }
+
+      if (!state.activityChart[meta.arg.filterType][meta.arg.range]) {
+        state.activityChart[meta.arg.filterType][meta.arg.range] = {
+          ...currentChart,
+          data: [] as ChartData[],
+        }
+      }
+
+      state.activityChart[meta.arg.filterType][meta.arg.range].loading =
+        'pending'
     })
     builder.addCase(
       fetchActivityChart.fulfilled,
       (state, { meta, payload }) => {
-        state.activityChart[meta.arg.range].loading = 'fulfilled'
-        state.activityChart[meta.arg.range].data = payload
+        const currentChart =
+          state.activityChart[meta.arg.filterType]?.[meta.arg.range] || {}
+
+        state.activityChart[meta.arg.filterType][meta.arg.range] = {
+          ...currentChart,
+          data: payload,
+          loading: 'fulfilled',
+        }
       },
     )
     builder.addCase(fetchActivityChart.rejected, (state, { meta }) => {
-      state.activityChart[meta.arg.range].loading = 'rejected'
+      const currentChart =
+        state.activityChart[meta.arg.filterType]?.[meta.arg.range] || {}
+
+      state.activityChart[meta.arg.filterType][meta.arg.range] = {
+        ...currentChart,
+        loading: 'rejected',
+      }
     })
+    builder.addCase(fetchAccountRewards.rejected, (state) => {
+      state.rewardsSum = handleCacheRejected()
+    })
+    builder.addCase(fetchAccountRewards.fulfilled, (state, { payload }) => {
+      state.rewardsSum = handleCacheFulfilled(payload)
+    })
+    builder.addCase(fetchAccountSettings.fulfilled, (state, { payload }) => {
+      const settings = settingsBagToKeyValue(payload)
+      return {
+        ...state,
+        settings: { ...state.settings, ...settings },
+        settingsLoaded: true,
+        fetchAccountSettingsFailed: false,
+      }
+    })
+    builder.addCase(fetchAccountSettings.rejected, (state) => {
+      state.settingsLoaded = true
+      state.fetchAccountSettingsFailed = true
+    })
+    builder.addCase(
+      transferAppSettingsToAccount.fulfilled,
+      (state, { payload }) => {
+        const settings = settingsBagToKeyValue(payload)
+        return {
+          ...state,
+          settings,
+          settingsLoaded: true,
+          settingsTransferRequired: false,
+        }
+      },
+    )
+    builder.addCase(
+      updateFleetModeEnabled.pending,
+      (
+        state,
+        {
+          meta: {
+            arg: { enabled, autoEnabled },
+          },
+        },
+      ) => {
+        state.settings.isFleetModeEnabled = enabled
+        if (autoEnabled) {
+          state.settings.hasFleetModeAutoEnabled = true
+        }
+      },
+    )
+    builder.addCase(
+      updateSetting.pending,
+      (
+        state,
+        {
+          meta: {
+            arg: { key, value },
+          },
+        },
+      ) => {
+        if (boolKeys.includes(key as BooleanKey)) {
+          state.settings[key as BooleanKey] = value as boolean
+        } else if (stringKeys.includes(key as StringKey)) {
+          state.settings[key as StringKey] = value as string
+        }
+      },
+    )
   },
 })
 

@@ -1,4 +1,7 @@
 {
   "name": "Helium",
-  "displayName": "Helium"
+  "displayName": "Helium",
+  "expo": {
+    "scheme": "helium"
+  }
 }

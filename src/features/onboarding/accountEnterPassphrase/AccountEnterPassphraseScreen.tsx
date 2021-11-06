@@ -23,7 +23,7 @@ import TextTransform from '../../../components/TextTransform'
 import Card from '../../../components/Card'
 import sleep from '../../../utils/sleep'
 import { wp } from '../../../utils/layout'
-import { triggerNotification } from '../../../utils/haptic'
+import useHaptic from '../../../utils/useHaptic'
 import animateTransition from '../../../utils/animateTransition'
 
 const testIndices = __DEV__
@@ -47,6 +47,7 @@ const AccountEnterPassphraseScreen = () => {
   const [challengeWords, setChallengeWords] = useState<Array<string>>([])
   const carouselRef = useRef<Carousel<CarouselItemData>>(null)
   const { t } = useTranslation()
+  const { triggerNotification } = useHaptic()
   const navigation = useNavigation<OnboardingNavigationProp>()
 
   const findTargetWord = useCallback(
@@ -69,7 +70,7 @@ const AccountEnterPassphraseScreen = () => {
       await sleep(1000)
       setWord(null)
       setChallengeWords(generateChallengeWords(findTargetWord(step)))
-      animateTransition()
+      animateTransition('AccountEnterPassphraseScreen.OnPressWord')
     }
   }
 
@@ -81,7 +82,7 @@ const AccountEnterPassphraseScreen = () => {
         carouselRef.current?.snapToItem(step + 1)
         setStep(step + 1)
         setWord(null)
-        animateTransition()
+        animateTransition('AccountEnterPassphraseScreen.NextStep')
         setChallengeWords(generateChallengeWords(findTargetWord(step + 1)))
       }
     }, 1000)
@@ -117,14 +118,14 @@ const AccountEnterPassphraseScreen = () => {
         flex={1}
         overflow="hidden"
         backgroundColor="white"
-        padding="l"
+        paddingHorizontal="l"
         alignItems="center"
         flexDirection="row"
       >
-        <Text variant="h1" color="purpleLight">
+        <Text variant="h1" color="purpleLight" maxFontSizeMultiplier={1}>
           {`${index + 1}. `}
         </Text>
-        <Text variant="h1" color="purpleDark">
+        <Text variant="h1" color="purpleDark" maxFontSizeMultiplier={1}>
           {step === index && word ? upperFirst(word) : '?????'}
         </Text>
       </Card>
@@ -138,7 +139,12 @@ const AccountEnterPassphraseScreen = () => {
       paddingHorizontal="lx"
     >
       <Box flex={2} />
-      <Text variant="h1" numberOfLines={2} adjustsFontSizeToFit>
+      <Text
+        variant="h1"
+        numberOfLines={2}
+        adjustsFontSizeToFit
+        maxFontSizeMultiplier={1}
+      >
         {t('account_setup.confirm.title')}
       </Text>
       <Box flex={0.5} />

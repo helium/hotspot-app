@@ -18,6 +18,7 @@ type Props = TextProps<Theme> & {
   values?: Record<string, unknown>
   numberOfLines?: number
   adjustsFontSizeToFit?: boolean
+  maxFontSizeMultiplier?: number
 }
 const TextTransform = ({ i18nKey, values, ...props }: Props) => {
   return (

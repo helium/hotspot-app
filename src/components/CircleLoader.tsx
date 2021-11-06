@@ -1,13 +1,18 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useRef, useEffect } from 'react'
+import React, { memo, useRef, useEffect } from 'react'
 import { Animated, Easing } from 'react-native'
 import { BoxProps } from '@shopify/restyle'
 import Box from './Box'
 import { Theme } from '../theme/theme'
 import Text from './Text'
 
-type Props = BoxProps<Theme> & { text?: string }
-const CircleLoader = ({ text, minHeight, ...props }: Props) => {
+type Props = BoxProps<Theme> & { text?: string; loaderSize?: number }
+const CircleLoader = ({
+  text,
+  loaderSize = 30,
+  minHeight,
+  ...props
+}: Props) => {
   const rotateAnim = useRef(new Animated.Value(0))
   const opacityAnim = useRef(new Animated.Value(0))
 
@@ -41,8 +46,8 @@ const CircleLoader = ({ text, minHeight, ...props }: Props) => {
     <Box
       {...props}
       overflow="hidden"
-      minHeight={minHeight || 30}
       alignItems="center"
+      minHeight={minHeight || loaderSize}
     >
       <Animated.Image
         source={require('../assets/images/circleLoader.png')}
@@ -50,6 +55,8 @@ const CircleLoader = ({ text, minHeight, ...props }: Props) => {
         style={{
           flex: 1,
           maxHeight: 105,
+          height: loaderSize,
+          width: loaderSize,
           opacity: opacityAnim.current,
           transform: [
             {
@@ -76,4 +83,4 @@ const CircleLoader = ({ text, minHeight, ...props }: Props) => {
   )
 }
 
-export default CircleLoader
+export default memo(CircleLoader)

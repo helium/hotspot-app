@@ -1,55 +1,80 @@
-import React from 'react'
-import { useAsync } from 'react-async-hook'
-import QRCode from 'react-qr-code'
-import { useSelector } from 'react-redux'
-import { RootState } from '../../../../store/rootReducer'
+/* eslint-disable react/jsx-props-no-spreading */
+import React, { memo } from 'react'
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
+import SendCircle from '@assets/images/sendCircle.svg'
+import ReceiveCircle from '@assets/images/receiveCircle.svg'
+import { Account } from '@helium/http'
+import { BoxProps } from '@shopify/restyle'
 import Box from '../../../../components/Box'
-import AnimatedBox from '../../../../components/AnimatedBox'
 import Text from '../../../../components/Text'
 import CurrencyBadge from './CurrencyBadge'
-import WalletButton from './WalletButton'
-import { getAddress } from '../../../../utils/secureAccount'
-import { hp, wp } from '../../../../utils/layout'
-import CopyAddressButton from './AddressCopyButton'
-import ShareButton from './ShareButton'
+import { hp } from '../../../../utils/layout'
+import { DebouncedTouchableOpacityBox } from '../../../../components/TouchableOpacityBox'
+import { Theme } from '../../../../theme/theme'
 
-type Props = {
+type Props = BoxProps<Theme> & {
   onReceivePress: () => void
   onSendPress: () => void
+  balanceInfo: {
+    hasBalance: boolean
+    integerPart: string
+    decimalPart: string
+  }
+  account?: Account
+  accountLoading: boolean
+  toggleConvertHntToCurrency: () => void
 }
 
-const BalanceCard = ({ onReceivePress, onSendPress }: Props) => {
-  const { result: address, loading: loadingAddress } = useAsync(getAddress, [])
-  const {
-    account: { account },
-  } = useSelector((state: RootState) => state)
-
-  const hasBalance = account?.balance?.integerBalance !== 0
-  const [integerPart, decimalPart] =
-    account?.balance?.toString().split('.') || []
-
+const BalanceCard = ({
+  onReceivePress,
+  onSendPress,
+  balanceInfo,
+  account,
+  accountLoading,
+  toggleConvertHntToCurrency,
+  ...boxProps
+}: Props) => {
   return (
     <Box
-      flex={1}
-      backgroundColor="purple200"
+      justifyContent="center"
       paddingVertical="xs"
       paddingHorizontal="l"
-      borderRadius="l"
+      {...boxProps}
     >
-      <Box height={hp(18)} justifyContent="center">
-        <AnimatedBox
-          flexDirection="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <Box>
+      <Box
+        flexDirection="row"
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        {accountLoading ? (
+          <SkeletonPlaceholder
+            backgroundColor="#343964"
+            highlightColor="#292E56"
+          >
+            <SkeletonPlaceholder.Item
+              width={80}
+              height={40}
+              marginTop={8}
+              borderRadius={8}
+            />
+            <SkeletonPlaceholder.Item
+              width={150}
+              height={16}
+              marginTop={8}
+              borderRadius={8}
+            />
+          </SkeletonPlaceholder>
+        ) : (
+          <Box onTouchStart={toggleConvertHntToCurrency} flex={1}>
             <Text
               adjustsFontSizeToFit
+              maxFontSizeMultiplier={1.2}
               color="white"
               fontSize={hp(4.5)}
+              numberOfLines={1}
               fontWeight="300"
             >
-              {hasBalance ? integerPart : '0'}
+              {balanceInfo.integerPart}
             </Text>
             <Text
               color="white"
@@ -58,54 +83,43 @@ const BalanceCard = ({ onReceivePress, onSendPress }: Props) => {
               opacity={0.4}
               lineHeight={25}
             >
-              .{hasBalance ? decimalPart : '00000000 HNT'}
+              {balanceInfo.decimalPart}
             </Text>
           </Box>
+        )}
 
-          <Box
-            flexDirection="row"
-            justifyContent="space-between"
-            width={wp(30)}
+        <Box flexDirection="row" alignSelf="flex-start">
+          <DebouncedTouchableOpacityBox
+            onPress={onReceivePress}
+            marginRight="s"
           >
-            <WalletButton variant="receive" onPress={onReceivePress} />
-            <WalletButton
-              variant="send"
-              onPress={onSendPress}
-              disabled={!hasBalance}
-            />
-          </Box>
-        </AnimatedBox>
-
-        <Box flexDirection="row" marginTop="m">
-          <CurrencyBadge
-            variant="dc"
-            amount={account?.dcBalance?.integerBalance || 0}
-          />
-          <CurrencyBadge
-            variant="hst"
-            amount={account?.secBalance?.integerBalance || 0}
-          />
+            <ReceiveCircle />
+          </DebouncedTouchableOpacityBox>
+          <DebouncedTouchableOpacityBox
+            onPress={onSendPress}
+            disabled={!balanceInfo.hasBalance}
+          >
+            <SendCircle />
+          </DebouncedTouchableOpacityBox>
         </Box>
       </Box>
 
-      <Box
-        flex={1}
-        justifyContent="flex-start"
-        alignItems="center"
-        paddingTop="m"
-      >
-        <Box backgroundColor="white" padding="s" borderRadius="m">
-          {!loadingAddress && (
-            <QRCode value={address?.b58 || ''} size={hp(14)} />
-          )}
-        </Box>
-        <Box width="100%" marginTop="m" alignItems="center">
-          <CopyAddressButton address={address?.b58} />
-          <ShareButton address={address?.b58 || ''} />
-        </Box>
+      <Box flexDirection="row" paddingVertical="m">
+        <CurrencyBadge
+          variant="dc"
+          amount={account?.dcBalance?.integerBalance}
+        />
+        <CurrencyBadge
+          variant="hst"
+          amount={account?.secBalance?.floatBalance}
+        />
+        <CurrencyBadge
+          variant="stake"
+          amount={account?.stakedBalance?.floatBalance}
+        />
       </Box>
     </Box>
   )
 }
 
-export default BalanceCard
+export default memo(BalanceCard)

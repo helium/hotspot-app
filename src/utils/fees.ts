@@ -1,37 +1,46 @@
 import { Address } from '@helium/crypto-react-native'
 import {
-  PaymentV2,
   AddGatewayV1,
+  AssertLocationV2,
+  PaymentV2,
   TokenBurnV1,
-  AssertLocationV1,
   TransferHotspotV1,
 } from '@helium/transactions'
 import Balance, {
-  DataCredits,
   CurrencyType,
+  DataCredits,
   NetworkTokens,
 } from '@helium/currency'
 import { minBy } from 'lodash'
 import { useSelector } from 'react-redux'
+import { useCallback } from 'react'
 import { getKeypair } from './secureAccount'
 import { RootState } from '../store/rootReducer'
+import { SendDetails } from '../features/wallet/send/sendTypes'
+import { encodeMemoString } from './transactions'
 
 export const useFees = () => {
-  const {
-    heliumData: { currentOraclePrice, predictedOraclePrices },
-  } = useSelector((state: RootState) => state)
+  const { currentOraclePrice, predictedOraclePrices } = useSelector(
+    (state: RootState) => state.heliumData,
+  )
 
-  const feeToHNT = (balance?: Balance<DataCredits>) => {
-    if (!balance) return new Balance<DataCredits>(0, CurrencyType.dataCredit)
+  const feeToHNT = useCallback(
+    (balance?: Balance<DataCredits>) => {
+      if (!balance) return new Balance<DataCredits>(0, CurrencyType.dataCredit)
 
-    const prices = [currentOraclePrice, ...predictedOraclePrices]
-    const oraclePrice = minBy(prices, (p) => p?.price.integerBalance || 0)
-    // ensure precision is only 8 decimals
-    const feeHNTInteger = Math.trunc(
-      balance.toNetworkTokens(oraclePrice?.price).integerBalance,
-    )
-    return new Balance<NetworkTokens>(feeHNTInteger, CurrencyType.networkToken)
-  }
+      const prices = [currentOraclePrice, ...predictedOraclePrices]
+      const oraclePrice = minBy(prices, (p) => p?.price?.integerBalance)
+      // ensure precision is only 8 decimals
+      const feeHNTInteger = Math.trunc(
+        balance.toNetworkTokens(oraclePrice?.price).integerBalance,
+      )
+      return new Balance<NetworkTokens>(
+        feeHNTInteger,
+        CurrencyType.networkToken,
+      )
+    },
+    [currentOraclePrice, predictedOraclePrices],
+  )
 
   return { feeToHNT }
 }
@@ -40,28 +49,23 @@ const emptyB58Address = () =>
   Address.fromB58('13PuqyWXzPYeXcF1B9ZRx7RLkEygeL374ZABiQdwRSNzASdA1sn')
 
 export const calculatePaymentTxnFee = async (
-  amount: number,
+  paymentDetails: Array<SendDetails>,
   nonce: number,
-  payeeB58?: string,
 ) => {
   const keypair = await getKeypair()
   if (!keypair) throw new Error('missing keypair')
 
-  // if a payee isn't supplied, we use a dummy address
-  let payee: Address
-  if (payeeB58 && Address.isValid(payeeB58)) {
-    payee = Address.fromB58(payeeB58)
-  } else {
-    payee = emptyB58Address()
-  }
   const paymentTxn = new PaymentV2({
     payer: keypair.address,
-    payments: [
-      {
-        payee,
-        amount,
-      },
-    ],
+    payments: paymentDetails.map(({ address, balanceAmount, memo }) => ({
+      // if a payee address isn't supplied, we use a dummy address
+      payee:
+        address && Address.isValid(address)
+          ? Address.fromB58(address)
+          : emptyB58Address(),
+      amount: balanceAmount.integerBalance,
+      memo: encodeMemoString(memo),
+    })),
     nonce,
   })
 
@@ -82,19 +86,21 @@ export const calculateAddGatewayFee = (ownerB58: string, payerB58: string) => {
 }
 
 export const calculateAssertLocFee = (
-  ownerB58: string,
-  payerB58: string,
-  nonce: number,
+  ownerB58: string | undefined,
+  payerB58: string | undefined,
+  nonce: number | undefined,
 ) => {
-  const owner = Address.fromB58(ownerB58)
-  const payer = payerB58 !== '' ? Address.fromB58(payerB58) : undefined
+  const owner = ownerB58 ? Address.fromB58(ownerB58) : emptyB58Address()
+  const payer = payerB58 ? Address.fromB58(payerB58) : emptyB58Address()
 
-  const txn = new AssertLocationV1({
+  const txn = new AssertLocationV2({
     owner,
     gateway: emptyB58Address(),
     payer,
     location: 'fffffffffffffff',
-    nonce,
+    gain: 12,
+    elevation: 1,
+    nonce: nonce || 1,
   })
 
   return { fee: txn.fee || 0, stakingFee: txn.stakingFee || 0 }

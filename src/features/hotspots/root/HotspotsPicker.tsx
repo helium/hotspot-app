@@ -1,80 +1,135 @@
-import { getCurrentPositionAsync } from 'expo-location'
-import React, { useCallback, useMemo, memo } from 'react'
+import React, { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import NewestHotspot from '@assets/images/newestHotspot.svg'
+import NearestHotspot from '@assets/images/nearestHotspot.svg'
+import OfflineHotspot from '@assets/images/offlineHotspot.svg'
+import FollowedHotspot from '@assets/images/follow.svg'
+import TopHotspot from '@assets/images/topHotspot.svg'
 import Box from '../../../components/Box'
-import ModalPicker from '../../../components/ModalPicker'
-import hotspotsSlice, {
-  HotspotSort,
-} from '../../../store/hotspots/hotspotsSlice'
-import { useAppDispatch } from '../../../store/store'
-import usePermissionManager from '../../../utils/usePermissionManager'
+import HeliumSelect from '../../../components/HeliumSelect'
+import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
+import { useSpacing } from '../../../theme/themeHooks'
 
-const HotspotsPicker = () => {
-  const { t, i18n } = useTranslation()
-  const dispatch = useAppDispatch()
-  const { requestLocationPermission } = usePermissionManager()
+export enum GatewaySort {
+  New = 'new',
+  Near = 'near',
+  Earn = 'earn',
+  FollowedHotspots = 'followed',
+  Offline = 'offline',
+  Unasserted = 'unasserted',
+  FollowedValidators = 'followedValidators',
+  Validators = 'validators',
+}
 
-  const checkLocationPermissions = useCallback(async () => {
-    const enabled = await requestLocationPermission()
-    if (enabled) {
-      const position = await getCurrentPositionAsync()
-      return position.coords
-    }
-  }, [requestLocationPermission])
+type Props = {
+  handleFilterChange: (sort: GatewaySort) => void
+  gatewaySort: GatewaySort
+  fleetModeEnabled: boolean
+  locationBlocked: boolean
+  hasFollowedValidators: boolean
+  hasValidators: boolean
+}
+const HotspotsPicker = ({
+  gatewaySort,
+  handleFilterChange,
+  fleetModeEnabled,
+  locationBlocked,
+  hasFollowedValidators,
+  hasValidators,
+}: Props) => {
+  const { t } = useTranslation()
+  const spacing = useSpacing()
 
   const handleValueChanged = useCallback(
-    async (order) => {
-      if (order === HotspotSort.Near) {
-        const currentLocation = await checkLocationPermissions()
-        dispatch(hotspotsSlice.actions.changeOrder({ order, currentLocation }))
-      } else {
-        dispatch(hotspotsSlice.actions.changeOrder({ order }))
-      }
+    async (newOrder) => {
+      handleFilterChange(newOrder)
     },
-    [checkLocationPermissions, dispatch],
+    [handleFilterChange],
   )
 
-  type PickerData = {
-    label: string
-    value: HotspotSort
-  }
-  const data: PickerData[] = useMemo(
-    () => [
-      {
-        label: t(`hotspots.owned.filter.${HotspotSort.New}`),
-        value: HotspotSort.New,
-      },
-      {
-        label: t(`hotspots.owned.filter.${HotspotSort.Near}`),
-        value: HotspotSort.Near,
-      },
-      {
-        label: t(`hotspots.owned.filter.${HotspotSort.Earn}`),
-        value: HotspotSort.Earn,
-      },
-      {
-        label: t(`hotspots.owned.filter.${HotspotSort.Offline}`),
-        value: HotspotSort.Offline,
-      },
-    ],
-    [t],
+  const data = useMemo(() => {
+    const opts: HeliumSelectItemType[] = []
+    opts.push({
+      label: t(`hotspots.owned.filter.${GatewaySort.New}`),
+      value: GatewaySort.New,
+      Icon: NewestHotspot,
+      color: 'purpleMain',
+    })
+    opts.push({
+      label: t(`hotspots.owned.filter.${GatewaySort.FollowedHotspots}`),
+      value: GatewaySort.FollowedHotspots,
+      Icon: FollowedHotspot,
+      color: 'purpleBright',
+    })
+    if (hasValidators) {
+      opts.push({
+        label: t(`hotspots.owned.filter.${GatewaySort.Validators}`),
+        value: GatewaySort.Validators,
+        Icon: NewestHotspot,
+        color: 'purpleMain',
+      })
+    }
+    if (hasFollowedValidators) {
+      opts.push({
+        label: t(`hotspots.owned.filter.${GatewaySort.FollowedValidators}`),
+        value: GatewaySort.FollowedValidators,
+        Icon: FollowedHotspot,
+        color: 'purpleMain',
+      })
+    }
+    if (!locationBlocked) {
+      opts.push({
+        label: t(`hotspots.owned.filter.${GatewaySort.Near}`),
+        value: GatewaySort.Near,
+        Icon: NearestHotspot,
+        color: 'purpleMain',
+      })
+    }
+    if (!fleetModeEnabled) {
+      opts.push({
+        label: t(`hotspots.owned.filter.${GatewaySort.Earn}`),
+        value: GatewaySort.Earn,
+        Icon: TopHotspot,
+        color: 'purpleMain',
+      })
+    }
+    if (fleetModeEnabled) {
+      opts.push({
+        label: t(`hotspots.owned.filter.${GatewaySort.Unasserted}`),
+        value: GatewaySort.Unasserted,
+        Icon: TopHotspot,
+        color: 'purpleMain',
+      })
+    }
+    opts.push({
+      label: t(`hotspots.owned.filter.${GatewaySort.Offline}`),
+      value: GatewaySort.Offline,
+      Icon: OfflineHotspot,
+      color: 'purpleMain',
+    })
+    return opts
+  }, [
+    fleetModeEnabled,
+    hasFollowedValidators,
+    hasValidators,
+    locationBlocked,
+    t,
+  ])
+
+  const contentContainerStyle = useMemo(
+    () => ({ paddingHorizontal: spacing.l }),
+    [spacing.l],
   )
 
   return (
-    <Box
-      flexDirection="row"
-      alignItems="center"
-      // marginVertical="m"
-      width="100%"
-      paddingHorizontal="l"
-    >
-      <ModalPicker
-        marginHorizontal="xs"
-        // can't assume other languages will have the same prefix
-        // structure so we'll just leave it out for non-en
-        prefix={i18n.language === 'en' ? 'Your' : undefined}
+    <Box flexDirection="row" alignItems="center" width="100%">
+      <HeliumSelect
+        contentContainerStyle={contentContainerStyle}
+        marginBottom="lm"
         data={data}
+        selectedValue={gatewaySort}
         onValueChanged={handleValueChanged}
+        marginVertical="s"
       />
     </Box>
   )

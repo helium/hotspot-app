@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import Text from '../../../components/Text'
@@ -38,6 +38,14 @@ const AccountCreatePinScreen = () => {
     return unsubscribe
   }, [navigation])
 
+  const handleBackspace = useCallback(() => {
+    setPin((val) => val.slice(0, -1))
+  }, [])
+
+  const handleNumber = useCallback((num: number) => {
+    setPin((val) => (val.length < 6 ? val + num : val))
+  }, [])
+
   return (
     <Box
       backgroundColor="primaryBackground"
@@ -47,19 +55,25 @@ const AccountCreatePinScreen = () => {
       alignItems="center"
     >
       <Box flex={1} />
-      <Text marginBottom="m" variant="h1">
+      <Text
+        marginBottom="m"
+        variant="h1"
+        maxFontSizeMultiplier={1}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+      >
         {t('account_setup.create_pin.title')}
       </Text>
 
-      <Text variant="body1">{t('account_setup.create_pin.subtitle')}</Text>
+      <Text variant="body1" maxFontSizeMultiplier={1.2}>
+        {t('account_setup.create_pin.subtitle')}
+      </Text>
       <PinDisplay length={pin.length} marginVertical="xl" />
       <Keypad
-        onBackspacePress={() => {
-          setPin((val) => val.slice(0, -1))
-        }}
-        onNumberPress={(num) => {
-          setPin((val) => (val.length < 6 ? val + num : val))
-        }}
+        onBackspacePress={handleBackspace}
+        onNumberPress={handleNumber}
+        onCustomButtonPress={pinReset ? navigation.goBack : undefined}
+        customButtonTitle={t('generic.cancel')}
       />
       <Box flex={1} />
     </Box>

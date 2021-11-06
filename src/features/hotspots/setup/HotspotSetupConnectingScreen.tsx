@@ -2,12 +2,12 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native'
 import { uniq } from 'lodash'
 import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Alert } from 'react-native'
 import Box from '../../../components/Box'
 import RadarLoader from '../../../components/Loaders/RadarLoader'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
+import useAlert from '../../../utils/useAlert'
 import {
   HotspotSetupNavigationProp,
   HotspotSetupStackParamList,
@@ -24,6 +24,8 @@ const HotspotSetupConnectingScreen = () => {
     params: { hotspotId },
   } = useRoute<Route>()
 
+  const { showOKAlert, showOKCancelAlert } = useAlert()
+
   const {
     availableHotspots,
     connectAndConfigHotspot,
@@ -35,33 +37,49 @@ const HotspotSetupConnectingScreen = () => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
-      // connect to hotspot
-      const success = await connectAndConfigHotspot(hotspot)
+      try {
+        // connect to hotspot
+        const connectStatus = await connectAndConfigHotspot(hotspot)
 
-      // check for valid onboarding record
-      if (!success) {
-        // TODO actual screen for this
-        Alert.alert('Error', 'Invalid onboarding record')
+        if (connectStatus === 'no_onboarding_key') {
+          // prompt to retry
+          const decision = await showOKCancelAlert({
+            titleKey: 'hotspot_setup.add_hotspot.no_onboarding_key_title',
+            messageKey: 'hotspot_setup.add_hotspot.no_onboarding_key_message',
+          })
+          if (decision) {
+            navigation.goBack()
+            return
+          }
+        }
+
+        // check for valid onboarding record
+        if (connectStatus !== 'success') {
+          navigation.navigate('OnboardingErrorScreen', { connectStatus })
+          return
+        }
+
+        // check firmware
+        const hasCurrentFirmware = await checkFirmwareCurrent()
+        if (!hasCurrentFirmware) {
+          navigation.navigate('FirmwareUpdateNeededScreen')
+          return
+        }
+
+        // scan for wifi networks
+        const networks = uniq((await scanForWifiNetworks()) || [])
+        const connectedNetworks = uniq((await scanForWifiNetworks(true)) || [])
+
+        // navigate to next screen
+        navigation.replace('HotspotSetupPickWifiScreen', {
+          networks,
+          connectedNetworks,
+        })
+      } catch (e) {
+        const titleKey = 'generic.error'
+        await showOKAlert({ titleKey, messageKey: e.toString() })
         navigation.goBack()
-        return
       }
-
-      // check firmware
-      const hasCurrentFirmware = await checkFirmwareCurrent()
-      if (!hasCurrentFirmware) {
-        navigation.navigate('FirmwareUpdateNeededScreen')
-        return
-      }
-
-      // scan for wifi networks
-      const networks = uniq((await scanForWifiNetworks()) || [])
-      const connectedNetworks = uniq((await scanForWifiNetworks(true)) || [])
-
-      // navigate to next screen
-      navigation.replace('HotspotSetupPickWifiScreen', {
-        networks,
-        connectedNetworks,
-      })
     })
 
     return unsubscribe

@@ -1,13 +1,16 @@
-import React, { useState, useEffect, memo, useCallback, useMemo } from 'react'
-import Svg, { Text, Rect } from 'react-native-svg'
-import { PanResponder, Animated, GestureResponderEvent } from 'react-native'
-import { maxBy, clamp, max, some } from 'lodash'
-import { triggerImpact } from '../../utils/haptic'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import Svg from 'react-native-svg'
+import { clamp, max, maxBy, some } from 'lodash'
+import {
+  PanGestureHandler,
+  PanGestureHandlerEventPayload,
+} from 'react-native-gesture-handler'
+import { Animated, GestureResponderEvent } from 'react-native'
+import useHaptic from '../../utils/useHaptic'
 import { ChartData } from './types'
 import { useColors } from '../../theme/themeHooks'
-
-// TODO
-// animate in?
+import usePrevious from '../../utils/usePrevious'
+import ChartBar from './ChartBar'
 
 type Props = {
   width: number
@@ -31,15 +34,20 @@ const BarChart = ({
   downColor,
 }: Props) => {
   const [focusedBar, setFocusedBar] = useState<ChartData | null>(null)
+  const prevFocusedBar = usePrevious(focusedBar)
   const { greenBright, blueBright, white } = useColors()
+  const { triggerImpact } = useHaptic()
 
   // trigger haptic feedback when the focused bar changes
   useEffect(() => {
     if (focusedBar) {
       triggerImpact()
     }
-    onFocus(focusedBar)
-  }, [focusedBar, onFocus])
+
+    if (prevFocusedBar !== undefined && prevFocusedBar !== focusedBar) {
+      onFocus(focusedBar)
+    }
+  }, [focusedBar, onFocus, prevFocusedBar, triggerImpact])
 
   // support charts that have no down values
   const hasDownBars = useMemo(() => some(data, ({ down }) => down > 0), [data])
@@ -98,7 +106,7 @@ const BarChart = ({
 
   const barHeight = useCallback(
     (value: number | undefined): number => {
-      if (value === 0 || value === undefined) return 0
+      if (value === 0 || value === undefined) return minBarHeight
       if (
         maxUpBarHeight === minBarHeight ||
         maxDownBarHeight === minBarHeight
@@ -133,76 +141,58 @@ const BarChart = ({
   }, [])
 
   // pan responder is responsible for the slide interaction
-  const panResponder = useMemo(
-    () =>
-      PanResponder.create({
-        onMoveShouldSetPanResponder: () => true,
-        onPanResponderMove: (evt) => {
-          const dataIndex = findDataIndex(evt.nativeEvent.locationX)
-          setFocusedBar(data[dataIndex])
-        },
-        onPanResponderRelease: () => {
-          setFocusedBar(null)
-        },
-      }),
+  const onPanEvent = useCallback(
+    (event: { nativeEvent: PanGestureHandlerEventPayload }) => {
+      const dataIndex = findDataIndex(event.nativeEvent.x)
+      setFocusedBar(data[dataIndex])
+    },
     [data, findDataIndex],
   )
 
+  const barStyle = useMemo(
+    () => ({
+      backgroundColor: 'rgba(255,0,0,0)',
+      width,
+      height,
+    }),
+    [width, height],
+  )
+
+  const activeOffsetX = useMemo(() => [-5, 5], []) // only activate the gesture if x moves 5 pixels
+
   return (
-    <Animated.View
-      style={{
-        backgroundColor: 'rgba(255,0,0,0)',
-        width,
-        height,
-      }}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      {...panResponder.panHandlers}
+    <PanGestureHandler
+      activeOffsetX={activeOffsetX}
+      onGestureEvent={onPanEvent}
+      onEnded={handleTouchEnd}
     >
-      <Svg height="100%" width="100%">
-        {data.map((v, i) => (
-          <React.Fragment key={`frag-${v.id}`}>
-            <Rect
-              x={barWidth * (2 * i)}
-              y={maxUpBarHeight - barHeight(v?.up)}
-              rx={barWidth / 2}
-              width={barWidth}
-              height={barHeight(v?.up)}
-              fill={upColor || greenBright}
-              opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
+      <Animated.View
+        style={barStyle}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        <Svg height="100%" width="100%">
+          {data.map((v, i) => (
+            <ChartBar
+              key={`frag-${v.id}`}
+              index={i}
+              showXAxisLabel={showXAxisLabel}
+              hasDownBars={hasDownBars}
+              barWidth={barWidth}
+              barHeight={barHeight}
+              upColor={upColor || greenBright}
+              barGap={barGap}
+              focusedBar={focusedBar}
+              downColor={downColor || blueBright}
+              labelColor={labelColor || white}
+              height={height}
+              maxUpBarHeight={maxUpBarHeight}
+              data={v}
             />
-
-            {hasDownBars && (
-              <Rect
-                x={barWidth * (2 * i)}
-                y={maxUpBarHeight + barGap}
-                rx={barWidth / 2}
-                width={barWidth}
-                height={barHeight(v?.down)}
-                fill={downColor || blueBright}
-                opacity={!focusedBar || focusedBar?.id === v.id ? 1 : 0.4}
-              />
-            )}
-
-            {showXAxisLabel && (
-              <Text
-                fill={labelColor || white}
-                stroke="none"
-                fontSize="12"
-                fontWeight={300}
-                x={barWidth * (2 * i) + barWidth / 2}
-                y={height - 4}
-                textAnchor="middle"
-                opacity={focusedBar && focusedBar?.id === v.id ? 1 : 0.4}
-              >
-                {v.label}
-              </Text>
-            )}
-          </React.Fragment>
-        ))}
-      </Svg>
-    </Animated.View>
+          ))}
+        </Svg>
+      </Animated.View>
+    </PanGestureHandler>
   )
 }
 

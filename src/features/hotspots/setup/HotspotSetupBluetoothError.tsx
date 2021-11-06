@@ -2,7 +2,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import Box from '../../../components/Box'
-import Button from '../../../components/Button'
+import { DebouncedButton } from '../../../components/Button'
 import Text from '../../../components/Text'
 import {
   HotspotSetupNavigationProp,
@@ -20,12 +20,13 @@ const HotspotSetupBluetoothError = () => {
   const navigation = useNavigation<HotspotSetupNavigationProp>()
   return (
     <Box flex={1}>
-      <Box flex={1}>
-        <Box marginBottom="l">
-          <Bluetooth />
-        </Box>
+      <Box flex={1} alignItems="center" justifyContent="center">
+        <Bluetooth />
         <Text
+          marginTop="l"
           variant="h1"
+          maxFontSizeMultiplier={1}
+          textAlign="center"
           numberOfLines={2}
           adjustsFontSizeToFit
           marginBottom="xxl"
@@ -69,17 +70,12 @@ const HotspotSetupBluetoothError = () => {
           </Box>
         </Box>
       </Box>
-
-      <Box justifyContent="flex-end">
-        <Button
-          onPress={() =>
-            navigation.replace('HotspotSetupScanningScreen', params)
-          }
-          mode="contained"
-          variant="primary"
-          title={t('generic.scan_again')}
-        />
-      </Box>
+      <DebouncedButton
+        onPress={() => navigation.replace('HotspotSetupScanningScreen', params)}
+        mode="contained"
+        variant="primary"
+        title={t('generic.scan_again')}
+      />
     </Box>
   )
 }

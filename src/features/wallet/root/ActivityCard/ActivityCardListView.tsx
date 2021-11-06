@@ -1,50 +1,49 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import React, { useCallback, memo, useMemo } from 'react'
 import { useAsync } from 'react-async-hook'
-import {
-  AnyTransaction,
-  AddGatewayV1,
-  PendingTransaction,
-  AssertLocationV1,
-} from '@helium/http'
-import animalName from 'angry-purple-tiger'
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
 import ActivityItem, { ACTIVITY_ITEM_ROW_HEIGHT } from './ActivityItem'
 import { getSecureItem } from '../../../../utils/secureAccount'
-import activitySlice from '../../../../store/activity/activitySlice'
+import activitySlice, {
+  HttpTransaction,
+  HttpPendingTransaction,
+} from '../../../../store/activity/activitySlice'
 import { useAppDispatch } from '../../../../store/store'
 import { useSpacing } from '../../../../theme/themeHooks'
-import useActivityItem from '../useActivityItem'
 import ActivityCardLoading from './ActivityCardLoading'
+import WalletChart from '../../../../components/BarChart/WalletChart'
+import SkeletonActivityItem from './SkeletonActivityItem'
 
 type Props = {
   hasNoResults: boolean
-  data: (AnyTransaction | PendingTransaction)[]
+  data: (HttpTransaction | HttpPendingTransaction)[]
+  showSkeleton: boolean
 }
 
-const ActivityCardListView = ({ data, hasNoResults }: Props) => {
+const ActivityCardListView = ({
+  data: propsData,
+  hasNoResults,
+  showSkeleton,
+}: Props) => {
   const { m } = useSpacing()
   const dispatch = useAppDispatch()
-  const { result: address, loading } = useAsync(getSecureItem, ['address'])
-  const { backgroundColor, title, listIcon, amount, time } = useActivityItem(
-    address || '',
-  )
+  const { result: address } = useAsync(getSecureItem, ['address'])
+
+  const data = useMemo((): (
+    | HttpTransaction
+    | HttpPendingTransaction
+    | false
+  )[] => {
+    if (showSkeleton) return new Array(10).map(() => false)
+
+    return propsData
+  }, [propsData, showSkeleton])
 
   const handleActivityItemPressed = useCallback(
-    (item: AnyTransaction | PendingTransaction) => () => {
+    (item: HttpTransaction | HttpPendingTransaction) => () => {
       dispatch(activitySlice.actions.setDetailTxn(item))
     },
     [dispatch],
-  )
-
-  const getSubtitle = useCallback(
-    (item: AnyTransaction | PendingTransaction) => {
-      if (item instanceof AssertLocationV1 || item instanceof AddGatewayV1) {
-        return animalName(item.gateway)
-      }
-      return amount(item)
-    },
-    [amount],
   )
 
   const requestMore = useCallback(() => {
@@ -52,7 +51,7 @@ const ActivityCardListView = ({ data, hasNoResults }: Props) => {
   }, [dispatch])
 
   type Item = {
-    item: AnyTransaction | PendingTransaction
+    item: HttpTransaction | HttpPendingTransaction | false
     index: number
   }
 
@@ -62,34 +61,27 @@ const ActivityCardListView = ({ data, hasNoResults }: Props) => {
         return !!data && index === data?.length - 1
       }
 
+      if (!item) {
+        return <SkeletonActivityItem isFirst={index === 0} isLast={isLast()} />
+      }
+
       return (
         <ActivityItem
-          hash={(item as AddGatewayV1).hash}
           handlePress={handleActivityItemPressed(item)}
           isFirst={index === 0}
           isLast={isLast()}
-          backgroundColor={backgroundColor(item)}
-          icon={listIcon(item)}
-          title={title(item)}
-          subtitle={getSubtitle(item)}
-          time={time(item)}
+          address={address || ''}
+          item={item}
         />
       )
     },
-    [
-      backgroundColor,
-      data,
-      getSubtitle,
-      handleActivityItemPressed,
-      listIcon,
-      time,
-      title,
-    ],
+    [address, data, handleActivityItemPressed],
   )
 
   const keyExtractor = useCallback(
-    (item: AnyTransaction | PendingTransaction) => {
-      const txn = item as PendingTransaction
+    (item: HttpTransaction | HttpPendingTransaction | false, index: number) => {
+      if (!item) return `${index}`
+      const txn = item as HttpPendingTransaction
       return `${txn.hash}${txn.status}`
     },
     [],
@@ -105,18 +97,35 @@ const ActivityCardListView = ({ data, hasNoResults }: Props) => {
   )
 
   const contentContainerStyle = useMemo(() => {
-    return { paddingHorizontal: m, paddingBottom: 100 }
+    return {
+      paddingHorizontal: m,
+      paddingBottom: 100,
+    }
   }, [m])
 
-  const footer = useMemo(
-    () => <ActivityCardLoading hasNoResults={hasNoResults} />,
-    [hasNoResults],
-  )
+  const footer = useMemo(() => {
+    return (
+      <ActivityCardLoading
+        hasNoResults={hasNoResults}
+        showSkeleton={showSkeleton}
+      />
+    )
+  }, [hasNoResults, showSkeleton])
 
-  if (loading) return null
+  const header = useMemo(() => {
+    return (
+      <WalletChart
+        showSkeleton={showSkeleton}
+        height={222}
+        marginHorizontal="l"
+        marginBottom="s"
+      />
+    )
+  }, [showSkeleton])
 
   return (
     <BottomSheetFlatList
+      ListHeaderComponent={header}
       data={data}
       renderItem={renderItem}
       keyExtractor={keyExtractor}

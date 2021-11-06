@@ -1,16 +1,19 @@
-import React, { memo } from 'react'
+import React, { memo, ReactText, useMemo } from 'react'
 import { Linking, Switch } from 'react-native'
-import RNPickerSelect, { Item } from 'react-native-picker-select'
-import Text from '../../../components/Text'
+import Text, { TextProps } from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import { useColors, useTextVariants } from '../../../theme/themeHooks'
+import { useColors } from '../../../theme/themeHooks'
 import CarotRight from '../../../assets/images/carot-right.svg'
 import LinkImg from '../../../assets/images/link.svg'
+import HeliumActionSheet from '../../../components/HeliumActionSheet'
+import { HeliumActionSheetItemType } from '../../../components/HeliumActionSheetItem'
+import { Colors } from '../../../theme/theme'
+import { hp } from '../../../utils/layout'
 
 export type SelectProps = {
   onDonePress?: () => void
-  onValueSelect: (value: string, index: number) => void
-  items: Item[]
+  onValueSelect: (value: ReactText, index: number) => void
+  items: HeliumActionSheetItemType[]
 }
 
 export type MoreListItemType = {
@@ -18,13 +21,25 @@ export type MoreListItemType = {
   destructive?: boolean
   onPress?: () => void
   onToggle?: (value: boolean) => void
+  renderModal?: () => void
   value?: boolean | string | number
   select?: SelectProps
   openUrl?: string
+  disabled?: boolean
 }
 
 const MoreListItem = ({
-  item: { title, value, destructive, onToggle, onPress, select, openUrl },
+  item: {
+    title,
+    value,
+    destructive,
+    onToggle,
+    onPress,
+    renderModal,
+    select,
+    openUrl,
+    disabled,
+  },
   isTop = false,
   isBottom = false,
 }: {
@@ -33,13 +48,6 @@ const MoreListItem = ({
   isBottom?: boolean
 }) => {
   const colors = useColors()
-  const { body2 } = useTextVariants()
-
-  const style = {
-    ...body2,
-    color: colors.purpleMuted,
-    height: '100%',
-  }
 
   const handlePress = () => {
     if (openUrl) {
@@ -51,6 +59,26 @@ const MoreListItem = ({
     }
   }
 
+  const trackColor = useMemo(
+    () => ({ false: colors.purple300, true: colors.purpleMain }),
+    [colors],
+  )
+
+  const actionSheetTextProps = useMemo(
+    () =>
+      ({
+        variant: 'regular',
+        fontSize: 16,
+        color: 'purpleBrightMuted',
+      } as TextProps),
+    [],
+  )
+
+  let textColor: Colors = 'primaryText'
+  if (destructive && !disabled) textColor = 'redMain'
+  if (destructive && disabled) textColor = 'redMedium'
+  if (!destructive && disabled) textColor = 'disabled'
+
   return (
     <TouchableOpacityBox
       flexDirection="row"
@@ -61,13 +89,14 @@ const MoreListItem = ({
       paddingHorizontal="ms"
       marginBottom="xxxs"
       onPress={handlePress}
-      disabled={!(onPress || openUrl)}
+      disabled={disabled || !(onPress || openUrl)}
       borderTopLeftRadius={isTop ? 'm' : 'none'}
       borderTopRightRadius={isTop ? 'm' : 'none'}
       borderBottomLeftRadius={isBottom ? 'm' : 'none'}
       borderBottomRightRadius={isBottom ? 'm' : 'none'}
     >
-      <Text variant="body2" color={destructive ? 'redMain' : 'primaryText'}>
+      {renderModal && renderModal()}
+      <Text variant="body2" color={textColor}>
         {title}
       </Text>
       {!onToggle && !select && onPress && (
@@ -78,27 +107,20 @@ const MoreListItem = ({
         <Switch
           value={value as boolean}
           onValueChange={onToggle}
-          trackColor={{ false: colors.purpleMain, true: colors.purpleMain }}
+          trackColor={trackColor}
+          thumbColor={colors.white}
+          disabled={disabled}
         />
       )}
       {select && (
-        <RNPickerSelect
-          placeholder={{}}
-          style={{
-            inputIOS: {
-              ...style,
-              lineHeight: 19,
-            },
-            inputAndroid: {
-              ...style,
-            },
-          }}
-          items={select.items}
-          value={value}
-          onValueChange={select.onValueSelect}
-          onDonePress={select.onDonePress}
-          useNativeAndroidPickerStyle={false}
-          fixAndroidTouchableBug
+        <HeliumActionSheet
+          data={select.items}
+          selectedValue={value as string}
+          onValueSelected={select.onValueSelect}
+          title={title}
+          textProps={actionSheetTextProps}
+          iconVariant="none"
+          maxModalHeight={hp(80)}
         />
       )}
     </TouchableOpacityBox>

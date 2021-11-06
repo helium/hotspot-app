@@ -1,5 +1,6 @@
 import React, { useEffect, memo, useRef, useMemo, useState } from 'react'
 import { Animated, ImageStyle, Image, Platform } from 'react-native'
+import Box from '../../components/Box'
 
 const AnimatedImage = Animated.createAnimatedComponent(Image)
 
@@ -12,7 +13,7 @@ const SecurityScreen = ({ visible }: Props) => {
     setMounted(true)
     Animated.timing(fadeAnim.current, {
       toValue: 1,
-      duration: 500,
+      duration: 100,
       useNativeDriver: true,
     }).start()
   }
@@ -42,8 +43,9 @@ const SecurityScreen = ({ visible }: Props) => {
   const style = useMemo(
     () =>
       ({
-        position: 'absolute',
         opacity: fadeAnim.current,
+        height: '100%',
+        width: '100%',
       } as Animated.AnimatedProps<ImageStyle>),
     [],
   )
@@ -57,10 +59,12 @@ const SecurityScreen = ({ visible }: Props) => {
   }
 
   return (
-    <AnimatedImage
-      style={style}
-      source={require('../../assets/images/SplashScreen.png')}
-    />
+    <Box position="absolute" top={0} left={0} right={0} bottom={0}>
+      <AnimatedImage
+        style={style}
+        source={require('../../assets/images/SplashScreen.png')}
+      />
+    </Box>
   )
 }
 

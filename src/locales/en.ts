@@ -50,8 +50,7 @@ export default {
     },
     create_pin: {
       title: 'Set PIN Code',
-      subtitle:
-        'As a final secure step, let’s secure your account with a PIN Code.',
+      subtitle: 'Let’s secure your account with a PIN Code.',
     },
     confirm_pin: {
       title: 'Repeat PIN',
@@ -93,7 +92,11 @@ export default {
     next: "I've read the guide",
   },
   generic: {
+    clear: 'Clear',
     done: 'Done',
+    disabled: 'Disabled',
+    readMore: 'Read More',
+    witness: 'Witness',
     understand: 'I understand',
     blocks: 'Blocks',
     active: 'Active',
@@ -108,7 +111,11 @@ export default {
     go_to_account: 'Go to My Account',
     go_to_settings: 'Go to Settings',
     hotspot: 'Hotspot',
+    validator: 'Validator',
     location: 'Location',
+    unable_to_get_location: 'We were unable to get your location',
+    location_blocked:
+      "Location is turned off. Go to your phone's settings to allow Location Services.",
     challenger: 'Challenger',
     learn_more: 'Learn More',
     cancel: 'Cancel',
@@ -126,11 +133,30 @@ export default {
     forget: 'Forget',
     error: 'Error',
     loading: 'Loading...',
+    copy: 'Copy',
+    address: 'Address',
+    copy_address: 'Copy Address',
+    share: 'Share',
+    invalid_password: 'You password is incorrect',
+    something_went_wrong: 'Something went wrong',
+    hnt_to_currency: '{{currencyType}}. Data from CoinGecko',
+    search_location: 'Search for an address or place',
+    unavailable: 'Unavailable',
+    minutes: '{{count}} minute',
+    minutes_plural: '{{count}} minutes',
+    seconds: '{{count}} second',
+    seconds_plural: '{{count}} seconds',
+    meters: '{{distance}}m',
+    kilometers: '{{distance}}km',
+    owner: 'Owner',
+    one: 'one',
+    swipe_to_confirm: 'Swipe to Confirm',
   },
   hotspot_setup: {
     selection: {
       title: 'Choose\nyour Hotspot.',
       subtitle: 'What kind of Hotspot do you\nwish to add?',
+<<<<<<< HEAD
       helium: 'Helium\nHotspot',
       rak: 'RAK\nHotspot Miner',
       nebrain: 'Nebra\nIndoor Hotspot',
@@ -140,6 +166,8 @@ export default {
       helium_edition: 'For the Helium Network',
       fine_print:
         'RAK Hotspot Miners have special firmware preloaded by RAK. Double check your hardware is a RAK Hotspot Miner before proceeding.',
+=======
+>>>>>>> 1f8e1c1a23096999ff6acb08aaea2f74459de002
     },
     education: {
       title: 'Placing\nyour Hotspot.',
@@ -167,18 +195,34 @@ export default {
       ],
       next: "I've read the guide",
     },
+    external: {
+      qrTitle: 'Scan QR Code',
+      webTitle: 'Web Onboarding',
+      wallet_address: 'Your wallet address is:',
+    },
+    confirm: {
+      title: 'Confirm\nInformation',
+      title_one_line: 'Confirm Information',
+      public_key: 'Public Key',
+      mac_address: 'MAC Address',
+      owner_address: 'Owner Address',
+    },
     diagnostics: {
       title: 'Diagnostics',
+<<<<<<< HEAD
       p_1:
         '<b><white>Diagnostic support allows Helium to identify issues with your Hotspot in a secure way.</white></b>\n\nHelium will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@helium.com</b></purple> from the email used to purchase the Hotspot.',
       nebra_p_1:
         '<b><white>Diagnostic support allows Nebra LTD to identify issues with your Hotspot in a secure way.</white></b>\n\nNebra will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@nebra.com</b></purple> from the email used to purchase the Hotspot.',
       syncrobit_p_1:
         '<b><white>Diagnostic support allows SyncroB.it to identify issues with your Hotspot in a secure way.</white></b>\n\nSyncroB.it will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@syncrob.it</b></purple> from the email used to purchase the Hotspot.',
+=======
+>>>>>>> 1f8e1c1a23096999ff6acb08aaea2f74459de002
     },
     power: {
       title: 'Power Up',
       next: "I'm powered up",
+<<<<<<< HEAD
       helium_subtitle_1:
         'Attach the antenna and plug in the provided power adapter.',
       rak_subtitle_1:
@@ -221,6 +265,11 @@ export default {
         'Bluetooth is automatically enabled for 10 minutes after the Nebra Outdoor Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.\n\nPress Next to scan.',
       syncrobit_subtitle_2:
         'Bluetooth is automatically enabled for 5 minutes after the SyncroB.it Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.\n\nPress Next to scan.',
+=======
+    },
+    pair: {
+      title: 'Bluetooth',
+>>>>>>> 1f8e1c1a23096999ff6acb08aaea2f74459de002
       alert_no_permissions: {
         title: 'Authorize Bluetooth',
         body:
@@ -267,6 +316,10 @@ export default {
       disconnect_help:
         'To update the password or connect to a new network, first forget the old network.',
       disconnect: 'Forget Network',
+      not_found_title: 'No Wi-Fi Networks Found',
+      not_found_desc:
+        'It can take up to 3 minutes for the Hotspot to boot and find available networks.',
+      scan_networks: 'Scan Networks',
     },
     disconnect_dialog: {
       title: 'Forget Network?',
@@ -306,6 +359,25 @@ export default {
         'Your Hotspot will check for updates automatically. This can take about 10 minutes. Leave it plugged in and check back later.',
       next: 'Got it',
     },
+    onboarding_error: {
+      title: 'Onboarding Error',
+      subtitle: {
+        something_went_wrong:
+          'Something went wrong. Please contact the Hotspot manufacturer for next steps.',
+        invalid_onboarding_address:
+          'Your onboarding address is invalid. Please contact the Hotspot manufacturer for next steps.',
+        no_onboarding_key:
+          'Unable to find Hotspot in the Onboarding Server. Please contact the Hotspot manufacturer for next steps.',
+        service_unavailable:
+          "The Onboarding Server is temporarily unavailable and users won't be able to add Hotspots at this time.  Check for updates on status.helium.com and try again later.",
+      },
+      next: 'Exit Setup',
+      disconnected:
+        'There was an error connecting to the Hotspot. Please try again.',
+      title_connect_failed: 'Hotspot Pairing Failed',
+      body_connect_failed:
+        'Hotspot Miner is unable to respond to requests. Please reboot the Hotspot and try again later.',
+    },
     add_hotspot: {
       title: 'Add Hotspot',
       subtitle:
@@ -330,6 +402,14 @@ export default {
         'There was an error constructing the Add Hotspot transaction. Please try again.',
       assert_loc_error_body:
         'There was an error constructing the Assert Location transaction. Please try again.',
+      assert_loc_error_no_loc:
+        'The selected location is invalid. Please try again.',
+      assert_loc_error_no_change_title: 'Location Unchanged',
+      assert_loc_error_no_change_body:
+        'The Hotspot location has not changed. Drag the pin to a different location and try again.',
+      no_onboarding_key_title: 'Hotspot not found on Onboarding Server',
+      no_onboarding_key_message:
+        'Unable to add Hotspot. Please contact your Hotspot manufacturer for next steps.',
     },
     enable_location: {
       title: 'Set Hotspot\nLocation',
@@ -362,6 +442,11 @@ export default {
       error_body: 'There was an error loading fee data. Please try again.',
       next: 'Register Hotspot',
       fee_next: 'Pay Fee & Register Hotspot',
+      gain_label: 'TX / RX Gain:',
+      elevation_label: 'Height:',
+      gain: '{{gain}} dBi',
+      elevation: '{{count}} meter',
+      elevation_plural: '{{count}} meters',
     },
     location: {
       title: 'Hotspot Location',
@@ -378,18 +463,39 @@ export default {
       alertMessage:
         'Request to servers have timed out and we cannot add your Hotspot at this time.\n\nPlease contact support@helium.com and note MAC address %{mac}.',
     },
+    skip_location: {
+      title: 'Add Hotspot',
+      subtitle_1: 'You have decided to assert location later.',
+      subtitle_2: 'Update your location later from settings.',
+    },
+    not_owner: {
+      title: 'This Hotspot already has an owner.',
+      subtitle_1: 'Perhaps you’re hosting it for\nsomeone else?',
+      subtitle_1_no_follow:
+        "If you're a Host updating Wi-Fi, you may exit setup now.",
+      subtitle_2:
+        'Following a Hotspot allows you to monitor a Hotspot within the app when you don’t own it.',
+      contact_manufacturer:
+        'If you think you are the Hotspot Owner (i.e. you bought it) contact the Hotspot manufacturer.',
+    },
+    owned_hotspot: {
+      title: 'You already own this Hotspot',
+      subtitle_1: 'Looks like this Hotspot is already onboarded.',
+      subtitle_2:
+        'To update your Hotspot’s Wi-Fi or location, go to your Hotspot’s Settings.',
+    },
   },
   account_import: {
     word_entry: {
       title: 'Enter Recovery\nSeed Phrase',
       directions: 'Enter the <b>{{ordinal}}</b> Word',
       placeholder: '{{ordinal}} word',
-      subtitle: 'Recovery Seed Phrases are not case-sensitive',
+      subtitle: 'Recovery Seed Phrases are not\ncase-sensitive',
     },
     confirm: {
-      title: 'Confirm Seed Phrase',
+      title: 'Please Confirm\nSeed Phrase',
       subtitle:
-        "Here are the 12 words you've entered. If needed, you can tap the words to update.",
+        'Here are the 12 words you’ve entered. Tap on any of them if you need to edit.',
       next: 'Submit Seed Phrase',
     },
     complete: {
@@ -419,8 +525,14 @@ export default {
         body: 'Blue signifies HNT <blue>leaving</blue> your account.',
       },
     ],
+    chartRanges: {
+      daily: { label: '14D', accessibilityLabel: '14 Days' },
+      weekly: { label: '12W', accessibilityLabel: '12 Weeks' },
+      monthly: { label: '12M', accessibilityLabel: '12 Months' },
+    },
   },
   send: {
+    not_valid_address: 'Not a valid Helium Wallet Address.',
     title: {
       payment: 'Send HNT',
       dcBurn: 'Burn HNT',
@@ -446,6 +558,10 @@ export default {
     memo: {
       label: 'Memo',
       placeholder: 'Enter Memo... (optional)',
+      bytes_left: '{{count}} byte left',
+      bytes_left_plural: '{{count}} bytes left',
+      length_error:
+        'Memo is too long. Please edit the memo to 8 bytes or less.',
     },
     sendMax: 'Send Max',
     button: {
@@ -456,9 +572,12 @@ export default {
     },
     qrInfo: 'QR INFO',
     error: 'There was an error submitting this transaction. Please try again.',
+    deployModePaymentsDisabled: 'Payments are disabled in Deploy Mode',
     hotspot_label: 'Hotspot',
     last_activity: 'LAST REPORTED ACTIVITY: {{activity}}',
     label_error: 'You do not have enough HNT in your account.',
+    stale_error:
+      'Hotspot has not had Beacon or Witness activity in the last {{blocks}} blocks.',
     scan: {
       title: 'Ways to use a QR Code',
       send: 'Send HNT',
@@ -470,6 +589,18 @@ export default {
       view_description:
         'Share your QR Code to deposit or receive HNT from others.',
       learn_more: 'Learn More',
+      parse_code_error: 'Unable to parse QR code',
+      invalid_hotspot_address:
+        'Hotspot Address in QR code is missing or invalid.',
+      invalid_sender_address:
+        'Sender Address in QR code is not a valid wallet account address.',
+      mismatched_sender_address:
+        'Sender Address in QR code does not match wallet account address. Addresses must match in order to proceed.',
+    },
+    send_max_fee: {
+      error_title: 'Send Max Error',
+      error_description:
+        'Unable to calculate fees to send max balance.\n\nTap Send Max and try again.',
     },
   },
   more: {
@@ -490,6 +621,20 @@ export default {
           after_4_hr: 'After 4 hours',
         },
         revealWords: 'Reveal Words',
+        deployMode: {
+          title: 'Deploy Mode',
+          subtitle:
+            'This mode adds extra protection to your wallet, restricting some app features.',
+          inDeployMode: 'In Deploy Mode:',
+          cantViewWords: "Can't view your 12 secure words",
+          cantTransferHotspots: "Can't transfer Hotspots from this account",
+          canOnlySendFunds: 'Can only send funds to',
+          otherAccount: 'other specified account',
+          enableButton: 'Enable Deploy Mode',
+          disableInstructions:
+            'In order to disable this feature, you will have to log out. Remember to write down all 12 words now.',
+          addressLabel: 'Allowed Account Address...',
+        },
       },
       learn: {
         title: 'Learn',
@@ -501,14 +646,26 @@ export default {
         troubleshooting: 'Troubleshooting',
         joinDiscord: 'Join Helium Discord',
       },
-      account: {
-        title: 'Account',
+      app: {
+        title: 'App',
+        enableHapticFeedback: 'Enable Haptic Feedback',
+        enableFleetMode: 'Enable Fleet Mode',
+        showHiddenHotspots: 'Show Hidden Hotspots',
+        convertHntToCurrency: 'Convert HNT to Currency',
         language: 'Language',
+        currency: 'Currency',
+        network: 'Choose API Provider',
         signOut: 'Sign Out',
+        clearMapCache: 'Clear Map Cache',
+        clearMapCacheAlert: {
+          title: 'Clear Map Cache?',
+          body:
+            'This will clear your map cache which may help resolve map issues.',
+        },
         signOutAlert: {
           title: 'Warning!',
           body:
-            'This will remove all account info from this device. The only way to restore access to your account and Hotspots will be by using your 12 word recovery seed phrase.',
+            'You are signing out of your account. Do you have your 12 recovery words? If you don’t, you will lose access to:\n\n- your Hotspots\n- your HNT\n- your Wallet',
         },
       },
     },
@@ -519,42 +676,94 @@ export default {
     enter_current: 'Enter your current PIN to continue',
   },
   hotspots: {
+    sort_by: 'Sort Hotspots By',
     new: {
       title: 'Add a New Hotspot',
       subtitle:
         'If you just added a Hotspot, hang tight. It takes a few moments for the Network to propagate the Hotspot.',
-      setup: 'Set up Hotspot',
-      explorer: 'Global Hotspot Explorer',
+      setup: '+ Add a Hotspot',
+      explorer: 'Browse Network Map',
     },
     owned: {
       title: 'My Hotspots',
-      reward_summary: 'Your Hotspot mined {{hntAmount}} in the past 24 hours.',
-      reward_summary_plural:
-        'Your {{count}} Hotspots mined {{hntAmount}} in the past 24 hours.',
+      title_no_hotspots: 'Hotspots',
+      hotspot_plural: '{{count}} Hotspots',
+      hotspot: 'Hotspot',
+      validator_plural: '{{count}} Validators',
+      validator: 'Validator',
+      reward_hotspot_summary:
+        'Your Hotspot has earned\n{{hntAmount}} in the past 24 hours.',
+      reward_hotspot_summary_plural:
+        'Your {{count}} Hotspots have earned\n{{hntAmount}} in the past 24 hours.',
+      reward_validator_summary:
+        'Your Validator has earned\n{{hntAmount}} in the past 24 hours.',
+      reward_validator_summary_plural:
+        'Your {{count}} Validators have earned\n{{hntAmount}} in the past 24 hours.',
+      reward_hotspot_and_validator_summary:
+        'Your {{hotspot}} and \n{{validator}} have earned\n{{hntAmount}} in the past 24 hours.',
       your_hotspots: 'Your Hotspots',
       filter: {
         new: 'Newest Hotspots',
         near: 'Nearest Hotspots',
         earn: 'Top Earning Hotspots',
         offline: 'Offline Hotspots',
+        followed: 'Followed Hotspots',
+        followedValidators: 'Followed Validators',
+        validators: 'Validators',
+        unasserted: 'Unasserted Hotspots',
       },
     },
-    empty: {
-      body: "You haven't added or followed any Hotspots yet.",
+    search: {
+      title: 'Hotspot Search',
+      network: 'Network\nSearch',
+      my_hotspots: 'My Hotspots',
+      all_hotspots: 'All Hotspots',
+      placeholder: 'Search...',
+      recent_searches: 'Recent Searches',
+      tips: 'Search Tips',
+      tips_body:
+        'Try typing a Hotspot or Validator Name (e.g. silly-animal-name) or a place name (e.g. New York City).\n\nNote: Hotspots and Validators added within the last 10 minutes may not appear.',
     },
+    empty: {
+      title: 'Add a\nHelium Miner',
+      body: 'There are two types of miner\non the Helium Network:',
+      search: 'Search',
+      info: 'Info',
+      hotspots: {
+        title: 'Hotspots',
+        body:
+          'Hardware miners that participate in Proof-of-Coverage and mine HNT.',
+        add: 'Add Hotspot',
+      },
+      validators: {
+        title: 'Validators',
+        body:
+          'Validator nodes secure the Helium network by verifying transactions and adding blocks in Consensus Groups.',
+      },
+      failed:
+        'We’re having problems fetching your Hotspots due to an API or network outage. Please try again later.',
+    },
+    list: {
+      no_offline: 'NO OFFLINE HOTSPOTS',
+      online: 'ONLINE HOTSPOTS',
+      no_results: 'No Results',
+    },
+    ticker:
+      '{{formattedHotspotCount}} Hotspots • Oracle Price: {{oraclePrice}} • Block Time: {{formattedBlockTime}} secs • ',
+    ticker_no_block:
+      '{{formattedHotspotCount}} Hotspots • Oracle Price: {{oraclePrice}} • ',
   },
   permissions: {
     location: {
       title: 'Location Permission',
       message:
-        'Helium Wallet needs access to your location for Bluetooth LE discovery.',
+        'Helium needs access to your location for Bluetooth discovery and to enable location assertion. This information will never be sold or shared.',
     },
   },
   time: {
     morning: 'Morning',
     evening: 'Evening',
     afternoon: 'Afternoon',
-    day_header: 'Good\n{{timeOfDay}}.',
   },
   notifications: {
     tapToReadMore: 'Tap to read more',
@@ -565,43 +774,121 @@ export default {
       subtitle:
         'Here you’ll get news, updates and alerts about your Hotspots and The People’s Network.',
     },
+    helium_updates_empty: {
+      title: 'There are no Helium updates',
+      subtitle: "Stay tuned for upcoming news about The People's Network.",
+    },
+    hotspot_update_empty: {
+      title: 'There are no Hotspot notifications',
+      subtitle:
+        "Here is where you'll be notified when your Hotspot falls offline or comes back online.",
+    },
+    transfers_empty: {
+      title: 'There are no Hotspot Transfers',
+      subtitle:
+        "Here is where you'll find pending Hotspot transfer notifications.",
+    },
+    earnings_empty: {
+      title: 'No weekly earnings to report',
+      subtitle:
+        "Here is where you'll find weekly earnings notifications from your owned Hotspots.",
+    },
+    payment_empty: {
+      title: 'No payment transactions',
+      subtitle: 'Payment transaction notifications will appear here.',
+    },
+    failed_empty: {
+      title: 'No failed transactions',
+      subtitle: 'Any failed transaction notification will appear here.',
+    },
+    all: 'All Messages',
+    hotspot_updates: 'Hotspot Updates',
+    hotspot_transfers: 'Hotspot Transfers',
+    helium_updates: 'Helium Updates',
+    helium_update: 'Helium Update',
+    weekly_earnings: 'Weekly Earnings',
+    payment_notifications: 'Payment Notifications',
+    failure_notifications: 'Failure Notifications',
   },
   transactions: {
     pending: 'Pending',
     mining: 'Mining Rewards',
     sent: 'Sent HNT',
+    stakeValidator: 'Stake HNT',
+    unstakeValidator: 'Unstake HNT',
+    transferValidator: 'Transfer Stake',
     burnHNT: 'Burn HNT',
     received: 'Received HNT',
     added: 'Hotspot Added to Blockchain',
     location: 'Confirm Location',
+    location_v2: 'Update Hotspot',
     transfer: 'Hotspot Transfer',
     transferSell: 'Transfer Hotspot (Sell)',
     transferBuy: 'Transfer Hotspot (Buy)',
     view: 'View',
+    view_transactions: 'View Transactions',
     filter: {
       all: 'All Activity',
       mining: 'Mining Rewards',
       payment: 'Payment Transactions',
       hotspot: 'Hotspot Transactions',
+      burn: 'Burn Transactions',
+      validator: 'Validator Transactions',
       pending: 'Pending Transactions',
     },
     no_results: 'No Results',
+    all_footer:
+      "You've reached the end of your recent activity. Select a filter or <b><purple>go to the explorer</purple></b> to view more.",
+    rejected: 'Failed to load. Tap to try again',
   },
   hotspot_settings: {
     title: 'Hotspot Settings',
     pairing: {
-      title: 'Hotspot Pairing Required',
+      title: 'Update Wi-Fi or Run Diagnostics',
       subtitle:
-        'Press the button on your Helium Hotspot, or power-cycle your RAK Hotspot Miner.',
-      scan: 'Scan for my Hotspot',
+        'Pairing required before proceeding.\nSome Hotspot models are not supported, check with your manufacturer.',
+      scan: 'Pair',
     },
     transfer: {
       title: 'Transfer Hotspot',
-      subtitle: 'Transfer Hotspot to another Helium Wallet Account.',
+      subtitle: 'Send to another Helium Wallet.',
       begin: 'Begin Hotspot Transfer',
+    },
+    update: {
+      title: 'Update Hotspot',
+      subtitle: 'Hotspot location or antenna details.',
+    },
+    visibility_on: {
+      title: 'Show Hotspot',
+      subtitle: 'Makes the Hotspot visible in the app.',
+    },
+    visibility_off: {
+      title: 'Hide Hotspot',
+      subtitle: 'Hides the Hotspot in the app.',
+    },
+    visibility_popup: {
+      title: 'Hide Hotspot',
+      message:
+        'Hotspot will be hidden from view in the app but stays linked to your account.\n\nTo view Hidden Hotspots and unhide them, go to Settings.',
+    },
+    discovery: {
+      title: 'Discovery Mode',
+      subtitle: 'Identify ideal Hotspot placement.',
+      no_location_error: {
+        title: 'Unable to Start Discovery Mode',
+        message:
+          'Please set a Hotspot location before initiating Discovery Mode.',
+      },
+      unasserted_hotspot_warning: {
+        title: 'Hotspot Does Not Have A Location',
+        message:
+          "To visualize Hotspots that respond, we will use your phone's location as a placeholder for the Hotspot.",
+      },
     },
     diagnostics: {
       title: 'Diagnostic Report',
+      desc_info:
+        "Please add more details to the issue you're experiencing below",
       no_hotspots: 'No Hotspots Found',
       scan_again: 'Scan again',
       generating_report: 'Generating Report',
@@ -622,18 +909,25 @@ export default {
       last_challenged_help:
         'Neighboring Hotspots have not been able to verify your Hotspot location. In most cases, this is because the antenna is in an area where radio signals can’t reach (buildings blocking, antenna pointed down, antenna indoors).',
       firmware: 'Hotspot Firmware',
-      hotspot_type: 'Hotspot Type',
+      hotspot_type: 'Hotspot Maker',
       app_version: 'App Version',
       wifi_mac: 'Wi-Fi MAC',
       eth_mac: 'Ethernet MAC',
       nat_type: 'NAT Type',
       ip: 'IP Address',
+      disk: 'Disk',
+      disk_read_only: 'Read-Only',
+      disk_no_data: 'No Data Available',
+      disk_read_only_instructions:
+        'Contact your Manufacturer for a replacement. Hotspot unable to sync due to hardware failure.',
       report_generated: 'Report Generated',
       send_to_support: 'Send Report to Support',
       help_link: 'Read more for possible solutions',
       email_client_missing:
         'Could not find a compatible email client installed',
       other_info: 'Other Information',
+      unavailable_warning:
+        '* Diagnostics may be unavailable before a Hotspot is fully booted. If data is missing, please go back and generate the diagnostic report again.',
     },
     wifi: {
       title: 'Wi-Fi Network',
@@ -658,7 +952,7 @@ export default {
         'You have <b><purple>{{count}} free remaining</purple></b> Hotspot Location Assert Updates.',
       change_location: 'Change Location',
       confirm: 'I Confirm',
-      cost: 'The cost to reasserting location is:',
+      cost: 'The cost of reasserting location is:',
       insufficient_funds:
         'You do not have the funds available to make\nthis assert. Acquire HNT.',
       confirm_location: "Please confirm your Hotspot's change in location",
@@ -667,26 +961,112 @@ export default {
       assert_pending: 'Assert Pending...',
       failTitle: 'Failed to reassert hotspot',
       failSubtitle: 'Please try again later',
+      current_location: 'Current Location',
+      new_location: 'New Location',
+      antenna_details: 'Antenna/Height Details',
+      update_antenna: 'Update Antenna',
+      submit: 'Update Hotspot transaction submitted and now pending.',
+      already_pending:
+        'Unable to update Hotspot while a transaction is pending. Please try again later.',
     },
   },
+  validator_details: {
+    overview: 'Overview',
+    penalties: 'Penalties',
+    consensus_groups: 'Consensus Groups',
+    consensus_group: 'Consensus Group',
+    consensus_group_title: 'Consensus\nGroup',
+    elected_count: 'Currently Elected Validators ({{count}})',
+    earnings_desc: '30d Earnings',
+    penalty_desc: 'Penalty Score',
+    consensus_desc: 'Participated in Consensus',
+    in_consensus: ' In Consensus Group',
+    time_range: 'Time Range',
+    time_range_24_hours: '24H',
+    time_range_14_days: '14D',
+    time_range_30_days: '30D',
+    in_cooldown_mode: 'In Cooldown Mode',
+    cooldown_blocks_left: '{{blocks}} Blocks Left',
+    status_online: 'Online',
+    status_offline: 'Offline',
+    current_block_height: 'Current Block Height: {{blockHeight}}',
+    penalty: 'Penalty',
+    lifetime_consensus: 'Lifetime Consensus',
+    stake_status: 'Stake Status',
+    performance: 'Performance Penalty',
+    tenure: 'Tenure Penalty',
+    block: 'Block {{height}}',
+    block_elected: 'Block Elected {{block}}',
+    version_desc: 'Validator Version',
+    heartbeat_desc: 'Blocks since the last heartbeat transaction',
+  },
   hotspot_details: {
+    checklist: 'Progress',
     title: 'Hotspot Details',
     owner: 'Owned by {{address}}',
     owner_you: 'Owned by you',
     pass_rate: 'PASS RATE',
     reward_title: 'HNT Rewards',
     witness_title: 'Average Witnesses',
+    num_witnesses: '{{count}} Witness',
+    num_witnesses_plural: '{{count}} Witnesses',
+    distance_away: '{{distance}} away',
     challenge_title: 'Challenges',
     challenge_sub_title: '(witness, challenger, or challengee)',
     picker_title: 'Past',
-    picker_options: ['24 Hours', '7 Days', '14 Days', '30 Days'],
+    overview: 'Earnings',
+    no_location: 'No Location',
+    picker_options: ['24H', '14D', '30D'],
+    picker_prompt: 'Select Range',
+    status_data_only: 'Data-Only',
     status_online: 'Online',
     status_offline: 'Needs Attention',
+    status_syncing: 'Syncing',
+    relayed: 'Relayed',
+    status_prompt_online: {
+      title: 'Hotspot is online and syncing.',
+      subtitle_active: 'Status: Block {{hotspotBlock}} of {{currentBlock}}',
+      subtitle_starting: 'Beginning to sync...',
+    },
+    status_prompt_offline: {
+      title: 'Hotspot is offline and not syncing.',
+    },
     options: {
       settings: 'Settings',
       viewExplorer: 'View on Explorer',
       share: 'Share',
     },
+    no_location_title: 'No Asserted Location',
+    no_location_body: 'Pair with the Hotspot to begin.',
+    percent_synced: '{{percent}}% Synced',
+    starting_sync: 'Starting Sync...',
+    data_only_prompt: {
+      title: 'Data-Only Hotspot Explained',
+      message:
+        'These Hotspots earn HNT for transmitting data packets from sensors.\n\nThey do not affect transmit scales and do not affect Hotspot Proof-of-Coverage earnings of nearby Hotspots.',
+    },
+    relay_prompt: {
+      title: 'Hotspot is Relayed',
+      message:
+        "Hotspot's connection is being relayed through another Hotspot on the network which may affect mining. To take a Hotspot out of Relay, please visit the troubleshooting guide.",
+    },
+    reward_scale_prompt: {
+      title: 'Transmit Scale',
+      message:
+        "When this Hotspot transmits a beacon, any Hotspots that hear it will have its mining rewards scaled by this number. This Hotspot's Challengee reward will also scale by this number.",
+    },
+    witness_prompt: {
+      title: 'Witnesses',
+      message:
+        'The Hotspots in this list have witnessed a Beacon from {{hotspotName}} recently.\n\nFluctuations are normal and expected. The number of Hotspots will reset to zero if you update location, antenna, or elevation',
+    },
+    witness_desc:
+      'These Hotspots witnessed {{hotspotAnimal}}’s\nbeacons over the last 5 days.',
+    witness_desc_none:
+      'No Hotspots have heard and responded to\n{{hotspotAnimal}}’s beacons over the last 5 days.',
+    get_witnessed: 'GET WITNESSED',
+    get_witnessed_desc:
+      'Position your Hotspot so that it can be heard by others. Often this means moving it higher in order to increase its range.',
   },
   transfer: {
     title: 'Transfer Hotspot',
@@ -712,8 +1092,11 @@ export default {
     fine_print:
       'Hotspot will transfer once the buyer accepts and completes the transaction.',
     notification_button: 'View Transaction',
+    deployModeTransferDisableTitle: 'Transfer Hotspot Disabled',
+    deployModeTransferDisabled:
+      'Transfer Hotspot is disabled while in Deploy Mode.',
     cancel: {
-      button_title: 'Cancel Transfer',
+      button_title: 'Transfer Pending. Tap to Cancel.',
       failed_alert_title: 'Unable to Cancel Transfer',
       failed_alert_body: 'No response from the API. Please try again.',
       alert_title: 'Cancel Hotspot Transfer',
@@ -736,6 +1119,8 @@ export default {
     owner: 'Owner',
     my_account: 'My Account',
     view_block: 'View Block',
+    elevation: 'Height',
+    antenna: 'Antenna',
     rewardTypes: {
       poc_challengees: 'PoC',
       poc_challengers: 'Challenger',
@@ -744,21 +1129,22 @@ export default {
       data_credits: 'Packet Transfer',
       securities: 'Security Tokens',
     },
+    staking_fee_payer: 'Paid By {{payer}}',
   },
   checklist: {
     title: 'Checklist',
     blocks: {
       not:
-        'Hotspots must be fully synced before they can mine. New Hotspots can take up to 48 hours to sync.',
-      full: 'Hotspot is fully synced.',
-      partial:
-        'Hotspot is {{count}} block behind the Helium blockchain and is roughly {{percent}}% synced.',
-      partial_plural:
-        'Hotspot is {{count}} blocks behind the Helium blockchain and is roughly {{percent}}% synced.',
+        'Hotspots must be fully synced before they can mine. New Hotspots can take up to 96 hours to sync.',
+      full: 'Hotspot fully synced.',
+      partial: 'Hotspot syncing with the Helium blockchain.',
+      full_with_date: 'Hotspot fully synced as of {{timeAgo}}.',
+      partial_with_date:
+        'Hotspot syncing with the Helium blockchain as of {{timeAgo}}.',
       title: 'Sync to Blockchain',
     },
     status: {
-      online: 'Hotspot is connect to the internet.',
+      online: 'Hotspot is connected to the internet.',
       offline:
         'Hotspot is not online. Hotspots must be online to sync and mine.',
       title: 'Hotspot Status',
@@ -767,7 +1153,7 @@ export default {
       success: 'Hotspot issued a challenge {{count}} block ago.',
       success_plural: 'Hotspot issued a challenge {{count}} blocks ago.',
       fail:
-        "Hotspot hasn't issued a challenge yet. Hotspots create challenges automatically.",
+        "Hotspot hasn't issued a challenge yet. Hotspots create challenges automatically every 240 blocks, or approximately 4 hours.",
       title: 'Create a Challenge',
     },
     challenge_witness: {
@@ -780,7 +1166,7 @@ export default {
       success_plural:
         'This Hotspot has {{count}} Hotspots in its witness list.',
       fail:
-        'No witnesses yet. Newly added Hotspots may take a few days to populate their witnesses.',
+        'No witnesses yet. New Hotspots, Hotspots with recently updated location or antenna settings will have zero witnesses.',
       title: 'Witness List',
     },
     challengee: {
@@ -788,18 +1174,147 @@ export default {
       success_plural:
         'Hotspot last participated in a challenge {{count}} blocks ago.',
       fail:
-        'It can take a few hours to pass a challenge once a witness list is created.',
+        'Online Hotspots are challenged every 240 blocks (or 4 hours). Hotspots send a Beacon (also known as a challenge) and if other Hotspot witness, they pass.',
       title: 'Pass a Challenge',
     },
     data_transfer: {
       success: 'Hotspot has transferred data packets recently.',
       fail:
-        "Hotspots automatically transfer device data and earn HNT. This Hotspot hasn't transferred data yet.",
+        "Hotspots automatically transfer device data from nearby sensors. This Hotspot hasn't transferred data yet.",
       title: 'Transfer Data',
     },
-    auto: 'AUTO',
-    auto_hours: 'EVERY FEW HOURS',
+    auto: 'AUTOMATIC',
+    auto_hours: 'EVERY 6 HOURS',
+    auto_refresh: 'REFRESHES OFTEN',
     complete: 'COMPLETE',
     online: 'ONLINE',
+    pending: 'PENDING',
+    item_count: '{{index}} of {{total}}',
   },
+  discovery: {
+    troubleshooting_guide: 'Troubleshooting Guide',
+    syncing_prompt: {
+      title: 'Unable to initiate Discovery Mode',
+      message: 'Hotspot must be fully synced, please try again later.',
+    },
+    offline_prompt: {
+      title: 'Unable to initiate Discovery Mode',
+      message: 'Hotspot is offline, connect to internet and try again.',
+    },
+    relay_prompt: {
+      title: 'Hotspot is Relayed',
+      message:
+        'Relayed Hotspots running Discovery Mode may not receive responses from neighboring Hotspots. To take a Hotspot out of Relay, please visit the troubleshooting guide.',
+    },
+    session_error_prompt: {
+      title: 'Unable to initiate Discovery Mode',
+      message:
+        'Hotspot may be behind a relay and is not responding. Check your router settings and try again.',
+    },
+    begin: {
+      title: 'Discovery Mode',
+      subtitle:
+        'Find out which Hotspots can hear you by sending radio packets for {{duration}}.',
+      body:
+        'Discovery Mode is free to use for now, up to {{requestsPerDay}} sessions per day.',
+      previous_sessions: 'Previous Sessions',
+      last_30_days: '(Last 30 Days)',
+      start_session: 'Begin New Session',
+      no_sessions: 'You’ve run out of sessions for today.\nTry again tomorrow.',
+      responses: '{{count}} response',
+      responses_plural: '{{count}} responses',
+      initiation_error: 'Unable to Initiate Session',
+      error: {
+        title: 'Error',
+        subtitle:
+          'There was a problem loading discovery mode. Please try again later',
+      },
+      location_opts: {
+        hotspot: 'Use Temporary Location*',
+        asserted: 'Use Asserted Location',
+        info:
+          '*Useful if you want to test Hotspot coverage before setting a location',
+      },
+    },
+    results: {
+      title: 'Discovery Mode Results',
+      share: 'Share Results',
+      responded: 'Hotspots Responded',
+      elapsed_time: 'Time Elapsed',
+      result_time: 'Time of Results',
+      searching: 'Searching',
+      distance: '{{distance}} {{unit}} away',
+      added_to_followed: 'Added to Followed Hotspots',
+      removed_from_followed: 'Removed from Followed Hotspots',
+    },
+    share: {
+      subject: 'Discovery Results',
+      hotspot_name: 'Hotspot Name',
+      packets_heard: 'Packets Heard',
+    },
+  },
+  antennas: {
+    onboarding: {
+      title: 'Antenna Setup',
+      subtitle: 'Submit antenna and height details for your Hotspot.',
+      gain: 'TX / RX Gain',
+      dbi: 'dBi',
+      elevation: 'Height (meters)',
+      select: 'Select Antenna',
+    },
+    elevation_info: {
+      title: 'Hotspot Height',
+      desc:
+        'Estimate how high the antenna is placed relative to the ground. An antenna located on the roof of a single-story house is typically 5 meters.',
+    },
+    gain_info: {
+      title: 'Antenna TX / RX Gain',
+      desc:
+        'A value between 1 and 15 to one decimal point. This is provided by your hotspot or antenna manufacturer.',
+    },
+  },
+  map_filter: {
+    your_hotspots: {
+      title: 'Your Hotspots',
+      body: 'Shows followed and owned Hotspots',
+      followed: 'Followed',
+      owned: 'Owned',
+    },
+    witness: {
+      title: 'Witnesses',
+      body: 'Highlights witnesses for chosen Hotspot',
+      desc_title: 'What are Witnesses?',
+      desc_body:
+        'Witnesses are Hotspot that hear a Hotspots ‘Beacons’ and report Proof-of-Coverage receipts.',
+    },
+    reward: {
+      title: 'Transmit Scaling',
+      body:
+        'Indicates location density. When a Hotspot transmits a beacon, any that hear it will have its mining rewards scaled by this number.',
+    },
+    title: 'Map Filters',
+    button: 'Choose Map Filter',
+  },
+  statusBanner: {
+    description: 'Last updated {{date}}. Tap for info.',
+  },
+  fleetMode: {
+    autoEnablePrompt: {
+      title: 'Fleet Mode Enabled',
+      subtitle:
+        'Fleet Mode Fleet Mode has been enabled for this account to improve app performance.',
+    },
+    enablePrompt: {
+      title: 'Enable Fleet Mode',
+      subtitle:
+        'Fleet Mode optimizes app performance by reducing the amount of data the app fetches but does not impact onboarding, setting location, or diagnostics. Fleet Mode is recommended for accounts with more than {{lowerLimit}} Hotspots.',
+    },
+    disablePrompt: {
+      title: 'Turning Off Fleet Mode',
+      subtitle:
+        'Turning off Fleet Mode may negatively affect App performance, resulting in your ability to interact with the App. We do not recommend turning off Fleet Mode for users with more than {{lowerLimit}} Hotspots in an account.',
+    },
+  },
+  explore_hotspots: 'Explore Hotspots',
+  explore_validators: 'Explore Validators',
 }

@@ -1,5 +1,6 @@
-import { Keypair, Mnemonic, Address } from '@helium/crypto-react-native'
+import { Address, Keypair, Mnemonic } from '@helium/crypto-react-native'
 import * as SecureStore from 'expo-secure-store'
+import OneSignal from 'react-native-onesignal'
 import * as Logger from './logger'
 
 type AccountStoreKey = BooleanKey | StringKey
@@ -12,6 +13,7 @@ const stringKeys = [
   'authInterval',
   'walletApiToken',
   'language',
+  'permanentPaymentAddress',
 ] as const
 type StringKey = typeof stringKeys[number]
 
@@ -20,6 +22,11 @@ const boolKeys = [
   'isSettingUpHotspot',
   'requirePin',
   'requirePinForPayment',
+  'hapticDisabled',
+  'convertHntToCurrency',
+  'deployModeEnabled',
+  'fleetModeEnabled',
+  'hasFleetModeAutoEnabled',
 ] as const
 type BooleanKey = typeof boolKeys[number]
 
@@ -54,6 +61,7 @@ export const createKeypair = async (
   }
   const { keypair: keypairRaw, address } = await Keypair.fromMnemonic(mnemonic)
 
+  OneSignal.sendTags({ address: address.b58 })
   Logger.setUser(address.b58)
 
   await Promise.all([
@@ -67,7 +75,6 @@ export const getAddress = async (): Promise<Address | undefined> => {
   const addressB58 = await getSecureItem('address')
   if (!addressB58) return
 
-  Logger.setUser(addressB58)
   return Address.fromB58(addressB58)
 }
 
@@ -75,7 +82,13 @@ export const getMnemonic = async (): Promise<Mnemonic | undefined> => {
   const wordsStr = await getSecureItem('mnemonic')
   if (!wordsStr) return
 
-  const words = JSON.parse(wordsStr)
+  let words: string[] = []
+  try {
+    words = JSON.parse(wordsStr) // The new (v3) app uses JSON.stringify ['hello', 'one', 'two', 'etc'] => "[\"hello\",\"one\",\"two\",\"etc\"]"
+  } catch (e) {
+    words = wordsStr.split(' ') // The old (v2) app space separated "hello one two etc"
+    setSecureItem('mnemonic', JSON.stringify(words)) // upgrade the users to the new format
+  }
   return new Mnemonic(words)
 }
 
@@ -92,6 +105,14 @@ const makeSignature = async (token: { address: string; time: number }) => {
   const keypair = await getKeypair()
   if (!keypair) return
   const buffer = await keypair.sign(stringifiedToken)
+
+  return buffer.toString('base64')
+}
+
+export const makeDiscoverySignature = async (hotspotAddress: string) => {
+  const keypair = await getKeypair()
+  if (!keypair) return
+  const buffer = await keypair.sign(hotspotAddress)
 
   return buffer.toString('base64')
 }
@@ -122,5 +143,9 @@ export const getWalletApiToken = async () => {
   return apiToken
 }
 
-export const signOut = async () =>
-  Promise.all([...stringKeys, ...boolKeys].map((key) => deleteSecureItem(key)))
+export const signOut = async () => {
+  OneSignal.deleteTag('address')
+  return Promise.all(
+    [...stringKeys, ...boolKeys].map((key) => deleteSecureItem(key)),
+  )
+}

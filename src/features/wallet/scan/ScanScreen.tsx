@@ -1,8 +1,17 @@
 import React from 'react'
+import { RouteProp } from '@react-navigation/native'
 import Box from '../../../components/Box'
 import ScanView from './ScanView'
+import { ScanStackParamList } from './scanTypes'
 
-const ScanScreen = () => {
+type Route = RouteProp<ScanStackParamList, 'Scan'>
+
+type Props = {
+  route?: Route
+}
+
+const ScanScreen = ({ route }: Props) => {
+  const type = route?.params?.type
   return (
     <Box
       backgroundColor="white"
@@ -11,7 +20,7 @@ const ScanScreen = () => {
       alignContent="center"
       flexDirection="column"
     >
-      <ScanView />
+      <ScanView scanType={type} showBottomSheet={type !== 'transfer'} />
     </Box>
   )
 }

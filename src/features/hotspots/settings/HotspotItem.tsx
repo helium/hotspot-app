@@ -39,7 +39,7 @@ const HotspotItem = ({
     else if (connecting) nextState = 'connecting'
 
     if (nextState !== state) {
-      animateTransition()
+      animateTransition('HotspotItem')
       setState(nextState)
     }
   }, [connected, connecting, selected, state])

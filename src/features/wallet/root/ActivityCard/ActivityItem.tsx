@@ -3,20 +3,20 @@ import { createText } from '@shopify/restyle'
 import Box from '../../../../components/Box'
 import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
 import { Theme } from '../../../../theme/theme'
+import useActivityItem from '../useActivityItem'
+import {
+  HttpTransaction,
+  HttpPendingTransaction,
+} from '../../../../store/activity/activitySlice'
 
 export const ACTIVITY_ITEM_ROW_HEIGHT = 58
 
 type Props = {
   isFirst: boolean
   isLast: boolean
-  backgroundColor: string
-  icon: React.ReactNode
-  title: string
-  subtitle: string
-  time?: string
-  // eslint-disable-next-line react/no-unused-prop-types
-  hash: string // used for memoization
   handlePress: () => void
+  item: HttpTransaction | HttpPendingTransaction
+  address: string
 }
 
 const Text = createText<Theme>()
@@ -24,18 +24,16 @@ const Text = createText<Theme>()
 const ActivityItem = ({
   isFirst = false,
   isLast = false,
-  backgroundColor,
-  icon,
-  subtitle,
-  time,
-  title,
   handlePress,
+  item,
+  address,
 }: Props) => {
+  const txn = useActivityItem(item, address)
   const iconStyle = useMemo(
     () => ({
-      backgroundColor,
+      backgroundColor: txn.backgroundColor,
     }),
-    [backgroundColor],
+    [txn.backgroundColor],
   )
 
   return (
@@ -61,7 +59,7 @@ const ActivityItem = ({
         borderTopLeftRadius={isFirst ? 'm' : undefined}
         borderBottomLeftRadius={isLast ? 'm' : undefined}
       >
-        {icon}
+        {txn.listIcon}
       </Box>
       <Box flex={1} paddingHorizontal="m">
         <Text
@@ -70,7 +68,7 @@ const ActivityItem = ({
           numberOfLines={1}
           adjustsFontSizeToFit
         >
-          {title}
+          {txn.title}
         </Text>
         <Text
           color="grayExtraLight"
@@ -78,21 +76,14 @@ const ActivityItem = ({
           numberOfLines={1}
           adjustsFontSizeToFit
         >
-          {subtitle}
+          {txn.subtitle || txn.amount}
         </Text>
       </Box>
       <Box paddingHorizontal="m">
-        {time && <Text color="graySteel">{time}</Text>}
+        {!!txn.time && <Text color="graySteel">{txn.time}</Text>}
       </Box>
     </TouchableOpacityBox>
   )
 }
 
-export default memo(ActivityItem, (prev, next) => {
-  const areEqual =
-    prev.hash === next.hash &&
-    prev.isFirst === next.isFirst &&
-    prev.isLast === next.isLast &&
-    prev.time === next.time
-  return areEqual
-})
+export default memo(ActivityItem)

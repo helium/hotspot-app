@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import Box from './Box'
 import Text from './Text'
 import InputLock from '../assets/images/input-lock.svg'
@@ -6,18 +6,27 @@ import InputLock from '../assets/images/input-lock.svg'
 type Props = {
   label: string
   value: string
-  footer?: any
-  bottom?: boolean
+  footer?: ReactElement
+  isLast?: boolean
+  isFirst?: boolean
 }
 
-const LockedField = ({ label, value, footer, bottom = false }: Props) => {
+const LockedField = ({
+  label,
+  value,
+  footer,
+  isLast = false,
+  isFirst = false,
+}: Props) => {
   return (
     <Box
       backgroundColor="offwhite"
       padding="m"
       marginBottom="xs"
-      borderBottomLeftRadius={bottom ? 'm' : 'none'}
-      borderBottomRightRadius={bottom ? 'm' : 'none'}
+      borderTopLeftRadius={isFirst ? 'm' : 'none'}
+      borderTopRightRadius={isFirst ? 'm' : 'none'}
+      borderBottomLeftRadius={isLast ? 'm' : 'none'}
+      borderBottomRightRadius={isLast ? 'm' : 'none'}
     >
       <Box flexDirection="row" marginBottom="s">
         <Text letterSpacing={0.92} fontSize={13}>

@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect } from 'react'
-import { Platform } from 'react-native'
+import React, { useCallback } from 'react'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import BackScreen from '../../../components/BackScreen'
@@ -9,62 +8,66 @@ import {
   HotspotSetupNavigationProp,
   HotspotSetupStackParamList,
 } from './hotspotSetupTypes'
-import usePermissionManager from '../../../utils/usePermissionManager'
 import Lightning from '../../../assets/images/lightning.svg'
+import Box from '../../../components/Box'
+import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
 type Route = RouteProp<HotspotSetupStackParamList, 'HotspotSetupPowerScreen'>
 
 const HotspotSetupPowerScreen = () => {
   const { t } = useTranslation()
-  const { requestLocationPermission } = usePermissionManager()
   const {
     params: { hotspotType },
   } = useRoute<Route>()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
+  const rootNav = useNavigation<RootNavigationProp>()
+
+  const handleClose = useCallback(() => rootNav.navigate('MainTabs'), [rootNav])
 
   const navNext = useCallback(
     () => navigation.push('HotspotSetupBluetoothInfoScreen', { hotspotType }),
     [navigation, hotspotType],
   )
 
-  useEffect(() => {
-    if (Platform.OS === 'android') {
-      requestLocationPermission()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   return (
     <BackScreen
       backgroundColor="primaryBackground"
-      padding="lx"
+      onClose={handleClose}
       alignItems="center"
-      justifyContent="flex-end"
+      justifyContent="center"
     >
-      <Lightning />
-      <Text
-        marginTop="xl"
-        variant="h1"
-        numberOfLines={2}
-        adjustsFontSizeToFit
-        marginBottom="l"
-        textAlign="center"
-      >
-        {t('hotspot_setup.power.title')}
-      </Text>
-      <Text
-        marginBottom="lx"
-        variant="subtitleBold"
-        textAlign="center"
-        color="white"
-      >
-        {t(`hotspot_setup.power.${hotspotType.toLowerCase()}_subtitle_1`)}
-      </Text>
-      <Text marginBottom="xl" variant="subtitle" textAlign="center">
-        {t(`hotspot_setup.power.${hotspotType.toLowerCase()}_subtitle_2`)}
-      </Text>
+      <Box flex={1} alignItems="center" justifyContent="center">
+        <Lightning />
+        <Text
+          marginTop="xl"
+          variant="h1"
+          numberOfLines={2}
+          adjustsFontSizeToFit
+          maxFontSizeMultiplier={1}
+          marginBottom="l"
+          textAlign="center"
+        >
+          {t('hotspot_setup.power.title')}
+        </Text>
+        <Text
+          marginBottom="lx"
+          maxFontSizeMultiplier={1.2}
+          variant="subtitleBold"
+          textAlign="center"
+          color="white"
+        >
+          {t(`makerHotspot.${hotspotType}.power.0`)}
+        </Text>
+        <Text
+          marginBottom="xl"
+          maxFontSizeMultiplier={1.2}
+          variant="subtitle"
+          textAlign="center"
+        >
+          {t(`makerHotspot.${hotspotType}.power.1`)}
+        </Text>
+      </Box>
       <DebouncedButton
-        marginTop="xxl"
         width="100%"
         variant="secondary"
         mode="contained"

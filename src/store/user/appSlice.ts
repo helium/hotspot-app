@@ -1,15 +1,19 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import { AppStateStatus } from 'react-native'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import OneSignal from 'react-native-onesignal'
 import {
+  deleteSecureItem,
   getSecureItem,
   setSecureItem,
-  deleteSecureItem,
   signOut,
 } from '../../utils/secureAccount'
-import { getCurrentPosition, LocationCoords } from '../../utils/location'
+import * as Logger from '../../utils/logger'
+import { Intervals } from '../../features/moreTab/more/useAuthIntervals'
 
 export type AppState = {
   isBackedUp: boolean
+  isHapticDisabled: boolean
+  isDeployModeEnabled: boolean
+  permanentPaymentAddress: string
   isSettingUpHotspot: boolean
   isRestored: boolean
   isPinRequired: boolean
@@ -18,54 +22,73 @@ export type AppState = {
   lastIdle: number | null
   isLocked: boolean
   isRequestingPermission: boolean
-  currentLocation?: LocationCoords
-  isLoadingLocation: boolean
-  appStateStatus: AppStateStatus
 }
 const initialState: AppState = {
   isBackedUp: false,
+  isHapticDisabled: false,
+  isDeployModeEnabled: false,
+  permanentPaymentAddress: '',
   isSettingUpHotspot: false,
   isRestored: false,
   isPinRequired: false,
   isPinRequiredForPayment: false,
-  authInterval: 0,
+  authInterval: Intervals.IMMEDIATELY,
   lastIdle: null,
   isLocked: false,
   isRequestingPermission: false,
-  isLoadingLocation: false,
-  appStateStatus: 'unknown',
 }
 
 type Restore = {
   isBackedUp: boolean
   isPinRequired: boolean
   isPinRequiredForPayment: boolean
+  isDeployModeEnabled: boolean
+  permanentPaymentAddress: string
   authInterval: number
   isLocked: boolean
+  isHapticDisabled: boolean
 }
 
-export const restoreUser = createAsyncThunk<Restore>(
-  'app/restoreUser',
+export const restoreAppSettings = createAsyncThunk<Restore>(
+  'app/restoreAppSettings',
   async () => {
-    const vals = await Promise.all([
+    const [
+      isBackedUp,
+      isPinRequired,
+      isPinRequiredForPayment,
+      authInterval,
+      isHapticDisabled,
+      address,
+      isDeployModeEnabled,
+      permanentPaymentAddress,
+    ] = await Promise.all([
       getSecureItem('accountBackedUp'),
       getSecureItem('requirePin'),
       getSecureItem('requirePinForPayment'),
       getSecureItem('authInterval'),
+      getSecureItem('hapticDisabled'),
+      getSecureItem('address'),
+      getSecureItem('deployModeEnabled'),
+      getSecureItem('permanentPaymentAddress'),
     ])
-    return {
-      isBackedUp: vals[0],
-      isPinRequired: vals[1],
-      isPinRequiredForPayment: vals[2],
-      authInterval: vals[3] ? parseInt(vals[3], 10) : 0,
-      isLocked: vals[1],
-    }
-  },
-)
 
-export const getLocation = createAsyncThunk<Location>(
-  'app/location',
-  async () => getCurrentPosition(),
+    if (isBackedUp && address) {
+      OneSignal.sendTags({ address })
+      Logger.setUser(address)
+    }
+    return {
+      isBackedUp,
+      isPinRequired,
+      isPinRequiredForPayment,
+      authInterval: authInterval
+        ? parseInt(authInterval, 10)
+        : Intervals.IMMEDIATELY,
+      isLocked: isPinRequired,
+      isHapticDisabled,
+      isDeployModeEnabled,
+      permanentPaymentAddress,
+    } as Restore
+  },
 )
 
 // This slice contains data related to the state of the app
@@ -91,6 +114,18 @@ const appSlice = createSlice({
       state.isPinRequiredForPayment = action.payload
       setSecureItem('requirePinForPayment', action.payload)
     },
+    enableDeployMode: (state, action: PayloadAction<boolean>) => {
+      state.isDeployModeEnabled = action.payload
+      setSecureItem('deployModeEnabled', action.payload)
+    },
+    setPermanentPaymentAddress: (state, action: PayloadAction<string>) => {
+      state.permanentPaymentAddress = action.payload
+      setSecureItem('permanentPaymentAddress', action.payload)
+    },
+    updateHapticEnabled: (state, action: PayloadAction<boolean>) => {
+      state.isHapticDisabled = action.payload
+      setSecureItem('hapticDisabled', action.payload)
+    },
     updateAuthInterval: (state, action: PayloadAction<number>) => {
       state.authInterval = action.payload
       setSecureItem('authInterval', action.payload.toString())
@@ -111,28 +146,13 @@ const appSlice = createSlice({
         state.lastIdle = null
       }
     },
-    updateAppStateStatus: (state, action: PayloadAction<AppStateStatus>) => {
-      if (action.payload === state.appStateStatus) return
-
-      state.appStateStatus = action.payload
-    },
     requestingPermission: (state, action: PayloadAction<boolean>) => {
       state.isRequestingPermission = action.payload
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(restoreUser.fulfilled, (state, { payload }) => {
+    builder.addCase(restoreAppSettings.fulfilled, (state, { payload }) => {
       return { ...state, ...payload, isRestored: true }
-    })
-    builder.addCase(getLocation.pending, (state) => {
-      state.isLoadingLocation = true
-    })
-    builder.addCase(getLocation.rejected, (state) => {
-      state.isLoadingLocation = false
-    })
-    builder.addCase(getLocation.fulfilled, (state, { payload }) => {
-      state.currentLocation = payload
-      state.isLoadingLocation = false
     })
   },
 })

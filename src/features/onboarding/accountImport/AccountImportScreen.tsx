@@ -41,7 +41,7 @@ const AccountImportScreen = () => {
     >
       <KeyboardAwareScrollView
         enableOnAndroid
-        extraScrollHeight={40}
+        extraHeight={150}
         keyboardShouldPersistTaps="always"
       >
         <PassphraseAutocomplete

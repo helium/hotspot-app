@@ -1,7 +1,7 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
-import React from 'react'
+import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ScrollView } from 'react-native'
+import { ScrollView, StyleSheet } from 'react-native'
 import BackScreen from '../../../components/BackScreen'
 import { DebouncedButton } from '../../../components/Button'
 import Text from '../../../components/Text'
@@ -11,6 +11,8 @@ import {
   HotspotSetupStackParamList,
 } from './hotspotSetupTypes'
 import Clipboard from '../../../assets/images/clipboard.svg'
+import Box from '../../../components/Box'
+import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
 type Route = RouteProp<
   HotspotSetupStackParamList,
@@ -21,7 +23,9 @@ const HotspotSetupDiagnosticsScreen = () => {
   const { params } = useRoute<Route>()
   const { t } = useTranslation()
   const navigation = useNavigation<HotspotSetupNavigationProp>()
+  const rootNav = useNavigation<RootNavigationProp>()
 
+<<<<<<< HEAD
   const diagnosticTextKey = () => {
     switch (params.hotspotType) {
       default:
@@ -35,28 +39,31 @@ const HotspotSetupDiagnosticsScreen = () => {
         return 'hotspot_setup.diagnostics.syncrobit_p_1'
     }
   }
+=======
+  const handleClose = useCallback(() => rootNav.navigate('MainTabs'), [rootNav])
+>>>>>>> 1f8e1c1a23096999ff6acb08aaea2f74459de002
 
   return (
-    <BackScreen
-      backgroundColor="primaryBackground"
-      paddingBottom="s"
-      paddingHorizontal="lx"
-    >
-      <ScrollView>
-        <Clipboard />
-        <Text
-          variant="h1"
-          numberOfLines={1}
-          adjustsFontSizeToFit
-          marginVertical="l"
-        >
-          {t('hotspot_setup.diagnostics.title')}
-        </Text>
-        <TextTransform
-          variant="subtitle"
-          marginTop="m"
-          i18nKey={diagnosticTextKey()}
-        />
+    <BackScreen backgroundColor="primaryBackground" onClose={handleClose}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <Box alignItems="center">
+          <Clipboard />
+          <Text
+            variant="h1"
+            numberOfLines={1}
+            maxFontSizeMultiplier={1}
+            adjustsFontSizeToFit
+            marginVertical="l"
+          >
+            {t('hotspot_setup.diagnostics.title')}
+          </Text>
+          <TextTransform
+            maxFontSizeMultiplier={1.1}
+            variant="subtitle"
+            marginTop="m"
+            i18nKey={t(`makerHotspot.${params.hotspotType}.diagnostic`)}
+          />
+        </Box>
       </ScrollView>
       <DebouncedButton
         variant="primary"
@@ -67,5 +74,13 @@ const HotspotSetupDiagnosticsScreen = () => {
     </BackScreen>
   )
 }
+
+const styles = StyleSheet.create({
+  scrollContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+})
 
 export default HotspotSetupDiagnosticsScreen

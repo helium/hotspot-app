@@ -1,5 +1,4 @@
-import { PaymentV1, AnyTransaction, PendingTransaction } from '@helium/http'
-import React, { useEffect, useRef, useCallback, memo } from 'react'
+import React, { memo, useCallback, useEffect, useRef, useMemo } from 'react'
 import { Linking } from 'react-native'
 import {
   BottomSheetBackdrop,
@@ -13,40 +12,44 @@ import LinkImg from '@assets/images/link.svg'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
 import ActivityDetailsHeader from './ActivityDetailsHeader'
-import useActivityItem from '../useActivityItem'
+import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
+import { getSecureItem } from '../../../../utils/secureAccount'
+import { useAppDispatch } from '../../../../store/store'
+import activitySlice, {
+  HttpPendingTransaction,
+  HttpTransaction,
+} from '../../../../store/activity/activitySlice'
+import { locale } from '../../../../utils/i18n'
+import { EXPLORER_BASE_URL } from '../../../../utils/config'
+import useCurrency from '../../../../utils/useCurrency'
+import useActivityItem, { isPendingTransaction } from '../useActivityItem'
 import Rewards from './Rewards'
+import StakeValidator from './StakeValidator'
 import HotspotTransaction from './HotspotTransaction'
 import Payment from './Payment'
 import Burn from './Burn'
-import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
-import { getSecureItem } from '../../../../utils/secureAccount'
 import UnknownTransaction from './UnknownTransaction'
-import { useAppDispatch } from '../../../../store/store'
-import activitySlice from '../../../../store/activity/activitySlice'
+import UnstakeValidator from './UnstakeValidator'
+import TransferValidator from './TransferStake'
 
 const DF = 'MM/dd/yyyy hh:mm a'
-type Props = { detailTxn?: AnyTransaction | PendingTransaction }
+type Props = { detailTxn: HttpTransaction | HttpPendingTransaction }
 const ActivityDetails = ({ detailTxn }: Props) => {
   const sheet = useRef<BottomSheetModal>(null)
   const { result: address } = useAsync(getSecureItem, ['address'])
   const { t } = useTranslation()
+  const { toggleConvertHntToCurrency } = useCurrency()
   const dispatch = useAppDispatch()
-  const {
-    backgroundColor,
-    backgroundColorKey,
-    title,
-    detailIcon,
-    amount,
-    time,
-    isFee,
-    fee,
-  } = useActivityItem(address || '')
+  const txnDisplayVals = useActivityItem(detailTxn, address || '', DF)
 
-  let block: number | undefined
-  if (detailTxn) {
-    const asPayment = detailTxn as PaymentV1
-    block = asPayment.height
-  }
+  const txn = useMemo(() => {
+    if (isPendingTransaction(detailTxn)) {
+      return detailTxn.txn
+    }
+    return detailTxn
+  }, [detailTxn])
+
+  const block = useMemo(() => txn.height, [txn.height])
 
   useEffect(() => {
     if (detailTxn) {
@@ -62,31 +65,33 @@ const ActivityDetails = ({ detailTxn }: Props) => {
     if (!detailTxn) return null
     return (
       <ActivityDetailsHeader
-        backgroundColor={backgroundColor(detailTxn)}
-        icon={detailIcon(detailTxn)}
-        title={title(detailTxn)}
-        date={time(detailTxn, DF)}
+        backgroundColor={txnDisplayVals.backgroundColor}
+        icon={txnDisplayVals.detailIcon}
+        title={txnDisplayVals.title}
+        date={txnDisplayVals.time}
       />
     )
-  }, [detailTxn, detailIcon, title, time, backgroundColor])
+  }, [
+    detailTxn,
+    txnDisplayVals.backgroundColor,
+    txnDisplayVals.detailIcon,
+    txnDisplayVals.time,
+    txnDisplayVals.title,
+  ])
 
   const openExplorer = useCallback(
-    () =>
-      Linking.openURL(
-        `https://explorer.helium.com/blocks/${block?.toString()}`,
-      ),
+    () => Linking.openURL(`${EXPLORER_BASE_URL}/blocks/${block?.toString()}`),
     [block],
   )
 
+  const snapPoints = useMemo(() => ['50%', '75%'], [])
   if (!detailTxn) return null
-
-  const feeStr = fee(detailTxn)
 
   return (
     <BottomSheetModalProvider>
       <BottomSheetModal
         ref={sheet}
-        snapPoints={['50%', '75%']}
+        snapPoints={snapPoints}
         handleComponent={renderHandle}
         backdropComponent={BottomSheetBackdrop}
         onDismiss={onClose}
@@ -95,35 +100,55 @@ const ActivityDetails = ({ detailTxn }: Props) => {
           <Box padding="l" flex={1}>
             <Text
               variant="medium"
+              onPress={toggleConvertHntToCurrency}
               fontSize={32}
               numberOfLines={1}
               adjustsFontSizeToFit
-              color={isFee(detailTxn) ? 'blueMain' : 'greenMain'}
+              color={txnDisplayVals.isFee ? 'blueMain' : 'greenMain'}
               alignSelf="flex-end"
-              marginBottom={!feeStr ? 'm' : 'none'}
+              marginBottom={!txnDisplayVals.fee ? 'm' : 'none'}
             >
-              {amount(detailTxn)}
+              {txnDisplayVals.amount}
             </Text>
 
-            {!!feeStr && (
+            {!!txnDisplayVals.fee && (
               <Text
                 variant="light"
                 fontSize={15}
                 color="blueBright"
                 alignSelf="flex-end"
-                marginBottom="m"
+                marginBottom={!txnDisplayVals.feePayer ? 'm' : 'none'}
               >
-                {`${feeStr} ${t('generic.fee')}`}
+                {`${txnDisplayVals.fee} ${t('generic.fee')}`}
               </Text>
             )}
-            <Rewards item={detailTxn} />
-            <Payment item={detailTxn} address={address || ''} />
-            <Burn item={detailTxn} address={address || ''} />
-            <HotspotTransaction item={detailTxn} address={address || ''} />
-            <UnknownTransaction item={detailTxn} />
+
+            {!!txnDisplayVals.feePayer && (
+              <Text
+                variant="light"
+                fontSize={15}
+                color="graySteel"
+                marginTop="xs"
+                marginBottom="s"
+                alignSelf="flex-end"
+              >
+                {t('activity_details.staking_fee_payer', {
+                  payer: txnDisplayVals.feePayer,
+                })}
+              </Text>
+            )}
+
+            <StakeValidator item={txn} />
+            <UnstakeValidator item={txn} />
+            <TransferValidator item={txn} address={address || ''} />
+            <Rewards item={txn} />
+            <Payment item={txn} address={address || ''} />
+            <Burn item={txn} address={address || ''} />
+            <HotspotTransaction item={txn} address={address || ''} />
+            <UnknownTransaction item={txn} />
             {block && (
               <TouchableOpacityBox
-                backgroundColor={backgroundColorKey(detailTxn)}
+                backgroundColor={txnDisplayVals.backgroundColorKey}
                 height={63}
                 width="100%"
                 borderRadius="ms"
@@ -138,9 +163,9 @@ const ActivityDetails = ({ detailTxn }: Props) => {
                   color="white"
                   marginRight="s"
                 >
-                  {`${t(
-                    'activity_details.view_block',
-                  )} ${block?.toLocaleString()}`}
+                  {`${t('activity_details.view_block')} ${block?.toLocaleString(
+                    locale,
+                  )}`}
                 </Text>
                 <LinkImg />
               </TouchableOpacityBox>

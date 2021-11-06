@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { Keyboard } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import Animated, {
@@ -13,12 +13,12 @@ import HotspotOutlineIcon from '../../../assets/images/hotspotOutlineIcon.svg'
 import Close from '../../../assets/images/close.svg'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Text from '../../../components/Text'
-import { SendType } from './sendTypes'
+import { AppLinkCategoryType } from '../../../providers/appLinkTypes'
 
 const ReanimatedBox = Animated.createAnimatedComponent(Box)
 
 type Props = {
-  type: SendType
+  type?: AppLinkCategoryType
   onClosePress: () => void
 }
 
@@ -27,23 +27,28 @@ const SendHeader = ({ type, onClosePress }: Props) => {
 
   const keyboardState = useSharedValue(0)
 
-  useEffect(() => {
-    Keyboard.addListener('keyboardWillShow', keyboardShow)
-    Keyboard.addListener('keyboardWillHide', keyboardHide)
-
-    return () => {
-      Keyboard.removeListener('keyboardWillShow', keyboardShow)
-      Keyboard.removeListener('keyboardWillHide', keyboardHide)
-    }
-  })
-
-  const keyboardShow = () => {
+  const keyboardShow = useCallback(() => {
     keyboardState.value = 1
-  }
+  }, [keyboardState])
 
-  const keyboardHide = () => {
+  const keyboardHide = useCallback(() => {
     keyboardState.value = 0
-  }
+  }, [keyboardState])
+
+  useEffect(() => {
+    const keyboardDidShowEmitter = Keyboard.addListener(
+      'keyboardDidShow',
+      keyboardShow,
+    )
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      keyboardHide,
+    )
+    return (): void => {
+      keyboardDidShowEmitter.remove()
+      keyboardDidHideListener.remove()
+    }
+  }, [keyboardHide, keyboardShow])
 
   const animatedOptions = {
     duration: 300,

@@ -1,49 +1,49 @@
-import React, { memo, useEffect, useState, useCallback } from 'react'
+import React, { memo, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Position } from 'geojson'
-import { useSelector } from 'react-redux'
+import Search from '@assets/images/search.svg'
+import { Platform } from 'react-native'
+import { Hotspot, Witness } from '@helium/http'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import Map from '../../../components/Map'
 import Button from '../../../components/Button'
-import { hp } from '../../../utils/layout'
 import ImageBox from '../../../components/ImageBox'
 import { reverseGeocode } from '../../../utils/location'
 import { useSpacing } from '../../../theme/themeHooks'
 import animateTransition from '../../../utils/animateTransition'
-import CircleLoader from '../../../components/CircleLoader'
-import { RootState } from '../../../store/rootReducer'
-import { useConnectedHotspotContext } from '../../../providers/ConnectedHotspotProvider'
 import sleep from '../../../utils/sleep'
+import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import { getH3Location } from '../../../utils/h3Utils'
+import useAlert from '../../../utils/useAlert'
 
 type Props = {
   confirming?: boolean
   amount: string
   coords?: { latitude: number; longitude: number }
-  locationSelected?: (latitude: number, longitude: number) => void
+  locationSelected?: (latitude: number, longitude: number, name: string) => void
   onCancel: () => void
-  onSuccess?: () => void
-  onFailure?: (err: unknown) => void
+  onConfirm: () => void
+  onSearch?: () => void
+  hotspot?: Hotspot | Witness
 }
 const ReassertLocationUpdate = ({
   confirming,
+  hotspot,
   coords,
   amount,
   locationSelected,
-  onSuccess,
-  onFailure,
+  onConfirm,
   onCancel,
+  onSearch,
 }: Props) => {
   const { t } = useTranslation()
   const [markerCenter, setMarkerCenter] = useState([0, 0])
   const [locationName, setLocationName] = useState('')
   const { l } = useSpacing()
-  const [loading, setLoading] = useState(false)
   const [disabled, setDisabled] = useState(true)
-  const {
-    connectedHotspot: { address: hotspotAddress, details },
-  } = useSelector((s: RootState) => s)
-  const { assertLocationTxn } = useConnectedHotspotContext()
+  const { showOKAlert } = useAlert()
+
   const onMapMoved = useCallback(async (newCoords?: Position) => {
     if (newCoords) {
       setMarkerCenter(newCoords)
@@ -57,76 +57,56 @@ const ReassertLocationUpdate = ({
     }
   }, [])
 
-  const finish = (success: boolean, message?: unknown) => {
-    setLoading(false)
-    if (success) {
-      onSuccess?.()
-    } else {
-      onFailure?.(
-        message ||
-          `There was an error updating location for hotspot ${
-            hotspotAddress || ''
-          }`,
-      )
-    }
-  }
-  const submitOnboardingTxns = async () => {
-    const isOnChain = !!details // verify the hotspot exists
-    if (!hotspotAddress || !isOnChain || !coords) {
-      finish(false)
-      return
-    }
-
-    // construct and publish assert location
-    try {
-      const assertLocTxnSuccess = await assertLocationTxn(
-        coords.latitude,
-        coords.longitude,
-      )
-      if (!assertLocTxnSuccess) {
-        finish(false)
+  const handleNextButton = () => {
+    if (!confirming) {
+      const h3Location = getH3Location(markerCenter[1], markerCenter[0])
+      if (h3Location === hotspot?.location) {
+        showOKAlert({
+          titleKey:
+            'hotspot_setup.add_hotspot.assert_loc_error_no_change_title',
+          messageKey:
+            'hotspot_setup.add_hotspot.assert_loc_error_no_change_body',
+        })
         return
       }
-      onSuccess?.()
-    } catch (error) {
-      onFailure?.(error)
+      locationSelected?.(markerCenter[1], markerCenter[0], locationName)
+    } else {
+      onConfirm()
     }
   }
 
-  const handleAssert = () => {
-    animateTransition()
-    setLoading(true)
-    submitOnboardingTxns()
-  }
+  const handleSearchPress = useCallback(() => {
+    onSearch?.()
+  }, [onSearch])
 
   useEffect(() => {
     const sleepThenEnable = async () => {
       await sleep(3000)
-      animateTransition()
+      animateTransition('ReassertLocationUpdate')
       setDisabled(false)
     }
     sleepThenEnable()
   }, [])
 
   return (
-    <Box height={hp(75)} borderRadius="l" overflow="hidden">
-      {loading && (
-        <Box
-          position="absolute"
-          zIndex={20000}
-          backgroundColor="black"
-          opacity={0.8}
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          justifyContent="center"
-        >
-          <CircleLoader height={80} marginBottom="lx" />
-        </Box>
-      )}
-
-      <Box position="absolute" zIndex={10000} top={0} left={0} right={0}>
+    <Box
+      height={
+        Platform.OS === 'ios'
+          ? { smallPhone: 550, phone: 750 }
+          : { smallPhone: 450, phone: 650 }
+      }
+      borderRadius="l"
+      overflow="hidden"
+    >
+      <Box
+        position="absolute"
+        flexDirection="row"
+        justifyContent="space-between"
+        zIndex={10000}
+        top={0}
+        left={0}
+        right={0}
+      >
         <Text
           variant="bold"
           fontSize={15}
@@ -136,14 +116,19 @@ const ReassertLocationUpdate = ({
         >
           {locationName}
         </Text>
+        <TouchableOpacityBox onPress={handleSearchPress} padding="lm">
+          <Search width={30} height={30} color="white" />
+        </TouchableOpacityBox>
       </Box>
 
       <Map
-        showUserLocation={!confirming}
+        showUserLocation={!confirming && !coords}
         mapCenter={coords ? [coords.longitude, coords.latitude] : undefined}
         zoomLevel={16}
         onMapMoved={onMapMoved}
         interactive={!confirming}
+        showH3Grid
+        showNearbyHotspots
       />
       <ImageBox
         position="absolute"
@@ -196,13 +181,7 @@ const ReassertLocationUpdate = ({
             flex={198}
             variant={confirming ? 'secondary' : 'primary'}
             mode="contained"
-            onPress={() => {
-              if (!confirming) {
-                locationSelected?.(markerCenter[1], markerCenter[0])
-              } else {
-                handleAssert()
-              }
-            }}
+            onPress={handleNextButton}
             title={t(
               `hotspot_settings.reassert.${
                 confirming ? 'confirm' : 'change_location'

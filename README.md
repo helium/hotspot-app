@@ -5,17 +5,20 @@ For a list of issues and prioritization, please go to our [Project page](https:/
 
 ## Get the app
 
-Release versions of the app are available here:
-
-_Note: These links currently point to 2.x release of the app and this repository represents the 3.x release that's currently in active development._
+### Release versions of the app are available here:
 
 - [Hotspot App for iOS](https://apps.apple.com/us/app/helium-hotspot/id1450463605)
   on the iTunes App Store
 - [Hotspot App for Android](https://play.google.com/store/apps/details?id=com.helium.wallet&hl=en_US&gl=US)
   on the Google Play Store
   - Or if you don't use Google Play, you can [download an
-    APK](https://install.appcenter.ms/orgs/helium/apps/helium-mobile-wallet-android/distribution_groups/public)
+    APK](https://install.appcenter.ms/orgs/helium/apps/hotspot-app-android/distribution_groups/public)
     from the official AppCenter build.
+
+### Beta Versions of the app are available here:
+
+- [TestFlight for iOS](https://testflight.apple.com/join/qX0kqa9j)
+- [Beta for Android](https://play.google.com/apps/testing/com.helium.wallet), or sign up via the Google Play Store Beta button.
 
 ## What to expect in the new Hotspot App
 
@@ -33,7 +36,7 @@ The new Hotspot app will include a recommendation engine which will suggest acti
 
 ## Join us in Discord
 
-Chat with the developers and the product team in the [Helium Community Discord](https://discord.gg/helium) and look for the #wallet-mobile-app channel.
+Chat with the developers and the product team in the [Helium Community Discord](https://discord.gg/helium) and look for the #hotspot-app-development channel.
 
 ## App Designs
 
@@ -148,7 +151,10 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 
 ### Environment Variables
 
-Copy the file `.env.sample` and rename it to `.env`. Once renamed update the values within the file.
+1. Copy the file `.env.sample` and rename it to `.env`.
+2. Once renamed update the values within the file.
+3. In order for maps to load you will need to create your own [Mapbox](https://account.mapbox.com) access token.
+4. You will also need a Mapbox download token to build the Android app. See the [Mapbox Docs](https://docs.mapbox.com/android/maps/guides/install/#configure-credentials) on creating a token with `Downloads:Read` scope. This token needs to be exported as a system environment variable `MAPBOX_DOWNLOAD_TOKEN` on your machine.
 
 ### Dependencies
 

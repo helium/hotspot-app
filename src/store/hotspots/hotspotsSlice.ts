@@ -1,78 +1,141 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { Hotspot, Sum } from '@helium/http'
+import { Hotspot } from '@helium/http'
 import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
-import { orderBy, sortBy } from 'lodash'
-import { getHotspotRewardsSum, getHotspots } from '../../utils/appDataClient'
-import { distance, LocationCoords } from '../../utils/location'
+import { getHotspotDetails, getHotspots } from '../../utils/appDataClient'
+import { LocationCoords } from '../../utils/location'
+import { getWallet, deleteWallet, postWallet } from '../../utils/walletClient'
+import { CacheRecord, handleCacheFulfilled } from '../../utils/cacheUtils'
+import { HotspotSyncStatus } from '../../features/hotspots/root/hotspotTypes'
+import { WalletReward } from '../rewards/rewardsSlice'
 
-export enum HotspotSort {
-  New = 'new',
-  Near = 'near',
-  Earn = 'earn',
-  Offline = 'offline',
+export type Rewards = Record<string, Balance<NetworkTokens>>
+
+export type HotspotsSliceState = {
+  hotspots: Hotspot[]
+  orderedHotspots: Hotspot[]
+  followedHotspotsObj: Record<string, Hotspot>
+  followedHotspots: Hotspot[]
+  location?: LocationCoords
+  loadingRewards: boolean
+  hotspotsLoaded: boolean
+  failure: boolean
+  syncStatuses: Record<string, CacheRecord<{ status: HotspotSyncStatus }>>
+  rewards: Rewards
 }
 
-type Rewards = Record<string, Sum>
-
-type SorterContext = { rewards?: Rewards; location?: LocationCoords }
-type HotspotSorter = (hotspots: Hotspot[], context?: SorterContext) => Hotspot[]
-const hotspotSorters: Record<HotspotSort, HotspotSorter> = {
-  [HotspotSort.New]: (hotspots) => orderBy(hotspots, 'blockAdded', 'desc'),
-  [HotspotSort.Near]: (hotspots, context) => {
-    if (!context?.location) {
-      return hotspots
-    }
-    return sortBy(hotspots, [
-      (h) => distance(context.location, { latitude: h.lat, longitude: h.lng }),
-    ])
-  },
-  [HotspotSort.Earn]: (hotspots, context) => {
-    if (!context || !context.rewards) {
-      return hotspots
-    }
-    return sortBy(hotspots, [(h) => -context.rewards[h.address].total])
-  },
-  [HotspotSort.Offline]: (hotspots) =>
-    orderBy(hotspots, ['status.online', 'offline']),
+const initialState: HotspotsSliceState = {
+  hotspots: [],
+  orderedHotspots: [],
+  followedHotspotsObj: {},
+  followedHotspots: [],
+  loadingRewards: false,
+  hotspotsLoaded: false,
+  failure: false,
+  syncStatuses: {},
+  rewards: {},
 }
 
+export const fetchRewards = createAsyncThunk<
+  WalletReward[],
+  { addresses: string[] }
+>('hotspots/fetchRewards', async ({ addresses }) => {
+  if (!addresses.length) return []
+
+  return getWallet('hotspots/rewards', {
+    addresses: addresses.join(','),
+    dayRange: 1,
+  })
+})
+// TODO: fix lat/lng coming as strings from the wallet api.
+const sanitizeWalletHotspots = (hotspots: WalletHotspot[]) => {
+  return hotspots.map((h) => ({
+    ...h,
+    lat: parseFloat(h.lat),
+    lng: parseFloat(h.lng),
+  }))
+}
+
+type WalletHotspot = Hotspot & { lat: string; lng: string }
 export const fetchHotspotsData = createAsyncThunk(
-  'hotspots/fetchRewards',
-  async () => {
-    const hotspots = await getHotspots()
-
-    let total = new Balance(0, CurrencyType.networkToken)
-    const rewards: Record<string, Sum> = {}
-    const results = await Promise.all(
-      hotspots.map((hotspot) => getHotspotRewardsSum(hotspot.address, 1)),
+  'hotspots/fetchHotspotsData',
+  async (_arg) => {
+    const allHotspots = await Promise.all(
+      [
+        getHotspots(),
+        getWallet('hotspots/follow', null, { camelCase: true }),
+      ].map((p) => p.catch(() => {})),
     )
-    results.forEach((reward, i) => {
-      const { address } = hotspots[i]
-      rewards[address] = reward
-      total = total.plus(reward.balanceTotal)
-    })
+
+    const [hotspots = [], followedHotspots = []]: [
+      Hotspot[],
+      WalletHotspot[],
+    ] = allHotspots as [Hotspot[], WalletHotspot[]]
 
     return {
       hotspots,
-      total,
-      rewards,
+      followedHotspots: sanitizeWalletHotspots(followedHotspots),
     }
   },
 )
 
-type HotspotsSliceState = {
-  hotspots: Hotspot[]
-  order: HotspotSort
-  rewards?: Rewards
-  totalRewards: Balance<NetworkTokens>
-  loadingRewards: boolean
-}
-const initialState: HotspotsSliceState = {
-  hotspots: [],
-  order: HotspotSort.New,
-  loadingRewards: false,
-  totalRewards: new Balance(0, CurrencyType.networkToken),
-}
+export const followHotspot = createAsyncThunk<
+  {
+    followed: Hotspot[]
+    blockHotspot: Hotspot | null
+    hotspotRewards: Balance<NetworkTokens> | null
+    hotspotAddress: string
+  },
+  string
+>('hotspots/followHotspot', async (hotspotAddress) => {
+  const followed = await postWallet(`hotspots/follow/${hotspotAddress}`, null, {
+    camelCase: true,
+  })
+  let blockHotspot: Hotspot | null = null
+  try {
+    blockHotspot = await getHotspotDetails(hotspotAddress)
+  } catch (e) {}
+
+  let hotspotRewards: Balance<NetworkTokens> | null = null
+  try {
+    const response: WalletReward[] = await getWallet('hotspots/rewards', {
+      addresses: hotspotAddress,
+      dayRange: 1,
+    })
+    if (response && response.length) {
+      hotspotRewards = Balance.fromFloat(
+        response[0].total,
+        CurrencyType.networkToken,
+      )
+    }
+  } catch (e) {}
+
+  return {
+    followed: sanitizeWalletHotspots(followed),
+    blockHotspot,
+    hotspotRewards,
+    hotspotAddress,
+  }
+})
+
+export const unfollowHotspot = createAsyncThunk<Hotspot[], string>(
+  'hotspots/unfollowHotspot',
+  async (hotspot_address) => {
+    const followed = await deleteWallet(
+      `hotspots/follow/${hotspot_address}`,
+      null,
+      { camelCase: true },
+    )
+    return sanitizeWalletHotspots(followed)
+  },
+)
+
+const hotspotsToObj = (hotspots: Hotspot[]) =>
+  hotspots.reduce((obj, hotspot) => {
+    return {
+      ...obj,
+      [hotspot.address]: hotspot,
+    }
+  }, {})
 
 const hotspotsSlice = createSlice({
   name: 'hotspotDetails',
@@ -81,34 +144,81 @@ const hotspotsSlice = createSlice({
     signOut: () => {
       return { ...initialState }
     },
-    changeOrder: (
+    updateSyncStatus: (
       state,
       {
-        payload,
-      }: { payload: { order: HotspotSort; currentLocation?: LocationCoords } },
+        payload: { address, status },
+      }: { payload: { address: string; status: HotspotSyncStatus } },
     ) => {
-      return {
-        ...state,
-        hotspots: hotspotSorters[payload.order](state.hotspots as Hotspot[], {
-          rewards: state.rewards as Rewards,
-          location: payload.currentLocation,
-        }),
-      }
+      state.syncStatuses[address] = handleCacheFulfilled({
+        status,
+      })
     },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchHotspotsData.fulfilled, (state, action) => {
-      state.hotspots = hotspotSorters[state.order](action.payload.hotspots)
-      state.rewards = action.payload.rewards
-      state.totalRewards = action.payload.total
-      state.loadingRewards = false
-    })
-    builder.addCase(fetchHotspotsData.pending, (state, _action) => {
-      state.loadingRewards = true
+      const followed: Hotspot[] = action.payload.followedHotspots
+      state.followedHotspots = followed
+      state.followedHotspotsObj = hotspotsToObj(followed)
+      state.hotspots = action.payload.hotspots
+      state.hotspotsLoaded = true
+      state.failure = false
     })
     builder.addCase(fetchHotspotsData.rejected, (state, _action) => {
       state.loadingRewards = false
+      state.hotspotsLoaded = true
+      state.failure = true
     })
+    builder.addCase(fetchRewards.rejected, (state, _action) => {
+      state.loadingRewards = false
+    })
+    builder.addCase(fetchRewards.pending, (state, _action) => {
+      state.loadingRewards = true
+    })
+    builder.addCase(fetchRewards.fulfilled, (state, action) => {
+      action.payload.forEach((r) => {
+        state.rewards[r.gateway] = Balance.fromFloat(
+          r.total,
+          CurrencyType.networkToken,
+        )
+      })
+      state.loadingRewards = false
+    })
+    builder.addCase(
+      unfollowHotspot.fulfilled,
+      (state, { payload: followed }) => {
+        const nextFollowed = followed.map((walletFollowed) => {
+          const hotspot = state.followedHotspotsObj[walletFollowed.address]
+          return (hotspot as Hotspot) || walletFollowed
+        })
+
+        state.followedHotspots = nextFollowed
+        state.followedHotspotsObj = hotspotsToObj(nextFollowed)
+      },
+    )
+    builder.addCase(
+      followHotspot.fulfilled,
+      (
+        state,
+        { payload: { blockHotspot, followed, hotspotRewards, hotspotAddress } },
+      ) => {
+        const nextFollowed = followed.map((walletFollowed) => {
+          if (walletFollowed.address === blockHotspot?.address)
+            return blockHotspot
+          const hotspot = state.followedHotspotsObj[walletFollowed.address]
+          return (hotspot as Hotspot) || walletFollowed
+        })
+
+        state.followedHotspots = nextFollowed
+        state.followedHotspotsObj = hotspotsToObj(nextFollowed)
+
+        if (hotspotRewards) {
+          const rewards = state.rewards || {}
+          rewards[hotspotAddress] = hotspotRewards
+          state.rewards = rewards
+        }
+      },
+    )
   },
 })
 

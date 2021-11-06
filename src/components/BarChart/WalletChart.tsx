@@ -1,134 +1,245 @@
-import React, { useEffect, useState, useMemo, useCallback, memo } from 'react'
-import { ActivityIndicator, TouchableWithoutFeedback } from 'react-native'
-import { round } from 'lodash'
+/* eslint-disable react/jsx-props-no-spreading */
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { LayoutChangeEvent } from 'react-native'
+import { isEqual } from 'lodash'
 import { useSelector } from 'react-redux'
+import { add } from 'date-fns'
+import { useTranslation } from 'react-i18next'
+import { BoxProps } from '@shopify/restyle'
 import ChartContainer from './ChartContainer'
 import CarotLeft from '../../assets/images/carot-left.svg'
 import CarotRight from '../../assets/images/carot-right.svg'
 import Box from '../Box'
 import Text from '../Text'
-import { ChartData, ChartRange } from './types'
-import { triggerImpact } from '../../utils/haptic'
+import { ChartData, ChartRange, ChartRangeKeys } from './types'
+import useHaptic from '../../utils/useHaptic'
 import { useColors } from '../../theme/themeHooks'
 import { useAppDispatch } from '../../store/store'
 import { RootState } from '../../store/rootReducer'
-import { fetchActivityChart } from '../../store/account/accountSlice'
+import accountSlice, {
+  fetchActivityChart,
+} from '../../store/account/accountSlice'
+import useCurrency from '../../utils/useCurrency'
+import DateModule from '../../utils/DateModule'
+import { Theme } from '../../theme/theme'
+import HeliumSelect from '../HeliumSelect'
+import { HeliumSelectItemType } from '../HeliumSelectItem'
 
-type Props = {
+type Props = BoxProps<Theme> & {
   height: number
+  showSkeleton: boolean
 }
 
-const WalletChart = ({ height }: Props) => {
+const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
   const dispatch = useAppDispatch()
+  const { triggerImpact } = useHaptic()
+  const colors = useColors()
   const {
-    account: { activityChart },
+    account: { activityChart, activityChartRange },
     activity: { filter },
-  } = useSelector((state: RootState) => state)
+    heliumData: { blockHeight },
+  } = useSelector((state: RootState) => state, selectorIsEqual)
 
+  const chartEnabled = useSelector(
+    (state: RootState) => state.features.walletChartEnabled,
+  )
+
+  const { t } = useTranslation()
+
+  const { hntToDisplayVal } = useCurrency()
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
-  const [timeframe, setTimeframe] = useState<ChartRange>('daily')
-
-  const data = useMemo(() => activityChart[timeframe].data, [
-    activityChart,
-    timeframe,
-  ])
+  const [up, setUp] = useState('')
+  const [down, setDown] = useState('')
+  const [headerHeight, setHeaderHeight] = useState(65)
 
   useEffect(() => {
-    dispatch(fetchActivityChart({ range: timeframe, filterType: filter }))
-  }, [dispatch, timeframe, filter])
+    const setValues = async () => {
+      const u = await hntToDisplayVal(focusedData?.up || 0)
+      const d = await hntToDisplayVal(focusedData?.down || 0)
+      setUp(u)
+      setDown(d)
+    }
+    setValues()
+  }, [focusedData?.down, focusedData?.up, hntToDisplayVal])
+  const [dataRange, setDataRange] = useState('')
 
-  const headerHeight = 30
+  const data = useMemo(() => {
+    const chartsByFilter = activityChart[filter]
+
+    if (!chartsByFilter || !chartsByFilter[activityChartRange]) return null
+
+    return chartsByFilter[activityChartRange]
+  }, [filter, activityChart, activityChartRange])
+
+  useEffect(() => {
+    if (chartEnabled) {
+      dispatch(
+        fetchActivityChart({ range: activityChartRange, filterType: filter }),
+      )
+    }
+  }, [dispatch, filter, activityChartRange, blockHeight, chartEnabled])
+
   const padding = 20
-  const chartHeight = useMemo(() => height - headerHeight - padding, [height])
+  const chartHeight = useMemo(() => height - headerHeight - padding, [
+    headerHeight,
+    height,
+  ])
 
-  const changeTimeframe = useCallback(
-    (range: ChartRange) => () => {
-      setTimeframe(range)
+  const handleFocusData = useCallback(
+    async (chartData: ChartData | null) => {
+      setFocusedData(chartData)
+
+      if (!chartData?.timestamp || activityChartRange !== 'monthly') return
+
+      const startDate = new Date(chartData.timestamp)
+      const endDate = add(startDate, { days: 29 })
+
+      const start = await DateModule.formatDate(chartData.timestamp, 'MMM d')
+      const end = await DateModule.formatDate(endDate.toISOString(), 'MMM d')
+      setDataRange(`${start} - ${end}`)
+    },
+    [activityChartRange],
+  )
+
+  const showDataRange = useMemo(
+    () =>
+      (activityChartRange === 'monthly' && !!focusedData) ||
+      filter === 'pending',
+    [activityChartRange, focusedData, filter],
+  )
+
+  const chartRangeData = useMemo(
+    () =>
+      ChartRangeKeys.map((value) => ({
+        label: t(`wallet.chartRanges.${value}.label`),
+        value,
+        Icon: undefined,
+        color: 'purpleMain',
+      })) as HeliumSelectItemType[],
+    [t],
+  )
+
+  const handleChartRangeChanged = useCallback(
+    (itemValue: string | number) => {
+      dispatch(
+        accountSlice.actions.setActivityChartRange(itemValue as ChartRange),
+      )
       triggerImpact()
     },
+    [dispatch, triggerImpact],
+  )
+
+  const handleHeaderLayout = useCallback(
+    (e: LayoutChangeEvent) => setHeaderHeight(e.nativeEvent.layout.height),
     [],
   )
 
-  const handleFocusData = useCallback((chartData: ChartData | null): void => {
-    setFocusedData(chartData)
-  }, [])
+  const hasData = useMemo(() => {
+    if (filter === 'pending') return false
+    return data?.data !== undefined && data?.data?.length !== 0
+  }, [data?.data, filter])
 
-  const { greenBright } = useColors()
-
-  const containerStyle = useMemo(() => ({ paddingVertical: padding / 2 }), [])
+  const { greenBright, blueBright } = useColors()
 
   return (
-    <Box justifyContent="space-around" style={containerStyle}>
-      <Box
-        flexDirection="row"
-        justifyContent="space-between"
-        height={headerHeight}
-      >
-        <Box flexDirection="row" flex={1.5}>
-          {focusedData && (
-            <>
-              <Box flexDirection="row" alignItems="center" marginRight="s">
-                <CarotLeft
-                  width={12}
-                  height={12}
-                  stroke={greenBright}
-                  strokeWidth={2}
-                />
-                <Text variant="body2" marginLeft="xs">
-                  {round(focusedData?.up, 2).toLocaleString()}
-                </Text>
-              </Box>
-
-              <Box
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  width: 200,
-                }}
-              >
-                <CarotRight width={12} height={12} />
-                <Text variant="body2" marginLeft="s">
-                  {round(focusedData?.down, 2).toLocaleString()}
-                </Text>
-              </Box>
-            </>
-          )}
+    <Box
+      {...boxProps}
+      height={chartEnabled && filter !== 'pending' && hasData ? height : 0}
+    >
+      <Box flexDirection="column" onLayout={handleHeaderLayout}>
+        <Box flexDirection="row" justifyContent="space-between">
+          <Text
+            opacity={showDataRange ? 100 : 0}
+            variant="body2"
+            adjustsFontSizeToFit
+            numberOfLines={1}
+            color="grayDark"
+            fontSize={14}
+            maxFontSizeMultiplier={1}
+            maxWidth="40%"
+            marginTop="m"
+          >
+            {dataRange}
+          </Text>
+          <HeliumSelect
+            width={undefined}
+            scrollEnabled={false}
+            flex={undefined}
+            showGradient={false}
+            data={chartRangeData}
+            selectedValue={activityChartRange}
+            onValueChanged={handleChartRangeChanged}
+            marginBottom="l"
+            visible={!showSkeleton && hasData}
+          />
         </Box>
-        <Box flex={1} flexDirection="row" justifyContent="space-between">
-          <TouchableWithoutFeedback onPress={changeTimeframe('daily')}>
-            <Text variant="body1" opacity={timeframe === 'daily' ? 1 : 0.3}>
-              14D
-            </Text>
-          </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback onPress={changeTimeframe('weekly')}>
-            <Text variant="body1" opacity={timeframe === 'weekly' ? 1 : 0.3}>
-              12W
-            </Text>
-          </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback onPress={changeTimeframe('monthly')}>
-            <Text variant="body1" opacity={timeframe === 'monthly' ? 1 : 0.3}>
-              12M
-            </Text>
-          </TouchableWithoutFeedback>
+        <Box
+          flexDirection="row"
+          alignItems="center"
+          marginTop="n_m"
+          marginBottom="s"
+          opacity={focusedData ? 100 : 0}
+        >
+          <CarotLeft
+            width={12}
+            height={12}
+            stroke={greenBright}
+            strokeWidth={2}
+          />
+          <Text
+            variant="body2"
+            fontSize={16}
+            maxFontSizeMultiplier={1.1}
+            marginLeft="xxs"
+            marginRight="xs"
+            color="black"
+          >
+            {up}
+          </Text>
+
+          <CarotRight color={blueBright} width={12} height={12} />
+          <Text
+            variant="body1"
+            maxFontSizeMultiplier={1.1}
+            fontSize={16}
+            marginLeft="xs"
+            flex={1}
+            color="grayDark"
+          >
+            {down}
+          </Text>
         </Box>
       </Box>
-      {data.length === 0 && (
-        <Box
+      {filter !== 'pending' && (
+        <ChartContainer
+          loading={
+            showSkeleton ||
+            !data ||
+            (data.loading === 'pending' && (data.data || []).length === 0)
+          }
           height={chartHeight}
-          width="100%"
-          justifyContent="center"
-          position="absolute"
-        >
-          <ActivityIndicator color="gray" />
-        </Box>
+          data={data?.data}
+          onFocus={handleFocusData}
+          showXAxisLabel={activityChartRange !== 'monthly'}
+          labelColor={colors.grayDark}
+        />
       )}
-      <ChartContainer
-        height={chartHeight}
-        data={data}
-        onFocus={handleFocusData}
-      />
     </Box>
   )
+}
+
+const selectorIsEqual = (prev: RootState, next: RootState) => {
+  const activityChartEqual = isEqual(
+    prev.account.activityChart,
+    next.account.activityChart,
+  )
+  const rangeEqual =
+    prev.account.activityChartRange === next.account.activityChartRange
+  const filterEqual = prev.activity.filter === next.activity.filter
+  const heightEqual =
+    prev.heliumData.blockHeight === next.heliumData.blockHeight
+
+  return activityChartEqual && rangeEqual && filterEqual && heightEqual
 }
 
 export default memo(WalletChart)

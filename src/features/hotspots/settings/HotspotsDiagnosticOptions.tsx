@@ -9,7 +9,6 @@ import { HotspotOptions, HotspotOptionsKeys } from './HotspotSettingsTypes'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Diagnostic from '../../../assets/images/diagnostic.svg'
 import Wifi from '../../../assets/images/wifi.svg'
-import Reassert from '../../../assets/images/reassert.svg'
 import Firmware from '../../../assets/images/firmware.svg'
 import Chevron from '../../../assets/images/chevron-right.svg'
 import { useColors } from '../../../theme/themeHooks'
@@ -21,9 +20,9 @@ type Opts = 'scan' | HotspotOptions
 type Props = { hotspot?: Device; optionSelected: (option: Opts) => void }
 const HotspotDiagnosticOptions = ({ hotspot, optionSelected }: Props) => {
   const { t } = useTranslation()
-  const {
-    connectedHotspot: { firmware },
-  } = useSelector((state: RootState) => state)
+  const firmware = useSelector(
+    (state: RootState) => state.connectedHotspot.firmware,
+  )
 
   const { purpleMain } = useColors()
   const { checkFirmwareCurrent } = useConnectedHotspotContext()
@@ -34,8 +33,8 @@ const HotspotDiagnosticOptions = ({ hotspot, optionSelected }: Props) => {
     }
   }, [firmware, checkFirmwareCurrent])
 
-  const selectOption = (opt: Opts) => {
-    animateTransition()
+  const selectOption = (opt: Opts) => () => {
+    animateTransition('HotspotDiagnosticOptions.SelectOption')
     optionSelected(opt)
   }
 
@@ -62,7 +61,7 @@ const HotspotDiagnosticOptions = ({ hotspot, optionSelected }: Props) => {
             marginBottom="xxxs"
             height={48}
             disabled={k === 'firmware'}
-            onPress={() => selectOption(k)}
+            onPress={selectOption(k)}
             paddingHorizontal="m"
             borderBottomLeftRadius={
               index === HotspotOptionsKeys.length - 1 ? 'l' : undefined
@@ -75,27 +74,33 @@ const HotspotDiagnosticOptions = ({ hotspot, optionSelected }: Props) => {
           >
             {k === 'diagnostic' && <Diagnostic />}
             {k === 'wifi' && <Wifi />}
-            {k === 'reassert' && <Reassert />}
             {k === 'firmware' && <Firmware />}
-            <Text variant="body1" color="black" marginLeft="ms" flex={1}>
+            <Text
+              variant="body1"
+              color="black"
+              marginLeft="ms"
+              flex={1}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+            >
               {t(`hotspot_settings.options.${k}`)}
             </Text>
             {k === 'firmware' && (
-              <Text variant="body1" color="purpleMain">
+              <Text
+                variant="body2"
+                color="purpleMain"
+                numberOfLines={1}
+                adjustsFontSizeToFit
+              >
                 {firmware?.version}
               </Text>
             )}
-            {k !== 'firmware' && <Chevron />}
+            {k !== 'firmware' && <Chevron color="#C1CFEE" />}
           </TouchableOpacityBox>
         )
       })}
 
-      <TouchableOpacityBox
-        marginLeft="n_m"
-        onPress={() => {
-          selectOption('scan')
-        }}
-      >
+      <TouchableOpacityBox marginLeft="n_m" onPress={selectOption('scan')}>
         <Text variant="body1Medium" padding="m" color="purpleMain">
           {t('hotspot_settings.diagnostics.scan_again')}
         </Text>

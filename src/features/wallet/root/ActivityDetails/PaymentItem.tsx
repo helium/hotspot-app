@@ -2,6 +2,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
+import Address from '../../../../components/Address'
 
 type Props = {
   text: string
@@ -9,8 +10,18 @@ type Props = {
   title?: string | null
   isFirst?: boolean
   isLast?: boolean
-  mode: 'to' | 'from' | 'memo' | 'location' | 'seller' | 'owner' | 'buyer'
+  mode:
+    | 'to'
+    | 'from'
+    | 'memo'
+    | 'location'
+    | 'seller'
+    | 'owner'
+    | 'buyer'
+    | 'antenna'
+    | 'elevation'
   isMyAccount?: boolean
+  isMemo?: boolean
 }
 const PaymentItem = ({
   text,
@@ -20,6 +31,7 @@ const PaymentItem = ({
   mode,
   title,
   isMyAccount,
+  isMemo = false,
 }: Props) => {
   const { t } = useTranslation()
 
@@ -42,7 +54,7 @@ const PaymentItem = ({
         fontSize={15}
         color="black"
         flex={1}
-        alignSelf="flex-start"
+        alignSelf="center"
       >
         {title || t(`activity_details.${mode}`)}
       </Text>
@@ -52,16 +64,7 @@ const PaymentItem = ({
         flex={1}
         marginHorizontal="ms"
       >
-        <Text
-          selectable={false}
-          variant="medium"
-          fontSize={14}
-          color="black"
-          numberOfLines={1}
-          ellipsizeMode="middle"
-        >
-          {text}
-        </Text>
+        {isMemo ? <Text selectable>{text}</Text> : <Address address={text} />}
         {(isMyAccount || subText) && (
           <Text
             variant="light"

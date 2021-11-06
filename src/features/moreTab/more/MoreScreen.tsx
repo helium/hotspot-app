@@ -1,8 +1,17 @@
-import React, { useCallback, useMemo, useEffect, memo } from 'react'
+import React, {
+  memo,
+  ReactText,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, SectionList } from 'react-native'
 import { useSelector } from 'react-redux'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
+import { isEqual } from 'lodash'
+import { Edge } from 'react-native-safe-area-context'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
 import { RootState } from '../../../store/rootReducer'
@@ -17,19 +26,29 @@ import {
 import MoreListItem, { MoreListItemType } from './MoreListItem'
 import useAuthIntervals from './useAuthIntervals'
 import { useSpacing } from '../../../theme/themeHooks'
-import accountSlice from '../../../store/account/accountSlice'
+import accountSlice, {
+  fetchAccountSettings,
+  updateFleetModeEnabled,
+  updateSetting,
+} from '../../../store/account/accountSlice'
 import connectedHotspotSlice from '../../../store/connectedHotspot/connectedHotspotSlice'
-import heliumDataSlice from '../../../store/helium/heliumDataSlice'
 import Security from '../../../assets/images/security.svg'
 import Learn from '../../../assets/images/learn.svg'
 import Account from '../../../assets/images/account.svg'
 import Box from '../../../components/Box'
 import DiscordItem from './DiscordItem'
 import AppInfoItem from './AppInfoItem'
+import DeployModeModal from './DeployModeModal'
 import activitySlice from '../../../store/activity/activitySlice'
 import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
-import { SUPPORTED_LANGUAGUES } from '../../../utils/i18n'
 import { useLanguageContext } from '../../../providers/LanguageProvider'
+import { EXPLORER_BASE_URL } from '../../../utils/config'
+import { SUPPORTED_LANGUAGUES } from '../../../utils/i18n/i18nTypes'
+import Articles from '../../../constants/articles'
+import useAlert from '../../../utils/useAlert'
+import validatorsSlice from '../../../store/validators/validatorsSlice'
+import { SUPPORTED_CURRENCIES } from '../../../utils/useCurrency'
+import { clearMapCache } from '../../../utils/mapUtils'
 
 type Route = RouteProp<RootStackParamList & MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
@@ -37,11 +56,31 @@ const MoreScreen = () => {
   const { params } = useRoute<Route>()
   const dispatch = useAppDispatch()
   const { version } = useDevice()
-  const { app } = useSelector((state: RootState) => state)
+  const app = useSelector((state: RootState) => state.app, isEqual)
+  const showHiddenHotspots = useSelector(
+    (state: RootState) => state.account.settings.showHiddenHotspots,
+  )
+  const account = useSelector((state: RootState) => state.account, isEqual)
+  const fleetModeLowerLimit = useSelector(
+    (state: RootState) => state.features.fleetModeLowerLimit,
+  )
   const authIntervals = useAuthIntervals()
+  const { showOKCancelAlert } = useAlert()
   const { changeLanguage, language } = useLanguageContext()
   const navigation = useNavigation<MoreNavigationProp & RootNavigationProp>()
   const spacing = useSpacing()
+  const [
+    showingDeployModeConfirmation,
+    setShowingDeployModeConfirmation,
+  ] = useState(false)
+
+  useEffect(
+    () =>
+      navigation.addListener('focus', () => {
+        dispatch(fetchAccountSettings())
+      }),
+    [dispatch, navigation],
+  )
 
   useEffect(() => {
     if (!params?.pinVerifiedFor) return
@@ -105,25 +144,80 @@ const MoreScreen = () => {
     navigation.push('LockScreen', { requestType: 'resetPin' })
   }, [navigation])
 
+  const handleConvertHntToCurrency = useCallback(() => {
+    dispatch(
+      updateSetting({
+        key: 'convertHntToCurrency',
+        value: !account.settings.convertHntToCurrency,
+      }),
+    )
+  }, [dispatch, account.settings.convertHntToCurrency])
+
+  const handleHaptic = useCallback(() => {
+    dispatch(appSlice.actions.updateHapticEnabled(!app.isHapticDisabled))
+  }, [dispatch, app.isHapticDisabled])
+
+  const handleFleetMode = useCallback(async () => {
+    const decision = await showOKCancelAlert({
+      titleKey: account.settings.isFleetModeEnabled
+        ? 'fleetMode.disablePrompt.title'
+        : 'fleetMode.enablePrompt.title',
+      messageKey: account.settings.isFleetModeEnabled
+        ? 'fleetMode.disablePrompt.subtitle'
+        : 'fleetMode.enablePrompt.subtitle',
+      messageOptions: { lowerLimit: `${fleetModeLowerLimit}` },
+    })
+    if (!decision) return
+
+    dispatch(
+      updateFleetModeEnabled({
+        enabled: !account.settings.isFleetModeEnabled,
+      }),
+    )
+  }, [
+    account.settings.isFleetModeEnabled,
+    dispatch,
+    fleetModeLowerLimit,
+    showOKCancelAlert,
+  ])
+
+  const handleShowHiddenHotspots = useCallback(() => {
+    dispatch(
+      updateSetting({
+        key: 'showHiddenHotspots',
+        value: !showHiddenHotspots,
+      }),
+    )
+  }, [dispatch, showHiddenHotspots])
+
+  const handleClearMapCache = useCallback(async () => {
+    const decision = await showOKCancelAlert({
+      titleKey: 'more.sections.app.clearMapCacheAlert.title',
+      messageKey: 'more.sections.app.clearMapCacheAlert.body',
+    })
+    if (!decision) return
+    await clearMapCache()
+  }, [showOKCancelAlert])
+
   const handleSignOut = useCallback(() => {
     Alert.alert(
-      t('more.sections.account.signOutAlert.title'),
-      t('more.sections.account.signOutAlert.body'),
+      t('more.sections.app.signOutAlert.title'),
+      t('more.sections.app.signOutAlert.body'),
       [
         {
           text: t('generic.cancel'),
           style: 'cancel',
         },
         {
-          text: t('generic.ok'),
+          text: t('more.sections.app.signOut'),
           style: 'destructive',
           onPress: () => {
             dispatch(appSlice.actions.signOut())
             dispatch(accountSlice.actions.signOut())
             dispatch(activitySlice.actions.signOut())
             dispatch(hotspotsSlice.actions.signOut())
+            dispatch(validatorsSlice.actions.signOut())
             dispatch(connectedHotspotSlice.actions.signOut())
-            dispatch(heliumDataSlice.actions.signOut())
           },
         },
       ],
@@ -137,9 +231,34 @@ const MoreScreen = () => {
     [changeLanguage],
   )
 
+  const handleNetworkChange = useCallback(
+    (network: string) => {
+      dispatch(
+        updateSetting({
+          key: 'network',
+          value: network,
+        }),
+      )
+    },
+    [dispatch],
+  )
+
+  const handleCurrencyTypeChange = useCallback(
+    (currencyType: string) => {
+      dispatch(
+        updateSetting({
+          key: 'currencyType',
+          value: currencyType,
+        }),
+      )
+    },
+    [dispatch],
+  )
+
   const handleIntervalSelected = useCallback(
-    (value: string) => {
-      dispatch(appSlice.actions.updateAuthInterval(parseInt(value, 10)))
+    (value: ReactText) => {
+      const number = typeof value === 'number' ? value : parseInt(value, 10)
+      dispatch(appSlice.actions.updateAuthInterval(number))
     },
     [dispatch],
   )
@@ -189,6 +308,21 @@ const MoreScreen = () => {
       {
         title: t('more.sections.security.revealWords'),
         onPress: handleRevealWords,
+        disabled: app.isDeployModeEnabled,
+      },
+      {
+        title: t('more.sections.security.deployMode.enableButton'),
+        value: app.isDeployModeEnabled,
+        onToggle: () => {
+          setShowingDeployModeConfirmation(true)
+        },
+        renderModal: () => (
+          <DeployModeModal
+            isVisible={showingDeployModeConfirmation}
+            onClose={() => setShowingDeployModeConfirmation(false)}
+          />
+        ),
+        disabled: app.isDeployModeEnabled,
       },
     ]
     return [
@@ -203,30 +337,29 @@ const MoreScreen = () => {
         data: [
           {
             title: t('more.sections.learn.tokenEarnings'),
-            openUrl:
-              'https://docs.helium.com/blockchain/mining/#how-do-hotspots-earn-helium-tokens',
+            openUrl: Articles.Token_Earnings,
           },
           {
             title: t('more.sections.learn.heliumtoken'),
-            openUrl: 'https://docs.helium.com/blockchain/helium-token',
+            openUrl: Articles.Helium_Token,
           },
           {
             title: t('more.sections.learn.coverage'),
-            openUrl: 'https://explorer.helium.com/coverage',
+            openUrl: `${EXPLORER_BASE_URL}/coverage`,
           },
           {
             title: t('more.sections.learn.troubleshooting'),
-            openUrl: 'https://docs.helium.com',
+            openUrl: Articles.Docs_Root,
           },
-        ],
+        ] as MoreListItemType[],
         footer: <DiscordItem />,
       },
       {
-        title: t('more.sections.account.title'),
+        title: t('more.sections.app.title'),
         icon: <Account />,
         data: [
           {
-            title: t('more.sections.account.language'),
+            title: t('more.sections.app.language'),
             value: language,
             select: {
               items: SUPPORTED_LANGUAGUES,
@@ -234,64 +367,156 @@ const MoreScreen = () => {
             },
           },
           {
-            title: t('more.sections.account.signOut'),
+            title: t('more.sections.app.currency'),
+            value: account.settings.currencyType,
+            select: {
+              items: Object.keys(SUPPORTED_CURRENCIES).map((p) => {
+                return {
+                  label: `${p} ${SUPPORTED_CURRENCIES[p]}`,
+                  labelShort: p,
+                  value: p,
+                }
+              }),
+              onValueSelect: handleCurrencyTypeChange,
+            },
+          },
+          {
+            title: t('more.sections.app.network'),
+            value: account.settings.network,
+            select: {
+              items: [
+                { label: 'StakeJoy API', value: 'stakejoy' },
+                { label: 'Helium API', value: 'helium' },
+              ],
+              onValueSelect: handleNetworkChange,
+            },
+          },
+          {
+            title: t('more.sections.app.enableHapticFeedback'),
+            onToggle: handleHaptic,
+            value: !app.isHapticDisabled,
+          },
+          {
+            title: t('more.sections.app.convertHntToCurrency'),
+            onToggle: handleConvertHntToCurrency,
+            value: account.settings.convertHntToCurrency,
+          },
+          {
+            title: t('more.sections.app.enableFleetMode'),
+            onToggle: handleFleetMode,
+            value: account.settings.isFleetModeEnabled,
+          },
+          {
+            title: t('more.sections.app.showHiddenHotspots'),
+            onToggle: handleShowHiddenHotspots,
+            value: showHiddenHotspots,
+          },
+          {
+            title: t('more.sections.app.clearMapCache'),
+            onPress: handleClearMapCache,
+          },
+          {
+            title: t('more.sections.app.signOut'),
             onPress: handleSignOut,
             destructive: true,
           },
-        ],
+        ] as MoreListItemType[],
         footer: <AppInfoItem version={version} />,
       },
     ]
   }, [
-    app,
-    handleSignOut,
-    version,
-    handlePinRequiredForPayment,
     t,
     handlePinRequired,
-    handleResetPin,
+    app.isPinRequired,
+    app.isDeployModeEnabled,
+    app.isHapticDisabled,
+    app.authInterval,
+    app.isPinRequiredForPayment,
+    handleRevealWords,
+    language,
+    handleLanguageChange,
+    account.settings.currencyType,
+    account.settings.network,
+    account.settings.convertHntToCurrency,
+    account.settings.isFleetModeEnabled,
+    handleCurrencyTypeChange,
+    handleNetworkChange,
+    handleHaptic,
+    handleConvertHntToCurrency,
+    handleFleetMode,
+    handleShowHiddenHotspots,
+    showHiddenHotspots,
+    handleSignOut,
+    version,
     authIntervals,
     handleIntervalSelected,
-    handleRevealWords,
-    handleLanguageChange,
-    language,
+    handleResetPin,
+    handlePinRequiredForPayment,
+    showingDeployModeConfirmation,
+    handleClearMapCache,
   ])
 
+  const contentContainer = useMemo(
+    () => ({
+      paddingHorizontal: spacing.m,
+      paddingBottom: spacing.xxxl,
+    }),
+    [spacing.m, spacing.xxxl],
+  )
+
+  const renderItem = useCallback(
+    ({ item, index, section }) => (
+      <MoreListItem
+        item={item}
+        isTop={index === 0}
+        isBottom={index === section.data.length - 1}
+      />
+    ),
+    [],
+  )
+
+  const renderSectionHeader = useCallback(
+    ({ section: { title, icon } }) => (
+      <Box
+        flexDirection="row"
+        alignItems="center"
+        paddingTop="l"
+        paddingBottom="s"
+        paddingHorizontal="xs"
+        backgroundColor="primaryBackground"
+      >
+        {icon !== undefined && icon}
+        <Text variant="body1Bold" marginLeft="s">
+          {title}
+        </Text>
+      </Box>
+    ),
+    [],
+  )
+
+  const renderSectionFooter = useCallback(
+    ({ section: { footer } }) => footer,
+    [],
+  )
+
+  const keyExtractor = useCallback((item, index) => item.title + index, [])
+
+  const edges = useMemo(() => ['left', 'right', 'top'] as Edge[], [])
   return (
-    <SafeAreaBox backgroundColor="primaryBackground">
+    <SafeAreaBox backgroundColor="primaryBackground" flex={1} edges={edges}>
       <Text variant="h3" marginVertical="m" paddingHorizontal="l">
         {t('more.title')}
       </Text>
       <SectionList
-        contentContainerStyle={{
-          paddingHorizontal: spacing.m,
-          paddingBottom: spacing.xxl,
-        }}
+        contentContainerStyle={contentContainer}
         sections={SectionData}
-        keyExtractor={(item, index) => item.title + index}
-        renderItem={({ item, index, section }) => (
-          <MoreListItem
-            item={item}
-            isTop={index === 0}
-            isBottom={index === section.data.length - 1}
-          />
-        )}
-        renderSectionHeader={({ section: { title, icon } }) => (
-          <Box
-            flexDirection="row"
-            alignItems="center"
-            paddingTop="l"
-            paddingBottom="s"
-            paddingHorizontal="xs"
-            backgroundColor="primaryBackground"
-          >
-            {icon !== undefined && icon}
-            <Text variant="body1Bold" marginLeft="s">
-              {title}
-            </Text>
-          </Box>
-        )}
-        renderSectionFooter={({ section: { footer } }) => footer}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        renderSectionHeader={renderSectionHeader}
+        renderSectionFooter={renderSectionFooter}
+        initialNumToRender={100}
+        // ^ Sometimes on initial page load there is a bug with SectionList
+        // where it won't render all items right away. This seems to fix it.
       />
     </SafeAreaBox>
   )

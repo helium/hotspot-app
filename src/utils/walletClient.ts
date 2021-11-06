@@ -3,21 +3,34 @@ import qs from 'qs'
 import { getWalletApiToken } from './secureAccount'
 import * as Logger from './logger'
 
-const makeRequest = async (url: string, opts: RequestInit) => {
-  Logger.breadcrumb(`request: ${opts.method} ${url}`)
+const breadcrumbOpts = { type: 'HTTP Request', category: 'walletClient' }
+
+let network = 'stakejoy'
+
+export const updateNetwork = (nextNetwork: string) => {
+  network = nextNetwork
+}
+
+const makeRequest = async (
+  url: string,
+  opts: RequestInit & { showCursor?: boolean },
+) => {
+  Logger.breadcrumb(`httpRequest ${opts.method} ${url}`, breadcrumbOpts)
   try {
     const token = await getWalletApiToken()
     if (!token) {
-      Logger.breadcrumb('no token')
+      Logger.breadcrumb('no token', breadcrumbOpts)
       throw new Error('no token')
     }
 
-    const route = [Config.WALLET_API_BASE_URL, url].join('/')
+    const baseUrl = Config.WALLET_API_BASE_URL
+    const route = [baseUrl, url].join('/')
 
     const response = await fetch(route, {
       ...opts,
       headers: {
         ...opts.headers,
+        network,
         'Cache-Control': 'no-cache',
         'Content-Type': 'application/json',
         Authorization: token,
@@ -25,46 +38,84 @@ const makeRequest = async (url: string, opts: RequestInit) => {
     })
 
     if (!response.ok) {
-      const error = new Error(
-        `Bad response, status:${response.status} message:${response.statusText}`,
-      )
-      Logger.error(error)
-      throw error
+      const errorMessage = `Bad response, status:${response.status} message:${response.statusText} ${opts.method} url:${route}`
+      Logger.breadcrumb(errorMessage, breadcrumbOpts)
+      throw new Error(errorMessage)
     }
 
     const text = await response.text()
     try {
       const json = JSON.parse(text)
-      return json.data || json
+      const responseData = json.data || json
+      const data = opts.showCursor ? json : responseData
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      data.serverDate = response.headers.map?.date
+      return data
     } catch (err) {
       return text
     }
   } catch (error) {
-    Logger.breadcrumb('fetch failed')
-    Logger.error(error)
+    Logger.breadcrumb('fetch failed', breadcrumbOpts)
     throw error
   }
 }
 
-export const getWallet = async (url: string, params?: unknown) => {
+type WalletOpts = {
+  camelCase?: boolean
+  showCursor?: boolean
+}
+export const getWallet = async (
+  url: string,
+  params?: unknown,
+  { camelCase, showCursor } = {
+    camelCase: false,
+    showCursor: false,
+  } as WalletOpts,
+) => {
   let fullUrl = url
   if (params) {
     fullUrl += '?'
     fullUrl += qs.stringify(params)
   }
-  return makeRequest(fullUrl, {
+  const opts = {
     method: 'GET',
-  })
+    showCursor,
+  } as RequestInit
+  if (camelCase) {
+    opts.headers = { Accent: 'camel' }
+  }
+  return makeRequest(fullUrl, opts)
 }
 
-export const postWallet = async (url: string, data?: unknown) =>
-  makeRequest(url, {
+export const postWallet = async (
+  url: string,
+  data?: unknown,
+  { camelCase } = { camelCase: false },
+) => {
+  const opts = {
     method: 'POST',
     body: data ? JSON.stringify(data) : null,
-  })
+  } as RequestInit
+  if (camelCase) {
+    opts.headers = { Accent: 'camel' }
+  }
 
-export const deleteWallet = async (url: string, data?: unknown) =>
-  makeRequest(url, {
+  return makeRequest(url, opts)
+}
+
+export const deleteWallet = async (
+  url: string,
+  data?: unknown,
+  { camelCase } = { camelCase: false },
+) => {
+  const opts = {
     method: 'DELETE',
     body: data ? JSON.stringify(data) : null,
-  })
+  } as RequestInit
+  if (camelCase) {
+    opts.headers = { Accent: 'camel' }
+  }
+
+  return makeRequest(url, opts)
+}

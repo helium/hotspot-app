@@ -1,4 +1,6 @@
-import { LOCATION, getAsync, askAsync, PermissionType } from 'expo-permissions'
+import { LOCATION, askAsync, PermissionType } from 'expo-permissions'
+import { useCallback } from 'react'
+import locationSlice from '../store/location/locationSlice'
 import { useAppDispatch } from '../store/store'
 import appSlice from '../store/user/appSlice'
 import useAlert from './useAlert'
@@ -7,31 +9,33 @@ const usePermissionManager = () => {
   const { showOKCancelAlert } = useAlert()
   const dispatch = useAppDispatch()
 
-  const requestPermission = async (type: PermissionType) => {
-    dispatch(appSlice.actions.requestingPermission(true))
-    const { status } = await askAsync(type)
-    dispatch(appSlice.actions.requestingPermission(false))
-    return status === 'granted'
-  }
+  const requestPermission = useCallback(
+    async (type: PermissionType) => {
+      dispatch(appSlice.actions.requestingPermission(true))
+      const response = await askAsync(type)
+      dispatch(appSlice.actions.requestingPermission(false))
+      return response
+    },
+    [dispatch],
+  )
 
-  const hasLocationPermission = async () => {
-    const perms = await getAsync(LOCATION)
-    return perms.status === 'granted'
-  }
+  const requestLocationPermission = useCallback(
+    async (showAlert = true) => {
+      if (showAlert) {
+        const decision = await showOKCancelAlert({
+          titleKey: 'permissions.location.title',
+          messageKey: 'permissions.location.message',
+        })
+        if (!decision) return false
+      }
 
-  const requestLocationPermission = async () => {
-    const hasPermission = await hasLocationPermission()
-    if (hasPermission) return true
+      const response = await requestPermission(LOCATION)
+      dispatch(locationSlice.actions.updateLocationPermission(response))
+      return response
+    },
+    [dispatch, requestPermission, showOKCancelAlert],
+  )
 
-    const decision = await showOKCancelAlert({
-      titleKey: 'permissions.location.title',
-      messageKey: 'permissions.location.message',
-    })
-    if (!decision) return false
-
-    return requestPermission(LOCATION)
-  }
-
-  return { requestLocationPermission, hasLocationPermission }
+  return { requestLocationPermission, requestPermission }
 }
 export default usePermissionManager

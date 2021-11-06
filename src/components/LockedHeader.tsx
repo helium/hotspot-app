@@ -1,20 +1,26 @@
 import React from 'react'
-import { useTranslation } from 'react-i18next'
 import Box from './Box'
+import { Colors } from '../theme/theme'
 import Close from '../assets/images/close.svg'
 import TouchableOpacityBox from './TouchableOpacityBox'
 import Text from './Text'
 
 type Props = {
+  backgroundColor: Colors
   onClosePress: () => void
+  allowClose?: boolean
+  text: string
 }
 
-const SendLockedHeader = ({ onClosePress }: Props) => {
-  const { t } = useTranslation()
-
+const SendLockedHeader = ({
+  backgroundColor,
+  onClosePress,
+  allowClose = true,
+  text,
+}: Props) => {
   return (
     <Box
-      backgroundColor="blueMain"
+      backgroundColor={backgroundColor}
       flexDirection="row"
       justifyContent="space-between"
       alignItems="center"
@@ -28,15 +34,17 @@ const SendLockedHeader = ({ onClosePress }: Props) => {
         fontSize={14}
         letterSpacing={0.85}
       >
-        {t('send.qrInfo')}
+        {text}
       </Text>
-      <TouchableOpacityBox
-        onPress={onClosePress}
-        paddingVertical="s"
-        paddingHorizontal="m"
-      >
-        <Close color="white" width={10} height={10} />
-      </TouchableOpacityBox>
+      {allowClose && (
+        <TouchableOpacityBox
+          onPress={onClosePress}
+          paddingVertical="s"
+          paddingHorizontal="m"
+        >
+          <Close color="white" width={10} height={10} />
+        </TouchableOpacityBox>
+      )}
     </Box>
   )
 }

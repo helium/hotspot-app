@@ -1,6 +1,5 @@
-import React from 'react'
-import { useTranslation } from 'react-i18next'
-import haptic from '../utils/haptic'
+import React, { useCallback, useMemo } from 'react'
+import useHaptic from '../utils/useHaptic'
 import Box from './Box'
 import Text from './Text'
 import TouchableCircle from './TouchableCircle'
@@ -10,7 +9,8 @@ import { useColors } from '../theme/themeHooks'
 type Props = {
   onNumberPress: (value: number) => void
   onBackspacePress: () => void
-  onCancel?: () => void
+  onCustomButtonPress?: () => void
+  customButtonTitle?: string
 }
 const Key = ({
   children,
@@ -19,42 +19,64 @@ const Key = ({
   children: React.ReactNode
   onPressIn: () => void
 }) => {
+  const { triggerImpact } = useHaptic()
+
+  const handlePressIn = useCallback(() => {
+    triggerImpact()
+    onPressIn()
+  }, [onPressIn, triggerImpact])
+
   return (
     <TouchableCircle
       alignItems="center"
       marginBottom="xs"
       flexBasis="33%"
-      onPressIn={() => {
-        haptic()
-        onPressIn()
-      }}
+      onPressIn={handlePressIn}
     >
       {children}
     </TouchableCircle>
   )
 }
 
-const Keypad = ({ onNumberPress, onCancel, onBackspacePress }: Props) => {
-  const { t } = useTranslation()
+const Keypad = ({
+  onNumberPress,
+  onCustomButtonPress,
+  onBackspacePress,
+  customButtonTitle,
+}: Props) => {
+  const { triggerImpact } = useHaptic()
   const colors = useColors()
 
-  const renderDynamicButton = () => {
-    if (onCancel) {
+  const renderDynamicButton = useMemo(() => {
+    if (onCustomButtonPress && customButtonTitle) {
       return (
-        <Key onPressIn={onCancel}>
+        <Key onPressIn={onCustomButtonPress}>
           <Text
             variant="keypad"
+            fontSize={20}
             numberOfLines={1}
             adjustsFontSizeToFit
             padding="s"
           >
-            {t('generic.cancel')}
+            {customButtonTitle}
           </Text>
         </Key>
       )
     }
     return <Box flexBasis="33%" />
-  }
+  }, [customButtonTitle, onCustomButtonPress])
+
+  const onPressIn = useCallback(
+    (value: number) => () => {
+      triggerImpact()
+      onNumberPress(value)
+    },
+    [onNumberPress, triggerImpact],
+  )
+  const handleBackspace = useCallback(() => {
+    triggerImpact()
+    onBackspacePress()
+  }, [onBackspacePress, triggerImpact])
 
   return (
     <Box
@@ -68,26 +90,20 @@ const Keypad = ({ onNumberPress, onCancel, onBackspacePress }: Props) => {
           alignItems="center"
           marginBottom="xs"
           flexBasis="33%"
-          onPressIn={() => {
-            haptic()
-            onNumberPress(idx + 1)
-          }}
+          onPressIn={onPressIn(idx + 1)}
           key={idx}
         >
           <Text variant="keypad">{idx + 1}</Text>
         </TouchableCircle>
       ))}
 
-      {renderDynamicButton()}
+      {renderDynamicButton}
 
       <TouchableCircle
         alignItems="center"
         marginBottom="xs"
         flexBasis="33%"
-        onPressIn={() => {
-          haptic()
-          onNumberPress(0)
-        }}
+        onPressIn={onPressIn(0)}
       >
         <Text variant="keypad">{0}</Text>
       </TouchableCircle>
@@ -95,10 +111,7 @@ const Keypad = ({ onNumberPress, onCancel, onBackspacePress }: Props) => {
         alignItems="center"
         marginBottom="xs"
         flexBasis="33%"
-        onPressIn={() => {
-          haptic()
-          onBackspacePress()
-        }}
+        onPressIn={handleBackspace}
       >
         <Backspace color={colors.white} height={24} width={24} />
       </TouchableCircle>
