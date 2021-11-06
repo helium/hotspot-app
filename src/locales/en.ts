@@ -157,6 +157,7 @@ export default {
       title: 'Choose\nyour Hotspot.',
       subtitle: 'What kind of Hotspot do you\nwish to add?',
 <<<<<<< HEAD
+<<<<<<< HEAD
       helium: 'Helium\nHotspot',
       rak: 'RAK\nHotspot Miner',
       nebrain: 'Nebra\nIndoor Hotspot',
@@ -166,6 +167,8 @@ export default {
       helium_edition: 'For the Helium Network',
       fine_print:
         'RAK Hotspot Miners have special firmware preloaded by RAK. Double check your hardware is a RAK Hotspot Miner before proceeding.',
+=======
+>>>>>>> 1f8e1c1a23096999ff6acb08aaea2f74459de002
 =======
 >>>>>>> 1f8e1c1a23096999ff6acb08aaea2f74459de002
     },
@@ -210,6 +213,7 @@ export default {
     diagnostics: {
       title: 'Diagnostics',
 <<<<<<< HEAD
+<<<<<<< HEAD
       p_1:
         '<b><white>Diagnostic support allows Helium to identify issues with your Hotspot in a secure way.</white></b>\n\nHelium will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@helium.com</b></purple> from the email used to purchase the Hotspot.',
       nebra_p_1:
@@ -218,10 +222,13 @@ export default {
         '<b><white>Diagnostic support allows SyncroB.it to identify issues with your Hotspot in a secure way.</white></b>\n\nSyncroB.it will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@syncrob.it</b></purple> from the email used to purchase the Hotspot.',
 =======
 >>>>>>> 1f8e1c1a23096999ff6acb08aaea2f74459de002
+=======
+>>>>>>> 1f8e1c1a23096999ff6acb08aaea2f74459de002
     },
     power: {
       title: 'Power Up',
       next: "I'm powered up",
+<<<<<<< HEAD
 <<<<<<< HEAD
       helium_subtitle_1:
         'Attach the antenna and plug in the provided power adapter.',
@@ -265,6 +272,11 @@ export default {
         'Bluetooth is automatically enabled for 10 minutes after the Nebra Outdoor Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.\n\nPress Next to scan.',
       syncrobit_subtitle_2:
         'Bluetooth is automatically enabled for 5 minutes after the SyncroB.it Hotspot is powered on.\n\nHotspot can take up to 1 minute to fully boot up.\n\nPress Next to scan.',
+=======
+    },
+    pair: {
+      title: 'Bluetooth',
+>>>>>>> 1f8e1c1a23096999ff6acb08aaea2f74459de002
 =======
     },
     pair: {

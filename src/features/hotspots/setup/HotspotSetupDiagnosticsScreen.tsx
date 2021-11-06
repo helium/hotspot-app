@@ -26,6 +26,7 @@ const HotspotSetupDiagnosticsScreen = () => {
   const rootNav = useNavigation<RootNavigationProp>()
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   const diagnosticTextKey = () => {
     switch (params.hotspotType) {
       default:
@@ -39,6 +40,9 @@ const HotspotSetupDiagnosticsScreen = () => {
         return 'hotspot_setup.diagnostics.syncrobit_p_1'
     }
   }
+=======
+  const handleClose = useCallback(() => rootNav.navigate('MainTabs'), [rootNav])
+>>>>>>> 1f8e1c1a23096999ff6acb08aaea2f74459de002
 =======
   const handleClose = useCallback(() => rootNav.navigate('MainTabs'), [rootNav])
 >>>>>>> 1f8e1c1a23096999ff6acb08aaea2f74459de002

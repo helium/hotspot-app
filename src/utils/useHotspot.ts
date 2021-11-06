@@ -74,6 +74,7 @@ const useHotspot = () => {
   // TODO: Move staking calls to redux
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   // helium hotspot uses b58 onboarding address and RAK is uuid v4
   const getHotspotType = (onboardingAddress: string): HotspotType =>
     validator.isUUID(addUuidDashes(onboardingAddress)) ? 'RAK' : 'Helium'
@@ -100,6 +101,8 @@ const useHotspot = () => {
     }
   }
 
+=======
+>>>>>>> 1f8e1c1a23096999ff6acb08aaea2f74459de002
 =======
 >>>>>>> 1f8e1c1a23096999ff6acb08aaea2f74459de002
   const scanForHotspots = async (ms: number) => {

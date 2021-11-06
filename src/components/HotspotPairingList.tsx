@@ -9,6 +9,7 @@ import { DebouncedTouchableHighlightBox } from './TouchableHighlightBox'
 import { useColors, useSpacing } from '../theme/themeHooks'
 import CarotRight from '../assets/images/carot-right.svg'
 <<<<<<< HEAD
+<<<<<<< HEAD
 import HeliumHotspot from '../assets/images/helium-hotspot.svg'
 
 const imagesByHotspotName: Record<string, any> = {
@@ -26,6 +27,9 @@ const imagesByHotspotName: Record<string, any> = {
     <Image source={require('../assets/images/syncrobit-hotspot.png')} />
   ),
 }
+=======
+import { HotspotMakerModels, HotspotModelKeys } from '../makers'
+>>>>>>> 1f8e1c1a23096999ff6acb08aaea2f74459de002
 =======
 import { HotspotMakerModels, HotspotModelKeys } from '../makers'
 >>>>>>> 1f8e1c1a23096999ff6acb08aaea2f74459de002

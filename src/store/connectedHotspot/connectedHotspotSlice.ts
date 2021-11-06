@@ -16,6 +16,7 @@ import * as Logger from '../../utils/logger'
 
 export type HotspotStatus = 'owned' | 'global' | 'new' | 'error' | 'initial'
 <<<<<<< HEAD
+<<<<<<< HEAD
 export type HotspotType = 'Helium' | 'RAK' | 'NEBRAIN' | 'NEBRAOUT' | 'SYNCROBIT'
 export type HotspotName =
   | 'RAK Hotspot Miner'
@@ -24,6 +25,8 @@ export type HotspotName =
   | 'Nebra Outdoor Hotspot'
   | 'SyncroB.it Hotspot'
 
+=======
+>>>>>>> 1f8e1c1a23096999ff6acb08aaea2f74459de002
 =======
 >>>>>>> 1f8e1c1a23096999ff6acb08aaea2f74459de002
 type Loading = 'idle' | 'pending' | 'fulfilled' | 'rejected'
