@@ -89,9 +89,10 @@ type FollowedValidator = Hotspot & Followed
 type Item = { address: string; owner?: string; name?: string }
 
 const getItemId = (item: GlobalOpt | Item) =>
-  isGlobalOption(item) ? item : item.address
+  isGlobalOption(item) ? item : item?.address
 
 const getAnimalName = <T extends Item>(item: T) => {
+  if (item?.name === undefined && item?.address === undefined) return ''
   const pieces = (item.name || animalName(item.address)).split('-')
   return pieces[pieces.length - 1]
 }
@@ -116,7 +117,7 @@ const sortItems = <T extends Item>({
   type FollowedItem = T & Followed
   const uniqueItems = uniqBy(
     [...followed.map((h) => ({ ...h, followed: true })), ...owned],
-    (h) => h.address,
+    (h) => h?.address,
   ) as FollowedItem[]
 
   const groupedItems = uniqueItems.reduce(
@@ -208,7 +209,7 @@ const ShortcutNav = ({
         return selected === item
       }
       if (!isGlobalOption(selected) && !isGlobalOption(item)) {
-        return selected.address === item.address
+        return selected?.address === item?.address
       }
 
       return false
@@ -506,21 +507,21 @@ const ShortcutNav = ({
     if (isGlobalOption(item)) {
       return item
     }
-    return item.address
+    return item?.address
   }, [])
 
   const contentContainerStyle = useMemo(() => {
     const halfWidth = wp(50)
     let firstItemWidth = ITEM_SIZE
     if (data.length && isValidator(data[0])) {
-      firstItemWidth = sizes[data[0].address] || 0
+      firstItemWidth = sizes[data[0]?.address] || 0
     }
     const paddingStart = halfWidth - firstItemWidth / 2
 
     const lastItem = data[data.length - 1]
     let lastItemWidth = ITEM_SIZE
-    if (lastItem && !isGlobalOption(lastItem) && sizes[lastItem.address]) {
-      lastItemWidth = sizes[lastItem.address] || 0
+    if (lastItem && !isGlobalOption(lastItem) && sizes[lastItem?.address]) {
+      lastItemWidth = sizes[lastItem?.address] || 0
     }
     const paddingEnd = halfWidth - lastItemWidth / 2 - spacing.s
     return { paddingStart, paddingEnd }
