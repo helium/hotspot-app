@@ -122,10 +122,10 @@ const sortItems = <T extends Item>({
 
   const groupedItems = uniqueItems.reduce(
     (val, item) => {
-      if (!item.followed) {
+      if (!item?.followed) {
         return { ...val, owned: [...val.owned, item] }
       }
-      if (item.owner === ownerAddress) {
+      if (item?.owner === ownerAddress) {
         return {
           ...val,
           ownedAndFollowed: [...val.ownedAndFollowed, item],
@@ -392,11 +392,11 @@ const ShortcutNav = ({
 
   const renderGateway = useCallback(
     (item: FollowedHotspot | FollowedValidator, index: number) => {
-      if (!item.name) return null
-      const isOwner = item.owner === ownerAddress
-      const followedAndUnowned = item.followed && !isOwner
-      const followedAndOwned = item.followed && isOwner
-      const [, , animal] = item.name.split('-')
+      if (!item?.name) return null
+      const isOwner = item?.owner === ownerAddress
+      const followedAndUnowned = item?.followed && !isOwner
+      const followedAndOwned = item?.followed && isOwner
+      const [, , animal] = item?.name.split('-')
       const itemIsValidator = isValidator(item)
       const colorObj = itemColors[itemIsValidator ? 'validator' : 'hotspot']
       let colorScheme = colorObj.owned
@@ -416,10 +416,10 @@ const ShortcutNav = ({
           height={ITEM_SIZE}
           flexDirection="row"
           paddingRight="m"
-          paddingLeft={item.followed ? 'xs' : 'm'}
+          paddingLeft={item?.followed ? 'xs' : 'm'}
           alignItems="center"
         >
-          {item.followed && (
+          {item?.followed && (
             <Box
               marginRight="s"
               borderRadius="round"
