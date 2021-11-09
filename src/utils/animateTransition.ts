@@ -19,5 +19,16 @@ export default (
     console.log('animateTransition:', { id, enabledOnAndroid })
   }
 
-  LayoutAnimation.configureNext(config || LayoutAnimation.Presets.easeInEaseOut)
+  LayoutAnimation.configureNext(
+    config || {
+      duration: 300,
+      create: {
+        type: LayoutAnimation.Types.easeInEaseOut,
+        property: LayoutAnimation.Properties.opacity,
+      },
+      update: {
+        type: LayoutAnimation.Types.easeInEaseOut,
+      },
+    },
+  )
 }
