@@ -77,7 +77,12 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
       <Text variant="h4" color="black">
         {t('hotspot_settings.pairing.title')}
       </Text>
-      <Text variant="body2" color="grayText" marginVertical="ms">
+      <Text
+        variant="body2"
+        color="grayText"
+        marginVertical="ms"
+        maxFontSizeMultiplier={1}
+      >
         {t('hotspot_settings.pairing.subtitle')}
       </Text>
       {scanComplete &&
@@ -98,14 +103,24 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
         })}
 
       {scanComplete && hotspotCount === 0 && (
-        <Text variant="h4" color="black" marginVertical="ms">
+        <Text
+          variant="h4"
+          color="black"
+          marginVertical="ms"
+          maxFontSizeMultiplier={1}
+        >
           {t('hotspot_settings.diagnostics.no_hotspots')}
         </Text>
       )}
       {!scanComplete && <CircleLoader marginTop="l" />}
       {scanComplete && (
         <TouchableOpacityBox marginLeft="n_m" onPress={rescan}>
-          <Text variant="body1Medium" padding="m" color="purpleMain">
+          <Text
+            variant="body1Medium"
+            padding="m"
+            color="purpleMain"
+            maxFontSizeMultiplier={1}
+          >
             {t('hotspot_settings.diagnostics.scan_again')}
           </Text>
         </TouchableOpacityBox>
