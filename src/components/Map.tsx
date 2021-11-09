@@ -35,6 +35,7 @@ import { theme, Theme } from '../theme/theme'
 import { useColors } from '../theme/themeHooks'
 import Coverage from './Coverage'
 import { distance } from '../utils/location'
+import ImageBox from './ImageBox'
 
 const defaultLngLat = [-122.419418, 37.774929] // San Francisco
 
@@ -49,6 +50,7 @@ type Props = BoxProps<Theme> & {
   currentLocationEnabled?: boolean
   zoomLevel?: number
   mapCenter?: number[]
+  markerLocation?: number[]
   ownedHotspots?: Hotspot[]
   followedHotspots?: Hotspot[]
   selectedHotspot?: Hotspot | Witness
@@ -89,6 +91,7 @@ const Map = ({
   showRewardScale,
   cameraBottomOffset,
   selectedHex,
+  markerLocation,
   ...props
 }: Props) => {
   const colors = useColors()
@@ -346,6 +349,16 @@ const Map = ({
               followedHotspots={followedHotspots}
               showRewardScale={showRewardScale}
             />
+          )}
+          {markerLocation !== undefined && (
+            <MapboxGL.PointAnnotation
+              id="locationCenterMarker"
+              coordinate={markerLocation}
+            >
+              <ImageBox
+                source={require('../assets/images/locationWhite.png')}
+              />
+            </MapboxGL.PointAnnotation>
           )}
         </MapboxGL.MapView>
         {currentLocationEnabled && (
