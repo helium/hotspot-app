@@ -1263,6 +1263,7 @@ export default {
   },
   signHotspot: {
     title: 'Add Hotspot to\nblockchain?',
+    titleLocationOnly: 'Update Location?',
     name: 'Hostpot Name: {{name}}',
     location: 'Location: {{location}}',
     owner: 'Owner: {{owner}}',

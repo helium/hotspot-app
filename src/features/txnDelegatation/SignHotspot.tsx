@@ -150,7 +150,7 @@ const SignHotspot = () => {
       justifyContent="space-around"
     >
       <Text variant="h2" textAlign="center">
-        {t('signHotspot.title')}
+        {t(gatewayTxn ? 'signHotspot.title' : 'signHotspot.titleLocationOnly')}
       </Text>
 
       <Box>
