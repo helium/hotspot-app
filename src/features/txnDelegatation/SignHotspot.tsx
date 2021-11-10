@@ -20,8 +20,8 @@ type Route = RouteProp<RootStackParamList, 'SignHotspot'>
 const SignHotspot = () => {
   const {
     params: {
-      callbackUrl,
       requestAppName,
+      requestAppId,
       token,
       addGatewayTxn,
       assertLocationTxn,
@@ -35,7 +35,11 @@ const SignHotspot = () => {
   const callback = useCallback(
     async (responseParams: WalletLink.SignHotspotResponse) => {
       try {
-        const url = `${callbackUrl}sign_hotspot?${qs.stringify(responseParams)}`
+        const makerApp = WalletLink.getMakerApp(requestAppId)
+        if (!makerApp?.universalLink) return
+        const url = `${makerApp.universalLink}sign_hotspot?${qs.stringify(
+          responseParams,
+        )}`
         const canOpen = await Linking.canOpenURL(url)
         if (canOpen) {
           Linking.openURL(url)
@@ -46,7 +50,7 @@ const SignHotspot = () => {
 
       navigation.goBack()
     },
-    [callbackUrl, navigation],
+    [navigation, requestAppId],
   )
 
   useEffect(() => {

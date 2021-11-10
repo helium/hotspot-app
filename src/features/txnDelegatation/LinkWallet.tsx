@@ -20,7 +20,7 @@ import { addAppLinkAuthToken, getSecureItem } from '../../utils/secureAccount'
 type Route = RouteProp<RootStackParamList, 'LinkWallet'>
 const LinkWallet = () => {
   const {
-    params: { callbackUrl, requestAppId, requestAppName },
+    params: { requestAppId, requestAppName },
   } = useRoute<Route>()
   const navigation = useNavigation<RootNavigationProp>()
   const { t } = useTranslation()
@@ -29,9 +29,11 @@ const LinkWallet = () => {
   const callback = useCallback(
     async (responseParams: WalletLink.LinkWalletResponse) => {
       try {
-        const url = `${callbackUrl}link_wallet/${address}?${qs.stringify(
-          responseParams,
-        )}`
+        const makerApp = WalletLink.getMakerApp(requestAppId)
+        if (!makerApp?.universalLink) return
+        const url = `${
+          makerApp.universalLink
+        }link_wallet/${address}?${qs.stringify(responseParams)}`
         const canOpen = await Linking.canOpenURL(url)
         if (canOpen) {
           Linking.openURL(url)
@@ -42,7 +44,7 @@ const LinkWallet = () => {
 
       navigation.goBack()
     },
-    [address, callbackUrl, navigation],
+    [address, navigation, requestAppId],
   )
 
   const handleLink = useCallback(async () => {
