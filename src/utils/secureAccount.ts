@@ -1,4 +1,5 @@
 import { Address, Keypair, Mnemonic } from '@helium/crypto-react-native'
+import { WalletLink } from '@helium/react-native-sdk'
 import * as SecureStore from 'expo-secure-store'
 import OneSignal from 'react-native-onesignal'
 import * as Logger from './logger'
@@ -144,12 +145,34 @@ export const getWalletApiToken = async () => {
   return apiToken
 }
 
-export const addAppLinkAuthToken = async (token: string) => {
+export const addAppLinkAuthToken = async ({
+  time,
+  address,
+  requestAppId,
+  signingAppId,
+}: {
+  time: number
+  address: string
+  requestAppId: string
+  signingAppId: string
+}) => {
+  const token = WalletLink.createWalletLinkToken({
+    time,
+    address,
+    requestAppId,
+    signingAppId,
+  })
+
   const tokens = await getSecureItem('appLinkAuthTokens')
   const tokenArr: string[] = tokens ? JSON.parse(tokens) : []
-  const nextTokens = [token, ...tokenArr]
-  // TODO: Only one token per app. Filter out any old ones
-  return setSecureItem('appLinkAuthTokens', JSON.stringify(nextTokens))
+  // Only store one token per maker app
+  const filtered = tokenArr.filter(
+    (t) => WalletLink.parseWalletLinkToken(t)?.requestAppId !== requestAppId,
+  )
+  const nextTokens = [token, ...filtered]
+
+  setSecureItem('appLinkAuthTokens', JSON.stringify(nextTokens))
+  return token
 }
 
 export const hasAppLinkAuthToken = async (token: string) => {

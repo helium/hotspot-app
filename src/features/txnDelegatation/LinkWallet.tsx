@@ -56,13 +56,12 @@ const LinkWallet = () => {
     if (!address) return
 
     const time = getUnixTime(new Date())
-    const token = WalletLink.createWalletLinkToken({
+    const token = await addAppLinkAuthToken({
       time,
       address,
       requestAppId,
       signingAppId: getBundleId(),
     })
-    await addAppLinkAuthToken(token)
     callback({ token, status: 'success' })
   }, [address, requestAppId, callback])
 
