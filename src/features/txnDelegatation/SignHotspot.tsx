@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 import { Linking } from 'react-native'
 import { AddGateway, WalletLink, Location } from '@helium/react-native-sdk'
 import animalHash from 'angry-purple-tiger'
-import qs from 'qs'
 import Box from '../../components/Box'
 import SafeAreaBox from '../../components/SafeAreaBox'
 import Text from '../../components/Text'
@@ -19,38 +18,36 @@ import { getStakingSignedTransaction } from '../../utils/stakingClient'
 type Route = RouteProp<RootStackParamList, 'SignHotspot'>
 const SignHotspot = () => {
   const {
-    params: {
-      requestAppName,
-      requestAppId,
-      token,
-      addGatewayTxn,
-      assertLocationTxn,
-      makerName,
-    },
+    params: { requestAppId, token, addGatewayTxn, assertLocationTxn },
   } = useRoute<Route>()
   const navigation = useNavigation<RootNavigationProp>()
   const { t } = useTranslation()
   const [hasStoredToken, setHasStoredToken] = useState<boolean>()
 
+  const makerApp = useMemo(() => WalletLink.getMakerApp(requestAppId), [
+    requestAppId,
+  ])
+
   const callback = useCallback(
     async (responseParams: WalletLink.SignHotspotResponse) => {
       try {
-        const makerApp = WalletLink.getMakerApp(requestAppId)
         if (!makerApp?.universalLink) return
-        const url = `${makerApp.universalLink}sign_hotspot?${qs.stringify(
+        const url = WalletLink.createSignHotspotCallbackUrl(
+          makerApp.universalLink,
           responseParams,
-        )}`
+        )
         const canOpen = await Linking.canOpenURL(url)
         if (canOpen) {
           Linking.openURL(url)
         }
       } catch (e) {
+        // eslint-disable-next-line no-console
         console.error(e)
       }
 
-      navigation.goBack()
+      navigation.navigate('MainTabs')
     },
-    [navigation, requestAppId],
+    [makerApp?.universalLink, navigation],
   )
 
   useEffect(() => {
@@ -114,10 +111,10 @@ const SignHotspot = () => {
 
       callback(responseParams)
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error(e)
     }
-    navigation.goBack()
-  }, [callback, gatewayTxn, locationTxn, navigation])
+  }, [callback, gatewayTxn, locationTxn])
 
   const handleCancel = useCallback(async () => {
     callback({ status: 'user_cancelled' })
@@ -153,7 +150,7 @@ const SignHotspot = () => {
       justifyContent="space-around"
     >
       <Text variant="h2" textAlign="center">
-        {t('signHotspot.title', { appName: requestAppName })}
+        {t('signHotspot.title')}
       </Text>
 
       <Box>
@@ -170,9 +167,9 @@ const SignHotspot = () => {
             {t('signHotspot.owner', { owner })}
           </Text>
         )}
-        {makerName && (
+        {makerApp?.name && (
           <Text variant="body2" textAlign="center" marginBottom="m">
-            {t('signHotspot.maker', { maker: makerName })}
+            {t('signHotspot.maker', { maker: makerApp.name })}
           </Text>
         )}
       </Box>

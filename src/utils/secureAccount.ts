@@ -148,6 +148,7 @@ export const addAppLinkAuthToken = async (token: string) => {
   const tokens = await getSecureItem('appLinkAuthTokens')
   const tokenArr: string[] = tokens ? JSON.parse(tokens) : []
   const nextTokens = [token, ...tokenArr]
+  // TODO: Only one token per app. Filter out any old ones
   return setSecureItem('appLinkAuthTokens', JSON.stringify(nextTokens))
 }
 
