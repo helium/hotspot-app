@@ -26,7 +26,7 @@ const ControllinoHotspot = {
 } as MakerHotspot
 
 const ControllinoHotspotQR = {
-  name: 'Controllino Hotspot',
+  name: 'Controllino Hotspot QR',
   icon: HotspotIcon,
   onboardType: 'QR',
   translations: {
