@@ -30,20 +30,12 @@ const SignHotspot = () => {
 
   const callback = useCallback(
     async (responseParams: WalletLink.SignHotspotResponse) => {
-      try {
-        if (!makerApp?.universalLink) return
-        const url = WalletLink.createSignHotspotCallbackUrl(
-          makerApp.universalLink,
-          responseParams,
-        )
-        const canOpen = await Linking.canOpenURL(url)
-        if (canOpen) {
-          Linking.openURL(url)
-        }
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error(e)
-      }
+      if (!makerApp?.universalLink) return
+      const url = WalletLink.createSignHotspotCallbackUrl(
+        makerApp.universalLink,
+        responseParams,
+      )
+      Linking.openURL(url)
 
       navigation.navigate('MainTabs')
     },

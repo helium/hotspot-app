@@ -30,6 +30,7 @@ import {
 
 const APP_LINK_PROTOCOL = 'helium://'
 const UNIVERSAL_LINK_BASE = 'https://helium.com/'
+const UNIVERSAL_LINK_WWW_BASE = 'https://www.helium.com/'
 
 // Define subclasses of Error to return address-specific errors when attempting to process scanned
 // payloads from QR codes
@@ -179,7 +180,8 @@ const useAppLink = () => {
     const parsed = queryString.parseUrl(url)
     if (
       !parsed.url.includes(APP_LINK_PROTOCOL) &&
-      !parsed.url.includes(UNIVERSAL_LINK_BASE)
+      !parsed.url.includes(UNIVERSAL_LINK_BASE) &&
+      !parsed.url.includes(UNIVERSAL_LINK_WWW_BASE)
     ) {
       return
     }
@@ -193,6 +195,7 @@ const useAppLink = () => {
     const path = parsed.url
       .replace(APP_LINK_PROTOCOL, '')
       .replace(UNIVERSAL_LINK_BASE, '')
+      .replace(UNIVERSAL_LINK_WWW_BASE, '')
     const [resourceType, ...rest] = path.split('/')
     if (resourceType && AppLinkCategories.find((k) => k === resourceType)) {
       record.type = resourceType as AppLinkCategoryType

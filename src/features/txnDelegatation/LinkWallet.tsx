@@ -31,21 +31,13 @@ const LinkWallet = () => {
 
   const callback = useCallback(
     async (responseParams: WalletLink.LinkWalletResponse) => {
-      try {
-        if (!makerApp?.universalLink || !address) return
-        const url = WalletLink.createLinkWalletCallbackUrl(
-          makerApp.universalLink,
-          address,
-          responseParams,
-        )
-        const canOpen = await Linking.canOpenURL(url)
-        if (canOpen) {
-          Linking.openURL(url)
-        }
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error(e)
-      }
+      if (!makerApp?.universalLink || !address) return
+      const url = WalletLink.createLinkWalletCallbackUrl(
+        makerApp.universalLink,
+        address,
+        responseParams,
+      )
+      Linking.openURL(url)
 
       navigation.goBack()
     },
