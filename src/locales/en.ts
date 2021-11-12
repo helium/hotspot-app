@@ -1257,9 +1257,11 @@ export default {
   explore_hotspots: 'Explore Hotspots',
   explore_validators: 'Explore Validators',
   linkWallet: {
-    title: 'Link Helium Wallet to\n{{appName}}?',
+    title: 'Link Helium Wallet\nto {{appName}}?',
     body:
-      'by linking helium to {{appName}}, you can safely sign blockchain transactions without re-entering your seed phrase.',
+      'By Linking Helum Wallet to Maker App, you can safely sign blockchain transactions without re-entering your seed phrase.',
+    yes: 'Yes, Link my Wallet',
+    no: 'No, Cancel',
   },
   signHotspot: {
     title: 'Add Hotspot to\nblockchain?',

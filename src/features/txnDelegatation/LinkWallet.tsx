@@ -6,7 +6,7 @@ import { Linking } from 'react-native'
 import { getUnixTime } from 'date-fns'
 import { WalletLink } from '@helium/react-native-sdk'
 import { getBundleId } from 'react-native-device-info'
-import Box from '../../components/Box'
+import AppLinkIcon from '@assets/images/appLink.svg'
 import SafeAreaBox from '../../components/SafeAreaBox'
 import Text from '../../components/Text'
 import TouchableOpacityBox from '../../components/TouchableOpacityBox'
@@ -65,35 +65,47 @@ const LinkWallet = () => {
     <SafeAreaBox
       backgroundColor="primaryBackground"
       flex={1}
-      padding="xl"
-      justifyContent="space-around"
+      padding="l"
+      justifyContent="center"
     >
-      <Text variant="h2" textAlign="center">
+      <AppLinkIcon />
+
+      <Text variant="bold" fontSize={32} marginTop="m">
         {t('linkWallet.title', { appName: makerApp?.name })}
       </Text>
-      <Text variant="body1" textAlign="center">
+      <Text variant="body1" color="purpleLightText" marginVertical="m">
         {t('linkWallet.body', { appName: makerApp?.name })}
       </Text>
-      <Box>
-        <TouchableOpacityBox
-          padding="l"
-          paddingHorizontal="xxl"
-          onPress={handleLink}
+      <TouchableOpacityBox
+        marginTop="ms"
+        minHeight={56}
+        justifyContent="center"
+        backgroundColor="greenBright"
+        borderRadius="l"
+        onPress={handleLink}
+      >
+        <Text
+          variant="medium"
+          fontSize={16}
+          color="primaryBackground"
+          textAlign="center"
         >
-          <Text variant="subtitle" textAlign="center" color="white">
-            {t('generic.yes')}
-          </Text>
-        </TouchableOpacityBox>
-        <TouchableOpacityBox
-          padding="l"
-          paddingHorizontal="xxl"
-          onPress={handleCancel}
-        >
-          <Text variant="subtitle" textAlign="center">
-            {t('generic.cancel')}
-          </Text>
-        </TouchableOpacityBox>
-      </Box>
+          {t('linkWallet.yes')}
+        </Text>
+      </TouchableOpacityBox>
+
+      <TouchableOpacityBox
+        minHeight={56}
+        justifyContent="center"
+        backgroundColor="purpleDull"
+        marginTop="ms"
+        borderRadius="l"
+        onPress={handleCancel}
+      >
+        <Text variant="medium" fontSize={16} color="white" textAlign="center">
+          {t('linkWallet.no')}
+        </Text>
+      </TouchableOpacityBox>
     </SafeAreaBox>
   )
 }
