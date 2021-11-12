@@ -3,6 +3,7 @@ import bobcat from './bobcat'
 import cotx from './cotx'
 import clodpi from './clodpi'
 import customAntennas from './custom/antennas'
+import hntenna from './hntenna/antennas'
 import finestra from './finestra'
 import helium from './helium'
 import linxdot from './linxdot'
@@ -55,6 +56,7 @@ export const AntennaModels = {
   ...cotx.antennas,
   ...clodpi.antennas,
   ...customAntennas,
+  ...hntenna,
   ...finestra.antennas,
   ...helium.antennas,
   ...linxdot.antennas,
