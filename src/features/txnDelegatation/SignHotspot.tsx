@@ -154,6 +154,16 @@ const SignHotspot = () => {
             {t('signHotspot.location', { location })}
           </Text>
         )}
+        {locationTxn?.gain && (
+          <Text variant="body2" textAlign="center" marginBottom="m">
+            {t('signHotspot.antennaGain', { antennaGain: locationTxn.gain })}
+          </Text>
+        )}
+        {locationTxn?.elevation && (
+          <Text variant="body2" textAlign="center" marginBottom="m">
+            {t('signHotspot.elevation', { elevation: locationTxn.elevation })}
+          </Text>
+        )}
         {owner && (
           <Text variant="body2" textAlign="center" marginBottom="m">
             {t('signHotspot.owner', { owner })}

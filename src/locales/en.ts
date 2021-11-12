@@ -1268,5 +1268,7 @@ export default {
     location: 'Location: {{location}}',
     owner: 'Owner: {{owner}}',
     maker: 'Maker: {{maker}}',
+    antennaGain: 'Antenna Gain: {{antennaGain}}',
+    elevation: 'Elevation: {{elevation}}',
   },
 }
