@@ -82,8 +82,6 @@ const App = () => {
     'expo-permissions is now deprecated',
   ])
 
-  LogBox.ignoreAllLogs()
-
   const { appState } = useAppState()
   const dispatch = useAppDispatch()
 
