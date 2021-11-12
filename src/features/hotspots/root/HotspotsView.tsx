@@ -53,6 +53,7 @@ import ValidatorExplorer from '../../validators/explorer/ValidatorExplorer'
 import HeliumSelect from '../../../components/HeliumSelect'
 import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
 import HotspotsEmpty from './HotspotsEmpty'
+import { hasValidCache } from '../../../utils/cacheUtils'
 
 type Props = {
   ownedHotspots?: Hotspot[]
@@ -277,11 +278,17 @@ const HotspotsView = ({
       let hotspots: Hotspot[] = []
       if (hexId && hexId !== NO_FEATURES) {
         // load hotspots in hex and update ui
-        const response = (await dispatch(fetchHotspotsForHex({ hexId }))) as {
-          payload?: Hotspot[]
-        }
-        if (response.payload) {
-          hotspots = response.payload
+
+        const existing = hotspotsForHexId[hexId]
+        if (hasValidCache(existing, 60)) {
+          hotspots = existing.hotspots
+        } else {
+          const response = (await dispatch(fetchHotspotsForHex({ hexId }))) as {
+            payload?: Hotspot[]
+          }
+          if (response.payload) {
+            hotspots = response.payload
+          }
         }
       }
       let index = 0
@@ -296,7 +303,12 @@ const HotspotsView = ({
         handleShortcutItemSelected(hotspots[index] as Hotspot)
       }
     },
-    [dispatch, handleShortcutItemSelected, loadingHotspotsForHex],
+    [
+      dispatch,
+      handleShortcutItemSelected,
+      hotspotsForHexId,
+      loadingHotspotsForHex,
+    ],
   )
 
   const handlePresentHotspot = useCallback(
@@ -389,7 +401,7 @@ const HotspotsView = ({
 
   const hexHotspots = useMemo(() => {
     if (!selectedHexId) return []
-    return hotspotsForHexId[selectedHexId]
+    return hotspotsForHexId[selectedHexId]?.hotspots
   }, [hotspotsForHexId, selectedHexId])
 
   const onHotspotSelected = useCallback(
