@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import React, { memo, useCallback, useMemo, useState } from 'react'
 import { Hotspot } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
@@ -7,6 +7,7 @@ import LocationIcon from '@assets/images/location-icon.svg'
 import Balance, { NetworkTokens } from '@helium/currency'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import { Pressable } from 'react-native'
+import { useAsync } from 'react-async-hook'
 import Box from './Box'
 import Text from './Text'
 import useCurrency from '../utils/useCurrency'
@@ -51,16 +52,12 @@ const HotspotListItem = ({
   const handlePress = useCallback(() => onPress?.(gateway), [gateway, onPress])
   const [reward, setReward] = useState('')
 
-  const updateReward = useCallback(async () => {
+  useAsync(async () => {
     if (!totalReward) return
 
     const nextReward = await hntBalanceToDisplayVal(totalReward, false)
     setReward(`+${nextReward}`)
   }, [hntBalanceToDisplayVal, totalReward])
-
-  useEffect(() => {
-    updateReward()
-  }, [updateReward])
 
   const locationText = useMemo(() => {
     const { geocode: geo } = gateway as Hotspot

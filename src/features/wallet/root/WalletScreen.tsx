@@ -1,12 +1,11 @@
 import React, { memo, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
-import useAppState from 'react-native-appstate-hook'
 import ActivityDetails from './ActivityDetails/ActivityDetails'
 import useVisible from '../../../utils/useVisible'
 import usePrevious from '../../../utils/usePrevious'
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
-import activitySlice, {
+import {
   fetchMoreTxns,
   fetchTxnsHead,
 } from '../../../store/activity/activitySlice'
@@ -31,16 +30,6 @@ const WalletScreen = () => {
   const visible = useVisible()
   const prevVisible = usePrevious(visible)
   const prevBlockHeight = usePrevious(blockHeight)
-
-  const { appState } = useAppState()
-  const prevAppState = usePrevious(appState)
-
-  useEffect(() => {
-    // clear the list data when coming into foreground
-    if (prevAppState && appState === 'active' && prevAppState !== 'active') {
-      dispatch(activitySlice.actions.reset())
-    }
-  }, [appState, dispatch, prevAppState])
 
   useEffect(() => {
     // once you have activity, you always have activity
@@ -135,6 +124,7 @@ const WalletScreen = () => {
           activityViewState={activityViewState}
           showSkeleton={showSkeleton}
           txns={filter === 'pending' ? [] : txns[filter].data}
+          loadingTxns={txns[filter].status === 'pending'}
           pendingTxns={txns.pending.data}
         />
       </SafeAreaBox>

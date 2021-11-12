@@ -82,6 +82,8 @@ const App = () => {
     'expo-permissions is now deprecated',
   ])
 
+  LogBox.ignoreAllLogs()
+
   const { appState } = useAppState()
   const dispatch = useAppDispatch()
 
@@ -191,6 +193,7 @@ const App = () => {
         dispatch(fetchAccountRewards())
         dispatch(fetchMyValidators())
         dispatch(fetchFollowedValidators())
+        dispatch(fetchNotifications())
       }
     }
   }, [isBackedUp, appState, dispatch, prevAppState, lastIdle, isLocked])

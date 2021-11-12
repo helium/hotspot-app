@@ -140,6 +140,7 @@ const useCurrency = () => {
       const multiplier = currentPrices?.[currencyType.toLowerCase()] || 0
 
       const showAsHnt = !convert || !multiplier
+
       if (showAsHnt) {
         if (split) {
           const [intStr, decStr] = balance
@@ -160,20 +161,29 @@ const useCurrency = () => {
           return { integerPart: intStr, decimalPart }
         }
 
-        return `${balance.toString(maxDecimalPlaces, {
+        // when there is no network the toString method from helium js may not work properly
+        const stringBalance = balance.toString(maxDecimalPlaces, {
           groupSeparator,
           decimalSeparator,
-        })}`
+        })
+
+        return stringBalance === '[object Object]'
+          ? `${balance?.floatBalance?.toFixed(2)} HNT`
+          : stringBalance
       }
 
-      const convertedValue = multiplier * balance.floatBalance
-      const formattedValue: string = await formatCurrency(convertedValue)
+      try {
+        const convertedValue = multiplier * balance.floatBalance
+        const formattedValue: string = await formatCurrency(convertedValue)
 
-      if (split) {
-        const decimalPart = t('generic.hnt_to_currency', { currencyType })
-        return { integerPart: formattedValue, decimalPart }
+        if (split) {
+          const decimalPart = t('generic.hnt_to_currency', { currencyType })
+          return { integerPart: formattedValue, decimalPart }
+        }
+        return formattedValue
+      } catch (e) {
+        return ''
       }
-      return formattedValue
     },
     [convert, currencyType, currentPrices, formatCurrency, t],
   ) as StringReturn & PartsReturn

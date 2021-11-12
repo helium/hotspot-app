@@ -43,6 +43,7 @@ import {
 
 type Props = {
   showSkeleton: boolean
+  loadingTxns: boolean
   activityViewState: ActivityViewState
   txns: HttpTransaction[]
   pendingTxns: HttpPendingTransaction[]
@@ -53,6 +54,7 @@ const WalletView = ({
   activityViewState,
   txns,
   pendingTxns,
+  loadingTxns,
 }: Props) => {
   const animatedCardIndex = useSharedValue<number>(1)
   const [hasNoResults, setHasNoResults] = useState(false)
@@ -228,7 +230,9 @@ const WalletView = ({
             onSendPress={handleSendPress}
             balanceInfo={balanceInfoSplit}
             account={account}
-            accountLoading={fetchAccountState !== 'fulfilled'}
+            accountLoading={
+              fetchAccountState !== 'fulfilled' && !balanceInfoSplit.hasBalance
+            }
             toggleConvertHntToCurrency={toggleConvertHntToCurrency}
           />
         </Box>
@@ -239,6 +243,7 @@ const WalletView = ({
         showSkeleton={showSkeleton}
         filter={filter}
         txns={txns}
+        loadingTxns={loadingTxns}
         pendingTxns={pendingTxns}
         hasNoResults={hasNoResults}
         paddingVertical={listTopPadding.key}

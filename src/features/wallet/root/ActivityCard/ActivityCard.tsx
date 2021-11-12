@@ -20,6 +20,7 @@ type Props = {
   showSkeleton: boolean
   snapPoints: (string | number)[]
   paddingVertical: Spacing
+  loadingTxns: boolean
 }
 
 const ActivityCard = forwardRef(
@@ -34,6 +35,7 @@ const ActivityCard = forwardRef(
       showSkeleton,
       snapPoints,
       paddingVertical,
+      loadingTxns,
     }: Props,
     ref: Ref<BottomSheet>,
   ) => {
@@ -69,6 +71,7 @@ const ActivityCard = forwardRef(
             data={getData}
             hasNoResults={hasNoResults}
             showSkeleton={showSkeleton}
+            loadingTxns={loadingTxns}
           />
         </>
       </BottomSheet>
