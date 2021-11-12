@@ -139,59 +139,126 @@ const SignHotspot = () => {
       backgroundColor="primaryBackground"
       flex={1}
       padding="xl"
-      justifyContent="space-around"
+      justifyContent="center"
     >
-      <Text variant="h2" textAlign="center">
+      <Text variant="bold" fontSize={36}>
         {t(gatewayTxn ? 'signHotspot.title' : 'signHotspot.titleLocationOnly')}
       </Text>
 
-      <Box>
-        <Text variant="body2" textAlign="center" marginBottom="m">
-          {t('signHotspot.name', { name })}
+      <Box backgroundColor="white" borderRadius="l" padding="l" marginTop="l">
+        <Text variant="regular" fontSize={16} color="purpleText">
+          {t('signHotspot.name')}
+        </Text>
+        <Text
+          variant="bold"
+          fontSize={20}
+          color="primaryBackground"
+          marginBottom="m"
+        >
+          {name}
         </Text>
         {location && (
-          <Text variant="body2" textAlign="center" marginBottom="m">
-            {t('signHotspot.location', { location })}
-          </Text>
+          <>
+            <Text variant="regular" fontSize={16} color="purpleText">
+              {t('signHotspot.location')}
+            </Text>
+            <Text
+              variant="bold"
+              fontSize={20}
+              color="primaryBackground"
+              marginBottom="m"
+            >
+              {location}
+            </Text>
+          </>
         )}
-        {locationTxn?.gain && (
-          <Text variant="body2" textAlign="center" marginBottom="m">
-            {t('signHotspot.antennaGain', { antennaGain: locationTxn.gain })}
-          </Text>
-        )}
-        {locationTxn?.elevation && (
-          <Text variant="body2" textAlign="center" marginBottom="m">
-            {t('signHotspot.elevation', { elevation: locationTxn.elevation })}
-          </Text>
-        )}
+        <Box flexDirection="row">
+          {locationTxn?.gain && (
+            <Box marginEnd="xxl">
+              <Text variant="regular" fontSize={16} color="purpleText">
+                {t('signHotspot.gain')}
+              </Text>
+              <Text
+                variant="bold"
+                fontSize={20}
+                color="primaryBackground"
+                marginBottom="m"
+              >
+                {locationTxn.gain}
+              </Text>
+            </Box>
+          )}
+          {locationTxn?.elevation && (
+            <Box>
+              <Text variant="regular" fontSize={16} color="purpleText">
+                {t('signHotspot.elevation')}
+              </Text>
+              <Text
+                variant="bold"
+                fontSize={20}
+                color="primaryBackground"
+                marginBottom="m"
+              >
+                {locationTxn.elevation}
+              </Text>
+            </Box>
+          )}
+        </Box>
         {owner && (
-          <Text variant="body2" textAlign="center" marginBottom="m">
-            {t('signHotspot.owner', { owner })}
-          </Text>
+          <>
+            <Text variant="regular" fontSize={16} color="purpleText">
+              {t('signHotspot.owner')}
+            </Text>
+            <Text
+              variant="bold"
+              fontSize={16}
+              color="primaryBackground"
+              marginBottom="m"
+            >
+              {owner}
+            </Text>
+          </>
         )}
         {makerApp?.name && (
-          <Text variant="body2" textAlign="center" marginBottom="m">
-            {t('signHotspot.maker', { maker: makerApp.name })}
-          </Text>
+          <>
+            <Text variant="regular" fontSize={16} color="purpleText">
+              {t('signHotspot.maker')}
+            </Text>
+            <Text variant="bold" fontSize={20} color="primaryBackground">
+              {makerApp.name}
+            </Text>
+          </>
         )}
       </Box>
-      <Box>
+      <Box flexDirection="row" marginTop="l">
         <TouchableOpacityBox
-          padding="l"
-          paddingHorizontal="xxl"
-          onPress={handleLink}
+          flex={1}
+          minHeight={56}
+          justifyContent="center"
+          backgroundColor="purpleDull"
+          marginEnd="m"
+          borderRadius="l"
+          onPress={handleCancel}
         >
-          <Text variant="subtitle" textAlign="center" color="white">
-            {t('generic.yes')}
+          <Text variant="medium" fontSize={16} color="white" textAlign="center">
+            {t('generic.cancel')}
           </Text>
         </TouchableOpacityBox>
         <TouchableOpacityBox
-          padding="l"
-          paddingHorizontal="xxl"
-          onPress={handleCancel}
+          flex={1}
+          minHeight={56}
+          justifyContent="center"
+          backgroundColor="greenBright"
+          borderRadius="l"
+          onPress={handleLink}
         >
-          <Text variant="subtitle" textAlign="center">
-            {t('generic.cancel')}
+          <Text
+            variant="medium"
+            fontSize={16}
+            color="primaryBackground"
+            textAlign="center"
+          >
+            {t('hotspot_settings.reassert.confirm')}
           </Text>
         </TouchableOpacityBox>
       </Box>
