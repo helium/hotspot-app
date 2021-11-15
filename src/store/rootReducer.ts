@@ -1,4 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit'
+import { persistReducer } from 'redux-persist'
+import AsyncStorage from '@react-native-community/async-storage'
 import accountSlice from './account/accountSlice'
 import appSlice from './user/appSlice'
 import connectedHotspotSlice from './connectedHotspot/connectedHotspotSlice'
@@ -17,6 +19,12 @@ import locationSlice from './location/locationSlice'
 import hotspotOnboardingSlice from './hotspots/hotspotOnboardingSlice'
 import notificationSlice from './notifications/notificationSlice'
 
+const discoveryConfig = {
+  key: discoverySlice.name,
+  storage: AsyncStorage,
+  whitelist: ['hotspotsForHexId'],
+}
+
 const rootReducer = combineReducers({
   app: appSlice.reducer,
   account: accountSlice.reducer,
@@ -29,7 +37,7 @@ const rootReducer = combineReducers({
   hotspotChecklist: hotspotChecklistSlice.reducer,
   validators: validatorsSlice.reducer,
   rewards: rewardsSlice.reducer,
-  discovery: discoverySlice.reducer,
+  discovery: persistReducer(discoveryConfig, discoverySlice.reducer),
   features: featuresSlice.reducer,
   location: locationSlice.reducer,
   status: heliumStatusSlice.reducer,

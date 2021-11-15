@@ -1,6 +1,11 @@
 import { Hotspot } from '@helium/http'
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { getHotspotsForHexId } from '../../utils/appDataClient'
+import {
+  CacheRecord,
+  handleCacheFulfilled,
+  hasValidCache,
+} from '../../utils/cacheUtils'
 import { makeDiscoverySignature } from '../../utils/secureAccount'
 import { getWallet, postWallet } from '../../utils/walletClient'
 import { Loading } from '../activity/activitySlice'
@@ -12,7 +17,7 @@ export type DiscoveryState = {
   requestLoading: Loading
   selectedRequest?: DiscoveryRequest | null
   requestId?: number | null
-  hotspotsForHexId: Record<string, Hotspot[]>
+  hotspotsForHexId: Record<string, CacheRecord<{ hotspots: Hotspot[] }>>
   loadingHotspotsForHex: boolean
 }
 
@@ -27,7 +32,20 @@ const initialState: DiscoveryState = {
 export const fetchHotspotsForHex = createAsyncThunk<
   Hotspot[],
   { hexId: string }
->('discovery/hotspotsForHex', async ({ hexId }) => getHotspotsForHexId(hexId))
+>('discovery/hotspotsForHex', async ({ hexId }, { getState }) => {
+  const {
+    discovery: { hotspotsForHexId },
+  } = getState() as {
+    discovery: DiscoveryState
+  }
+  const existing = hotspotsForHexId[hexId]
+  if (hasValidCache(existing, 60)) {
+    throw new Error(
+      `Valid Cache Found - No need to fetch hotspot for hex ${hexId}`,
+    )
+  }
+  return getHotspotsForHexId(hexId)
+})
 
 export const fetchRecentDiscoveries = createAsyncThunk<
   RecentDiscoveryInfo,
@@ -120,7 +138,9 @@ const discoverySlice = createSlice({
     builder.addCase(
       fetchHotspotsForHex.fulfilled,
       (state, { meta: { arg }, payload }) => {
-        state.hotspotsForHexId[arg.hexId] = payload
+        state.hotspotsForHexId[arg.hexId] = handleCacheFulfilled({
+          hotspots: payload,
+        })
         state.loadingHotspotsForHex = false
       },
     )

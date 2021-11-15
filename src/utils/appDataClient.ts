@@ -26,6 +26,7 @@ const baseURL = Config.HTTP_CLIENT_PROXY_URL
 let client = new Client(Network.production, {
   retry: 1,
   name,
+  userAgent: name,
 })
 
 export const updateClient = ({
@@ -51,6 +52,7 @@ export const updateClient = ({
     retry: retryCount,
     name,
     headers,
+    userAgent: name,
   })
 }
 

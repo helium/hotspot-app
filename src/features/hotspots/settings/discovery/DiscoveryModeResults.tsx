@@ -14,6 +14,7 @@ import dedupeDiscoveryResponses from './dedupeDiscoveryResponses'
 import { useAppDispatch } from '../../../../store/store'
 import { fetchHotspotsForHex } from '../../../../store/discovery/discoverySlice'
 import { RootState } from '../../../../store/rootReducer'
+import { hasValidCache } from '../../../../utils/cacheUtils'
 
 type Props = {
   request?: DiscoveryRequest | null
@@ -40,7 +41,7 @@ const DiscoveryModeResults = ({
 
   const selectedHotspots = useMemo(() => {
     if (!selectedHexId) return []
-    return hotspotsForHexId[selectedHexId]
+    return hotspotsForHexId[selectedHexId]?.hotspots
   }, [hotspotsForHexId, selectedHexId])
 
   useEffect(() => {
@@ -53,9 +54,12 @@ const DiscoveryModeResults = ({
     async (hexId: string) => {
       animateTransition('DiscoveryMode.ShowOverlay')
       setSelectedHexId(hexId)
-      dispatch(fetchHotspotsForHex({ hexId }))
+      const existing = hotspotsForHexId[hexId]
+      if (!hasValidCache(existing, 60)) {
+        dispatch(fetchHotspotsForHex({ hexId }))
+      }
     },
-    [dispatch],
+    [dispatch, hotspotsForHexId],
   )
 
   const hideOverlay = useCallback(() => {
