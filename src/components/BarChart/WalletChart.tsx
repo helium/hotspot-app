@@ -141,6 +141,8 @@ const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
 
   const { greenBright, blueBright } = useColors()
 
+  if (!chartEnabled) return null
+
   return (
     <Box
       {...boxProps}

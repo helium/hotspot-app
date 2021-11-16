@@ -2,6 +2,8 @@
 import React, { useCallback, memo, useMemo } from 'react'
 import { useAsync } from 'react-async-hook'
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
+import { ActivityIndicator } from 'react-native'
+import Box from '../../../../components/Box'
 import ActivityItem, { ACTIVITY_ITEM_ROW_HEIGHT } from './ActivityItem'
 import { getSecureItem } from '../../../../utils/secureAccount'
 import activitySlice, {
@@ -18,12 +20,14 @@ type Props = {
   hasNoResults: boolean
   data: (HttpTransaction | HttpPendingTransaction)[]
   showSkeleton: boolean
+  loadingTxns: boolean
 }
 
 const ActivityCardListView = ({
   data: propsData,
   hasNoResults,
   showSkeleton,
+  loadingTxns,
 }: Props) => {
   const { m } = useSpacing()
   const dispatch = useAppDispatch()
@@ -114,14 +118,22 @@ const ActivityCardListView = ({
 
   const header = useMemo(() => {
     return (
-      <WalletChart
-        showSkeleton={showSkeleton}
-        height={222}
-        marginHorizontal="l"
-        marginBottom="s"
-      />
+      <>
+        <WalletChart
+          showSkeleton={showSkeleton}
+          height={222}
+          marginHorizontal="l"
+          marginBottom="s"
+        />
+        <Box
+          paddingBottom="m"
+          visible={loadingTxns && data?.length !== 0 && !showSkeleton}
+        >
+          <ActivityIndicator size="small" />
+        </Box>
+      </>
     )
-  }, [showSkeleton])
+  }, [data?.length, loadingTxns, showSkeleton])
 
   return (
     <BottomSheetFlatList

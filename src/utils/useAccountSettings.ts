@@ -88,6 +88,7 @@ export default () => {
     accountSettings.network,
     accountSettingsLoaded,
     retryCount,
+    proxyEnabled,
     featuresLoaded,
   ])
 

@@ -7,13 +7,13 @@ import {
 } from 'expo-permissions'
 import { getCurrentPosition, LocationCoords } from '../../utils/location'
 
-export type AppState = {
+export type LocationState = {
   currentLocation?: LocationCoords
   isLoadingLocation: boolean
   permissionResponse?: PermissionResponse
   locationBlocked: boolean
 }
-const initialState: AppState = {
+const initialState: LocationState = {
   isLoadingLocation: false,
   locationBlocked: false,
 }
@@ -39,7 +39,7 @@ export const hasLocationPermission = (status?: PermissionStatus) =>
   status === 'granted'
 
 // This slice contains data related to the state of the app
-const appSlice = createSlice({
+const locationSlice = createSlice({
   name: 'location',
   initialState,
   reducers: {
@@ -80,4 +80,4 @@ const appSlice = createSlice({
   },
 })
 
-export default appSlice
+export default locationSlice
