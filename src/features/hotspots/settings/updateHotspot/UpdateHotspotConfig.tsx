@@ -230,6 +230,7 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
           <Text
             textAlign="center"
             color={updatingAntenna ? 'white' : 'purpleMain'}
+            maxFontSizeMultiplier={1.2}
           >
             {t('hotspot_settings.reassert.update_antenna')}
           </Text>
@@ -249,6 +250,7 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
           <Text
             textAlign="center"
             color={updatingLocation ? 'white' : 'purpleMain'}
+            maxFontSizeMultiplier={1.2}
           >
             {t('hotspot_settings.options.reassert')}
           </Text>
@@ -260,8 +262,13 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
   const ConfirmDetails = () => (
     <Box>
       {isLocationChange && location ? (
-        <Box>
-          <Text variant="body1Medium" color="black" marginBottom="s">
+        <Box height={200} marginBottom="l">
+          <Text
+            variant="body1Medium"
+            color="black"
+            marginBottom="s"
+            maxFontSizeMultiplier={1.2}
+          >
             {t('hotspot_settings.reassert.new_location')}
           </Text>
           <HotspotLocationPreview
@@ -271,10 +278,20 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
         </Box>
       ) : (
         <Box>
-          <Text variant="body1Medium" color="black" marginBottom="s">
+          <Text
+            variant="body1Medium"
+            color="black"
+            marginBottom="s"
+            maxFontSizeMultiplier={1.2}
+          >
             {t('hotspot_settings.reassert.antenna_details')}
           </Text>
-          <Text variant="body1Medium" color="grayLightText" marginBottom="s">
+          <Text
+            variant="body1Medium"
+            color="grayLightText"
+            marginBottom="s"
+            maxFontSizeMultiplier={1.2}
+          >
             {antenna?.name}
           </Text>
           <Text
@@ -282,10 +299,16 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
             color="black"
             marginTop="m"
             marginBottom="s"
+            maxFontSizeMultiplier={1.2}
           >
             {t('antennas.onboarding.gain')}
           </Text>
-          <Text variant="body1Medium" color="grayLightText" marginBottom="s">
+          <Text
+            variant="body1Medium"
+            color="grayLightText"
+            marginBottom="s"
+            maxFontSizeMultiplier={1.2}
+          >
             {t('hotspot_setup.location_fee.gain', {
               gain: gain?.toLocaleString(locale, {
                 maximumFractionDigits: 1,
@@ -297,18 +320,35 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
             color="black"
             marginTop="m"
             marginBottom="s"
+            maxFontSizeMultiplier={1.2}
           >
             {t('antennas.onboarding.elevation')}
           </Text>
-          <Text variant="body1Medium" color="grayLightText" marginBottom="s">
+          <Text
+            variant="body1Medium"
+            color="grayLightText"
+            marginBottom="s"
+            maxFontSizeMultiplier={1.2}
+          >
             {elevation}
           </Text>
         </Box>
       )}
-      <Text variant="body1Medium" color="black" marginTop="m" marginBottom="s">
+      <Text
+        variant="body1Medium"
+        color="black"
+        marginTop="m"
+        marginBottom="s"
+        maxFontSizeMultiplier={1.2}
+      >
         {t('generic.fee')}
       </Text>
-      <Text variant="body1Medium" color="grayLightText" marginBottom="l">
+      <Text
+        variant="body1Medium"
+        color="grayLightText"
+        marginBottom="l"
+        maxFontSizeMultiplier={1.2}
+      >
         {locationFee}
       </Text>
       <Button

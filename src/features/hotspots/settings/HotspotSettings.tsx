@@ -547,6 +547,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
                 lineHeight={27}
                 color="white"
                 marginBottom="ms"
+                maxFontSizeMultiplier={1.2}
               >
                 {title}
               </Text>

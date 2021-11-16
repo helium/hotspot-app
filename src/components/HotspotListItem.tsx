@@ -103,6 +103,7 @@ const HotspotListItem = ({
                   paddingEnd="s"
                   ellipsizeMode="tail"
                   numberOfLines={2}
+                  maxFontSizeMultiplier={1.2}
                   maxWidth={220}
                 >
                   {animalName(gateway.address)}
@@ -114,6 +115,7 @@ const HotspotListItem = ({
                   variant="body3Light"
                   color={hidden ? 'grayLightText' : 'blueGray'}
                   marginTop="s"
+                  maxFontSizeMultiplier={1.2}
                 >
                   {locationText}
                 </Text>
@@ -135,6 +137,7 @@ const HotspotListItem = ({
                       variant="body2"
                       color={hidden ? 'grayLightText' : 'grayDarkText'}
                       paddingEnd="s"
+                      maxFontSizeMultiplier={1.2}
                     >
                       {reward}
                     </Text>
@@ -152,6 +155,7 @@ const HotspotListItem = ({
                       variant="regular"
                       fontSize={12}
                       marginLeft="xs"
+                      maxFontSizeMultiplier={1.2}
                     >
                       {t('hotspot_details.distance_away', {
                         distance: distanceAway,
@@ -176,6 +180,7 @@ const HotspotListItem = ({
                       variant="regular"
                       fontSize={12}
                       marginLeft="xs"
+                      maxFontSizeMultiplier={1.2}
                     >
                       {t('generic.meters', {
                         distance: (gateway as Hotspot)?.elevation || 0,
@@ -187,6 +192,7 @@ const HotspotListItem = ({
                         variant="regular"
                         fontSize={12}
                         marginLeft="xs"
+                        maxFontSizeMultiplier={1.2}
                       >
                         {(((gateway as Hotspot).gain || 0) / 10).toFixed(1) +
                           t('antennas.onboarding.dbi')}
@@ -200,6 +206,7 @@ const HotspotListItem = ({
                     variant="regular"
                     fontSize={12}
                     marginLeft="s"
+                    maxFontSizeMultiplier={1.2}
                   >
                     {t('hotspot_details.relayed')}
                   </Text>

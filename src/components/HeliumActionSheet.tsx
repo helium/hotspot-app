@@ -142,7 +142,12 @@ const HeliumActionSheet = ({
           justifyContent="center"
           borderRadius="ms"
         >
-          <Text variant="medium" fontSize={18} style={styles.cancelText}>
+          <Text
+            variant="medium"
+            fontSize={18}
+            style={styles.cancelText}
+            maxFontSizeMultiplier={1.2}
+          >
             {t('generic.cancel')}
           </Text>
         </TouchableOpacityBox>

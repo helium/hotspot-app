@@ -167,6 +167,7 @@ const WelcomeOverview = ({ accountRewards }: Props) => {
             lineHeight={24}
             textAlign="center"
             color="black"
+            maxFontSizeMultiplier={1.2}
             onPress={toggleConvertHntToCurrency}
           >
             {bodyText}

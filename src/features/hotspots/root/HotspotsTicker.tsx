@@ -88,6 +88,7 @@ const HotspotsTicker = ({ ...boxProps }: Props) => {
         loop
         repeatSpacer={0}
         easing={Easing.linear}
+        maxFontSizeMultiplier={1.2}
       >
         {isTablet() ? text + text : text}
       </TextTicker>
