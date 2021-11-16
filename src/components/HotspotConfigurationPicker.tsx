@@ -51,7 +51,9 @@ const HotspotConfigurationPicker = ({
         ...AntennaModels[k],
         label: AntennaModels[k].name,
         value: AntennaModels[k].name,
-      })),
+      })).sort((a, b) =>
+        a.label.toLocaleLowerCase() > b.label.toLocaleLowerCase() ? 1 : -1,
+      ),
     [],
   )
 
