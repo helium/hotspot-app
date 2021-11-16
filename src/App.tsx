@@ -209,7 +209,7 @@ const App = () => {
     if (!settingsLoaded && !featuresLoaded) return
     const interval = setInterval(() => {
       dispatch(fetchBlockHeight())
-    }, 30000)
+    }, 60000)
     return () => clearInterval(interval)
   }, [dispatch, featuresLoaded, settingsLoaded])
 

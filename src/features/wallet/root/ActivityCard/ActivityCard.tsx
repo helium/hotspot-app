@@ -86,6 +86,7 @@ export default memo(ActivityCard, (prev, next) => {
     prev.txns === next.txns &&
     prev.pendingTxns === next.pendingTxns &&
     prev.hasNoResults === next.hasNoResults &&
-    prev.showSkeleton === next.showSkeleton
+    prev.showSkeleton === next.showSkeleton &&
+    prev.loadingTxns === next.loadingTxns
   )
 })

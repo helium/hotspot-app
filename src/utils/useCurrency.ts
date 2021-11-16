@@ -143,13 +143,21 @@ const useCurrency = () => {
 
       if (showAsHnt) {
         if (split) {
-          const [intStr, decStr] = balance
+          let [intStr, decStr] = balance
             .toString(undefined, {
               decimalSeparator,
               groupSeparator,
               showTicker: false,
             })
             .split(decimalSeparator)
+
+          // when there is no network the toString method from helium js may not work properly
+          if (intStr === '[object Object]') {
+            const balString = balance?.floatBalance?.toString()
+            const [intPart, decPart] = balString.split('.')
+            intStr = intPart
+            decStr = decPart
+          }
 
           const decimalPart = [
             decimalSeparator,

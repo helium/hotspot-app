@@ -54,8 +54,7 @@ const WalletScreen = () => {
   }, [filter, activityViewState, txns, visible])
 
   useEffect(() => {
-    const nextShowSkeleton =
-      !txns[filter].hasInitialLoad || !txns.pending.hasInitialLoad
+    const nextShowSkeleton = !txns[filter].hasInitialLoad
 
     if (nextShowSkeleton !== showSkeleton) {
       if (visible && activityViewState !== 'no_activity') {
@@ -68,7 +67,7 @@ const WalletScreen = () => {
   }, [activityViewState, filter, showSkeleton, txns, visible])
 
   useEffect(() => {
-    // Fetch pending txns on an interval of 30s
+    // Fetch pending txns on an interval of 60s
     if (!visible && interval.current) {
       clearInterval(interval.current)
       interval.current = undefined
@@ -76,7 +75,7 @@ const WalletScreen = () => {
       dispatch(fetchTxnsHead({ filter: 'pending' }))
       interval.current = setInterval(() => {
         dispatch(fetchTxnsHead({ filter: 'pending' }))
-      }, 30000)
+      }, 60000)
     }
   }, [dispatch, visible])
 

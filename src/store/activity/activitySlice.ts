@@ -308,7 +308,6 @@ const activitySlice = createSlice({
       ) => {
         state.txns[filter].status = 'fulfilled'
         state.txns[filter].hasInitialLoad = true
-
         if (filter === 'pending') {
           const pending = payload as HttpPendingTransaction[]
           state.txns.pending.data = pending.filter(

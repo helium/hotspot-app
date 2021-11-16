@@ -25,14 +25,32 @@ const discoveryConfig = {
   whitelist: ['hotspotsForHexId'],
 }
 
+const hotspotsConfig = {
+  key: hotspotsSlice.name,
+  storage: AsyncStorage,
+  blacklist: ['rewards'],
+}
+
+const accountConfig = {
+  key: accountSlice.name,
+  storage: AsyncStorage,
+  blacklist: ['rewardsSum'],
+}
+
+const activityConfig = {
+  key: activitySlice.name,
+  storage: AsyncStorage,
+  blacklist: ['filter'],
+}
+
 const rootReducer = combineReducers({
   app: appSlice.reducer,
-  account: accountSlice.reducer,
-  activity: activitySlice.reducer,
+  account: persistReducer(accountConfig, accountSlice.reducer),
+  activity: persistReducer(activityConfig, activitySlice.reducer),
   connectedHotspot: connectedHotspotSlice.reducer,
   heliumData: heliumDataSlice.reducer,
   hotspotDetails: hotspotDetailsSlice.reducer,
-  hotspots: hotspotsSlice.reducer,
+  hotspots: persistReducer(hotspotsConfig, hotspotsSlice.reducer),
   hotspotSearch: hotspotSearchSlice.reducer,
   hotspotChecklist: hotspotChecklistSlice.reducer,
   validators: validatorsSlice.reducer,
