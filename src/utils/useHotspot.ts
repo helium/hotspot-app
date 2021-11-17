@@ -129,7 +129,7 @@ const useHotspot = () => {
 
   const connectAndConfigHotspot = async (
     hotspotDevice: Device,
-    isDiagnostics?: boolean,
+    options: { isDiagnostics?: boolean } = {},
   ): Promise<HotspotConnectStatus> => {
     let connectedDevice = hotspotDevice
     const connected = await hotspotDevice.isConnected()
@@ -202,11 +202,11 @@ const useHotspot = () => {
         return handleConnectStatus(err)
       }
       return handleConnectStatus(
-        payload || isDiagnostics ? 'success' : 'details_fetch_failure',
+        payload || options.isDiagnostics ? 'success' : 'details_fetch_failure',
       )
     } catch (e) {
       return handleConnectStatus(
-        isDiagnostics ? 'success' : 'details_fetch_failure',
+        options.isDiagnostics ? 'success' : 'details_fetch_failure',
       )
     }
   }
