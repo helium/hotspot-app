@@ -23,7 +23,6 @@ import { useSelector } from 'react-redux'
 import BottomSheet from '@gorhom/bottom-sheet'
 import { useNavigation } from '@react-navigation/native'
 import ActivityCard from './ActivityCard/ActivityCard'
-import { ActivityViewState } from './walletTypes'
 import { Spacing } from '../../../theme/theme'
 import { useSpacing } from '../../../theme/themeHooks'
 import Box from '../../../components/Box'
@@ -44,14 +43,12 @@ import {
 type Props = {
   showSkeleton: boolean
   loadingTxns: boolean
-  activityViewState: ActivityViewState
   txns: HttpTransaction[]
   pendingTxns: HttpPendingTransaction[]
 }
 
 const WalletView = ({
   showSkeleton,
-  activityViewState,
   txns,
   pendingTxns,
   loadingTxns,
@@ -141,13 +138,9 @@ const WalletView = ({
 
   useEffect(() => {
     const noResults =
-      activityViewState === 'no_activity' ||
-      (activityViewState === 'activity' &&
-        !showSkeleton &&
-        pendingTxns.length === 0 &&
-        txns.length === 0)
+      !showSkeleton && pendingTxns.length === 0 && txns.length === 0
     setHasNoResults(noResults)
-  }, [activityViewState, pendingTxns.length, showSkeleton, txns.length])
+  }, [pendingTxns.length, showSkeleton, txns.length])
 
   const condensedHeaderStyle = useAnimatedStyle(
     () => ({

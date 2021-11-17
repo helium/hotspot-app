@@ -9,17 +9,12 @@ import {
   fetchMoreTxns,
   fetchTxnsHead,
 } from '../../../store/activity/activitySlice'
-import animateTransition from '../../../utils/animateTransition'
-import { ActivityViewState } from './walletTypes'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import WalletView from './WalletView'
 
 const WalletScreen = () => {
   const dispatch = useAppDispatch()
   const [showSkeleton, setShowSkeleton] = useState(true)
-  const [activityViewState, setActivityViewState] = useState<ActivityViewState>(
-    'undetermined',
-  )
 
   const {
     activity: { txns, filter, detailTxn, requestMore },
@@ -32,39 +27,12 @@ const WalletScreen = () => {
   const prevBlockHeight = usePrevious(blockHeight)
 
   useEffect(() => {
-    // once you have activity, you always have activity
-    if (activityViewState === 'activity') return
-
-    const { hasInitialLoad: allLoaded, data: allData } = txns.all
-    const { hasInitialLoad: pendingLoaded, data: pendingData } = txns.pending
-
-    if (!allLoaded || !pendingLoaded) return
-
-    if (pendingData.length || allData.length) {
-      setActivityViewState('activity')
-    } else if (
-      !pendingData.length &&
-      !allData.length &&
-      activityViewState !== 'no_activity' &&
-      txns[filter].status === 'fulfilled'
-    ) {
-      animateTransition('WalletScreen.NoActivity')
-      setActivityViewState('no_activity')
-    }
-  }, [filter, activityViewState, txns, visible])
-
-  useEffect(() => {
     const nextShowSkeleton = !txns[filter].hasInitialLoad
 
     if (nextShowSkeleton !== showSkeleton) {
-      if (visible && activityViewState !== 'no_activity') {
-        animateTransition('WalletScreen.ShowSkeleton', {
-          enabledOnAndroid: false,
-        })
-      }
       setShowSkeleton(nextShowSkeleton)
     }
-  }, [activityViewState, filter, showSkeleton, txns, visible])
+  }, [filter, showSkeleton, txns, visible])
 
   useEffect(() => {
     // Fetch pending txns on an interval of 60s
@@ -120,7 +88,6 @@ const WalletScreen = () => {
     <>
       <SafeAreaBox flex={1} backgroundColor="primaryBackground">
         <WalletView
-          activityViewState={activityViewState}
           showSkeleton={showSkeleton}
           txns={filter === 'pending' ? [] : txns[filter].data}
           loadingTxns={txns[filter].status === 'pending'}
