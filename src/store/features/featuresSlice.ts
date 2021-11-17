@@ -11,6 +11,7 @@ export type FeaturesState = {
   walletChartEnabled: boolean
   proxyEnabled: boolean
   fetchFeaturesFailed: boolean
+  checklistEnabled: boolean
 }
 
 const initialState: FeaturesState = {
@@ -23,6 +24,7 @@ const initialState: FeaturesState = {
   walletChartEnabled: false,
   proxyEnabled: false,
   fetchFeaturesFailed: false,
+  checklistEnabled: false,
 }
 
 // if this call fails we load the app with default settings and retry every 30 seconds
@@ -43,6 +45,7 @@ const featuresSlice = createSlice({
       state.appRetryCount = payload.appRetryCount
       state.walletChartEnabled = payload.walletChartEnabled
       state.proxyEnabled = payload.proxyEnabled
+      state.checklistEnabled = payload.checklistEnabled
       if (payload.tileServerRes8Url) {
         state.tileServerRes8Url = payload.tileServerRes8Url
       }

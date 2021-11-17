@@ -92,6 +92,9 @@ const HotspotDetails = ({
   const hiddenAddresses = useSelector(
     (state: RootState) => state.account.settings.hiddenAddresses,
   )
+  const checklistEnabled = useSelector(
+    (state: RootState) => state.features.checklistEnabled,
+  )
 
   const { showOKAlert, showOKCancelAlert } = useAlert()
   const listRef = useRef<BottomSheet>(null)
@@ -197,7 +200,7 @@ const HotspotDetails = ({
   }, [hotspot])
 
   const selectData = useMemo(() => {
-    let data = [
+    const data = [
       {
         label: t('hotspot_details.overview'),
         value: 'overview',
@@ -206,24 +209,24 @@ const HotspotDetails = ({
       } as HeliumSelectItemType,
     ]
 
-    if (!isDataOnly(hotspot))
-      data = [
-        ...data,
-        {
+    if (!isDataOnly(hotspot)) {
+      if (checklistEnabled) {
+        data.push({
           label: t('hotspot_details.checklist'),
           value: 'checklist',
           color: 'purpleMain',
           Icon: WitnessIcon,
-        } as HeliumSelectItemType,
-        {
-          label: t('map_filter.witness.title'),
-          value: 'witnesses',
-          color: 'purpleMain',
-          Icon: CheckCircle,
-        } as HeliumSelectItemType,
-      ]
+        } as HeliumSelectItemType)
+      }
+      data.push({
+        label: t('map_filter.witness.title'),
+        value: 'witnesses',
+        color: 'purpleMain',
+        Icon: CheckCircle,
+      } as HeliumSelectItemType)
+    }
     return data
-  }, [hotspot, t])
+  }, [checklistEnabled, hotspot, t])
 
   const [selectedOption, setSelectedOption] = useState(selectData[0].value)
 
