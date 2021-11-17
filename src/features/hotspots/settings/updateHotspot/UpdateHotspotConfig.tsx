@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Hotspot, Witness } from '@helium/http'
 import { useTranslation } from 'react-i18next'
 import { ActivityIndicator, Alert } from 'react-native'
@@ -34,6 +34,12 @@ import {
 import { calculateAssertLocFee } from '../../../../utils/fees'
 import { MakerAntenna } from '../../../../makers/antennaMakerTypes'
 import { isDataOnly } from '../../../../utils/hotspotUtils'
+import {
+  fetchTxnsHead,
+  HttpTransaction,
+} from '../../../../store/activity/activitySlice'
+import { isPendingTransaction } from '../../../wallet/root/useActivityItem'
+import { useAppDispatch } from '../../../../store/store'
 
 type Props = {
   onClose: () => void
@@ -47,6 +53,7 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
   const { t } = useTranslation()
   const submitTxn = useSubmitTxn()
   const navigation = useNavigation()
+  const dispatch = useAppDispatch()
   const [state, setState] = useState<State>(
     isDataOnly(hotspot) ? 'location' : 'antenna',
   )
@@ -183,8 +190,35 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
     })
   }
 
+  const hasPendingTransaction = useCallback(async () => {
+    try {
+      const pending = (await dispatch(
+        fetchTxnsHead({ filter: 'pending' }),
+      )) as {
+        payload?: HttpTransaction[]
+      }
+      const txns = pending.payload
+      return txns?.find((pendingTxn) => {
+        if (!isPendingTransaction(pendingTxn)) return
+
+        return (
+          pendingTxn.txn.type === 'assert_location_v2' &&
+          pendingTxn.status === 'pending' &&
+          pendingTxn.txn.gateway === hotspot?.address
+        )
+      })
+    } catch (e) {}
+    return false
+  }, [dispatch, hotspot?.address])
+
   const onSubmit = async () => {
     setLoading(true)
+    const hasExistingPendingTxn = await hasPendingTransaction()
+    if (hasExistingPendingTxn) {
+      setLoading(false)
+      Toast.show(t('hotspot_settings.reassert.already_pending'), Toast.LONG)
+      return
+    }
     try {
       const txn = await constructTransaction()
       if (txn) {

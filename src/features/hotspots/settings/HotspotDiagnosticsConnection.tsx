@@ -55,7 +55,9 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
   const handleConnect = (hotspot: Device) => async () => {
     try {
       setSelectedHotspot(hotspot)
-      const connectStatus = await connectAndConfigHotspot(hotspot)
+      const connectStatus = await connectAndConfigHotspot(hotspot, {
+        isDiagnostics: true,
+      })
       const connectHotspotSuccess = connectStatus === 'success'
       setConnected(connectHotspotSuccess)
       if (connectHotspotSuccess) {
