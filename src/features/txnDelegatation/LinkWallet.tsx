@@ -1,5 +1,5 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
-import React, { memo, useCallback, useMemo } from 'react'
+import React, { memo, useCallback } from 'react'
 import { useAsync } from 'react-async-hook'
 import { useTranslation } from 'react-i18next'
 import { Linking } from 'react-native'
@@ -19,21 +19,18 @@ import { addAppLinkAuthToken, getSecureItem } from '../../utils/secureAccount'
 type Route = RouteProp<RootStackParamList, 'LinkWallet'>
 const LinkWallet = () => {
   const {
-    params: { requestAppId },
+    params: { requestAppId, callbackUrl, appName },
   } = useRoute<Route>()
   const navigation = useNavigation<RootNavigationProp>()
   const { t } = useTranslation()
   const { result: address } = useAsync(getSecureItem, ['address'])
 
-  const makerApp = useMemo(() => WalletLink.getMakerApp(requestAppId), [
-    requestAppId,
-  ])
-
   const callback = useCallback(
     async (responseParams: WalletLink.LinkWalletResponse) => {
-      if (!makerApp?.universalLink || !address) return
+      if (!address) return
+
       const url = WalletLink.createLinkWalletCallbackUrl(
-        makerApp.universalLink,
+        callbackUrl,
         address,
         responseParams,
       )
@@ -41,7 +38,7 @@ const LinkWallet = () => {
 
       navigation.goBack()
     },
-    [address, makerApp?.universalLink, navigation],
+    [address, callbackUrl, navigation],
   )
 
   const handleLink = useCallback(async () => {
@@ -71,10 +68,10 @@ const LinkWallet = () => {
       <AppLinkIcon />
 
       <Text variant="bold" fontSize={32} marginTop="m">
-        {t('linkWallet.title', { appName: makerApp?.name })}
+        {t('linkWallet.title', { appName })}
       </Text>
       <Text variant="body1" color="purpleLightText" marginVertical="m">
-        {t('linkWallet.body', { appName: makerApp?.name })}
+        {t('linkWallet.body', { appName })}
       </Text>
       <TouchableOpacityBox
         marginTop="ms"
