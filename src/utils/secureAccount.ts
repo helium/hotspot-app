@@ -150,17 +150,20 @@ export const addAppLinkAuthToken = async ({
   address,
   requestAppId,
   signingAppId,
-}: {
+  callbackUrl,
+  appName,
+}: WalletLink.LinkWalletRequest & {
+  signingAppId: string
   time: number
   address: string
-  requestAppId: string
-  signingAppId: string
 }) => {
   const token = WalletLink.createWalletLinkToken({
     time,
     address,
     requestAppId,
     signingAppId,
+    callbackUrl,
+    appName,
   })
 
   const tokens = await getSecureItem('appLinkAuthTokens')

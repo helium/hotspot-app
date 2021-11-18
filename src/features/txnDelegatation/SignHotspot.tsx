@@ -18,28 +18,37 @@ import { getStakingSignedTransaction } from '../../utils/stakingClient'
 type Route = RouteProp<RootStackParamList, 'SignHotspot'>
 const SignHotspot = () => {
   const {
-    params: { requestAppId, token, addGatewayTxn, assertLocationTxn },
+    params: { token, addGatewayTxn, assertLocationTxn },
   } = useRoute<Route>()
   const navigation = useNavigation<RootNavigationProp>()
   const { t } = useTranslation()
   const [hasStoredToken, setHasStoredToken] = useState<boolean>()
 
-  const makerApp = useMemo(() => WalletLink.getMakerApp(requestAppId), [
-    requestAppId,
-  ])
+  const parsedToken = useMemo(() => {
+    const emptyToken = {
+      address: '',
+      time: '',
+      requestAppId: '',
+      signingAppId: '',
+      callbackUrl: '',
+      appName: '',
+    }
+
+    if (!token || !hasStoredToken) return emptyToken
+    return WalletLink.parseWalletLinkToken(token) || emptyToken
+  }, [hasStoredToken, token])
 
   const callback = useCallback(
     async (responseParams: WalletLink.SignHotspotResponse) => {
-      if (!makerApp?.universalLink) return
       const url = WalletLink.createSignHotspotCallbackUrl(
-        makerApp.universalLink,
+        parsedToken.callbackUrl,
         responseParams,
       )
       Linking.openURL(url)
 
       navigation.navigate('MainTabs')
     },
-    [makerApp?.universalLink, navigation],
+    [navigation, parsedToken.callbackUrl],
   )
 
   useEffect(() => {
@@ -127,13 +136,6 @@ const SignHotspot = () => {
     hasAppLinkAuthToken(token).then(setHasStoredToken)
   }, [token])
 
-  const owner = useMemo(() => {
-    if (!token || !hasStoredToken) return
-    const parsedToken = WalletLink.parseWalletLinkToken(token)
-    if (!parsedToken) return
-    return parsedToken.address
-  }, [hasStoredToken, token])
-
   return (
     <SafeAreaBox
       backgroundColor="primaryBackground"
@@ -204,7 +206,7 @@ const SignHotspot = () => {
             </Box>
           )}
         </Box>
-        {owner && (
+        {parsedToken.address && (
           <>
             <Text variant="regular" fontSize={16} color="purpleText">
               {t('signHotspot.owner')}
@@ -215,17 +217,17 @@ const SignHotspot = () => {
               color="primaryBackground"
               marginBottom="m"
             >
-              {owner}
+              {parsedToken.address}
             </Text>
           </>
         )}
-        {makerApp?.name && (
+        {parsedToken.appName && (
           <>
             <Text variant="regular" fontSize={16} color="purpleText">
               {t('signHotspot.maker')}
             </Text>
             <Text variant="bold" fontSize={20} color="primaryBackground">
-              {makerApp.name}
+              {parsedToken.appName}
             </Text>
           </>
         )}

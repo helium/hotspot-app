@@ -50,9 +50,11 @@ const LinkWallet = () => {
       address,
       requestAppId,
       signingAppId: getBundleId(),
+      callbackUrl,
+      appName,
     })
     callback({ token, status: 'success' })
-  }, [address, requestAppId, callback])
+  }, [address, requestAppId, callbackUrl, appName, callback])
 
   const handleCancel = useCallback(async () => {
     callback({ status: 'user_cancelled' })
