@@ -14,7 +14,7 @@ import {
   RootNavigationProp,
   RootStackParamList,
 } from '../../navigation/main/tabTypes'
-import { addAppLinkAuthToken, getSecureItem } from '../../utils/secureAccount'
+import { makeAppLinkAuthToken, getSecureItem } from '../../utils/secureAccount'
 
 type Route = RouteProp<RootStackParamList, 'LinkWallet'>
 const LinkWallet = () => {
@@ -45,7 +45,7 @@ const LinkWallet = () => {
     if (!address) return
 
     const time = getUnixTime(new Date())
-    const token = await addAppLinkAuthToken({
+    const token = await makeAppLinkAuthToken({
       time,
       address,
       requestAppId,

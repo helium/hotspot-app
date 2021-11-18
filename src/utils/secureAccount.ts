@@ -2,6 +2,7 @@ import { Address, Keypair, Mnemonic } from '@helium/crypto-react-native'
 import { WalletLink } from '@helium/react-native-sdk'
 import * as SecureStore from 'expo-secure-store'
 import OneSignal from 'react-native-onesignal'
+import Sodium from 'react-native-sodium'
 import * as Logger from './logger'
 
 type AccountStoreKey = BooleanKey | StringKey
@@ -15,7 +16,6 @@ const stringKeys = [
   'walletApiToken',
   'language',
   'permanentPaymentAddress',
-  'appLinkAuthTokens',
 ] as const
 type StringKey = typeof stringKeys[number]
 
@@ -145,43 +145,33 @@ export const getWalletApiToken = async () => {
   return apiToken
 }
 
-export const addAppLinkAuthToken = async ({
-  time,
-  address,
-  requestAppId,
-  signingAppId,
-  callbackUrl,
-  appName,
-}: WalletLink.LinkWalletRequest & {
-  signingAppId: string
-  time: number
-  address: string
-}) => {
-  const token = WalletLink.createWalletLinkToken({
-    time,
-    address,
-    requestAppId,
-    signingAppId,
-    callbackUrl,
-    appName,
-  })
+export const makeAppLinkAuthToken = async (
+  token: WalletLink.LinkWalletRequest & {
+    signingAppId: string
+    time: number
+    address: string
+  },
+) => {
+  const stringifiedToken = JSON.stringify(token)
+  const keypair = await getKeypair()
+  if (!keypair) return
+  const buffer = await keypair.sign(stringifiedToken)
 
-  const tokens = await getSecureItem('appLinkAuthTokens')
-  const tokenArr: string[] = tokens ? JSON.parse(tokens) : []
-  // Only store one token per maker app
-  const filtered = tokenArr.filter(
-    (t) => WalletLink.parseWalletLinkToken(t)?.requestAppId !== requestAppId,
-  )
-  const nextTokens = [token, ...filtered]
+  const signature = buffer.toString('base64')
 
-  setSecureItem('appLinkAuthTokens', JSON.stringify(nextTokens))
-  return token
+  const signedToken = { ...token, signature }
+  return Buffer.from(JSON.stringify(signedToken)).toString('base64')
 }
 
-export const hasAppLinkAuthToken = async (token: string) => {
-  const tokens = await getSecureItem('appLinkAuthTokens')
-  const tokenArr: string[] = tokens ? JSON.parse(tokens) : []
-  return !!tokenArr.find((t) => t === token)
+export const verifyAppLinkAuthToken = async (token: WalletLink.Token) => {
+  const { signature, ...tokenWithoutSignature } = token
+  const stringifiedToken = JSON.stringify(tokenWithoutSignature)
+  const base64Token = Buffer.from(stringifiedToken).toString('base64')
+
+  const keypair = await getKeypair()
+  const publicKey = keypair?.publicKey.toString('base64')
+  if (!publicKey) return false
+  return Sodium.crypto_sign_verify_detached(signature, base64Token, publicKey)
 }
 
 export const signOut = async () => {

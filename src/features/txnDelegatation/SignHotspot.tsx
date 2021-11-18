@@ -12,7 +12,7 @@ import {
   RootNavigationProp,
   RootStackParamList,
 } from '../../navigation/main/tabTypes'
-import { getKeypair, hasAppLinkAuthToken } from '../../utils/secureAccount'
+import { getKeypair, verifyAppLinkAuthToken } from '../../utils/secureAccount'
 import { getStakingSignedTransaction } from '../../utils/stakingClient'
 
 type Route = RouteProp<RootStackParamList, 'SignHotspot'>
@@ -22,24 +22,17 @@ const SignHotspot = () => {
   } = useRoute<Route>()
   const navigation = useNavigation<RootNavigationProp>()
   const { t } = useTranslation()
-  const [hasStoredToken, setHasStoredToken] = useState<boolean>()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [validated, setValidated] = useState<boolean>()
 
   const parsedToken = useMemo(() => {
-    const emptyToken = {
-      address: '',
-      time: '',
-      requestAppId: '',
-      signingAppId: '',
-      callbackUrl: '',
-      appName: '',
-    }
-
-    if (!token || !hasStoredToken) return emptyToken
-    return WalletLink.parseWalletLinkToken(token) || emptyToken
-  }, [hasStoredToken, token])
+    if (!token) return
+    return WalletLink.parseWalletLinkToken(token)
+  }, [token])
 
   const callback = useCallback(
     async (responseParams: WalletLink.SignHotspotResponse) => {
+      if (!parsedToken?.callbackUrl) return
       const url = WalletLink.createSignHotspotCallbackUrl(
         parsedToken.callbackUrl,
         responseParams,
@@ -48,14 +41,14 @@ const SignHotspot = () => {
 
       navigation.navigate('MainTabs')
     },
-    [navigation, parsedToken.callbackUrl],
+    [navigation, parsedToken?.callbackUrl],
   )
 
   useEffect(() => {
-    if (hasStoredToken === false) {
+    if (validated === false) {
       callback({ status: 'token_not_found' })
     }
-  }, [callback, hasStoredToken])
+  }, [callback, validated])
 
   const gatewayTxn = useMemo(() => {
     if (!addGatewayTxn) return
@@ -133,8 +126,15 @@ const SignHotspot = () => {
   }, [locationTxn?.location])
 
   useEffect(() => {
-    hasAppLinkAuthToken(token).then(setHasStoredToken)
-  }, [token])
+    if (!parsedToken) return
+    verifyAppLinkAuthToken(parsedToken)
+      .then((valid) => {
+        setValidated(valid)
+      })
+      .catch(() => {
+        setValidated(false)
+      })
+  }, [parsedToken, token])
 
   return (
     <SafeAreaBox
@@ -206,7 +206,7 @@ const SignHotspot = () => {
             </Box>
           )}
         </Box>
-        {!!parsedToken.address && (
+        {!!parsedToken?.address && (
           <>
             <Text variant="regular" fontSize={16} color="purpleText">
               {t('signHotspot.owner')}
@@ -221,7 +221,7 @@ const SignHotspot = () => {
             </Text>
           </>
         )}
-        {!!parsedToken.appName && (
+        {!!parsedToken?.appName && (
           <>
             <Text variant="regular" fontSize={16} color="purpleText">
               {t('signHotspot.maker')}
@@ -253,6 +253,7 @@ const SignHotspot = () => {
           backgroundColor="greenBright"
           borderRadius="l"
           onPress={handleLink}
+          disabled={!validated}
         >
           <Text
             variant="medium"
