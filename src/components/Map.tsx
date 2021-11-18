@@ -35,7 +35,7 @@ import { theme, Theme } from '../theme/theme'
 import { useColors } from '../theme/themeHooks'
 import Coverage from './Coverage'
 import { distance } from '../utils/location'
-import ImageBox from './ImageBox'
+import LocationIcon from '../assets/images/location-icon.svg'
 
 const defaultLngLat = [-122.419418, 37.774929] // San Francisco
 
@@ -355,9 +355,7 @@ const Map = ({
               id="locationCenterMarker"
               coordinate={markerLocation}
             >
-              <ImageBox
-                source={require('../assets/images/locationWhite.png')}
-              />
+              <LocationIcon color="white" />
             </MapboxGL.PointAnnotation>
           )}
         </MapboxGL.MapView>

@@ -2,7 +2,7 @@ import React, { memo, useCallback, useMemo, useRef, useState } from 'react'
 import MapboxGL from '@react-native-mapbox-gl/maps'
 import Config from 'react-native-config'
 import Box from '../../../../components/Box'
-import ImageBox from '../../../../components/ImageBox'
+import LocationIcon from '../../../../assets/images/location-icon.svg'
 import Text from '../../../../components/Text'
 
 const defaultLngLat = [-122.419418, 37.774929] // San Francisco
@@ -95,9 +95,7 @@ const HotspotLocationPreview = ({
           id="locationMarker"
           coordinate={coords || defaultLngLat}
         >
-          <ImageBox
-            source={require('../../../../assets/images/locationWhite.png')}
-          />
+          <LocationIcon color="white" />
         </MapboxGL.PointAnnotation>
       </MapboxGL.MapView>
       <LocationName />
