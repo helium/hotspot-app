@@ -206,7 +206,7 @@ const SignHotspot = () => {
             </Box>
           )}
         </Box>
-        {parsedToken.address && (
+        {!!parsedToken.address && (
           <>
             <Text variant="regular" fontSize={16} color="purpleText">
               {t('signHotspot.owner')}
@@ -221,7 +221,7 @@ const SignHotspot = () => {
             </Text>
           </>
         )}
-        {parsedToken.appName && (
+        {!!parsedToken.appName && (
           <>
             <Text variant="regular" fontSize={16} color="purpleText">
               {t('signHotspot.maker')}
