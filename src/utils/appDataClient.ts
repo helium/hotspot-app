@@ -98,6 +98,7 @@ export const getValidatorRewards = async (
   date: Date = new Date(),
 ) => {
   Logger.breadcrumb('getValidatorRewards', breadcrumbOpts)
+  date.setUTCHours(0, 0, 0, 0)
   const endDate = new Date(date)
   endDate.setDate(date.getDate() - numDaysBack)
   const list = await client
@@ -164,6 +165,7 @@ export const getHotspotRewards = async (
   date: Date = new Date(),
 ) => {
   Logger.breadcrumb('getHotspotRewards', breadcrumbOpts)
+  date.setUTCHours(0, 0, 0, 0)
   const endDate = new Date(date)
   endDate.setDate(date.getDate() - numDaysBack)
   const list = await client
