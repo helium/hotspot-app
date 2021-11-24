@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
+import { Camera } from 'expo-camera'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import Crosshair from './Crosshair'
@@ -17,10 +18,10 @@ import useHaptic from '../../../utils/useHaptic'
 import BSHandle from '../../../components/BSHandle'
 import { useSpacing } from '../../../theme/themeHooks'
 import {
-  useAppLinkContext,
   AddressType,
   InvalidAddressError,
   MismatchedAddressError,
+  useAppLinkContext,
 } from '../../../providers/AppLinkProvider'
 import {
   AppLinkCategoryType,
@@ -44,11 +45,9 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
   const { handleBarCode } = useAppLinkContext()
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    return navigation.addListener('focus', () => {
       setScanned(false)
     })
-
-    return unsubscribe
   }, [navigation])
 
   const { result: permissions } = useAsync(
@@ -132,10 +131,13 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
 
   return (
     <Box flex={1}>
-      <BarCodeScanner
+      <Camera
         onBarCodeScanned={handleBarCodeScanned}
-        barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
+        barCodeScannerSettings={{
+          barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+        }}
         style={StyleSheet.absoluteFillObject}
+        useCamera2Api
       />
       <CloseButton onPress={navBack} />
       <Box flex={0.7} justifyContent="center" alignItems="center">

@@ -216,6 +216,7 @@ const HotspotSetupExternalScreen = () => {
                 onBarCodeScanned={handleBarCodeScanned.callback}
                 ratio="1:1"
                 style={StyleSheet.absoluteFill}
+                useCamera2Api
               />
             </Box>
           </>
