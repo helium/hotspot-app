@@ -63,7 +63,7 @@ PODS:
     - MapboxMobileEvents (= 0.10.2)
   - MapboxMobileEvents (0.10.2)
   - MultiplatformBleAdapter (0.1.9)
-  - OneSignal (3.4.3)
+  - OneSignalXCFramework (3.9.1)
   - RCT-Folly (2021.06.28.00-v2):
     - boost
     - DoubleConversion
@@ -262,9 +262,9 @@ PODS:
   - React-jsinspector (0.66.1)
   - React-logger (0.66.1):
     - glog
-  - react-native-ble-plx (2.0.2):
+  - react-native-ble-plx (2.0.3):
     - MultiplatformBleAdapter (= 0.1.9)
-    - React
+    - React-Core
   - react-native-blur (0.8.0):
     - React
   - react-native-config (1.4.2):
@@ -289,8 +289,8 @@ PODS:
     - Mapbox-iOS-SDK (~> 5.9.0)
     - React
     - React-Core
-  - react-native-onesignal (4.0.8):
-    - OneSignal (= 3.4.3)
+  - react-native-onesignal (4.3.3):
+    - OneSignalXCFramework (= 3.9.1)
     - React (< 1.0.0, >= 0.13.0)
   - react-native-safe-area-context (3.2.0):
     - React-Core
@@ -454,8 +454,7 @@ DEPENDENCIES:
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - lottie-ios (from `../node_modules/lottie-ios`)
   - lottie-react-native (from `../node_modules/lottie-react-native`)
-  - MultiplatformBleAdapter (from `https://github.com/below/MultiPlatformBleAdapter`, tag `0.1.9`)
-  - OneSignal (< 4.0, >= 3.0.0)
+  - OneSignalXCFramework (< 4.0, >= 3.0)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
@@ -511,7 +510,8 @@ SPEC REPOS:
     - fmt
     - Mapbox-iOS-SDK
     - MapboxMobileEvents
-    - OneSignal
+    - MultiplatformBleAdapter
+    - OneSignalXCFramework
     - Sentry
     - Toast
     - ZXingObjC
@@ -569,9 +569,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/lottie-ios"
   lottie-react-native:
     :path: "../node_modules/lottie-react-native"
-  MultiplatformBleAdapter:
-    :git: https://github.com/below/MultiPlatformBleAdapter
-    :tag: 0.1.9
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -667,11 +664,6 @@ EXTERNAL SOURCES:
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
-CHECKOUT OPTIONS:
-  MultiplatformBleAdapter:
-    :git: https://github.com/below/MultiPlatformBleAdapter
-    :tag: 0.1.9
-
 SPEC CHECKSUMS:
   boost: a7c83b31436843459a1961bfd74b96033dc77234
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
@@ -697,14 +689,14 @@ SPEC CHECKSUMS:
   FBLazyVector: 500821d196c3d1bd10e7e828bc93ce075234080f
   FBReactNativeSpec: 74c869e2cffa2ffec685cd1bac6788c021da6005
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 43737235ae6a21de4f45297f4f73b6420fc2ecb2
+  glog: 5337263514dd6f09803962437687240c5dc39aa4
   lottie-ios: 48fac6be217c76937e36e340e2d09cf7b10b7f5f
   lottie-react-native: 4dff8fe8d10ddef9e7880e770080f4a56121397e
   Mapbox-iOS-SDK: a5915700ec84bc1a7f8b3e746d474789e35b7956
   MapboxMobileEvents: 2bc0ca2eedb627b73cf403258dce2b2fa98074a6
-  MultiplatformBleAdapter: ec28c1eac17cdb9ca0ba55ba0c2cad3de8e9c01a
-  OneSignal: e4dfb1912410f302dc9661ce98fc829f6c18ff6a
-  RCT-Folly: e2636706cc3fded205cf0d380428ec0ea7455f80
+  MultiplatformBleAdapter: 5a6a897b006764392f9cef785e4360f54fb9477d
+  OneSignalXCFramework: 27159b0a150cdfe528c85325215c9d78b2f973c7
+  RCT-Folly: a21c126816d8025b547704b777a2ba552f3d9fa9
   RCTRequired: 3cc065b52aa18db729268b9bd78a2feffb4d0f91
   RCTTypeSafety: 3c4fc37d5dea452d2ef17324db5504ec2f05083a
   React: 4a00720816c52a213424442954acb7e4b724804a
@@ -716,13 +708,13 @@ SPEC CHECKSUMS:
   React-jsiexecutor: db2f6e22a534d466fc0e34e622df47d9d20bab2f
   React-jsinspector: 8c0517dee5e8c70cd6c3066f20213ff7ce54f176
   React-logger: bfddd3418dc1d45b77b822958f3e31422e2c179b
-  react-native-ble-plx: 5b09a27b9824df10f11f663076335eba6dbb495a
+  react-native-ble-plx: f10240444452dfb2d2a13a0e4f58d7783e92d76e
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-config: c98128a72bc2c3a1ca72caec0b021f0fa944aa29
   react-native-currency-format: cd0a30868fddb004c3b5b5e9b7fe7717876927f5
   react-native-mail: 8fdcd3aef007c33a6877a18eb4cf7447a1d4ce4a
   react-native-mapbox-gl: 5386b80d54af32b0e21278a6fc9203fa7b95d835
-  react-native-onesignal: 50b047c674b79ba700218338fdefb45220da4db5
+  react-native-onesignal: 9a543af01c2359b7567919cd3b1490051c553e21
   react-native-safe-area-context: f0906bf8bc9835ac9a9d3f97e8bde2a997d8da79
   react-native-simple-toast: bf002828cf816775a6809f7a9ec3907509bce11f
   react-native-sodium: be31e3fd97b1e9abd0853d7623fbec4b390b6615
@@ -755,6 +747,6 @@ SPEC CHECKSUMS:
   Yoga: 2b4a01651f42a32f82e6cef3830a3ba48088237f
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: cb4f6aa59f60c69ca24cde619f3fd2f6bc20ab1a
+PODFILE CHECKSUM: 29d9360ba2759359f2b1196674e376ceaabd0d75
 
 COCOAPODS: 1.11.2
