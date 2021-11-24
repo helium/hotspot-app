@@ -129,7 +129,7 @@ const ActivityCardListView = ({
           paddingBottom="m"
           visible={loadingTxns && data?.length !== 0 && !showSkeleton}
         >
-          <ActivityIndicator size="small" />
+          <ActivityIndicator size="small" color="gray" />
         </Box>
       </>
     )
