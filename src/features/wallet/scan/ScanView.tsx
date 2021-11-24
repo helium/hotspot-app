@@ -4,9 +4,9 @@ import { useAsync } from 'react-async-hook'
 import { StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner'
+import { BarCodeScanner } from 'expo-barcode-scanner'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
-import { Camera } from 'expo-camera'
+import { BarCodeScanningResult, Camera } from 'expo-camera'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import Crosshair from './Crosshair'
@@ -60,7 +60,7 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
     triggerNavHaptic()
   }
 
-  const handleBarCodeScanned = async (result: BarCodeScannerResult) => {
+  const handleBarCodeScanned = async (result: BarCodeScanningResult) => {
     if (scanned) return
 
     try {

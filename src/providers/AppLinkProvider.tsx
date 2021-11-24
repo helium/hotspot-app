@@ -9,9 +9,9 @@ import React, {
 } from 'react'
 import { Linking } from 'react-native'
 import queryString from 'query-string'
-import { BarCodeScannerResult } from 'expo-barcode-scanner'
 import { useSelector } from 'react-redux'
 import { Address } from '@helium/crypto-react-native'
+import { BarCodeScanningResult } from 'expo-camera'
 import useMount from '../utils/useMount'
 import { getAddress } from '../utils/secureAccount'
 import { RootState } from '../store/rootReducer'
@@ -327,7 +327,7 @@ const useAppLink = () => {
 
   const handleBarCode = useCallback(
     async (
-      { data }: BarCodeScannerResult,
+      { data }: BarCodeScanningResult,
       scanType: AppLinkCategoryType,
       opts?: Record<string, string>,
       assertScanResult?: (
