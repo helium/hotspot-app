@@ -1,10 +1,15 @@
 import Config from 'react-native-config'
 import qs from 'qs'
+import { Platform } from 'react-native'
+import { getVersion } from 'react-native-device-info'
 import { getWalletApiToken } from './secureAccount'
 import * as Logger from './logger'
 
 const breadcrumbOpts = { type: 'HTTP Request', category: 'walletClient' }
 
+const userAgent = `helium-hotspot-app-${getVersion()}-${
+  Platform.OS
+}-wallet-client`
 let network = 'stakejoy'
 
 export const updateNetwork = (nextNetwork: string) => {
@@ -34,6 +39,7 @@ const makeRequest = async (
         'Cache-Control': 'no-cache',
         'Content-Type': 'application/json',
         Authorization: token,
+        'User-Agent': userAgent,
       },
     })
 

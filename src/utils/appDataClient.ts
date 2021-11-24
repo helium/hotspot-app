@@ -9,6 +9,7 @@ import Client, {
 import { Transaction } from '@helium/transactions'
 import { Platform } from 'react-native'
 import Config from 'react-native-config'
+import { getVersion } from 'react-native-device-info'
 import {
   HotspotActivityFilters,
   HotspotActivityType,
@@ -18,15 +19,14 @@ import { fromNow } from './timeUtils'
 import * as Logger from './logger'
 
 const MAX = 100000
-const name =
-  Platform.OS === 'android' ? 'helium-wallet-android' : 'helium-wallet-ios'
+const userAgent = `helium-hotspot-app-${getVersion()}-${Platform.OS}-js-client`
 
 const baseURL = Config.HTTP_CLIENT_PROXY_URL
 
 let client = new Client(Network.production, {
   retry: 1,
-  name,
-  userAgent: name,
+  name: userAgent,
+  userAgent,
 })
 
 export const updateClient = ({
@@ -50,9 +50,9 @@ export const updateClient = ({
   }
   client = new Client(network, {
     retry: retryCount,
-    name,
+    name: userAgent,
     headers,
-    userAgent: name,
+    userAgent,
   })
 }
 
