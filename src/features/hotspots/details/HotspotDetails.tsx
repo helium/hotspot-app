@@ -164,17 +164,12 @@ const HotspotDetails = ({
     if (
       !address ||
       listIndex === 0 ||
-      (listIndex === 1 && prevListIndex === 1)
+      (listIndex === 1 && prevListIndex === 1) ||
+      (listIndex === -1 && prevListIndex === -1)
     ) {
       return
     }
     dispatch(fetchHotspotData(address))
-  }, [address, dispatch, hotspot, listIndex, prevListIndex, timelineValue])
-
-  // initial load of chart data
-  useEffect(() => {
-    if (!address || listIndex === 0 || (listIndex === 1 && prevListIndex === 1))
-      return
 
     dispatch(
       fetchChartData({
@@ -393,8 +388,6 @@ const HotspotDetails = ({
       listIndex !== 0
     ) {
       setListIndex(0)
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore bottom sheet type bug https://github.com/gorhom/react-native-bottom-sheet/issues/708
       listRef.current?.snapTo(0)
       setSelectedOption(selectData[0].value)
       scrollViewRef.current?.scrollTo({ y: 0, x: 0, animated: false })
@@ -410,9 +403,10 @@ const HotspotDetails = ({
       if (shouldClose && listIndex !== -1) {
         setListIndex(-1)
         listRef.current?.close()
-      } else if (!shouldClose && listIndex === -1) {
+      } else if (!shouldClose && listIndex !== 0) {
         setListIndex(0)
         listRef.current?.snapTo(0)
+        scrollViewRef.current?.scrollTo({ y: 0, x: 0, animated: false })
       }
     }
   }, [
