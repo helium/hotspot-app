@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { Reward } from '@helium/http'
+import { Sum } from '@helium/http'
 import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
 import {
   getHotspotRewards,
@@ -33,7 +33,7 @@ type FetchDetailsParams = {
 
 type GatewayChartData = {
   rewardSum?: Balance<NetworkTokens>
-  rewards?: Reward[]
+  rewards?: Sum[]
   rewardsChange?: number
 }
 
@@ -69,7 +69,7 @@ export const fetchChartData = createAsyncThunk<
     const startDate = new Date()
     const endDate = new Date(startDate)
     endDate.setDate(endDate.getDate() - numDays)
-    const data: [WalletReward[], WalletReward[], Reward[]] = await Promise.all([
+    const data: [WalletReward[], WalletReward[], Sum[]] = await Promise.all([
       getWallet(`${resource}/rewards`, {
         addresses: address,
         dayRange: numDays,
