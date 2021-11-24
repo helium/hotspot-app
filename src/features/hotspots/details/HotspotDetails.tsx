@@ -100,7 +100,7 @@ const HotspotDetails = ({
   const listRef = useRef<BottomSheet>(null)
   const scrollViewRef = useRef<any>(null) // eslint-disable-line @typescript-eslint/no-explicit-any
   const [isRelayed, setIsRelayed] = useState(false)
-  const [timelineValue, setTimelineValue] = useState(1)
+  const [timelineValue, setTimelineValue] = useState(7)
   const [timelineIndex, setTimelineIndex] = useState(2)
   const [snapPoints, setSnapPoints] = useState([0, 0])
   const [listIndex, setListIndex] = useState(-1)
@@ -164,17 +164,12 @@ const HotspotDetails = ({
     if (
       !address ||
       listIndex === 0 ||
-      (listIndex === 1 && prevListIndex === 1)
+      (listIndex === 1 && prevListIndex === 1) ||
+      (listIndex === -1 && prevListIndex === -1)
     ) {
       return
     }
     dispatch(fetchHotspotData(address))
-  }, [address, dispatch, hotspot, listIndex, prevListIndex, timelineValue])
-
-  // initial load of chart data
-  useEffect(() => {
-    if (!address || listIndex === 0 || (listIndex === 1 && prevListIndex === 1))
-      return
 
     dispatch(
       fetchChartData({
@@ -393,8 +388,6 @@ const HotspotDetails = ({
       listIndex !== 0
     ) {
       setListIndex(0)
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore bottom sheet type bug https://github.com/gorhom/react-native-bottom-sheet/issues/708
       listRef.current?.snapTo(0)
       setSelectedOption(selectData[0].value)
       scrollViewRef.current?.scrollTo({ y: 0, x: 0, animated: false })
@@ -410,9 +403,10 @@ const HotspotDetails = ({
       if (shouldClose && listIndex !== -1) {
         setListIndex(-1)
         listRef.current?.close()
-      } else if (!shouldClose && listIndex === -1) {
+      } else if (!shouldClose && listIndex !== 0) {
         setListIndex(0)
         listRef.current?.snapTo(0)
+        scrollViewRef.current?.scrollTo({ y: 0, x: 0, animated: false })
       }
     }
   }, [
@@ -665,6 +659,7 @@ const HotspotDetails = ({
           {selectedOption === 'overview' && (
             <HotspotDetailChart
               title={t('hotspot_details.reward_title')}
+              subtitle={t('hotspot_details.reward_subtitle')}
               number={rewardSum?.floatBalance.toFixed(2)}
               change={rewardsChange}
               data={rewardChartData}

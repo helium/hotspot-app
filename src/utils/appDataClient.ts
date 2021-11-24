@@ -10,6 +10,7 @@ import { Transaction } from '@helium/transactions'
 import { Platform } from 'react-native'
 import Config from 'react-native-config'
 import { getVersion } from 'react-native-device-info'
+import { subDays } from 'date-fns'
 import {
   HotspotActivityFilters,
   HotspotActivityType,
@@ -92,21 +93,6 @@ export const getValidators = async () => {
   return newValidatorsList.takeJSON(MAX)
 }
 
-export const getValidatorRewards = async (
-  address: string,
-  numDaysBack: number,
-  date: Date = new Date(),
-) => {
-  Logger.breadcrumb('getValidatorRewards', breadcrumbOpts)
-  date.setUTCHours(0, 0, 0, 0)
-  const endDate = new Date(date)
-  endDate.setDate(date.getDate() - numDaysBack)
-  const list = await client
-    .validator(address)
-    .rewards.list({ minTime: endDate, maxTime: date })
-  return list.take(MAX)
-}
-
 export const searchValidators = async (searchTerm: string) => {
   Logger.breadcrumb('searchValidators', breadcrumbOpts)
   const newValidatorList = await client.validators.search(searchTerm)
@@ -159,18 +145,36 @@ export const getHotspotDetails = async (address: string): Promise<Hotspot> => {
   return client.hotspots.get(address)
 }
 
+const getRewardsRange = (numDaysBack: number) => {
+  const startOfToday = new Date()
+  startOfToday.setUTCHours(0, 0, 0, 0)
+  const maxTime = startOfToday
+  const minTime = subDays(startOfToday, numDaysBack)
+  return { maxTime, minTime }
+}
+
+export const getValidatorRewards = async (
+  address: string,
+  numDaysBack: number,
+  bucket: Bucket = 'day',
+) => {
+  Logger.breadcrumb('getValidatorRewards', breadcrumbOpts)
+  const list = await client
+    .validator(address)
+    .rewards.sum.list({ ...getRewardsRange(numDaysBack), bucket })
+  return list.take(MAX)
+}
+
 export const getHotspotRewards = async (
   address: string,
   numDaysBack: number,
-  date: Date = new Date(),
+  bucket: Bucket = 'day',
 ) => {
   Logger.breadcrumb('getHotspotRewards', breadcrumbOpts)
-  date.setUTCHours(0, 0, 0, 0)
-  const endDate = new Date(date)
-  endDate.setDate(date.getDate() - numDaysBack)
+
   const list = await client
     .hotspot(address)
-    .rewards.list({ minTime: endDate, maxTime: date })
+    .rewards.sum.list({ ...getRewardsRange(numDaysBack), bucket })
   return list.take(MAX)
 }
 
