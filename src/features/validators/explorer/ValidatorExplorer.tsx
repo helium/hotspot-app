@@ -40,20 +40,21 @@ const ValidatorExplorer = ({ visible, onSelectValidator }: Props) => {
   const [consensusMembers, setConsensusMembers] = useState<number>()
 
   const loadElectedValidators = useCallback(async () => {
+    if (!visible) return
     const response = await dispatch(fetchElectedValidators())
     const fetchedValidators = response.payload as Validator[]
     await dispatch(
       fetchValidatorRewards(fetchedValidators.map((v) => v.address)),
     )
     await dispatch(fetchElections())
-  }, [dispatch])
+  }, [visible, dispatch])
 
   useAsync(async () => {
     await loadElectedValidators()
   }, [loadElectedValidators])
 
   useAsync(async () => {
-    const chainVars = await getChainVars()
+    const chainVars = await getChainVars(['num_consensus_members'])
     setConsensusMembers(chainVars.numConsensusMembers)
   }, [])
 

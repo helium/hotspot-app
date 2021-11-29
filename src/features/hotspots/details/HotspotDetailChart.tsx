@@ -12,6 +12,7 @@ import TimelinePicker from './TimelinePicker'
 
 type Props = {
   title: string
+  subtitle?: string
   number?: string
   change?: number
   data: ChartData[]
@@ -25,6 +26,7 @@ const HotspotDetailChart = ({
   number,
   change = 0,
   data,
+  subtitle,
   loading: propsLoading,
   timelineIndex,
   onTimelineChanged,
@@ -74,9 +76,22 @@ const HotspotDetailChart = ({
     return (
       <>
         <Box flex={1}>
-          <Text color="grayLightText" fontSize={16} maxFontSizeMultiplier={1.2}>
-            {title}
-          </Text>
+          <Box flexDirection="row" justifyContent="space-between">
+            <Text
+              color="grayLightText"
+              fontSize={16}
+              maxFontSizeMultiplier={1.2}
+            >
+              {title}
+            </Text>
+            <Text
+              color="grayLightText"
+              fontSize={16}
+              maxFontSizeMultiplier={1.2}
+            >
+              {subtitle}
+            </Text>
+          </Box>
           <Box flexDirection="row" alignItems="center">
             <Text
               variant="light"
@@ -155,6 +170,7 @@ const HotspotDetailChart = ({
     onFocus,
     onTimelineChanged,
     purpleMain,
+    subtitle,
     timelineIndex,
     title,
   ])

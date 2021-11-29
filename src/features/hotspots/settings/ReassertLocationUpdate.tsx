@@ -6,9 +6,7 @@ import { Platform } from 'react-native'
 import { Hotspot, Witness } from '@helium/http'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
-import Map from '../../../components/Map'
 import Button from '../../../components/Button'
-import ImageBox from '../../../components/ImageBox'
 import { reverseGeocode } from '../../../utils/location'
 import { useSpacing } from '../../../theme/themeHooks'
 import animateTransition from '../../../utils/animateTransition'
@@ -16,6 +14,7 @@ import sleep from '../../../utils/sleep'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { getH3Location } from '../../../utils/h3Utils'
 import useAlert from '../../../utils/useAlert'
+import HotspotLocationPreview from './updateHotspot/HotspotLocationPreview'
 
 type Props = {
   confirming?: boolean
@@ -113,6 +112,7 @@ const ReassertLocationUpdate = ({
           color="white"
           padding="l"
           textAlign="center"
+          maxFontSizeMultiplier={1.2}
         >
           {locationName}
         </Text>
@@ -121,23 +121,10 @@ const ReassertLocationUpdate = ({
         </TouchableOpacityBox>
       </Box>
 
-      <Map
-        showUserLocation={!confirming && !coords}
+      <HotspotLocationPreview
         mapCenter={coords ? [coords.longitude, coords.latitude] : undefined}
-        zoomLevel={16}
+        movable={!confirming}
         onMapMoved={onMapMoved}
-        interactive={!confirming}
-        showH3Grid
-        showNearbyHotspots
-      />
-      <ImageBox
-        position="absolute"
-        top="50%"
-        left="50%"
-        style={{ marginTop: -29, marginLeft: -25 / 2 }}
-        width={25}
-        height={29}
-        source={require('../../../assets/images/locationWhite.png')}
       />
       <Box
         position="absolute"
@@ -156,10 +143,20 @@ const ReassertLocationUpdate = ({
             padding="m"
             justifyContent="space-between"
           >
-            <Text variant="medium" fontSize={15} color="black">
+            <Text
+              variant="medium"
+              fontSize={15}
+              color="black"
+              maxFontSizeMultiplier={1}
+            >
               {t('hotspot_settings.reassert.confirm_location')}
             </Text>
-            <Text variant="light" fontSize={15} color="black">
+            <Text
+              variant="light"
+              fontSize={15}
+              color="black"
+              maxFontSizeMultiplier={1}
+            >
               {t('hotspot_settings.reassert.charge', { amount })}
             </Text>
           </Box>

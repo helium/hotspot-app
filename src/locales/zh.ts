@@ -536,9 +536,6 @@ export default {
     owned: {
       title: '我的 Hotspot',
       title_no_hotspots: 'Hotspot',
-      reward_summary: '您的 Hotspot 过去 24 小时共赚取\n{{hntAmount}}。',
-      reward_summary_plural:
-        '您的 {{count}} 个 Hotspot 过去 24 小时共赚取\n{{hntAmount}}。',
       your_hotspots: '您的 Hotspot',
       filter: {
         new: '最新的 Hotspot',

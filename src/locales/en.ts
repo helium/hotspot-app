@@ -442,12 +442,6 @@ export default {
     },
   },
   wallet: {
-    empty: {
-      title: 'Welcome to\nyour wallet',
-      subtitle: 'Your balance is zero.',
-      description:
-        'You can send HNT to the below address/QR or deploy a Hotspot to start earning.',
-    },
     title: 'My Wallet',
     copiedToClipboard: 'Copied {{address}} to clipboard',
     share: 'Share',
@@ -632,15 +626,15 @@ export default {
       validator_plural: '{{count}} Validators',
       validator: 'Validator',
       reward_hotspot_summary:
-        'Your Hotspot has earned\n{{hntAmount}} in the past 24 hours.',
+        'Your Hotspot earned\n{{hntAmount}} on {{date}} (UTC).',
       reward_hotspot_summary_plural:
-        'Your {{count}} Hotspots have earned\n{{hntAmount}} in the past 24 hours.',
+        'Your {{count}} Hotspots earned\n{{hntAmount}} on {{date}} (UTC).',
       reward_validator_summary:
-        'Your Validator has earned\n{{hntAmount}} in the past 24 hours.',
+        'Your Validator earned\n{{hntAmount}} on {{date}} (UTC).',
       reward_validator_summary_plural:
-        'Your {{count}} Validators have earned\n{{hntAmount}} in the past 24 hours.',
+        'Your {{count}} Validators earned\n{{hntAmount}} on {{date}} (UTC).',
       reward_hotspot_and_validator_summary:
-        'Your {{hotspot}} and \n{{validator}} have earned\n{{hntAmount}} in the past 24 hours.',
+        'Your {{hotspot}} and \n{{validator}} earned\n{{hntAmount}} on {{date}} (UTC).',
       your_hotspots: 'Your Hotspots',
       filter: {
         new: 'Newest Hotspots',
@@ -690,8 +684,11 @@ export default {
     },
     ticker:
       '{{formattedHotspotCount}} Hotspots • Oracle Price: {{oraclePrice}} • Block Time: {{formattedBlockTime}} secs • ',
+    ticker_no_hotspots:
+      'Oracle Price: {{oraclePrice}} • Block Time: {{formattedBlockTime}} secs',
     ticker_no_block:
-      '{{formattedHotspotCount}} Hotspots • Oracle Price: {{oraclePrice}} • ',
+      '{{formattedHotspotCount}} Hotspots • Oracle Price: {{oraclePrice}} ',
+    ticker_no_hotspots_or_block: 'Oracle Price: {{oraclePrice}}',
   },
   permissions: {
     location: {
@@ -921,8 +918,8 @@ export default {
     penalty_desc: 'Penalty Score',
     consensus_desc: 'Participated in Consensus',
     in_consensus: ' In Consensus Group',
-    time_range: 'Time Range',
-    time_range_24_hours: '24H',
+    time_range: 'Time Range (UTC)',
+    time_range_7_days: '7D',
     time_range_14_days: '14D',
     time_range_30_days: '30D',
     in_cooldown_mode: 'In Cooldown Mode',
@@ -947,6 +944,7 @@ export default {
     owner_you: 'Owned by you',
     pass_rate: 'PASS RATE',
     reward_title: 'HNT Rewards',
+    reward_subtitle: 'Time Range (UTC)',
     witness_title: 'Average Witnesses',
     num_witnesses: '{{count}} Witness',
     num_witnesses_plural: '{{count}} Witnesses',
@@ -956,7 +954,7 @@ export default {
     picker_title: 'Past',
     overview: 'Earnings',
     no_location: 'No Location',
-    picker_options: ['24H', '14D', '30D'],
+    picker_options: ['7D', '14D', '30D'],
     picker_prompt: 'Select Range',
     status_data_only: 'Data-Only',
     status_online: 'Online',

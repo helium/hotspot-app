@@ -38,6 +38,7 @@ import {
 } from '../../../utils/transactions'
 import {
   getAccount,
+  getChainVars,
   getHotspotDetails,
   getHotspotsLastChallengeActivity,
 } from '../../../utils/appDataClient'
@@ -164,7 +165,10 @@ const SendView = ({
         setStalePocBlockCount(0)
         return
       }
-      const staleBlockCount = 1500
+      const chainVars = await getChainVars([
+        'transfer_hotspot_stale_poc_blocks',
+      ])
+      const staleBlockCount = chainVars.transferHotspotStalePocBlocks as number
       const reportedActivity = await getHotspotsLastChallengeActivity(
         hotspotAddress,
       )

@@ -93,7 +93,9 @@ const Keypad = ({
           onPressIn={onPressIn(idx + 1)}
           key={idx}
         >
-          <Text variant="keypad">{idx + 1}</Text>
+          <Text variant="keypad" maxFontSizeMultiplier={1}>
+            {idx + 1}
+          </Text>
         </TouchableCircle>
       ))}
 
@@ -105,7 +107,9 @@ const Keypad = ({
         flexBasis="33%"
         onPressIn={onPressIn(0)}
       >
-        <Text variant="keypad">{0}</Text>
+        <Text variant="keypad" maxFontSizeMultiplier={1}>
+          {0}
+        </Text>
       </TouchableCircle>
       <TouchableCircle
         alignItems="center"

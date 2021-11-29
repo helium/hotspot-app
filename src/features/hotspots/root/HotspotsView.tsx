@@ -10,7 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTranslation } from 'react-i18next'
 import { RootStackParamList } from '../../../navigation/main/tabTypes'
 import Box from '../../../components/Box'
-import Map from '../../../components/Map'
+import Map, { NO_FEATURES } from '../../../components/Map'
 import { RootState } from '../../../store/rootReducer'
 import hotspotDetailsSlice, {
   fetchHotspotData,
@@ -37,7 +37,6 @@ import MapFilterModal from '../../map/MapFilterModal'
 import ShortcutNav from './ShortcutNav'
 import { useAppDispatch } from '../../../store/store'
 import { fetchAccountRewards } from '../../../store/account/accountSlice'
-import useVisible from '../../../utils/useVisible'
 import {
   fetchFollowedValidators,
   fetchMyValidators,
@@ -54,6 +53,7 @@ import ValidatorExplorer from '../../validators/explorer/ValidatorExplorer'
 import HeliumSelect from '../../../components/HeliumSelect'
 import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
 import HotspotsEmpty from './HotspotsEmpty'
+import { hasValidCache } from '../../../utils/cacheUtils'
 
 type Props = {
   ownedHotspots?: Hotspot[]
@@ -107,6 +107,9 @@ const HotspotsView = ({
   const followedValidatorsLoaded = useSelector(
     (state: RootState) => state.validators.followedValidatorsLoaded,
   )
+  const loadingHotspotsForHex = useSelector(
+    (state: RootState) => state.discovery.loadingHotspotsForHex,
+  )
   const [selectedHexId, setSelectedHexId] = useState<string>()
   const [selectedHotspotIndex, setSelectedHotspotIndex] = useState(0)
   const animatedIndex = useSharedValue<number>(0)
@@ -149,12 +152,10 @@ const HotspotsView = ({
     mapFilter,
   ])
 
-  useVisible({
-    onAppear: () => {
-      dispatch(fetchAccountRewards())
-      dispatch(fetchMyValidators())
-      dispatch(fetchFollowedValidators())
-    },
+  useMount(() => {
+    dispatch(fetchAccountRewards())
+    dispatch(fetchMyValidators())
+    dispatch(fetchFollowedValidators())
   })
 
   useEffect(() => {
@@ -266,27 +267,48 @@ const HotspotsView = ({
 
   const onMapHexSelected = useCallback(
     async (hexId: string, address?: string) => {
-      const hotspots = (await dispatch(fetchHotspotsForHex({ hexId }))) as {
-        payload?: Hotspot[]
-      }
+      if (loadingHotspotsForHex) return
 
+      // set UI until hotspots load
+      setSelectedHexId(hexId)
+
+      setShowTabs(false)
+      handleShortcutItemSelected({ address, locationHex: hexId } as Hotspot)
+
+      let hotspots: Hotspot[] = []
+      if (hexId && hexId !== NO_FEATURES) {
+        // load hotspots in hex and update ui
+
+        const existing = hotspotsForHexId[hexId]
+        if (hasValidCache(existing, 60)) {
+          hotspots = existing.hotspots
+        } else {
+          const response = (await dispatch(fetchHotspotsForHex({ hexId }))) as {
+            payload?: Hotspot[]
+          }
+          if (response.payload) {
+            hotspots = response.payload
+          }
+        }
+      }
       let index = 0
-      if (address && hotspots?.payload) {
-        const foundIndex = hotspots.payload.findIndex(
-          (h) => h?.address === address,
-        )
+      if (address && hotspots) {
+        const foundIndex = hotspots.findIndex((h) => h?.address === address)
         if (foundIndex >= 0) {
           index = foundIndex
         }
       }
-      setSelectedHexId(hexId)
       setSelectedHotspotIndex(index)
-      setShowTabs(false)
-      if (hotspots?.payload?.length) {
-        handleShortcutItemSelected(hotspots.payload[index] as Hotspot)
+      if (hotspots?.length) {
+        handleShortcutItemSelected(hotspots[index] as Hotspot)
       }
     },
-    [dispatch, handleShortcutItemSelected],
+    [
+      dispatch,
+      handleShortcutItemSelected,
+      hotspotsForHexId,
+      loadingHotspotsForHex,
+    ],
   )
 
   const handlePresentHotspot = useCallback(
@@ -379,7 +401,7 @@ const HotspotsView = ({
 
   const hexHotspots = useMemo(() => {
     if (!selectedHexId) return []
-    return hotspotsForHexId[selectedHexId]
+    return hotspotsForHexId[selectedHexId]?.hotspots
   }, [hotspotsForHexId, selectedHexId])
 
   const onHotspotSelected = useCallback(
@@ -391,7 +413,8 @@ const HotspotsView = ({
   )
 
   const hotspotHasLocation = useMemo(() => {
-    if (!hotspotAddress || !selectedHotspot) return true
+    if (!hotspotAddress || !selectedHotspot || !selectedHotspot?.owner)
+      return true
 
     return hotspotHasValidLocation(
       selectedHotspot || hotspotDetailsData.hotspot,
@@ -530,6 +553,7 @@ const HotspotsView = ({
               cameraBottomOffset={cameraBottomOffset}
               ownedHotspots={showOwned ? ownedHotspots : []}
               selectedHotspot={selectedHotspot}
+              selectedHex={selectedHexId}
               maxZoomLevel={12}
               zoomLevel={12}
               witnesses={showWitnesses ? witnesses : []}

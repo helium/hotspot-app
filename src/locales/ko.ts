@@ -567,10 +567,6 @@ export default {
     owned: {
       title: '내 Hotspot',
       title_no_hotspots: 'Hotspot',
-      reward_summary:
-        'Hotspot이 지난 24시간 동안 \n{{hntAmount}}을(를) 획득했습니다.',
-      reward_summary_plural:
-        'Hotspot {{count}}개가 지난 24시간 동안 \n{{hntAmount}}을(를) 획득했습니다.',
       your_hotspots: '내 Hotspot',
       filter: {
         new: '최신 Hotspot',

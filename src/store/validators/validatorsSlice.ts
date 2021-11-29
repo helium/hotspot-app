@@ -210,7 +210,7 @@ const validatorsToObj = (validators: Validator[]) =>
   }, {})
 
 const validatorsSlice = createSlice({
-  name: 'validatorDetails',
+  name: 'validators',
   initialState,
   reducers: {
     signOut: () => {

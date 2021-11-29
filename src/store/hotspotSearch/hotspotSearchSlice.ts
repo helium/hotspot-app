@@ -90,7 +90,7 @@ export const fetchData = createAsyncThunk<
 })
 
 const hotspotSearchSlice = createSlice({
-  name: 'hotspotSearchSlice',
+  name: 'hotspotSearch',
   initialState,
   reducers: {
     clear: (state) => {

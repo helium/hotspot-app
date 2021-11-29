@@ -11,7 +11,7 @@ import {
 import { Hotspot, Witness } from '@helium/http'
 import Animated from 'react-native-reanimated'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
-import { BottomSheetScrollViewType } from '@gorhom/bottom-sheet/lib/typescript/components/scrollView/types'
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import StatusBadge from './StatusBadge'
@@ -53,6 +53,7 @@ import usePrevious from '../../../utils/usePrevious'
 import useHotspotSync from '../useHotspotSync'
 import useAlert from '../../../utils/useAlert'
 import { locale } from '../../../utils/i18n'
+import { NO_FEATURES } from '../../../components/Map'
 
 const hitSlop = { top: 24, bottom: 24 } as Insets
 
@@ -91,15 +92,18 @@ const HotspotDetails = ({
   const hiddenAddresses = useSelector(
     (state: RootState) => state.account.settings.hiddenAddresses,
   )
+  const checklistEnabled = useSelector(
+    (state: RootState) => state.features.checklistEnabled,
+  )
 
   const { showOKAlert, showOKCancelAlert } = useAlert()
   const listRef = useRef<BottomSheet>(null)
-  const scrollViewRef = useRef<BottomSheetScrollViewType>(null)
+  const scrollViewRef = useRef<any>(null) // eslint-disable-line @typescript-eslint/no-explicit-any
   const [isRelayed, setIsRelayed] = useState(false)
-  const [timelineValue, setTimelineValue] = useState(14)
-  const [timelineIndex, setTimelineIndex] = useState(1)
+  const [timelineValue, setTimelineValue] = useState(7)
+  const [timelineIndex, setTimelineIndex] = useState(2)
   const [snapPoints, setSnapPoints] = useState([0, 0])
-  const [listIndex, setListIndex] = useState(0)
+  const [listIndex, setListIndex] = useState(-1)
   const prevListIndex = usePrevious(listIndex)
   const prevHotspotAddress = usePrevious(propsHotspot?.address)
 
@@ -112,6 +116,7 @@ const HotspotDetails = ({
     hotspotDetailsHotspot,
     propsHotspot,
   ])
+  const prevHexId = usePrevious(hotspot?.locationHex)
 
   const { updateSyncStatus, hotspotSyncStatus } = useHotspotSync(hotspot)
 
@@ -133,6 +138,15 @@ const HotspotDetails = ({
       setIsRelayed(isRelay(hotspot?.status?.listenAddrs || []))
     }
   }, [hotspot, visible])
+
+  useEffect(() => {
+    if (visible || listIndex !== 1) return
+
+    setListIndex(0)
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore bottom sheet type bug https://github.com/gorhom/react-native-bottom-sheet/issues/708
+    listRef.current?.snapTo(0)
+  }, [listIndex, visible])
 
   const rewardChartData = useMemo(() => {
     if (!visible) return []
@@ -159,17 +173,12 @@ const HotspotDetails = ({
     if (
       !address ||
       listIndex === 0 ||
-      (listIndex === 1 && prevListIndex === 1)
+      (listIndex === 1 && prevListIndex === 1) ||
+      (listIndex === -1 && prevListIndex === -1)
     ) {
       return
     }
     dispatch(fetchHotspotData(address))
-  }, [address, dispatch, hotspot, listIndex, prevListIndex, timelineValue])
-
-  // initial load of chart data
-  useEffect(() => {
-    if (!address || listIndex === 0 || (listIndex === 1 && prevListIndex === 1))
-      return
 
     dispatch(
       fetchChartData({
@@ -185,7 +194,7 @@ const HotspotDetails = ({
   }, [updateSyncStatus])
 
   const formattedHotspotName = useMemo(() => {
-    if (!hotspot) return ''
+    if (!hotspot || !hotspot.address) return ''
 
     const name = animalName(hotspot.address)
     const pieces = name.split(' ')
@@ -195,7 +204,7 @@ const HotspotDetails = ({
   }, [hotspot])
 
   const selectData = useMemo(() => {
-    let data = [
+    const data = [
       {
         label: t('hotspot_details.overview'),
         value: 'overview',
@@ -204,24 +213,24 @@ const HotspotDetails = ({
       } as HeliumSelectItemType,
     ]
 
-    if (!isDataOnly(hotspot))
-      data = [
-        ...data,
-        {
+    if (!isDataOnly(hotspot)) {
+      if (checklistEnabled) {
+        data.push({
           label: t('hotspot_details.checklist'),
           value: 'checklist',
           color: 'purpleMain',
           Icon: WitnessIcon,
-        } as HeliumSelectItemType,
-        {
-          label: t('map_filter.witness.title'),
-          value: 'witnesses',
-          color: 'purpleMain',
-          Icon: CheckCircle,
-        } as HeliumSelectItemType,
-      ]
+        } as HeliumSelectItemType)
+      }
+      data.push({
+        label: t('map_filter.witness.title'),
+        value: 'witnesses',
+        color: 'purpleMain',
+        Icon: CheckCircle,
+      } as HeliumSelectItemType)
+    }
     return data
-  }, [hotspot, t])
+  }, [checklistEnabled, hotspot, t])
 
   const [selectedOption, setSelectedOption] = useState(selectData[0].value)
 
@@ -304,12 +313,6 @@ const HotspotDetails = ({
     }
   }, [showOKCancelAlert])
 
-  const cardHandle = useCallback(() => {
-    return (
-      <HotspotSheetHandle hotspot={hotspot} toggleSettings={toggleSettings} />
-    )
-  }, [hotspot, toggleSettings])
-
   const handleHeaderLayout = (event: LayoutChangeEvent) => {
     const nextSnapPoints = [event.nativeEvent.layout.height, hp(55)]
     onLayoutSnapPoints?.({
@@ -337,6 +340,8 @@ const HotspotDetails = ({
     }
     if (listIndex === 0) {
       setListIndex(1)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore bottom sheet type bug https://github.com/gorhom/react-native-bottom-sheet/issues/708
       listRef.current?.snapTo(1)
       if (showStatusBanner) {
         return // banner is already showing, but was out of sight
@@ -379,13 +384,42 @@ const HotspotDetails = ({
 
   useEffect(() => {
     // contract the bottom sheet when a new hotspot is selected
-    if (prevHotspotAddress && prevHotspotAddress !== propsHotspot?.address) {
+    if (
+      propsHotspot?.address &&
+      prevHotspotAddress &&
+      prevHotspotAddress !== propsHotspot?.address &&
+      listIndex !== 0
+    ) {
       setListIndex(0)
       listRef.current?.snapTo(0)
       setSelectedOption(selectData[0].value)
       scrollViewRef.current?.scrollTo({ y: 0, x: 0, animated: false })
+    } else {
+      const currentHex = hotspot?.locationHex
+      if (
+        prevHexId === undefined ||
+        currentHex === undefined ||
+        prevHexId === currentHex
+      )
+        return
+      const shouldClose = currentHex === NO_FEATURES
+      if (shouldClose && listIndex !== -1) {
+        setListIndex(-1)
+        listRef.current?.close()
+      } else if (!shouldClose && listIndex !== 0) {
+        setListIndex(0)
+        listRef.current?.snapTo(0)
+        scrollViewRef.current?.scrollTo({ y: 0, x: 0, animated: false })
+      }
     }
-  }, [prevHotspotAddress, propsHotspot, selectData])
+  }, [
+    hotspot?.locationHex,
+    listIndex,
+    prevHexId,
+    prevHotspotAddress,
+    propsHotspot?.address,
+    selectData,
+  ])
 
   const makerName = useMemo(() => {
     if (hotspot?.payer === HELIUM_OLD_MAKER_ADDRESS) {
@@ -395,49 +429,73 @@ const HotspotDetails = ({
     return makers?.find((m) => m.address === hotspot?.payer)?.name
   }, [hotspot?.payer, makers])
 
+  const bottomSheetBackground = useCallback(() => <Box flex={1} />, [])
+
   if (!hotspot) return null
 
   return (
     <BottomSheet
       snapPoints={snapPoints}
       ref={listRef}
-      index={0}
       onChange={handleChange}
-      handleComponent={cardHandle}
+      handleComponent={null}
       animatedIndex={animatedPosition}
+      backgroundComponent={bottomSheetBackground}
     >
       <BottomSheetScrollView
         keyboardShouldPersistTaps="always"
         ref={scrollViewRef}
       >
-        <Box paddingBottom="l">
+        <Box paddingBottom="l" backgroundColor="white">
           <Box onLayout={handleHeaderLayout}>
+            <HotspotSheetHandle
+              hotspot={hotspot}
+              toggleSettings={toggleSettings}
+            />
             <Box marginBottom="lm" alignItems="flex-start" marginHorizontal="m">
-              <Text
-                variant="light"
-                fontSize={29}
-                lineHeight={31}
-                color={isHidden ? 'grayLightText' : 'black'}
-                numberOfLines={1}
-                width="100%"
-                adjustsFontSizeToFit
-              >
-                {formattedHotspotName[0]}
-              </Text>
-              <Box flexDirection="row" alignItems="center">
-                <Text
-                  variant="regular"
-                  fontSize={29}
-                  lineHeight={31}
-                  paddingRight="s"
-                  color={isHidden ? 'grayLightText' : 'black'}
-                  numberOfLines={1}
-                  adjustsFontSizeToFit
-                >
-                  {formattedHotspotName[1]}
-                </Text>
-                {isHidden && <VisibilityOff height={20} width={20} />}
-              </Box>
+              {hotspot.address === undefined ? (
+                <SkeletonPlaceholder>
+                  <SkeletonPlaceholder.Item
+                    height={29}
+                    width={250}
+                    borderRadius={spacing.s}
+                  />
+                  <SkeletonPlaceholder.Item
+                    height={29}
+                    marginTop={spacing.xs}
+                    width={150}
+                    borderRadius={spacing.s}
+                  />
+                </SkeletonPlaceholder>
+              ) : (
+                <>
+                  <Text
+                    variant="light"
+                    fontSize={29}
+                    lineHeight={31}
+                    color={isHidden ? 'grayLightText' : 'black'}
+                    numberOfLines={1}
+                    width="100%"
+                    adjustsFontSizeToFit
+                  >
+                    {formattedHotspotName[0]}
+                  </Text>
+                  <Box flexDirection="row" alignItems="center">
+                    <Text
+                      variant="regular"
+                      fontSize={29}
+                      lineHeight={31}
+                      paddingRight="s"
+                      color={isHidden ? 'grayLightText' : 'black'}
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                    >
+                      {formattedHotspotName[1]}
+                    </Text>
+                    {isHidden && <VisibilityOff height={20} width={20} />}
+                  </Box>
+                </>
+              )}
             </Box>
             <Box
               flexDirection="row"
@@ -445,32 +503,57 @@ const HotspotDetails = ({
               alignItems="center"
               marginBottom="m"
               marginLeft="m"
+              opacity={hotspot.address === undefined ? 0 : 100}
             >
               <Location
                 width={10}
                 height={10}
                 color={isHidden ? colors.grayLightText : colors.grayText}
               />
-              <Text
-                variant="body2"
-                color={isHidden ? 'grayLightText' : 'grayText'}
-                marginLeft="xs"
-                marginRight="m"
-              >
-                {`${hotspot?.geocode?.longCity}, ${hotspot?.geocode?.shortCountry}`}
-              </Text>
+              {hotspot?.geocode?.longCity === undefined ? (
+                <SkeletonPlaceholder>
+                  <SkeletonPlaceholder.Item
+                    height={14}
+                    width={105}
+                    marginLeft={spacing.xs}
+                    marginRight={spacing.s}
+                    borderRadius={spacing.s}
+                  />
+                </SkeletonPlaceholder>
+              ) : (
+                <Text
+                  variant="body2"
+                  color={isHidden ? 'grayLightText' : 'grayText'}
+                  marginLeft="xs"
+                  marginRight="m"
+                >
+                  {`${hotspot?.geocode?.longCity}, ${hotspot?.geocode?.shortCountry}`}
+                </Text>
+              )}
               <Signal
                 width={10}
                 height={10}
                 color={isHidden ? colors.grayLightText : colors.grayText}
               />
-              <Text
-                variant="body2"
-                color={isHidden ? 'grayLightText' : 'grayText'}
-                marginLeft="xs"
-              >
-                {t('generic.meters', { distance: hotspot?.elevation || 0 })}
-              </Text>
+              {hotspot?.elevation === undefined ? (
+                <SkeletonPlaceholder>
+                  <SkeletonPlaceholder.Item
+                    height={14}
+                    width={75}
+                    marginLeft={spacing.xs}
+                    marginRight={spacing.s}
+                    borderRadius={spacing.s}
+                  />
+                </SkeletonPlaceholder>
+              ) : (
+                <Text
+                  variant="body2"
+                  color={isHidden ? 'grayLightText' : 'grayText'}
+                  marginLeft="xs"
+                >
+                  {t('generic.meters', { distance: hotspot?.elevation || 0 })}
+                </Text>
+              )}
               {hotspot?.gain !== undefined && (
                 <Text
                   variant="body2"
@@ -513,15 +596,16 @@ const HotspotDetails = ({
               marginLeft="m"
               height={24}
             >
-              {hotspot?.status && (
-                <StatusBadge
-                  hitSlop={hitSlop}
-                  online={hotspot?.status?.online}
-                  syncStatus={hotspotSyncStatus?.status}
-                  onPress={handleToggleStatus}
-                  isDataOnly={dataOnly}
-                />
-              )}
+              {hotspot?.status !== undefined &&
+                hotspotSyncStatus?.status !== undefined && (
+                  <StatusBadge
+                    hitSlop={hitSlop}
+                    online={hotspot?.status?.online}
+                    syncStatus={hotspotSyncStatus?.status}
+                    onPress={handleToggleStatus}
+                    isDataOnly={dataOnly}
+                  />
+                )}
               {isRelayed && (
                 <TouchableOpacityBox
                   hitSlop={hitSlop}
@@ -585,6 +669,7 @@ const HotspotDetails = ({
           {selectedOption === 'overview' && (
             <HotspotDetailChart
               title={t('hotspot_details.reward_title')}
+              subtitle={t('hotspot_details.reward_subtitle')}
               number={rewardSum?.floatBalance.toFixed(2)}
               change={rewardsChange}
               data={rewardChartData}

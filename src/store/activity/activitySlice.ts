@@ -1,5 +1,5 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import { differenceBy, unionBy, uniqBy } from 'lodash'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { differenceBy, uniqBy } from 'lodash'
 import {
   Filters,
   FilterType,
@@ -140,8 +140,6 @@ const initialState: ActivityState = {
   requestMore: false,
 }
 
-export const ACTIVITY_FETCH_SIZE = 15
-
 export const fetchMoreTxns = createAsyncThunk<
   AccountTransactions,
   { filter: Exclude<FilterType, 'pending'> }
@@ -186,9 +184,6 @@ const activitySlice = createSlice({
     },
     requestMoreActivity: (state) => {
       state.requestMore = true
-    },
-    reset: () => {
-      return { ...initialState }
     },
     addPendingTransaction: (
       state,
@@ -238,7 +233,6 @@ const activitySlice = createSlice({
         }
         state.requestMore = false
         state.txns[filter].status = 'more_rejected'
-        console.error(`Request to fetchMoreTxns with ${filter} was rejected`)
       },
     )
     builder.addCase(
@@ -264,12 +258,11 @@ const activitySlice = createSlice({
         state.txns[filter].cursor = payload.cursor
 
         // remove any pending txns with the same hash
-        const nextPending = differenceBy(
+        state.txns.pending.data = differenceBy(
           state.txns.pending.data,
           nextTxns,
           'hash',
         )
-        state.txns.pending.data = nextPending
       },
     )
 
@@ -300,7 +293,6 @@ const activitySlice = createSlice({
           state.txns[filter].hasInitialLoad = true
         }
         state.txns[filter].status = 'rejected'
-        console.error(`Request to fetchTxnsHead with ${filter} was rejected`)
       },
     )
     builder.addCase(
@@ -316,31 +308,24 @@ const activitySlice = createSlice({
       ) => {
         state.txns[filter].status = 'fulfilled'
         state.txns[filter].hasInitialLoad = true
-
         if (filter === 'pending') {
           const pending = payload as HttpPendingTransaction[]
-          const filtered = pending.filter((txn) => txn.status === 'pending')
-          const joined = unionBy(filtered, state.txns.pending.data, 'hash')
-          state.txns.pending.data = joined
+          state.txns.pending.data = pending.filter(
+            (txn) => txn.status === 'pending',
+          )
         } else {
           const txns = payload as AccountTransactions
-          if (state.txns[filter].cursor === undefined) {
-            state.txns[filter].cursor = txns.cursor
-          }
+          state.txns[filter].cursor = txns.cursor
 
-          const nextTxns = uniqBy(
-            [...txns.data, ...state.txns[filter].data],
-            (t) => t.hash,
-          ).sort((a, b) => b.time - a.time)
+          const nextTxns = txns.data.sort((a, b) => b.time - a.time)
           state.txns[filter].data = nextTxns
 
           // remove any pending txns with the same hash
-          const nextPending = differenceBy(
+          state.txns.pending.data = differenceBy(
             state.txns.pending.data,
             nextTxns,
             'hash',
           )
-          state.txns.pending.data = nextPending
         }
       },
     )

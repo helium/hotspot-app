@@ -5,19 +5,17 @@ import { useSelector } from 'react-redux'
 import Qr from '@assets/images/qr.svg'
 import LockIcon from '@assets/images/lockIconRed.svg'
 import { BoxProps } from '@shopify/restyle'
-import { Insets } from 'react-native'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
-import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { Theme } from '../../../theme/theme'
 import { RootState } from '../../../store/rootReducer'
+import Button from '../../../components/Button'
 
 type Props = BoxProps<Theme> & {
   handleScanPressed: () => void
   hideTitle?: boolean
 }
 
-const hitSlop = { top: 12, bottom: 12, left: 24, right: 24 } as Insets
 const WalletHeader = ({ handleScanPressed, hideTitle, ...boxProps }: Props) => {
   const { t } = useTranslation()
   const isDeployModeEnabled = useSelector(
@@ -49,13 +47,7 @@ const WalletHeader = ({ handleScanPressed, hideTitle, ...boxProps }: Props) => {
       )}
 
       <Box flex={1} flexDirection="row" justifyContent="flex-end">
-        <TouchableOpacityBox
-          onPress={handleScanPressed}
-          padding="s"
-          hitSlop={hitSlop}
-        >
-          <Qr width={22} height={22} color="white" />
-        </TouchableOpacityBox>
+        <Button icon={<Qr color="white" />} onPress={handleScanPressed} />
       </Box>
     </Box>
   )

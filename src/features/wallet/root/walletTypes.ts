@@ -29,8 +29,6 @@ export const Filters = {
   pending: [],
 } as Record<FilterType, string[]>
 
-export type ActivityViewState = 'undetermined' | 'no_activity' | 'activity'
-
 export const TxnTypeKeys = [
   'rewards_v1',
   'rewards_v2',
