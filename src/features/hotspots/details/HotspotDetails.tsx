@@ -304,12 +304,6 @@ const HotspotDetails = ({
     }
   }, [showOKCancelAlert])
 
-  const cardHandle = useCallback(() => {
-    return (
-      <HotspotSheetHandle hotspot={hotspot} toggleSettings={toggleSettings} />
-    )
-  }, [hotspot, toggleSettings])
-
   const handleHeaderLayout = (event: LayoutChangeEvent) => {
     const nextSnapPoints = [event.nativeEvent.layout.height, hp(55)]
     onLayoutSnapPoints?.({
@@ -433,7 +427,7 @@ const HotspotDetails = ({
       snapPoints={snapPoints}
       ref={listRef}
       onChange={handleChange}
-      handleComponent={cardHandle}
+      handleComponent={null}
       animatedIndex={animatedPosition}
     >
       <BottomSheetScrollView
@@ -442,6 +436,10 @@ const HotspotDetails = ({
       >
         <Box paddingBottom="l">
           <Box onLayout={handleHeaderLayout}>
+            <HotspotSheetHandle
+              hotspot={hotspot}
+              toggleSettings={toggleSettings}
+            />
             <Box marginBottom="lm" alignItems="flex-start" marginHorizontal="m">
               {hotspot.address === undefined ? (
                 <SkeletonPlaceholder>
