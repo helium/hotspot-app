@@ -626,15 +626,15 @@ export default {
       validator_plural: '{{count}} Validators',
       validator: 'Validator',
       reward_hotspot_summary:
-        'Your Hotspot has earned\n{{hntAmount}} in the past 24 hours.',
+        'Your Hotspot earned\n{{hntAmount}} on {{date}} (UTC).',
       reward_hotspot_summary_plural:
-        'Your {{count}} Hotspots have earned\n{{hntAmount}} in the past 24 hours.',
+        'Your {{count}} Hotspots earned\n{{hntAmount}} on {{date}} (UTC).',
       reward_validator_summary:
-        'Your Validator has earned\n{{hntAmount}} in the past 24 hours.',
+        'Your Validator earned\n{{hntAmount}} on {{date}} (UTC).',
       reward_validator_summary_plural:
-        'Your {{count}} Validators have earned\n{{hntAmount}} in the past 24 hours.',
+        'Your {{count}} Validators earned\n{{hntAmount}} on {{date}} (UTC).',
       reward_hotspot_and_validator_summary:
-        'Your {{hotspot}} and \n{{validator}} have earned\n{{hntAmount}} in the past 24 hours.',
+        'Your {{hotspot}} and \n{{validator}} earned\n{{hntAmount}} on {{date}} (UTC).',
       your_hotspots: 'Your Hotspots',
       filter: {
         new: 'Newest Hotspots',

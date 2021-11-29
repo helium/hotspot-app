@@ -588,9 +588,6 @@ export default {
     owned: {
       title: 'Hotspot',
       title_no_hotspots: 'Hotspot',
-      reward_summary: 'Hotspotは過去24時間で\n{{hntAmount}}を獲得しました。',
-      reward_summary_plural:
-        '{{count}}個のHotspotは過去24時間で\n{{hntAmount}}を獲得しました。',
       your_hotspots: 'Hotspot',
       filter: {
         new: '最新のHotspot',
