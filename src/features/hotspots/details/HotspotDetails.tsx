@@ -139,6 +139,15 @@ const HotspotDetails = ({
     }
   }, [hotspot, visible])
 
+  useEffect(() => {
+    if (visible || listIndex !== 1) return
+
+    setListIndex(0)
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore bottom sheet type bug https://github.com/gorhom/react-native-bottom-sheet/issues/708
+    listRef.current?.snapTo(0)
+  }, [listIndex, visible])
+
   const rewardChartData = useMemo(() => {
     if (!visible) return []
 
@@ -420,6 +429,8 @@ const HotspotDetails = ({
     return makers?.find((m) => m.address === hotspot?.payer)?.name
   }, [hotspot?.payer, makers])
 
+  const bottomSheetBackground = useCallback(() => <Box flex={1} />, [])
+
   if (!hotspot) return null
 
   return (
@@ -429,12 +440,13 @@ const HotspotDetails = ({
       onChange={handleChange}
       handleComponent={null}
       animatedIndex={animatedPosition}
+      backgroundComponent={bottomSheetBackground}
     >
       <BottomSheetScrollView
         keyboardShouldPersistTaps="always"
         ref={scrollViewRef}
       >
-        <Box paddingBottom="l">
+        <Box paddingBottom="l" backgroundColor="white">
           <Box onLayout={handleHeaderLayout}>
             <HotspotSheetHandle
               hotspot={hotspot}
