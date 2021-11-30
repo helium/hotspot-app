@@ -43,7 +43,7 @@
     "@helium/currency": "^3.45.0",
     "@helium/http": "^3.49.0",
     "@helium/proto-ble": "^3.37.0",
-    "@helium/react-native-sdk": "file:.yalc/@helium/react-native-sdk",
+    "@helium/react-native-sdk": "^0.1.2",
     "@helium/transactions": "^3.46.0",
     "@react-native-community/art": "^1.2.0",
     "@react-native-community/async-storage": "^1.12.1",
