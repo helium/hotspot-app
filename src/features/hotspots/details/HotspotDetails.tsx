@@ -429,7 +429,10 @@ const HotspotDetails = ({
     return makers?.find((m) => m.address === hotspot?.payer)?.name
   }, [hotspot?.payer, makers])
 
-  const bottomSheetBackground = useCallback(() => <Box flex={1} />, [])
+  const bottomSheetBackground = useCallback(
+    () => <Box flex={1} backgroundColor="white" />,
+    [],
+  )
 
   if (!hotspot) return null
 
@@ -445,6 +448,7 @@ const HotspotDetails = ({
       <BottomSheetScrollView
         keyboardShouldPersistTaps="always"
         ref={scrollViewRef}
+        style={{ backgroundColor: 'white' }}
       >
         <Box paddingBottom="l" backgroundColor="white">
           <Box onLayout={handleHeaderLayout}>
