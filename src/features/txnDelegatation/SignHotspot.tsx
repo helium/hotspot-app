@@ -22,7 +22,6 @@ const SignHotspot = () => {
   } = useRoute<Route>()
   const navigation = useNavigation<RootNavigationProp>()
   const { t } = useTranslation()
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [validated, setValidated] = useState<boolean>()
 
   const parsedToken = useMemo(() => {
