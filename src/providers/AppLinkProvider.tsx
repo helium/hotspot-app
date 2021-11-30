@@ -113,7 +113,12 @@ const useAppLink = () => {
 
   const navToAppLink = useCallback(
     (
-      record: AppLink | AppLinkPayment | AppLinkLocation | LinkWalletRequest,
+      record:
+        | AppLink
+        | AppLinkPayment
+        | AppLinkLocation
+        | LinkWalletRequest
+        | SignHotspotRequest,
     ) => {
       if (isLocked || !isBackedUp) {
         setUnhandledLink(record as AppLink)
