@@ -174,7 +174,7 @@ const SignHotspot = () => {
           </>
         )}
         <Box flexDirection="row">
-          {locationTxn?.gain && (
+          {locationTxn?.gain !== undefined && (
             <Box marginEnd="xxl">
               <Text variant="regular" fontSize={16} color="purpleText">
                 {t('signHotspot.gain')}
@@ -189,7 +189,7 @@ const SignHotspot = () => {
               </Text>
             </Box>
           )}
-          {locationTxn?.elevation && (
+          {locationTxn?.elevation !== undefined && (
             <Box>
               <Text variant="regular" fontSize={16} color="purpleText">
                 {t('signHotspot.elevation')}
