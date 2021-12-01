@@ -9,8 +9,6 @@ import HomeNav from './main/HomeNavigator'
 import { useColors } from '../theme/themeHooks'
 import SendScreen from '../features/wallet/send/SendScreen'
 import SendCompleteScreen from '../features/wallet/send/SendCompleteScreen'
-import LinkWallet from '../features/txnDelegatation/LinkWallet'
-import SignHotspot from '../features/txnDelegatation/SignHotspot'
 
 const OnboardingStack = createStackNavigator()
 const MainStack = createStackNavigator()
@@ -35,7 +33,6 @@ const NavigationRoot = () => {
             component={Onboarding}
             options={{ gestureEnabled: false }}
           />
-          {/* TODO: Handle when someone tries to link an account or sign a txn and they aren't authenticated in the app */}
         </OnboardingStack.Navigator>
       )
 
@@ -47,8 +44,6 @@ const NavigationRoot = () => {
         <MainStack.Screen name="MainTab" component={HomeNav} />
         <MainStack.Screen name="Send" component={SendScreen} />
         <MainStack.Screen name="SendComplete" component={SendCompleteScreen} />
-        <MainStack.Screen name="LinkWallet" component={LinkWallet} />
-        <MainStack.Screen name="SignHotspot" component={SignHotspot} />
       </MainStack.Navigator>
     )
   }, [isBackedUp])
