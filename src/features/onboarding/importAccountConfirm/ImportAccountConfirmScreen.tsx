@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { StyleSheet } from 'react-native'
 import Lock from '@assets/images/lock_ico.svg'
-import { upperFirst } from 'lodash'
+import { upperCase } from 'lodash'
 import Carousel, { Pagination } from 'react-native-snap-carousel'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -76,7 +76,7 @@ const ImportAccountConfirmScreen = () => {
             index + 1
           }. `}</Text>
           <Text variant="h1" color="purpleDark" maxFontSizeMultiplier={1}>
-            {upperFirst(item)}
+            {upperCase(item)}
           </Text>
         </Card>
       </TouchableOpacityBox>

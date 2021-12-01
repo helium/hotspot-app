@@ -6,7 +6,7 @@ import {
   take,
   reject,
   sampleSize,
-  upperFirst,
+  upperCase,
 } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
@@ -126,7 +126,7 @@ const AccountEnterPassphraseScreen = () => {
           {`${index + 1}. `}
         </Text>
         <Text variant="h1" color="purpleDark" maxFontSizeMultiplier={1}>
-          {step === index && word ? upperFirst(word) : '?????'}
+          {step === index && word ? upperCase(word) : '?????'}
         </Text>
       </Card>
     )

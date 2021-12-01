@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useCallback, useRef, useMemo } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import { useAsync } from 'react-async-hook'
 import Carousel, { Pagination } from 'react-native-snap-carousel'
-import { upperFirst } from 'lodash'
+import { upperCase } from 'lodash'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import { OnboardingNavigationProp } from '../onboardingTypes'
@@ -20,26 +20,33 @@ const AccountCreatePassphraseScreen = () => {
   const { result: mnemonic } = useAsync(getMnemonic, [])
   const navigation = useNavigation<OnboardingNavigationProp>()
   const [wordIndex, setWordIndex] = useState(0)
-  const [disabled, setDisabled] = useState(true)
-  const [viewedWords, setViewedWords] = useState(new Array(12).fill(false))
   const colors = useColors()
+  const carouselRef = useRef<Carousel<string>>(null)
 
   const onSnapToItem = (index: number) => {
     setWordIndex(index)
-    setViewedWords(
-      Object.assign(new Array(12).fill(false), viewedWords, {
-        0: true,
-        [index]: true,
-      }),
-    )
   }
 
-  useEffect(() => {
-    const viewedAll = viewedWords.every((w) => w)
-    if (!viewedAll && !__DEV__) return
+  const snapToNext = useCallback(() => {
+    carouselRef?.current?.snapToNext()
+  }, [])
 
-    setDisabled(false)
-  }, [viewedWords])
+  const snapToPrevious = useCallback(() => {
+    carouselRef?.current?.snapToPrev()
+  }, [])
+
+  const onLastWord = useMemo(() => wordIndex + 1 === mnemonic?.words.length, [
+    mnemonic?.words.length,
+    wordIndex,
+  ])
+
+  const handleNext = useCallback(() => {
+    if (onLastWord) {
+      navigation.push('AccountEnterPassphraseScreen')
+    } else {
+      snapToNext()
+    }
+  }, [navigation, snapToNext, onLastWord])
 
   const renderItem = ({ item, index }: { item: string; index: number }) => (
     <Card
@@ -56,7 +63,7 @@ const AccountCreatePassphraseScreen = () => {
         index + 1
       }. `}</Text>
       <Text variant="h1" color="purpleDark" maxFontSizeMultiplier={1}>
-        {upperFirst(item)}
+        {upperCase(item)}
       </Text>
     </Card>
   )
@@ -79,6 +86,7 @@ const AccountCreatePassphraseScreen = () => {
         marginVertical="l"
       >
         <Carousel
+          ref={carouselRef}
           layout="default"
           vertical={false}
           data={mnemonic?.words || []}
@@ -86,7 +94,8 @@ const AccountCreatePassphraseScreen = () => {
           sliderWidth={wp(100)}
           itemWidth={wp(90)}
           inactiveSlideScale={1}
-          onSnapToItem={(i) => onSnapToItem(i)}
+          scrollEnabled={false}
+          onSnapToItem={onSnapToItem}
         />
       </Box>
       <Pagination
@@ -103,12 +112,19 @@ const AccountCreatePassphraseScreen = () => {
       />
       <Box flex={1} />
       <Button
+        disabled={wordIndex === 0}
         marginBottom="m"
         mode="contained"
-        disabled={disabled}
         variant="primary"
-        onPress={() => navigation.push('AccountEnterPassphraseScreen')}
-        title={t('account_setup.passphrase.next')}
+        onPress={snapToPrevious}
+        title="Previous Word"
+      />
+      <Button
+        marginBottom="m"
+        mode="contained"
+        variant="primary"
+        onPress={handleNext}
+        title={onLastWord ? t('account_setup.passphrase.next') : 'Next Word'}
       />
     </BackScreen>
   )

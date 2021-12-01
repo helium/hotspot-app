@@ -1,5 +1,5 @@
 import React from 'react'
-import { upperFirst } from 'lodash'
+import { upperCase } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import Carousel from 'react-native-snap-carousel'
 import { useAsync } from 'react-async-hook'
@@ -33,7 +33,7 @@ const RevealWordsScreen = () => {
         index + 1
       }. `}</Text>
       <Text variant="h1" color="purpleDark" maxFontSizeMultiplier={1}>
-        {upperFirst(item)}
+        {upperCase(item)}
       </Text>
     </Card>
   )
