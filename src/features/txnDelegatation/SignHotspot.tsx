@@ -14,6 +14,7 @@ import {
 } from '../../navigation/main/tabTypes'
 import { getKeypair, verifyAppLinkAuthToken } from '../../utils/secureAccount'
 import { getStakingSignedTransaction } from '../../utils/stakingClient'
+import * as Logger from '../../utils/logger'
 
 type Route = RouteProp<RootStackParamList, 'SignHotspot'>
 const SignHotspot = () => {
@@ -104,8 +105,7 @@ const SignHotspot = () => {
 
       callback(responseParams)
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e)
+      Logger.error(e)
     }
   }, [callback, gatewayTxn, locationTxn])
 
