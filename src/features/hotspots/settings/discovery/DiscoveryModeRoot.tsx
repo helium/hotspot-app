@@ -46,6 +46,9 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
     },
   )
   const { showOKAlert } = useAlert()
+  const { enabled, message } = useSelector(
+    (state: RootState) => state.features.discovery,
+  )
   const recentDiscoveryInfo = useSelector(
     (state: RootState) => state.discovery.recentDiscoveryInfos[hotspot.address],
     isEqual,
@@ -202,6 +205,8 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
           onClose={onClose}
           recentDiscoveryInfo={recentDiscoveryInfo}
           error={infoLoading === 'rejected'}
+          enabled={enabled}
+          message={message}
         />
       )
     case 'results':

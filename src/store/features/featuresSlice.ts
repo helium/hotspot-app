@@ -12,6 +12,10 @@ export type FeaturesState = {
   proxyEnabled: boolean
   fetchFeaturesFailed: boolean
   checklistEnabled: boolean
+  discovery: {
+    enabled: boolean
+    message: string
+  }
 }
 
 const initialState: FeaturesState = {
@@ -25,6 +29,7 @@ const initialState: FeaturesState = {
   proxyEnabled: false,
   fetchFeaturesFailed: false,
   checklistEnabled: false,
+  discovery: { enabled: false, message: '' },
 }
 
 // if this call fails we load the app with default settings and retry every 30 seconds
@@ -54,6 +59,7 @@ const featuresSlice = createSlice({
       }
       state.featuresLoaded = true
       state.fetchFeaturesFailed = false
+      state.discovery = payload.discovery
     })
     builder.addCase(fetchFeatures.rejected, (state) => {
       state.featuresLoaded = true

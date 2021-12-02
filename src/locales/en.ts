@@ -1159,7 +1159,7 @@ export default {
       previous_sessions: 'Previous Sessions',
       last_30_days: '(Last 30 Days)',
       start_session: 'Begin New Session',
-      no_sessions: 'You’ve run out of sessions for today.\nTry again tomorrow.',
+      no_sessions: "You've run out of sessions for today.\nTry again tomorrow.",
       responses: '{{count}} response',
       responses_plural: '{{count}} responses',
       initiation_error: 'Unable to Initiate Session',

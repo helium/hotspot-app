@@ -13,6 +13,7 @@ type Props = {
   requestsRemaining: number
   onBeginNew: () => void
   onRequestSelected: (request: DiscoveryRequest) => void
+  enabled: boolean
 }
 type ItemType = { item: DiscoveryRequest; index: number }
 const DiscoveryModeSessionInfo = ({
@@ -20,6 +21,7 @@ const DiscoveryModeSessionInfo = ({
   requestsRemaining,
   onBeginNew,
   onRequestSelected,
+  enabled,
 }: Props) => {
   const { t } = useTranslation()
   const [canRequest, setCanRequest] = useState<boolean>()
@@ -85,7 +87,7 @@ const DiscoveryModeSessionInfo = ({
         keyExtractor={keyExtractor}
         renderItem={renderItem}
       />
-      {canRequest === true && (
+      {canRequest === true && enabled && (
         <Button
           marginTop="m"
           variant="primary"
@@ -94,7 +96,7 @@ const DiscoveryModeSessionInfo = ({
           title={t('discovery.begin.start_session')}
         />
       )}
-      {canRequest === false && (
+      {canRequest === false && enabled && (
         <Text variant="body2" textAlign="center" color="redMain" marginTop="m">
           {t('discovery.begin.no_sessions')}
         </Text>

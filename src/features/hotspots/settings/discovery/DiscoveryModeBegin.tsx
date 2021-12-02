@@ -2,10 +2,11 @@ import React, { memo, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ActivityIndicator } from 'react-native'
 import { isEqual } from 'lodash'
+import DiscoveryIcon from '@assets/images/discovery_mode_icon.svg'
+import ConstructionIcon from '@assets/images/construction.svg'
 import Text from '../../../../components/Text'
 import { hp } from '../../../../utils/layout'
 import Box from '../../../../components/Box'
-import DiscoveryIcon from '../../../../assets/images/discovery_mode_icon.svg'
 import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
 import Close from '../../../../assets/images/closeModal.svg'
 import {
@@ -23,6 +24,8 @@ type Props = {
   onBeginNew: () => void
   onRequestSelected: (request: DiscoveryRequest) => void
   error: boolean
+  enabled: boolean
+  message: string
 }
 
 const DiscoveryModeBegin = ({
@@ -31,6 +34,8 @@ const DiscoveryModeBegin = ({
   onBeginNew,
   onRequestSelected,
   error,
+  enabled,
+  message,
 }: Props) => {
   const { t } = useTranslation()
   const [recentRequests, setRecentRequests] = useState(
@@ -97,7 +102,6 @@ const DiscoveryModeBegin = ({
           </TouchableOpacityBox>
         </Box>
         <Box
-          width="100%"
           paddingHorizontal="l"
           paddingBottom={{ smallPhone: 'm', phone: 'lx' }}
           justifyContent="space-between"
@@ -124,12 +128,32 @@ const DiscoveryModeBegin = ({
         </Box>
       </Box>
       <Box margin="l" marginTop="m" flex={1}>
+        {message && (
+          <Box
+            flexDirection="row"
+            alignItems="center"
+            marginRight="xl"
+            marginBottom="l"
+          >
+            <ConstructionIcon height={32} width={32} />
+            <Text
+              marginLeft="m"
+              variant="regular"
+              fontSize={14}
+              color="black"
+              maxFontSizeMultiplier={1.2}
+            >
+              {message.replace(/\\n/g, '\n')}
+            </Text>
+          </Box>
+        )}
         {recentRequests && (
           <DiscoveryModeSessionInfo
             onBeginNew={onBeginNew}
             onRequestSelected={onRequestSelected}
             requestsRemaining={recentDiscoveryInfo?.requestsRemaining || 0}
             requests={recentRequests}
+            enabled={enabled}
           />
         )}
         {!recentRequests && !error && (
