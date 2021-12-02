@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import { useAsync } from 'react-async-hook'
@@ -20,53 +20,52 @@ const AccountCreatePassphraseScreen = () => {
   const { result: mnemonic } = useAsync(getMnemonic, [])
   const navigation = useNavigation<OnboardingNavigationProp>()
   const [wordIndex, setWordIndex] = useState(0)
+  const [disabled, setDisabled] = useState(true)
+  const [viewedWords, setViewedWords] = useState(new Array(12).fill(false))
   const colors = useColors()
-  const carouselRef = useRef<Carousel<string>>(null)
 
   const onSnapToItem = (index: number) => {
     setWordIndex(index)
+    setViewedWords(
+      Object.assign(new Array(12).fill(false), viewedWords, {
+        0: true,
+        [index]: true,
+      }),
+    )
   }
 
-  const snapToNext = useCallback(() => {
-    carouselRef?.current?.snapToNext()
-  }, [])
+  useEffect(() => {
+    const viewedAll = viewedWords.every((w) => w)
+    if (!viewedAll && !__DEV__) return
 
-  const snapToPrevious = useCallback(() => {
-    carouselRef?.current?.snapToPrev()
-  }, [])
+    setDisabled(false)
+  }, [viewedWords])
 
-  const onLastWord = useMemo(() => wordIndex + 1 === mnemonic?.words.length, [
-    mnemonic?.words.length,
-    wordIndex,
-  ])
-
-  const handleNext = useCallback(() => {
-    if (onLastWord) {
-      navigation.push('AccountEnterPassphraseScreen')
-    } else {
-      snapToNext()
-    }
-  }, [navigation, snapToNext, onLastWord])
-
-  const renderItem = ({ item, index }: { item: string; index: number }) => (
-    <Card
-      marginHorizontal="s"
-      variant="elevated"
-      flex={1}
-      overflow="hidden"
-      backgroundColor="white"
-      padding="l"
-      alignItems="center"
-      flexDirection="row"
-    >
-      <Text variant="h1" color="purpleLight" maxFontSizeMultiplier={1}>{`${
-        index + 1
-      }. `}</Text>
-      <Text variant="h1" color="purpleDark" maxFontSizeMultiplier={1}>
-        {upperCase(item)}
-      </Text>
-    </Card>
-  )
+  const renderItem = ({ item, index }: { item: string; index: number }) => {
+    const isFirst = index === 0
+    const isLast = index + 1 === mnemonic?.words.length
+    return (
+      <Card
+        marginHorizontal="s"
+        marginLeft={isFirst ? 'l' : undefined}
+        marginRight={isLast ? 'l' : undefined}
+        variant="elevated"
+        flex={1}
+        overflow="hidden"
+        backgroundColor="white"
+        padding="l"
+        alignItems="center"
+        flexDirection="row"
+      >
+        <Text variant="h1" color="purpleLight" maxFontSizeMultiplier={1}>{`${
+          index + 1
+        }. `}</Text>
+        <Text variant="h1" color="purpleDark" maxFontSizeMultiplier={1}>
+          {upperCase(item)}
+        </Text>
+      </Card>
+    )
+  }
 
   return (
     <BackScreen flex={1} backgroundColor="primaryBackground" paddingTop="none">
@@ -86,7 +85,6 @@ const AccountCreatePassphraseScreen = () => {
         marginVertical="l"
       >
         <Carousel
-          ref={carouselRef}
           layout="default"
           vertical={false}
           data={mnemonic?.words || []}
@@ -94,8 +92,11 @@ const AccountCreatePassphraseScreen = () => {
           sliderWidth={wp(100)}
           itemWidth={wp(90)}
           inactiveSlideScale={1}
-          scrollEnabled={false}
-          onSnapToItem={onSnapToItem}
+          onScrollIndexChanged={onSnapToItem}
+          useExperimentalSnap
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore this is a new beta prop and enforces only scrolling one item at a time
+          disableIntervalMomentum
         />
       </Box>
       <Pagination
@@ -112,19 +113,12 @@ const AccountCreatePassphraseScreen = () => {
       />
       <Box flex={1} />
       <Button
-        disabled={wordIndex === 0}
         marginBottom="m"
         mode="contained"
+        disabled={disabled}
         variant="primary"
-        onPress={snapToPrevious}
-        title="Previous Word"
-      />
-      <Button
-        marginBottom="m"
-        mode="contained"
-        variant="primary"
-        onPress={handleNext}
-        title={onLastWord ? t('account_setup.passphrase.next') : 'Next Word'}
+        onPress={() => navigation.push('AccountEnterPassphraseScreen')}
+        title={t('account_setup.passphrase.next')}
       />
     </BackScreen>
   )

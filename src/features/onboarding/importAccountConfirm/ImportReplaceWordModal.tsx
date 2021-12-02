@@ -77,6 +77,7 @@ const ImportReplaceWordModal = ({
             })}
             onChangeText={setWord}
             value={word}
+            autoCapitalize="characters"
             keyboardAppearance="dark"
             autoCorrect={false}
             autoCompleteType="off"

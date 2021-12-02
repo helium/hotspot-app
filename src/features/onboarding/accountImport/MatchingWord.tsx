@@ -1,4 +1,4 @@
-import { capitalize } from 'lodash'
+import { upperCase } from 'lodash'
 import React from 'react'
 import TouchableOpacityBox, {
   TouchableOpacityBoxProps,
@@ -30,14 +30,14 @@ const MatchingWord = ({ fullWord, matchingText, onPress }: Props) => (
       alignContent="center"
       color="white"
     >
-      {capitalize(matchingText)}
+      {upperCase(matchingText)}
       <Text
         variant="body1Medium"
         alignContent="center"
         justifyContent="center"
         color="grayMain"
       >
-        {fullWord.slice(matchingText.length)}
+        {upperCase(fullWord.slice(matchingText.length))}
       </Text>
     </Text>
   </TouchableOpacityBox>
