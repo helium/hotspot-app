@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react'
 import { Linking } from 'react-native'
 import Clipboard from '@react-native-community/clipboard'
@@ -5,21 +6,16 @@ import { useTranslation } from 'react-i18next'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import Toast from 'react-native-simple-toast'
 import Text from './Text'
-import { Colors, Spacing, TextVariant } from '../theme/theme'
 import TouchableOpacityBox from './TouchableOpacityBox'
 import { EXPLORER_BASE_URL } from '../utils/config'
 import useHaptic from '../utils/useHaptic'
 
-type Props = {
+type Props = React.ComponentProps<typeof Text> & {
   address: string | undefined
-  color?: Colors
-  variant?: TextVariant
-  fontSize?: number
-  ellipsizeMode?: 'head' | 'middle' | 'tail'
   maxWidth?: number
   text?: string
   clickToCopy?: boolean
-  padding?: Spacing
+  type?: 'account' | 'txn'
 }
 
 type AddressOption = { label: string; action?: () => void }
@@ -33,7 +29,8 @@ const Address = ({
   ellipsizeMode = 'middle',
   maxWidth,
   clickToCopy,
-  padding,
+  type = 'account',
+  ...rest
 }: Props) => {
   const { t } = useTranslation()
   const { triggerNavHaptic } = useHaptic()
@@ -49,7 +46,7 @@ const Address = ({
 
   const goToExplorer = () => {
     if (address) {
-      Linking.openURL(`${EXPLORER_BASE_URL}/accounts/${address}`)
+      Linking.openURL(`${EXPLORER_BASE_URL}/${type}s/${address}`)
     }
   }
 
@@ -61,7 +58,7 @@ const Address = ({
 
   const opts: AddressOption[] = [
     {
-      label: `${t('generic.copy')} ${t('generic.address')}`,
+      label: `${t('generic.copy')} ${t(`copyAddress.${type}`)}`,
       action: copyAddress,
     },
     {
@@ -103,7 +100,7 @@ const Address = ({
           color={color}
           numberOfLines={1}
           ellipsizeMode={ellipsizeMode}
-          padding={padding}
+          {...rest}
         >
           {text || address}
         </Text>

@@ -1273,4 +1273,8 @@ export default {
     owner: 'Owner:',
     maker: 'Maker',
   },
+  copyAddress: {
+    account: 'Address',
+    txn: 'Transaction Hash',
+  },
 }
