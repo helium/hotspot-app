@@ -1,13 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
-import {
-  random,
-  shuffle,
-  uniq,
-  take,
-  reject,
-  sampleSize,
-  upperCase,
-} from 'lodash'
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
+import { shuffle, uniq, take, reject, sampleSize, upperCase } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
 import Carousel from 'react-native-snap-carousel'
@@ -25,10 +17,6 @@ import sleep from '../../../utils/sleep'
 import { wp } from '../../../utils/layout'
 import useHaptic from '../../../utils/useHaptic'
 import animateTransition from '../../../utils/animateTransition'
-
-const testIndices = __DEV__
-  ? [0, 1, 2]
-  : [random(0, 3), random(4, 7), random(8, 11)]
 
 const generateChallengeWords = (targetWord: string) =>
   shuffle(
@@ -52,7 +40,7 @@ const AccountEnterPassphraseScreen = () => {
 
   const findTargetWord = useCallback(
     (pos: number, nextMnemonic?: string[] | undefined) => {
-      return (nextMnemonic || mnemonic)[testIndices[pos]]
+      return (nextMnemonic || mnemonic)[pos]
     },
     [mnemonic],
   )
@@ -76,7 +64,7 @@ const AccountEnterPassphraseScreen = () => {
 
   const nextStep = () => {
     setTimeout(() => {
-      if (step === 2) {
+      if (step === mnemonic.length - 1) {
         navigation.push('AccountCreatePinScreen')
       } else {
         carouselRef.current?.snapToItem(step + 1)
@@ -109,6 +97,8 @@ const AccountEnterPassphraseScreen = () => {
     return unsubscribe
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigation])
+
+  const data = useMemo(() => mnemonic.map((_, index) => index), [mnemonic])
 
   const renderItem = ({ item: index }: { item: CarouselItemData }) => {
     return (
@@ -152,7 +142,7 @@ const AccountEnterPassphraseScreen = () => {
         numberOfLines={1}
         adjustsFontSizeToFit
         values={{
-          ordinal: t(`ordinals.${testIndices[step]}`),
+          ordinal: t(`ordinals.${step}`),
         }}
         variant="subtitle"
         i18nKey="account_setup.confirm.subtitle"
@@ -168,7 +158,7 @@ const AccountEnterPassphraseScreen = () => {
           ref={carouselRef}
           layout="default"
           vertical={false}
-          data={testIndices}
+          data={data}
           renderItem={renderItem}
           sliderWidth={wp(100)}
           itemWidth={wp(90)}
