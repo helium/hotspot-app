@@ -40,7 +40,7 @@ const accountConfig = {
 const activityConfig = {
   key: activitySlice.name,
   storage: AsyncStorage,
-  blacklist: ['filter'],
+  blacklist: ['filter', 'detailTxn', 'requestMore'],
 }
 
 const rootReducer = combineReducers({
