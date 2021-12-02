@@ -104,27 +104,19 @@ const DiscoveryModeBegin = ({
         <Box
           paddingHorizontal="l"
           paddingBottom={{ smallPhone: 'm', phone: 'lx' }}
-          justifyContent="space-between"
           flex={1}
         >
-          <Text variant="medium" fontSize={24} maxFontSizeMultiplier={1}>
+          <Text
+            variant="medium"
+            fontSize={24}
+            maxFontSizeMultiplier={1}
+            marginBottom="l"
+          >
             {t('discovery.begin.title')}
           </Text>
           <Text variant="regular" fontSize={16} maxFontSizeMultiplier={1.1}>
             {subtitle}
           </Text>
-          {recentRequests && (
-            <Text
-              variant="regular"
-              fontSize={14}
-              color="white"
-              maxFontSizeMultiplier={1.2}
-            >
-              {t('discovery.begin.body', {
-                requestsPerDay: recentDiscoveryInfo?.requestsPerDay,
-              })}
-            </Text>
-          )}
         </Box>
       </Box>
       <Box margin="l" marginTop="m" flex={1}>

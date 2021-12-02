@@ -1153,7 +1153,7 @@ export default {
     begin: {
       title: 'Discovery Mode',
       subtitle:
-        'Find out which Hotspots can hear you by sending radio packets for {{duration}}.',
+        'Find out which Hotspots can hear you when you upgrade an antenna or change elevation.',
       body:
         'Discovery Mode is free to use for now, up to {{requestsPerDay}} sessions per day.',
       previous_sessions: 'Previous Sessions',
