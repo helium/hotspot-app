@@ -232,7 +232,6 @@ const App = () => {
           <BluetoothProvider>
             <ConnectedHotspotProvider>
               <SafeAreaProvider>
-                {/* TODO: Will need to adapt status bar for light/dark modes */}
                 {Platform.OS === 'ios' && (
                   <StatusBar barStyle="light-content" />
                 )}
