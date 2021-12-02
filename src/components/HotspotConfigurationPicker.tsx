@@ -45,8 +45,8 @@ function elevationIntToString(elevationInt?: number): string {
 
 type Props = {
   onAntennaUpdated: (antenna: MakerAntenna) => void
-  onGainUpdated: (gain: number | undefined) => void
-  onElevationUpdated: (elevation: number | undefined) => void
+  onGainUpdated: (gain: number) => void
+  onElevationUpdated: (elevation: number) => void
   selectedAntenna?: MakerAntenna
   outline?: boolean
   gain?: number
@@ -128,6 +128,8 @@ const HotspotConfigurationPicker = ({
     }
     const gainStr = gainFloatToString(gainFloat)
     setTmpGain(gainStr)
+
+    if (!gainFloat) return
     onGainUpdated(gainFloat)
   }
   const onChangeElevation = (text: string) => {
@@ -140,6 +142,8 @@ const HotspotConfigurationPicker = ({
     const elevationInt = elevationStringToInt(elevationStrRaw)
     const elevationStr = elevationIntToString(elevationInt)
     setTmpElevation(elevationStr)
+
+    if (!elevationInt) return
     onElevationUpdated(elevationInt)
   }
 
