@@ -112,10 +112,20 @@ const AccountEnterPassphraseScreen = () => {
         alignItems="center"
         flexDirection="row"
       >
-        <Text variant="h1" color="purpleLight" maxFontSizeMultiplier={1}>
+        <Text
+          variant="bold"
+          fontSize={39}
+          color="purpleLight"
+          maxFontSizeMultiplier={1}
+        >
           {`${index + 1}. `}
         </Text>
-        <Text variant="h1" color="purpleDark" maxFontSizeMultiplier={1}>
+        <Text
+          variant="bold"
+          fontSize={39}
+          color="purpleDark"
+          maxFontSizeMultiplier={1}
+        >
           {step === index && word ? upperCase(word) : '?????'}
         </Text>
       </Card>

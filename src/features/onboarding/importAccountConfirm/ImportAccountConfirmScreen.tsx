@@ -78,11 +78,17 @@ const ImportAccountConfirmScreen = () => {
             flexDirection="row"
           >
             <Text
-              variant="h1"
+              variant="bold"
+              fontSize={39}
               color="purpleLight"
               maxFontSizeMultiplier={1}
             >{`${index + 1}. `}</Text>
-            <Text variant="h1" color="purpleDark" maxFontSizeMultiplier={1}>
+            <Text
+              variant="bold"
+              fontSize={39}
+              color="purpleDark"
+              maxFontSizeMultiplier={1}
+            >
               {upperCase(item)}
             </Text>
           </Card>
