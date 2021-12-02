@@ -55,6 +55,8 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.66.1)
   - fmt (6.2.1)
   - glog (0.3.5)
+  - helium-react-native-sdk (0.1.2):
+    - React-Core
   - lottie-ios (3.1.8)
   - lottie-react-native (4.0.2):
     - lottie-ios (~> 3.1.8)
@@ -273,6 +275,8 @@ PODS:
     - React-Core
   - react-native-currency-format (1.0.19):
     - React
+  - react-native-get-random-values (1.7.0):
+    - React-Core
   - react-native-mail (6.1.1):
     - React-Core
   - react-native-mapbox-gl (8.4.0):
@@ -452,6 +456,7 @@ DEPENDENCIES:
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - "helium-react-native-sdk (from `../node_modules/@helium/react-native-sdk`)"
   - lottie-ios (from `../node_modules/lottie-ios`)
   - lottie-react-native (from `../node_modules/lottie-react-native`)
   - OneSignalXCFramework (< 4.0, >= 3.0)
@@ -473,6 +478,7 @@ DEPENDENCIES:
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - react-native-config (from `../node_modules/react-native-config`)
   - react-native-currency-format (from `../node_modules/react-native-currency-format`)
+  - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-mail (from `../node_modules/react-native-mail`)
   - "react-native-mapbox-gl (from `../node_modules/@react-native-mapbox-gl/maps`)"
   - react-native-onesignal (from `../node_modules/react-native-onesignal`)
@@ -565,6 +571,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/React/FBReactNativeSpec"
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
+  helium-react-native-sdk:
+    :path: "../node_modules/@helium/react-native-sdk"
   lottie-ios:
     :path: "../node_modules/lottie-ios"
   lottie-react-native:
@@ -601,6 +609,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-config"
   react-native-currency-format:
     :path: "../node_modules/react-native-currency-format"
+  react-native-get-random-values:
+    :path: "../node_modules/react-native-get-random-values"
   react-native-mail:
     :path: "../node_modules/react-native-mail"
   react-native-mapbox-gl:
@@ -689,14 +699,15 @@ SPEC CHECKSUMS:
   FBLazyVector: 500821d196c3d1bd10e7e828bc93ce075234080f
   FBReactNativeSpec: 74c869e2cffa2ffec685cd1bac6788c021da6005
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 5337263514dd6f09803962437687240c5dc39aa4
+  glog: 43737235ae6a21de4f45297f4f73b6420fc2ecb2
+  helium-react-native-sdk: 7345ab77a2e67e8f7dc1940bb46196278e203873
   lottie-ios: 48fac6be217c76937e36e340e2d09cf7b10b7f5f
   lottie-react-native: 4dff8fe8d10ddef9e7880e770080f4a56121397e
   Mapbox-iOS-SDK: a5915700ec84bc1a7f8b3e746d474789e35b7956
   MapboxMobileEvents: 2bc0ca2eedb627b73cf403258dce2b2fa98074a6
   MultiplatformBleAdapter: 5a6a897b006764392f9cef785e4360f54fb9477d
   OneSignalXCFramework: 27159b0a150cdfe528c85325215c9d78b2f973c7
-  RCT-Folly: a21c126816d8025b547704b777a2ba552f3d9fa9
+  RCT-Folly: e2636706cc3fded205cf0d380428ec0ea7455f80
   RCTRequired: 3cc065b52aa18db729268b9bd78a2feffb4d0f91
   RCTTypeSafety: 3c4fc37d5dea452d2ef17324db5504ec2f05083a
   React: 4a00720816c52a213424442954acb7e4b724804a
@@ -712,6 +723,7 @@ SPEC CHECKSUMS:
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-config: c98128a72bc2c3a1ca72caec0b021f0fa944aa29
   react-native-currency-format: cd0a30868fddb004c3b5b5e9b7fe7717876927f5
+  react-native-get-random-values: 237bffb1c7e05fb142092681531810a29ba53015
   react-native-mail: 8fdcd3aef007c33a6877a18eb4cf7447a1d4ce4a
   react-native-mapbox-gl: 5386b80d54af32b0e21278a6fc9203fa7b95d835
   react-native-onesignal: 9a543af01c2359b7567919cd3b1490051c553e21

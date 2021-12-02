@@ -120,6 +120,7 @@ export default {
     learn_more: 'Learn More',
     cancel: 'Cancel',
     ok: 'OK',
+    yes: 'Yes',
     unknown: 'Unknown',
     online: 'Online',
     offline: 'Offline',
@@ -1255,4 +1256,21 @@ export default {
   },
   explore_hotspots: 'Explore Hotspots',
   explore_validators: 'Explore Validators',
+  linkWallet: {
+    title: 'Link Helium Wallet\nto {{appName}}?',
+    body:
+      'By Linking Helum Wallet to Maker App, you can safely sign blockchain transactions without re-entering your seed phrase.',
+    yes: 'Yes, Link my Wallet',
+    no: 'No, Cancel',
+  },
+  signHotspot: {
+    title: 'Add Hotspot to\nBlockchain?',
+    titleLocationOnly: 'Update Location?',
+    location: 'Location:',
+    name: 'Hotspot Name:',
+    gain: 'Gain',
+    elevation: 'Elevation',
+    owner: 'Owner:',
+    maker: 'Maker',
+  },
 }
