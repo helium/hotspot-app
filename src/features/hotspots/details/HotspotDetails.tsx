@@ -61,7 +61,6 @@ export type HotspotSnapPoints = { collapsed: number; expanded: number }
 type Props = {
   hotspot?: Hotspot
   onLayoutSnapPoints?: ((snapPoints: HotspotSnapPoints) => void) | undefined
-  onFailure: () => void
   onSelectHotspot: (hotspot: Hotspot) => void
   onChangeHeight: (height: number) => void
   visible: boolean
@@ -72,7 +71,6 @@ const HotspotDetails = ({
   hotspot: propsHotspot,
   onLayoutSnapPoints,
   onSelectHotspot,
-  onFailure,
   visible,
   toggleSettings,
   animatedPosition,
@@ -154,19 +152,6 @@ const HotspotDetails = ({
     const data = getRewardChartData(rewards, timelineValue)
     return data || []
   }, [timelineValue, rewards, visible])
-
-  useEffect(() => {
-    if (!visible) return
-    if (hotspotDetailsData.loading === false && !hotspotDetailsData.hotspot) {
-      // hotspot couldn't be found - likely a bad app link or qr scan
-      onFailure()
-    }
-  }, [
-    visible,
-    hotspotDetailsData.hotspot,
-    hotspotDetailsData.loading,
-    onFailure,
-  ])
 
   // load hotspot data
   useEffect(() => {

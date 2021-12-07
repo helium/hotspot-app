@@ -460,7 +460,6 @@ const HotspotsView = ({
           hotspot={selectedHotspot}
           onLayoutSnapPoints={setDetailSnapPoints}
           onChangeHeight={setDetailHeight}
-          onFailure={handleItemSelected}
           onSelectHotspot={handlePresentHotspot}
           toggleSettings={toggleSettings}
           animatedPosition={animatedIndex}
@@ -486,7 +485,6 @@ const HotspotsView = ({
     shortcutItem,
     exploreType,
     selectedHotspot,
-    handleItemSelected,
     toggleSettings,
     animatedIndex,
     handleSearching,
