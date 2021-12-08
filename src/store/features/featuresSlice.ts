@@ -63,7 +63,6 @@ const featuresSlice = createSlice({
       state.featuresLoaded = true
       state.fetchFeaturesFailed = false
       state.discovery = payload.discovery || initialState.discovery
-      console.log(state.discovery)
     })
     builder.addCase(fetchFeatures.rejected, (state) => {
       state.featuresLoaded = true
