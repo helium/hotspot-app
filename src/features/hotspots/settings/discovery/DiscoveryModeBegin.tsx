@@ -2,6 +2,8 @@ import React, { memo, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ActivityIndicator } from 'react-native'
 import { isEqual } from 'lodash'
+import { useSelector } from 'react-redux'
+import Emoji from 'react-native-emoji'
 import Text from '../../../../components/Text'
 import { hp } from '../../../../utils/layout'
 import Box from '../../../../components/Box'
@@ -16,6 +18,8 @@ import DiscoveryModeSessionInfo from './DiscoveryModeSessionInfo'
 import animateTransition from '../../../../utils/animateTransition'
 import useAlert from '../../../../utils/useAlert'
 import { useColors } from '../../../../theme/themeHooks'
+import { RootState } from '../../../../store/rootReducer'
+import parseMarkup from '../../../../utils/parseMarkup'
 
 type Props = {
   onClose: () => void
@@ -40,6 +44,7 @@ const DiscoveryModeBegin = ({
   const { showOKAlert } = useAlert()
   const [alertShown, setAlertShown] = useState(false)
   const colors = useColors()
+  const discovery = useSelector((state: RootState) => state.features.discovery)
 
   useEffect(() => {
     if (isEqual(recentDiscoveryInfo?.recentRequests, recentRequests)) return
@@ -100,16 +105,26 @@ const DiscoveryModeBegin = ({
           width="100%"
           paddingHorizontal="l"
           paddingBottom={{ smallPhone: 'm', phone: 'lx' }}
-          justifyContent="space-between"
+          justifyContent="center"
           flex={1}
         >
-          <Text variant="medium" fontSize={24} maxFontSizeMultiplier={1}>
+          <Text
+            variant="medium"
+            fontSize={24}
+            maxFontSizeMultiplier={1}
+            marginBottom="m"
+          >
             {t('discovery.begin.title')}
           </Text>
-          <Text variant="regular" fontSize={16} maxFontSizeMultiplier={1.1}>
+          <Text
+            variant="regular"
+            fontSize={16}
+            maxFontSizeMultiplier={1.1}
+            marginBottom="m"
+          >
             {subtitle}
           </Text>
-          {recentRequests && (
+          {recentRequests && discovery.enabled && (
             <Text
               variant="regular"
               fontSize={14}
@@ -123,8 +138,39 @@ const DiscoveryModeBegin = ({
           )}
         </Box>
       </Box>
+      {!discovery.enabled && (
+        <Box
+          flexDirection="row"
+          backgroundColor="grayBox"
+          justifyContent="center"
+          alignItems="center"
+          padding="m"
+        >
+          <Emoji name="construction" />
+          <Text
+            color="grayText"
+            paddingLeft="s"
+            fontSize={16}
+            maxFontSizeMultiplier={1.1}
+          >
+            {t('discovery.begin.disabled')}
+          </Text>
+        </Box>
+      )}
       <Box margin="l" marginTop="m" flex={1}>
-        {recentRequests && (
+        {discovery?.message !== undefined &&
+          discovery?.message !== '' &&
+          parseMarkup(
+            discovery?.message?.replace(/\\n/g, '\n'),
+            <Text
+              variant="regular"
+              fontSize={16}
+              maxFontSizeMultiplier={1.1}
+              color="black"
+              marginBottom="m"
+            />,
+          )}
+        {recentRequests && discovery.enabled && (
           <DiscoveryModeSessionInfo
             onBeginNew={onBeginNew}
             onRequestSelected={onRequestSelected}
