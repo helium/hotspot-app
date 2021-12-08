@@ -1174,6 +1174,7 @@ export default {
         info:
           '*Useful if you want to test Hotspot coverage before setting a location',
       },
+      disabled: 'Under Maintenance',
     },
     results: {
       title: 'Discovery Mode Results',
