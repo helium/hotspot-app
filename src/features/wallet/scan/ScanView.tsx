@@ -125,10 +125,14 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
           right={0}
         >
           <Camera
-            onBarCodeScanned={handleBarCodeScanned}
-            barCodeScannerSettings={{
-              barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
-            }}
+            onBarCodeScanned={!scanned ? handleBarCodeScanned : undefined}
+            barCodeScannerSettings={
+              !scanned
+                ? {
+                    barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+                  }
+                : undefined
+            }
             style={StyleSheet.absoluteFillObject}
             ratio="4:3"
           />
