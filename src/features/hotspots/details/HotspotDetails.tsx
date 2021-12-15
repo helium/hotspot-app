@@ -665,6 +665,7 @@ const HotspotDetails = ({
               loading={loading}
               onTimelineChanged={onTimelineChanged}
               timelineIndex={timelineIndex}
+              timelineValue={timelineValue}
             />
           )}
 
