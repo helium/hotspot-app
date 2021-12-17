@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
-import { VictoryLine } from 'victory-native'
-import { maxBy } from 'lodash'
+import { sumBy } from 'lodash'
+import { useTranslation } from 'react-i18next'
 import { ChartData } from '../../../components/BarChart/types'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -11,7 +11,6 @@ import animateTransition from '../../../utils/animateTransition'
 import { locale } from '../../../utils/i18n'
 import DateModule from '../../../utils/DateModule'
 import TimelinePicker from './TimelinePicker'
-import { ww } from '../../../utils/layout'
 
 type Props = {
   title: string
@@ -40,8 +39,13 @@ const HotspotDetailChart = ({
   const { l } = useBorderRadii()
   const [loading, setLoading] = useState(propsLoading)
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
+  const [
+    focusedNetworkData,
+    setFocusedNetworkData,
+  ] = useState<ChartData | null>(null)
+  const { t } = useTranslation()
 
-  const lineData = useMemo(() => {
+  const networkData = useMemo(() => {
     const values = [
       0.09,
       0.04,
@@ -74,27 +78,12 @@ const HotspotDetailChart = ({
       0.6,
       0.2,
     ]
-    return values
-      .map((value, index) => ({ x: index, y: value }))
-      .slice(0, timelineValue)
-  }, [timelineValue])
-
-  const maxDomain = useMemo(() => {
-    const maxBar = maxBy(data, (d) => d.up)
-    return maxBar?.up
+    return data.map((d, i) => ({ ...d, up: values[i] }))
   }, [data])
 
-  const linePadding = useMemo(() => {
-    switch (timelineIndex) {
-      default:
-      case 2:
-        return { width: 60, left: 12 }
-      case 1:
-        return { width: 55, left: 6 }
-      case 0:
-        return { width: 50, left: 3 }
-    }
-  }, [timelineIndex])
+  const networkAvgTotal = useMemo(() => {
+    return sumBy(networkData.slice(0, timelineValue), (d) => d.up).toFixed(2)
+  }, [networkData, timelineValue])
 
   useEffect(() => {
     if (propsLoading === loading) return
@@ -106,20 +95,29 @@ const HotspotDetailChart = ({
     setLoading(propsLoading)
   }, [loading, propsLoading])
 
-  const onFocus = useCallback(async (chartData: ChartData | null) => {
-    animateTransition('HotspotDetailChart.OnFocus', { enabledOnAndroid: false })
+  const onFocus = useCallback(
+    async (chartData: ChartData | null, stackedChartData: ChartData | null) => {
+      animateTransition('HotspotDetailChart.OnFocus', {
+        enabledOnAndroid: false,
+      })
 
-    if (!chartData) {
-      setFocusedData(null)
-      return
-    }
+      if (!chartData) {
+        setFocusedData(null)
+        setFocusedNetworkData(null)
+        return
+      }
 
-    const label = await DateModule.formatDate(
-      chartData.label,
-      chartData.showTime ? 'MMM d h:mma' : 'EEE MMM d',
-    )
-    setFocusedData({ ...chartData, label })
-  }, [])
+      const label = await DateModule.formatDate(
+        chartData.label,
+        chartData.showTime ? 'MMM d h:mma' : 'EEE MMM d',
+      )
+      setFocusedData({ ...chartData, label })
+      if (stackedChartData) {
+        setFocusedNetworkData({ ...stackedChartData, label })
+      }
+    },
+    [],
+  )
 
   const body = useMemo(() => {
     if (loading)
@@ -152,17 +150,32 @@ const HotspotDetailChart = ({
               {subtitle}
             </Text>
           </Box>
-          <Box flexDirection="row" alignItems="center">
-            <Text
-              variant="light"
-              color="grayDarkText"
-              fontSize={37}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              maxFontSizeMultiplier={1}
-            >
-              {focusedData ? focusedData.up.toLocaleString(locale) : number}
-            </Text>
+          <Box flexDirection="row" alignItems="flex-start">
+            <Box>
+              <Text
+                variant="light"
+                color="grayDarkText"
+                fontSize={37}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                maxFontSizeMultiplier={1}
+              >
+                {focusedData ? focusedData.up.toLocaleString(locale) : number}
+              </Text>
+              <Text
+                variant="body3"
+                color="grayLightText"
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                maxFontSizeMultiplier={1}
+              >
+                {t('hotspot_details.network_avg_rewards', {
+                  amount: focusedNetworkData
+                    ? focusedNetworkData.up.toLocaleString(locale)
+                    : networkAvgTotal,
+                })}
+              </Text>
+            </Box>
 
             <TimelinePicker
               flex={1}
@@ -204,29 +217,10 @@ const HotspotDetailChart = ({
           marginBottom="xxs"
         >
           <Box width="100%" height={250}>
-            <Box
-              position="absolute"
-              zIndex={10000}
-              pointerEvents="none"
-              top={0}
-              bottom={0}
-              left={0}
-              right={0}
-            >
-              <VictoryLine
-                padding={{ left: linePadding.left }}
-                height={100}
-                maxDomain={{ y: maxDomain }}
-                width={ww - linePadding.width}
-                style={{
-                  data: { stroke: '#c43a31', strokeWidth: 3 },
-                }}
-                data={lineData}
-              />
-            </Box>
             <ChartContainer
               height={100}
               data={data}
+              stackedData={networkData}
               onFocus={onFocus}
               showXAxisLabel={false}
               upColor={change >= 0 ? greenOnline : purpleMain}
@@ -242,19 +236,19 @@ const HotspotDetailChart = ({
     change,
     data,
     focusedData,
+    focusedNetworkData,
     grayLight,
     greenOnline,
     l,
-    lineData,
-    linePadding.left,
-    linePadding.width,
     loading,
-    maxDomain,
+    networkAvgTotal,
+    networkData,
     number,
     onFocus,
     onTimelineChanged,
     purpleMain,
     subtitle,
+    t,
     timelineIndex,
     title,
   ])

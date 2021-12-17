@@ -1006,6 +1006,7 @@ export default {
     get_witnessed: 'GET WITNESSED',
     get_witnessed_desc:
       'Position your Hotspot so that it can be heard by others. Often this means moving it higher in order to increase its range.',
+    network_avg_rewards: 'Network Avg {{amount}}',
   },
   transfer: {
     title: 'Transfer Hotspot',
