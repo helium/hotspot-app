@@ -58,6 +58,11 @@ const BarChart = ({
     }
   }, [focusedBar, focusedStackedBar, onFocus, prevFocusedBar, triggerImpact])
 
+  const hasStackedData = useMemo(
+    () => stackedData !== undefined && stackedData.length > 0,
+    [stackedData],
+  )
+
   const allData = useMemo(() => [...data, ...stackedData], [data, stackedData])
 
   // support charts that have no down values
@@ -77,7 +82,10 @@ const BarChart = ({
   ])
 
   // min bar height is the same as bar width to form circles
-  const minBarHeight = useMemo(() => barWidth, [barWidth])
+  const minBarHeight = useMemo(() => barWidth / (hasStackedData ? 2 : 1), [
+    barWidth,
+    hasStackedData,
+  ])
 
   // the pixel value of the space between up and down bars
   const barGap = useMemo(() => (hasDownBars ? barWidth / 1.5 : 0), [
