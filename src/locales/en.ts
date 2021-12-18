@@ -152,6 +152,7 @@ export default {
     owner: 'Owner',
     one: 'one',
     swipe_to_confirm: 'Swipe to Confirm',
+    not_available: 'Not Available',
   },
   hotspot_setup: {
     selection: {

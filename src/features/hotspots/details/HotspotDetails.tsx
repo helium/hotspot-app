@@ -20,7 +20,10 @@ import { RootState } from '../../../store/rootReducer'
 import { getRewardChartData } from './RewardsHelper'
 import { useAppDispatch } from '../../../store/store'
 import { fetchHotspotData } from '../../../store/hotspotDetails/hotspotDetailsSlice'
-import { fetchChartData } from '../../../store/rewards/rewardsSlice'
+import {
+  fetchChartData,
+  fetchNetworkHotspotEarnings,
+} from '../../../store/rewards/rewardsSlice'
 import HexBadge from './HexBadge'
 import HotspotChecklist from '../checklist/HotspotChecklist'
 import animateTransition from '../../../utils/animateTransition'
@@ -87,6 +90,12 @@ const HotspotDetails = ({
     useSelector(
       (state: RootState) => state.hotspotDetails.hotspotData[address],
     ) || {}
+  const networkHotspotEarnings = useSelector(
+    (state: RootState) => state.rewards.networkHotspotEarnings.data,
+  )
+  const networkHotspotEarningsLoaded = useSelector(
+    (state: RootState) => state.rewards.networkHotspotEarningsLoaded,
+  )
   const hiddenAddresses = useSelector(
     (state: RootState) => state.account.settings.hiddenAddresses,
   )
@@ -164,6 +173,7 @@ const HotspotDetails = ({
       return
     }
     dispatch(fetchHotspotData(address))
+    dispatch(fetchNetworkHotspotEarnings())
 
     dispatch(
       fetchChartData({
@@ -662,7 +672,8 @@ const HotspotDetails = ({
               number={rewardSum?.floatBalance.toFixed(2)}
               change={rewardsChange}
               data={rewardChartData}
-              loading={loading}
+              networkHotspotEarnings={networkHotspotEarnings}
+              loading={loading || !networkHotspotEarningsLoaded}
               onTimelineChanged={onTimelineChanged}
               timelineIndex={timelineIndex}
               timelineValue={timelineValue}

@@ -11,6 +11,7 @@ import animateTransition from '../../../utils/animateTransition'
 import { locale } from '../../../utils/i18n'
 import DateModule from '../../../utils/DateModule'
 import TimelinePicker from './TimelinePicker'
+import { NetworkHotspotEarnings } from '../../../store/rewards/rewardsSlice'
 
 type Props = {
   title: string
@@ -18,6 +19,7 @@ type Props = {
   number?: string
   change?: number
   data: ChartData[]
+  networkHotspotEarnings: NetworkHotspotEarnings[]
   loading?: boolean
   timelineIndex: number
   timelineValue: number
@@ -29,6 +31,7 @@ const HotspotDetailChart = ({
   number,
   change = 0,
   data,
+  networkHotspotEarnings,
   subtitle,
   loading: propsLoading,
   timelineIndex,
@@ -45,45 +48,33 @@ const HotspotDetailChart = ({
   ] = useState<ChartData | null>(null)
   const { t } = useTranslation()
 
-  const networkData = useMemo(() => {
-    const values = [
-      0.09,
-      0.04,
-      0.3,
-      0.02,
-      0.19,
-      0.2,
-      0.05,
-      0.09,
-      0.04,
-      0.3,
-      0.02,
-      0.19,
-      0.2,
-      0.05,
-      0.09,
-      0.04,
-      0.3,
-      0.02,
-      0.19,
-      0.2,
-      0.05,
-      0.09,
-      0.04,
-      0.3,
-      0.02,
-      0.19,
-      0.2,
-      0.05,
-      0.6,
-      0.2,
-    ]
-    return data.map((d, i) => ({ ...d, up: values[i] }))
-  }, [data])
+  const findNetworkEarningForData = useCallback(
+    (d: ChartData) => {
+      const date = d.label?.split('T')[0] // yyyy-mm-dd format
+      const hotspotEarnings = networkHotspotEarnings.find(
+        (e) => e.date === date,
+      )
+      return parseFloat(hotspotEarnings?.avg_rewards?.toFixed(2) || '0')
+    },
+    [networkHotspotEarnings],
+  )
+
+  const networkData = useMemo(
+    () =>
+      data.map((d) => ({
+        ...d,
+        up: findNetworkEarningForData(d),
+      })),
+    [data, findNetworkEarningForData],
+  )
 
   const networkAvgTotal = useMemo(() => {
-    return sumBy(networkData.slice(0, timelineValue), (d) => d.up).toFixed(2)
-  }, [networkData, timelineValue])
+    if (timelineValue > networkHotspotEarnings.length)
+      return t('generic.not_available')
+    return sumBy(networkData.slice(0, timelineValue), (d) => d.up || 0).toFixed(
+      2,
+    )
+  }, [networkData, networkHotspotEarnings.length, t, timelineValue])
 
   useEffect(() => {
     if (propsLoading === loading) return
@@ -118,6 +109,13 @@ const HotspotDetailChart = ({
     },
     [],
   )
+
+  const currentFocusedNetworkAvg = useMemo(() => {
+    if (focusedNetworkData && focusedNetworkData.up !== 0) {
+      return focusedNetworkData.up.toLocaleString(locale)
+    }
+    return t('generic.not_available')
+  }, [focusedNetworkData, t])
 
   const body = useMemo(() => {
     if (loading)
@@ -171,7 +169,7 @@ const HotspotDetailChart = ({
               >
                 {t('hotspot_details.network_avg_rewards', {
                   amount: focusedNetworkData
-                    ? focusedNetworkData.up.toLocaleString(locale)
+                    ? currentFocusedNetworkAvg
                     : networkAvgTotal,
                 })}
               </Text>
@@ -234,6 +232,7 @@ const HotspotDetailChart = ({
   }, [
     black,
     change,
+    currentFocusedNetworkAvg,
     data,
     focusedData,
     focusedNetworkData,
