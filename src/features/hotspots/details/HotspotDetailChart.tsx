@@ -69,11 +69,14 @@ const HotspotDetailChart = ({
   )
 
   const networkAvgTotal = useMemo(() => {
-    if (timelineValue > networkHotspotEarnings.length)
+    if (timelineValue > networkHotspotEarnings.length) {
       return t('generic.not_available')
-    return sumBy(networkData.slice(0, timelineValue), (d) => d.up || 0).toFixed(
-      2,
-    )
+    }
+    const totalAvg = sumBy(
+      networkData.slice(0, timelineValue),
+      (d) => d.up || 0,
+    )?.toFixed(2)
+    return totalAvg || t('generic.not_available')
   }, [networkData, networkHotspotEarnings.length, t, timelineValue])
 
   useEffect(() => {
