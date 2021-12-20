@@ -668,7 +668,6 @@ const HotspotDetails = ({
           {selectedOption === 'overview' && (
             <HotspotDetailChart
               title={t('hotspot_details.reward_title')}
-              subtitle={t('hotspot_details.reward_subtitle')}
               number={rewardSum?.floatBalance.toFixed(2)}
               change={rewardsChange}
               data={rewardChartData}

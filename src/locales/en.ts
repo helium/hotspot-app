@@ -152,7 +152,7 @@ export default {
     owner: 'Owner',
     one: 'one',
     swipe_to_confirm: 'Swipe to Confirm',
-    not_available: 'Not Available',
+    not_available: 'N/A',
   },
   hotspot_setup: {
     selection: {
@@ -1007,7 +1007,8 @@ export default {
     get_witnessed: 'GET WITNESSED',
     get_witnessed_desc:
       'Position your Hotspot so that it can be heard by others. Often this means moving it higher in order to increase its range.',
-    network_avg_rewards: 'Network Avg {{amount}}',
+    your_earnings: 'Your Earnings',
+    network_avg: 'Network Avg',
   },
   transfer: {
     title: 'Transfer Hotspot',

@@ -2,6 +2,8 @@ import React, { useCallback, useMemo, useState, useEffect } from 'react'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import { sumBy } from 'lodash'
 import { useTranslation } from 'react-i18next'
+import { useAsync } from 'react-async-hook'
+import { addMinutes, startOfYesterday, subDays } from 'date-fns'
 import { ChartData } from '../../../components/BarChart/types'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -15,7 +17,6 @@ import { NetworkHotspotEarnings } from '../../../store/rewards/rewardsSlice'
 
 type Props = {
   title: string
-  subtitle?: string
   number?: string
   change?: number
   data: ChartData[]
@@ -32,7 +33,6 @@ const HotspotDetailChart = ({
   change = 0,
   data,
   networkHotspotEarnings,
-  subtitle,
   loading: propsLoading,
   timelineIndex,
   timelineValue,
@@ -42,6 +42,7 @@ const HotspotDetailChart = ({
   const { l } = useBorderRadii()
   const [loading, setLoading] = useState(propsLoading)
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
+  const [timeRange, setTimeRange] = useState('')
   const [
     focusedNetworkData,
     setFocusedNetworkData,
@@ -67,6 +68,17 @@ const HotspotDetailChart = ({
       })),
     [data, findNetworkEarningForData],
   )
+
+  useAsync(async () => {
+    const yesterday = startOfYesterday()
+    const utcOffset = yesterday.getTimezoneOffset()
+    const end = addMinutes(yesterday, utcOffset)
+    const endStr = await DateModule.formatDate(end.toISOString(), 'MMM d')
+    const start = subDays(end, timelineValue - 1)
+    const startStr = await DateModule.formatDate(start.toISOString(), 'MMM d')
+    const rangeStr = `${startStr} - ${endStr}`
+    setTimeRange(rangeStr)
+  }, [timelineValue])
 
   const networkAvgTotal = useMemo(() => {
     if (timelineValue > networkHotspotEarnings.length) {
@@ -133,91 +145,100 @@ const HotspotDetailChart = ({
       )
 
     return (
-      <>
-        <Box flex={1}>
-          <Box flexDirection="row" justifyContent="space-between">
+      <Box>
+        <Box
+          paddingVertical="s"
+          backgroundColor={focusedData ? 'grayBoxDark' : undefined}
+          paddingHorizontal="l"
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Box>
             <Text
-              color="grayLightText"
-              fontSize={16}
+              color="purpleMediumText"
+              variant="medium"
+              fontSize={15}
               maxFontSizeMultiplier={1.2}
             >
               {title}
             </Text>
             <Text
-              color="grayLightText"
-              fontSize={16}
-              maxFontSizeMultiplier={1.2}
+              variant="body3"
+              color="purpleMediumText"
+              fontSize={13}
+              maxFontSizeMultiplier={1.1}
             >
-              {subtitle}
+              {focusedData ? focusedData.label : timeRange}
             </Text>
           </Box>
-          <Box flexDirection="row" alignItems="flex-start">
-            <Box>
+          <Box>
+            <Text
+              color="purpleMediumText"
+              variant="regular"
+              fontSize={13}
+              lineHeight={15}
+              maxFontSizeMultiplier={1.2}
+            >
+              {t('hotspot_details.your_earnings')}
+            </Text>
+            <Box flexDirection="row" alignItems="center">
+              <Box
+                height={9}
+                width={9}
+                backgroundColor={change >= 0 ? 'greenOnline' : 'purpleMain'}
+                borderRadius="round"
+                marginRight="xs"
+              />
               <Text
-                variant="light"
-                color="grayDarkText"
-                fontSize={37}
-                numberOfLines={1}
-                adjustsFontSizeToFit
-                maxFontSizeMultiplier={1}
+                variant="medium"
+                color="purpleMediumText"
+                fontSize={13}
+                maxFontSizeMultiplier={1.1}
               >
                 {focusedData ? focusedData.up.toLocaleString(locale) : number}
               </Text>
+            </Box>
+          </Box>
+          <Box>
+            <Text
+              color="purpleMediumText"
+              variant="regular"
+              fontSize={13}
+              lineHeight={15}
+              maxFontSizeMultiplier={1.2}
+            >
+              {t('hotspot_details.network_avg')}
+            </Text>
+            <Box flexDirection="row" alignItems="center">
+              <Box
+                height={9}
+                width={9}
+                backgroundColor="grayLight"
+                borderRadius="round"
+                marginRight="xs"
+              />
               <Text
-                variant="body3"
-                color="grayLightText"
-                numberOfLines={1}
-                adjustsFontSizeToFit
-                maxFontSizeMultiplier={1}
+                variant="medium"
+                color="purpleMediumText"
+                fontSize={13}
+                maxFontSizeMultiplier={1.1}
               >
-                {t('hotspot_details.network_avg_rewards', {
-                  amount: focusedNetworkData
-                    ? currentFocusedNetworkAvg
-                    : networkAvgTotal,
-                })}
+                {focusedNetworkData
+                  ? currentFocusedNetworkAvg
+                  : networkAvgTotal}
               </Text>
             </Box>
-
-            <TimelinePicker
-              flex={1}
-              index={timelineIndex}
-              onTimelineChanged={onTimelineChanged}
-            />
-          </Box>
-
-          <Box flexDirection="row" flex={1} justifyContent="flex-end">
-            {change !== undefined && !focusedData ? (
-              <Text
-                color={change < 0 ? 'purpleMain' : 'greenOnline'}
-                variant="bold"
-                fontSize={13}
-                maxFontSizeMultiplier={1.1}
-              >
-                {`${change < 0 ? '' : '+'}${change.toLocaleString(locale, {
-                  maximumFractionDigits: 2,
-                  minimumFractionDigits: 2,
-                })}%`}
-              </Text>
-            ) : (
-              <Text
-                variant="body3"
-                color="grayDarkText"
-                fontSize={13}
-                maxFontSizeMultiplier={1.1}
-              >
-                {focusedData ? focusedData.label : ''}
-              </Text>
-            )}
           </Box>
         </Box>
         <Box
-          paddingTop="m"
+          paddingHorizontal="l"
+          paddingVertical="m"
           flexDirection="row"
           justifyContent={loading ? 'center' : 'space-between'}
           alignItems="center"
-          marginBottom="xxs"
         >
-          <Box width="100%" height={250}>
+          <Box width="100%">
             <ChartContainer
               height={100}
               data={data}
@@ -230,7 +251,27 @@ const HotspotDetailChart = ({
             />
           </Box>
         </Box>
-      </>
+
+        <Box flexDirection="row" paddingHorizontal="l" alignItems="center">
+          {change !== undefined && !focusedData && (
+            <Text
+              color={change < 0 ? 'purpleMain' : 'greenOnline'}
+              variant="regular"
+              fontSize={13}
+              maxFontSizeMultiplier={1.1}
+            >
+              {`${change < 0 ? '' : '+'}${change.toLocaleString(locale, {
+                maximumFractionDigits: 2,
+                minimumFractionDigits: 2,
+              })}%`}
+            </Text>
+          )}
+          <TimelinePicker
+            index={timelineIndex}
+            onTimelineChanged={onTimelineChanged}
+          />
+        </Box>
+      </Box>
     )
   }, [
     black,
@@ -249,14 +290,14 @@ const HotspotDetailChart = ({
     onFocus,
     onTimelineChanged,
     purpleMain,
-    subtitle,
     t,
+    timeRange,
     timelineIndex,
     title,
   ])
 
   return (
-    <Box backgroundColor="grayBoxLight" paddingTop="xl" padding="l">
+    <Box backgroundColor="grayBoxLight" paddingTop="xl" paddingBottom="l">
       {body}
     </Box>
   )
