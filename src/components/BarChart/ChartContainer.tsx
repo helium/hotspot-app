@@ -10,10 +10,13 @@ import { Theme } from '../../theme/theme'
 type Props = BoxProps<Theme> & {
   height: number
   data?: ChartData[] | null
-  onFocus: (data: ChartData | null) => void
+  stackedData?: ChartData[]
+  onFocus: (data: ChartData | null, stackedData: ChartData | null) => void
   showXAxisLabel?: boolean
   upColor?: string
   downColor?: string
+  stackedUpColor?: string
+  stackedDownColor?: string
   labelColor?: string
   loading?: boolean
 }
@@ -22,10 +25,13 @@ const BAR_HEIGHT_MODIFIERS = [2, 1, 4, 2, 4, 2, 1, 2, 3, 4, 3, 3, 4, 2]
 
 const ChartContainer = ({
   data,
+  stackedData,
   onFocus,
   showXAxisLabel,
   upColor,
+  stackedUpColor,
   downColor,
+  stackedDownColor,
   labelColor,
   loading,
   ...boxProps
@@ -71,9 +77,12 @@ const ChartContainer = ({
           width={width}
           height={boxProps.height}
           data={data}
+          stackedData={stackedData}
           onFocus={onFocus}
           showXAxisLabel={showXAxisLabel}
           upColor={upColor}
+          stackedUpColor={stackedUpColor}
+          stackedDownColor={stackedDownColor}
           downColor={downColor}
           labelColor={labelColor}
         />

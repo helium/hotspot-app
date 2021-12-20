@@ -12,7 +12,7 @@ import {
   handleCacheFulfilled,
   hasValidCache,
 } from '../../utils/cacheUtils'
-import { getWallet } from '../../utils/walletClient'
+import { getWallet, getWalletExt } from '../../utils/walletClient'
 
 export type WalletReward = {
   avg: number
@@ -37,6 +37,15 @@ type GatewayChartData = {
   rewardsChange?: number
 }
 
+export type NetworkHotspotEarnings = {
+  avg_rewards: number
+  consensus: number
+  hotspot_count: number
+  securities: number
+  total: number
+  date: string
+}
+
 export type GatewayChartCache = CacheRecord<GatewayChartData>
 export type GatewayAddress = string
 export type ChartTimelineIndex = number
@@ -45,10 +54,28 @@ export type GatewayIndex<T> = Record<GatewayAddress, T>
 
 type RewardsState = {
   chartData: GatewayIndex<GatewayChartRecord>
+  networkHotspotEarnings: CacheRecord<{ data: NetworkHotspotEarnings[] }>
+  networkHotspotEarningsLoaded: boolean
 }
 const initialState: RewardsState = {
   chartData: {},
+  networkHotspotEarnings: { lastFetchedTimestamp: 0, loading: false, data: [] },
+  networkHotspotEarningsLoaded: false,
 }
+
+export const fetchNetworkHotspotEarnings = createAsyncThunk<
+  NetworkHotspotEarnings[]
+>('rewards/fetchNetworkHotspotEarnings', async (_arg, { getState }) => {
+  const {
+    rewards: { networkHotspotEarnings },
+  } = (await getState()) as {
+    rewards: RewardsState
+  }
+  if (hasValidCache(networkHotspotEarnings, 30))
+    return networkHotspotEarnings.data
+
+  return getWalletExt('hotspots/earnings')
+})
 
 export const fetchChartData = createAsyncThunk<
   GatewayChartData,
@@ -157,6 +184,19 @@ const rewardsSlice = createSlice({
         ...state.chartData[address],
         [numDays]: nextState,
       }
+    })
+    builder.addCase(fetchNetworkHotspotEarnings.pending, (state, _action) => {
+      state.networkHotspotEarnings.loading = true
+    })
+    builder.addCase(fetchNetworkHotspotEarnings.fulfilled, (state, action) => {
+      state.networkHotspotEarnings = handleCacheFulfilled({
+        data: action.payload,
+      })
+      state.networkHotspotEarningsLoaded = true
+    })
+    builder.addCase(fetchNetworkHotspotEarnings.rejected, (state, _action) => {
+      state.networkHotspotEarnings.loading = false
+      state.networkHotspotEarningsLoaded = true
     })
   },
 })
