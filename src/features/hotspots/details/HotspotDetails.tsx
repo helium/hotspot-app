@@ -309,6 +309,7 @@ const HotspotDetails = ({
   }, [showOKCancelAlert])
 
   const handleHeaderLayout = (event: LayoutChangeEvent) => {
+    if (snapPoints[0] !== 0 && snapPoints[1] !== 0) return
     const nextSnapPoints = [event.nativeEvent.layout.height, hp(55)]
     onLayoutSnapPoints?.({
       collapsed: nextSnapPoints[0],
