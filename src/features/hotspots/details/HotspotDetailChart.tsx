@@ -38,7 +38,7 @@ const HotspotDetailChart = ({
   timelineValue,
   onTimelineChanged,
 }: Props) => {
-  const { black, grayLight, purpleMain, greenOnline } = useColors()
+  const { black, grayLight, purpleMain } = useColors()
   const { l } = useBorderRadii()
   const [loading, setLoading] = useState(propsLoading)
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
@@ -186,7 +186,7 @@ const HotspotDetailChart = ({
               <Box
                 height={9}
                 width={9}
-                backgroundColor={change >= 0 ? 'greenOnline' : 'purpleMain'}
+                backgroundColor="purpleMain"
                 borderRadius="round"
                 marginRight="xs"
               />
@@ -245,7 +245,7 @@ const HotspotDetailChart = ({
               stackedData={networkData}
               onFocus={onFocus}
               showXAxisLabel={false}
-              upColor={change >= 0 ? greenOnline : purpleMain}
+              upColor={purpleMain}
               downColor={grayLight}
               labelColor={black}
             />
@@ -255,7 +255,7 @@ const HotspotDetailChart = ({
         <Box flexDirection="row" paddingHorizontal="l" alignItems="center">
           {change !== undefined && !focusedData && (
             <Text
-              color={change < 0 ? 'purpleMain' : 'greenOnline'}
+              color="purpleMain"
               variant="regular"
               fontSize={13}
               maxFontSizeMultiplier={1.1}
@@ -281,7 +281,6 @@ const HotspotDetailChart = ({
     focusedData,
     focusedNetworkData,
     grayLight,
-    greenOnline,
     l,
     loading,
     networkAvgTotal,
