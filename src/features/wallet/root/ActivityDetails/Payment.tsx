@@ -42,16 +42,15 @@ const Payment = ({ item, address }: Props) => {
               index === payments.length - 1
             }
           />
-          {(p.memo !== undefined || p.memo !== null) &&
-            p.memo !== DEFAULT_MEMO && (
-              <PaymentItem
-                text={decodeMemoString(p.memo)}
-                mode="memo"
-                isFirst={false}
-                isLast={index === payments.length - 1}
-                isMemo
-              />
-            )}
+          {p.memo !== undefined && p.memo !== DEFAULT_MEMO && (
+            <PaymentItem
+              text={decodeMemoString(p.memo)}
+              mode="memo"
+              isFirst={false}
+              isLast={index === payments.length - 1}
+              isMemo
+            />
+          )}
         </Box>
       ))}
     </Box>
