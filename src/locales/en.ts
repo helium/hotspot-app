@@ -948,8 +948,8 @@ export default {
     reward_title: 'HNT Rewards',
     reward_subtitle: 'Time Range (UTC)',
     witness_title: 'Average Witnesses',
-    num_witnesses: '{{count}} Witness',
-    num_witnesses_plural: '{{count}} Witnesses',
+    num_witnesses: '{{count}} Hotspot',
+    num_witnesses_plural: '{{count}} Hotspots',
     distance_away: '{{distance}} away',
     challenge_title: 'Challenges',
     challenge_sub_title: '(witness, challenger, or challengee)',
@@ -1001,12 +1001,14 @@ export default {
         'The Hotspots in this list have witnessed a Beacon from {{hotspotName}} recently.\n\nFluctuations are normal and expected. The number of Hotspots will reset to zero if you update location, antenna, or elevation',
     },
     witness_desc:
-      'These Hotspots witnessed {{hotspotAnimal}}’s\nbeacons over the last 5 days.',
+      'Over the last 5 days, this Hotspot has witnessed beacons from <b><purplemain>{{count}} Hotspots</purplemain></b>, with an average transmit scale of',
+    witness_desc_two:
+      'Hotspots are rewarded more HNT when the Hotspots they witness have higher transmit scales.',
     witness_desc_none:
-      'No Hotspots have heard and responded to\n{{hotspotAnimal}}’s beacons over the last 5 days.',
-    get_witnessed: 'GET WITNESSED',
+      'Over the last 5 days, this Hotspot has witnessed no beacons.',
+    get_witnessed: 'WITNESS BEACONS',
     get_witnessed_desc:
-      'Position your Hotspot so that it can be heard by others. Often this means moving it higher in order to increase its range.',
+      'Position your Hotspot so that it can hear others. Often this means moving it higher in order to increase its range.',
     your_earnings: 'Your Earnings',
     network_avg: 'Network Avg',
   },
@@ -1224,7 +1226,7 @@ export default {
       owned: 'Owned',
     },
     witness: {
-      title: 'Witnesses',
+      title: 'Hotspots Witnessed',
       body: 'Highlights witnesses for chosen Hotspot',
       desc_title: 'What are Witnesses?',
       desc_body:

@@ -7,7 +7,7 @@ import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { decimalSeparator, locale } from '../../../utils/i18n'
 import { useColors } from '../../../theme/themeHooks'
 import { generateRewardScaleColor } from '../../../utils/hotspotUtils'
-import { Colors } from '../../../theme/theme'
+import { Colors, Spacing } from '../../../theme/theme'
 
 type Props = {
   hotspotId?: string
@@ -15,9 +15,12 @@ type Props = {
   pressable?: boolean
   badge?: boolean
   visible?: boolean
+  colorText?: boolean
+  boldText?: boolean
   backgroundColor?: Colors
   fontSize?: number
   hitSlop?: Insets
+  marginLeft?: Spacing
 }
 const HexBadge = ({
   hotspotId,
@@ -27,6 +30,9 @@ const HexBadge = ({
   badge = true,
   fontSize = 13,
   visible = true,
+  colorText = false,
+  boldText = false,
+  marginLeft,
   hitSlop,
 }: Props) => {
   const colors = useColors()
@@ -54,13 +60,13 @@ const HexBadge = ({
   }, [hotspotId, t])
 
   const color = useMemo(() => {
-    if (!rewardScale) return 'white'
+    if (!rewardScale) return 'grayText'
 
     return generateRewardScaleColor(rewardScale)
   }, [rewardScale])
 
   const scaleString = useMemo(() => {
-    if (!rewardScale) return ''
+    if (!rewardScale) return `0${decimalSeparator}00`
 
     if (rewardScale === 1) return `1${decimalSeparator}00`
 
@@ -70,7 +76,7 @@ const HexBadge = ({
     })
   }, [rewardScale])
 
-  if (!rewardScale || !visible) return null
+  if (rewardScale === undefined || !visible) return null
   return (
     <TouchableOpacityBox
       onPress={handlePress}
@@ -81,13 +87,13 @@ const HexBadge = ({
       justifyContent="center"
       alignItems="center"
       width={badge ? 59 : undefined}
-      marginLeft={badge ? 'xs' : undefined}
+      marginLeft={badge ? 'xs' : marginLeft}
       disabled={!pressable}
     >
       <Hex color={colors[color]} width={14} />
       <Text
-        color="grayText"
-        variant="regular"
+        color={colorText ? color : 'grayText'}
+        variant={boldText ? 'bold' : 'regular'}
         fontSize={fontSize}
         marginLeft="xs"
       >
