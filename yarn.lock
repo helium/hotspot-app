@@ -2439,12 +2439,20 @@
   dependencies:
     bignumber.js "^9.0.0"
 
-"@helium/http@^3.49.0":
-  version "3.49.0"
-  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.49.0.tgz#052fc444b1f91006e959265167273516bfcd9918"
-  integrity sha512-CNGWZfSqwGLWkB9uoDO5N7fqFHPDCRARlx6TmCsG89XbcQjAzePLIF1vys9qKdxuVy3TyscAbGe2bQ33DcLlPQ==
+"@helium/currency@^3.52.0":
+  version "3.52.0"
+  resolved "https://registry.yarnpkg.com/@helium/currency/-/currency-3.52.0.tgz#68b8ec1c2db73b7c88f54c1b59686a5ade148986"
+  integrity sha512-L91EKuzO+X4v45df8fgr9ihR1WTzThTQIx3Uh2bQwpwkDjxvxdI6xq43VEhz0+y7JN2XGRl3tX4ljQST+Azw4Q==
   dependencies:
-    "@helium/currency" "^3.45.0"
+    bignumber.js "^9.0.0"
+
+"@helium/http@^3.53.0":
+  version "3.53.0"
+  resolved "https://registry.yarnpkg.com/@helium/http/-/http-3.53.0.tgz#b9fd84427a2a8fbcb1187f6e8738403cea2f5922"
+  integrity sha512-8ibrAKaY8YgJYvFWVm9S0WcfB60rvkmhX5wpRGqXM8lWZ+IMY2chWGEhV7U4OxVBVEMhmiyVLH0OtwVojXrs6w==
+  dependencies:
+    "@helium/crypto" "^3.45.0"
+    "@helium/currency" "^3.52.0"
     axios "^0.21.1"
     camelcase-keys "^6.2.2"
     qs "^6.9.3"
