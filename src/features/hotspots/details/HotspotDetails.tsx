@@ -677,7 +677,7 @@ const HotspotDetails = ({
 
           {selectedOption === 'witnesses' && (
             <>
-              {hotspotDetailsData.loading ? (
+              {hotspotDetailsData.loading || !witnesses ? (
                 <Box
                   paddingTop="xl"
                   backgroundColor="grayBoxLight"
