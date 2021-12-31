@@ -2412,10 +2412,10 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
-"@helium/crypto-react-native@^3.45.0":
-  version "3.45.0"
-  resolved "https://registry.yarnpkg.com/@helium/crypto-react-native/-/crypto-react-native-3.45.0.tgz#37a6188f2ffb3d5608e8d92e0e76068fc64de5c8"
-  integrity sha512-5LfNJDTiCTEd20hk3hjDhXi8wSh8Hw57Cee1HMlHyW1DlLKe8mX43Ge+9bnFwgXaTu2YOaiyK0yhUJyPKEuZ4A==
+"@helium/crypto-react-native@^3.50.0":
+  version "3.50.0"
+  resolved "https://registry.yarnpkg.com/@helium/crypto-react-native/-/crypto-react-native-3.50.0.tgz#a16547fc42db20121b7e20c94548ab24a974381b"
+  integrity sha512-B8lEicGKwqc3IhM6OGuXEWgQ8Dyg/2eqwkU93K1PAAFCpSuhDfKy9Oja40hcBQacLusCWAxcKcycpP4c5hljEA==
   dependencies:
     bs58 "^4.0.1"
     buffer "^6.0.1"
@@ -2431,13 +2431,6 @@
     bs58 "^4.0.1"
     create-hash "^1.2.0"
     libsodium-wrappers "^0.7.6"
-
-"@helium/currency@^3.45.0":
-  version "3.45.0"
-  resolved "https://registry.yarnpkg.com/@helium/currency/-/currency-3.45.0.tgz#326933225047601f447209fb9c77c6d4b114c381"
-  integrity sha512-6hajnB+L5OQgbQJyGzzYrHlcpRnt1j9thjt+zKhLP672VgfqJWaBs5unI+yhqHvF3JPB2/DsLj3/oT4hL0z84A==
-  dependencies:
-    bignumber.js "^9.0.0"
 
 "@helium/currency@^3.52.0":
   version "3.52.0"
@@ -2478,10 +2471,10 @@
   resolved "https://registry.yarnpkg.com/@helium/react-native-sdk/-/react-native-sdk-0.1.2.tgz#5b317baaf8088aae9bc0a580f7e8857cd2cc0a97"
   integrity sha512-Fa4p7yqddQMrlf91Xyn7lDNpoKbcdPnbnwCwHZsziVdKguOHkD7cp7aEz+z6xye/QKxEJ13VHO0crytguMRA8w==
 
-"@helium/transactions@^3.46.0":
-  version "3.46.0"
-  resolved "https://registry.yarnpkg.com/@helium/transactions/-/transactions-3.46.0.tgz#09e13f2f4d1c6043ebffbe0fb80231276fd60245"
-  integrity sha512-P3+d7JhLADVxpdBGqZxDJpUPSGeYN21hk60ezP3rG44uprTNwkD5fnJ80qdPxe01SxhTtAiXPB4ctXiDYRpcLg==
+"@helium/transactions@^3.49.1":
+  version "3.49.1"
+  resolved "https://registry.yarnpkg.com/@helium/transactions/-/transactions-3.49.1.tgz#21d703595f68bb490f82872e27718fc1a24a1d81"
+  integrity sha512-HZv8c6yWGYUT8WKCvob24b7TQrQ4WUSbc7a9icutBPbuLWWzpWUaYQ9ayBosUq5UxIBmkFzd5PvSbTkdQxhojQ==
   dependencies:
     "@helium/crypto" "^3.45.0"
     "@helium/proto" "^1.5.0"
