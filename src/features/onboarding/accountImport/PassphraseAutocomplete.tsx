@@ -54,8 +54,8 @@ const PassphraseAutocomplete = ({ onSelectWord, wordIdx }: Props) => {
       behavior="position"
       style={styles.container}
     >
-      <Box marginTop={{ smallPhone: 'm', phone: 'xxl' }}>
-        <Lock />
+      <Box marginTop={{ smallPhone: 's', phone: 'xxl' }}>
+        <Lock height={70} width={70} />
         <Text
           marginTop="l"
           variant="bold"
