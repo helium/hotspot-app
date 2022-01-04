@@ -8,6 +8,7 @@ import { decimalSeparator, locale } from '../../../utils/i18n'
 import { useColors } from '../../../theme/themeHooks'
 import { generateRewardScaleColor } from '../../../utils/hotspotUtils'
 import { Colors, Spacing } from '../../../theme/theme'
+import Box from '../../../components/Box'
 
 type Props = {
   hotspotId?: string
@@ -21,6 +22,7 @@ type Props = {
   fontSize?: number
   hitSlop?: Insets
   marginLeft?: Spacing
+  hexagonMarginTop?: Spacing
 }
 const HexBadge = ({
   hotspotId,
@@ -34,6 +36,7 @@ const HexBadge = ({
   boldText = false,
   marginLeft,
   hitSlop,
+  hexagonMarginTop,
 }: Props) => {
   const colors = useColors()
   const { t } = useTranslation()
@@ -90,7 +93,9 @@ const HexBadge = ({
       marginLeft={badge ? 'xs' : marginLeft}
       disabled={!pressable}
     >
-      <Hex color={colors[color]} width={14} />
+      <Box marginTop={hexagonMarginTop}>
+        <Hex color={colors[color]} width={14} />
+      </Box>
       <Text
         color={colorText ? color : 'grayText'}
         variant={boldText ? 'bold' : 'regular'}

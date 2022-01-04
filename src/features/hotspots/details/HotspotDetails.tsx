@@ -7,6 +7,7 @@ import {
   Linking,
   ActivityIndicator,
   Insets,
+  Platform,
 } from 'react-native'
 import { Hotspot, Witness } from '@helium/http'
 import Animated from 'react-native-reanimated'
@@ -721,16 +722,18 @@ const HotspotDetails = ({
                             {parseMarkup(
                               t('hotspot_details.witness_desc', {
                                 count: witnesses?.length || 0,
-                                avg: avgWitnessTransmitScale.toFixed(2),
                               }),
                             )}
-                            <Box marginBottom="n_xs">
+                            <Box height={18} justifyContent="flex-end">
                               <HexBadge
                                 rewardScale={avgWitnessTransmitScale}
                                 pressable={false}
                                 badge={false}
-                                fontSize={18}
-                                marginLeft="lm"
+                                fontSize={16}
+                                marginLeft={Platform.OS === 'ios' ? 'lm' : 'xs'}
+                                hexagonMarginTop={
+                                  Platform.OS === 'android' ? 'xs' : undefined
+                                }
                                 colorText
                                 boldText
                               />
