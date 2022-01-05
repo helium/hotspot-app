@@ -1,6 +1,6 @@
 {
   "name": "Helium",
-  "version": "3.8.6",
+  "version": "3.9.0",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
