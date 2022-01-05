@@ -5,5 +5,5 @@ export default {
   antennas,
   hotspots,
   id: 99999, // TODO: Get maker id from onboarding server
-  supportEmail: 'support@examplemaker.com', // TODO
+  supportEmail: 'support@hzdusun.com',
 }
