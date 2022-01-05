@@ -184,6 +184,12 @@ export const getHotspotWitnesses = async (address: string) => {
   return list.take(MAX)
 }
 
+export const getWitnessedHotspots = async (address: string) => {
+  Logger.breadcrumb('getWitnessedHotspots', breadcrumbOpts)
+  const list = await client.hotspot(address).witnessed.list()
+  return list.take(MAX)
+}
+
 export const getHotspotWitnessSums = async (params: {
   address: string
   bucket: Bucket
