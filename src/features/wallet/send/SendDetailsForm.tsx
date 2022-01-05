@@ -173,7 +173,7 @@ const SendDetailsForm = ({
     }
   }
 
-  // set setIsHotspotAddress for default address
+  // set isHotspotAddress for default address
   useAsync(async () => {
     if (
       address !== undefined &&
