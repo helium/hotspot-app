@@ -7,8 +7,7 @@ import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { decimalSeparator, locale } from '../../../utils/i18n'
 import { useColors } from '../../../theme/themeHooks'
 import { generateRewardScaleColor } from '../../../utils/hotspotUtils'
-import { Colors, Spacing } from '../../../theme/theme'
-import Box from '../../../components/Box'
+import { Colors } from '../../../theme/theme'
 
 type Props = {
   hotspotId?: string
@@ -21,8 +20,6 @@ type Props = {
   backgroundColor?: Colors
   fontSize?: number
   hitSlop?: Insets
-  marginLeft?: Spacing
-  hexagonMarginTop?: Spacing
 }
 const HexBadge = ({
   hotspotId,
@@ -34,9 +31,7 @@ const HexBadge = ({
   visible = true,
   colorText = false,
   boldText = false,
-  marginLeft,
   hitSlop,
-  hexagonMarginTop,
 }: Props) => {
   const colors = useColors()
   const { t } = useTranslation()
@@ -90,12 +85,10 @@ const HexBadge = ({
       justifyContent="center"
       alignItems="center"
       width={badge ? 59 : undefined}
-      marginLeft={badge ? 'xs' : marginLeft}
+      marginLeft={badge ? 'xs' : undefined}
       disabled={!pressable}
     >
-      <Box marginTop={hexagonMarginTop}>
-        <Hex color={colors[color]} width={14} />
-      </Box>
+      <Hex color={colors[color]} width={14} />
       <Text
         color={colorText ? color : 'grayText'}
         variant={boldText ? 'bold' : 'regular'}

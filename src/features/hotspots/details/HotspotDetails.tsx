@@ -7,7 +7,6 @@ import {
   Linking,
   ActivityIndicator,
   Insets,
-  Platform,
 } from 'react-native'
 import { Hotspot, Witness } from '@helium/http'
 import Animated from 'react-native-reanimated'
@@ -36,6 +35,7 @@ import {
   isDataOnly,
   HELIUM_OLD_MAKER_ADDRESS,
   isRelay,
+  generateRewardScaleColor,
 } from '../../../utils/hotspotUtils'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Articles from '../../../constants/articles'
@@ -426,6 +426,11 @@ const HotspotDetails = ({
     return total / witnesses.length
   }, [witnesses])
 
+  const avgTransmitScaleColor = useMemo(
+    () => generateRewardScaleColor(avgWitnessTransmitScale),
+    [avgWitnessTransmitScale],
+  )
+
   if (!hotspot) return null
 
   return (
@@ -724,20 +729,13 @@ const HotspotDetails = ({
                                 count: witnesses?.length || 0,
                               }),
                             )}
-                            <Box height={18} justifyContent="flex-end">
-                              <HexBadge
-                                rewardScale={avgWitnessTransmitScale}
-                                pressable={false}
-                                badge={false}
-                                fontSize={16}
-                                marginLeft={Platform.OS === 'ios' ? 'lm' : 'xs'}
-                                hexagonMarginTop={
-                                  Platform.OS === 'android' ? 'xs' : undefined
-                                }
-                                colorText
-                                boldText
-                              />
-                            </Box>
+                            <Text
+                              fontSize={18}
+                              color={avgTransmitScaleColor}
+                              variant="bold"
+                            >
+                              {` ${avgWitnessTransmitScale.toFixed(2)}`}
+                            </Text>
                           </>
                         )}
                       </Text>
