@@ -23,6 +23,7 @@ const boolKeys = [
   'hasFleetModeAutoEnabled',
   'convertHntToCurrency',
   'showHiddenHotspots',
+  'animationsEnabled',
 ] as const
 type BooleanKey = typeof boolKeys[number]
 const stringKeys = ['hiddenAddresses', 'network', 'currencyType'] as const
@@ -49,6 +50,7 @@ export type AccountState = {
     hasFleetModeAutoEnabled?: boolean
     convertHntToCurrency?: boolean
     showHiddenHotspots?: boolean
+    animationsEnabled?: boolean
     hiddenAddresses?: string
     network?: string
     currencyType?: string
@@ -63,7 +65,7 @@ const initialState: AccountState = {
   activityChart: {} as Record<FilterType, ActivityChart>,
   activityChartRange: 'daily',
   rewardsSum: { loading: true } as CacheRecord<AccountReward>,
-  settings: { network: 'stakejoy', currencyType },
+  settings: { network: 'stakejoy', currencyType, animationsEnabled: true },
   fetchAccountSettingsFailed: false,
 }
 
