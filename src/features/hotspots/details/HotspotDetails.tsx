@@ -35,18 +35,17 @@ import {
   isDataOnly,
   HELIUM_OLD_MAKER_ADDRESS,
   isRelay,
+  generateRewardScaleColor,
 } from '../../../utils/hotspotUtils'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import Articles from '../../../constants/articles'
 import HotspotListItem from '../../../components/HotspotListItem'
-import Info from '../../../assets/images/info-hollow.svg'
 import Location from '../../../assets/images/location.svg'
 import Signal from '../../../assets/images/signal.svg'
 import VisibilityOff from '../../../assets/images/visibility_off.svg'
 import HotspotIcon from '../../../assets/images/hotspot-icon-small.svg'
 import EarningsIcon from '../../../assets/images/earnings_icon.svg'
 import WitnessIcon from '../../../assets/images/checklist_challenge_witness.svg'
-import CheckCircle from '../../../assets/images/check-circle.svg'
 import { distance } from '../../../utils/location'
 import { useColors, useSpacing } from '../../../theme/themeHooks'
 import HotspotSheetHandle from '../root/HotspotSheetHandle'
@@ -57,6 +56,8 @@ import useHotspotSync from '../useHotspotSync'
 import useAlert from '../../../utils/useAlert'
 import { locale } from '../../../utils/i18n'
 import { NO_FEATURES } from '../../../components/Map'
+import Card from '../../../components/Card'
+import parseMarkup from '../../../utils/parseMarkup'
 
 const hitSlop = { top: 24, bottom: 24 } as Insets
 
@@ -221,7 +222,6 @@ const HotspotDetails = ({
         label: t('map_filter.witness.title'),
         value: 'witnesses',
         color: 'purpleMain',
-        Icon: CheckCircle,
       } as HeliumSelectItemType)
     }
     return data
@@ -294,19 +294,6 @@ const HotspotDetails = ({
     },
     [getDistance, onSelectHotspot],
   )
-
-  const showWitnessAlert = useCallback(async () => {
-    const decision = await showOKCancelAlert({
-      titleKey: 'hotspot_details.witness_prompt.title',
-      messageKey: 'hotspot_details.witness_prompt.message',
-      cancelKey: 'discovery.troubleshooting_guide',
-      cancelStyle: 'cancel',
-    })
-
-    if (!decision && Linking.canOpenURL(Articles.Witnesses)) {
-      Linking.openURL(Articles.Witnesses)
-    }
-  }, [showOKCancelAlert])
 
   const handleHeaderLayout = (event: LayoutChangeEvent) => {
     if (snapPoints[0] !== 0 && snapPoints[1] !== 0) return
@@ -428,6 +415,20 @@ const HotspotDetails = ({
   const bottomSheetBackground = useCallback(
     () => <Box flex={1} backgroundColor="white" />,
     [],
+  )
+
+  const avgWitnessTransmitScale = useMemo(() => {
+    if (!witnesses || witnesses.length === 0) return 0
+    const total = witnesses.reduce(
+      (sum, next) => sum + (next?.rewardScale || 0),
+      0,
+    )
+    return total / witnesses.length
+  }, [witnesses])
+
+  const avgTransmitScaleColor = useMemo(
+    () => generateRewardScaleColor(avgWitnessTransmitScale),
+    [avgWitnessTransmitScale],
   )
 
   if (!hotspot) return null
@@ -682,7 +683,7 @@ const HotspotDetails = ({
 
           {selectedOption === 'witnesses' && (
             <>
-              {hotspotDetailsData.loading ? (
+              {hotspotDetailsData.loading || !witnesses ? (
                 <Box
                   paddingTop="xl"
                   backgroundColor="grayBoxLight"
@@ -692,48 +693,60 @@ const HotspotDetails = ({
                 </Box>
               ) : (
                 <>
-                  <Box
-                    backgroundColor="grayBoxLight"
-                    marginBottom="xxs"
-                    paddingTop="m"
-                  >
+                  <Box backgroundColor="grayBoxLight" marginBottom="xxs">
                     <Box
-                      alignItems="center"
-                      flexDirection="row"
+                      alignItems="flex-start"
+                      flexDirection="column"
                       paddingTop="m"
                       paddingBottom="s"
                     >
+                      <Card
+                        padding="s"
+                        variant="elevated"
+                        backgroundColor="white"
+                        borderRadius="m"
+                        marginLeft="m"
+                        marginBottom="m"
+                      >
+                        <WitnessIcon
+                          color={colors.yellow}
+                          width={22}
+                          height={22}
+                        />
+                      </Card>
                       <Text
-                        variant="body1Medium"
-                        color="grayDarkText"
-                        fontSize={22}
+                        color="grayText"
                         paddingLeft="m"
                         paddingRight="s"
+                        fontSize={18}
                       >
-                        {t('hotspot_details.num_witnesses', {
-                          count: witnesses?.length || 0,
-                        })}
+                        {!witnesses || witnesses?.length === 0 ? (
+                          t('hotspot_details.witness_desc_none')
+                        ) : (
+                          <>
+                            {parseMarkup(
+                              t('hotspot_details.witness_desc', {
+                                count: witnesses?.length || 0,
+                              }),
+                            )}
+                            <Text
+                              fontSize={18}
+                              color={avgTransmitScaleColor}
+                              variant="bold"
+                            >
+                              {` ${avgWitnessTransmitScale.toFixed(2)}`}
+                            </Text>
+                          </>
+                        )}
                       </Text>
-                      <TouchableOpacityBox
-                        onPress={showWitnessAlert}
-                        hitSlop={{ top: 8, left: 8, bottom: 8, right: 8 }}
-                      >
-                        <Info color={colors.blueMain} />
-                      </TouchableOpacityBox>
                     </Box>
                     <Text
                       paddingHorizontal="m"
                       paddingBottom="m"
-                      color="grayDarkText"
+                      color="grayLightText"
+                      visible={witnesses && witnesses.length !== 0}
                     >
-                      {t(
-                        witnesses?.length === 0
-                          ? 'hotspot_details.witness_desc_none'
-                          : 'hotspot_details.witness_desc',
-                        {
-                          hotspotAnimal: formattedHotspotName[1],
-                        },
-                      )}
+                      {t('hotspot_details.witness_desc_two')}
                     </Text>
                     {witnesses?.length === 0 && (
                       <Box
