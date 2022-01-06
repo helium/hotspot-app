@@ -60,9 +60,6 @@ const MoreScreen = () => {
   const showHiddenHotspots = useSelector(
     (state: RootState) => state.account.settings.showHiddenHotspots,
   )
-  const animationsEnabled = useSelector(
-    (state: RootState) => state.account.settings.animationsEnabled,
-  )
   const account = useSelector((state: RootState) => state.account, isEqual)
   const fleetModeLowerLimit = useSelector(
     (state: RootState) => state.features.fleetModeLowerLimit,
@@ -192,15 +189,6 @@ const MoreScreen = () => {
       }),
     )
   }, [dispatch, showHiddenHotspots])
-
-  const handleToggleAnimations = useCallback(() => {
-    dispatch(
-      updateSetting({
-        key: 'animationsEnabled',
-        value: !animationsEnabled,
-      }),
-    )
-  }, [dispatch, animationsEnabled])
 
   const handleClearMapCache = useCallback(async () => {
     const decision = await showOKCancelAlert({
@@ -424,11 +412,6 @@ const MoreScreen = () => {
             value: showHiddenHotspots,
           },
           {
-            title: t('more.sections.app.disableAnimations'),
-            onToggle: handleToggleAnimations,
-            value: !animationsEnabled,
-          },
-          {
             title: t('more.sections.app.clearMapCache'),
             onPress: handleClearMapCache,
           },
@@ -463,9 +446,6 @@ const MoreScreen = () => {
     handleFleetMode,
     handleShowHiddenHotspots,
     showHiddenHotspots,
-    handleToggleAnimations,
-    animationsEnabled,
-    handleClearMapCache,
     handleSignOut,
     version,
     authIntervals,
@@ -473,6 +453,7 @@ const MoreScreen = () => {
     handleResetPin,
     handlePinRequiredForPayment,
     showingDeployModeConfirmation,
+    handleClearMapCache,
   ])
 
   const contentContainer = useMemo(
