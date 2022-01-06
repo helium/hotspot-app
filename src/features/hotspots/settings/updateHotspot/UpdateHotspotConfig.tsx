@@ -40,6 +40,7 @@ import {
 } from '../../../../store/activity/activitySlice'
 import { isPendingTransaction } from '../../../wallet/root/useActivityItem'
 import { useAppDispatch } from '../../../../store/store'
+import { hp } from '../../../../utils/layout'
 
 type Props = {
   onClose: () => void
@@ -397,7 +398,7 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
   )
 
   return (
-    <Box>
+    <Box minHeight={hp(75)}>
       {!fullScreen && (
         <UpdateHotspotHeader
           onClose={onClose}
