@@ -587,6 +587,7 @@ export default {
         enableHapticFeedback: 'Enable Haptic Feedback',
         enableFleetMode: 'Enable Fleet Mode',
         showHiddenHotspots: 'Show Hidden Hotspots',
+        disableAnimations: 'Disable Animations',
         convertHntToCurrency: 'Convert HNT to Currency',
         language: 'Language',
         currency: 'Currency',
