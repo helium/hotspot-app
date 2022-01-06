@@ -68,7 +68,7 @@ const DiscoveryModeResults = ({
   }, [])
 
   return (
-    <Box height={hp(85)}>
+    <Box height={hp(75)}>
       <DiscoveryMap
         responses={responses}
         onSelectHex={showOverlay}
