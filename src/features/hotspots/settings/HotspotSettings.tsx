@@ -1,15 +1,6 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Alert,
-  Animated,
-  Easing,
   KeyboardAvoidingView,
   Linking,
   Modal,
@@ -25,14 +16,12 @@ import Visibility from '@assets/images/visibility.svg'
 import VisibilityOff from '@assets/images/visibility_off.svg'
 import { unwrapResult } from '@reduxjs/toolkit'
 import { useAsync } from 'react-async-hook'
-import BlurBox from '../../../components/BlurBox'
 import Card from '../../../components/Card'
 import Text from '../../../components/Text'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import CloseModal from '../../../assets/images/closeModal.svg'
 import SafeAreaBox from '../../../components/SafeAreaBox'
-import { useColors, useSpacing } from '../../../theme/themeHooks'
-import AnimatedBox from '../../../components/AnimatedBox'
+import { useColors } from '../../../theme/themeHooks'
 import HotspotSettingsOption from './HotspotSettingsOption'
 import HotspotDiagnostics from './HotspotDiagnostics'
 import HotspotTransfer from '../transfers/HotspotTransfer'
@@ -71,8 +60,6 @@ const HotspotSettings = ({ hotspot }: Props) => {
   const { t } = useTranslation()
   const [settingsState, setSettingsState] = useState<State>('init')
   const [title, setTitle] = useState<string>(t('hotspot_settings.title'))
-  const { m } = useSpacing()
-  const slideUpAnimRef = useRef(new Animated.Value(1000))
   const { getState, enable } = useBluetoothContext()
   const dispatch = useAppDispatch()
   const {
@@ -106,19 +93,10 @@ const HotspotSettings = ({ hotspot }: Props) => {
   }, [dispatch, getState])
 
   useEffect(() => {
-    Animated.timing(slideUpAnimRef.current, {
-      toValue: showSettings ? m : 1000,
-      duration: 500,
-      useNativeDriver: true,
-      easing: Easing.elastic(0.8),
-      delay: showSettings ? 100 : 0,
-    }).start()
-
     if (showSettings) {
       setTitle(t('hotspot_settings.title'))
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showSettings])
+  }, [showSettings, t])
 
   const isHidden = useMemo(
     () => hotspot && hiddenAddresses?.includes(hotspot.address),
@@ -467,69 +445,34 @@ const HotspotSettings = ({ hotspot }: Props) => {
       animationType="fade"
       statusBarTranslucent
     >
-      <BlurBox
-        top={0}
-        left={0}
-        bottom={0}
-        right={0}
-        blurAmount={70}
-        blurType="dark"
-        position="absolute"
-      />
-
-      <SafeAreaBox flex={1} flexDirection="column" marginBottom="m">
-        <Box
-          flexDirection="row-reverse"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <TouchableOpacityBox
-            height={22}
-            padding="l"
-            alignItems="flex-end"
-            justifyContent="center"
-            marginEnd={settingsState === 'discoveryMode' ? 'n_s' : undefined}
-            onPress={handleClose}
-          >
+      <SafeAreaBox
+        flex={1}
+        flexDirection="column"
+        backgroundColor="purpleDark"
+        padding="m"
+      >
+        <Box flexDirection="row-reverse" justifyContent="space-between">
+          <TouchableOpacityBox height={22} onPress={handleClose}>
             <CloseModal color="white" />
           </TouchableOpacityBox>
-          {showBack && (
-            <BackButton
-              alignSelf="center"
-              onPress={goBack}
-              marginStart={settingsState === 'discoveryMode' ? 'n_m' : 'n_s'}
-            />
-          )}
-        </Box>
-        <AnimatedBox
-          marginTop="none"
-          marginBottom="ms"
-          justifyContent="flex-end"
-          flex={1}
-          marginHorizontal={settingsState === 'discoveryMode' ? 'none' : 'ms'}
-          style={{ transform: [{ translateY: slideUpAnimRef.current }] }}
-        >
-          <TouchableOpacityBox
-            top={0}
-            left={0}
-            bottom={0}
-            right={0}
-            position="absolute"
-            onPress={handleClose}
+          <BackButton
+            alignSelf="center"
+            onPress={goBack}
+            paddingHorizontal="s"
+            visible={showBack}
           />
-          <Box alignSelf="flex-start">
-            {(settingsState === 'init' || settingsState === 'scan') && (
-              <Text
-                variant="h2"
-                lineHeight={27}
-                color="white"
-                marginBottom="ms"
-                maxFontSizeMultiplier={1.2}
-              >
-                {title}
-              </Text>
-            )}
-          </Box>
+        </Box>
+        <Box flex={1} justifyContent="flex-end">
+          <Text
+            variant="h2"
+            lineHeight={27}
+            color="white"
+            marginBottom="ms"
+            maxFontSizeMultiplier={1.2}
+            visible={settingsState === 'init' || settingsState === 'scan'}
+          >
+            {title}
+          </Text>
 
           {settingsState !== 'scan' && (
             <KeyboardAvoidingView behavior="padding">
@@ -549,7 +492,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
               {pairingCard}
             </Card>
           )}
-        </AnimatedBox>
+        </Box>
       </SafeAreaBox>
     </Modal>
   )

@@ -88,7 +88,7 @@ const DiscoveryModeBegin = ({
   }, [recentDiscoveryInfo?.requestLength, t])
 
   return (
-    <Box height={hp(85)}>
+    <Box height={hp(75)}>
       <Box backgroundColor="purpleMain" height={210}>
         <Box
           paddingLeft="l"
