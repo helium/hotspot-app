@@ -1,8 +1,8 @@
 import { MakerAntenna } from '../antennaMakerTypes'
 
-const peoples = {
-  name: "PPL's Antenna",
+const PEOPLES = {
+  name:'"People\'s Antenna" - PPL',
   gain: 5.3,
 } as MakerAntenna
 
-export default { peoples }
+export default { PEOPLES }
