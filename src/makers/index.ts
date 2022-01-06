@@ -15,6 +15,7 @@ import sensecap from './sensecap'
 import syncrobit from './syncrobit'
 import kerlink from './kerlink'
 import heltec from './heltec'
+import peoples from './peoples/antennas'
 import pisces from './pisces'
 import controllino from './controllino'
 import freedomfi from './freedomfi'
@@ -68,6 +69,7 @@ export const AntennaModels = {
   ...syncrobit.antennas,
   ...kerlink.antennas,
   ...heltec.antennas,
+  ...peoples.antennas,
   ...pisces.antennas,
   ...controllino.antennas,
   ...freedomfi.antennas,
