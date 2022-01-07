@@ -841,6 +841,7 @@ export default {
         'Blockchain peers cannot to reach Hotspot. This can be due to router issues, no internet connection, or a firewall blocking incoming connections.',
       activity: 'Activity',
       blockchain_sync: 'Blockchain Sync',
+      block_height: 'Block Height',
       synced: '{{percent}} Synced',
       blockchain_height_help:
         'Hotspot must be 100% synced before it can start mining. This can take several hours or more depending on your internet speed. Keep the Hotspot powered on and connected to the internet.',

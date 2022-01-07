@@ -345,6 +345,17 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
             )}
           </Box>
 
+          <Box flexDirection="row" marginBottom="s">
+            <Text variant="body2Medium" color="black" flex={1}>
+              {t('hotspot_settings.diagnostics.block_height')}
+            </Text>
+            <Text variant="body2" color="black" marginLeft="s">
+              {info?.height
+                ? info.height.toLocaleString(locale)
+                : t('generic.unavailable')}
+            </Text>
+          </Box>
+
           <Box flexDirection="row">
             <Text variant="body2Medium" color="black" flex={1}>
               {t('hotspot_settings.diagnostics.last_challenged')}
