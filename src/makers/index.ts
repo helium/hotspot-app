@@ -69,7 +69,7 @@ export const AntennaModels = {
   ...syncrobit.antennas,
   ...kerlink.antennas,
   ...heltec.antennas,
-  ...peoples.antennas,
+  ...peoples,
   ...pisces.antennas,
   ...controllino.antennas,
   ...freedomfi.antennas,
