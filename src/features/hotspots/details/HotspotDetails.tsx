@@ -597,16 +597,13 @@ const HotspotDetails = ({
               marginLeft="m"
               height={24}
             >
-              {hotspot?.status !== undefined &&
-                hotspotSyncStatus?.status !== undefined && (
-                  <StatusBadge
-                    hitSlop={hitSlop}
-                    online={hotspot?.status?.online}
-                    syncStatus={hotspotSyncStatus?.status}
-                    onPress={handleToggleStatus}
-                    isDataOnly={dataOnly}
-                  />
-                )}
+              <StatusBadge
+                hitSlop={hitSlop}
+                online={hotspot?.status?.online}
+                syncStatus={hotspotSyncStatus?.status}
+                onPress={handleToggleStatus}
+                isDataOnly={dataOnly}
+              />
               {isRelayed && (
                 <TouchableOpacityBox
                   hitSlop={hitSlop}
