@@ -110,7 +110,7 @@ const HotspotDetails = ({
   const [isRelayed, setIsRelayed] = useState(false)
   const [timelineValue, setTimelineValue] = useState(7)
   const [timelineIndex, setTimelineIndex] = useState(2)
-  const [snapPoints, setSnapPoints] = useState([0, 0])
+  const [snapPoints, setSnapPoints] = useState([1, 1])
   const [listIndex, setListIndex] = useState(-1)
   const prevListIndex = usePrevious(listIndex)
   const prevHotspotAddress = usePrevious(propsHotspot?.address)
@@ -151,9 +151,7 @@ const HotspotDetails = ({
     if (visible || listIndex !== 1) return
 
     setListIndex(0)
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore bottom sheet type bug https://github.com/gorhom/react-native-bottom-sheet/issues/708
-    listRef.current?.snapTo(0)
+    listRef.current?.snapToIndex(0)
   }, [listIndex, visible])
 
   const rewardChartData = useMemo(() => {
@@ -296,7 +294,7 @@ const HotspotDetails = ({
   )
 
   const handleHeaderLayout = (event: LayoutChangeEvent) => {
-    if (snapPoints[0] !== 0 && snapPoints[1] !== 0) return
+    if (snapPoints[0] !== 1 && snapPoints[1] !== 1) return
     const nextSnapPoints = [event.nativeEvent.layout.height, hp(55)]
     onLayoutSnapPoints?.({
       collapsed: nextSnapPoints[0],
@@ -323,9 +321,7 @@ const HotspotDetails = ({
     }
     if (listIndex === 0) {
       setListIndex(1)
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore bottom sheet type bug https://github.com/gorhom/react-native-bottom-sheet/issues/708
-      listRef.current?.snapTo(1)
+      listRef.current?.snapToIndex(1)
       if (showStatusBanner) {
         return // banner is already showing, but was out of sight
       }
@@ -374,7 +370,7 @@ const HotspotDetails = ({
       listIndex !== 0
     ) {
       setListIndex(0)
-      listRef.current?.snapTo(0)
+      listRef.current?.snapToIndex(0)
       setSelectedOption(selectData[0].value)
       scrollViewRef.current?.scrollTo({ y: 0, x: 0, animated: false })
     } else {
@@ -391,7 +387,7 @@ const HotspotDetails = ({
         listRef.current?.close()
       } else if (!shouldClose && listIndex !== 0) {
         setListIndex(0)
-        listRef.current?.snapTo(0)
+        listRef.current?.snapToIndex(0)
         scrollViewRef.current?.scrollTo({ y: 0, x: 0, animated: false })
       }
     }
