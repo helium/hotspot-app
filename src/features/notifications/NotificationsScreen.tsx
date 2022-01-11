@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { Edge } from 'react-native-safe-area-context'
+import { useAsync } from 'react-async-hook'
 import SafeAreaBox from '../../components/SafeAreaBox'
 import { RootState } from '../../store/rootReducer'
 import { useAppDispatch } from '../../store/store'
@@ -29,13 +30,17 @@ const NotificationsScreen = () => {
     dispatch(markNotificationsViewed())
   }, [notifications, dispatch])
 
-  const refreshNotifications = useCallback(() => {
+  const refreshNotifications = useCallback(async () => {
     if (markNotificationStatus === 'pending') return
 
-    dispatch(fetchNotifications(filter))
+    await dispatch(fetchNotifications(filter))
   }, [dispatch, filter, markNotificationStatus])
 
-  useVisible({ onAppear: refreshNotifications, onDisappear: markAsRead })
+  useAsync(async () => {
+    await refreshNotifications()
+  }, [])
+
+  useVisible({ onDisappear: markAsRead })
 
   const onFilterChanged = useCallback(
     (notificationFilter: NotificationFilter) => {
@@ -53,7 +58,7 @@ const NotificationsScreen = () => {
         notifications={notifications}
         loadingNotification={loadingNotification}
         onRefresh={refreshNotifications}
-        refreshing={markNotificationStatus === 'pending'}
+        refreshing={loadingNotification}
         onFilterChanged={onFilterChanged}
         filter={filter}
       />

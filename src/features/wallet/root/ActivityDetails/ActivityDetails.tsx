@@ -69,12 +69,14 @@ const ActivityDetails = ({ detailTxn }: Props) => {
         icon={txnDisplayVals.detailIcon}
         title={txnDisplayVals.title}
         date={txnDisplayVals.time}
+        hash={txnDisplayVals.hash}
       />
     )
   }, [
     detailTxn,
     txnDisplayVals.backgroundColor,
     txnDisplayVals.detailIcon,
+    txnDisplayVals.hash,
     txnDisplayVals.time,
     txnDisplayVals.title,
   ])

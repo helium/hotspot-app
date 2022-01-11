@@ -55,7 +55,7 @@ const HotspotsViewHeader = ({
           translateY: interpolate(
             animatedPosition.value,
             [-1, 0],
-            [0, -1 * (detailHeaderHeight + (showNoLocation ? 40 : 180))],
+            [0, -1 * (detailHeaderHeight + (showNoLocation ? 40 : 126))],
             Extrapolate.CLAMP,
           ),
         },

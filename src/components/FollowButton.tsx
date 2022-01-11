@@ -11,7 +11,7 @@ import { followHotspot, unfollowHotspot } from '../store/hotspots/hotspotsSlice'
 import { Theme } from '../theme/theme'
 
 type Props = BoxProps<Theme> & {
-  address: string
+  address?: string
   colors?: { following: string; notFollowing: string }
   handleChange?: (following: boolean) => void
   duration?: number
@@ -31,7 +31,11 @@ const FollowButton = ({
   )
 
   useEffect(() => {
-    setFollowing(!!followedHotspots[address])
+    if (!address) {
+      setFollowing(false)
+    } else {
+      setFollowing(!!followedHotspots[address])
+    }
   }, [followedHotspots, address])
 
   const color = useMemo(() => {
@@ -41,6 +45,7 @@ const FollowButton = ({
   }, [colors, following, followPurple, grayPurple])
 
   const toggleFollowing = useCallback(() => {
+    if (!address) return
     setFollowing(!following)
     handleChange?.(!following)
     if (following) {

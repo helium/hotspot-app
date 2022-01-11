@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { Reward } from '@helium/http'
+import { Sum } from '@helium/http'
 import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
 import {
   getHotspotRewards,
@@ -12,7 +12,7 @@ import {
   handleCacheFulfilled,
   hasValidCache,
 } from '../../utils/cacheUtils'
-import { getWallet } from '../../utils/walletClient'
+import { getWallet, getWalletExt } from '../../utils/walletClient'
 
 export type WalletReward = {
   avg: number
@@ -33,8 +33,17 @@ type FetchDetailsParams = {
 
 type GatewayChartData = {
   rewardSum?: Balance<NetworkTokens>
-  rewards?: Reward[]
+  rewards?: Sum[]
   rewardsChange?: number
+}
+
+export type NetworkHotspotEarnings = {
+  avg_rewards: number
+  consensus: number
+  hotspot_count: number
+  securities: number
+  total: number
+  date: string
 }
 
 export type GatewayChartCache = CacheRecord<GatewayChartData>
@@ -45,10 +54,28 @@ export type GatewayIndex<T> = Record<GatewayAddress, T>
 
 type RewardsState = {
   chartData: GatewayIndex<GatewayChartRecord>
+  networkHotspotEarnings: CacheRecord<{ data: NetworkHotspotEarnings[] }>
+  networkHotspotEarningsLoaded: boolean
 }
 const initialState: RewardsState = {
   chartData: {},
+  networkHotspotEarnings: { lastFetchedTimestamp: 0, loading: false, data: [] },
+  networkHotspotEarningsLoaded: false,
 }
+
+export const fetchNetworkHotspotEarnings = createAsyncThunk<
+  NetworkHotspotEarnings[]
+>('rewards/fetchNetworkHotspotEarnings', async (_arg, { getState }) => {
+  const {
+    rewards: { networkHotspotEarnings },
+  } = (await getState()) as {
+    rewards: RewardsState
+  }
+  if (hasValidCache(networkHotspotEarnings, 30))
+    return networkHotspotEarnings.data
+
+  return getWalletExt('hotspots/earnings')
+})
 
 export const fetchChartData = createAsyncThunk<
   GatewayChartData,
@@ -69,7 +96,7 @@ export const fetchChartData = createAsyncThunk<
     const startDate = new Date()
     const endDate = new Date(startDate)
     endDate.setDate(endDate.getDate() - numDays)
-    const data: [WalletReward[], WalletReward[], Reward[]] = await Promise.all([
+    const data: [WalletReward[], WalletReward[], Sum[]] = await Promise.all([
       getWallet(`${resource}/rewards`, {
         addresses: address,
         dayRange: numDays,
@@ -157,6 +184,19 @@ const rewardsSlice = createSlice({
         ...state.chartData[address],
         [numDays]: nextState,
       }
+    })
+    builder.addCase(fetchNetworkHotspotEarnings.pending, (state, _action) => {
+      state.networkHotspotEarnings.loading = true
+    })
+    builder.addCase(fetchNetworkHotspotEarnings.fulfilled, (state, action) => {
+      state.networkHotspotEarnings = handleCacheFulfilled({
+        data: action.payload,
+      })
+      state.networkHotspotEarningsLoaded = true
+    })
+    builder.addCase(fetchNetworkHotspotEarnings.rejected, (state, _action) => {
+      state.networkHotspotEarnings.loading = false
+      state.networkHotspotEarningsLoaded = true
     })
   },
 })

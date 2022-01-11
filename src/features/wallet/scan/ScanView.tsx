@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useAsync } from 'react-async-hook'
-import { StyleSheet } from 'react-native'
+import { Platform, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner'
+import { BarCodeScanner } from 'expo-barcode-scanner'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
+import { BarCodeScanningResult, Camera } from 'expo-camera'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import Crosshair from './Crosshair'
-import { wp } from '../../../utils/layout'
+import { wp, ww } from '../../../utils/layout'
 import Close from '../../../assets/images/close.svg'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import useAlert from '../../../utils/useAlert'
@@ -17,10 +18,10 @@ import useHaptic from '../../../utils/useHaptic'
 import BSHandle from '../../../components/BSHandle'
 import { useSpacing } from '../../../theme/themeHooks'
 import {
-  useAppLinkContext,
   AddressType,
   InvalidAddressError,
   MismatchedAddressError,
+  useAppLinkContext,
 } from '../../../providers/AppLinkProvider'
 import {
   AppLinkCategoryType,
@@ -44,11 +45,9 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
   const { handleBarCode } = useAppLinkContext()
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    return navigation.addListener('focus', () => {
       setScanned(false)
     })
-
-    return unsubscribe
   }, [navigation])
 
   const { result: permissions } = useAsync(
@@ -61,7 +60,7 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
     triggerNavHaptic()
   }
 
-  const handleBarCodeScanned = async (result: BarCodeScannerResult) => {
+  const handleBarCodeScanned = async (result: BarCodeScanningResult) => {
     if (scanned) return
 
     try {
@@ -113,6 +112,44 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
     }
   }
 
+  const CameraPreview = () => {
+    if (Platform.OS === 'android') {
+      return (
+        <Box
+          height={ww * (4 / 3)}
+          width={ww}
+          position="absolute"
+          top={30}
+          bottom={0}
+          left={0}
+          right={0}
+        >
+          <Camera
+            onBarCodeScanned={!scanned ? handleBarCodeScanned : undefined}
+            barCodeScannerSettings={
+              !scanned
+                ? {
+                    barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+                  }
+                : undefined
+            }
+            style={StyleSheet.absoluteFillObject}
+            ratio="4:3"
+          />
+        </Box>
+      )
+    }
+    return (
+      <Camera
+        onBarCodeScanned={handleBarCodeScanned}
+        barCodeScannerSettings={{
+          barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+        }}
+        style={StyleSheet.absoluteFillObject}
+      />
+    )
+  }
+
   if (!permissions) {
     return <Box flex={1} backgroundColor="black" />
   }
@@ -131,12 +168,8 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
   }
 
   return (
-    <Box flex={1}>
-      <BarCodeScanner
-        onBarCodeScanned={handleBarCodeScanned}
-        barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
-        style={StyleSheet.absoluteFillObject}
-      />
+    <Box flex={1} backgroundColor="black">
+      <CameraPreview />
       <CloseButton onPress={navBack} />
       <Box flex={0.7} justifyContent="center" alignItems="center">
         <Crosshair width={wp(65)} height={wp(65)} color="white" />

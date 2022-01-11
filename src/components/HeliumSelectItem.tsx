@@ -100,6 +100,7 @@ const HeliumSelectItem = ({
         fontSize={fontSize}
         color={itemTextColor}
         marginLeft={Icon ? 'xs' : 'none'}
+        maxFontSizeMultiplier={1.2}
       >
         {text}
       </Text>

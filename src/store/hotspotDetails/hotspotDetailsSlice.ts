@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { Hotspot, Witness } from '@helium/http'
 import {
   getHotspotDetails,
-  getHotspotWitnesses,
+  getWitnessedHotspots,
 } from '../../utils/appDataClient'
 import {
   CacheRecord,
@@ -26,7 +26,7 @@ export const fetchHotspotData = createAsyncThunk<HotspotData, string>(
     }
     const data = await Promise.all([
       getHotspotDetails(address),
-      getHotspotWitnesses(address),
+      getWitnessedHotspots(address),
     ])
     return {
       hotspot: data[0],

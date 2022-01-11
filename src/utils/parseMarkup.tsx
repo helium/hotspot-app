@@ -22,6 +22,7 @@ const symbols: Record<string, JSX.Element> = {
   blue: <Text color="blueMain" />,
   green: <Text color="greenMain" />,
   purple: <Text color="purple" />,
+  purplemain: <Text color="purpleMain" />,
   red: <Text color="redMain" />,
   orange: <Text color="orange" />,
   yellow: <Text color="yellow" />,

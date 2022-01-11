@@ -45,7 +45,7 @@ const FirmwareUpdateNeededScreen = () => {
               {t('hotspot_setup.firmware_update.current_version')}
             </Text>
             <Text textAlign="center" variant="body1Mono">
-              {connectedHotspot.firmware?.version || '12.45.1'}
+              {connectedHotspot.firmware?.version}
             </Text>
           </Box>
           <Box flex={1}>
@@ -53,7 +53,7 @@ const FirmwareUpdateNeededScreen = () => {
               {t('hotspot_setup.firmware_update.required_version')}
             </Text>
             <Text textAlign="center" variant="body1Mono">
-              {connectedHotspot.firmware?.minVersion || '1234.123.1'}
+              {connectedHotspot.firmware?.minVersion}
             </Text>
           </Box>
         </Box>

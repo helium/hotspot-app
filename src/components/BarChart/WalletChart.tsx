@@ -72,10 +72,12 @@ const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
   }, [filter, activityChart, activityChartRange])
 
   useEffect(() => {
-    dispatch(
-      fetchActivityChart({ range: activityChartRange, filterType: filter }),
-    )
-  }, [dispatch, filter, activityChartRange, blockHeight])
+    if (chartEnabled) {
+      dispatch(
+        fetchActivityChart({ range: activityChartRange, filterType: filter }),
+      )
+    }
+  }, [dispatch, filter, activityChartRange, blockHeight, chartEnabled])
 
   const padding = 20
   const chartHeight = useMemo(() => height - headerHeight - padding, [
@@ -134,15 +136,17 @@ const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
 
   const hasData = useMemo(() => {
     if (filter === 'pending') return false
-    return data?.data?.length !== 0
-  }, [data?.data?.length, filter])
+    return data?.data !== undefined && data?.data?.length !== 0
+  }, [data?.data, filter])
 
   const { greenBright, blueBright } = useColors()
+
+  if (!chartEnabled) return null
 
   return (
     <Box
       {...boxProps}
-      height={chartEnabled && filter !== 'pending' ? height : 0}
+      height={chartEnabled && filter !== 'pending' && hasData ? height : 0}
     >
       <Box flexDirection="column" onLayout={handleHeaderLayout}>
         <Box flexDirection="row" justifyContent="space-between">

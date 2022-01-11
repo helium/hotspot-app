@@ -1,8 +1,8 @@
 import { MakerAntenna } from '../antennaMakerTypes'
 
 const FINESTRA_US = {
-  name: 'Finestra Miner (US 915)',
-  gain: 1.2,
+  name: 'FinestraMiner (US 915)',
+  gain: 2.6,
 } as MakerAntenna
 
 export default { FINESTRA_US }

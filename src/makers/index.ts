@@ -3,6 +3,7 @@ import bobcat from './bobcat'
 import cotx from './cotx'
 import clodpi from './clodpi'
 import customAntennas from './custom/antennas'
+import hntenna from './hntenna/antennas'
 import finestra from './finestra'
 import helium from './helium'
 import linxdot from './linxdot'
@@ -20,6 +21,9 @@ import freedomfi from './freedomfi'
 import hummingbird from './hummingbird'
 import merryIoT from './merryIoT'
 import dusun from './dusun'
+import milesight from './milesight'
+import deepernetwork from './deepernetwork'
+
 import { LangType, supportedLangs } from '../utils/i18n/i18nTypes'
 import { HotspotMakerLangField } from './hotspotMakerTypes'
 
@@ -45,6 +49,8 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
   hummingbird,
   merryIoT,
   dusun,
+  milesight,
+  deepernetwork,
 }
 
 export const AntennaModels = {
@@ -53,6 +59,7 @@ export const AntennaModels = {
   ...cotx.antennas,
   ...clodpi.antennas,
   ...customAntennas,
+  ...hntenna,
   ...finestra.antennas,
   ...helium.antennas,
   ...linxdot.antennas,
@@ -70,6 +77,9 @@ export const AntennaModels = {
   ...hummingbird.antennas,
   ...merryIoT.antennas,
   ...dusun.antennas,
+  ...milesight.antennas,
+  ...deepernetwork.antennas,
+
 }
 
 export const HotspotMakerModels = {
@@ -94,6 +104,8 @@ export const HotspotMakerModels = {
   ...hummingbird.hotspots,
   ...merryIoT.hotspots,
   ...dusun.hotspots,
+  ...milesight.hotspots,
+  ...deepernetwork.hotspots,
 }
 
 export type HotspotType = keyof typeof HotspotMakerModels

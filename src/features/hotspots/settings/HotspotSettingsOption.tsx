@@ -41,11 +41,16 @@ const HotspotSettingsOption = ({
         <Box>
           <Box flexDirection="row" alignItems="center" marginBottom="s">
             {compact && <Box marginEnd="s">{buttonIcon}</Box>}
-            <Text variant="medium" fontSize={17} color="black">
+            <Text
+              variant="medium"
+              fontSize={17}
+              color="black"
+              maxFontSizeMultiplier={1.2}
+            >
               {title}
             </Text>
           </Box>
-          <Text variant="body2" color="grayText">
+          <Text variant="body2" color="grayText" maxFontSizeMultiplier={1.2}>
             {subtitle}
           </Text>
           {!compact && (
