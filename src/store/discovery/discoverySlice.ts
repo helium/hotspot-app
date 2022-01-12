@@ -12,6 +12,7 @@ import { Loading } from '../activity/activitySlice'
 import { DiscoveryRequest, RecentDiscoveryInfo } from './discoveryTypes'
 
 export type DiscoveryState = {
+  hotspotDiscoStatuses: Record<string, CacheRecord<{ enabled: boolean }>>
   recentDiscoveryInfos: Record<string, RecentDiscoveryInfo>
   infoLoading: Loading
   requestLoading: Loading
@@ -22,12 +23,33 @@ export type DiscoveryState = {
 }
 
 const initialState: DiscoveryState = {
+  hotspotDiscoStatuses: {},
   infoLoading: 'idle',
   requestLoading: 'idle',
   recentDiscoveryInfos: {},
   hotspotsForHexId: {},
   loadingHotspotsForHex: false,
 }
+
+export const fetchHotspotDiscoStatus = createAsyncThunk<
+  { enabled: boolean },
+  { hotspotAddress: string }
+>('discovery/hotspotDiscoStatus', async ({ hotspotAddress }, { getState }) => {
+  const {
+    discovery: { hotspotDiscoStatuses },
+  } = getState() as {
+    discovery: DiscoveryState
+  }
+  const existing = hotspotDiscoStatuses[hotspotAddress]
+  if (hasValidCache(existing, 60)) {
+    throw new Error(
+      `Valid Cache Found - No need to fetch disco status for ${hotspotAddress}`,
+    )
+  }
+  return getWallet(`discoveries/${hotspotAddress}/status`, null, {
+    camelCase: true,
+  })
+})
 
 export const fetchHotspotsForHex = createAsyncThunk<
   Hotspot[],
@@ -150,6 +172,15 @@ const discoverySlice = createSlice({
     builder.addCase(fetchHotspotsForHex.rejected, (state) => {
       state.loadingHotspotsForHex = false
     })
+    builder.addCase(
+      fetchHotspotDiscoStatus.fulfilled,
+      (state, { meta: { arg }, payload }) => {
+        state.hotspotDiscoStatuses[arg.hotspotAddress] = handleCacheFulfilled(
+          payload,
+        )
+        state.loadingHotspotsForHex = false
+      },
+    )
   },
 })
 

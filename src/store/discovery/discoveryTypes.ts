@@ -5,6 +5,7 @@ export type RecentDiscoveryInfo = {
   requestsPerDay: number
   requestLength: number
   serverDate?: string
+  enabled: boolean
 }
 
 export type DiscoveryRequest = {

@@ -44,7 +44,12 @@ const DiscoveryModeBegin = ({
   const { showOKAlert } = useAlert()
   const [alertShown, setAlertShown] = useState(false)
   const colors = useColors()
-  const discovery = useSelector((state: RootState) => state.features.discovery)
+  const disabledMessage = useSelector(
+    (state: RootState) => state.features.discovery.message,
+  )
+  const enabled = useMemo(() => recentDiscoveryInfo?.enabled, [
+    recentDiscoveryInfo?.enabled,
+  ])
 
   useEffect(() => {
     if (isEqual(recentDiscoveryInfo?.recentRequests, recentRequests)) return
@@ -124,7 +129,7 @@ const DiscoveryModeBegin = ({
           >
             {subtitle}
           </Text>
-          {recentRequests && discovery.enabled && (
+          {recentRequests && enabled && (
             <Text
               variant="regular"
               fontSize={14}
@@ -138,7 +143,7 @@ const DiscoveryModeBegin = ({
           )}
         </Box>
       </Box>
-      {!discovery.enabled && (
+      {!enabled && (
         <Box
           flexDirection="row"
           backgroundColor="grayBox"
@@ -158,10 +163,10 @@ const DiscoveryModeBegin = ({
         </Box>
       )}
       <Box margin="l" marginTop="m" flex={1}>
-        {discovery?.message !== undefined &&
-          discovery?.message !== '' &&
+        {!enabled &&
+          disabledMessage &&
           parseMarkup(
-            discovery?.message?.replace(/\\n/g, '\n'),
+            disabledMessage.replace(/\\n/g, '\n'),
             <Text
               variant="regular"
               fontSize={16}
@@ -170,7 +175,7 @@ const DiscoveryModeBegin = ({
               marginBottom="m"
             />,
           )}
-        {recentRequests && discovery.enabled && (
+        {recentRequests && enabled && (
           <DiscoveryModeSessionInfo
             onBeginNew={onBeginNew}
             onRequestSelected={onRequestSelected}

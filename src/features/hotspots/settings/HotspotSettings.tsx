@@ -60,6 +60,7 @@ import useAlert from '../../../utils/useAlert'
 import { getLocationPermission } from '../../../store/location/locationSlice'
 import { isDataOnly } from '../../../utils/hotspotUtils'
 import { updateSetting } from '../../../store/account/accountSlice'
+import { fetchHotspotDiscoStatus } from '../../../store/discovery/discoverySlice'
 
 type State = 'init' | 'scan' | 'transfer' | 'discoveryMode' | 'updateHotspot'
 
@@ -96,9 +97,24 @@ const HotspotSettings = ({ hotspot }: Props) => {
   const isDeployModeEnabled = useSelector(
     (state: RootState) => state.app.isDeployModeEnabled,
   )
+
+  const discoStatuses = useSelector(
+    (state: RootState) => state.discovery.hotspotDiscoStatuses,
+  )
+
+  const discoEnabled = useMemo(
+    () => (hotspot?.address ? discoStatuses[hotspot.address]?.enabled : false),
+    [discoStatuses, hotspot?.address],
+  )
+
   const { showOKAlert, showOKCancelAlert } = useAlert()
 
   const dataOnly = useMemo(() => isDataOnly(hotspot), [hotspot])
+
+  useEffect(() => {
+    if (!hotspot?.address) return
+    dispatch(fetchHotspotDiscoStatus({ hotspotAddress: hotspot?.address }))
+  }, [dispatch, hotspot?.address])
 
   useEffect(() => {
     getState()
@@ -401,13 +417,15 @@ const HotspotSettings = ({ hotspot }: Props) => {
           />
         )}
         <Box backgroundColor="black" height={0.5} />
-        <HotspotSettingsOption
-          title={t('hotspot_settings.discovery.title')}
-          subtitle={t('hotspot_settings.discovery.subtitle')}
-          onPress={onPressDiscoveryMode}
-          compact
-          buttonIcon={<DiscoveryModeIcon color={purpleMain} />}
-        />
+        {discoEnabled && (
+          <HotspotSettingsOption
+            title={t('hotspot_settings.discovery.title')}
+            subtitle={t('hotspot_settings.discovery.subtitle')}
+            onPress={onPressDiscoveryMode}
+            compact
+            buttonIcon={<DiscoveryModeIcon color={purpleMain} />}
+          />
+        )}
         <Box backgroundColor="black" height={0.5} />
         <HotspotSettingsOption
           title={t('hotspot_settings.update.title')}
@@ -449,6 +467,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
     transferButtonTitle,
     hasActiveTransfer,
     onPressTransferSetting,
+    discoEnabled,
     onPressDiscoveryMode,
     purpleMain,
     onPressUpdateHotspot,
