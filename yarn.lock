@@ -2421,6 +2421,14 @@
     retry-axios "^2.1.2"
     snakecase-keys "^5.1.0"
 
+"@helium/onboarding@^3.59.0":
+  version "3.59.0"
+  resolved "https://registry.yarnpkg.com/@helium/onboarding/-/onboarding-3.59.0.tgz#82c601d32a29d7ea99abd4758618888a45e92550"
+  integrity sha512-Xbo3m3/2VbHEiOzDOp4mUbaK38xtEoOLcvUDk0BUMTWa+E6xAvul/uxHq0NAhQtbwUclkvDaZpfjo3EmXHsDPA==
+  dependencies:
+    axios "^0.24.0"
+    qs "^6.10.3"
+
 "@helium/proto-ble@^3.37.0":
   version "3.37.0"
   resolved "https://registry.yarnpkg.com/@helium/proto-ble/-/proto-ble-3.37.0.tgz#ec660a03815997b4cc62a5c52ad65cbf6e1f6684"
@@ -2435,10 +2443,10 @@
   dependencies:
     protobufjs "^6.8.9"
 
-"@helium/react-native-sdk@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@helium/react-native-sdk/-/react-native-sdk-0.1.2.tgz#5b317baaf8088aae9bc0a580f7e8857cd2cc0a97"
-  integrity sha512-Fa4p7yqddQMrlf91Xyn7lDNpoKbcdPnbnwCwHZsziVdKguOHkD7cp7aEz+z6xye/QKxEJ13VHO0crytguMRA8w==
+"@helium/react-native-sdk@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@helium/react-native-sdk/-/react-native-sdk-0.1.4.tgz#29a81cf1f4c07b431e0e29bd94309eae5eb169a8"
+  integrity sha512-bvdcdwwu0Zaj8GOIBQ1m6x+56p0Uhx9kWtNEsdUSejLJULnmrh/E/9atEE9wn4h1PFg+o1x3D3cemF5YvIfJPw==
 
 "@helium/transactions@^3.49.1":
   version "3.49.1"
@@ -4771,6 +4779,13 @@ axios@^0.21.1:
   integrity sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
   dependencies:
     follow-redirects "^1.10.0"
+
+axios@^0.24.0:
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.24.0.tgz#804e6fa1e4b9c5288501dd9dff56a7a0940d20d6"
+  integrity sha512-Q6cWsys88HoPgAaFAVUb0WpPk0O8iTeisR9IMqy9G8AbO4NlpVknrnQS03zzF9PGAWgO3cgletO3VjV/P7VztA==
+  dependencies:
+    follow-redirects "^1.14.4"
 
 axobject-query@^2.2.0:
   version "2.2.0"
@@ -7779,6 +7794,11 @@ follow-redirects@^1.10.0:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.1.tgz#d9114ded0a1cfdd334e164e6662ad02bfd91ff43"
   integrity sha512-HWqDgT7ZEkqRzBvc2s64vSZ/hfOceEol3ac/7tKwzuvEyWx3/4UegXh5oBOIotkGsObyk3xznnSRVADBgWSQVg==
+
+follow-redirects@^1.14.4:
+  version "1.14.7"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.7.tgz#2004c02eb9436eee9a21446a6477debf17e81685"
+  integrity sha512-+hbxoLbFMbRKDwohX8GkTataGqO6Jb7jGwpAlwgy2bIz25XtRm7KEzJM76R1WiNT5SwZkX4Y75SwBolkpmE7iQ==
 
 fontfaceobserver@^2.1.0:
   version "2.1.0"
@@ -12146,6 +12166,13 @@ qr.js@0.0.0:
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/qr.js/-/qr.js-0.0.0.tgz#cace86386f59a0db8050fa90d9b6b0e88a1e364f"
   integrity sha1-ys6GOG9ZoNuAUPqQ2baw6IoeNk8=
+
+qs@^6.10.3:
+  version "6.10.3"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.10.3.tgz#d6cde1b2ffca87b5aa57889816c5f81535e22e8e"
+  integrity sha512-wr7M2E0OFRfIfJZjKGieI8lBKb7fRCH4Fv5KNPEs7gJ8jadvotdsS08PzOKR7opXhZ/Xkjtt3WF9g38drmyRqQ==
+  dependencies:
+    side-channel "^1.0.4"
 
 qs@^6.5.0, qs@^6.9.3, qs@^6.9.6:
   version "6.10.1"
