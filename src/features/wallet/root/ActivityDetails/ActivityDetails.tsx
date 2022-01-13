@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { memo, useCallback, useEffect, useRef, useMemo } from 'react'
 import { Linking } from 'react-native'
 import {
@@ -86,7 +87,18 @@ const ActivityDetails = ({ detailTxn }: Props) => {
     [block],
   )
 
-  const snapPoints = useMemo(() => ['50%', '75%'], [])
+  const renderBackdrop = useCallback(
+    (props) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+      />
+    ),
+    [],
+  )
+
+  const snapPoints = useMemo(() => ['65%', '90%'], [])
   if (!detailTxn) return null
 
   return (
@@ -95,7 +107,7 @@ const ActivityDetails = ({ detailTxn }: Props) => {
         ref={sheet}
         snapPoints={snapPoints}
         handleComponent={renderHandle}
-        backdropComponent={BottomSheetBackdrop}
+        backdropComponent={renderBackdrop}
         onDismiss={onClose}
       >
         <BottomSheetScrollView>
