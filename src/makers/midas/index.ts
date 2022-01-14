@@ -4,6 +4,6 @@ import hotspots from './hotspots'
 export default {
   antennas,
   hotspots,
-  id: 999, // TODO: Get maker id from onboarding server
+  id: 26, 
   supportEmail: 'support@midaswireless.com',
 }
