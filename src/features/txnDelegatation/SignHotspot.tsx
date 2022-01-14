@@ -13,7 +13,6 @@ import {
   RootStackParamList,
 } from '../../navigation/main/tabTypes'
 import { getKeypair, verifyAppLinkAuthToken } from '../../utils/secureAccount'
-import { getStakingSignedTransaction } from '../../utils/stakingClient'
 import * as Logger from '../../utils/logger'
 
 type Route = RouteProp<RootStackParamList, 'SignHotspot'>
@@ -66,6 +65,7 @@ const SignHotspot = () => {
 
       const responseParams = {
         status: 'success',
+        gatewayAddress: gatewayTxn?.gateway?.b58 || locationTxn?.gateway?.b58,
       } as WalletLink.SignHotspotResponse
 
       if (gatewayTxn) {
@@ -78,11 +78,7 @@ const SignHotspot = () => {
           throw new Error('Failed to sign gateway txn')
         }
 
-        const signedGatewayTxn = await getStakingSignedTransaction(
-          txnOwnerSigned.gateway.b58,
-          txnOwnerSigned.toString(),
-        )
-        responseParams.gatewayTxn = signedGatewayTxn
+        responseParams.gatewayTxn = txnOwnerSigned.toString()
       }
 
       if (locationTxn && locationTxn.gateway?.b58) {
@@ -91,16 +87,7 @@ const SignHotspot = () => {
           owner: ownerKeypair,
           payer: ownerIsPayer ? ownerKeypair : undefined,
         })
-        let finalTxn = txnOwnerSigned.toString()
-        if (!ownerIsPayer) {
-          const stakingServerSignedTxn = await getStakingSignedTransaction(
-            locationTxn.gateway.b58,
-            finalTxn,
-          )
-          finalTxn = stakingServerSignedTxn
-        }
-
-        responseParams.assertTxn = finalTxn
+        responseParams.assertTxn = txnOwnerSigned.toString()
       }
 
       callback(responseParams)
