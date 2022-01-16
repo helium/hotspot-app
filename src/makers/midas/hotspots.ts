@@ -3,7 +3,7 @@ import { MakerHotspot } from '../hotspotMakerTypes'
 import ANTENNAS from './antennas'
 
 const MIDAS_926_B = {
-  name: 'Midas 926 Gateway',
+  name: 'Midas-926 Gateway',
   icon: HotspotIcon,
   onboardType: 'BLE',
   translations: {
