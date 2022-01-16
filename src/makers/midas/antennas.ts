@@ -1,17 +1,17 @@
 import { MakerAntenna } from '../antennaMakerTypes'
 
 const MIDAS_GATEWAY_US = {
-  name: 'MIDAS_GATEWAY(US 915)',
+  name: 'Midas-926 Gateway (US 915)',
   gain: 3,
 } as MakerAntenna
 
 const MIDAS_GATEWAY_EU = {
-  name: 'MIDAS_GATEWAY (EU 868)',
+  name: 'Midas-926 Gateway (EU 868)',
   gain: 3,
 } as MakerAntenna
 
 const MIDAS_GATEWAY_CN = {
-  name: 'MIDAS_GATEWAY (CN 470)',
+  name: 'Midas-926 Gateway (CN 470)',
   gain: 3,
 } as MakerAntenna
 
