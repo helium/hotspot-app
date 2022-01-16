@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next'
 import Box from '../../../../components/Box'
 import { FilterKeys, FilterType } from '../walletTypes'
 import { useAppDispatch } from '../../../../store/store'
-import activitySlice from '../../../../store/activity/activitySlice'
+import activitySlice, {
+  fetchTxnsHead,
+} from '../../../../store/activity/activitySlice'
 import accountSlice from '../../../../store/account/accountSlice'
 import HeliumSelect from '../../../../components/HeliumSelect'
 import { HeliumSelectItemType } from '../../../../components/HeliumSelectItem'
@@ -40,6 +42,7 @@ const ActivityCardHeader = ({ filter, paddingVertical }: Props) => {
       if (nextFilter !== filter) {
         dispatch(accountSlice.actions.resetActivityChart())
         dispatch(activitySlice.actions.setFilter(nextFilter))
+        dispatch(fetchTxnsHead({ filter: nextFilter }))
       }
     },
     [filter, dispatch],

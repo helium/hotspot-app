@@ -15,7 +15,13 @@ import MapboxGL, {
 import { Feature, Point, Position } from 'geojson'
 import { Hotspot, Witness } from '@helium/http'
 import { BoxProps } from '@shopify/restyle'
-import { StyleProp, ViewStyle } from 'react-native'
+import {
+  PixelRatio,
+  Platform,
+  Pressable,
+  StyleProp,
+  ViewStyle,
+} from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { h3ToGeo } from 'h3-js'
 import Config from 'react-native-config'
@@ -29,8 +35,11 @@ import { theme, Theme } from '../theme/theme'
 import { useColors } from '../theme/themeHooks'
 import Coverage from './Coverage'
 import { distance } from '../utils/location'
+import LocationIcon from '../assets/images/location-icon.svg'
 
 const defaultLngLat = [-122.419418, 37.774929] // San Francisco
+
+export const NO_FEATURES = 'no_features'
 
 type Props = BoxProps<Theme> & {
   onMapMoved?: (coords?: Position) => void
@@ -41,9 +50,11 @@ type Props = BoxProps<Theme> & {
   currentLocationEnabled?: boolean
   zoomLevel?: number
   mapCenter?: number[]
+  markerLocation?: number[]
   ownedHotspots?: Hotspot[]
   followedHotspots?: Hotspot[]
   selectedHotspot?: Hotspot | Witness
+  selectedHex?: string
   witnesses?: Witness[]
   animationMode?: 'flyTo' | 'easeTo' | 'moveTo'
   animationDuration?: number
@@ -79,6 +90,8 @@ const Map = ({
   followedHotspots,
   showRewardScale,
   cameraBottomOffset,
+  selectedHex,
+  markerLocation,
   ...props
 }: Props) => {
   const colors = useColors()
@@ -156,13 +169,17 @@ const Map = ({
     loadMapBoundsAndZoom()
   }, [])
 
-  const selectedHex = useMemo(() => selectedHotspot?.locationHex, [
-    selectedHotspot?.locationHex,
-  ])
+  const selectedHexId = useMemo(
+    () => selectedHex || selectedHotspot?.locationHex,
+    [selectedHex, selectedHotspot?.locationHex],
+  )
 
-  const onHexPress = (id: string) => {
-    onHexSelected(id)
-  }
+  const onHexPress = useCallback(
+    (id: string) => {
+      onHexSelected(id)
+    },
+    [onHexSelected],
+  )
 
   useEffect(() => {
     if (loaded && userCoords) {
@@ -179,10 +196,11 @@ const Map = ({
   )
 
   const bounds = useMemo(() => {
+    if (selectedHexId === NO_FEATURES) return
     const boundsLocations: number[][] = []
     let hotspotCoords: number[] | undefined
 
-    if (mapCenter && !selectedHotspot && !selectedHex) {
+    if (mapCenter && !selectedHotspot && !selectedHexId) {
       boundsLocations.push(mapCenter)
     }
 
@@ -192,8 +210,8 @@ const Map = ({
       boundsLocations.push(hotspotCoords)
     }
 
-    if (selectedHex && !selectedHotspot) {
-      boundsLocations.push(h3ToGeo(selectedHex).reverse())
+    if (selectedHexId && !selectedHotspot) {
+      boundsLocations.push(h3ToGeo(selectedHexId).reverse())
     }
 
     if (hotspotCoords) {
@@ -217,7 +235,7 @@ const Map = ({
     }
 
     return findBounds(boundsLocations, cameraBottomOffset)
-  }, [mapCenter, cameraBottomOffset, selectedHex, selectedHotspot, witnesses])
+  }, [mapCenter, cameraBottomOffset, selectedHexId, selectedHotspot, witnesses])
 
   const defaultCameraSettings = useMemo(() => {
     const centerCoordinate =
@@ -232,79 +250,120 @@ const Map = ({
     }
   }, [mapCenter, zoomLevel])
 
+  const onPressMap = useCallback(
+    async (event) => {
+      if (selectedHexId !== NO_FEATURES) {
+        onHexPress('')
+      }
+      const { locationX, locationY } = event.nativeEvent
+      let locX = locationX
+      let locY = locationY
+
+      if (Platform.OS === 'android') {
+        locX = locationX * PixelRatio.get()
+        locY = locationY * PixelRatio.get()
+      }
+
+      if (!map.current) return
+      const stuff = await map.current.queryRenderedFeaturesAtPoint(
+        [locX, locY],
+        undefined,
+        ['hexagonFill'],
+      )
+
+      if (!stuff?.features[0]?.properties?.id) {
+        onHexPress(NO_FEATURES)
+      } else {
+        onHexPress(stuff.features[0].properties.id)
+      }
+    },
+    [onHexPress, selectedHexId],
+  )
+
   return (
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    <Box {...props}>
-      {showNoLocation && (
-        <Box
-          position="absolute"
-          zIndex={100}
-          top={0}
-          left={0}
-          right={0}
-          bottom={250}
-          justifyContent="center"
-          alignItems="center"
-        >
-          <NoLocation color={colors.purpleMain} />
-          <Text variant="h2" color="white" marginTop="m">
-            {t('hotspot_details.no_location_title')}
-          </Text>
-          <Text variant="body2" color="purpleMuted" marginTop="s">
-            {t('hotspot_details.no_location_body')}
-          </Text>
-        </Box>
-      )}
-      <MapboxGL.MapView
-        ref={map}
-        onRegionDidChange={onRegionDidChange}
-        onRegionWillChange={onMapMoving}
-        onDidFinishLoadingMap={onDidFinishLoad}
-        styleURL={Config.MAPBOX_STYLE_URL}
-        style={styles.map}
-        logoEnabled={false}
-        rotateEnabled={false}
-        pitchEnabled={false}
-        scrollEnabled={interactive}
-        zoomEnabled={interactive}
-        compassEnabled={false}
+    <Pressable onPress={onPressMap}>
+      <Box
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        {...props}
       >
-        {(showUserLocation || currentLocationEnabled) && (
-          <MapboxGL.UserLocation onUpdate={handleUserLocationUpdate}>
-            <MapboxGL.SymbolLayer
-              id="markerLocation"
-              style={styles.markerLocation}
-            />
-          </MapboxGL.UserLocation>
+        {showNoLocation && (
+          <Box
+            position="absolute"
+            zIndex={100}
+            top={0}
+            left={0}
+            right={0}
+            bottom={250}
+            justifyContent="center"
+            alignItems="center"
+          >
+            <NoLocation color={colors.purpleMain} />
+            <Text variant="h2" color="white" marginTop="m">
+              {t('hotspot_details.no_location_title')}
+            </Text>
+            <Text variant="body2" color="purpleMuted" marginTop="s">
+              {t('hotspot_details.no_location_body')}
+            </Text>
+          </Box>
         )}
-        <MapboxGL.Camera
-          ref={camera}
-          maxZoomLevel={maxZoomLevel}
-          minZoomLevel={minZoomLevel}
-          defaultSettings={defaultCameraSettings}
-          bounds={bounds}
-          animationMode={animationMode}
-          animationDuration={animationDuration}
-        />
-        <MapboxGL.Images images={mapImages} />
-        {showNearbyHotspots && (
-          <Coverage
-            showGrid={showH3Grid}
-            bounds={mapBounds}
-            mapZoom={mapZoomLevel}
-            onHexSelected={onHexPress}
-            selectedHexId={selectedHex}
-            witnesses={witnesses}
-            ownedHotspots={ownedHotspots}
-            followedHotspots={followedHotspots}
-            showRewardScale={showRewardScale}
+        <MapboxGL.MapView
+          ref={map}
+          onRegionDidChange={onRegionDidChange}
+          onRegionWillChange={onMapMoving}
+          onDidFinishLoadingMap={onDidFinishLoad}
+          styleURL={Config.MAPBOX_STYLE_URL}
+          style={styles.map}
+          logoEnabled={false}
+          rotateEnabled={false}
+          pitchEnabled={false}
+          scrollEnabled={interactive}
+          zoomEnabled={interactive}
+          compassEnabled={false}
+        >
+          {(showUserLocation || currentLocationEnabled) && (
+            <MapboxGL.UserLocation onUpdate={handleUserLocationUpdate}>
+              <MapboxGL.SymbolLayer
+                id="markerLocation"
+                style={styles.markerLocation}
+              />
+            </MapboxGL.UserLocation>
+          )}
+          <MapboxGL.Camera
+            ref={camera}
+            maxZoomLevel={maxZoomLevel}
+            minZoomLevel={minZoomLevel}
+            defaultSettings={defaultCameraSettings}
+            bounds={bounds}
+            animationMode={animationMode}
+            animationDuration={animationDuration}
           />
+          <MapboxGL.Images images={mapImages} />
+          {showNearbyHotspots && (
+            <Coverage
+              showGrid={showH3Grid}
+              bounds={mapBounds}
+              mapZoom={mapZoomLevel}
+              selectedHexId={selectedHexId === NO_FEATURES ? '' : selectedHexId}
+              witnesses={witnesses}
+              ownedHotspots={ownedHotspots}
+              followedHotspots={followedHotspots}
+              showRewardScale={showRewardScale}
+            />
+          )}
+          {markerLocation !== undefined && (
+            <MapboxGL.PointAnnotation
+              id="locationCenterMarker"
+              coordinate={markerLocation}
+            >
+              <LocationIcon color="white" />
+            </MapboxGL.PointAnnotation>
+          )}
+        </MapboxGL.MapView>
+        {currentLocationEnabled && (
+          <CurrentLocationButton onPress={centerUserLocation} />
         )}
-      </MapboxGL.MapView>
-      {currentLocationEnabled && (
-        <CurrentLocationButton onPress={centerUserLocation} />
-      )}
-    </Box>
+      </Box>
+    </Pressable>
   )
 }
 

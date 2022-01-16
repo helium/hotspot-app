@@ -89,6 +89,7 @@ const ValidatorListItem = ({
             ellipsizeMode="tail"
             numberOfLines={1}
             maxWidth={210}
+            maxFontSizeMultiplier={1.2}
           >
             {animalName(validator.address)}
           </Text>
@@ -112,6 +113,7 @@ const ValidatorListItem = ({
                 fontSize={12}
                 marginLeft="xs"
                 minWidth={90}
+                maxFontSizeMultiplier={1.2}
               >
                 {reward}
               </Text>
@@ -123,6 +125,7 @@ const ValidatorListItem = ({
               fontSize={12}
               marginLeft="xs"
               marginRight="m"
+              maxFontSizeMultiplier={1.2}
             >
               {validator.penalty?.toFixed(2)}
             </Text>

@@ -15,6 +15,8 @@ type Props = {
   pressable?: boolean
   badge?: boolean
   visible?: boolean
+  colorText?: boolean
+  boldText?: boolean
   backgroundColor?: Colors
   fontSize?: number
   hitSlop?: Insets
@@ -27,6 +29,8 @@ const HexBadge = ({
   badge = true,
   fontSize = 13,
   visible = true,
+  colorText = false,
+  boldText = false,
   hitSlop,
 }: Props) => {
   const colors = useColors()
@@ -54,13 +58,13 @@ const HexBadge = ({
   }, [hotspotId, t])
 
   const color = useMemo(() => {
-    if (!rewardScale) return 'white'
+    if (!rewardScale) return 'grayText'
 
     return generateRewardScaleColor(rewardScale)
   }, [rewardScale])
 
   const scaleString = useMemo(() => {
-    if (!rewardScale) return ''
+    if (!rewardScale) return `0${decimalSeparator}00`
 
     if (rewardScale === 1) return `1${decimalSeparator}00`
 
@@ -70,7 +74,7 @@ const HexBadge = ({
     })
   }, [rewardScale])
 
-  if (!rewardScale || !visible) return null
+  if (rewardScale === undefined || !visible) return null
   return (
     <TouchableOpacityBox
       onPress={handlePress}
@@ -86,8 +90,8 @@ const HexBadge = ({
     >
       <Hex color={colors[color]} width={14} />
       <Text
-        color="grayText"
-        variant="regular"
+        color={colorText ? color : 'grayText'}
+        variant={boldText ? 'bold' : 'regular'}
         fontSize={fontSize}
         marginLeft="xs"
       >

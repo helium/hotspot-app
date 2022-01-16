@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import React, { memo, useCallback, useMemo, useState } from 'react'
 import { Hotspot } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
@@ -7,6 +7,7 @@ import LocationIcon from '@assets/images/location-icon.svg'
 import Balance, { NetworkTokens } from '@helium/currency'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import { Pressable } from 'react-native'
+import { useAsync } from 'react-async-hook'
 import Box from './Box'
 import Text from './Text'
 import useCurrency from '../utils/useCurrency'
@@ -51,16 +52,12 @@ const HotspotListItem = ({
   const handlePress = useCallback(() => onPress?.(gateway), [gateway, onPress])
   const [reward, setReward] = useState('')
 
-  const updateReward = useCallback(async () => {
+  useAsync(async () => {
     if (!totalReward) return
 
     const nextReward = await hntBalanceToDisplayVal(totalReward, false)
     setReward(`+${nextReward}`)
   }, [hntBalanceToDisplayVal, totalReward])
-
-  useEffect(() => {
-    updateReward()
-  }, [updateReward])
 
   const locationText = useMemo(() => {
     const { geocode: geo } = gateway as Hotspot
@@ -106,6 +103,7 @@ const HotspotListItem = ({
                   paddingEnd="s"
                   ellipsizeMode="tail"
                   numberOfLines={2}
+                  maxFontSizeMultiplier={1.2}
                   maxWidth={220}
                 >
                   {animalName(gateway.address)}
@@ -117,6 +115,7 @@ const HotspotListItem = ({
                   variant="body3Light"
                   color={hidden ? 'grayLightText' : 'blueGray'}
                   marginTop="s"
+                  maxFontSizeMultiplier={1.2}
                 >
                   {locationText}
                 </Text>
@@ -138,6 +137,7 @@ const HotspotListItem = ({
                       variant="body2"
                       color={hidden ? 'grayLightText' : 'grayDarkText'}
                       paddingEnd="s"
+                      maxFontSizeMultiplier={1.2}
                     >
                       {reward}
                     </Text>
@@ -155,6 +155,7 @@ const HotspotListItem = ({
                       variant="regular"
                       fontSize={12}
                       marginLeft="xs"
+                      maxFontSizeMultiplier={1.2}
                     >
                       {t('hotspot_details.distance_away', {
                         distance: distanceAway,
@@ -179,6 +180,7 @@ const HotspotListItem = ({
                       variant="regular"
                       fontSize={12}
                       marginLeft="xs"
+                      maxFontSizeMultiplier={1.2}
                     >
                       {t('generic.meters', {
                         distance: (gateway as Hotspot)?.elevation || 0,
@@ -190,6 +192,7 @@ const HotspotListItem = ({
                         variant="regular"
                         fontSize={12}
                         marginLeft="xs"
+                        maxFontSizeMultiplier={1.2}
                       >
                         {(((gateway as Hotspot).gain || 0) / 10).toFixed(1) +
                           t('antennas.onboarding.dbi')}
@@ -203,6 +206,7 @@ const HotspotListItem = ({
                     variant="regular"
                     fontSize={12}
                     marginLeft="s"
+                    maxFontSizeMultiplier={1.2}
                   >
                     {t('hotspot_details.relayed')}
                   </Text>

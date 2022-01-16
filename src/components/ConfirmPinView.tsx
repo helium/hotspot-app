@@ -101,7 +101,9 @@ const ConfirmPinView = ({
         {title}
       </Text>
 
-      <Text variant="body1">{subtitle}</Text>
+      <Text variant="body1" maxFontSizeMultiplier={1}>
+        {subtitle}
+      </Text>
       <Animated.View style={{ transform: [{ translateX: shakeAnim.current }] }}>
         <PinDisplay length={pin.length} marginVertical="xl" />
       </Animated.View>
@@ -114,7 +116,9 @@ const ConfirmPinView = ({
       <Box flex={1} justifyContent="center">
         {clearable && onCancel && (
           <TouchableOpacityBox padding="l" onPress={onCancel}>
-            <Text variant="body1">{t('more.sections.app.signOut')}</Text>
+            <Text variant="body1" maxFontSizeMultiplier={2}>
+              {t('more.sections.app.signOut')}
+            </Text>
           </TouchableOpacityBox>
         )}
       </Box>

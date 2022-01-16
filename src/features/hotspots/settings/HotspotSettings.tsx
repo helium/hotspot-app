@@ -24,6 +24,7 @@ import { visible } from '@shopify/restyle'
 import Visibility from '@assets/images/visibility.svg'
 import VisibilityOff from '@assets/images/visibility_off.svg'
 import { unwrapResult } from '@reduxjs/toolkit'
+import { useAsync } from 'react-async-hook'
 import BlurBox from '../../../components/BlurBox'
 import Card from '../../../components/Card'
 import Text from '../../../components/Text'
@@ -59,11 +60,6 @@ import useAlert from '../../../utils/useAlert'
 import { getLocationPermission } from '../../../store/location/locationSlice'
 import { isDataOnly } from '../../../utils/hotspotUtils'
 import { updateSetting } from '../../../store/account/accountSlice'
-import {
-  fetchTxnsHead,
-  HttpTransaction,
-} from '../../../store/activity/activitySlice'
-import { isPendingTransaction } from '../../wallet/root/useActivityItem'
 
 type State = 'init' | 'scan' | 'transfer' | 'discoveryMode' | 'updateHotspot'
 
@@ -146,19 +142,16 @@ const HotspotSettings = ({ hotspot }: Props) => {
 
   const [hasActiveTransfer, setHasActiveTransfer] = useState<boolean>()
   const [activeTransfer, setActiveTransfer] = useState<Transfer>()
-  useEffect(() => {
-    const fetchTransfer = async () => {
-      if (!hotspot) return
-      try {
-        const transfer = await getTransfer(hotspot.address)
-        setHasActiveTransfer(transfer !== undefined)
-        setActiveTransfer(transfer)
-      } catch (e) {
-        setHasActiveTransfer(false)
-      }
+  useAsync(async () => {
+    if (!hotspot?.address || !showSettings) return
+    try {
+      const transfer = await getTransfer(hotspot.address)
+      setHasActiveTransfer(transfer !== undefined)
+      setActiveTransfer(transfer)
+    } catch (e) {
+      setHasActiveTransfer(false)
     }
-    fetchTransfer()
-  }, [hotspot])
+  }, [showSettings, hotspot])
 
   const transferButtonTitle = useMemo(() => {
     if (hasActiveTransfer === undefined) {
@@ -188,27 +181,9 @@ const HotspotSettings = ({ hotspot }: Props) => {
     setNextState('discoveryMode')
   }, [setNextState])
 
-  const onPressUpdateHotspot = useCallback(async () => {
-    // Check for pending assert
-    const pending = (await dispatch(fetchTxnsHead({ filter: 'pending' }))) as {
-      payload?: HttpTransaction[]
-    }
-    const txns = pending.payload
-    const hasPending = txns?.find((pendingTxn) => {
-      if (!isPendingTransaction(pendingTxn)) return
-
-      return (
-        pendingTxn.txn.type === 'assert_location_v2' &&
-        pendingTxn.status === 'pending' &&
-        pendingTxn.txn.gateway === hotspot?.address
-      )
-    })
-    if (hasPending) {
-      Toast.show(t('hotspot_settings.reassert.already_pending'), Toast.LONG)
-    } else {
-      setNextState('updateHotspot')
-    }
-  }, [dispatch, hotspot?.address, setNextState, t])
+  const onPressUpdateHotspot = useCallback(() => {
+    setNextState('updateHotspot')
+  }, [setNextState])
 
   const onPressTransferSetting = useCallback(() => {
     if (hasActiveTransfer) {
@@ -549,6 +524,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
                 lineHeight={27}
                 color="white"
                 marginBottom="ms"
+                maxFontSizeMultiplier={1.2}
               >
                 {title}
               </Text>
@@ -556,9 +532,7 @@ const HotspotSettings = ({ hotspot }: Props) => {
           </Box>
 
           {settingsState !== 'scan' && (
-            <KeyboardAvoidingView
-              behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            >
+            <KeyboardAvoidingView behavior="padding">
               <Card variant="modal" backgroundColor="white" overflow="hidden">
                 {ownerSettings}
               </Card>

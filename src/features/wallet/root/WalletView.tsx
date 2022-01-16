@@ -23,7 +23,6 @@ import { useSelector } from 'react-redux'
 import BottomSheet from '@gorhom/bottom-sheet'
 import { useNavigation } from '@react-navigation/native'
 import ActivityCard from './ActivityCard/ActivityCard'
-import { ActivityViewState } from './walletTypes'
 import { Spacing } from '../../../theme/theme'
 import { useSpacing } from '../../../theme/themeHooks'
 import Box from '../../../components/Box'
@@ -36,7 +35,6 @@ import WalletHeaderCondensed from './WalletHeaderCondensed'
 import animateTransition from '../../../utils/animateTransition'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 import useHaptic from '../../../utils/useHaptic'
-import WalletEmpty from './WalletEmpty'
 import {
   HttpPendingTransaction,
   HttpTransaction,
@@ -44,16 +42,16 @@ import {
 
 type Props = {
   showSkeleton: boolean
-  activityViewState: ActivityViewState
+  loadingTxns: boolean
   txns: HttpTransaction[]
   pendingTxns: HttpPendingTransaction[]
 }
 
 const WalletView = ({
   showSkeleton,
-  activityViewState,
   txns,
   pendingTxns,
+  loadingTxns,
 }: Props) => {
   const animatedCardIndex = useSharedValue<number>(1)
   const [hasNoResults, setHasNoResults] = useState(false)
@@ -104,14 +102,9 @@ const WalletView = ({
 
   const toggleShowReceive = useCallback(() => {
     const snapToIndex = activityCardIndex >= 1 ? 0 : 1
-    activityCardRef.current?.snapTo(snapToIndex)
+    activityCardRef.current?.snapToIndex(snapToIndex)
     triggerNavHaptic()
   }, [activityCardIndex, triggerNavHaptic])
-
-  const balanceLoaded = useMemo(
-    () => account?.balance?.integerBalance !== undefined,
-    [account?.balance?.integerBalance],
-  )
 
   useEffect(() => {
     const updateBalanceInfo = async () => {
@@ -143,12 +136,9 @@ const WalletView = ({
 
   useEffect(() => {
     const noResults =
-      activityViewState === 'activity' &&
-      !showSkeleton &&
-      pendingTxns.length === 0 &&
-      txns.length === 0
+      !showSkeleton && pendingTxns.length === 0 && txns.length === 0
     setHasNoResults(noResults)
-  }, [activityViewState, pendingTxns.length, showSkeleton, txns.length])
+  }, [pendingTxns.length, showSkeleton, txns.length])
 
   const condensedHeaderStyle = useAnimatedStyle(
     () => ({
@@ -224,50 +214,34 @@ const WalletView = ({
         />
       </Animated.View>
       <Box flex={1}>
-        {(activityViewState === 'activity' ||
-          balanceInfoSplit.hasBalance ||
-          !balanceLoaded) && (
-          <Box onLayout={handleLayout('header')}>
-            <WalletHeader handleScanPressed={navScan} />
-            <BalanceCard
-              onReceivePress={toggleShowReceive}
-              onSendPress={handleSendPress}
-              balanceInfo={balanceInfoSplit}
-              account={account}
-              accountLoading={
-                fetchAccountState === 'idle' || fetchAccountState === 'rejected'
-              }
-              toggleConvertHntToCurrency={toggleConvertHntToCurrency}
-            />
-          </Box>
-        )}
-
-        {activityViewState === 'no_activity' &&
-          !balanceInfoSplit.hasBalance &&
-          balanceLoaded && <WalletEmpty handleScanPressed={navScan} />}
-
-        <WalletAddress
-          flex={1}
-          loading={activityViewState === 'undetermined'}
-          alignItems="center"
-          justifyContent="center"
-        />
+        <Box onLayout={handleLayout('header')}>
+          <WalletHeader handleScanPressed={navScan} />
+          <BalanceCard
+            onReceivePress={toggleShowReceive}
+            onSendPress={handleSendPress}
+            balanceInfo={balanceInfoSplit}
+            account={account}
+            accountLoading={
+              fetchAccountState !== 'fulfilled' && !balanceInfoSplit.hasBalance
+            }
+            toggleConvertHntToCurrency={toggleConvertHntToCurrency}
+          />
+        </Box>
+        <WalletAddress flex={1} alignItems="center" justifyContent="center" />
       </Box>
-
-      {activityViewState !== 'no_activity' && (
-        <ActivityCard
-          ref={activityCardRef}
-          showSkeleton={showSkeleton}
-          filter={filter}
-          txns={txns}
-          pendingTxns={pendingTxns}
-          hasNoResults={hasNoResults}
-          paddingVertical={listTopPadding.key}
-          snapPoints={snapPoints}
-          animatedIndex={animatedCardIndex}
-          onChange={setActivityCardIndex}
-        />
-      )}
+      <ActivityCard
+        ref={activityCardRef}
+        showSkeleton={showSkeleton}
+        filter={filter}
+        txns={txns}
+        loadingTxns={loadingTxns}
+        pendingTxns={pendingTxns}
+        hasNoResults={hasNoResults}
+        paddingVertical={listTopPadding.key}
+        snapPoints={snapPoints}
+        animatedIndex={animatedCardIndex}
+        onChange={setActivityCardIndex}
+      />
     </>
   )
 }

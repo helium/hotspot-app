@@ -53,7 +53,7 @@ export const fetchIncidents = createAsyncThunk(
 )
 
 const heliumStatusSlice = createSlice({
-  name: 'heliumStatus',
+  name: 'status',
   initialState,
   reducers: {},
   extraReducers: (builder) => {

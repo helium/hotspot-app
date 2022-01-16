@@ -121,17 +121,16 @@ const HotspotsList = ({
     },
   })
 
-  useVisible({
-    onAppear: () => {
-      maybeGetLocation(false, locationDeniedHandler)
-    },
+  useMount(() => {
+    maybeGetLocation(false, locationDeniedHandler)
   })
 
   useAsync(async () => {
     if (
       !myValidatorsLoaded ||
       !followedValidatorsLoaded ||
-      loadingValidatorRewards
+      loadingValidatorRewards ||
+      !visible
     ) {
       return
     }
@@ -152,6 +151,7 @@ const HotspotsList = ({
     validators,
     followedValidators,
     loadingValidatorRewards,
+    visible,
   ])
 
   useEffect(() => {
@@ -288,17 +288,28 @@ const HotspotsList = ({
                 marginTop="xs"
                 marginBottom="xl"
                 letterSpacing={1}
+                maxFontSizeMultiplier={1.2}
               >
                 {t('hotspots.list.no_offline')}
               </Text>
-              <Text variant="body3Medium" color="grayDark" letterSpacing={1}>
+              <Text
+                variant="body3Medium"
+                color="grayDark"
+                letterSpacing={1}
+                maxFontSizeMultiplier={1.2}
+              >
                 {t('hotspots.list.online')}
               </Text>
             </Box>
           )}
         {!filterHasHotspots && (
           <Box paddingHorizontal="l">
-            <Text variant="body1" color="grayDark" padding="m">
+            <Text
+              variant="body1"
+              color="grayDark"
+              padding="m"
+              maxFontSizeMultiplier={1.2}
+            >
               {t('hotspots.list.no_results')}
             </Text>
           </Box>
@@ -365,6 +376,7 @@ const HotspotsList = ({
   )
 
   useEffect(() => {
+    if (!visible) return
     if (
       prevGatewaySortOrder !== gatewaySortOrder ||
       prevVisibleHotspots.length !== visibleHotspots.length
@@ -403,6 +415,7 @@ const HotspotsList = ({
     rewardsFetchIndex,
     gatewaySortOrder,
     prevGatewaySortOrder,
+    visible,
   ])
 
   const onViewableItemsChanged = useCallback(

@@ -59,12 +59,10 @@ type WalletHotspot = Hotspot & { lat: string; lng: string }
 export const fetchHotspotsData = createAsyncThunk(
   'hotspots/fetchHotspotsData',
   async (_arg) => {
-    const allHotspots = await Promise.all(
-      [
-        getHotspots(),
-        getWallet('hotspots/follow', null, { camelCase: true }),
-      ].map((p) => p.catch(() => {})),
-    )
+    const allHotspots = await Promise.all([
+      getHotspots(),
+      getWallet('hotspots/follow', null, { camelCase: true }),
+    ])
 
     const [hotspots = [], followedHotspots = []]: [
       Hotspot[],
@@ -138,7 +136,7 @@ const hotspotsToObj = (hotspots: Hotspot[]) =>
   }, {})
 
 const hotspotsSlice = createSlice({
-  name: 'hotspotDetails',
+  name: 'hotspots',
   initialState,
   reducers: {
     signOut: () => {

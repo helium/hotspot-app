@@ -87,7 +87,7 @@ const initialState = {
 } as NotificationState
 
 const notificationSlice = createSlice({
-  name: 'location',
+  name: 'notifications',
   initialState,
   reducers: {
     pushNotificationOpened: (

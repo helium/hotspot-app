@@ -39,6 +39,7 @@ const HeliumActionSheetItem = ({ label, onPress, selected, Icon }: Props) => {
         color={selected ? 'purpleMain' : 'black'}
         variant={selected ? 'medium' : 'regular'}
         fontSize={18}
+        maxFontSizeMultiplier={1.2}
       >
         {label}
       </Text>

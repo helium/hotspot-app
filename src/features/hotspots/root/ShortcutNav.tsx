@@ -27,7 +27,7 @@ import Text from '../../../components/Text'
 import { useColors, useSpacing } from '../../../theme/themeHooks'
 import Box from '../../../components/Box'
 import usePrevious from '../../../utils/usePrevious'
-import TouchableOpacityBox from '../../../components/BSTouchableOpacityBox'
+import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import { GlobalOpt, GLOBAL_OPTS } from './hotspotTypes'
 import { isGlobalOption, isHotspot } from '../../../utils/hotspotUtils'
 import { isValidator } from '../../../utils/validatorUtils'
@@ -89,9 +89,10 @@ type FollowedValidator = Hotspot & Followed
 type Item = { address: string; owner?: string; name?: string }
 
 const getItemId = (item: GlobalOpt | Item) =>
-  isGlobalOption(item) ? item : item.address
+  isGlobalOption(item) ? item : item?.address
 
 const getAnimalName = <T extends Item>(item: T) => {
+  if (item?.name === undefined && item?.address === undefined) return ''
   const pieces = (item.name || animalName(item.address)).split('-')
   return pieces[pieces.length - 1]
 }
@@ -116,15 +117,15 @@ const sortItems = <T extends Item>({
   type FollowedItem = T & Followed
   const uniqueItems = uniqBy(
     [...followed.map((h) => ({ ...h, followed: true })), ...owned],
-    (h) => h.address,
+    (h) => h?.address,
   ) as FollowedItem[]
 
   const groupedItems = uniqueItems.reduce(
     (val, item) => {
-      if (!item.followed) {
+      if (!item?.followed) {
         return { ...val, owned: [...val.owned, item] }
       }
-      if (item.owner === ownerAddress) {
+      if (item?.owner === ownerAddress) {
         return {
           ...val,
           ownedAndFollowed: [...val.ownedAndFollowed, item],
@@ -208,7 +209,7 @@ const ShortcutNav = ({
         return selected === item
       }
       if (!isGlobalOption(selected) && !isGlobalOption(item)) {
-        return selected.address === item.address
+        return selected?.address === item?.address
       }
 
       return false
@@ -391,11 +392,11 @@ const ShortcutNav = ({
 
   const renderGateway = useCallback(
     (item: FollowedHotspot | FollowedValidator, index: number) => {
-      if (!item.name) return null
-      const isOwner = item.owner === ownerAddress
-      const followedAndUnowned = item.followed && !isOwner
-      const followedAndOwned = item.followed && isOwner
-      const [, , animal] = item.name.split('-')
+      if (!item?.name) return null
+      const isOwner = item?.owner === ownerAddress
+      const followedAndUnowned = item?.followed && !isOwner
+      const followedAndOwned = item?.followed && isOwner
+      const [, , animal] = item?.name.split('-')
       const itemIsValidator = isValidator(item)
       const colorObj = itemColors[itemIsValidator ? 'validator' : 'hotspot']
       let colorScheme = colorObj.owned
@@ -415,10 +416,10 @@ const ShortcutNav = ({
           height={ITEM_SIZE}
           flexDirection="row"
           paddingRight="m"
-          paddingLeft={item.followed ? 'xs' : 'm'}
+          paddingLeft={item?.followed ? 'xs' : 'm'}
           alignItems="center"
         >
-          {item.followed && (
+          {item?.followed && (
             <Box
               marginRight="s"
               borderRadius="round"
@@ -506,21 +507,21 @@ const ShortcutNav = ({
     if (isGlobalOption(item)) {
       return item
     }
-    return item.address
+    return item?.address
   }, [])
 
   const contentContainerStyle = useMemo(() => {
     const halfWidth = wp(50)
     let firstItemWidth = ITEM_SIZE
     if (data.length && isValidator(data[0])) {
-      firstItemWidth = sizes[data[0].address] || 0
+      firstItemWidth = sizes[data[0]?.address] || 0
     }
     const paddingStart = halfWidth - firstItemWidth / 2
 
     const lastItem = data[data.length - 1]
     let lastItemWidth = ITEM_SIZE
-    if (lastItem && !isGlobalOption(lastItem) && sizes[lastItem.address]) {
-      lastItemWidth = sizes[lastItem.address] || 0
+    if (lastItem && !isGlobalOption(lastItem) && sizes[lastItem?.address]) {
+      lastItemWidth = sizes[lastItem?.address] || 0
     }
     const paddingEnd = halfWidth - lastItemWidth / 2 - spacing.s
     return { paddingStart, paddingEnd }

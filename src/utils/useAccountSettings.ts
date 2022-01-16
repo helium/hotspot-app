@@ -1,5 +1,4 @@
 import { useCallback, useEffect } from 'react'
-import useAppState from 'react-native-appstate-hook'
 import { useSelector } from 'react-redux'
 import { useAsync } from 'react-async-hook'
 import accountSlice, {
@@ -89,6 +88,7 @@ export default () => {
     accountSettings.network,
     accountSettingsLoaded,
     retryCount,
+    proxyEnabled,
     featuresLoaded,
   ])
 
@@ -97,14 +97,6 @@ export default () => {
 
     await refreshAccountSettingsAndFeatures()
   }, [accountBackedUp, refreshAccountSettingsAndFeatures])
-
-  useAppState({
-    onForeground: async () => {
-      if (accountBackedUp) {
-        await refreshAccountSettingsAndFeatures()
-      }
-    },
-  })
 
   useEffect(() => {
     if (!accountSettingsLoaded || transferRequired !== undefined) return

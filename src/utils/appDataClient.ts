@@ -9,6 +9,8 @@ import Client, {
 import { Transaction } from '@helium/transactions'
 import { Platform } from 'react-native'
 import Config from 'react-native-config'
+import { getVersion } from 'react-native-device-info'
+import { subDays } from 'date-fns'
 import {
   HotspotActivityFilters,
   HotspotActivityType,
@@ -18,14 +20,14 @@ import { fromNow } from './timeUtils'
 import * as Logger from './logger'
 
 const MAX = 100000
-const name =
-  Platform.OS === 'android' ? 'helium-wallet-android' : 'helium-wallet-ios'
+const userAgent = `helium-hotspot-app-${getVersion()}-${Platform.OS}-js-client`
 
 const baseURL = Config.HTTP_CLIENT_PROXY_URL
 
 let client = new Client(Network.production, {
   retry: 1,
-  name,
+  name: userAgent,
+  userAgent,
 })
 
 export const updateClient = ({
@@ -49,8 +51,9 @@ export const updateClient = ({
   }
   client = new Client(network, {
     retry: retryCount,
-    name,
+    name: userAgent,
     headers,
+    userAgent,
   })
 }
 
@@ -58,13 +61,13 @@ const breadcrumbOpts = { type: 'HTTP Request', category: 'appDataClient' }
 
 export const configChainVars = async () => {
   Logger.breadcrumb('configChainVars', breadcrumbOpts)
-  const vars = await client.vars.get()
+  const vars = await client.vars.getTransactionVars()
   Transaction.config(vars)
 }
 
-export const getChainVars = async () => {
+export const getChainVars = async (keys?: string[]) => {
   Logger.breadcrumb('getChainVars', breadcrumbOpts)
-  return client.vars.get()
+  return client.vars.get(keys)
 }
 
 export const getAddress = async () => {
@@ -88,20 +91,6 @@ export const getValidators = async () => {
 
   const newValidatorsList = await client.account(address).validators.list()
   return newValidatorsList.takeJSON(MAX)
-}
-
-export const getValidatorRewards = async (
-  address: string,
-  numDaysBack: number,
-  date: Date = new Date(),
-) => {
-  Logger.breadcrumb('getValidatorRewards', breadcrumbOpts)
-  const endDate = new Date(date)
-  endDate.setDate(date.getDate() - numDaysBack)
-  const list = await client
-    .validator(address)
-    .rewards.list({ minTime: endDate, maxTime: date })
-  return list.take(MAX)
 }
 
 export const searchValidators = async (searchTerm: string) => {
@@ -156,23 +145,48 @@ export const getHotspotDetails = async (address: string): Promise<Hotspot> => {
   return client.hotspots.get(address)
 }
 
+const getRewardsRange = (numDaysBack: number) => {
+  const startOfToday = new Date()
+  startOfToday.setUTCHours(0, 0, 0, 0)
+  const maxTime = startOfToday
+  const minTime = subDays(startOfToday, numDaysBack)
+  return { maxTime, minTime }
+}
+
+export const getValidatorRewards = async (
+  address: string,
+  numDaysBack: number,
+  bucket: Bucket = 'day',
+) => {
+  Logger.breadcrumb('getValidatorRewards', breadcrumbOpts)
+  const list = await client
+    .validator(address)
+    .rewards.sum.list({ ...getRewardsRange(numDaysBack), bucket })
+  return list.take(MAX)
+}
+
 export const getHotspotRewards = async (
   address: string,
   numDaysBack: number,
-  date: Date = new Date(),
+  bucket: Bucket = 'day',
 ) => {
   Logger.breadcrumb('getHotspotRewards', breadcrumbOpts)
-  const endDate = new Date(date)
-  endDate.setDate(date.getDate() - numDaysBack)
+
   const list = await client
     .hotspot(address)
-    .rewards.list({ minTime: endDate, maxTime: date })
+    .rewards.sum.list({ ...getRewardsRange(numDaysBack), bucket })
   return list.take(MAX)
 }
 
 export const getHotspotWitnesses = async (address: string) => {
   Logger.breadcrumb('getHotspotWitnesses', breadcrumbOpts)
   const list = await client.hotspot(address).witnesses.list()
+  return list.take(MAX)
+}
+
+export const getWitnessedHotspots = async (address: string) => {
+  Logger.breadcrumb('getWitnessedHotspots', breadcrumbOpts)
+  const list = await client.hotspot(address).witnessed.list()
   return list.take(MAX)
 }
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import { upperFirst } from 'lodash'
+import { upperCase } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import Carousel from 'react-native-snap-carousel'
 import { useAsync } from 'react-async-hook'
@@ -18,25 +18,39 @@ const RevealWordsScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation()
 
-  const renderItem = ({ item, index }: { item: string; index: number }) => (
-    <Card
-      marginHorizontal="s"
-      variant="elevated"
-      flex={1}
-      overflow="hidden"
-      backgroundColor="white"
-      paddingHorizontal="l"
-      alignItems="center"
-      flexDirection="row"
-    >
-      <Text variant="h1" color="purpleLight" maxFontSizeMultiplier={1}>{`${
-        index + 1
-      }. `}</Text>
-      <Text variant="h1" color="purpleDark" maxFontSizeMultiplier={1}>
-        {upperFirst(item)}
-      </Text>
-    </Card>
-  )
+  const renderItem = ({ item, index }: { item: string; index: number }) => {
+    const isFirst = index === 0
+    const isLast = index + 1 === mnemonic?.words.length
+    return (
+      <Card
+        marginHorizontal="s"
+        marginLeft={isFirst ? 'l' : undefined}
+        marginRight={isLast ? 'l' : undefined}
+        variant="elevated"
+        flex={1}
+        overflow="hidden"
+        backgroundColor="white"
+        padding="l"
+        alignItems="center"
+        flexDirection="row"
+      >
+        <Text
+          variant="bold"
+          fontSize={39}
+          color="purpleLight"
+          maxFontSizeMultiplier={1}
+        >{`${index + 1}. `}</Text>
+        <Text
+          variant="bold"
+          fontSize={39}
+          color="purpleDark"
+          maxFontSizeMultiplier={1}
+        >
+          {upperCase(item)}
+        </Text>
+      </Card>
+    )
+  }
 
   return (
     <SafeAreaBox
@@ -67,6 +81,10 @@ const RevealWordsScreen = () => {
           sliderWidth={wp(100)}
           itemWidth={wp(90)}
           inactiveSlideScale={1}
+          useExperimentalSnap
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore this is a new beta prop and enforces only scrolling one item at a time
+          disableIntervalMomentum
         />
       </Box>
       <Box flex={1} />

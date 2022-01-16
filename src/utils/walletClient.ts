@@ -1,10 +1,15 @@
 import Config from 'react-native-config'
 import qs from 'qs'
+import { Platform } from 'react-native'
+import { getVersion } from 'react-native-device-info'
 import { getWalletApiToken } from './secureAccount'
 import * as Logger from './logger'
 
 const breadcrumbOpts = { type: 'HTTP Request', category: 'walletClient' }
 
+const userAgent = `helium-hotspot-app-${getVersion()}-${
+  Platform.OS
+}-wallet-client`
 let network = 'stakejoy'
 
 export const updateNetwork = (nextNetwork: string) => {
@@ -34,6 +39,7 @@ const makeRequest = async (
         'Cache-Control': 'no-cache',
         'Content-Type': 'application/json',
         Authorization: token,
+        'User-Agent': userAgent,
       },
     })
 
@@ -118,4 +124,43 @@ export const deleteWallet = async (
   }
 
   return makeRequest(url, opts)
+}
+
+export const getWalletExt = async (url: string) => {
+  Logger.breadcrumb(`httpRequest GET ${url}`, breadcrumbOpts)
+  try {
+    const baseUrl = Config.WALLET_API_BASE_URL.replace('/api', '/ext/api')
+    const route = [baseUrl, url].join('/')
+
+    const response = await fetch(route, {
+      method: 'GET',
+      headers: {
+        network,
+        'Cache-Control': 'no-cache',
+        'Content-Type': 'application/json',
+        'User-Agent': userAgent,
+      },
+    })
+
+    if (!response.ok) {
+      const errorMessage = `Bad response, status:${response.status} message:${response.statusText} GET url:${route}`
+      Logger.breadcrumb(errorMessage, breadcrumbOpts)
+      throw new Error(errorMessage)
+    }
+
+    const text = await response.text()
+    try {
+      const json = JSON.parse(text)
+      const responseData = json.data || json
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      responseData.serverDate = response.headers.map?.date
+      return responseData
+    } catch (err) {
+      return text
+    }
+  } catch (error) {
+    Logger.breadcrumb('fetch failed', breadcrumbOpts)
+    throw error
+  }
 }
