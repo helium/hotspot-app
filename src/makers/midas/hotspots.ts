@@ -16,7 +16,7 @@ const MIDAS_926_B = {
       ],
       bluetooth: [
         'Use the provided pin to press the BT Button on the back of the Hotspot and hold for more than 15 seconds.',
-        'The hotspot is ready to pair when the third indicator light turns blue.\n\nMake sure your phone\'s Bluetooth is turned on! And Move the phone close to the device to increase the success rate of device connection!',
+        "The hotspot is ready to pair when the third indicator light turns blue.\n\nMake sure your phone's Bluetooth is turned on! And Move the phone close to the device to increase the success rate of device connection!",
       ],
     },
     ja: {
