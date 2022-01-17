@@ -24,6 +24,7 @@ import milesight from './milesight'
 import deepernetwork from './deepernetwork'
 import { LangType, supportedLangs } from '../utils/i18n/i18nTypes'
 import { HotspotMakerLangField } from './hotspotMakerTypes'
+import edatec from './edatec'
 
 export const Makers: Record<string, { id: number; supportEmail: string }> = {
   PantherX,
@@ -48,6 +49,7 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
   merryIoT,
   milesight,
   deepernetwork,
+  edatec,
 }
 
 export const AntennaModels = {
@@ -75,6 +77,7 @@ export const AntennaModels = {
   ...merryIoT.antennas,
   ...milesight.antennas,
   ...deepernetwork.antennas,
+  ...edatec.antennas,
 }
 
 export const HotspotMakerModels = {
@@ -100,6 +103,7 @@ export const HotspotMakerModels = {
   ...merryIoT.hotspots,
   ...milesight.hotspots,
   ...deepernetwork.hotspots,
+  ...edatec.hotspots,
 }
 
 export type HotspotType = keyof typeof HotspotMakerModels
