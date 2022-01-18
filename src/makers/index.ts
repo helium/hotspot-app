@@ -21,7 +21,8 @@ import freedomfi from './freedomfi'
 import hummingbird from './hummingbird'
 import merryIoT from './merryIoT'
 import milesight from './milesight'
-import deepernetwork from './deepernetwork'
+import deepernetwork from './deepernetwork' 
+import ospreyElectronics from './ospreyElectronics' 
 import { LangType, supportedLangs } from '../utils/i18n/i18nTypes'
 import { HotspotMakerLangField } from './hotspotMakerTypes'
 
@@ -48,6 +49,7 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
   merryIoT,
   milesight,
   deepernetwork,
+  ospreyElectronics,
 }
 
 export const AntennaModels = {
@@ -75,6 +77,7 @@ export const AntennaModels = {
   ...merryIoT.antennas,
   ...milesight.antennas,
   ...deepernetwork.antennas,
+  ...ospreyElectronics.antennas,
 }
 
 export const HotspotMakerModels = {
@@ -100,6 +103,7 @@ export const HotspotMakerModels = {
   ...merryIoT.hotspots,
   ...milesight.hotspots,
   ...deepernetwork.hotspots,
+  ...ospreyElectronics.hotspots,
 }
 
 export type HotspotType = keyof typeof HotspotMakerModels
@@ -138,3 +142,4 @@ export const getMakerSupportEmail = (makerId?: number): string => {
   const makerKey = Object.keys(Makers).find((m) => Makers[m].id === makerId)
   return makerKey ? Makers[makerKey].supportEmail : 'support@helium.com'
 }
+
