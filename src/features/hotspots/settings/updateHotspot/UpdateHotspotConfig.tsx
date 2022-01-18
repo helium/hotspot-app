@@ -41,6 +41,7 @@ import {
 import { isPendingTransaction } from '../../../wallet/root/useActivityItem'
 import { useAppDispatch } from '../../../../store/store'
 import { hp } from '../../../../utils/layout'
+import { getHotspotDetails } from '../../../../utils/appDataClient'
 
 type Props = {
   onClose: () => void
@@ -166,28 +167,30 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
         )
         return
       }
-      const hotspotGain = hotspot.gain ? hotspot.gain / 10 : 1.2
+      const hotspotDetails = await getHotspotDetails(hotspot.address)
+      const hotspotGain = hotspotDetails.gain ? hotspotDetails.gain / 10 : 1.2
       return assertLocationTxn({
-        gateway: hotspot.address,
+        gateway: hotspotDetails.address,
         lat: location.latitude,
         lng: location.longitude,
         decimalGain: hotspotGain,
-        elevation: hotspot.elevation,
+        elevation: hotspotDetails.elevation,
         onboardingRecord,
         updatingLocation: isLocationChange,
-        dataOnly: isDataOnly(hotspot),
+        dataOnly: isDataOnly(hotspotDetails),
       })
     }
 
+    const hotspotDetails = await getHotspotDetails(hotspot.address)
     return assertLocationTxn({
-      gateway: hotspot.address,
-      lat: hotspot.lat,
-      lng: hotspot.lng,
+      gateway: hotspotDetails.address,
+      lat: hotspotDetails.lat,
+      lng: hotspotDetails.lng,
       decimalGain: gain,
       elevation,
       onboardingRecord,
       updatingLocation: false,
-      dataOnly: isDataOnly(hotspot),
+      dataOnly: isDataOnly(hotspotDetails),
     })
   }
 
