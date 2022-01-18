@@ -57,7 +57,7 @@ const MERRYIOT_HOTSPOT = {
     },
   },
   antenna: {
-    default: ANTENNAS.MERRYIOT_US,
+    default: ANTENNAS.MERRYIOT,
   },
 } as MakerHotspot
 
