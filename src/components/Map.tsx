@@ -66,6 +66,7 @@ type Props = BoxProps<Theme> & {
   showNearbyHotspots?: boolean
   showH3Grid?: boolean
   showRewardScale?: boolean
+  showEarningsScale?: boolean
 }
 const Map = ({
   onMapMoved,
@@ -89,6 +90,7 @@ const Map = ({
   showH3Grid = false,
   followedHotspots,
   showRewardScale,
+  showEarningsScale,
   cameraBottomOffset,
   selectedHex,
   markerLocation,
@@ -348,6 +350,7 @@ const Map = ({
               ownedHotspots={ownedHotspots}
               followedHotspots={followedHotspots}
               showRewardScale={showRewardScale}
+              showEarningsScale={showEarningsScale}
             />
           )}
           {markerLocation !== undefined && (

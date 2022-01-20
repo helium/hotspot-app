@@ -152,6 +152,10 @@ const HotspotsView = ({
     mapFilter,
   ])
 
+  const showEarningsScale = useMemo(() => mapFilter === MapFilters.earnings, [
+    mapFilter,
+  ])
+
   useMount(() => {
     dispatch(fetchAccountRewards())
     dispatch(fetchMyValidators())
@@ -565,6 +569,7 @@ const HotspotsView = ({
               showNearbyHotspots
               showH3Grid
               showRewardScale={showRewardScale}
+              showEarningsScale={showEarningsScale}
               overflow="hidden"
               borderTopLeftRadius="l"
               borderTopRightRadius="l"
