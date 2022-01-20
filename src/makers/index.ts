@@ -23,6 +23,7 @@ import merryIoT from './merryIoT'
 import milesight from './milesight'
 import midas from './midas'
 import deepernetwork from './deepernetwork'
+import heliumrepuplic from './heliumrepublic/antennas'
 import { LangType, supportedLangs } from '../utils/i18n/i18nTypes'
 import { HotspotMakerLangField } from './hotspotMakerTypes'
 
@@ -78,6 +79,7 @@ export const AntennaModels = {
   ...milesight.antennas,
   ...midas.antennas,
   ...deepernetwork.antennas,
+  ...heliumrepuplic,
 }
 
 export const HotspotMakerModels = {
