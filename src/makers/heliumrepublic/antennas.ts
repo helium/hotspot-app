@@ -10,11 +10,6 @@ const heliumrepublic_4 = {
   gain: 4,
 } as MakerAntenna
 
-const heliumrepublic_5 = {
-  name: 'HELIUM REPUBLIC 5dBi',
-  gain: 5,
-} as MakerAntenna
-
 const heliumrepublic_58 = {
   name: 'HELIUM REPUBLIC 5.8dBi',
   gain: 5.8,
@@ -30,7 +25,6 @@ const heliumrepublic_8 = {
 export default { 
   heliumrepublic_3,
   heliumrepublic_4,
-  heliumrepublic_5,
   heliumrepublic_58,
   heliumrepublic_8
 }
