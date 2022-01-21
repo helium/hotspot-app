@@ -1,7 +1,7 @@
 import { MakerAntenna } from '../antennaMakerTypes'
 
 const heliumrepublic_3 = {
-  name: 'HELIUM REPUBLIC 2dBi',
+  name: 'HELIUM REPUBLIC 3dBi',
   gain: 3,
 } as MakerAntenna
 
