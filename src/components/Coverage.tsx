@@ -25,6 +25,8 @@ export type HexProperties = {
   id: string
 }
 
+export type CoverageFeatures = 'earnings' | 'transmit'
+
 type CoverageItem = DiscoveryResponse | Hotspot | Witness
 type HexColors = {
   fill: Colors
@@ -46,8 +48,7 @@ type Props = {
   ownedHotspots?: CoverageItem[]
   followedHotspots?: CoverageItem[]
   onHexSelected?: (id: string) => void
-  showRewardScale?: boolean
-  showEarningsScale?: boolean
+  showFeatures?: CoverageFeatures
   showGrid?: boolean
 }
 
@@ -79,8 +80,7 @@ const Coverage = ({
   witnesses,
   ownedHotspots,
   followedHotspots,
-  showRewardScale,
-  showEarningsScale,
+  showFeatures,
   showGrid = true,
 }: Props) => {
   const tileServerRes8Url = useSelector(
@@ -89,6 +89,12 @@ const Coverage = ({
   const tileServerPointsUrl = useSelector(
     (state: RootState) => state.features.tileServerPointsUrl,
   )
+  const showEarningsScale = useMemo(() => showFeatures === 'earnings', [
+    showFeatures,
+  ])
+  const showRewardScale = useMemo(() => showFeatures === 'transmit', [
+    showFeatures,
+  ])
   const boundingBox = useMemo(() => {
     if (!showGrid || !mapZoom || mapZoom < 11)
       return { type: 'Feature' } as Feature
