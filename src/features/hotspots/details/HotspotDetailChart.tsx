@@ -27,7 +27,7 @@ type Props = {
   loading?: boolean
   timelineIndex: number
   timelineValue: ChartTimelineValue
-  onTimelineChanged: (value: number, index: number) => void
+  onTimelineChanged: (value: ChartTimelineValue, index: number) => void
 }
 
 const HotspotDetailChart = ({
