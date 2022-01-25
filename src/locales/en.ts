@@ -957,7 +957,7 @@ export default {
     picker_title: 'Past',
     overview: 'Earnings',
     no_location: 'No Location',
-    picker_options: ['7D', '14D', '30D', 'YTD'],
+    picker_options: { 7: '7D', 14: '14D', 30: '30D', YTD: 'YTD' },
     picker_prompt: 'Select Range',
     status_data_only: 'Data-Only',
     status_online: 'Online',

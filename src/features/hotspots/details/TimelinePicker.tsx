@@ -22,16 +22,13 @@ const TimelinePicker = ({
 
   const data = useMemo(() => {
     const values = [7, 14, 30, 'YTD']
-    const labels: string[] = t('hotspot_details.picker_options', {
-      returnObjects: true,
-    })
 
-    return labels
+    return values
       .map(
-        (label, i) =>
+        (value) =>
           ({
-            label,
-            value: values[i],
+            label: t(`hotspot_details.picker_options.${value}`),
+            value,
             color: 'purpleMain',
           } as HeliumSelectItemType),
       )

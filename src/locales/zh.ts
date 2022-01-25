@@ -733,7 +733,7 @@ export default {
     picker_title: '过去',
     overview: '概览',
     no_location: '无位置',
-    picker_options: ['过去 24 小时', '过去 14 天', '过去 30 天'],
+    picker_options: { 7: '过去 7 天', 14: '过去 14 天', 30: '지난 30일' },
     picker_prompt: '选择范围',
     status_online: '在线',
     status_offline: '请注意',
