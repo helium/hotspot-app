@@ -14,7 +14,7 @@ import { locale } from '../../../utils/i18n'
 import DateModule from '../../../utils/DateModule'
 import TimelinePicker from './TimelinePicker'
 import {
-  ChartTimelineIndex,
+  ChartTimelineValue,
   NetworkHotspotEarnings,
 } from '../../../store/rewards/rewardsSlice'
 
@@ -26,7 +26,7 @@ type Props = {
   networkHotspotEarnings: NetworkHotspotEarnings[]
   loading?: boolean
   timelineIndex: number
-  timelineValue: ChartTimelineIndex
+  timelineValue: ChartTimelineValue
   onTimelineChanged: (value: number, index: number) => void
 }
 

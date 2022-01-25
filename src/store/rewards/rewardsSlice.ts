@@ -27,11 +27,11 @@ export type WalletReward = {
   updated_at: string
 }
 
-export type ChartTimelineIndex = number | 'YTD'
+export type ChartTimelineValue = number | 'YTD'
 
 type FetchDetailsParams = {
   address: string
-  numDays: ChartTimelineIndex
+  numDays: ChartTimelineValue
   resource: 'validators' | 'hotspots'
 }
 
@@ -52,7 +52,7 @@ export type NetworkHotspotEarnings = {
 
 export type GatewayChartCache = CacheRecord<GatewayChartData>
 export type GatewayAddress = string
-export type GatewayChartRecord = Record<ChartTimelineIndex, GatewayChartCache>
+export type GatewayChartRecord = Record<ChartTimelineValue, GatewayChartCache>
 export type GatewayIndex<T> = Record<GatewayAddress, T>
 
 type RewardsState = {
