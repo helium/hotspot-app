@@ -75,7 +75,7 @@ const HotspotDetailChart = ({
 
   useEffect(() => {
     const jan1 = startOfYear(new Date()).toISOString()
-    DateModule.formatDate(jan1, 'MMM d').then(setStartOfYearStr)
+    DateModule.formatDate(jan1, 'MMM d YYYY').then(setStartOfYearStr)
   }, [])
 
   useAsync(async () => {
@@ -164,12 +164,12 @@ const HotspotDetailChart = ({
             <Text
               variant="body3"
               color="purpleMediumText"
-              fontSize={13}
+              fontSize={15}
               maxFontSizeMultiplier={1.1}
               textAlign="center"
               padding="l"
             >
-              {`Your hotspot has earned ${number} HNT since ${startOfYearStr}`}
+              {t('hotspot_details.ytd', { number, date: startOfYearStr })}
             </Text>
           </Box>
           <TimelinePicker

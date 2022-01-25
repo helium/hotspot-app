@@ -964,6 +964,7 @@ export default {
     status_offline: 'Needs Attention',
     status_syncing: 'Syncing',
     relayed: 'Relayed',
+    ytd: 'Your Hotspot has earned\n{{number}} HNT since {{date}}',
     status_prompt_online: {
       title: 'Hotspot is online and syncing.',
       subtitle_active: 'Status: Block {{hotspotBlock}} of {{currentBlock}}',
