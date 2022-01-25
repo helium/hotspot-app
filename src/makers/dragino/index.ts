@@ -4,6 +4,6 @@ import hotspots from './hotspots'
 export default {
   antennas,
   hotspots,
-  id: 21, // TODO: Get maker id from onboarding server
+  id: 27, 
   supportEmail: 'support@dragino.com',
 }
