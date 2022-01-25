@@ -3,7 +3,7 @@ import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import { sumBy } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { useAsync } from 'react-async-hook'
-import { addMinutes, startOfYesterday, subDays } from 'date-fns'
+import { addMinutes, startOfYear, startOfYesterday, subDays } from 'date-fns'
 import { ChartData } from '../../../components/BarChart/types'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -13,7 +13,10 @@ import animateTransition from '../../../utils/animateTransition'
 import { locale } from '../../../utils/i18n'
 import DateModule from '../../../utils/DateModule'
 import TimelinePicker from './TimelinePicker'
-import { NetworkHotspotEarnings } from '../../../store/rewards/rewardsSlice'
+import {
+  ChartTimelineIndex,
+  NetworkHotspotEarnings,
+} from '../../../store/rewards/rewardsSlice'
 
 type Props = {
   title: string
@@ -23,7 +26,7 @@ type Props = {
   networkHotspotEarnings: NetworkHotspotEarnings[]
   loading?: boolean
   timelineIndex: number
-  timelineValue: number
+  timelineValue: ChartTimelineIndex
   onTimelineChanged: (value: number, index: number) => void
 }
 
@@ -43,6 +46,7 @@ const HotspotDetailChart = ({
   const [loading, setLoading] = useState(propsLoading)
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
   const [timeRange, setTimeRange] = useState('')
+  const [startOfYearStr, setStartOfYearStr] = useState('')
   const [
     focusedNetworkData,
     setFocusedNetworkData,
@@ -69,7 +73,14 @@ const HotspotDetailChart = ({
     [data, findNetworkEarningForData],
   )
 
+  useEffect(() => {
+    const jan1 = startOfYear(new Date()).toISOString()
+    DateModule.formatDate(jan1, 'MMM d').then(setStartOfYearStr)
+  }, [])
+
   useAsync(async () => {
+    if (timelineValue === 'YTD') return
+
     const yesterday = startOfYesterday()
     const utcOffset = yesterday.getTimezoneOffset()
     const end = addMinutes(yesterday, utcOffset)
@@ -81,6 +92,8 @@ const HotspotDetailChart = ({
   }, [timelineValue])
 
   const networkAvgTotal = useMemo(() => {
+    if (timelineValue === 'YTD') return
+
     if (timelineValue > networkHotspotEarnings.length) {
       return t('generic.not_available')
     }
@@ -143,6 +156,29 @@ const HotspotDetailChart = ({
           />
         </SkeletonPlaceholder>
       )
+
+    if (timelineValue === 'YTD') {
+      return (
+        <>
+          <Box backgroundColor="grayBoxDark" marginBottom="l">
+            <Text
+              variant="body3"
+              color="purpleMediumText"
+              fontSize={13}
+              maxFontSizeMultiplier={1.1}
+              textAlign="center"
+              padding="l"
+            >
+              {`Your hotspot has earned ${number} HNT since ${startOfYearStr}`}
+            </Text>
+          </Box>
+          <TimelinePicker
+            index={timelineIndex}
+            onTimelineChanged={onTimelineChanged}
+          />
+        </>
+      )
+    }
 
     return (
       <Box>
@@ -289,9 +325,11 @@ const HotspotDetailChart = ({
     onFocus,
     onTimelineChanged,
     purpleMain,
+    startOfYearStr,
     t,
     timeRange,
     timelineIndex,
+    timelineValue,
     title,
   ])
 

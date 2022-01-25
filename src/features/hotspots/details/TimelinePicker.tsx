@@ -21,7 +21,7 @@ const TimelinePicker = ({
   const spacing = useSpacing()
 
   const data = useMemo(() => {
-    const values = [7, 14, 30]
+    const values = [7, 14, 30, 'YTD']
     const labels: string[] = t('hotspot_details.picker_options', {
       returnObjects: true,
     })
