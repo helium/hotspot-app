@@ -1282,6 +1282,12 @@ export default {
     elevation: 'Elevation',
     owner: 'Owner:',
     maker: 'Maker',
+    error: {
+      title: 'Invalid Link',
+      subtitle:
+        'Unable to add this Hotspot to the Helium Network. Contact {{maker}} to troubleshoot this issue.',
+      takeMeBack: 'Go Back to {{maker}}',
+    },
   },
   copyAddress: {
     account: 'Address',
