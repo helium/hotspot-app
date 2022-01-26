@@ -33,7 +33,7 @@ import { findBounds } from '../utils/mapUtils'
 import CurrentLocationButton from './CurrentLocationButton'
 import { theme, Theme } from '../theme/theme'
 import { useColors } from '../theme/themeHooks'
-import Coverage from './Coverage'
+import Coverage, { CoverageFeatures } from './Coverage'
 import { distance } from '../utils/location'
 import LocationIcon from '../assets/images/location-icon.svg'
 
@@ -65,7 +65,7 @@ type Props = BoxProps<Theme> & {
   showNoLocation?: boolean
   showNearbyHotspots?: boolean
   showH3Grid?: boolean
-  showRewardScale?: boolean
+  coverageFeatures?: CoverageFeatures
 }
 const Map = ({
   onMapMoved,
@@ -88,7 +88,7 @@ const Map = ({
   showNearbyHotspots = false,
   showH3Grid = false,
   followedHotspots,
-  showRewardScale,
+  coverageFeatures,
   cameraBottomOffset,
   selectedHex,
   markerLocation,
@@ -347,7 +347,7 @@ const Map = ({
               witnesses={witnesses}
               ownedHotspots={ownedHotspots}
               followedHotspots={followedHotspots}
-              showRewardScale={showRewardScale}
+              showFeatures={coverageFeatures}
             />
           )}
           {markerLocation !== undefined && (

@@ -19,6 +19,7 @@ const palette = {
   blueBrightDarkened: '#0478DF',
   blueBright30: '#183E75',
   blueBright40: '#265591',
+  blueBrightEarnings: '#14D5FF',
   blueLight: '#51AEFF',
   blueMain: '#4BABFF',
   blueDark: '#232E39',

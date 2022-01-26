@@ -1241,6 +1241,11 @@ export default {
       body:
         'Indicates location density. When a Hotspot transmits a beacon, any that hear it will have its mining rewards scaled by this number.',
     },
+    earnings: {
+      title: 'Daily HNT Earnings (7D Avg)',
+      body:
+        'Compares Hotspot earnings in a hex with the average earnings of a Hotspot on the network.',
+    },
     title: 'Map Filters',
     button: 'Choose Map Filter',
   },

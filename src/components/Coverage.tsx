@@ -25,6 +25,8 @@ export type HexProperties = {
   id: string
 }
 
+export type CoverageFeatures = 'earnings' | 'transmit'
+
 type CoverageItem = DiscoveryResponse | Hotspot | Witness
 type HexColors = {
   fill: Colors
@@ -46,7 +48,7 @@ type Props = {
   ownedHotspots?: CoverageItem[]
   followedHotspots?: CoverageItem[]
   onHexSelected?: (id: string) => void
-  showRewardScale?: boolean
+  showFeatures?: CoverageFeatures
   showGrid?: boolean
 }
 
@@ -78,7 +80,7 @@ const Coverage = ({
   witnesses,
   ownedHotspots,
   followedHotspots,
-  showRewardScale,
+  showFeatures,
   showGrid = true,
 }: Props) => {
   const tileServerRes8Url = useSelector(
@@ -87,6 +89,12 @@ const Coverage = ({
   const tileServerPointsUrl = useSelector(
     (state: RootState) => state.features.tileServerPointsUrl,
   )
+  const showEarningsScale = useMemo(() => showFeatures === 'earnings', [
+    showFeatures,
+  ])
+  const showRewardScale = useMemo(() => showFeatures === 'transmit', [
+    showFeatures,
+  ])
   const boundingBox = useMemo(() => {
     if (!showGrid || !mapZoom || mapZoom < 11)
       return { type: 'Feature' } as Feature
@@ -176,6 +184,30 @@ const Coverage = ({
     [selectedHexId],
   )
 
+  const hexFillStyle = useMemo(() => {
+    if (showRewardScale) return styles.rewardScaleFill
+    if (showEarningsScale) return styles.earningsScaleColor
+    return styles.fill
+  }, [
+    showEarningsScale,
+    showRewardScale,
+    styles.earningsScaleColor,
+    styles.fill,
+    styles.rewardScaleFill,
+  ])
+
+  const circleFillStyle = useMemo(() => {
+    if (showRewardScale) return styles.rewardScaleCircle
+    if (showEarningsScale) return styles.earningsScaleCircle
+    return styles.defaultCircle
+  }, [
+    showEarningsScale,
+    showRewardScale,
+    styles.defaultCircle,
+    styles.earningsScaleCircle,
+    styles.rewardScaleCircle,
+  ])
+
   return (
     <>
       <MapboxGL.ShapeSource id="h3Grid" shape={sourceSet}>
@@ -194,7 +226,7 @@ const Coverage = ({
           id="hexagonFill"
           sourceID="tileServerH3"
           sourceLayerID="public.h3_res8"
-          style={showRewardScale ? styles.rewardScaleFill : styles.fill}
+          style={hexFillStyle}
           minZoomLevel={8}
         />
         <MapboxGL.LineLayer
@@ -230,9 +262,7 @@ const Coverage = ({
           sourceID="tileServerPoints"
           sourceLayerID="public.points"
           maxZoomLevel={8}
-          style={
-            showRewardScale ? styles.rewardScaleCircle : styles.defaultCircle
-          }
+          style={circleFillStyle}
         />
       </MapboxGL.VectorSource>
     </>
@@ -313,6 +343,27 @@ const makeStyles = (
     ],
   ]
 
+  const earningsScaleColor: Expression = [
+    'case',
+    ['==', ['get', 'avg_earnings'], 0],
+    '#4F5293',
+    [
+      'interpolate',
+      ['linear'],
+      ['get', 'avg_earnings'],
+      0,
+      '#2E303B',
+      0.1,
+      '#E95858',
+      0.8,
+      '#FCC945',
+      1,
+      '#8ED343',
+      1.8,
+      '#14D5FF',
+    ],
+  ]
+
   const textFont = Config.MAPBOX_FONT_NAME
     ? [Config.MAPBOX_FONT_NAME]
     : undefined
@@ -345,6 +396,10 @@ const makeStyles = (
       fillOpacity,
       fillColor: rewardScaleColor,
     } as StyleProp<FillLayerStyle>,
+    earningsScaleColor: {
+      fillOpacity,
+      fillColor: earningsScaleColor,
+    } as StyleProp<FillLayerStyle>,
     outline: {
       lineWidth,
       lineColor: networkOutlineColor,
@@ -361,6 +416,10 @@ const makeStyles = (
     rewardScaleCircle: {
       ...commonCircleStyle,
       circleColor: rewardScaleColor,
+    } as StyleProp<CircleLayerStyle>,
+    earningsScaleCircle: {
+      ...commonCircleStyle,
+      circleColor: earningsScaleColor,
     } as StyleProp<CircleLayerStyle>,
   }
 }
