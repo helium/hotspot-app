@@ -2,31 +2,21 @@ import HotspotIcon from './icon.svg'
 import { MakerHotspot } from '../hotspotMakerTypes'
 import ANTENNAS from './antennas'
 
-const ExampleHotspotBLE = {
-  name: 'Osprey Electronics Hotspot BLE',
+const OspreyHotspotBLE = {
+  name: 'Osprey Electronics Hotspot',
   icon: HotspotIcon,
   onboardType: 'BLE',
   translations: {
     en: {
-      internal: [
-        {
-          title: '[title.1]',
-          body:
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-          button: '[next button - 1]',
-        },
-        {
-          title: '[title.2]',
-          body:
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-          button: '[next button - 2]',
-        },
-        {
-          title: '[title.3]',
-          body:
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-          button: '[finish button]',
-        },
+      diagnostic: 
+        '<b><white>Diagnostic support allows Osprey Electronic to identify issues with your Hotspot in a secure way.</white></b>\n\n Osprey Electronic will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@ingenioussafety.com</b></purple> from the email used to purchase the Hotspot.',
+      power: [
+        'Plug in the power cable as described in the user manual.',
+        '',
+      ],
+      bluetooth: [
+        'There is no pairing button on the Osprey Electronic Hotspot Miner.',
+        'Bluetooth is automatically enabled for 5 minutes after the Osprey Electronic Hotspot Miner is powered on.\n\nHotspot can take up to 1 minute to fully boot up.',
       ],
     },
     ja: {},
@@ -34,27 +24,9 @@ const ExampleHotspotBLE = {
     zh: {},
   },
   antenna: {
-    us: ANTENNAS.EXAMPLE_US,
-    default: ANTENNAS.EXAMPLE_EU,
+    us: ANTENNAS.ELECTRONICS_HOTSPOT_US,
+    default: ANTENNAS.ELECTRONICS_HOTSPOT_EU,
   },
 } as MakerHotspot
 
-const ExampleHotspotQR = {
-  name: 'Osprey Electronics Hotspot QR',
-  icon: HotspotIcon,
-  onboardType: 'QR',
-  translations: {
-    en: {
-      externalOnboard: '[Your instructions here]',
-    },
-    ja: {},
-    ko: {},
-    zh: {},
-  },
-  antenna: {
-    us: ANTENNAS.EXAMPLE_US,
-    default: ANTENNAS.EXAMPLE_EU,
-  },
-} as MakerHotspot
-
-export default { ExampleHotspotBLE, ExampleHotspotQR }
+export default { OspreyHotspotBLE }

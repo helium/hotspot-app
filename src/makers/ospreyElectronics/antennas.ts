@@ -1,13 +1,13 @@
 import { MakerAntenna } from '../antennaMakerTypes'
 
-const EXAMPLE_US = {
+const ELECTRONICS_HOTSPOT_US = {
   name: 'Osprey Electronics Hotspot (US 915)',
   gain: 1.2,
 } as MakerAntenna
 
-const EXAMPLE_EU = {
+const ELECTRONICS_HOTSPOT_EU = {
   name: 'Osprey Electronics Hotspot (EU 868)',
   gain: 2.3,
 } as MakerAntenna
 
-export default { EXAMPLE_US, EXAMPLE_EU }
+export default { ELECTRONICS_HOTSPOT_US, ELECTRONICS_HOTSPOT_EU }
