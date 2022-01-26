@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { Sum } from '@helium/http'
 import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
+import { getDayOfYear } from 'date-fns'
 import {
   getHotspotRewards,
   getValidatorRewards,
@@ -25,9 +26,12 @@ export type WalletReward = {
   total: number
   updated_at: string
 }
+
+export type ChartTimelineValue = number | 'YTD'
+
 type FetchDetailsParams = {
   address: string
-  numDays: number
+  numDays: ChartTimelineValue
   resource: 'validators' | 'hotspots'
 }
 
@@ -48,8 +52,7 @@ export type NetworkHotspotEarnings = {
 
 export type GatewayChartCache = CacheRecord<GatewayChartData>
 export type GatewayAddress = string
-export type ChartTimelineIndex = number
-export type GatewayChartRecord = Record<ChartTimelineIndex, GatewayChartCache>
+export type GatewayChartRecord = Record<ChartTimelineValue, GatewayChartCache>
 export type GatewayIndex<T> = Record<GatewayAddress, T>
 
 type RewardsState = {
@@ -93,6 +96,21 @@ export const fetchChartData = createAsyncThunk<
     if (hasValidCache(details)) {
       return details
     }
+
+    if (numDays === 'YTD') {
+      const response: WalletReward[] = await getWallet(`${resource}/rewards`, {
+        addresses: address,
+        dayRange: getDayOfYear(new Date()) - 1,
+      })
+      const selectedBalance = Balance.fromFloat(
+        response[0].total,
+        CurrencyType.networkToken,
+      )
+      return {
+        rewardSum: selectedBalance,
+      }
+    }
+
     const startDate = new Date()
     const endDate = new Date(startDate)
     endDate.setDate(endDate.getDate() - numDays)

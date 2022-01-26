@@ -16,6 +16,7 @@ export type FeaturesState = {
     enabled: boolean
     message: string
   }
+  ytdEarningsEnabled: boolean
 }
 
 const initialState: FeaturesState = {
@@ -33,6 +34,7 @@ const initialState: FeaturesState = {
     enabled: false,
     message: '',
   },
+  ytdEarningsEnabled: false,
 }
 
 // if this call fails we load the app with default settings and retry every 30 seconds
@@ -50,7 +52,6 @@ const featuresSlice = createSlice({
     builder.addCase(fetchFeatures.fulfilled, (state, { payload }) => {
       state.fleetModeLowerLimit = payload.fleetModeLowerLimit
       state.hotspotSyncBuffer = payload.hotspotSyncBuffer
-      state.appRetryCount = payload.appRetryCount
       state.walletChartEnabled = payload.walletChartEnabled
       state.proxyEnabled = payload.proxyEnabled
       state.checklistEnabled = payload.checklistEnabled
@@ -63,6 +64,7 @@ const featuresSlice = createSlice({
       state.featuresLoaded = true
       state.fetchFeaturesFailed = false
       state.discovery = payload.discovery || initialState.discovery
+      state.ytdEarningsEnabled = payload.ytdEarningsEnabled
     })
     builder.addCase(fetchFeatures.rejected, (state) => {
       state.featuresLoaded = true
