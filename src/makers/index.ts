@@ -1,13 +1,16 @@
+import PantherX from './panther'
 import bobcat from './bobcat'
 import cotx from './cotx'
 import clodpi from './clodpi'
 import customAntennas from './custom/antennas'
+import hntenna from './hntenna/antennas'
 import finestra from './finestra'
 import helium from './helium'
 import linxdot from './linxdot'
 import longAP from './longAP'
 import nebra from './nebra'
 import rak from './rak'
+import risinghf from './risinghf'
 import sensecap from './sensecap'
 import syncrobit from './syncrobit'
 import kerlink from './kerlink'
@@ -17,10 +20,15 @@ import controllino from './controllino'
 import freedomfi from './freedomfi'
 import hummingbird from './hummingbird'
 import dragino from './dragino'
+import merryIoT from './merryIoT'
+import milesight from './milesight'
+import midas from './midas'
+import deepernetwork from './deepernetwork'
 import { LangType, supportedLangs } from '../utils/i18n/i18nTypes'
 import { HotspotMakerLangField } from './hotspotMakerTypes'
 
 export const Makers: Record<string, { id: number; supportEmail: string }> = {
+  PantherX,
   bobcat,
   cotx,
   clodpi,
@@ -30,6 +38,7 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
   longAP,
   nebra,
   rak,
+  risinghf,
   sensecap,
   syncrobit,
   kerlink,
@@ -39,19 +48,26 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
   freedomfi,
   hummingbird,
   dragino,
+  merryIoT,
+  milesight,
+  midas,
+  deepernetwork,
 }
 
 export const AntennaModels = {
+  ...PantherX.antennas,
   ...bobcat.antennas,
   ...cotx.antennas,
   ...clodpi.antennas,
   ...customAntennas,
+  ...hntenna,
   ...finestra.antennas,
   ...helium.antennas,
   ...linxdot.antennas,
   ...longAP.antennas,
   ...nebra.antennas,
   ...rak.antennas,
+  ...risinghf.antennas,
   ...sensecap.antennas,
   ...syncrobit.antennas,
   ...kerlink.antennas,
@@ -61,9 +77,14 @@ export const AntennaModels = {
   ...freedomfi.antennas,
   ...hummingbird.antennas,
   ...dragino.antennas,
+  ...merryIoT.antennas,
+  ...milesight.antennas,
+  ...midas.antennas,
+  ...deepernetwork.antennas,
 }
 
 export const HotspotMakerModels = {
+  ...PantherX.hotspots,
   ...bobcat.hotspots,
   ...cotx.hotspots,
   ...clodpi.hotspots,
@@ -73,6 +94,7 @@ export const HotspotMakerModels = {
   ...longAP.hotspots,
   ...nebra.hotspots,
   ...rak.hotspots,
+  ...risinghf.hotspots,
   ...sensecap.hotspots,
   ...syncrobit.hotspots,
   ...kerlink.hotspots,
@@ -82,6 +104,10 @@ export const HotspotMakerModels = {
   ...freedomfi.hotspots,
   ...hummingbird.hotspots,
   ...dragino.hotspots,
+  ...merryIoT.hotspots,
+  ...milesight.hotspots,
+  ...midas.hotspots,
+  ...deepernetwork.hotspots,
 }
 
 export type HotspotType = keyof typeof HotspotMakerModels

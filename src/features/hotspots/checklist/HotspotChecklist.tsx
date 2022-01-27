@@ -47,6 +47,9 @@ const HotspotChecklist = ({
   const syncStatuses = useSelector(
     (state: RootState) => state.hotspots.syncStatuses,
   )
+  const checklistEnabled = useSelector(
+    (state: RootState) => state.features.checklistEnabled,
+  )
   const [showSkeleton, setShowSkeleton] = useState(true)
   const [lastLoadedAddress, setLastLoadedAddress] = useState<string>()
 
@@ -56,23 +59,23 @@ const HotspotChecklist = ({
   ])
 
   useEffect(() => {
-    if (!visible) return
+    if (!visible || !checklistEnabled) return
     if (!lastLoadedAddress || lastLoadedAddress !== hotspot.address) {
       animateTransition('HotspotChecklist.HotspotChange')
       setShowSkeleton(true)
       dispatch(fetchChecklistActivity(hotspot.address))
       setLastLoadedAddress(hotspot.address)
     }
-  }, [dispatch, hotspot.address, lastLoadedAddress, visible])
+  }, [checklistEnabled, dispatch, hotspot.address, lastLoadedAddress, visible])
 
   useEffect(() => {
-    if (!visible) return
+    if (!visible || !checklistEnabled) return
 
     if (showSkeleton && !loadingActivity) {
       animateTransition('HotspotChecklist.LoadingChange')
       setShowSkeleton(false)
     }
-  }, [loadingActivity, showSkeleton, visible])
+  }, [checklistEnabled, loadingActivity, showSkeleton, visible])
 
   const isOnline = useMemo(() => hotspot?.status?.online === 'online', [
     hotspot?.status?.online,
@@ -211,7 +214,7 @@ const HotspotChecklist = ({
     return (count / checklistData.length) * 100
   }, [checklistData])
 
-  if (!visible) return null
+  if (!visible || !checklistEnabled) return null
 
   return (
     <Box {...boxProps}>

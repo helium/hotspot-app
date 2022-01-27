@@ -16,10 +16,13 @@ type Props = {
   width: number
   height: number
   data: ChartData[]
-  onFocus: (data: ChartData | null) => void
+  stackedData?: ChartData[]
+  onFocus: (data: ChartData | null, stackedData: ChartData | null) => void
   showXAxisLabel?: boolean
   upColor?: string
   downColor?: string
+  stackedUpColor?: string
+  stackedDownColor?: string
   labelColor?: string
 }
 
@@ -27,15 +30,21 @@ const BarChart = ({
   width,
   height,
   data,
+  stackedData = [],
   onFocus,
   showXAxisLabel = true,
   labelColor,
   upColor,
   downColor,
+  stackedUpColor,
+  stackedDownColor,
 }: Props) => {
   const [focusedBar, setFocusedBar] = useState<ChartData | null>(null)
+  const [focusedStackedBar, setFocusedStackedBar] = useState<ChartData | null>(
+    null,
+  )
   const prevFocusedBar = usePrevious(focusedBar)
-  const { greenBright, blueBright, white } = useColors()
+  const { greenBright, blueBright, white, grayLight } = useColors()
   const { triggerImpact } = useHaptic()
 
   // trigger haptic feedback when the focused bar changes
@@ -45,12 +54,21 @@ const BarChart = ({
     }
 
     if (prevFocusedBar !== undefined && prevFocusedBar !== focusedBar) {
-      onFocus(focusedBar)
+      onFocus(focusedBar, focusedStackedBar)
     }
-  }, [focusedBar, onFocus, prevFocusedBar, triggerImpact])
+  }, [focusedBar, focusedStackedBar, onFocus, prevFocusedBar, triggerImpact])
+
+  const hasStackedData = useMemo(
+    () => stackedData !== undefined && stackedData.length > 0,
+    [stackedData],
+  )
+
+  const allData = useMemo(() => [...data, ...stackedData], [data, stackedData])
 
   // support charts that have no down values
-  const hasDownBars = useMemo(() => some(data, ({ down }) => down > 0), [data])
+  const hasDownBars = useMemo(() => some(allData, ({ down }) => down > 0), [
+    allData,
+  ])
 
   // pixel value of the height of x axis labels
   const bottomOffset = useMemo(() => (showXAxisLabel ? 20 : 0), [
@@ -64,7 +82,10 @@ const BarChart = ({
   ])
 
   // min bar height is the same as bar width to form circles
-  const minBarHeight = useMemo(() => barWidth, [barWidth])
+  const minBarHeight = useMemo(() => barWidth / (hasStackedData ? 2 : 1), [
+    barWidth,
+    hasStackedData,
+  ])
 
   // the pixel value of the space between up and down bars
   const barGap = useMemo(() => (hasDownBars ? barWidth / 1.5 : 0), [
@@ -73,14 +94,14 @@ const BarChart = ({
   ])
 
   // raw max up value
-  const maxUp = useMemo(() => maxBy(data, 'up')?.up || minBarHeight, [
-    data,
+  const maxUp = useMemo(() => maxBy(allData, 'up')?.up || minBarHeight, [
+    allData,
     minBarHeight,
   ])
 
   // raw max down value
-  const maxDown = useMemo(() => maxBy(data, 'down')?.down || minBarHeight, [
-    data,
+  const maxDown = useMemo(() => maxBy(allData, 'down')?.down || minBarHeight, [
+    allData,
     minBarHeight,
   ])
 
@@ -132,12 +153,14 @@ const BarChart = ({
     (evt: GestureResponderEvent) => {
       const dataIndex = findDataIndex(evt.nativeEvent.locationX)
       setFocusedBar(data[dataIndex])
+      setFocusedStackedBar(stackedData[dataIndex])
     },
-    [data, findDataIndex],
+    [data, findDataIndex, stackedData],
   )
 
   const handleTouchEnd = useCallback(() => {
     setFocusedBar(null)
+    setFocusedStackedBar(null)
   }, [])
 
   // pan responder is responsible for the slide interaction
@@ -145,8 +168,9 @@ const BarChart = ({
     (event: { nativeEvent: PanGestureHandlerEventPayload }) => {
       const dataIndex = findDataIndex(event.nativeEvent.x)
       setFocusedBar(data[dataIndex])
+      setFocusedStackedBar(stackedData[dataIndex])
     },
-    [data, findDataIndex],
+    [data, findDataIndex, stackedData],
   )
 
   const barStyle = useMemo(
@@ -181,13 +205,16 @@ const BarChart = ({
               barWidth={barWidth}
               barHeight={barHeight}
               upColor={upColor || greenBright}
+              stackedUpColor={stackedUpColor || grayLight}
               barGap={barGap}
               focusedBar={focusedBar}
               downColor={downColor || blueBright}
+              stackedDownColor={stackedDownColor || grayLight}
               labelColor={labelColor || white}
               height={height}
               maxUpBarHeight={maxUpBarHeight}
               data={v}
+              stackedData={stackedData[i]}
             />
           ))}
         </Svg>

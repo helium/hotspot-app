@@ -1,21 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { format, formatDistanceToNow, fromUnixTime } from 'date-fns'
-import {
-  AddGatewayV1,
-  AnyTransaction,
-  AssertLocationV1,
-  AssertLocationV2,
-  PaymentV1,
-  PaymentV2,
-  PendingTransaction,
-  RewardsV1,
-  RewardsV2,
-  StakeValidatorV1,
-  UnstakeValidatorV1,
-  TransferValidatorStakeV1,
-  TokenBurnV1,
-  TransferHotspotV1,
-} from '@helium/http'
 import { useTranslation } from 'react-i18next'
 import Balance, {
   CurrencyType,
@@ -24,8 +8,8 @@ import Balance, {
 } from '@helium/currency'
 import { startCase } from 'lodash'
 import { useSelector } from 'react-redux'
+import animalName from 'angry-purple-tiger'
 import { useColors } from '../../../theme/themeHooks'
-import { isPayer } from '../../../utils/transactions'
 import Rewards from '../../../assets/images/rewards.svg'
 import SentHnt from '../../../assets/images/sentHNT.svg'
 import HotspotAdded from '../../../assets/images/hotspotAdded.svg'
@@ -37,32 +21,22 @@ import StakeValidator from '../../../assets/images/stake_validator.svg'
 import UnstakeValidator from '../../../assets/images/unstake_validator.svg'
 import TransferStakeValidator from '../../../assets/images/transfer_validator_stake.svg'
 import shortLocale from '../../../utils/formatDistance'
-import { decimalSeparator, groupSeparator, locale } from '../../../utils/i18n'
+import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
 import useCurrency from '../../../utils/useCurrency'
 import { Colors } from '../../../theme/theme'
 import { getMakerName } from '../../../utils/stakingClient'
 import { RootState } from '../../../store/rootReducer'
-
-export const TxnTypeKeys = [
-  'rewards_v1',
-  'rewards_v2',
-  'payment_v1',
-  'payment_v2',
-  'add_gateway_v1',
-  'assert_location_v1',
-  'assert_location_v2',
-  'transfer_hotspot_v1',
-  'token_burn_v1',
-  'unstake_validator_v1',
-  'stake_validator_v1',
-  'transfer_validator_stake_v1',
-] as const
-type TxnType = typeof TxnTypeKeys[number]
+import {
+  HttpPendingTransaction,
+  HttpTransaction,
+} from '../../../store/activity/activitySlice'
+import { TxnTypeKeys } from './walletTypes'
 
 type TxnDisplayVals = {
   backgroundColor: string
   backgroundColorKey: Colors
   title: string
+  subtitle: string
   listIcon?: JSX.Element
   detailIcon?: JSX.Element
   amount: string
@@ -70,9 +44,26 @@ type TxnDisplayVals = {
   isFee: boolean
   fee: string
   feePayer: string
+  hash: string
 }
+
+const hntBalance = (v: number | undefined | null) => {
+  if (v === undefined || v === null) return v
+  return new Balance(v, CurrencyType.networkToken)
+}
+
+const dcBalance = (v: number | undefined | null) => {
+  if (v === undefined || v === null) return v
+  return new Balance(v, CurrencyType.dataCredit)
+}
+
+export const isPendingTransaction = (
+  item: unknown,
+): item is HttpPendingTransaction =>
+  (item as HttpPendingTransaction)?.txn !== undefined
+
 const useActivityItem = (
-  item: AnyTransaction | PendingTransaction,
+  item: HttpTransaction | HttpPendingTransaction,
   address: string,
   dateFormat?: string,
 ) => {
@@ -85,6 +76,8 @@ const useActivityItem = (
     isFee: false,
     fee: '',
     feePayer: '',
+    subtitle: '',
+    hash: '',
   })
   const { hntBalanceToDisplayVal } = useCurrency()
   const colors = useColors()
@@ -94,21 +87,22 @@ const useActivityItem = (
     (state: RootState) => state.heliumData.blockHeight,
   )
 
-  const isSending = useMemo(() => {
-    return isPayer(address, item)
-  }, [address, item])
+  const txn = useMemo(() => {
+    if (isPendingTransaction(item)) return item.txn
 
-  const isSelling = useMemo(
-    () => (item as TransferHotspotV1).seller === address,
-    [address, item],
-  )
+    return item
+  }, [item])
+
+  const isSending = useMemo(() => txn.payer === address, [address, txn.payer])
+
+  const isSelling = useMemo(() => txn.seller === address, [address, txn.seller])
 
   const backgroundColorKey = useMemo(() => {
     if (!TxnTypeKeys.find((k) => k === item.type)) {
       return 'redMain'
     }
 
-    switch (item.type as TxnType) {
+    switch (item.type) {
       case 'transfer_hotspot_v1':
       case 'add_gateway_v1':
         return 'purple100'
@@ -142,7 +136,7 @@ const useActivityItem = (
       return startCase(item.type)
     }
 
-    switch (item.type as TxnType) {
+    switch (item.type) {
       case 'add_gateway_v1':
         return t('transactions.added')
       case 'payment_v1':
@@ -171,7 +165,7 @@ const useActivityItem = (
   }, [isSending, isSelling, t, item])
 
   const detailIcon = useMemo(() => {
-    switch (item.type as TxnType) {
+    switch (item.type) {
       case 'stake_validator_v1':
         return <StakeValidator width={40} />
       case 'unstake_validator_v1':
@@ -202,7 +196,7 @@ const useActivityItem = (
   }, [isSending, item.type])
 
   const listIcon = useMemo(() => {
-    switch (item.type as TxnType) {
+    switch (item.type) {
       case 'stake_validator_v1':
         return <StakeValidator width={32} />
       case 'unstake_validator_v1':
@@ -233,38 +227,31 @@ const useActivityItem = (
 
   const isFee = useMemo(() => {
     // TODO: Determine if TransferStakeV1 is a fee
-    if (item instanceof PaymentV1 || item instanceof PaymentV2) {
+    if (item.type === 'payment_v1' || item.type === 'payment_v2') {
       return isSending
     }
 
     if (
-      item instanceof RewardsV1 ||
-      item instanceof RewardsV2 ||
-      item instanceof UnstakeValidatorV1
+      item.type === 'rewards_v1' ||
+      item.type === 'rewards_v2' ||
+      item.type === 'unstake_validator_v1'
     ) {
       return false
     }
 
-    if (item instanceof TransferHotspotV1) {
-      return (item as TransferHotspotV1).seller === address
+    if (item.type === 'transfer_hotspot_v1') {
+      return isSelling
     }
 
     return true
-  }, [item, isSending, address])
+  }, [item.type, isSending, isSelling])
 
   const formatAmount = useCallback(
     async (
       prefix: '-' | '+',
-      amount?: Balance<DataCredits | NetworkTokens> | number,
+      amount?: Balance<DataCredits | NetworkTokens> | null,
     ): Promise<string> => {
       if (!amount) return ''
-
-      if (typeof amount === 'number') {
-        if (amount === 0) return '0'
-        return `${prefix}${amount.toLocaleString(locale, {
-          maximumFractionDigits: 8,
-        })}`
-      }
 
       if (amount?.floatBalance === 0) {
         return amount.toString(undefined, { groupSeparator, decimalSeparator })
@@ -284,147 +271,105 @@ const useActivityItem = (
   )
 
   const fee = useMemo(async () => {
-    if (item instanceof RewardsV1 || item instanceof RewardsV2) {
+    if (item.type === 'rewards_v1' || item.type === 'rewards_v2') {
       return ''
     }
 
-    if (item instanceof TransferHotspotV1) {
+    if (item.type === 'transfer_hotspot_v1') {
       if (!isSelling) return ''
 
-      return formatAmount('-', item.fee)
+      return formatAmount('-', dcBalance(txn.fee))
     }
 
     if (
-      item instanceof AddGatewayV1 ||
-      item instanceof AssertLocationV1 ||
-      item instanceof AssertLocationV2 ||
-      item instanceof TokenBurnV1
+      item.type === 'add_gateway_v1' ||
+      item.type === 'assert_location_v1' ||
+      item.type === 'assert_location_v2' ||
+      item.type === 'token_burn_v1'
     ) {
-      return formatAmount('-', item.fee)
+      return formatAmount('-', dcBalance(txn.fee))
     }
 
-    if (item instanceof PaymentV1 || item instanceof PaymentV2) {
-      if (address !== item.payer) return ''
-      return formatAmount('-', item.fee)
+    if (item.type === 'payment_v1' || item.type === 'payment_v2') {
+      if (address !== txn.payer) return ''
+      return formatAmount('-', dcBalance(txn.fee))
     }
 
-    const pendingTxn = item as PendingTransaction
-    if (pendingTxn.txn !== undefined) {
-      if (pendingTxn.txn.fee instanceof Balance) {
-        return formatAmount('-', pendingTxn.txn.fee)
-      }
-      return formatAmount(
-        '-',
-        new Balance(pendingTxn.txn.fee, CurrencyType.dataCredit),
-      )
-    }
-
-    return formatAmount('-', (item as AddGatewayV1).fee)
-  }, [address, formatAmount, isSelling, item])
+    return formatAmount('-', dcBalance(txn.fee))
+  }, [address, formatAmount, isSelling, item.type, txn.fee, txn.payer])
 
   const feePayer = useMemo(() => {
     if (
-      item instanceof AddGatewayV1 ||
-      item instanceof AssertLocationV1 ||
-      item instanceof AssertLocationV2
+      item.type === 'add_gateway_v1' ||
+      item.type === 'assert_location_v2' ||
+      item.type === 'assert_location_v1'
     ) {
-      return getMakerName(item.payer, makers)
+      return getMakerName(txn.payer, makers)
     }
     return ''
-  }, [item, makers])
+  }, [item.type, makers, txn.payer])
 
   const amount = useMemo(() => {
-    if (item instanceof TransferHotspotV1) {
-      return formatAmount(isSelling ? '+' : '-', item.amountToSeller)
-    }
-    if (
-      item instanceof AssertLocationV1 ||
-      item instanceof AssertLocationV2 ||
-      item instanceof AddGatewayV1
-    ) {
-      return formatAmount('-', item.stakingFee)
-    }
-    if (item instanceof StakeValidatorV1) {
-      return formatAmount('-', item.stake)
-    }
-    if (item instanceof UnstakeValidatorV1) {
-      return formatAmount('+', item.stakeAmount)
-    }
-    if (item instanceof TransferValidatorStakeV1) {
-      // TODO: Should this be stake amount, payment amount, both?
-      return '+0 HNT'
-    }
-    if (item instanceof TokenBurnV1) {
-      return formatAmount('-', item.amount)
-    }
-    if (item instanceof RewardsV1 || item instanceof RewardsV2) {
-      return formatAmount('+', item.totalAmount)
-    }
-    if (item instanceof PaymentV1) {
-      return formatAmount(item.payer === address ? '-' : '+', item.amount)
-    }
-    if (item instanceof PaymentV2) {
-      if (item.payer === address) {
-        return formatAmount('-', item.totalAmount)
+    switch (item.type) {
+      case 'rewards_v1':
+      case 'rewards_v2': {
+        const rewardsAmount =
+          txn.rewards?.reduce(
+            (sum, current) =>
+              sum.plus(new Balance(current.amount, CurrencyType.networkToken)),
+            new Balance(0, CurrencyType.networkToken),
+          ) || new Balance(0, CurrencyType.networkToken)
+        return formatAmount('+', rewardsAmount)
       }
-
-      const payment = item.payments.find((p) => p.payee === address)
-      return formatAmount('+', payment?.amount)
-    }
-
-    const pendingTxn = item as PendingTransaction
-    if (pendingTxn.txn !== undefined) {
-      if (pendingTxn.type === 'add_gateway_v1') {
-        return formatAmount('-', (pendingTxn.txn as AddGatewayV1).stakingFee)
-      }
-      if (pendingTxn.type === 'assert_location_v1') {
+      case 'transfer_hotspot_v1':
         return formatAmount(
-          '-',
-          (pendingTxn.txn as AssertLocationV1).stakingFee,
+          isSelling ? '+' : '-',
+          hntBalance(txn.amountToSeller),
         )
-      }
-      if (pendingTxn.type === 'assert_location_v2') {
+      case 'assert_location_v1':
+      case 'assert_location_v2':
+      case 'add_gateway_v1':
+        return formatAmount('-', dcBalance(txn.stakingFee))
+      case 'stake_validator_v1':
+        return formatAmount('-', hntBalance(txn.stake))
+      case 'unstake_validator_v1':
+        return formatAmount('+', hntBalance(txn.stakeAmount))
+      case 'transfer_validator_stake_v1':
         return formatAmount(
-          '-',
-          (pendingTxn.txn as AssertLocationV2).stakingFee,
+          txn.payer === address ? '-' : '+',
+          hntBalance(txn.stakeAmount),
         )
-      }
-      if (pendingTxn.type === 'payment_v2') {
-        const paymentV2 = pendingTxn.txn as PaymentV2
-        if (paymentV2.payer === address) {
-          return formatAmount('-', paymentV2.totalAmount)
+      case 'token_burn_v1':
+        return formatAmount('-', hntBalance(txn.amount))
+      case 'payment_v1':
+        return formatAmount(
+          txn.payer === address ? '-' : '+',
+          hntBalance(txn.amount),
+        )
+      case 'payment_v2': {
+        if (txn.payer === address) {
+          const paymentTotal =
+            txn.payments?.reduce(
+              (sum, current) =>
+                sum.plus(
+                  new Balance(current.amount, CurrencyType.networkToken),
+                ),
+              new Balance(0, CurrencyType.networkToken),
+            ) || new Balance(0, CurrencyType.networkToken)
+          return formatAmount('-', paymentTotal)
         }
 
-        const payment = paymentV2.payments.find((p) => p.payee === address)
-        return formatAmount('+', payment?.amount)
+        const payment = txn.payments?.find((p) => p.payee === address)
+        return formatAmount('+', hntBalance(payment?.amount))
       }
-
-      return formatAmount(isFee ? '-' : '+', pendingTxn.txn.fee)
     }
-
-    if (pendingTxn.type === 'stake_validator_v1') {
-      return formatAmount('-', (pendingTxn.txn as StakeValidatorV1).stake)
-    }
-    if (pendingTxn.type === 'unstake_validator_v1') {
-      return formatAmount(
-        '+',
-        (pendingTxn.txn as UnstakeValidatorV1).stakeAmount,
-      )
-    }
-    if (pendingTxn.type === 'transfer_validator_stake_v1') {
-      // TODO: Should this be stake amount, payment amount, both?
-      return '+0 HNT'
-    }
-
-    return ''
-  }, [address, formatAmount, isFee, isSelling, item])
+  }, [address, formatAmount, isSelling, item.type, txn])
 
   const time = useMemo(() => {
-    const pending = item as PendingTransaction
-    if (pending.status === 'pending') {
+    if (isPendingTransaction(item)) {
       return t('transactions.pending')
     }
-    const val = fromUnixTime((item as AddGatewayV1).time)
+    const val = fromUnixTime(item.time)
 
     if (!dateFormat)
       return formatDistanceToNow(val, {
@@ -436,6 +381,18 @@ const useActivityItem = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dateFormat, item, t, blockHeight])
 
+  const subtitle = useMemo(() => {
+    if (
+      (item.type === 'assert_location_v1' ||
+        item.type === 'assert_location_v2' ||
+        item.type === 'add_gateway_v1') &&
+      txn.gateway
+    ) {
+      return animalName(txn.gateway)
+    }
+    return ''
+  }, [txn, item.type])
+
   useEffect(() => {
     const createTxnDisplayData = async () => {
       const amt = await amount
@@ -444,6 +401,7 @@ const useActivityItem = (
         backgroundColor,
         backgroundColorKey,
         title,
+        subtitle,
         listIcon,
         detailIcon,
         amount: amt,
@@ -451,6 +409,7 @@ const useActivityItem = (
         isFee,
         fee: f,
         feePayer,
+        hash: txn.hash,
       } as TxnDisplayVals
       setDisplayValues(nextVals)
     }
@@ -467,6 +426,8 @@ const useActivityItem = (
     time,
     title,
     feePayer,
+    subtitle,
+    txn.hash,
   ])
 
   return displayValues

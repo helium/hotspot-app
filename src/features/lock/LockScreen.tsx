@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect } from 'react'
+import React, { memo, useCallback, useEffect, useMemo } from 'react'
 import { Alert } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
@@ -22,13 +22,14 @@ type Route = RouteProp<RootStackParamList, 'LockScreen'>
 const LockScreen = () => {
   const { t } = useTranslation()
   const {
-    params: { lock: shouldLock, requestType },
+    params: { lock: shouldLock, requestType, sendParams },
   } = useRoute<Route>()
   const rootNav = useNavigation<RootNavigationProp>()
   const moreNav = useNavigation<MoreNavigationProp>()
   const sendNav = useNavigation<SendNavigationProps>()
   const [locked, setLocked] = useStateWithCallbackLazy(shouldLock)
   const dispatch = useAppDispatch()
+  const passedSendParams = useMemo(() => sendParams || {}, [sendParams])
 
   const { result: pin } = useAsync(getSecureItem, ['userPin'])
 
@@ -39,13 +40,22 @@ const LockScreen = () => {
         rootNav.goBack()
       })
     } else if (requestType === 'send') {
-      sendNav.navigate('Send', { pinVerified: 'pass' })
+      sendNav.navigate('Send', { pinVerified: 'pass', ...passedSendParams })
     } else {
       moreNav.navigate('MoreScreen', {
         pinVerifiedFor: requestType,
       })
     }
-  }, [shouldLock, requestType, setLocked, dispatch, rootNav, sendNav, moreNav])
+  }, [
+    shouldLock,
+    requestType,
+    setLocked,
+    dispatch,
+    rootNav,
+    sendNav,
+    passedSendParams,
+    moreNav,
+  ])
 
   const handleSignOut = useCallback(() => {
     Alert.alert(
@@ -71,11 +81,18 @@ const LockScreen = () => {
     if (shouldLock) {
       handleSignOut()
     } else if (requestType === 'send') {
-      sendNav.navigate('Send', { pinVerified: 'fail' })
+      sendNav.navigate('Send', { pinVerified: 'fail', ...passedSendParams })
     } else {
       rootNav.goBack()
     }
-  }, [handleSignOut, requestType, rootNav, sendNav, shouldLock])
+  }, [
+    handleSignOut,
+    requestType,
+    rootNav,
+    sendNav,
+    passedSendParams,
+    shouldLock,
+  ])
 
   useEffect(() => {
     const unsubscribe = rootNav.addListener('beforeRemove', (e) => {

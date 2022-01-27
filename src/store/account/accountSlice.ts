@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Account, Sum } from '@helium/http'
-import { getAccount, getAccountRewards } from '../../utils/appDataClient'
+import { Account } from '@helium/http'
+import { getAccount } from '../../utils/appDataClient'
 import { getWallet, postWallet } from '../../utils/walletClient'
 import { ChartData, ChartRange } from '../../components/BarChart/types'
 import { FilterType } from '../../features/wallet/root/walletTypes'
@@ -12,6 +12,8 @@ import {
   hasValidCache,
 } from '../../utils/cacheUtils'
 import { getSecureItem } from '../../utils/secureAccount'
+import { currencyType } from '../../utils/i18n'
+import { WalletReward } from '../rewards/rewardsSlice'
 
 export type ChartRangeData = { data: ChartData[]; loading: Loading }
 type ActivityChart = Record<ChartRange, ChartRangeData>
@@ -23,32 +25,46 @@ const boolKeys = [
   'showHiddenHotspots',
 ] as const
 type BooleanKey = typeof boolKeys[number]
-const stringKeys = ['hiddenAddresses'] as const
+const stringKeys = ['hiddenAddresses', 'network', 'currencyType'] as const
 type StringKey = typeof stringKeys[number]
+
+export type AccountReward = {
+  avg: number
+  max: number
+  median: number
+  min: number
+  stddev: number
+  sum: number
+  total: number
+}
 
 export type AccountState = {
   account?: Account
   fetchDataStatus: Loading
   activityChart: Record<FilterType, ActivityChart>
   activityChartRange: ChartRange
-  rewardsSum: CacheRecord<Sum>
+  rewardsSum: CacheRecord<AccountReward>
   settings: {
     isFleetModeEnabled?: boolean
     hasFleetModeAutoEnabled?: boolean
     convertHntToCurrency?: boolean
     showHiddenHotspots?: boolean
     hiddenAddresses?: string
+    network?: string
+    currencyType?: string
   }
   settingsLoaded?: boolean
   settingsTransferRequired?: boolean
+  fetchAccountSettingsFailed: boolean
 }
 
 const initialState: AccountState = {
   fetchDataStatus: 'idle',
   activityChart: {} as Record<FilterType, ActivityChart>,
   activityChartRange: 'daily',
-  rewardsSum: { loading: true } as CacheRecord<Sum>,
-  settings: {},
+  rewardsSum: { loading: true } as CacheRecord<AccountReward>,
+  settings: { network: 'stakejoy', currencyType },
+  fetchAccountSettingsFailed: false,
 }
 
 type AccountData = {
@@ -70,6 +86,7 @@ const settingsBagToKeyValue = (payload: SettingsBag) =>
     return { ...obj, [key]: val }
   }, {})
 
+// if this call fails we load the app with default settings and retry every 30 seconds
 export const fetchAccountSettings = createAsyncThunk<SettingsBag>(
   'account/fetchAccountSettings',
   async () => getWallet('accounts/settings'),
@@ -122,14 +139,16 @@ export const fetchAccountRewards = createAsyncThunk(
   async (_, { getState }) => {
     const currentState = getState() as {
       account: {
-        rewardsSum: CacheRecord<Sum>
+        rewardsSum: CacheRecord<WalletReward>
       }
     }
     const sum = currentState.account.rewardsSum
     if (hasValidCache(sum)) {
       return sum
     }
-    return getAccountRewards()
+    return getWallet('accounts/rewards/sum') as Promise<
+      CacheRecord<WalletReward>
+    >
   },
 )
 
@@ -240,7 +259,16 @@ const accountSlice = createSlice({
     })
     builder.addCase(fetchAccountSettings.fulfilled, (state, { payload }) => {
       const settings = settingsBagToKeyValue(payload)
-      return { ...state, settings, settingsLoaded: true }
+      return {
+        ...state,
+        settings: { ...state.settings, ...settings },
+        settingsLoaded: true,
+        fetchAccountSettingsFailed: false,
+      }
+    })
+    builder.addCase(fetchAccountSettings.rejected, (state) => {
+      state.settingsLoaded = true
+      state.fetchAccountSettingsFailed = true
     })
     builder.addCase(
       transferAppSettingsToAccount.fulfilled,

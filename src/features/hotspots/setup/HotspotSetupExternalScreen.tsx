@@ -3,14 +3,14 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
 import QrIcon from '@assets/images/qr.svg'
 import LinkIcon from '@assets/images/webLink.svg'
-import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner'
-import { Camera } from 'expo-camera'
+import { BarCodeScanningResult, Camera } from 'expo-camera'
 import { useAsync } from 'react-async-hook'
 import { useDebouncedCallback } from 'use-debounce/lib'
 import Toast from 'react-native-simple-toast'
 import { StyleSheet, Linking, ScrollView } from 'react-native'
 import Clipboard from '@react-native-community/clipboard'
 import { TouchableOpacity } from 'react-native-gesture-handler'
+import { BarCodeScanner } from 'expo-barcode-scanner'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -44,9 +44,9 @@ const HotspotSetupExternalScreen = () => {
   ])
 
   const handleBarCodeScanned = useDebouncedCallback(
-    (result: BarCodeScannerResult) => {
+    async (result: BarCodeScanningResult) => {
       try {
-        handleBarCode(result, 'add_gateway', {
+        await handleBarCode(result, 'add_gateway', {
           hotspotType: params.hotspotType,
         })
         triggerNotification('success')

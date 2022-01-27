@@ -13,6 +13,7 @@ import Button from '../../../components/Button'
 import { useHotspotSettingsContext } from '../settings/HotspotSettingsProvider'
 import { useColors } from '../../../theme/themeHooks'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
+import { hp } from '../../../utils/layout'
 
 type Props = {
   onCloseTransfer: () => void
@@ -54,7 +55,7 @@ const HotspotTransfer = ({
   }
 
   return (
-    <>
+    <Box minHeight={hp(75)}>
       <Box
         backgroundColor="greenMain"
         borderTopRightRadius="l"
@@ -113,7 +114,7 @@ const HotspotTransfer = ({
           disabled={!typedHotspotName()}
         />
       </Box>
-    </>
+    </Box>
   )
 }
 

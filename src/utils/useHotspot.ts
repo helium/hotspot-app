@@ -129,6 +129,7 @@ const useHotspot = () => {
 
   const connectAndConfigHotspot = async (
     hotspotDevice: Device,
+    options: { isDiagnostics?: boolean } = {},
   ): Promise<HotspotConnectStatus> => {
     let connectedDevice = hotspotDevice
     const connected = await hotspotDevice.isConnected()
@@ -178,27 +179,36 @@ const useHotspot = () => {
     Logger.breadcrumb('connectAndConfigHotspot - received details', {
       data: details,
     })
-    const response = await dispatch(fetchConnectedHotspotDetails(details))
-    let payload: AllHotspotDetails | null = null
-    if (response.payload) {
-      payload = response.payload as AllHotspotDetails
-    }
 
-    await updateHotspotStatus(payload?.hotspot)
-
-    if (!payload?.onboardingRecord?.onboardingKey) {
-      let err: HotspotConnectStatus = 'service_unavailable'
-      if (payload?.onboardingRecord?.code === 404) {
-        err = 'no_onboarding_key'
+    try {
+      const response = await dispatch(fetchConnectedHotspotDetails(details))
+      let payload: AllHotspotDetails | null = null
+      if (response.payload) {
+        payload = response.payload as AllHotspotDetails
       }
-      Logger.error(
-        new Error(
-          `Hotspot connect failed: ${err} - error code: ${payload?.onboardingRecord?.code}`,
-        ),
+
+      await updateHotspotStatus(payload?.hotspot)
+
+      if (!payload?.onboardingRecord?.onboardingKey) {
+        let err: HotspotConnectStatus = 'service_unavailable'
+        if (payload?.onboardingRecord?.code === 404) {
+          err = 'no_onboarding_key'
+        }
+        Logger.error(
+          new Error(
+            `Hotspot connect failed: ${err} - error code: ${payload?.onboardingRecord?.code}`,
+          ),
+        )
+        return handleConnectStatus(err)
+      }
+      return handleConnectStatus(
+        payload || options.isDiagnostics ? 'success' : 'details_fetch_failure',
       )
-      return handleConnectStatus(err)
+    } catch (e) {
+      return handleConnectStatus(
+        options.isDiagnostics ? 'success' : 'details_fetch_failure',
+      )
     }
-    return handleConnectStatus(payload ? 'success' : 'details_fetch_failure')
   }
 
   const scanForWifiNetworks = async (configured = false) => {

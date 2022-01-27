@@ -502,6 +502,10 @@ export default {
       parse_code_error: 'QRコードを解析できません',
       invalid_hotspot_address:
         'QRコードのホットスポットアドレスが見つからないか無効です。',
+      invalid_sender_address:
+        'QRコードの送信者アドレスは有効なウォレットアカウントアドレスではありません。',
+      mismatched_sender_address:
+        'QRコードの送信者アドレスがウォレットアカウントアドレスと一致しません。 続行するには、アドレスが一致している必要があります。',
     },
     send_max_fee: {
       error_title: '最大送信エラー',
@@ -584,9 +588,6 @@ export default {
     owned: {
       title: 'Hotspot',
       title_no_hotspots: 'Hotspot',
-      reward_summary: 'Hotspotは過去24時間で\n{{hntAmount}}を獲得しました。',
-      reward_summary_plural:
-        '{{count}}個のHotspotは過去24時間で\n{{hntAmount}}を獲得しました。',
       your_hotspots: 'Hotspot',
       filter: {
         new: '最新のHotspot',
@@ -788,7 +789,11 @@ export default {
     picker_title: '過去',
     overview: '概要',
     no_location: '位置情報がありません',
-    picker_options: ['過去24時間', '過去14日間', '過去30日間'],
+    picker_options: {
+      7: '過去7日間',
+      14: '過去14日間',
+      30: '過去30日間',
+    },
     picker_prompt: '範囲を選択',
     status_online: 'オンライン',
     status_offline: '注意が必要',

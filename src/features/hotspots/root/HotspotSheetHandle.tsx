@@ -14,9 +14,8 @@ type Props = {
 }
 const HotspotSheetHandle = ({ hotspot, toggleSettings }: Props) => {
   const colors = useColors()
-  const showHotspotOptions = hotspot && hotspot.address
-
-  if (!showHotspotOptions) return null
+  const showHotspotOptions =
+    hotspot !== undefined && hotspot.address !== undefined
   return (
     <Box
       flexDirection="row"
@@ -39,19 +38,22 @@ const HotspotSheetHandle = ({ hotspot, toggleSettings }: Props) => {
       >
         <CardHandle />
       </Box>
-      {showHotspotOptions && hotspot && (
-        <Box flexDirection="row" alignItems="center">
-          <FollowButton address={hotspot.address} />
-          <TouchableOpacityBox
-            onPress={toggleSettings}
-            marginLeft="m"
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            <Settings width={22} height={22} color={colors.grayPurple} />
-          </TouchableOpacityBox>
-          <ShareSheet item={hotspot} />
-        </Box>
-      )}
+      <Box
+        flexDirection="row"
+        alignItems="center"
+        opacity={showHotspotOptions ? 100 : 0}
+      >
+        <FollowButton address={hotspot?.address} />
+        <TouchableOpacityBox
+          disabled={!showHotspotOptions}
+          onPress={toggleSettings}
+          marginLeft="m"
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Settings width={22} height={22} color={colors.grayPurple} />
+        </TouchableOpacityBox>
+        <ShareSheet item={hotspot} />
+      </Box>
     </Box>
   )
 }

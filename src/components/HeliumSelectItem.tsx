@@ -23,6 +23,7 @@ type Props = {
   backgroundColor?: Colors
   handleLayout: (event: LayoutChangeEvent) => void
   itemPadding?: Spacing
+  disabled?: boolean
 }
 
 const HeliumSelectItem = ({
@@ -33,6 +34,7 @@ const HeliumSelectItem = ({
   backgroundColor = 'white',
   handleLayout,
   itemPadding,
+  disabled = false,
 }: Props) => {
   const itemTextColor = useMemo(() => {
     if (textColor && !selected) return textColor
@@ -90,6 +92,7 @@ const HeliumSelectItem = ({
       borderRadius="round"
       onPress={onPress}
       paddingHorizontal={itemPadding || 'ms'}
+      disabled={disabled}
     >
       {!!Icon && selected && <Icon height={16} width={16} color="white" />}
       <Text
@@ -97,6 +100,7 @@ const HeliumSelectItem = ({
         fontSize={fontSize}
         color={itemTextColor}
         marginLeft={Icon ? 'xs' : 'none'}
+        maxFontSizeMultiplier={1.2}
       >
         {text}
       </Text>

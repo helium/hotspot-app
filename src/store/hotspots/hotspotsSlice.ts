@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { Hotspot } from '@helium/http'
 import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
-import { uniq } from 'lodash'
 import { getHotspotDetails, getHotspots } from '../../utils/appDataClient'
 import { LocationCoords } from '../../utils/location'
 import { getWallet, deleteWallet, postWallet } from '../../utils/walletClient'
@@ -16,12 +15,12 @@ export type HotspotsSliceState = {
   orderedHotspots: Hotspot[]
   followedHotspotsObj: Record<string, Hotspot>
   followedHotspots: Hotspot[]
-  rewards: Rewards
   location?: LocationCoords
   loadingRewards: boolean
   hotspotsLoaded: boolean
   failure: boolean
   syncStatuses: Record<string, CacheRecord<{ status: HotspotSyncStatus }>>
+  rewards: Rewards
 }
 
 const initialState: HotspotsSliceState = {
@@ -38,27 +37,12 @@ const initialState: HotspotsSliceState = {
 
 export const fetchRewards = createAsyncThunk<
   WalletReward[],
-  { fetchType: 'all' | 'followed' }
->('hotspots/fetchRewards', async ({ fetchType }, { getState }) => {
-  const { hotspots, followedHotspots } = (getState() as {
-    hotspots: {
-      hotspots: Hotspot[]
-      followedHotspots: Hotspot[]
-    }
-  }).hotspots
-  let gatewayAddresses = followedHotspots.map((h) => h.address)
-  if (fetchType === 'all') {
-    const ownedAddresses = hotspots.map((h) => h.address)
-    gatewayAddresses = uniq([...ownedAddresses, ...gatewayAddresses])
-  }
-  if (gatewayAddresses.length === 0) return []
-
-  if (gatewayAddresses.length === 0) {
-    return []
-  }
+  { addresses: string[] }
+>('hotspots/fetchRewards', async ({ addresses }) => {
+  if (!addresses.length) return []
 
   return getWallet('hotspots/rewards', {
-    addresses: gatewayAddresses.join(','),
+    addresses: addresses.join(','),
     dayRange: 1,
   })
 })
@@ -75,12 +59,10 @@ type WalletHotspot = Hotspot & { lat: string; lng: string }
 export const fetchHotspotsData = createAsyncThunk(
   'hotspots/fetchHotspotsData',
   async (_arg) => {
-    const allHotspots = await Promise.all(
-      [
-        getHotspots(),
-        getWallet('hotspots/follow', null, { camelCase: true }),
-      ].map((p) => p.catch(() => {})),
-    )
+    const allHotspots = await Promise.all([
+      getHotspots(),
+      getWallet('hotspots/follow', null, { camelCase: true }),
+    ])
 
     const [hotspots = [], followedHotspots = []]: [
       Hotspot[],
@@ -154,7 +136,7 @@ const hotspotsToObj = (hotspots: Hotspot[]) =>
   }, {})
 
 const hotspotsSlice = createSlice({
-  name: 'hotspotDetails',
+  name: 'hotspots',
   initialState,
   reducers: {
     signOut: () => {

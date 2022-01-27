@@ -1,24 +1,22 @@
-import React from 'react'
-import { AnyTransaction, PendingTransaction, TokenBurnV1 } from '@helium/http'
+import React, { useMemo } from 'react'
 import Box from '../../../../components/Box'
-import { isPayer } from '../../../../utils/transactions'
 import PaymentItem from './PaymentItem'
+import { HttpTransaction } from '../../../../store/activity/activitySlice'
 
-type Props = { item: AnyTransaction | PendingTransaction; address: string }
+type Props = { item: HttpTransaction; address: string }
 const Burn = ({ item, address }: Props) => {
+  const isPayer = useMemo(() => item.payer === address, [address, item.payer])
+
   if (item.type !== 'token_burn_v1') return null
 
-  const v1 = (item as unknown) as TokenBurnV1
-
-  const payer = isPayer(address, item)
   return (
-    <Box flex={1} marginTop={payer ? 'none' : 'm'}>
+    <Box flex={1} marginTop={isPayer ? 'none' : 'm'}>
       <PaymentItem
-        text={v1.payee}
+        text={item.payee || ''}
         mode="to"
-        isMyAccount={v1.payee === address}
+        isMyAccount={item.payee === address}
       />
-      <PaymentItem text={v1.memo} mode="memo" isFirst={false} isLast />
+      <PaymentItem text={item.memo || ''} mode="memo" isFirst={false} isLast />
     </Box>
   )
 }

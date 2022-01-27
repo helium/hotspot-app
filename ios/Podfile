@@ -1,14 +1,15 @@
-require_relative '../node_modules/react-native/scripts/react_native_pods'
-require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
-require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
+require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
+require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
+require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
 
 platform :ios, '12.1'
 
-target 'Helium' do
-  use_unimodules!
-  config = use_native_modules!
+require 'json'
+podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {}
 
-  pod 'OneSignal', '>= 3.0.0', '< 4.0'
+target 'Helium' do
+  use_expo_modules!
+  config = use_native_modules!
 
   use_react_native!(
     :path => config[:reactNativePath],
@@ -34,9 +35,28 @@ target 'Helium' do
   post_install do |installer|
     $RNMBGL.post_install(installer)
     react_native_post_install(installer)
+    __apply_Xcode_12_5_M1_post_install_workaround(installer)
+
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings["ONLY_ACTIVE_ARCH"] = "NO"
+      end
+    end
+
+    # Workaround `Cycle inside FBReactNativeSpec` error for react-native 0.64
+    # Reference: https://github.com/software-mansion/react-native-screens/issues/842#issuecomment-812543933
+    installer.pods_project.targets.each do |target|
+      if (target.name&.eql?('FBReactNativeSpec'))
+        target.build_phases.each do |build_phase|
+          if (build_phase.respond_to?(:name) && build_phase.name.eql?('[CP-User] Generate Specs'))
+            target.build_phases.move(build_phase, 0)
+          end
+        end
+      end
+    end
   end
 end
 
 target 'OneSignalNotificationServiceExtension' do
-  pod 'OneSignal', '>= 3.0.0', '< 4.0'
+  pod 'OneSignalXCFramework', '>= 3.0', '< 4.0'
 end

@@ -28,7 +28,7 @@ export const HELIUM_OLD_MAKER_ADDRESS =
   '14fzfjFcHpDR1rTH8BNPvSi5dKBbgxaDnmsVPbCjuq9ENjpZbxh'
 
 export const isHotspot = (item: unknown): item is Hotspot =>
-  (item as Hotspot).location !== undefined &&
+  (item as Hotspot).locationHex !== undefined &&
   (item as Witness).witnessFor === undefined
 
 export const isWitness = (

@@ -91,7 +91,12 @@ const ReassertLocationFee = ({
       )}
       {!isFree && totalStakingAmountDC.floatBalance > 0 && !isPending && (
         <>
-          <Text variant="body1" numberOfLines={1} color="grayText">
+          <Text
+            variant="body1"
+            numberOfLines={1}
+            color="grayText"
+            maxFontSizeMultiplier={1.2}
+          >
             {t('hotspot_settings.reassert.cost')}
           </Text>
 
@@ -104,7 +109,12 @@ const ReassertLocationFee = ({
             backgroundColor="grayBox"
             flexDirection="row"
           >
-            <Text variant="body2" numberOfLines={1} color="black">
+            <Text
+              variant="body2"
+              numberOfLines={1}
+              color="black"
+              maxFontSizeMultiplier={1.2}
+            >
               {`${totalStakingAmountDC.toString()} (~$${totalStakingAmountUsd.toString()})`}
             </Text>
             {hasSufficientBalance && <Check height={18} width={18} />}
@@ -116,6 +126,7 @@ const ReassertLocationFee = ({
               color="grayText"
               marginTop="s"
               textAlign="center"
+              maxFontSizeMultiplier={1.2}
             >
               {t('hotspot_settings.reassert.insufficient_funds')}
             </Text>
@@ -123,29 +134,24 @@ const ReassertLocationFee = ({
         </>
       )}
       {mapCenter !== undefined && (
-        <>
+        <Box height={200} marginBottom="xl">
           <Text
             variant="body1Medium"
             color="black"
             marginTop="m"
             marginBottom="s"
+            maxFontSizeMultiplier={1.2}
           >
             {newLocation
               ? t('hotspot_settings.reassert.new_location')
               : t('hotspot_settings.reassert.current_location')}
           </Text>
-          {newLocation ? (
-            <HotspotLocationPreview
-              mapCenter={mapCenter}
-              locationName={newLocation.name}
-            />
-          ) : (
-            <HotspotLocationPreview
-              mapCenter={mapCenter}
-              geocode={hotspot.geocode}
-            />
-          )}
-        </>
+          <HotspotLocationPreview
+            mapCenter={mapCenter}
+            locationName={newLocation?.name}
+            geocode={hotspot.geocode}
+          />
+        </Box>
       )}
       {newLocation ? (
         <Box flexDirection="row" marginTop="m">

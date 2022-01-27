@@ -40,6 +40,10 @@ const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
     heliumData: { blockHeight },
   } = useSelector((state: RootState) => state, selectorIsEqual)
 
+  const chartEnabled = useSelector(
+    (state: RootState) => state.features.walletChartEnabled,
+  )
+
   const { t } = useTranslation()
 
   const { hntToDisplayVal } = useCurrency()
@@ -68,10 +72,12 @@ const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
   }, [filter, activityChart, activityChartRange])
 
   useEffect(() => {
-    dispatch(
-      fetchActivityChart({ range: activityChartRange, filterType: filter }),
-    )
-  }, [dispatch, filter, activityChartRange, blockHeight])
+    if (chartEnabled) {
+      dispatch(
+        fetchActivityChart({ range: activityChartRange, filterType: filter }),
+      )
+    }
+  }, [dispatch, filter, activityChartRange, blockHeight, chartEnabled])
 
   const padding = 20
   const chartHeight = useMemo(() => height - headerHeight - padding, [
@@ -128,10 +134,20 @@ const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
     [],
   )
 
+  const hasData = useMemo(() => {
+    if (filter === 'pending') return false
+    return data?.data !== undefined && data?.data?.length !== 0
+  }, [data?.data, filter])
+
   const { greenBright, blueBright } = useColors()
 
+  if (!chartEnabled) return null
+
   return (
-    <Box {...boxProps} height={height}>
+    <Box
+      {...boxProps}
+      height={chartEnabled && filter !== 'pending' && hasData ? height : 0}
+    >
       <Box flexDirection="column" onLayout={handleHeaderLayout}>
         <Box flexDirection="row" justifyContent="space-between">
           <Text
@@ -156,6 +172,7 @@ const WalletChart = ({ height, showSkeleton, ...boxProps }: Props) => {
             selectedValue={activityChartRange}
             onValueChanged={handleChartRangeChanged}
             marginBottom="l"
+            visible={!showSkeleton && hasData}
           />
         </Box>
         <Box

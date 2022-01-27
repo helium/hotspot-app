@@ -455,6 +455,9 @@ export default {
       learn_more: '了解更多',
       parse_code_error: '无法解析二维码',
       invalid_hotspot_address: '二维码中的热点地址缺失或无效。',
+      invalid_sender_address: '二维码中的发件人地址不是有效的钱包账户地址。',
+      mismatched_sender_address:
+        '二维码中的发件人地址与钱包账户地址不匹配。 地址必须匹配才能继续。',
     },
     send_max_fee: {
       error_title: '发送最大值出错',
@@ -535,9 +538,6 @@ export default {
     owned: {
       title: '我的 Hotspot',
       title_no_hotspots: 'Hotspot',
-      reward_summary: '您的 Hotspot 过去 24 小时共赚取\n{{hntAmount}}。',
-      reward_summary_plural:
-        '您的 {{count}} 个 Hotspot 过去 24 小时共赚取\n{{hntAmount}}。',
       your_hotspots: '您的 Hotspot',
       filter: {
         new: '最新的 Hotspot',
@@ -733,7 +733,7 @@ export default {
     picker_title: '过去',
     overview: '概览',
     no_location: '无位置',
-    picker_options: ['过去 24 小时', '过去 14 天', '过去 30 天'],
+    picker_options: { 7: '过去 7 天', 14: '过去 14 天', 30: '지난 30일' },
     picker_prompt: '选择范围',
     status_online: '在线',
     status_offline: '请注意',

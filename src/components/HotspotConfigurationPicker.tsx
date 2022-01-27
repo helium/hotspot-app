@@ -1,5 +1,6 @@
 import {
   Alert,
+  Keyboard,
   StyleSheet,
   TextInput,
   TouchableWithoutFeedback,
@@ -51,7 +52,9 @@ const HotspotConfigurationPicker = ({
         ...AntennaModels[k],
         label: AntennaModels[k].name,
         value: AntennaModels[k].name,
-      })),
+      })).sort((a, b) =>
+        a.label.toLocaleLowerCase() > b.label.toLocaleLowerCase() ? 1 : -1,
+      ),
     [],
   )
 
@@ -76,19 +79,40 @@ const HotspotConfigurationPicker = ({
     Alert.alert(t('antennas.gain_info.title'), t('antennas.gain_info.desc'))
 
   const focusGain = () => {
-    gainInputRef.current?.focus()
+    if (!selectedAntenna) {
+      onAntennaUpdated(AntennaModels.CUSTOM)
+      onGainUpdated(AntennaModels.CUSTOM.gain)
+      setTimeout(() => gainInputRef?.current?.focus(), 200)
+    } else {
+      gainInputRef.current?.focus()
+    }
   }
   const focusElevation = () => {
     elevationInputRef.current?.focus()
   }
 
-  const onChangeGain = (text: string) => setGain(text)
-  const onDoneEditingGain = () => {
-    const gainFloat = gain
+  const parseGainFloat = (floatString?: string) =>
+    floatString
       ? parseFloat(
-          gain.replace(groupSeparator, '').replace(decimalSeparator, '.'),
+          floatString
+            .replace(groupSeparator, '')
+            .replace(decimalSeparator, '.'),
         )
       : 0
+
+  const onChangeGain = (text: string) => {
+    let gainFloat = parseGainFloat(text)
+    if (!gainFloat || gainFloat <= 1) {
+      gainFloat = 1
+    } else if (gainFloat >= 15) {
+      gainFloat = 15
+    }
+    setGain(text)
+    onGainUpdated(gainFloat)
+  }
+
+  const onDoneEditingGain = () => {
+    const gainFloat = parseGainFloat(gain)
     let gainString
     if (!gainFloat || gainFloat <= 1) {
       gainString = '1'
@@ -101,6 +125,7 @@ const HotspotConfigurationPicker = ({
     }
     setGain(gainString)
     onGainUpdated(gainFloat)
+    Keyboard.dismiss()
   }
 
   const onChangeElevation = (text: string) => {
@@ -160,7 +185,11 @@ const HotspotConfigurationPicker = ({
           alignItems="center"
         >
           <Box flexDirection="row" alignItems="center">
-            <Text color="purpleMain" marginRight="xs">
+            <Text
+              color="purpleMain"
+              marginRight="xs"
+              maxFontSizeMultiplier={1.2}
+            >
               {t('antennas.onboarding.gain')}
             </Text>
             <TouchableOpacityBox onPress={showGainInfo} padding="xs">
@@ -178,11 +207,14 @@ const HotspotConfigurationPicker = ({
               keyboardType="numeric"
               value={gain}
               returnKeyType="done"
+              maxFontSizeMultiplier={1.2}
               onChangeText={onChangeGain}
               onEndEditing={onDoneEditingGain}
               editable={selectedAntenna?.name === 'Custom Antenna'}
             />
-            <Text marginLeft="xxs">{t('antennas.onboarding.dbi')}</Text>
+            <Text marginLeft="xxs" maxFontSizeMultiplier={1.2}>
+              {t('antennas.onboarding.dbi')}
+            </Text>
           </Box>
         </Box>
       </TouchableWithoutFeedback>
@@ -195,7 +227,11 @@ const HotspotConfigurationPicker = ({
           alignItems="center"
         >
           <Box flexDirection="row" alignItems="center">
-            <Text color="purpleMain" marginRight="xs">
+            <Text
+              color="purpleMain"
+              marginRight="xs"
+              maxFontSizeMultiplier={1.2}
+            >
               {t('antennas.onboarding.elevation')}
             </Text>
             <TouchableOpacityBox onPress={showElevationInfo} padding="xs">
@@ -207,7 +243,9 @@ const HotspotConfigurationPicker = ({
             placeholder="0"
             keyboardType="numeric"
             returnKeyType="done"
+            maxFontSizeMultiplier={1.2}
             onChangeText={onChangeElevation}
+            onEndEditing={Keyboard.dismiss}
           />
         </Box>
       </TouchableWithoutFeedback>

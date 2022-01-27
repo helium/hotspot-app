@@ -5,15 +5,12 @@ import { ActivityIndicator } from 'react-native'
 import { RootState } from '../../../store/rootReducer'
 import HotspotsView from './HotspotsView'
 import Box from '../../../components/Box'
-import {
-  fetchHotspotsData,
-  fetchRewards,
-} from '../../../store/hotspots/hotspotsSlice'
-import useVisible from '../../../utils/useVisible'
+import { fetchHotspotsData } from '../../../store/hotspots/hotspotsSlice'
 import { useAppDispatch } from '../../../store/store'
 import useGetLocation from '../../../utils/useGetLocation'
 import useAlert from '../../../utils/useAlert'
 import { updateFleetModeEnabled } from '../../../store/account/accountSlice'
+import useMount from '../../../utils/useMount'
 
 const HotspotsScreen = () => {
   const maybeGetLocation = useGetLocation()
@@ -99,16 +96,10 @@ const HotspotsScreen = () => {
     showOKAlert,
   ])
 
-  useVisible({
-    onAppear: () => {
-      dispatch(fetchHotspotsData())
-      maybeGetLocation(false)
-    },
+  useMount(() => {
+    dispatch(fetchHotspotsData())
+    maybeGetLocation(false)
   })
-
-  useEffect(() => {
-    dispatch(fetchRewards({ fetchType: fleetModeEnabled ? 'followed' : 'all' }))
-  }, [visibleHotspots, dispatch, fleetModeEnabled])
 
   const viewState = useMemo(() => {
     if (!hotspotsLoaded) return 'loading'

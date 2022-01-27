@@ -45,7 +45,9 @@ const EmojiBlip = ({ date, name }: { date?: Date; name?: string }) => {
     pickEmoji,
   ])
 
-  return <Emoji name={emojiName} style={styles.emoji} />
+  return (
+    <Emoji name={emojiName} style={styles.emoji} maxFontSizeMultiplier={1.2} />
+  )
 }
 
 const styles = StyleSheet.create({ emoji: { fontSize: 42 } })

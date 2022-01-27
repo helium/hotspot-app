@@ -86,15 +86,18 @@ export const getStakingSignedTransaction = async (
   const { transaction } = await postStaking(`transactions/pay/${gateway}`, {
     transaction: txn,
   })
-  return transaction
+  return transaction as string
 }
 
 export const getMakers = async (): Promise<Maker[]> => {
   return makeRequest('makers')
 }
 
-export const getMakerName = (accountAddress: string, makers?: Maker[]) => {
-  if (!makers) return ''
+export const getMakerName = (
+  accountAddress?: string | null,
+  makers?: Maker[],
+) => {
+  if (!makers || !accountAddress) return ''
   const makerMatchIndex = makers.findIndex(
     (m: { address: string }) => m.address === accountAddress,
   )

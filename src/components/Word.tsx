@@ -1,6 +1,6 @@
-import upperFirst from 'lodash/upperFirst'
 import React from 'react'
 import { Animated } from 'react-native'
+import { upperCase } from 'lodash'
 import Text from './Text'
 import TouchableOpacityBox from './TouchableOpacityBox'
 
@@ -41,7 +41,7 @@ const Word = ({
           color="grayLight"
           marginLeft="s"
         >
-          {upperFirst(word)}
+          {upperCase(word)}
         </Text>
       </TouchableOpacityBox>
     </Animated.View>

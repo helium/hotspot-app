@@ -46,6 +46,9 @@ import { EXPLORER_BASE_URL } from '../../../utils/config'
 import { SUPPORTED_LANGUAGUES } from '../../../utils/i18n/i18nTypes'
 import Articles from '../../../constants/articles'
 import useAlert from '../../../utils/useAlert'
+import validatorsSlice from '../../../store/validators/validatorsSlice'
+import { SUPPORTED_CURRENCIES } from '../../../utils/useCurrency'
+import { clearMapCache } from '../../../utils/mapUtils'
 
 type Route = RouteProp<RootStackParamList & MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
@@ -187,6 +190,15 @@ const MoreScreen = () => {
     )
   }, [dispatch, showHiddenHotspots])
 
+  const handleClearMapCache = useCallback(async () => {
+    const decision = await showOKCancelAlert({
+      titleKey: 'more.sections.app.clearMapCacheAlert.title',
+      messageKey: 'more.sections.app.clearMapCacheAlert.body',
+    })
+    if (!decision) return
+    await clearMapCache()
+  }, [showOKCancelAlert])
+
   const handleSignOut = useCallback(() => {
     Alert.alert(
       t('more.sections.app.signOutAlert.title'),
@@ -204,6 +216,7 @@ const MoreScreen = () => {
             dispatch(accountSlice.actions.signOut())
             dispatch(activitySlice.actions.signOut())
             dispatch(hotspotsSlice.actions.signOut())
+            dispatch(validatorsSlice.actions.signOut())
             dispatch(connectedHotspotSlice.actions.signOut())
           },
         },
@@ -216,6 +229,30 @@ const MoreScreen = () => {
       changeLanguage(lng)
     },
     [changeLanguage],
+  )
+
+  const handleNetworkChange = useCallback(
+    (network: string) => {
+      dispatch(
+        updateSetting({
+          key: 'network',
+          value: network,
+        }),
+      )
+    },
+    [dispatch],
+  )
+
+  const handleCurrencyTypeChange = useCallback(
+    (currencyType: string) => {
+      dispatch(
+        updateSetting({
+          key: 'currencyType',
+          value: currencyType,
+        }),
+      )
+    },
+    [dispatch],
   )
 
   const handleIntervalSelected = useCallback(
@@ -330,6 +367,31 @@ const MoreScreen = () => {
             },
           },
           {
+            title: t('more.sections.app.currency'),
+            value: account.settings.currencyType,
+            select: {
+              items: Object.keys(SUPPORTED_CURRENCIES).map((p) => {
+                return {
+                  label: `${p} ${SUPPORTED_CURRENCIES[p]}`,
+                  labelShort: p,
+                  value: p,
+                }
+              }),
+              onValueSelect: handleCurrencyTypeChange,
+            },
+          },
+          {
+            title: t('more.sections.app.network'),
+            value: account.settings.network,
+            select: {
+              items: [
+                { label: 'StakeJoy API', value: 'stakejoy' },
+                { label: 'Helium API', value: 'helium' },
+              ],
+              onValueSelect: handleNetworkChange,
+            },
+          },
+          {
             title: t('more.sections.app.enableHapticFeedback'),
             onToggle: handleHaptic,
             value: !app.isHapticDisabled,
@@ -350,6 +412,10 @@ const MoreScreen = () => {
             value: showHiddenHotspots,
           },
           {
+            title: t('more.sections.app.clearMapCache'),
+            onPress: handleClearMapCache,
+          },
+          {
             title: t('more.sections.app.signOut'),
             onPress: handleSignOut,
             destructive: true,
@@ -362,28 +428,32 @@ const MoreScreen = () => {
     t,
     handlePinRequired,
     app.isPinRequired,
+    app.isDeployModeEnabled,
     app.isHapticDisabled,
     app.authInterval,
     app.isPinRequiredForPayment,
-    app.isDeployModeEnabled,
-    showingDeployModeConfirmation,
-    setShowingDeployModeConfirmation,
-    showHiddenHotspots,
     handleRevealWords,
     language,
     handleLanguageChange,
-    handleHaptic,
-    handleConvertHntToCurrency,
+    account.settings.currencyType,
+    account.settings.network,
     account.settings.convertHntToCurrency,
     account.settings.isFleetModeEnabled,
+    handleCurrencyTypeChange,
+    handleNetworkChange,
+    handleHaptic,
+    handleConvertHntToCurrency,
     handleFleetMode,
     handleShowHiddenHotspots,
+    showHiddenHotspots,
     handleSignOut,
     version,
     authIntervals,
     handleIntervalSelected,
     handleResetPin,
     handlePinRequiredForPayment,
+    showingDeployModeConfirmation,
+    handleClearMapCache,
   ])
 
   const contentContainer = useMemo(

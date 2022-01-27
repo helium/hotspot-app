@@ -485,6 +485,10 @@ export default {
       learn_more: '자세히 알아보기',
       parse_code_error: 'QR 코드를 구문 분석할 수 없음',
       invalid_hotspot_address: 'QR 코드의 핫스팟 주소가 없거나 잘못되었습니다.',
+      invalid_sender_address:
+        'QR 코드의 보낸 사람 주소는 유효한 지갑 계정 주소가 아닙니다.',
+      mismatched_sender_address:
+        'QR 코드의 보낸 사람 주소가 지갑 계정 주소와 일치하지 않습니다. 계속하려면 주소가 일치해야 합니다.',
     },
     send_max_fee: {
       error_title: '최대 오류 전송',
@@ -566,10 +570,6 @@ export default {
     owned: {
       title: '내 Hotspot',
       title_no_hotspots: 'Hotspot',
-      reward_summary:
-        'Hotspot이 지난 24시간 동안 \n{{hntAmount}}을(를) 획득했습니다.',
-      reward_summary_plural:
-        'Hotspot {{count}}개가 지난 24시간 동안 \n{{hntAmount}}을(를) 획득했습니다.',
       your_hotspots: '내 Hotspot',
       filter: {
         new: '최신 Hotspot',
@@ -769,7 +769,7 @@ export default {
     picker_title: '이전',
     overview: '개요',
     no_location: '위치 없음',
-    picker_options: ['지난 24시간', '지난 14일', '지난 30일'],
+    picker_options: { 7: '지난 7일', 14: '지난 14일', 30: '지난 30일' },
     picker_prompt: '범위 선택',
     status_online: '온라인',
     status_offline: '주의 필요',

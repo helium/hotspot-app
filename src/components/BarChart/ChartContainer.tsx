@@ -10,20 +10,28 @@ import { Theme } from '../../theme/theme'
 type Props = BoxProps<Theme> & {
   height: number
   data?: ChartData[] | null
-  onFocus: (data: ChartData | null) => void
+  stackedData?: ChartData[]
+  onFocus: (data: ChartData | null, stackedData: ChartData | null) => void
   showXAxisLabel?: boolean
   upColor?: string
   downColor?: string
+  stackedUpColor?: string
+  stackedDownColor?: string
   labelColor?: string
   loading?: boolean
 }
 
+const BAR_HEIGHT_MODIFIERS = [2, 1, 4, 2, 4, 2, 1, 2, 3, 4, 3, 3, 4, 2]
+
 const ChartContainer = ({
   data,
+  stackedData,
   onFocus,
   showXAxisLabel,
   upColor,
+  stackedUpColor,
   downColor,
+  stackedDownColor,
   labelColor,
   loading,
   ...boxProps
@@ -38,9 +46,26 @@ const ChartContainer = ({
   )
 
   if (loading) {
+    const placeHolderBars = []
+    for (let i = 0; i < 14; i += 1) {
+      placeHolderBars.push(
+        <SkeletonPlaceholder.Item
+          key={`placeHolderBar${i}`}
+          height={boxProps.height / BAR_HEIGHT_MODIFIERS[i]}
+          width={10}
+          borderRadius={5}
+        />,
+      )
+    }
     return (
       <SkeletonPlaceholder>
-        <SkeletonPlaceholder.Item height={boxProps.height} width={width} />
+        <SkeletonPlaceholder.Item
+          flexDirection="row"
+          alignItems="flex-end"
+          justifyContent="space-between"
+        >
+          {placeHolderBars}
+        </SkeletonPlaceholder.Item>
       </SkeletonPlaceholder>
     )
   }
@@ -52,9 +77,12 @@ const ChartContainer = ({
           width={width}
           height={boxProps.height}
           data={data}
+          stackedData={stackedData}
           onFocus={onFocus}
           showXAxisLabel={showXAxisLabel}
           upColor={upColor}
+          stackedUpColor={stackedUpColor}
+          stackedDownColor={stackedDownColor}
           downColor={downColor}
           labelColor={labelColor}
         />

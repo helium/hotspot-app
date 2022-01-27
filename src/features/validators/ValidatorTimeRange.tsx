@@ -13,7 +13,7 @@ const ValidatorTimeRange = ({ timeRange, setTimeRange }: Props) => {
     const values = [
       { label: t('validator_details.time_range_30_days'), value: 30 },
       { label: t('validator_details.time_range_14_days'), value: 14 },
-      { label: t('validator_details.time_range_24_hours'), value: 1 },
+      { label: t('validator_details.time_range_7_days'), value: 7 },
     ]
 
     return values.map(
@@ -37,7 +37,6 @@ const ValidatorTimeRange = ({ timeRange, setTimeRange }: Props) => {
       data={data}
       variant="flat"
       showGradient={false}
-      // contentContainerStyle={contentContainerStyle}
       selectedValue={timeRange}
       onValueChanged={handleTimeRangeChanged}
       itemPadding="xs"
