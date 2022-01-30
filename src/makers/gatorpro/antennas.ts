@@ -7,7 +7,7 @@ const EXAMPLE_US = {
 
 const EXAMPLE_EU = {
   name: 'Example Hotspot (EU 868)',
-  gain: 2.6,
+  gain: 2.5,
 } as MakerAntenna
 
 export default { EXAMPLE_US, EXAMPLE_EU }
