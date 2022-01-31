@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect } from 'react'
 import { BoxProps } from '@shopify/restyle'
 import { Address } from '@helium/crypto-react-native'
-import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native'
+import { KeyboardAvoidingView, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import DeployModeIcon from '@assets/images/deployModeIcon.svg'
@@ -51,7 +51,7 @@ const DeployModeModal = ({ isVisible, onClose = () => {} }: Props) => {
       hideHeaderBorder
     >
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior="padding"
         keyboardVerticalOffset={100}
         style={{ flexGrow: 1, marginTop: 'auto' }}
       >

@@ -173,6 +173,28 @@ const SendDetailsForm = ({
     }
   }
 
+  // set isHotspotAddress for default address
+  useAsync(async () => {
+    if (
+      address !== undefined &&
+      address !== '' &&
+      isHotspotAddress === undefined
+    ) {
+      setAddressLoading(true)
+      try {
+        const hotspot = await getHotspotDetails(address)
+        if (hotspot.address === address) {
+          setIsHotspotAddress(true)
+          setSendDisabled(true)
+          setAddressLoading(false)
+        }
+      } catch (e) {
+        setIsHotspotAddress(false)
+        setAddressLoading(false)
+      }
+    }
+  }, [])
+
   const handleAddressChange = useCallback((text: string) => {
     setIsHotspotAddress(false)
     setAddress(text)

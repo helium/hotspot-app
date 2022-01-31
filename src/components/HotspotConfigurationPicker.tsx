@@ -1,5 +1,6 @@
 import {
   Alert,
+  Keyboard,
   StyleSheet,
   TextInput,
   TouchableWithoutFeedback,
@@ -78,7 +79,13 @@ const HotspotConfigurationPicker = ({
     Alert.alert(t('antennas.gain_info.title'), t('antennas.gain_info.desc'))
 
   const focusGain = () => {
-    gainInputRef.current?.focus()
+    if (!selectedAntenna) {
+      onAntennaUpdated(AntennaModels.CUSTOM)
+      onGainUpdated(AntennaModels.CUSTOM.gain)
+      setTimeout(() => gainInputRef?.current?.focus(), 200)
+    } else {
+      gainInputRef.current?.focus()
+    }
   }
   const focusElevation = () => {
     elevationInputRef.current?.focus()
@@ -118,6 +125,7 @@ const HotspotConfigurationPicker = ({
     }
     setGain(gainString)
     onGainUpdated(gainFloat)
+    Keyboard.dismiss()
   }
 
   const onChangeElevation = (text: string) => {
@@ -237,6 +245,7 @@ const HotspotConfigurationPicker = ({
             returnKeyType="done"
             maxFontSizeMultiplier={1.2}
             onChangeText={onChangeElevation}
+            onEndEditing={Keyboard.dismiss}
           />
         </Box>
       </TouchableWithoutFeedback>

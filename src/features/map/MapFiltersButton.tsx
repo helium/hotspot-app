@@ -2,12 +2,14 @@ import React, { memo, useMemo } from 'react'
 import FiltersDefault from '../../assets/images/filters-default.svg'
 import FiltersRewards from '../../assets/images/filters-rewards.svg'
 import FiltersWitness from '../../assets/images/filters-witness.svg'
+import FiltersEarnings from '../../assets/images/filters-earnings.svg'
 import TouchableOpacityBox from '../../components/TouchableOpacityBox'
 
 export enum MapFilters {
   owned,
   reward,
   witness,
+  earnings,
 }
 
 const MapFiltersButton = ({
@@ -36,6 +38,8 @@ const MapFiltersButton = ({
         return <FiltersRewards height={iconHeight} width={iconWidth} />
       case MapFilters.witness:
         return <FiltersWitness height={iconHeight} width={iconWidth} />
+      case MapFilters.earnings:
+        return <FiltersEarnings height={iconHeight} width={iconWidth} />
     }
   }, [iconHeight, iconWidth, mapFilter])
   return (

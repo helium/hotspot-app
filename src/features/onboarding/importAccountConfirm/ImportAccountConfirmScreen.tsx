@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { StyleSheet } from 'react-native'
 import Lock from '@assets/images/lock_ico.svg'
-import { upperFirst } from 'lodash'
+import { upperCase } from 'lodash'
 import Carousel, { Pagination } from 'react-native-snap-carousel'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -57,31 +57,45 @@ const ImportAccountConfirmScreen = () => {
   }
 
   const renderItem = useCallback(
-    ({ item, index }) => (
-      <TouchableOpacityBox
-        height={{ smallPhone: 84, phone: 114 }}
-        onPress={handleWordEdit(index)}
-      >
-        <Card
-          marginHorizontal="s"
-          variant="elevated"
-          flex={1}
-          overflow="hidden"
-          backgroundColor="white"
-          paddingHorizontal="l"
-          alignItems="center"
-          flexDirection="row"
+    ({ item, index }) => {
+      const isFirst = index === 0
+      const isLast = index + 1 === routeWords?.length
+      return (
+        <TouchableOpacityBox
+          height={{ smallPhone: 84, phone: 114 }}
+          onPress={handleWordEdit(index)}
         >
-          <Text variant="h1" color="purpleLight" maxFontSizeMultiplier={1}>{`${
-            index + 1
-          }. `}</Text>
-          <Text variant="h1" color="purpleDark" maxFontSizeMultiplier={1}>
-            {upperFirst(item)}
-          </Text>
-        </Card>
-      </TouchableOpacityBox>
-    ),
-    [],
+          <Card
+            marginHorizontal="s"
+            marginLeft={isFirst ? 'l' : undefined}
+            marginRight={isLast ? 'l' : undefined}
+            variant="elevated"
+            flex={1}
+            overflow="hidden"
+            backgroundColor="white"
+            paddingHorizontal="l"
+            alignItems="center"
+            flexDirection="row"
+          >
+            <Text
+              variant="bold"
+              fontSize={39}
+              color="purpleLight"
+              maxFontSizeMultiplier={1}
+            >{`${index + 1}. `}</Text>
+            <Text
+              variant="bold"
+              fontSize={39}
+              color="purpleDark"
+              maxFontSizeMultiplier={1}
+            >
+              {upperCase(item)}
+            </Text>
+          </Card>
+        </TouchableOpacityBox>
+      )
+    },
+    [routeWords?.length],
   )
 
   return (
@@ -117,7 +131,11 @@ const ImportAccountConfirmScreen = () => {
           sliderWidth={wp(100)}
           itemWidth={wp(90)}
           inactiveSlideScale={1}
-          onSnapToItem={(i) => onSnapToItem(i)}
+          onScrollIndexChanged={onSnapToItem}
+          useExperimentalSnap
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore this is a new beta prop and enforces only scrolling one item at a time
+          disableIntervalMomentum
         />
         <Pagination
           containerStyle={styles.dotContainer}

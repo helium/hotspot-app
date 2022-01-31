@@ -40,7 +40,13 @@ const accountConfig = {
 const activityConfig = {
   key: activitySlice.name,
   storage: AsyncStorage,
-  blacklist: ['filter'],
+  blacklist: ['filter', 'detailTxn', 'requestMore'],
+}
+
+const validatorsConfig = {
+  key: validatorsSlice.name,
+  storage: AsyncStorage,
+  blacklist: ['rewards'],
 }
 
 const rootReducer = combineReducers({
@@ -53,7 +59,7 @@ const rootReducer = combineReducers({
   hotspots: persistReducer(hotspotsConfig, hotspotsSlice.reducer),
   hotspotSearch: hotspotSearchSlice.reducer,
   hotspotChecklist: hotspotChecklistSlice.reducer,
-  validators: validatorsSlice.reducer,
+  validators: persistReducer(validatorsConfig, validatorsSlice.reducer),
   rewards: rewardsSlice.reducer,
   discovery: persistReducer(discoveryConfig, discoverySlice.reducer),
   features: featuresSlice.reducer,

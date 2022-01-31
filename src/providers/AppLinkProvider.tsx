@@ -24,9 +24,13 @@ import {
   AppLinkPayment,
   Payee,
   AppLinkLocation,
+  LinkWalletRequest,
+  SignHotspotRequest,
 } from './appLinkTypes'
 
 const APP_LINK_PROTOCOL = 'helium://'
+const UNIVERSAL_LINK_BASE = 'https://helium.com/'
+const UNIVERSAL_LINK_WWW_BASE = 'https://www.helium.com/'
 
 // Define subclasses of Error to return address-specific errors when attempting to process scanned
 // payloads from QR codes
@@ -108,7 +112,14 @@ const useAppLink = () => {
   })
 
   const navToAppLink = useCallback(
-    (record: AppLink | AppLinkPayment | AppLinkLocation) => {
+    (
+      record:
+        | AppLink
+        | AppLinkPayment
+        | AppLinkLocation
+        | LinkWalletRequest
+        | SignHotspotRequest,
+    ) => {
       if (isLocked || !isBackedUp) {
         setUnhandledLink(record as AppLink)
         return
@@ -149,6 +160,12 @@ const useAppLink = () => {
           })
           break
         }
+        case 'link_wallet':
+          navigator.linkWallet(record as LinkWalletRequest)
+          break
+        case 'sign_hotspot':
+          navigator.signHotspot(record as SignHotspotRequest)
+          break
       }
     },
     [isLocked, isBackedUp],
@@ -166,7 +183,13 @@ const useAppLink = () => {
     if (!url) return
 
     const parsed = queryString.parseUrl(url)
-    if (!parsed.url.includes(APP_LINK_PROTOCOL)) return
+    if (
+      !parsed.url.includes(APP_LINK_PROTOCOL) &&
+      !parsed.url.includes(UNIVERSAL_LINK_BASE) &&
+      !parsed.url.includes(UNIVERSAL_LINK_WWW_BASE)
+    ) {
+      return
+    }
 
     const params = queryString.parse(queryString.extract(url))
     const record = AppLinkFields.reduce(
@@ -174,7 +197,10 @@ const useAppLink = () => {
       params,
     ) as AppLink
 
-    const path = parsed.url.replace(APP_LINK_PROTOCOL, '')
+    const path = parsed.url
+      .replace(APP_LINK_PROTOCOL, '')
+      .replace(UNIVERSAL_LINK_BASE, '')
+      .replace(UNIVERSAL_LINK_WWW_BASE, '')
     const [resourceType, ...rest] = path.split('/')
     if (resourceType && AppLinkCategories.find((k) => k === resourceType)) {
       record.type = resourceType as AppLinkCategoryType

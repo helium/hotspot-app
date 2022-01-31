@@ -1,6 +1,10 @@
 import { StackNavigationProp } from '@react-navigation/stack'
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import { SendRouteType } from '../../features/wallet/send/sendTypes'
+import {
+  LinkWalletRequest,
+  SignHotspotRequest,
+} from '../../providers/appLinkTypes'
 
 export type MainTabType = 'Hotspots' | 'Wallet' | 'Notifications' | 'More'
 
@@ -29,6 +33,8 @@ export type RootStackParamList = {
   HotspotSetup: undefined
   ScanStack: undefined
   SendStack: undefined | SendRouteType
+  LinkWallet: LinkWalletRequest
+  SignHotspot: SignHotspotRequest
 }
 
 export type RootNavigationProp = StackNavigationProp<RootStackParamList>

@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { differenceBy, uniqBy } from 'lodash'
+import { differenceBy, unionBy, uniqBy } from 'lodash'
 import {
   Filters,
   FilterType,
@@ -310,7 +310,9 @@ const activitySlice = createSlice({
         state.txns[filter].hasInitialLoad = true
         if (filter === 'pending') {
           const pending = payload as HttpPendingTransaction[]
-          state.txns.pending.data = pending.filter(
+          const existingPending = state.txns.pending.data
+          const newPending = unionBy(pending, existingPending, 'hash')
+          state.txns.pending.data = newPending.filter(
             (txn) => txn.status === 'pending',
           )
         } else {

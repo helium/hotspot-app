@@ -1,117 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-<key>CFBundleURLTypes</key>
-	<array>
- 	  <dict>
-    	<key>CFBundleTypeRole</key>
-    	<string>Editor</string>
-    	<key>CFBundleURLSchemes</key>
-    	<array>
-      	<string>helium</string>
-    	</array>
-  	</dict>
-	</array>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>en</string>
-	<key>CFBundleDisplayName</key>
-	<string>Helium</string>
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>$(PRODUCT_NAME)</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>$(MARKETING_VERSION)</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>CFBundleVersion</key>
-	<string>1</string>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
-	<key>NSAppTransportSecurity</key>
 	<dict>
-		<key>NSExceptionDomains</key>
-		<dict>
-			<key>localhost</key>
+		<key>CFBundleURLTypes</key>
+		<array>
 			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>helium</string>
+				</array>
+			</dict>
+		</array>
+		<key>CFBundleDevelopmentRegion</key>
+		<string>en</string>
+		<key>CFBundleDisplayName</key>
+		<string>Helium</string>
+		<key>CFBundleExecutable</key>
+		<string>$(EXECUTABLE_NAME)</string>
+		<key>CFBundleIdentifier</key>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>CFBundleName</key>
+		<string>$(PRODUCT_NAME)</string>
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
+		<key>CFBundleShortVersionString</key>
+		<string>$(MARKETING_VERSION)</string>
+		<key>CFBundleSignature</key>
+		<string>????</string>
+		<key>CFBundleVersion</key>
+		<string>1</string>
+		<key>LSRequiresIPhoneOS</key>
+		<true />
+		<key>NSAppTransportSecurity</key>
+		<dict>
+			<key>NSExceptionDomains</key>
+			<dict>
+				<key>localhost</key>
+				<dict>
+					<key>NSExceptionAllowsInsecureHTTPLoads</key>
+					<true />
+				</dict>
 			</dict>
 		</dict>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>Allow Helium to use your location to add Hotspots to the network and explore Hotspots around you</string>
+		<key>NSFaceIDUsageDescription</key>
+		<string>Allow Helium to authenticate with Face ID</string>
+		<key>UIRequiresFullScreen</key>
+		<true />
+		<key>NSBluetoothAlwaysUsageDescription</key>
+		<string>Allow Helium to connect to and manage your Hotspots</string>
+		<key>NSBluetoothPeripheralUsageDescription</key>
+		<string>Allow Helium to connect to and manage your Hotspots</string>
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>remote-notification</string>
+		</array>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>Allow Helium to use your location to add your Helium Hotspots to the network</string>
+		<key>NSCameraUsageDescription</key>
+		<string>Allow Helium to use the camera to scan QR codes</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>Allow Helium to use the microphone</string>
+		<key>UIAppFonts</key>
+		<array>
+			<string>NotoSerif-Bold.ttf</string>
+			<string>NotoSerif-BoldItalic.ttf</string>
+			<string>NotoSerif-Italic.ttf</string>
+			<string>NotoSerif-Regular.ttf</string>
+			<string>InputMono-Bold.ttf</string>
+			<string>InputMono-Light.ttf</string>
+			<string>InputMono-Medium.ttf</string>
+			<string>InputMono-Regular.ttf</string>
+			<string>Soleil-Bold.ttf</string>
+			<string>Soleil-Book.otf</string>
+			<string>Soleil-Light.otf</string>
+			<string>Soleil-Regular.otf</string>
+			<string>Soleil-SemiBold.otf</string>
+			<string>Inter-Black.otf</string>
+			<string>Inter-BlackItalic.otf</string>
+			<string>Inter-Bold.otf</string>
+			<string>Inter-BoldItalic.otf</string>
+			<string>Inter-ExtraBold.otf</string>
+			<string>Inter-ExtraBoldItalic.otf</string>
+			<string>Inter-ExtraLight.otf</string>
+			<string>Inter-ExtraLightItalic.otf</string>
+			<string>Inter-Italic.otf</string>
+			<string>Inter-Light.otf</string>
+			<string>Inter-LightItalic.otf</string>
+			<string>Inter-Medium.otf</string>
+			<string>Inter-MediumItalic.otf</string>
+			<string>Inter-Regular.otf</string>
+			<string>Inter-SemiBold.otf</string>
+			<string>Inter-SemiBoldItalic.otf</string>
+			<string>Inter-Thin.otf</string>
+			<string>Inter-ThinItalic.otf</string>
+			<string>Inter-V.ttf</string>
+		</array>
+		<key>UILaunchStoryboardName</key>
+		<string>LaunchScreen</string>
+		<key>UIRequiredDeviceCapabilities</key>
+		<array>
+			<string>armv7</string>
+		</array>
+		<key>UISupportedInterfaceOrientations</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+		</array>
+		<key>UIViewControllerBasedStatusBarAppearance</key>
+		<false />
+		<key>LSApplicationQueriesSchemes</key>
+		<array>
+			<string>makerappscheme</string>
+		</array>
 	</dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Allow Helium to use your location to add Hotspots to the network and explore Hotspots around you</string>
-	<key>NSFaceIDUsageDescription</key>
-	<string>Allow Helium to authenticate with Face ID</string>
-	<key>UIRequiresFullScreen</key>
-	<true/>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Allow Helium to connect to and manage your Hotspots</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Allow Helium to connect to and manage your Hotspots</string>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>remote-notification</string>
-	</array>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Allow Helium to use your location to add your Helium Hotspots to the network</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Allow Helium to use the camera to scan QR codes</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Allow Helium to use the microphone</string>
-	<key>UIAppFonts</key>
-	<array>
-		<string>NotoSerif-Bold.ttf</string>
-		<string>NotoSerif-BoldItalic.ttf</string>
-		<string>NotoSerif-Italic.ttf</string>
-		<string>NotoSerif-Regular.ttf</string>
-		<string>InputMono-Bold.ttf</string>
-		<string>InputMono-Light.ttf</string>
-		<string>InputMono-Medium.ttf</string>
-		<string>InputMono-Regular.ttf</string>
-		<string>Soleil-Bold.ttf</string>
-		<string>Soleil-Book.otf</string>
-		<string>Soleil-Light.otf</string>
-		<string>Soleil-Regular.otf</string>
-		<string>Soleil-SemiBold.otf</string>
-		<string>Inter-Black.otf</string>
-		<string>Inter-BlackItalic.otf</string>
-		<string>Inter-Bold.otf</string>
-		<string>Inter-BoldItalic.otf</string>
-		<string>Inter-ExtraBold.otf</string>
-		<string>Inter-ExtraBoldItalic.otf</string>
-		<string>Inter-ExtraLight.otf</string>
-		<string>Inter-ExtraLightItalic.otf</string>
-		<string>Inter-Italic.otf</string>
-		<string>Inter-Light.otf</string>
-		<string>Inter-LightItalic.otf</string>
-		<string>Inter-Medium.otf</string>
-		<string>Inter-MediumItalic.otf</string>
-		<string>Inter-Regular.otf</string>
-		<string>Inter-SemiBold.otf</string>
-		<string>Inter-SemiBoldItalic.otf</string>
-		<string>Inter-Thin.otf</string>
-		<string>Inter-ThinItalic.otf</string>
-		<string>Inter-V.ttf</string>
-	</array>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
-	<key>UIRequiredDeviceCapabilities</key>
-	<array>
-		<string>armv7</string>
-	</array>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-	</array>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
-</dict>
 </plist>

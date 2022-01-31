@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { getCountry } from 'react-native-localize'
 import { useSelector } from 'react-redux'
-import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native'
+import { KeyboardAvoidingView, StyleSheet } from 'react-native'
 import Box from '../../../components/Box'
 import {
   HotspotSetupNavigationProp,
@@ -68,7 +68,7 @@ const AntennaSetupScreen = () => {
     <BackScreen onClose={handleClose}>
       <KeyboardAvoidingView
         style={styles.keyboardAvoidingView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior="padding"
       >
         <Box flex={1} justifyContent="center" paddingBottom="xxl">
           <Box

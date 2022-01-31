@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { Sum } from '@helium/http'
 import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
+import { getDayOfYear } from 'date-fns'
 import {
   getHotspotRewards,
   getValidatorRewards,
@@ -12,7 +13,7 @@ import {
   handleCacheFulfilled,
   hasValidCache,
 } from '../../utils/cacheUtils'
-import { getWallet } from '../../utils/walletClient'
+import { getWallet, getWalletExt } from '../../utils/walletClient'
 
 export type WalletReward = {
   avg: number
@@ -25,9 +26,12 @@ export type WalletReward = {
   total: number
   updated_at: string
 }
+
+export type ChartTimelineValue = number | 'YTD'
+
 type FetchDetailsParams = {
   address: string
-  numDays: number
+  numDays: ChartTimelineValue
   resource: 'validators' | 'hotspots'
 }
 
@@ -37,18 +41,44 @@ type GatewayChartData = {
   rewardsChange?: number
 }
 
+export type NetworkHotspotEarnings = {
+  avg_rewards: number
+  consensus: number
+  hotspot_count: number
+  securities: number
+  total: number
+  date: string
+}
+
 export type GatewayChartCache = CacheRecord<GatewayChartData>
 export type GatewayAddress = string
-export type ChartTimelineIndex = number
-export type GatewayChartRecord = Record<ChartTimelineIndex, GatewayChartCache>
+export type GatewayChartRecord = Record<ChartTimelineValue, GatewayChartCache>
 export type GatewayIndex<T> = Record<GatewayAddress, T>
 
 type RewardsState = {
   chartData: GatewayIndex<GatewayChartRecord>
+  networkHotspotEarnings: CacheRecord<{ data: NetworkHotspotEarnings[] }>
+  networkHotspotEarningsLoaded: boolean
 }
 const initialState: RewardsState = {
   chartData: {},
+  networkHotspotEarnings: { lastFetchedTimestamp: 0, loading: false, data: [] },
+  networkHotspotEarningsLoaded: false,
 }
+
+export const fetchNetworkHotspotEarnings = createAsyncThunk<
+  NetworkHotspotEarnings[]
+>('rewards/fetchNetworkHotspotEarnings', async (_arg, { getState }) => {
+  const {
+    rewards: { networkHotspotEarnings },
+  } = (await getState()) as {
+    rewards: RewardsState
+  }
+  if (hasValidCache(networkHotspotEarnings, 30))
+    return networkHotspotEarnings.data
+
+  return getWalletExt('hotspots/earnings')
+})
 
 export const fetchChartData = createAsyncThunk<
   GatewayChartData,
@@ -66,6 +96,21 @@ export const fetchChartData = createAsyncThunk<
     if (hasValidCache(details)) {
       return details
     }
+
+    if (numDays === 'YTD') {
+      const response: WalletReward[] = await getWallet(`${resource}/rewards`, {
+        addresses: address,
+        dayRange: getDayOfYear(new Date()) - 1,
+      })
+      const selectedBalance = Balance.fromFloat(
+        response[0].total,
+        CurrencyType.networkToken,
+      )
+      return {
+        rewardSum: selectedBalance,
+      }
+    }
+
     const startDate = new Date()
     const endDate = new Date(startDate)
     endDate.setDate(endDate.getDate() - numDays)
@@ -157,6 +202,19 @@ const rewardsSlice = createSlice({
         ...state.chartData[address],
         [numDays]: nextState,
       }
+    })
+    builder.addCase(fetchNetworkHotspotEarnings.pending, (state, _action) => {
+      state.networkHotspotEarnings.loading = true
+    })
+    builder.addCase(fetchNetworkHotspotEarnings.fulfilled, (state, action) => {
+      state.networkHotspotEarnings = handleCacheFulfilled({
+        data: action.payload,
+      })
+      state.networkHotspotEarningsLoaded = true
+    })
+    builder.addCase(fetchNetworkHotspotEarnings.rejected, (state, _action) => {
+      state.networkHotspotEarnings.loading = false
+      state.networkHotspotEarningsLoaded = true
     })
   },
 })

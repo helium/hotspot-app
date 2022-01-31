@@ -21,6 +21,7 @@ import freedomfi from './freedomfi'
 import hummingbird from './hummingbird'
 import merryIoT from './merryIoT'
 import milesight from './milesight'
+import midas from './midas'
 import deepernetwork from './deepernetwork'
 import { LangType, supportedLangs } from '../utils/i18n/i18nTypes'
 import { HotspotMakerLangField } from './hotspotMakerTypes'
@@ -47,6 +48,7 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
   hummingbird,
   merryIoT,
   milesight,
+  midas,
   deepernetwork,
 }
 
@@ -74,6 +76,7 @@ export const AntennaModels = {
   ...hummingbird.antennas,
   ...merryIoT.antennas,
   ...milesight.antennas,
+  ...midas.antennas,
   ...deepernetwork.antennas,
 }
 
@@ -99,6 +102,7 @@ export const HotspotMakerModels = {
   ...hummingbird.hotspots,
   ...merryIoT.hotspots,
   ...milesight.hotspots,
+  ...midas.hotspots,
   ...deepernetwork.hotspots,
 }
 

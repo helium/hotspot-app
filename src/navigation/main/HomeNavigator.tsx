@@ -11,6 +11,8 @@ import HotspotSetup from '../../features/hotspots/setup/HotspotSetupNavigator'
 import MainTabs from './MainTabNavigator'
 import SendNavigator from '../../features/wallet/send/SendNavigator'
 import ScanNavigator from '../../features/wallet/scan/ScanNavigator'
+import SignHotspot from '../../features/txnDelegatation/SignHotspot'
+import LinkWallet from '../../features/txnDelegatation/LinkWallet'
 
 const HomeStack = createStackNavigator()
 
@@ -69,6 +71,24 @@ const HomeStackScreen = () => {
         name="LockScreen"
         component={LockScreen}
         options={{ headerShown: false }}
+      />
+      <HomeStack.Screen
+        name="LinkWallet"
+        component={LinkWallet}
+        options={{
+          headerShown: false,
+          cardOverlayEnabled: isIOS,
+          ...modalTransition,
+        }}
+      />
+      <HomeStack.Screen
+        name="SignHotspot"
+        component={SignHotspot}
+        options={{
+          headerShown: false,
+          cardOverlayEnabled: isIOS,
+          ...modalTransition,
+        }}
       />
     </HomeStack.Navigator>
   )

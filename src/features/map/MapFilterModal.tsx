@@ -6,6 +6,7 @@ import MapHex from '@assets/images/map-hex.svg'
 import Checkmark from '@assets/images/checkmark.svg'
 import Lightbulb from '@assets/images/lightbulb.svg'
 import RewardScaling from '@assets/images/reward-scaling.svg'
+import EarningsScaling from '@assets/images/earnings-scale.svg'
 import { useTranslation } from 'react-i18next'
 import MapFiltersButton, { MapFilters } from './MapFiltersButton'
 import { useAppDispatch } from '../../store/store'
@@ -18,6 +19,10 @@ import Text from '../../components/Text'
 import TouchableOpacityBox from '../../components/TouchableOpacityBox'
 import Button from '../../components/Button'
 import animateTransition from '../../utils/animateTransition'
+import { useColors } from '../../theme/themeHooks'
+import { fetchNetworkHotspotEarnings } from '../../store/rewards/rewardsSlice'
+import useMount from '../../utils/useMount'
+import { locale } from '../../utils/i18n'
 
 type Props = {
   mapFilter: MapFilters
@@ -27,10 +32,25 @@ type Props = {
 const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
+  const colors = useColors()
   const { showMapFilter } = useSelector(
     (state: RootState) => state.hotspotDetails,
   )
+  const networkHotspotEarnings = useSelector(
+    (state: RootState) => state.rewards.networkHotspotEarnings.data,
+  )
   const [selectedFilter, setSelectedFilter] = useState(mapFilter)
+
+  useMount(() => {
+    dispatch(fetchNetworkHotspotEarnings())
+  })
+
+  const avg7dEarnings = useMemo(() => {
+    if (networkHotspotEarnings.length === 0) return
+    const latest7dayEarnings = networkHotspotEarnings?.slice(-7) || []
+    const sum = latest7dayEarnings.reduce((a, b) => a + (b.avg_rewards || 0), 0)
+    return sum / latest7dayEarnings.length
+  }, [networkHotspotEarnings])
 
   const handleClose = useCallback(() => {
     setSelectedFilter(mapFilter)
@@ -70,7 +90,7 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
             </Text>
           </Box>
           <Box visible={selected}>
-            <Checkmark color="#1D91F8" />
+            <Checkmark color={colors.blueBright} />
           </Box>
         </Box>
         <Box
@@ -105,7 +125,7 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
         </Box>
       </TouchableOpacityBox>
     )
-  }, [handlePress, selectedFilter, t])
+  }, [colors.blueBright, handlePress, selectedFilter, t])
 
   const Witnesses = useCallback(() => {
     const selected = selectedFilter === MapFilters.witness
@@ -128,7 +148,7 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
             </Text>
           </Box>
           <Box visible={selected}>
-            <Checkmark color="#FCC945" />
+            <Checkmark color={colors.yellow} />
           </Box>
         </Box>
         <Box
@@ -177,7 +197,7 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
         </Box>
       </TouchableOpacityBox>
     )
-  }, [handlePress, selectedFilter, t])
+  }, [colors.yellow, handlePress, selectedFilter, t])
 
   const Rewards = useCallback(() => {
     const selected = selectedFilter === MapFilters.reward
@@ -188,18 +208,23 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
         backgroundColor={selected ? 'white' : 'whiteTransparent75'}
         borderRadius="m"
         padding="m"
+        marginBottom="s"
       >
         <Box flexDirection="row" justifyContent="space-between">
           <Box flex={1}>
             <Text variant="h5" color="black" maxFontSizeMultiplier={1.3}>
               {t('map_filter.reward.title')}
             </Text>
-            <Text color="grayText" maxFontSizeMultiplier={1.3}>
+            <Text
+              color="grayText"
+              maxFontSizeMultiplier={1.3}
+              numberOfLines={selected ? undefined : 1}
+            >
               {t('map_filter.reward.body')}
             </Text>
           </Box>
           <Box visible={selected}>
-            <Checkmark color="#2AD445" />
+            <Checkmark color={colors.greenOnline} />
           </Box>
         </Box>
         <Box
@@ -215,7 +240,76 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
         </Box>
       </TouchableOpacityBox>
     )
-  }, [handlePress, selectedFilter, t])
+  }, [colors.greenOnline, handlePress, selectedFilter, t])
+
+  const Earnings = useCallback(() => {
+    const selected = selectedFilter === MapFilters.earnings
+    return (
+      <TouchableOpacityBox
+        disabled={selected}
+        onPress={handlePress(MapFilters.earnings)}
+        backgroundColor={selected ? 'white' : 'whiteTransparent75'}
+        borderRadius="m"
+        padding="m"
+      >
+        <Box flexDirection="row" justifyContent="space-between">
+          <Box flex={1}>
+            <Text variant="h5" color="black" maxFontSizeMultiplier={1.3}>
+              {t('map_filter.earnings.title')}
+            </Text>
+            <Text
+              color="grayText"
+              maxFontSizeMultiplier={1.3}
+              numberOfLines={selected ? undefined : 1}
+            >
+              {t('map_filter.earnings.body')}
+            </Text>
+          </Box>
+          <Box visible={selected}>
+            <Checkmark color={colors.blueBrightEarnings} />
+          </Box>
+        </Box>
+        <Box
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          marginTop="m"
+          paddingVertical="m"
+          borderRadius="m"
+          backgroundColor="grayBox"
+          visible={selected}
+        >
+          <EarningsScaling width="90%" />
+          <Box
+            flexDirection="row"
+            width="100%"
+            justifyContent="space-between"
+            paddingLeft="lx"
+            paddingRight="m"
+            paddingTop="s"
+          >
+            <Text variant="bold" color="grayDarkText">
+              0
+            </Text>
+            <Text variant="bold" color="grayDarkText" paddingLeft="m">
+              {`${avg7dEarnings?.toLocaleString(locale, {
+                maximumFractionDigits: 2,
+                minimumFractionDigits: 2,
+              })} (Avg)`}
+            </Text>
+            <Text variant="bold" color="grayDarkText">
+              {avg7dEarnings === undefined
+                ? ''
+                : `${(avg7dEarnings * 2).toLocaleString(locale, {
+                    maximumFractionDigits: 2,
+                    minimumFractionDigits: 2,
+                  })}+`}
+            </Text>
+          </Box>
+        </Box>
+      </TouchableOpacityBox>
+    )
+  }, [avg7dEarnings, colors.blueBrightEarnings, handlePress, selectedFilter, t])
 
   const buttonColor = useMemo(() => {
     switch (selectedFilter) {
@@ -226,6 +320,8 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
         return 'yellow'
       case MapFilters.reward:
         return 'greenOnline'
+      case MapFilters.earnings:
+        return 'blueBrightEarnings'
     }
   }, [selectedFilter])
 
@@ -283,6 +379,7 @@ const MapFilterModal = ({ mapFilter, onChangeMapFilter }: Props) => {
             <YourHotspots />
             <Witnesses />
             <Rewards />
+            <Earnings />
           </Box>
         </ScrollView>
         <Button

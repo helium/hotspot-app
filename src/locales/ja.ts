@@ -786,7 +786,11 @@ export default {
     picker_title: '過去',
     overview: '概要',
     no_location: '位置情報がありません',
-    picker_options: ['過去24時間', '過去14日間', '過去30日間'],
+    picker_options: {
+      7: '過去7日間',
+      14: '過去14日間',
+      30: '過去30日間',
+    },
     picker_prompt: '範囲を選択',
     status_online: 'オンライン',
     status_offline: '注意が必要',

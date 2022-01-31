@@ -125,3 +125,42 @@ export const deleteWallet = async (
 
   return makeRequest(url, opts)
 }
+
+export const getWalletExt = async (url: string) => {
+  Logger.breadcrumb(`httpRequest GET ${url}`, breadcrumbOpts)
+  try {
+    const baseUrl = Config.WALLET_API_BASE_URL.replace('/api', '/ext/api')
+    const route = [baseUrl, url].join('/')
+
+    const response = await fetch(route, {
+      method: 'GET',
+      headers: {
+        network,
+        'Cache-Control': 'no-cache',
+        'Content-Type': 'application/json',
+        'User-Agent': userAgent,
+      },
+    })
+
+    if (!response.ok) {
+      const errorMessage = `Bad response, status:${response.status} message:${response.statusText} GET url:${route}`
+      Logger.breadcrumb(errorMessage, breadcrumbOpts)
+      throw new Error(errorMessage)
+    }
+
+    const text = await response.text()
+    try {
+      const json = JSON.parse(text)
+      const responseData = json.data || json
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      responseData.serverDate = response.headers.map?.date
+      return responseData
+    } catch (err) {
+      return text
+    }
+  } catch (error) {
+    Logger.breadcrumb('fetch failed', breadcrumbOpts)
+    throw error
+  }
+}

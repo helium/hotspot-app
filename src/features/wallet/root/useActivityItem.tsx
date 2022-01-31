@@ -44,6 +44,7 @@ type TxnDisplayVals = {
   isFee: boolean
   fee: string
   feePayer: string
+  hash: string
 }
 
 const hntBalance = (v: number | undefined | null) => {
@@ -76,6 +77,7 @@ const useActivityItem = (
     fee: '',
     feePayer: '',
     subtitle: '',
+    hash: '',
   })
   const { hntBalanceToDisplayVal } = useCurrency()
   const colors = useColors()
@@ -418,6 +420,7 @@ const useActivityItem = (
         isFee,
         fee: f,
         feePayer,
+        hash: txn.hash,
       } as TxnDisplayVals
       setDisplayValues(nextVals)
     }
@@ -435,6 +438,7 @@ const useActivityItem = (
     title,
     feePayer,
     subtitle,
+    txn.hash,
   ])
 
   return displayValues

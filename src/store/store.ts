@@ -13,6 +13,9 @@ import rewardsSlice from './rewards/rewardsSlice'
 import accountSlice from './account/accountSlice'
 import activitySlice from './activity/activitySlice'
 import hotspotsSlice from './hotspots/hotspotsSlice'
+import hotspotDetailsSlice from './hotspotDetails/hotspotDetailsSlice'
+import hotspotSearchSlice from './hotspotSearch/hotspotSearchSlice'
+import validatorsSlice from './validators/validatorsSlice'
 
 const enhancers = []
 if (Reactotron.createEnhancer) {
@@ -27,10 +30,13 @@ const persistConfig = {
     activitySlice.name, // persisted individually in rootReducer.ts
     hotspotsSlice.name, // persisted individually in rootReducer.ts
     discoverySlice.name, // persisted individually in rootReducer.ts
+    validatorsSlice.name, // persisted individually in rootReducer.ts
     connectedHotspotSlice.name,
     hotspotOnboardingSlice.name,
     heliumStatusSlice.name,
     rewardsSlice.name,
+    hotspotDetailsSlice.name,
+    hotspotSearchSlice.name,
   ],
 }
 
