@@ -291,8 +291,14 @@ const SendView = ({
     if (type === 'transfer') {
       const { address } = sendDetails[0]
       if (isSeller) {
-        setIsValid(Address.isValid(address) && (hasValidActivity || false))
-        setHasSufficientBalance(true)
+        const hasBalance =
+          fee && fee.integerBalance <= (account?.balance?.integerBalance || 0)
+        setIsValid(
+          Address.isValid(address) &&
+            (hasBalance || false) &&
+            (hasValidActivity || false),
+        )
+        setHasSufficientBalance(hasBalance || false)
       } else {
         const isValidSellerAddress = transferData
           ? Address.isValid(transferData.seller)

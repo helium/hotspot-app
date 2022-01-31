@@ -95,7 +95,10 @@ const useActivityItem = (
 
   const isSending = useMemo(() => txn.payer === address, [address, txn.payer])
 
-  const isSelling = useMemo(() => txn.seller === address, [address, txn.seller])
+  const isSelling = useMemo(() => {
+    if (txn.seller) return txn.seller === address // for transfer_v1
+    return txn.owner === address
+  }, [address, txn.seller, txn.owner])
 
   const backgroundColorKey = useMemo(() => {
     if (!TxnTypeKeys.find((k) => k === item.type)) {
