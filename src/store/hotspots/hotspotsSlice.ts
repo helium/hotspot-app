@@ -63,7 +63,8 @@ type WalletHotspot = Hotspot & { lat: string; lng: string }
 export const fetchHotspotsData = createAsyncThunk(
   'hotspots/fetchHotspotsData',
   async (_arg, { getState }) => {
-    const state = (await getState()) as HotspotsSliceState
+    const state = ((await getState()) as { hotspots: HotspotsSliceState })
+      .hotspots
     if (
       hasValidCache(state.hotspots) &&
       hasValidCache(state.followedHotspots)
