@@ -476,7 +476,6 @@ export default {
     button: {
       payment: 'HNTを送信',
       dcBurn: 'HNTをバーン',
-      transfer_request: '転送リクエストを送信',
       transfer_complete: '転送を完了',
     },
     qrInfo: 'QR情報',
@@ -486,8 +485,6 @@ export default {
     hotspot_label: 'Hotspot',
     last_activity: '最後に報告されたアクティビティ：{{activity}}',
     label_error: 'アカウントに十分なHNTがありません。',
-    stale_error:
-      'Hotspotには、最後の{{blocks}}ブロックにBeaconまたはWitnessのアクティビティはありません。',
     scan: {
       title: 'QRコードの使い方',
       send: 'HNTを送信',
@@ -844,8 +841,6 @@ export default {
     canceled_alert_title: '転送がキャンセルされました',
     canceled_alert_body:
       'この転送はアクティブではなくなりました。販売者に詳細を問い合わせてください。',
-    fine_print:
-      '購入者がトランザクションを承諾して完了すると、Hotspotでデータが転送されます。',
     notification_button: 'トランザクションを表示',
     deployModeTransferDisableTitle: 'ホットスポットの転送が無効',
     deployModeTransferDisabled:

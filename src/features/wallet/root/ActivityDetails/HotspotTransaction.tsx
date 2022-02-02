@@ -21,6 +21,7 @@ const HotspotTransaction = ({ item, address }: Props) => {
     | 'assert_location_v2'
     | 'add_gateway_v1'
     | 'transfer_hotspot_v1'
+    | 'transfer_hotspot_v2'
 
   useEffect(() => {
     const geoCode = async (lat: number, lng: number) => {
@@ -41,7 +42,8 @@ const HotspotTransaction = ({ item, address }: Props) => {
     type !== 'add_gateway_v1' &&
     type !== 'assert_location_v1' &&
     type !== 'assert_location_v2' &&
-    type !== 'transfer_hotspot_v1'
+    type !== 'transfer_hotspot_v1' &&
+    type !== 'transfer_hotspot_v2'
   )
     return null
 
@@ -109,16 +111,31 @@ const HotspotTransaction = ({ item, address }: Props) => {
         <>
           <PaymentItem
             isFirst
-            isLast
             text={item.seller || ''}
             isMyAccount={item.seller === address}
             mode="seller"
           />
           <PaymentItem
-            isFirst
             isLast
             text={item.buyer || ''}
             isMyAccount={item.buyer === address}
+            mode="buyer"
+          />
+        </>
+      )}
+
+      {type === 'transfer_hotspot_v2' && (
+        <>
+          <PaymentItem
+            isFirst
+            text={item?.owner || ''}
+            isMyAccount={item?.owner === address}
+            mode="seller"
+          />
+          <PaymentItem
+            isLast
+            text={item?.newOwner || ''}
+            isMyAccount={item?.newOwner === address}
             mode="buyer"
           />
         </>

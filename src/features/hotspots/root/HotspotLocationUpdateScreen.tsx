@@ -47,7 +47,9 @@ function HotspotLocationUpdateScreen({ route }: Props) {
   const { hotspotAddress } = route.params
   const { longitude, latitude } = route.params.location
   const account = useSelector((state: RootState) => state.account.account)
-  const hotspots = useSelector((state: RootState) => state.hotspots.hotspots)
+  const hotspots = useSelector(
+    (state: RootState) => state.hotspots.hotspots.data,
+  )
   const hotspot = hotspots.find((h) => h.address === hotspotAddress)
 
   const { t } = useTranslation()

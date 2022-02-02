@@ -433,7 +433,6 @@ export default {
     button: {
       payment: '发送 HNT',
       dcBurn: '烧 HNT 币',
-      transfer_request: '发送转让请求',
       transfer_complete: '完成转让',
     },
     qrInfo: 'QR 信息',
@@ -442,7 +441,6 @@ export default {
     hotspot_label: 'Hotspot',
     last_activity: '上次报告的活动: {{activity}}',
     label_error: '您的帐户 HNT 余额不足。',
-    stale_error: 'Hotspot 在最近的 {{blocks}} 个区块没有发生信标或见证活动。',
     scan: {
       title: '二维码使用方式',
       send: '发送 HNT',
@@ -782,7 +780,6 @@ export default {
       '无法完成此转让。请确认您是授权买家，或联系卖家了解更多信息。',
     canceled_alert_title: '转让已取消',
     canceled_alert_body: '此转让不再处于活动状态。请联系卖家了解更多信息。',
-    fine_print: '一旦买家接受并完成交易，Hotspot 即被转让。',
     notification_button: '查看交易',
     deployModeTransferDisableTitle: '传输热点已禁用',
     deployModeTransferDisabled: '在部署模式下禁用传输热点。',

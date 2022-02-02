@@ -4,6 +4,7 @@ import {
   PaymentV2,
   TokenBurnV1,
   TransferHotspotV1,
+  TransferHotspotV2,
 } from '@helium/transactions'
 import { useSelector } from 'react-redux'
 import { TxnType } from '../features/wallet/root/walletTypes'
@@ -22,6 +23,7 @@ type SignableTransaction =
   | AssertLocationV2
   | TokenBurnV1
   | TransferHotspotV1
+  | TransferHotspotV2
 
 type Submitter = (txn: SignableTransaction) => Promise<HttpPendingTransaction>
 

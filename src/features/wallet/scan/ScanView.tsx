@@ -40,7 +40,9 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
   const [scanned, setScanned] = useState(false)
   const navigation = useNavigation()
   const spacing = useSpacing()
-  const hotspots = useSelector((state: RootState) => state.hotspots.hotspots)
+  const hotspots = useSelector(
+    (state: RootState) => state.hotspots.hotspots.data,
+  )
 
   const { handleBarCode } = useAppLinkContext()
 

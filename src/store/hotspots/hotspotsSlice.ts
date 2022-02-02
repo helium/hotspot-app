@@ -4,17 +4,21 @@ import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
 import { getHotspotDetails, getHotspots } from '../../utils/appDataClient'
 import { LocationCoords } from '../../utils/location'
 import { getWallet, deleteWallet, postWallet } from '../../utils/walletClient'
-import { CacheRecord, handleCacheFulfilled } from '../../utils/cacheUtils'
+import {
+  CacheRecord,
+  handleCacheFulfilled,
+  hasValidCache,
+} from '../../utils/cacheUtils'
 import { HotspotSyncStatus } from '../../features/hotspots/root/hotspotTypes'
 import { WalletReward } from '../rewards/rewardsSlice'
 
 export type Rewards = Record<string, Balance<NetworkTokens>>
 
 export type HotspotsSliceState = {
-  hotspots: Hotspot[]
+  hotspots: CacheRecord<{ data: Hotspot[] }>
   orderedHotspots: Hotspot[]
   followedHotspotsObj: Record<string, Hotspot>
-  followedHotspots: Hotspot[]
+  followedHotspots: CacheRecord<{ data: Hotspot[] }>
   location?: LocationCoords
   loadingRewards: boolean
   hotspotsLoaded: boolean
@@ -24,10 +28,10 @@ export type HotspotsSliceState = {
 }
 
 const initialState: HotspotsSliceState = {
-  hotspots: [],
+  hotspots: { lastFetchedTimestamp: 0, loading: false, data: [] },
   orderedHotspots: [],
   followedHotspotsObj: {},
-  followedHotspots: [],
+  followedHotspots: { lastFetchedTimestamp: 0, loading: false, data: [] },
   loadingRewards: false,
   hotspotsLoaded: false,
   failure: false,
@@ -58,7 +62,19 @@ const sanitizeWalletHotspots = (hotspots: WalletHotspot[]) => {
 type WalletHotspot = Hotspot & { lat: string; lng: string }
 export const fetchHotspotsData = createAsyncThunk(
   'hotspots/fetchHotspotsData',
-  async (_arg) => {
+  async (_arg, { getState }) => {
+    const state = ((await getState()) as { hotspots: HotspotsSliceState })
+      .hotspots
+    if (
+      hasValidCache(state.hotspots) &&
+      hasValidCache(state.followedHotspots)
+    ) {
+      return {
+        hotspots: state.hotspots.data,
+        followedHotspots: state.followedHotspots.data,
+      }
+    }
+
     const allHotspots = await Promise.all([
       getHotspots(),
       getWallet('hotspots/follow', null, { camelCase: true }),
@@ -135,6 +151,11 @@ const hotspotsToObj = (hotspots: Hotspot[]) =>
     }
   }, {})
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const hotspotsSliceMigrations: any = {
+  0: () => initialState, // migration for hotspots and followedHotspots moving to CacheRecord
+}
+
 const hotspotsSlice = createSlice({
   name: 'hotspots',
   initialState,
@@ -156,9 +177,9 @@ const hotspotsSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchHotspotsData.fulfilled, (state, action) => {
       const followed: Hotspot[] = action.payload.followedHotspots
-      state.followedHotspots = followed
+      state.followedHotspots = handleCacheFulfilled({ data: followed })
       state.followedHotspotsObj = hotspotsToObj(followed)
-      state.hotspots = action.payload.hotspots
+      state.hotspots = handleCacheFulfilled({ data: action.payload.hotspots })
       state.hotspotsLoaded = true
       state.failure = false
     })
@@ -190,7 +211,7 @@ const hotspotsSlice = createSlice({
           return (hotspot as Hotspot) || walletFollowed
         })
 
-        state.followedHotspots = nextFollowed
+        state.followedHotspots = handleCacheFulfilled({ data: nextFollowed })
         state.followedHotspotsObj = hotspotsToObj(nextFollowed)
       },
     )
@@ -207,7 +228,7 @@ const hotspotsSlice = createSlice({
           return (hotspot as Hotspot) || walletFollowed
         })
 
-        state.followedHotspots = nextFollowed
+        state.followedHotspots = handleCacheFulfilled({ data: nextFollowed })
         state.followedHotspotsObj = hotspotsToObj(nextFollowed)
 
         if (hotspotRewards) {

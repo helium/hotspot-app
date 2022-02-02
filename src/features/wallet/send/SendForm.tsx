@@ -74,13 +74,12 @@ const SendForm = ({
     }
   }
 
-  const shouldShowFee = useMemo(
-    () =>
-      some(sendDetails, ({ balanceAmount }) => {
-        return balanceAmount.floatBalance !== 0
-      }),
-    [sendDetails],
-  )
+  const shouldShowFee = useMemo(() => {
+    const hasBalance = some(sendDetails, ({ balanceAmount }) => {
+      return balanceAmount.floatBalance !== 0
+    })
+    return hasBalance || (type === 'transfer' && isSeller)
+  }, [isSeller, sendDetails, type])
 
   return (
     <Box height="100%" justifyContent="space-between" paddingBottom="xl">
@@ -114,7 +113,7 @@ const SendForm = ({
       </ScrollView>
       {hasValidActivity === false && (
         <Text
-          variant="body3"
+          variant="body2"
           color="redMedium"
           marginVertical="s"
           textAlign="center"
