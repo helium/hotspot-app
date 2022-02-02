@@ -151,6 +151,11 @@ const hotspotsToObj = (hotspots: Hotspot[]) =>
     }
   }, {})
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const hotspotsSliceMigrations: any = {
+  0: () => initialState, // migration for hotspots and followedHotspots moving to CacheRecord
+}
+
 const hotspotsSlice = createSlice({
   name: 'hotspots',
   initialState,
