@@ -97,7 +97,8 @@ const useActivityItem = (
 
   const isSelling = useMemo(() => {
     if (txn.seller) return txn.seller === address // for transfer_v1
-    return txn.owner === address
+    if (txn.owner) return txn.owner === address
+    return undefined
   }, [address, txn.seller, txn.owner])
 
   const backgroundColorKey = useMemo(() => {
@@ -152,6 +153,7 @@ const useActivityItem = (
         return t('transactions.location_v2')
       case 'transfer_hotspot_v1':
       case 'transfer_hotspot_v2':
+        if (isSelling === undefined) return t('transactions.transferDefault')
         return isSelling
           ? t('transactions.transferSell')
           : t('transactions.transferBuy')

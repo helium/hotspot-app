@@ -762,6 +762,7 @@ export default {
     location: 'Confirm Location',
     location_v2: 'Update Hotspot',
     transfer: 'Hotspot Transfer',
+    transferDefault: 'Transfer Hotspot',
     transferSell: 'Transfer Hotspot (Sell)',
     transferBuy: 'Transfer Hotspot (Buy)',
     view: 'View',
