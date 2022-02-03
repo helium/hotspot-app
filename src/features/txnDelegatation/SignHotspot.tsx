@@ -18,11 +18,19 @@ import * as Logger from '../../utils/logger'
 type Route = RouteProp<RootStackParamList, 'SignHotspot'>
 const SignHotspot = () => {
   const {
-    params: { token, addGatewayTxn, assertLocationTxn },
+    params: { token, addGatewayTxn, assertLocationTxn } = {
+      token: '',
+      addGatewayTxn: '',
+      assertLocationTxn: '',
+    },
   } = useRoute<Route>()
   const navigation = useNavigation<RootNavigationProp>()
   const { t } = useTranslation()
   const [validated, setValidated] = useState<boolean>()
+
+  const linkInvalid = useMemo(() => {
+    return !addGatewayTxn && !assertLocationTxn
+  }, [addGatewayTxn, assertLocationTxn])
 
   const parsedToken = useMemo(() => {
     if (!token) return
@@ -100,6 +108,10 @@ const SignHotspot = () => {
     callback({ status: 'user_cancelled' })
   }, [callback])
 
+  const handleError = useCallback(async () => {
+    callback({ status: 'invalid_link' })
+  }, [callback])
+
   const name = useMemo(() => {
     if (!gatewayTxn?.gateway?.b58 && !locationTxn?.gateway?.b58) return
     return animalHash(
@@ -121,6 +133,45 @@ const SignHotspot = () => {
         setValidated(false)
       })
   }, [parsedToken, token])
+
+  if (linkInvalid) {
+    return (
+      <SafeAreaBox backgroundColor="primaryBackground" flex={1} padding="xl">
+        <Box justifyContent="center" flex={1}>
+          <Text variant="bold" fontSize={36} marginBottom="m">
+            {t('signHotspot.error.title')}
+          </Text>
+          <Text variant="body1">
+            {t('signHotspot.error.subtitle', {
+              maker: parsedToken?.appName || 'Maker',
+            })}
+          </Text>
+        </Box>
+        {parsedToken?.callbackUrl && (
+          <Box justifyContent="flex-end" flex={1}>
+            <TouchableOpacityBox
+              minHeight={56}
+              justifyContent="center"
+              backgroundColor="greenBright"
+              borderRadius="l"
+              onPress={handleError}
+            >
+              <Text
+                variant="medium"
+                fontSize={16}
+                color="primaryBackground"
+                textAlign="center"
+              >
+                {t('signHotspot.error.takeMeBack', {
+                  maker: parsedToken?.appName || 'Maker',
+                })}
+              </Text>
+            </TouchableOpacityBox>
+          </Box>
+        )}
+      </SafeAreaBox>
+    )
+  }
 
   return (
     <SafeAreaBox

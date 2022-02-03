@@ -2443,10 +2443,10 @@
   dependencies:
     protobufjs "^6.8.9"
 
-"@helium/react-native-sdk@^0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@helium/react-native-sdk/-/react-native-sdk-0.1.4.tgz#29a81cf1f4c07b431e0e29bd94309eae5eb169a8"
-  integrity sha512-bvdcdwwu0Zaj8GOIBQ1m6x+56p0Uhx9kWtNEsdUSejLJULnmrh/E/9atEE9wn4h1PFg+o1x3D3cemF5YvIfJPw==
+"@helium/react-native-sdk@^0.1.6":
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/@helium/react-native-sdk/-/react-native-sdk-0.1.6.tgz#4fbb4d0d2a0e479be11b8bcbe6ef13bd0d3b58a9"
+  integrity sha512-ow6kl54kzKinTq11yqTGR0J4gXZdd9FAzMLZtTMKH83+cOAf5Wa4AXl5il1kFk1E4YkCVQWHTFyMq4mVe6MqCQ==
 
 "@helium/transactions@^3.49.1":
   version "3.49.1"
