@@ -1,13 +1,13 @@
 import { MakerAntenna } from '../antennaMakerTypes'
 
-const EXAMPLE_US = {
-  name: 'Example Hotspot (US 915)',
-  gain: 1.2,
+const Gatorpro_US = {
+  name: 'Gatorpro X1 (US 915)',
+  gain: 2.6,
 } as MakerAntenna
 
-const EXAMPLE_EU = {
-  name: 'Example Hotspot (EU 868)',
-  gain: 2.5,
+const Gatorpro_EU = {
+  name: 'Gatorpro X1 (EU 868)',
+  gain: 2.8,
 } as MakerAntenna
 
-export default { EXAMPLE_US, EXAMPLE_EU }
+export default { Gatorpro_US, Gatorpro_EU }
