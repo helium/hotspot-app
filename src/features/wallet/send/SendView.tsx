@@ -107,6 +107,7 @@ const SendView = ({
   const [isLocked, setIsLocked] = useState(isDisabled)
   const [isValid, setIsValid] = useState(false)
   const [hasSufficientBalance, setHasSufficientBalance] = useState(false)
+  const [disableSubmit, setDisableSubmit] = useState(false)
   const [transferData, setTransferData] = useState<Transfer>()
   const [fee, setFee] = useState<Balance<NetworkTokens>>(
     new Balance(0, CurrencyType.networkToken),
@@ -522,6 +523,7 @@ const SendView = ({
 
   const handleSubmit = useCallback(async () => {
     if (!canSubmit) return
+    setDisableSubmit(true)
     try {
       const txn = await constructTxn()
       if (txn) {
@@ -535,6 +537,7 @@ const SendView = ({
         Alert.alert(t('generic.error'), t('send.error'))
       }
     }
+    setDisableSubmit(false)
   }, [
     canSubmit,
     constructTxn,
@@ -567,7 +570,7 @@ const SendView = ({
           isLocked={isLocked}
           isLockedAddress={!!lockedPaymentAddress}
           isSeller={isSeller}
-          isValid={isValid}
+          isValid={isValid && !disableSubmit}
           lastReportedActivity={lastReportedActivity}
           onScanPress={navScan}
           onSubmit={handleSubmit}
