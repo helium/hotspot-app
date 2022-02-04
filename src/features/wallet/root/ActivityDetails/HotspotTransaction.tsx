@@ -49,12 +49,7 @@ const HotspotTransaction = ({ item, address }: Props) => {
 
   return (
     <Box flex={1} marginBottom="xl">
-      <Box
-        flexDirection="row"
-        alignItems="center"
-        marginBottom="m"
-        marginTop="m"
-      >
+      <Box flexDirection="row" alignItems="center" marginBottom="m">
         <LittleHotspot />
         <Text variant="medium" fontSize={15} color="black" marginLeft="s">
           {item?.gateway ? animalName(item.gateway) : 'Hotspot'}

@@ -112,18 +112,20 @@ const ActivityDetails = ({ detailTxn }: Props) => {
       >
         <BottomSheetScrollView>
           <Box padding="l" flex={1}>
-            <Text
-              variant="medium"
-              onPress={toggleConvertHntToCurrency}
-              fontSize={32}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              color={txnDisplayVals.isFee ? 'blueMain' : 'greenMain'}
-              alignSelf="flex-end"
-              marginBottom={!txnDisplayVals.fee ? 'm' : 'none'}
-            >
-              {txnDisplayVals.amount}
-            </Text>
+            {!!txnDisplayVals.amount && (
+              <Text
+                variant="medium"
+                onPress={toggleConvertHntToCurrency}
+                fontSize={32}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                color={txnDisplayVals.isFee ? 'blueMain' : 'greenMain'}
+                alignSelf="flex-end"
+                marginBottom={!txnDisplayVals.fee ? 'm' : 'none'}
+              >
+                {txnDisplayVals.amount}
+              </Text>
+            )}
 
             {!!txnDisplayVals.fee && (
               <Text

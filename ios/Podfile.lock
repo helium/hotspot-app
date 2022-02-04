@@ -55,7 +55,7 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.66.4)
   - fmt (6.2.1)
   - glog (0.3.5)
-  - helium-react-native-sdk (0.1.4):
+  - helium-react-native-sdk (0.1.6):
     - React-Core
   - lottie-ios (3.1.8)
   - lottie-react-native (4.0.2):
@@ -699,7 +699,7 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: fe08c1cd7e2e205718d77ad14b34957cce949b58
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 43737235ae6a21de4f45297f4f73b6420fc2ecb2
-  helium-react-native-sdk: a3e6739ad7fbafdb41a6bc976fee6055964269c0
+  helium-react-native-sdk: 7f3ed1ac93ce3ed4c00104a679d548168c370cf8
   lottie-ios: 48fac6be217c76937e36e340e2d09cf7b10b7f5f
   lottie-react-native: 4dff8fe8d10ddef9e7880e770080f4a56121397e
   Mapbox-iOS-SDK: a5915700ec84bc1a7f8b3e746d474789e35b7956
