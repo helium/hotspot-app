@@ -4,6 +4,6 @@ import hotspots from './hotspots'
 export default {
   antennas,
   hotspots,
-  id: 27, 
+  id: 27,
   supportEmail: 'support@dragino.com',
 }
