@@ -395,24 +395,20 @@ const SendDetailsForm = ({
   const renderSellerTransferForm = () => (
     <InputField
       defaultValue={address}
-      onChange={setAddress}
+      onChange={handleAddressChange}
+      onEndEditing={onDoneEditingAddress}
       label={t('send.address.label_transfer')}
       placeholder={t('send.address.placeholder')}
       extra={
-        Address.isValid(address) ? (
-          <Box padding="s" position="absolute" right={0}>
-            <Check />
-          </Box>
-        ) : (
-          <TouchableOpacityBox
-            onPress={onScanPress}
-            padding="s"
-            position="absolute"
-            right={0}
-          >
-            <QrCode width={16} color={primaryMain} />
-          </TouchableOpacityBox>
-        )
+        <AddressExtra
+          addressLoading={addressLoading}
+          isValidAddress={
+            Address.isValid(address) &&
+            isHotspotAddress !== undefined &&
+            !isHotspotAddress
+          }
+          onScanPress={onScanPress}
+        />
       }
     />
   )

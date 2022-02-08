@@ -45,7 +45,7 @@ const PassphraseAutocomplete = ({ onSelectWord, wordIdx }: Props) => {
       y: 0,
       animated: true,
     })
-    setWord(text)
+    setWord(text?.trim())
   }, [])
 
   return (
