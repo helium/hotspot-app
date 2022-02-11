@@ -44,7 +44,7 @@
     "@helium/http": "^3.53.0",
     "@helium/onboarding": "^3.59.0",
     "@helium/proto-ble": "^3.37.0",
-    "@helium/react-native-sdk": "^0.1.6",
+    "@helium/react-native-sdk": "^0.2.1",
     "@helium/transactions": "^3.49.1",
     "@react-native-community/art": "^1.2.0",
     "@react-native-community/async-storage": "^1.12.1",

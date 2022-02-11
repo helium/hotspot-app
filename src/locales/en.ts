@@ -1282,6 +1282,8 @@ export default {
   signHotspot: {
     title: 'Add Hotspot to\nBlockchain?',
     titleLocationOnly: 'Update Location?',
+    titleTransfer: 'Transfer Hotspot?',
+    newOwner: 'New Owner:',
     location: 'Location:',
     name: 'Hotspot Name:',
     gain: 'Gain',
