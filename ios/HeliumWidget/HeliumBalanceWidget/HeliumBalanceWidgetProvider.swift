@@ -43,8 +43,6 @@ struct Provider: IntentTimelineProvider {
                 completion(timeline)
               }
               
-            } else {
-                print("Could not parse data")
             }
         } else {
             let nextRefresh = Calendar.current.date(byAdding: .minute, value: 5, to: entryDate)!

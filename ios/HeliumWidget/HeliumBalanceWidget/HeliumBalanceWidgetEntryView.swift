@@ -36,7 +36,7 @@ struct HeliumBalanceWidgetEntryView : View {
             .bold()
             .font(.system(size: 12.0))
           Spacer()
-          Text("Jan 17")
+          Text(dateToShortFormat())
             .font(.system(size: 12.0))
         }
         Spacer()
@@ -53,5 +53,13 @@ struct HeliumBalanceWidgetEntryView : View {
         }
         Spacer()
       }.padding(10).background(Color("WidgetBackground"))
+  }
+  
+  func dateToShortFormat() -> String {
+    let date = Date()
+    let dateFormatter = DateFormatter()
+    dateFormatter.timeZone = TimeZone.current
+    dateFormatter.dateFormat = "MMM d"
+    return dateFormatter.string(from: date)
   }
 }
