@@ -54,6 +54,7 @@ import HeliumSelect from '../../../components/HeliumSelect'
 import { HeliumSelectItemType } from '../../../components/HeliumSelectItem'
 import HotspotsEmpty from './HotspotsEmpty'
 import { hasValidCache } from '../../../utils/cacheUtils'
+import { CoverageFeatures } from '../../../components/Coverage'
 
 type Props = {
   ownedHotspots?: Hotspot[]
@@ -148,9 +149,11 @@ const HotspotsView = ({
 
   const showOwned = useMemo(() => mapFilter === MapFilters.owned, [mapFilter])
 
-  const showRewardScale = useMemo(() => mapFilter === MapFilters.reward, [
-    mapFilter,
-  ])
+  const coverageFeatures: CoverageFeatures | undefined = useMemo(() => {
+    if (mapFilter === MapFilters.reward) return 'transmit'
+    if (mapFilter === MapFilters.earnings) return 'earnings'
+    return undefined
+  }, [mapFilter])
 
   useMount(() => {
     dispatch(fetchAccountRewards())
@@ -564,7 +567,7 @@ const HotspotsView = ({
               showNoLocation={!hotspotHasLocation}
               showNearbyHotspots
               showH3Grid
-              showRewardScale={showRewardScale}
+              coverageFeatures={coverageFeatures}
               overflow="hidden"
               borderTopLeftRadius="l"
               borderTopRightRadius="l"

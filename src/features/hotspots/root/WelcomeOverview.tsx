@@ -52,7 +52,7 @@ const WelcomeOverview = ({ accountRewards }: Props) => {
     validatorsLoaded: false,
   })
   const hotspots = useSelector(
-    (state: RootState) => state.hotspots.hotspots,
+    (state: RootState) => state.hotspots.hotspots.data,
     isEqual,
   )
 

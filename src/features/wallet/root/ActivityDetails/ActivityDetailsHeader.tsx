@@ -44,6 +44,7 @@ const ActivityDetailsHeader = ({
           fontSize={28}
           numberOfLines={1}
           adjustsFontSizeToFit
+          paddingVertical="xs"
         >
           {title}
         </Text>

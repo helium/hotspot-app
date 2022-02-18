@@ -2,7 +2,12 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Linking } from 'react-native'
-import { AddGateway, WalletLink, Location } from '@helium/react-native-sdk'
+import {
+  AddGateway,
+  WalletLink,
+  Location,
+  Transfer,
+} from '@helium/react-native-sdk'
 import animalHash from 'angry-purple-tiger'
 import Box from '../../components/Box'
 import SafeAreaBox from '../../components/SafeAreaBox'
@@ -18,7 +23,12 @@ import * as Logger from '../../utils/logger'
 type Route = RouteProp<RootStackParamList, 'SignHotspot'>
 const SignHotspot = () => {
   const {
-    params: { token, addGatewayTxn, assertLocationTxn },
+    params: { token, addGatewayTxn, assertLocationTxn, transferHotspotTxn } = {
+      token: '',
+      addGatewayTxn: '',
+      assertLocationTxn: '',
+      transferHotspotTxn: '',
+    },
   } = useRoute<Route>()
   const navigation = useNavigation<RootNavigationProp>()
   const { t } = useTranslation()
@@ -59,13 +69,34 @@ const SignHotspot = () => {
     return Location.txnFromString(assertLocationTxn)
   }, [assertLocationTxn])
 
+  const transferTxn = useMemo(() => {
+    if (!transferHotspotTxn) return
+    return Transfer.txnFromString(transferHotspotTxn)
+  }, [transferHotspotTxn])
+
+  const linkInvalid = useMemo(() => {
+    return !addGatewayTxn && !assertLocationTxn && !transferTxn
+  }, [addGatewayTxn, assertLocationTxn, transferTxn])
+
+  const gatewayAddress = useMemo(
+    () =>
+      gatewayTxn?.gateway?.b58 ||
+      locationTxn?.gateway?.b58 ||
+      transferTxn?.gateway?.b58,
+    [
+      gatewayTxn?.gateway?.b58,
+      locationTxn?.gateway?.b58,
+      transferTxn?.gateway?.b58,
+    ],
+  )
+
   const handleLink = useCallback(async () => {
     try {
       const ownerKeypair = await getKeypair()
 
       const responseParams = {
         status: 'success',
-        gatewayAddress: gatewayTxn?.gateway?.b58 || locationTxn?.gateway?.b58,
+        gatewayAddress,
       } as WalletLink.SignHotspotResponse
 
       if (gatewayTxn) {
@@ -90,26 +121,58 @@ const SignHotspot = () => {
         responseParams.assertTxn = txnOwnerSigned.toString()
       }
 
+      if (transferTxn) {
+        if (!ownerKeypair) {
+          callback({ status: 'token_not_found' })
+          throw new Error('Failed to sign transfer txn')
+        }
+
+        const txnTransferSigned = await transferTxn.sign({
+          owner: ownerKeypair,
+        })
+
+        if (!txnTransferSigned.gateway?.b58) {
+          callback({ status: 'gateway_not_found' })
+          throw new Error('Failed to sign transfer txn')
+        }
+
+        responseParams.transferTxn = txnTransferSigned.toString()
+      }
+
       callback(responseParams)
     } catch (e) {
       Logger.error(e)
     }
-  }, [callback, gatewayTxn, locationTxn])
+  }, [callback, gatewayAddress, gatewayTxn, locationTxn, transferTxn])
 
   const handleCancel = useCallback(async () => {
     callback({ status: 'user_cancelled' })
   }, [callback])
 
+  const handleError = useCallback(async () => {
+    callback({ status: 'invalid_link' })
+  }, [callback])
+
   const name = useMemo(() => {
-    if (!gatewayTxn?.gateway?.b58 && !locationTxn?.gateway?.b58) return
-    return animalHash(
-      gatewayTxn?.gateway?.b58 || locationTxn?.gateway?.b58 || '',
-    )
-  }, [gatewayTxn?.gateway?.b58, locationTxn?.gateway?.b58])
+    if (!gatewayAddress) return
+    return animalHash(gatewayAddress || '')
+  }, [gatewayAddress])
 
   const location = useMemo(() => {
     return locationTxn?.location
   }, [locationTxn?.location])
+
+  const title = useMemo(() => {
+    if (gatewayTxn) {
+      return t('signHotspot.title')
+    }
+    if (locationTxn) {
+      return t('signHotspot.titleLocationOnly')
+    }
+    if (transferTxn) {
+      return t('signHotspot.titleTransfer')
+    }
+  }, [gatewayTxn, locationTxn, t, transferTxn])
 
   useEffect(() => {
     if (!parsedToken) return
@@ -122,6 +185,45 @@ const SignHotspot = () => {
       })
   }, [parsedToken, token])
 
+  if (linkInvalid) {
+    return (
+      <SafeAreaBox backgroundColor="primaryBackground" flex={1} padding="xl">
+        <Box justifyContent="center" flex={1}>
+          <Text variant="bold" fontSize={36} marginBottom="m">
+            {t('signHotspot.error.title')}
+          </Text>
+          <Text variant="body1">
+            {t('signHotspot.error.subtitle', {
+              maker: parsedToken?.appName || 'Maker',
+            })}
+          </Text>
+        </Box>
+        {parsedToken?.callbackUrl && (
+          <Box justifyContent="flex-end" flex={1}>
+            <TouchableOpacityBox
+              minHeight={56}
+              justifyContent="center"
+              backgroundColor="greenBright"
+              borderRadius="l"
+              onPress={handleError}
+            >
+              <Text
+                variant="medium"
+                fontSize={16}
+                color="primaryBackground"
+                textAlign="center"
+              >
+                {t('signHotspot.error.takeMeBack', {
+                  maker: parsedToken?.appName || 'Maker',
+                })}
+              </Text>
+            </TouchableOpacityBox>
+          </Box>
+        )}
+      </SafeAreaBox>
+    )
+  }
+
   return (
     <SafeAreaBox
       backgroundColor="primaryBackground"
@@ -129,8 +231,8 @@ const SignHotspot = () => {
       padding="xl"
       justifyContent="center"
     >
-      <Text variant="bold" fontSize={36}>
-        {t(gatewayTxn ? 'signHotspot.title' : 'signHotspot.titleLocationOnly')}
+      <Text variant="bold" fontSize={34} adjustsFontSizeToFit>
+        {title}
       </Text>
 
       <Box backgroundColor="white" borderRadius="l" padding="l" marginTop="l">
@@ -192,6 +294,21 @@ const SignHotspot = () => {
             </Box>
           )}
         </Box>
+        {transferTxn?.newOwner !== undefined && (
+          <>
+            <Text variant="regular" fontSize={16} color="purpleText">
+              {t('signHotspot.newOwner')}
+            </Text>
+            <Text
+              variant="bold"
+              fontSize={16}
+              color="primaryBackground"
+              marginBottom="m"
+            >
+              {transferTxn.newOwner.b58}
+            </Text>
+          </>
+        )}
         {!!parsedToken?.address && (
           <>
             <Text variant="regular" fontSize={16} color="purpleText">

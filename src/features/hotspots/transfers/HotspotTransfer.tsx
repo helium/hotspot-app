@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Hotspot, Witness } from '@helium/http'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
+import Toast from 'react-native-simple-toast'
 import Text from '../../../components/Text'
 import TextInput from '../../../components/TextInput'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
@@ -14,6 +15,12 @@ import { useHotspotSettingsContext } from '../settings/HotspotSettingsProvider'
 import { useColors } from '../../../theme/themeHooks'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 import { hp } from '../../../utils/layout'
+import {
+  fetchTxnsHead,
+  HttpTransaction,
+} from '../../../store/activity/activitySlice'
+import { isPendingTransaction } from '../../wallet/root/useActivityItem'
+import { useAppDispatch } from '../../../store/store'
 
 type Props = {
   onCloseTransfer: () => void
@@ -32,6 +39,7 @@ const HotspotTransfer = ({
   const [typedName, setTypedName] = useState('')
   const { enableBack } = useHotspotSettingsContext()
   const colors = useColors()
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     enableBack(onCloseTransfer)
@@ -45,14 +53,40 @@ const HotspotTransfer = ({
     return typedName.trim().toLowerCase() === hotspotName.trim().toLowerCase()
   }
 
-  const navigateToTransfer = () => {
+  const hasPendingTransaction = useCallback(async () => {
+    try {
+      const pending = (await dispatch(
+        fetchTxnsHead({ filter: 'pending' }),
+      )) as {
+        payload?: HttpTransaction[]
+      }
+      const txns = pending.payload
+      return txns?.find((pendingTxn) => {
+        if (!isPendingTransaction(pendingTxn)) return
+
+        return (
+          pendingTxn.txn.type === 'transfer_hotspot_v2' &&
+          pendingTxn.status === 'pending' &&
+          pendingTxn.txn.gateway === hotspot?.address
+        )
+      })
+    } catch (e) {}
+    return false
+  }, [dispatch, hotspot?.address])
+
+  const navigateToTransfer = useCallback(async () => {
+    const hasExistingPendingTxn = await hasPendingTransaction()
+    if (hasExistingPendingTxn) {
+      Toast.show(t('hotspot_settings.reassert.already_pending'), Toast.LONG)
+      return
+    }
     onCloseSettings()
     navigation.navigate('SendStack', {
       hotspotAddress: hotspot.address,
       isSeller: true,
       type: 'transfer',
     })
-  }
+  }, [hasPendingTransaction, hotspot.address, navigation, onCloseSettings, t])
 
   return (
     <Box minHeight={hp(75)}>

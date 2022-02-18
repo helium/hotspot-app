@@ -503,7 +503,7 @@ export default {
     button: {
       payment: 'Send HNT',
       dcBurn: 'Burn HNT',
-      transfer_request: 'Send Transfer Request',
+      transfer_request: 'Transfer Hotspot',
       transfer_complete: 'Complete Transfer',
     },
     qrInfo: 'QR INFO',
@@ -513,7 +513,7 @@ export default {
     last_activity: 'LAST REPORTED ACTIVITY: {{activity}}',
     label_error: 'You do not have enough HNT in your account.',
     stale_error:
-      'Hotspot has not had Beacon or Witness activity in the last {{blocks}} blocks.',
+      'Hotspot has not participated in Proof-of-Coverage in the last {{blocks}} blocks. Unable to proceed with transfer.',
     scan: {
       title: 'Ways to use a QR Code',
       send: 'Send HNT',
@@ -762,6 +762,7 @@ export default {
     location: 'Confirm Location',
     location_v2: 'Update Hotspot',
     transfer: 'Hotspot Transfer',
+    transferDefault: 'Transfer Hotspot',
     transferSell: 'Transfer Hotspot (Sell)',
     transferBuy: 'Transfer Hotspot (Buy)',
     view: 'View',
@@ -957,13 +958,14 @@ export default {
     picker_title: 'Past',
     overview: 'Earnings',
     no_location: 'No Location',
-    picker_options: ['7D', '14D', '30D'],
+    picker_options: { 7: '7D', 14: '14D', 30: '30D', YTD: 'YTD' },
     picker_prompt: 'Select Range',
     status_data_only: 'Data-Only',
     status_online: 'Online',
     status_offline: 'Needs Attention',
     status_syncing: 'Syncing',
     relayed: 'Relayed',
+    ytd: 'Your Hotspot has earned\n{{number}} HNT since {{date}}',
     status_prompt_online: {
       title: 'Hotspot is online and syncing.',
       subtitle_active: 'Status: Block {{hotspotBlock}} of {{currentBlock}}',
@@ -1037,7 +1039,7 @@ export default {
     canceled_alert_body:
       'This transfer is no longer active. Please contact the seller for more information.',
     fine_print:
-      'Hotspot will transfer once the buyer accepts and completes the transaction.',
+      'Hotspot will transfer immediately. Buyer acceptance not required.',
     notification_button: 'View Transaction',
     deployModeTransferDisableTitle: 'Transfer Hotspot Disabled',
     deployModeTransferDisabled:
@@ -1240,6 +1242,11 @@ export default {
       body:
         'Indicates location density. When a Hotspot transmits a beacon, any that hear it will have its mining rewards scaled by this number.',
     },
+    earnings: {
+      title: 'Daily HNT Earnings (7D Avg)',
+      body:
+        'Compares Hotspot earnings in a hex with the average earnings of a Hotspot on the network.',
+    },
     title: 'Map Filters',
     button: 'Choose Map Filter',
   },
@@ -1275,12 +1282,20 @@ export default {
   signHotspot: {
     title: 'Add Hotspot to\nBlockchain?',
     titleLocationOnly: 'Update Location?',
+    titleTransfer: 'Transfer Hotspot?',
+    newOwner: 'New Owner:',
     location: 'Location:',
     name: 'Hotspot Name:',
     gain: 'Gain',
     elevation: 'Elevation',
     owner: 'Owner:',
     maker: 'Maker',
+    error: {
+      title: 'Invalid Link',
+      subtitle:
+        'Unable to add this Hotspot to the Helium Network. Contact {{maker}} to troubleshoot this issue.',
+      takeMeBack: 'Go Back to {{maker}}',
+    },
   },
   copyAddress: {
     account: 'Address',

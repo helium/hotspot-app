@@ -19,6 +19,7 @@ import { wp } from '../../utils/layout'
 import appSlice from '../../store/user/appSlice'
 import NotificationsScreen from '../../features/notifications/NotificationsScreen'
 import notificationSlice from '../../store/notifications/notificationSlice'
+import { fetchHotspotsData } from '../../store/hotspots/hotspotsSlice'
 
 const MainTab = createBottomTabNavigator()
 
@@ -89,6 +90,10 @@ const MainTabs = () => {
     [],
   )
 
+  const fetchHotspotData = useCallback(() => dispatch(fetchHotspotsData()), [
+    dispatch,
+  ])
+
   return (
     <MainTab.Navigator
       sceneContainerStyle={sceneContainerStyle}
@@ -96,7 +101,13 @@ const MainTabs = () => {
       tabBarOptions={tabBarOptions}
       screenOptions={screenOptions}
     >
-      <MainTab.Screen name="Hotspots" component={Hotspots} />
+      <MainTab.Screen
+        name="Hotspots"
+        component={Hotspots}
+        listeners={{
+          tabPress: fetchHotspotData,
+        }}
+      />
       <MainTab.Screen name="Wallet" component={WalletNavigator} />
       <MainTab.Screen name="Notifications" component={NotificationsScreen} />
       <MainTab.Screen name="More" component={More} />
