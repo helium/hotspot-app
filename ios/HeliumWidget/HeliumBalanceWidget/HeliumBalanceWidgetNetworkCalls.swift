@@ -12,6 +12,10 @@ struct AccountRewardsData: Decodable {
 }
 
 struct AccountBalanceData: Decodable {
+  var data: AccountBalanceDataObj
+}
+
+struct AccountBalanceDataObj: Decodable {
   var balance: Int
 }
 
@@ -28,7 +32,7 @@ func fetchBalanceWidgetData(balanceWidgetData: BalanceWidgetData, completion: @e
     if (accountRewardsError == nil) {
       fetchAccountBalance(balanceWidgetData: balanceWidgetData) { accountBalanceError, accountBalanceData in
         if (accountBalanceError == nil) {
-          let parsedBalanceWidgetData = ParsedBalanceWidgetData(total: accountRewardsData?.total ?? 0, balance: accountBalanceData?.balance ?? 0)
+          let parsedBalanceWidgetData = ParsedBalanceWidgetData(total: accountRewardsData?.total ?? 0, balance: accountBalanceData?.data.balance ?? 0)
           completion(nil, parsedBalanceWidgetData)
         }
       }
