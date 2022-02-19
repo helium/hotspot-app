@@ -62,4 +62,33 @@ const Gatorpro = {
   },
 } as MakerHotspot
 
-export default {Gatorpro}
+const GatorproX1QR = {
+  name: 'Gatorpro X1 QR',
+  icon: HotspotIcon,
+  onboardType: 'QR',
+  translations: {
+    en: {
+      diagnostic:
+      '<b><white>Diagnostic support allows Gator to identify issues with your Hotspot in a secure way.</white></b>\n\nGator will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>support@gatorproiot.com</b></purple> from the email used to purchase the Hotspot.',
+      power: [
+        'Attach the antenna and plug in the provided power adapter near a window.',
+        'The Gatorpro Hotspot will have a solid yellow LED light up on the back of the Hotspot once powered on.',
+      ],
+      externalOnboard: 'Your onboarding QR Code is included in the package',
+    },
+    ja: {
+      // TODO: Translate strings for diagnostic, power, and bluetooth
+    },
+    ko: {
+      // TODO: Translate strings for diagnostic, power, and bluetooth
+    },
+    zh: {
+      // TODO: Translate strings for diagnostic, power, and bluetooth
+    },
+  },
+  antenna: {
+    us: ANTENNAS.Gatorpro_US,
+    default: ANTENNAS.Gatorpro_EU,
+  },
+} as MakerHotspot
+export default {GatorproX1, GatorproX1QR}
