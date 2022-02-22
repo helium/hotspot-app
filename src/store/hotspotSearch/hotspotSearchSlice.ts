@@ -43,7 +43,10 @@ export const fetchData = createAsyncThunk<
     const {
       hotspots: { hotspots, followedHotspots },
     } = getState() as { hotspots: HotspotsSliceState }
-    const unique = uniqBy([...hotspots, ...followedHotspots], (h) => h.address)
+    const unique = uniqBy(
+      [...hotspots.data, ...followedHotspots.data],
+      (h) => h.address,
+    )
     if (!searchTerm) {
       return unique
     }
@@ -90,7 +93,7 @@ export const fetchData = createAsyncThunk<
 })
 
 const hotspotSearchSlice = createSlice({
-  name: 'hotspotSearchSlice',
+  name: 'hotspotSearch',
   initialState,
   reducers: {
     clear: (state) => {

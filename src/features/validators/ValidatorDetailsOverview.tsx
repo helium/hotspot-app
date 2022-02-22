@@ -24,7 +24,7 @@ type Props = { validator?: Validator }
 const ValidatorDetailsOverview = ({ validator }: Props) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const [timelineValue, setTimelineValue] = useState(14)
+  const [timelineValue, setTimelineValue] = useState(7)
   const [focusedData, setFocusedData] = useState<ChartData | null>(null)
   const [dateLabel, setDateLabel] = useState('')
   const chartData = useSelector((state: RootState) => state.rewards.chartData)

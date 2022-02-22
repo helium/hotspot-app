@@ -230,7 +230,6 @@ const NotificationList = ({
               tintColor={colors.grayLight}
             />
           }
-          refreshing={refreshing}
           sections={groupedNotifications}
           keyExtractor={listKeyExtractor}
           renderItem={renderListItem}

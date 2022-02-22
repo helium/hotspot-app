@@ -44,6 +44,7 @@ type TxnDisplayVals = {
   isFee: boolean
   fee: string
   feePayer: string
+  hash: string
 }
 
 const hntBalance = (v: number | undefined | null) => {
@@ -76,6 +77,7 @@ const useActivityItem = (
     fee: '',
     feePayer: '',
     subtitle: '',
+    hash: '',
   })
   const { hntBalanceToDisplayVal } = useCurrency()
   const colors = useColors()
@@ -93,7 +95,11 @@ const useActivityItem = (
 
   const isSending = useMemo(() => txn.payer === address, [address, txn.payer])
 
-  const isSelling = useMemo(() => txn.seller === address, [address, txn.seller])
+  const isSelling = useMemo(() => {
+    if (txn.seller) return txn.seller === address // for transfer_v1
+    if (txn.owner) return txn.owner === address
+    return undefined
+  }, [address, txn.seller, txn.owner])
 
   const backgroundColorKey = useMemo(() => {
     if (!TxnTypeKeys.find((k) => k === item.type)) {
@@ -102,6 +108,7 @@ const useActivityItem = (
 
     switch (item.type) {
       case 'transfer_hotspot_v1':
+      case 'transfer_hotspot_v2':
       case 'add_gateway_v1':
         return 'purple100'
       case 'payment_v1':
@@ -145,6 +152,8 @@ const useActivityItem = (
       case 'assert_location_v2':
         return t('transactions.location_v2')
       case 'transfer_hotspot_v1':
+      case 'transfer_hotspot_v2':
+        if (isSelling === undefined) return t('transactions.transferDefault')
         return isSelling
           ? t('transactions.transferSell')
           : t('transactions.transferBuy')
@@ -171,6 +180,7 @@ const useActivityItem = (
       case 'transfer_validator_stake_v1':
         return <TransferStakeValidator width={40} />
       case 'transfer_hotspot_v1':
+      case 'transfer_hotspot_v2':
         return <HotspotTransfer height={20} width={50} />
       case 'payment_v1':
       case 'payment_v2':
@@ -217,6 +227,7 @@ const useActivityItem = (
       case 'token_burn_v1':
         return <Burn width={23} height={28} />
       case 'transfer_hotspot_v1':
+      case 'transfer_hotspot_v2':
       case 'add_gateway_v1':
       default:
         return <HotspotAdded width={20} height={20} />
@@ -237,7 +248,10 @@ const useActivityItem = (
       return false
     }
 
-    if (item.type === 'transfer_hotspot_v1') {
+    if (
+      item.type === 'transfer_hotspot_v1' ||
+      item.type === 'transfer_hotspot_v2'
+    ) {
       return isSelling
     }
 
@@ -273,7 +287,10 @@ const useActivityItem = (
       return ''
     }
 
-    if (item.type === 'transfer_hotspot_v1') {
+    if (
+      item.type === 'transfer_hotspot_v1' ||
+      item.type === 'transfer_hotspot_v2'
+    ) {
       if (!isSelling) return ''
 
       return formatAmount('-', dcBalance(txn.fee))
@@ -320,6 +337,7 @@ const useActivityItem = (
         return formatAmount('+', rewardsAmount)
       }
       case 'transfer_hotspot_v1':
+      case 'transfer_hotspot_v2':
         return formatAmount(
           isSelling ? '+' : '-',
           hntBalance(txn.amountToSeller),
@@ -407,6 +425,7 @@ const useActivityItem = (
         isFee,
         fee: f,
         feePayer,
+        hash: txn.hash,
       } as TxnDisplayVals
       setDisplayValues(nextVals)
     }
@@ -424,6 +443,7 @@ const useActivityItem = (
     title,
     feePayer,
     subtitle,
+    txn.hash,
   ])
 
   return displayValues

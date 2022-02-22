@@ -461,7 +461,6 @@ export default {
     button: {
       payment: 'HNT 전송',
       dcBurn: 'HNT 버닝',
-      transfer_request: '이체 요청 전송',
       transfer_complete: '이체 완료',
     },
     qrInfo: 'QR 정보',
@@ -470,8 +469,6 @@ export default {
     hotspot_label: 'Hotspot',
     last_activity: '마지막으로 보고된 활동: {{activity}}',
     label_error: '계정에 충분한 HNT가 없습니다.',
-    stale_error:
-      'Hotspot이 마지막 {{blocks}} 블록에서 Beacon 또는 감시 활동이 없었습니다.',
     scan: {
       title: 'QR 코드 사용 방법',
       send: 'HNT 전송',
@@ -570,10 +567,6 @@ export default {
     owned: {
       title: '내 Hotspot',
       title_no_hotspots: 'Hotspot',
-      reward_summary:
-        'Hotspot이 지난 24시간 동안 \n{{hntAmount}}을(를) 획득했습니다.',
-      reward_summary_plural:
-        'Hotspot {{count}}개가 지난 24시간 동안 \n{{hntAmount}}을(를) 획득했습니다.',
       your_hotspots: '내 Hotspot',
       filter: {
         new: '최신 Hotspot',
@@ -773,7 +766,7 @@ export default {
     picker_title: '이전',
     overview: '개요',
     no_location: '위치 없음',
-    picker_options: ['지난 24시간', '지난 14일', '지난 30일'],
+    picker_options: { 7: '지난 7일', 14: '지난 14일', 30: '지난 30일' },
     picker_prompt: '범위 선택',
     status_online: '온라인',
     status_offline: '주의 필요',
@@ -823,7 +816,6 @@ export default {
     canceled_alert_title: '전송이 취소됨',
     canceled_alert_body:
       '이 전송은 더 이상 활성화되지 않습니다. 판매자에게 자세한 내용을 문의하세요.',
-    fine_print: '구매자가 트랜잭션을 수락하고 완료하면 Hotspot이 전송됩니다.',
     notification_button: '트랜잭션 보기',
     deployModeTransferDisableTitle: '핫스팟 전송 비활성화됨',
     deployModeTransferDisabled: '배포 모드에서는 핫스팟 전송이 비활성화됩니다.',

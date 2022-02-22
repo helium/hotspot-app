@@ -5,6 +5,7 @@ import {
   PaymentV2,
   TokenBurnV1,
   TransferHotspotV1,
+  TransferHotspotV2,
 } from '@helium/transactions'
 import Balance, { CurrencyType } from '@helium/currency'
 import { getKeypair } from './secureAccount'
@@ -109,6 +110,28 @@ export const makeBurnTxn = async (
   })
 
   return tokenBurnTxn.sign({ payer: keypair })
+}
+
+export const makeTransferV2Txn = async (
+  gatewayB58: string,
+  owner: Address,
+  newOwnerB58: string,
+  gatewaySpeculativeNonce: number,
+): Promise<TransferHotspotV2> => {
+  const keypair = await getKeypair()
+  const newOwner = Address.fromB58(newOwnerB58)
+  const gateway = Address.fromB58(gatewayB58)
+  const nonce = gatewaySpeculativeNonce + 1
+
+  if (!keypair) throw new Error('missing keypair')
+
+  const transferV2Txn = new TransferHotspotV2({
+    gateway,
+    owner,
+    newOwner,
+    nonce,
+  })
+  return transferV2Txn.sign({ owner: keypair })
 }
 
 export const makeSellerTransferHotspotTxn = async (

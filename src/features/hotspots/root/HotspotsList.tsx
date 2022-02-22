@@ -68,9 +68,11 @@ const HotspotsList = ({
     rewards: validatorRewards,
   } = useSelector((state: RootState) => state.validators)
 
-  const hotspots = useSelector((state: RootState) => state.hotspots.hotspots)
+  const hotspots = useSelector(
+    (state: RootState) => state.hotspots.hotspots.data,
+  )
   const followedHotspots = useSelector(
-    (state: RootState) => state.hotspots.followedHotspots,
+    (state: RootState) => state.hotspots.followedHotspots.data,
   )
   const validators = useSelector(
     (state: RootState) => state.validators.validators.data,
@@ -288,17 +290,28 @@ const HotspotsList = ({
                 marginTop="xs"
                 marginBottom="xl"
                 letterSpacing={1}
+                maxFontSizeMultiplier={1.2}
               >
                 {t('hotspots.list.no_offline')}
               </Text>
-              <Text variant="body3Medium" color="grayDark" letterSpacing={1}>
+              <Text
+                variant="body3Medium"
+                color="grayDark"
+                letterSpacing={1}
+                maxFontSizeMultiplier={1.2}
+              >
                 {t('hotspots.list.online')}
               </Text>
             </Box>
           )}
         {!filterHasHotspots && (
           <Box paddingHorizontal="l">
-            <Text variant="body1" color="grayDark" padding="m">
+            <Text
+              variant="body1"
+              color="grayDark"
+              padding="m"
+              maxFontSizeMultiplier={1.2}
+            >
               {t('hotspots.list.no_results')}
             </Text>
           </Box>

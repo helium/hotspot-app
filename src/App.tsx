@@ -191,6 +191,7 @@ const App = () => {
         dispatch(fetchAccountRewards())
         dispatch(fetchMyValidators())
         dispatch(fetchFollowedValidators())
+        dispatch(fetchNotifications())
       }
     }
   }, [isBackedUp, appState, dispatch, prevAppState, lastIdle, isLocked])
@@ -208,7 +209,7 @@ const App = () => {
     if (!settingsLoaded && !featuresLoaded) return
     const interval = setInterval(() => {
       dispatch(fetchBlockHeight())
-    }, 30000)
+    }, 60000)
     return () => clearInterval(interval)
   }, [dispatch, featuresLoaded, settingsLoaded])
 
@@ -231,7 +232,6 @@ const App = () => {
           <BluetoothProvider>
             <ConnectedHotspotProvider>
               <SafeAreaProvider>
-                {/* TODO: Will need to adapt status bar for light/dark modes */}
                 {Platform.OS === 'ios' && (
                   <StatusBar barStyle="light-content" />
                 )}

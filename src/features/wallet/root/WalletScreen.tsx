@@ -1,26 +1,20 @@
 import React, { memo, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
-import useAppState from 'react-native-appstate-hook'
 import ActivityDetails from './ActivityDetails/ActivityDetails'
 import useVisible from '../../../utils/useVisible'
 import usePrevious from '../../../utils/usePrevious'
 import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
-import activitySlice, {
+import {
   fetchMoreTxns,
   fetchTxnsHead,
 } from '../../../store/activity/activitySlice'
-import animateTransition from '../../../utils/animateTransition'
-import { ActivityViewState } from './walletTypes'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import WalletView from './WalletView'
 
 const WalletScreen = () => {
   const dispatch = useAppDispatch()
   const [showSkeleton, setShowSkeleton] = useState(true)
-  const [activityViewState, setActivityViewState] = useState<ActivityViewState>(
-    'undetermined',
-  )
 
   const {
     activity: { txns, filter, detailTxn, requestMore },
@@ -32,54 +26,16 @@ const WalletScreen = () => {
   const prevVisible = usePrevious(visible)
   const prevBlockHeight = usePrevious(blockHeight)
 
-  const { appState } = useAppState()
-  const prevAppState = usePrevious(appState)
-
   useEffect(() => {
-    // clear the list data when coming into foreground
-    if (prevAppState && appState === 'active' && prevAppState !== 'active') {
-      dispatch(activitySlice.actions.reset())
-    }
-  }, [appState, dispatch, prevAppState])
-
-  useEffect(() => {
-    // once you have activity, you always have activity
-    if (activityViewState === 'activity') return
-
-    const { hasInitialLoad: allLoaded, data: allData } = txns.all
-    const { hasInitialLoad: pendingLoaded, data: pendingData } = txns.pending
-
-    if (!allLoaded || !pendingLoaded) return
-
-    if (pendingData.length || allData.length) {
-      setActivityViewState('activity')
-    } else if (
-      !pendingData.length &&
-      !allData.length &&
-      activityViewState !== 'no_activity' &&
-      txns[filter].status === 'fulfilled'
-    ) {
-      animateTransition('WalletScreen.NoActivity')
-      setActivityViewState('no_activity')
-    }
-  }, [filter, activityViewState, txns, visible])
-
-  useEffect(() => {
-    const nextShowSkeleton =
-      !txns[filter].hasInitialLoad || !txns.pending.hasInitialLoad
+    const nextShowSkeleton = !txns[filter].hasInitialLoad
 
     if (nextShowSkeleton !== showSkeleton) {
-      if (visible && activityViewState !== 'no_activity') {
-        animateTransition('WalletScreen.ShowSkeleton', {
-          enabledOnAndroid: false,
-        })
-      }
       setShowSkeleton(nextShowSkeleton)
     }
-  }, [activityViewState, filter, showSkeleton, txns, visible])
+  }, [filter, showSkeleton, txns, visible])
 
   useEffect(() => {
-    // Fetch pending txns on an interval of 30s
+    // Fetch pending txns on an interval of 60s
     if (!visible && interval.current) {
       clearInterval(interval.current)
       interval.current = undefined
@@ -87,7 +43,7 @@ const WalletScreen = () => {
       dispatch(fetchTxnsHead({ filter: 'pending' }))
       interval.current = setInterval(() => {
         dispatch(fetchTxnsHead({ filter: 'pending' }))
-      }, 30000)
+      }, 60000)
     }
   }, [dispatch, visible])
 
@@ -132,9 +88,9 @@ const WalletScreen = () => {
     <>
       <SafeAreaBox flex={1} backgroundColor="primaryBackground">
         <WalletView
-          activityViewState={activityViewState}
           showSkeleton={showSkeleton}
           txns={filter === 'pending' ? [] : txns[filter].data}
+          loadingTxns={txns[filter].status === 'pending'}
           pendingTxns={txns.pending.data}
         />
       </SafeAreaBox>

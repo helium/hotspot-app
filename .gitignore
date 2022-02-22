@@ -34,6 +34,9 @@ local.properties
 # Android/VSCode
 android/app/.project
 android/.project
+android/.settings/org.eclipse.buildship.core.prefs
+android/app/.classpath
+android/app/.settings/org.eclipse.buildship.core.prefs
 
 # Visual Studio Code
 #
@@ -44,6 +47,8 @@ android/.project
 node_modules/
 npm-debug.log
 yarn-error.log
+.yalc/
+yalc.lock
 
 # BUCK
 buck-out/

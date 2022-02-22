@@ -95,10 +95,7 @@ const BalanceCard = ({
           >
             <ReceiveCircle />
           </DebouncedTouchableOpacityBox>
-          <DebouncedTouchableOpacityBox
-            onPress={onSendPress}
-            disabled={!balanceInfo.hasBalance}
-          >
+          <DebouncedTouchableOpacityBox onPress={onSendPress}>
             <SendCircle />
           </DebouncedTouchableOpacityBox>
         </Box>

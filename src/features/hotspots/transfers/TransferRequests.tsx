@@ -47,12 +47,15 @@ export const getTransfer = async (
 export const deleteTransfer = async (
   hotspotAddress: string,
   complete: boolean,
-): Promise<Transfer | undefined> => {
-  const transfer: TransferHTTP = await deleteWallet(
-    `transfers/${hotspotAddress}`,
-    { complete },
-  )
-  return convertTransfer(transfer)
+): Promise<boolean | undefined> => {
+  try {
+    const transfer: string = await deleteWallet(`transfers/${hotspotAddress}`, {
+      complete,
+    })
+    return transfer === 'transfer deleted'
+  } catch (e) {
+    return false
+  }
 }
 
 const convertTransfer = (transfer?: TransferHTTP): Transfer | undefined => {

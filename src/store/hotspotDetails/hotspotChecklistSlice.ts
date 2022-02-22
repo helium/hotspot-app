@@ -19,7 +19,7 @@ export const fetchChecklistActivity = createAsyncThunk(
     const data = await Promise.all([
       getTransactions(gateway, 'challenge_construction', 1),
       getTransactions(gateway, 'challenge_activity', 1),
-      getTransactions(gateway, 'rewards', 200),
+      getTransactions(gateway, 'rewards', 75),
     ])
 
     const challengerTxn = data[0] as PocReceiptsV1[]

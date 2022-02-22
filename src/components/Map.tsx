@@ -33,8 +33,9 @@ import { findBounds } from '../utils/mapUtils'
 import CurrentLocationButton from './CurrentLocationButton'
 import { theme, Theme } from '../theme/theme'
 import { useColors } from '../theme/themeHooks'
-import Coverage from './Coverage'
+import Coverage, { CoverageFeatures } from './Coverage'
 import { distance } from '../utils/location'
+import LocationIcon from '../assets/images/location-icon.svg'
 
 const defaultLngLat = [-122.419418, 37.774929] // San Francisco
 
@@ -49,6 +50,7 @@ type Props = BoxProps<Theme> & {
   currentLocationEnabled?: boolean
   zoomLevel?: number
   mapCenter?: number[]
+  markerLocation?: number[]
   ownedHotspots?: Hotspot[]
   followedHotspots?: Hotspot[]
   selectedHotspot?: Hotspot | Witness
@@ -63,7 +65,7 @@ type Props = BoxProps<Theme> & {
   showNoLocation?: boolean
   showNearbyHotspots?: boolean
   showH3Grid?: boolean
-  showRewardScale?: boolean
+  coverageFeatures?: CoverageFeatures
 }
 const Map = ({
   onMapMoved,
@@ -86,9 +88,10 @@ const Map = ({
   showNearbyHotspots = false,
   showH3Grid = false,
   followedHotspots,
-  showRewardScale,
+  coverageFeatures,
   cameraBottomOffset,
   selectedHex,
+  markerLocation,
   ...props
 }: Props) => {
   const colors = useColors()
@@ -344,8 +347,16 @@ const Map = ({
               witnesses={witnesses}
               ownedHotspots={ownedHotspots}
               followedHotspots={followedHotspots}
-              showRewardScale={showRewardScale}
+              showFeatures={coverageFeatures}
             />
+          )}
+          {markerLocation !== undefined && (
+            <MapboxGL.PointAnnotation
+              id="locationCenterMarker"
+              coordinate={markerLocation}
+            >
+              <LocationIcon color="white" />
+            </MapboxGL.PointAnnotation>
           )}
         </MapboxGL.MapView>
         {currentLocationEnabled && (

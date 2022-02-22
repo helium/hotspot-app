@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Hotspot, Witness } from '@helium/http'
 import { useTranslation } from 'react-i18next'
 import { ActivityIndicator, Alert } from 'react-native'
@@ -34,6 +34,14 @@ import {
 import { calculateAssertLocFee } from '../../../../utils/fees'
 import { MakerAntenna } from '../../../../makers/antennaMakerTypes'
 import { isDataOnly } from '../../../../utils/hotspotUtils'
+import {
+  fetchTxnsHead,
+  HttpTransaction,
+} from '../../../../store/activity/activitySlice'
+import { isPendingTransaction } from '../../../wallet/root/useActivityItem'
+import { useAppDispatch } from '../../../../store/store'
+import { hp } from '../../../../utils/layout'
+import { getHotspotDetails } from '../../../../utils/appDataClient'
 
 type Props = {
   onClose: () => void
@@ -47,6 +55,7 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
   const { t } = useTranslation()
   const submitTxn = useSubmitTxn()
   const navigation = useNavigation()
+  const dispatch = useAppDispatch()
   const [state, setState] = useState<State>(
     isDataOnly(hotspot) ? 'location' : 'antenna',
   )
@@ -158,33 +167,62 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
         )
         return
       }
-      const hotspotGain = hotspot.gain ? hotspot.gain / 10 : 1.2
+      const hotspotDetails = await getHotspotDetails(hotspot.address)
+      const hotspotGain = hotspotDetails.gain ? hotspotDetails.gain / 10 : 1.2
       return assertLocationTxn({
-        gateway: hotspot.address,
+        gateway: hotspotDetails.address,
         lat: location.latitude,
         lng: location.longitude,
         decimalGain: hotspotGain,
-        elevation: hotspot.elevation,
+        elevation: hotspotDetails.elevation,
         onboardingRecord,
         updatingLocation: isLocationChange,
-        dataOnly: isDataOnly(hotspot),
+        dataOnly: isDataOnly(hotspotDetails),
       })
     }
 
+    const hotspotDetails = await getHotspotDetails(hotspot.address)
     return assertLocationTxn({
-      gateway: hotspot.address,
-      lat: hotspot.lat,
-      lng: hotspot.lng,
+      gateway: hotspotDetails.address,
+      lat: hotspotDetails.lat,
+      lng: hotspotDetails.lng,
       decimalGain: gain,
       elevation,
       onboardingRecord,
       updatingLocation: false,
-      dataOnly: isDataOnly(hotspot),
+      dataOnly: isDataOnly(hotspotDetails),
     })
   }
 
+  const hasPendingTransaction = useCallback(async () => {
+    try {
+      const pending = (await dispatch(
+        fetchTxnsHead({ filter: 'pending' }),
+      )) as {
+        payload?: HttpTransaction[]
+      }
+      const txns = pending.payload
+      return txns?.find((pendingTxn) => {
+        if (!isPendingTransaction(pendingTxn)) return
+
+        return (
+          pendingTxn.txn.type === 'assert_location_v2' &&
+          pendingTxn.status === 'pending' &&
+          pendingTxn.txn.gateway === hotspot?.address
+        )
+      })
+    } catch (e) {}
+    return false
+  }, [dispatch, hotspot?.address])
+
   const onSubmit = async () => {
     setLoading(true)
+    const hasExistingPendingTxn = await hasPendingTransaction()
+    if (hasExistingPendingTxn) {
+      setLoading(false)
+      Toast.show(t('hotspot_settings.reassert.already_pending'), Toast.LONG)
+      return
+    }
     try {
       const txn = await constructTransaction()
       if (txn) {
@@ -230,6 +268,7 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
           <Text
             textAlign="center"
             color={updatingAntenna ? 'white' : 'purpleMain'}
+            maxFontSizeMultiplier={1.2}
           >
             {t('hotspot_settings.reassert.update_antenna')}
           </Text>
@@ -249,6 +288,7 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
           <Text
             textAlign="center"
             color={updatingLocation ? 'white' : 'purpleMain'}
+            maxFontSizeMultiplier={1.2}
           >
             {t('hotspot_settings.options.reassert')}
           </Text>
@@ -260,8 +300,13 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
   const ConfirmDetails = () => (
     <Box>
       {isLocationChange && location ? (
-        <Box>
-          <Text variant="body1Medium" color="black" marginBottom="s">
+        <Box height={200} marginBottom="l">
+          <Text
+            variant="body1Medium"
+            color="black"
+            marginBottom="s"
+            maxFontSizeMultiplier={1.2}
+          >
             {t('hotspot_settings.reassert.new_location')}
           </Text>
           <HotspotLocationPreview
@@ -271,10 +316,20 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
         </Box>
       ) : (
         <Box>
-          <Text variant="body1Medium" color="black" marginBottom="s">
+          <Text
+            variant="body1Medium"
+            color="black"
+            marginBottom="s"
+            maxFontSizeMultiplier={1.2}
+          >
             {t('hotspot_settings.reassert.antenna_details')}
           </Text>
-          <Text variant="body1Medium" color="grayLightText" marginBottom="s">
+          <Text
+            variant="body1Medium"
+            color="grayLightText"
+            marginBottom="s"
+            maxFontSizeMultiplier={1.2}
+          >
             {antenna?.name}
           </Text>
           <Text
@@ -282,10 +337,16 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
             color="black"
             marginTop="m"
             marginBottom="s"
+            maxFontSizeMultiplier={1.2}
           >
             {t('antennas.onboarding.gain')}
           </Text>
-          <Text variant="body1Medium" color="grayLightText" marginBottom="s">
+          <Text
+            variant="body1Medium"
+            color="grayLightText"
+            marginBottom="s"
+            maxFontSizeMultiplier={1.2}
+          >
             {t('hotspot_setup.location_fee.gain', {
               gain: gain?.toLocaleString(locale, {
                 maximumFractionDigits: 1,
@@ -297,18 +358,35 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
             color="black"
             marginTop="m"
             marginBottom="s"
+            maxFontSizeMultiplier={1.2}
           >
             {t('antennas.onboarding.elevation')}
           </Text>
-          <Text variant="body1Medium" color="grayLightText" marginBottom="s">
+          <Text
+            variant="body1Medium"
+            color="grayLightText"
+            marginBottom="s"
+            maxFontSizeMultiplier={1.2}
+          >
             {elevation}
           </Text>
         </Box>
       )}
-      <Text variant="body1Medium" color="black" marginTop="m" marginBottom="s">
+      <Text
+        variant="body1Medium"
+        color="black"
+        marginTop="m"
+        marginBottom="s"
+        maxFontSizeMultiplier={1.2}
+      >
         {t('generic.fee')}
       </Text>
-      <Text variant="body1Medium" color="grayLightText" marginBottom="l">
+      <Text
+        variant="body1Medium"
+        color="grayLightText"
+        marginBottom="l"
+        maxFontSizeMultiplier={1.2}
+      >
         {locationFee}
       </Text>
       <Button
@@ -323,7 +401,7 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
   )
 
   return (
-    <>
+    <Box minHeight={hp(75)}>
       {!fullScreen && (
         <UpdateHotspotHeader
           onClose={onClose}
@@ -360,7 +438,7 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
         )}
         {confirmingUpdate && <ConfirmDetails />}
       </Box>
-    </>
+    </Box>
   )
 }
 

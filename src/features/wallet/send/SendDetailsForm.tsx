@@ -173,6 +173,28 @@ const SendDetailsForm = ({
     }
   }
 
+  // set isHotspotAddress for default address
+  useAsync(async () => {
+    if (
+      address !== undefined &&
+      address !== '' &&
+      isHotspotAddress === undefined
+    ) {
+      setAddressLoading(true)
+      try {
+        const hotspot = await getHotspotDetails(address)
+        if (hotspot.address === address) {
+          setIsHotspotAddress(true)
+          setSendDisabled(true)
+          setAddressLoading(false)
+        }
+      } catch (e) {
+        setIsHotspotAddress(false)
+        setAddressLoading(false)
+      }
+    }
+  }, [])
+
   const handleAddressChange = useCallback((text: string) => {
     setIsHotspotAddress(false)
     setAddress(text)
@@ -371,39 +393,24 @@ const SendDetailsForm = ({
   )
 
   const renderSellerTransferForm = () => (
-    <>
-      <InputField
-        defaultValue={address}
-        onChange={setAddress}
-        label={t('send.address.label_transfer')}
-        placeholder={t('send.address.placeholder')}
-        extra={
-          Address.isValid(address) ? (
-            <Box padding="s" position="absolute" right={0}>
-              <Check />
-            </Box>
-          ) : (
-            <TouchableOpacityBox
-              onPress={onScanPress}
-              padding="s"
-              position="absolute"
-              right={0}
-            >
-              <QrCode width={16} color={primaryMain} />
-            </TouchableOpacityBox>
-          )
-        }
-      />
-      <InputField
-        type="decimal-pad"
-        defaultValue={amount}
-        onChange={setFormAmount}
-        value={amount}
-        numberOfLines={2}
-        label={t('send.amount.label_transfer')}
-        placeholder={t('send.amount.placeholder_transfer')}
-      />
-    </>
+    <InputField
+      defaultValue={address}
+      onChange={handleAddressChange}
+      onEndEditing={onDoneEditingAddress}
+      label={t('send.address.label_transfer')}
+      placeholder={t('send.address.placeholder')}
+      extra={
+        <AddressExtra
+          addressLoading={addressLoading}
+          isValidAddress={
+            Address.isValid(address) &&
+            isHotspotAddress !== undefined &&
+            !isHotspotAddress
+          }
+          onScanPress={onScanPress}
+        />
+      }
+    />
   )
 
   const renderBuyerTransferForm = () => (

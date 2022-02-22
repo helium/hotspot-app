@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, memo } from 'react'
-import { upperFirst } from 'lodash'
+import { upperCase } from 'lodash'
 import Text from '../../../components/Text'
 import TouchableHighlightBox, {
   TouchableHighlightBoxProps,
@@ -76,7 +76,7 @@ const PhraseChip = ({
           variant="body1Medium"
           color={selected || underlayShowing ? 'white' : 'purpleLight'}
         >
-          {upperFirst(title)}
+          {upperCase(title)}
         </Text>
       </>
     </TouchableHighlightBox>

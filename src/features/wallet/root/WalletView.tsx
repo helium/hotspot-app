@@ -23,7 +23,6 @@ import { useSelector } from 'react-redux'
 import BottomSheet from '@gorhom/bottom-sheet'
 import { useNavigation } from '@react-navigation/native'
 import ActivityCard from './ActivityCard/ActivityCard'
-import { ActivityViewState } from './walletTypes'
 import { Spacing } from '../../../theme/theme'
 import { useSpacing } from '../../../theme/themeHooks'
 import Box from '../../../components/Box'
@@ -43,16 +42,16 @@ import {
 
 type Props = {
   showSkeleton: boolean
-  activityViewState: ActivityViewState
+  loadingTxns: boolean
   txns: HttpTransaction[]
   pendingTxns: HttpPendingTransaction[]
 }
 
 const WalletView = ({
   showSkeleton,
-  activityViewState,
   txns,
   pendingTxns,
+  loadingTxns,
 }: Props) => {
   const animatedCardIndex = useSharedValue<number>(1)
   const [hasNoResults, setHasNoResults] = useState(false)
@@ -103,9 +102,7 @@ const WalletView = ({
 
   const toggleShowReceive = useCallback(() => {
     const snapToIndex = activityCardIndex >= 1 ? 0 : 1
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore bottom sheet type bug https://github.com/gorhom/react-native-bottom-sheet/issues/708
-    activityCardRef.current?.snapTo(snapToIndex)
+    activityCardRef.current?.snapToIndex(snapToIndex)
     triggerNavHaptic()
   }, [activityCardIndex, triggerNavHaptic])
 
@@ -139,13 +136,9 @@ const WalletView = ({
 
   useEffect(() => {
     const noResults =
-      activityViewState === 'no_activity' ||
-      (activityViewState === 'activity' &&
-        !showSkeleton &&
-        pendingTxns.length === 0 &&
-        txns.length === 0)
+      !showSkeleton && pendingTxns.length === 0 && txns.length === 0
     setHasNoResults(noResults)
-  }, [activityViewState, pendingTxns.length, showSkeleton, txns.length])
+  }, [pendingTxns.length, showSkeleton, txns.length])
 
   const condensedHeaderStyle = useAnimatedStyle(
     () => ({
@@ -228,7 +221,9 @@ const WalletView = ({
             onSendPress={handleSendPress}
             balanceInfo={balanceInfoSplit}
             account={account}
-            accountLoading={fetchAccountState !== 'fulfilled'}
+            accountLoading={
+              fetchAccountState !== 'fulfilled' && !balanceInfoSplit.hasBalance
+            }
             toggleConvertHntToCurrency={toggleConvertHntToCurrency}
           />
         </Box>
@@ -239,6 +234,7 @@ const WalletView = ({
         showSkeleton={showSkeleton}
         filter={filter}
         txns={txns}
+        loadingTxns={loadingTxns}
         pendingTxns={pendingTxns}
         hasNoResults={hasNoResults}
         paddingVertical={listTopPadding.key}

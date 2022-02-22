@@ -18,6 +18,7 @@ export const Filters = {
     'assert_location_v1',
     'assert_location_v2',
     'transfer_hotspot_v1',
+    'transfer_hotspot_v2',
   ],
   validator: [
     'unstake_validator_v1',
@@ -28,8 +29,6 @@ export const Filters = {
   pending: [],
 } as Record<FilterType, string[]>
 
-export type ActivityViewState = 'undetermined' | 'no_activity' | 'activity'
-
 export const TxnTypeKeys = [
   'rewards_v1',
   'rewards_v2',
@@ -39,6 +38,7 @@ export const TxnTypeKeys = [
   'assert_location_v1',
   'assert_location_v2',
   'transfer_hotspot_v1',
+  'transfer_hotspot_v2',
   'token_burn_v1',
   'unstake_validator_v1',
   'stake_validator_v1',

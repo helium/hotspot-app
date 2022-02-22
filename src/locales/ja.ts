@@ -476,7 +476,6 @@ export default {
     button: {
       payment: 'HNTを送信',
       dcBurn: 'HNTをバーン',
-      transfer_request: '転送リクエストを送信',
       transfer_complete: '転送を完了',
     },
     qrInfo: 'QR情報',
@@ -486,8 +485,6 @@ export default {
     hotspot_label: 'Hotspot',
     last_activity: '最後に報告されたアクティビティ：{{activity}}',
     label_error: 'アカウントに十分なHNTがありません。',
-    stale_error:
-      'Hotspotには、最後の{{blocks}}ブロックにBeaconまたはWitnessのアクティビティはありません。',
     scan: {
       title: 'QRコードの使い方',
       send: 'HNTを送信',
@@ -588,9 +585,6 @@ export default {
     owned: {
       title: 'Hotspot',
       title_no_hotspots: 'Hotspot',
-      reward_summary: 'Hotspotは過去24時間で\n{{hntAmount}}を獲得しました。',
-      reward_summary_plural:
-        '{{count}}個のHotspotは過去24時間で\n{{hntAmount}}を獲得しました。',
       your_hotspots: 'Hotspot',
       filter: {
         new: '最新のHotspot',
@@ -792,7 +786,11 @@ export default {
     picker_title: '過去',
     overview: '概要',
     no_location: '位置情報がありません',
-    picker_options: ['過去24時間', '過去14日間', '過去30日間'],
+    picker_options: {
+      7: '過去7日間',
+      14: '過去14日間',
+      30: '過去30日間',
+    },
     picker_prompt: '範囲を選択',
     status_online: 'オンライン',
     status_offline: '注意が必要',
@@ -843,8 +841,6 @@ export default {
     canceled_alert_title: '転送がキャンセルされました',
     canceled_alert_body:
       'この転送はアクティブではなくなりました。販売者に詳細を問い合わせてください。',
-    fine_print:
-      '購入者がトランザクションを承諾して完了すると、Hotspotでデータが転送されます。',
     notification_button: 'トランザクションを表示',
     deployModeTransferDisableTitle: 'ホットスポットの転送が無効',
     deployModeTransferDisabled:

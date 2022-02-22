@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import Balance, { CurrencyType } from '@helium/currency'
-import React, { memo, useCallback, useEffect, useState } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useAsync } from 'react-async-hook'
 import { Hotspot, Witness } from '@helium/http'
 import { useSelector } from 'react-redux'
@@ -112,6 +112,24 @@ const ReassertLocation = ({
         decimalSeparator,
       })
 
+  const onLocationSelected = useCallback(
+    (latitude, longitude, name) => {
+      setUpdatedLocation({ latitude, longitude })
+      setLocationName(name)
+      onStateChange('confirm')
+      setState('confirm')
+    },
+    [onStateChange],
+  )
+
+  const reassertCoords = useMemo(
+    () =>
+      hotspot?.lat && hotspot?.lng
+        ? { latitude: hotspot.lat, longitude: hotspot.lng }
+        : undefined,
+    [hotspot?.lat, hotspot?.lng],
+  )
+
   switch (state) {
     case 'fee':
       return (
@@ -133,23 +151,11 @@ const ReassertLocation = ({
           amount={amount}
           hotspot={hotspot}
           key={state}
-          coords={
-            hotspot.lat && hotspot.lng
-              ? { latitude: hotspot.lat, longitude: hotspot.lng }
-              : undefined
-          }
+          coords={reassertCoords}
           onCancel={handleBack}
           onSearch={handleSearch}
           onConfirm={handleComplete}
-          locationSelected={(latitude, longitude, name) => {
-            setUpdatedLocation({ latitude, longitude })
-            setLocationName(name)
-            animateTransition('ReassertLocation.LocationSelected', {
-              enabledOnAndroid: false,
-            })
-            onStateChange('confirm')
-            setState('confirm')
-          }}
+          locationSelected={onLocationSelected}
         />
       )
     case 'search':

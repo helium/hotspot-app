@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { memo, useCallback, useEffect, useRef, useMemo } from 'react'
 import { Linking } from 'react-native'
 import {
@@ -69,12 +70,14 @@ const ActivityDetails = ({ detailTxn }: Props) => {
         icon={txnDisplayVals.detailIcon}
         title={txnDisplayVals.title}
         date={txnDisplayVals.time}
+        hash={txnDisplayVals.hash}
       />
     )
   }, [
     detailTxn,
     txnDisplayVals.backgroundColor,
     txnDisplayVals.detailIcon,
+    txnDisplayVals.hash,
     txnDisplayVals.time,
     txnDisplayVals.title,
   ])
@@ -84,7 +87,18 @@ const ActivityDetails = ({ detailTxn }: Props) => {
     [block],
   )
 
-  const snapPoints = useMemo(() => ['50%', '75%'], [])
+  const renderBackdrop = useCallback(
+    (props) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+      />
+    ),
+    [],
+  )
+
+  const snapPoints = useMemo(() => ['65%', '90%'], [])
   if (!detailTxn) return null
 
   return (
@@ -93,23 +107,25 @@ const ActivityDetails = ({ detailTxn }: Props) => {
         ref={sheet}
         snapPoints={snapPoints}
         handleComponent={renderHandle}
-        backdropComponent={BottomSheetBackdrop}
+        backdropComponent={renderBackdrop}
         onDismiss={onClose}
       >
         <BottomSheetScrollView>
           <Box padding="l" flex={1}>
-            <Text
-              variant="medium"
-              onPress={toggleConvertHntToCurrency}
-              fontSize={32}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              color={txnDisplayVals.isFee ? 'blueMain' : 'greenMain'}
-              alignSelf="flex-end"
-              marginBottom={!txnDisplayVals.fee ? 'm' : 'none'}
-            >
-              {txnDisplayVals.amount}
-            </Text>
+            {!!txnDisplayVals.amount && (
+              <Text
+                variant="medium"
+                onPress={toggleConvertHntToCurrency}
+                fontSize={32}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                color={txnDisplayVals.isFee ? 'blueMain' : 'greenMain'}
+                alignSelf="flex-end"
+                marginBottom={!txnDisplayVals.fee ? 'm' : 'none'}
+              >
+                {txnDisplayVals.amount}
+              </Text>
+            )}
 
             {!!txnDisplayVals.fee && (
               <Text

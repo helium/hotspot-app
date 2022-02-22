@@ -13,11 +13,11 @@ import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 import { RootState } from '../../../store/rootReducer'
-import TouchableOpacityBox from '../../../components/BSTouchableOpacityBox'
 import animateTransition from '../../../utils/animateTransition'
 import Button from '../../../components/Button'
 import { useColors } from '../../../theme/themeHooks'
 import Articles from '../../../constants/articles'
+import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 
 type ViewType = 'collapsed' | 'hotspots' | 'validators'
 const HotspotsEmpty = ({
