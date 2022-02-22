@@ -5,5 +5,5 @@ export default {
   antennas,
   hotspots,
   id: 2,
-  supportEmail: 'support@helium.com',
+  supportEmail: 'app@send.getmntd.com',
 }
