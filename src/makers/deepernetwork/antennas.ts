@@ -10,7 +10,13 @@ const DEEPER_NETWORK_CN = {
   gain: 3,
 } as MakerAntenna
 
+const DEEPER_NETWORK_EU = {
+  name: 'DeeperNetwork Hotspot (EU868)',
+  gain: 3,
+} as MakerAntenna
+
 export default {
   DEEPER_NETWORK_US,
   DEEPER_NETWORK_CN,
+  DEEPER_NETWORK_EU,
 }
