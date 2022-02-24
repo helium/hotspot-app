@@ -302,7 +302,9 @@ const HotspotsView = ({
           index = foundIndex
         }
       }
-      dispatch(fetchHotspotDenylists(hotspots[index].address))
+      if (hotspots[index]?.address) {
+        dispatch(fetchHotspotDenylists(hotspots[index].address))
+      }
       setSelectedHotspotIndex(index)
       if (hotspots?.length) {
         handleShortcutItemSelected(hotspots[index] as Hotspot)
