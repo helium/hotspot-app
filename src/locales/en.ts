@@ -1016,6 +1016,7 @@ export default {
       'Position your Hotspot so that it can hear others. Often this means moving it higher in order to increase its range.',
     your_earnings: 'Your Earnings',
     network_avg: 'Network Avg',
+    denylist: 'On Denylist',
   },
   transfer: {
     title: 'Transfer Hotspot',
