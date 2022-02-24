@@ -145,6 +145,21 @@ export const getHotspotDetails = async (address: string): Promise<Hotspot> => {
   return client.hotspots.get(address)
 }
 
+export const getHotspotDenylists = async (
+  address: string,
+): Promise<string[]> => {
+  Logger.breadcrumb('getHotspotDenylistDetails', breadcrumbOpts)
+  try {
+    const denylistResponse = await (
+      await fetch(`https://denylist-api.herokuapp.com/api/hotspots/${address}`)
+    ).json()
+    return denylistResponse.denylists
+  } catch (e) {
+    Logger.error(e)
+    return []
+  }
+}
+
 const getRewardsRange = (numDaysBack: number) => {
   const startOfToday = new Date()
   startOfToday.setUTCHours(0, 0, 0, 0)

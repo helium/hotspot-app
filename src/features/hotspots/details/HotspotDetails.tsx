@@ -58,6 +58,7 @@ import { locale } from '../../../utils/i18n'
 import { NO_FEATURES } from '../../../components/Map'
 import Card from '../../../components/Card'
 import parseMarkup from '../../../utils/parseMarkup'
+import DenylistBadge from './DenylistBadge'
 
 const hitSlop = { top: 24, bottom: 24 } as Insets
 
@@ -490,6 +491,7 @@ const HotspotDetails = ({
                       {formattedHotspotName[1]}
                     </Text>
                     {isHidden && <VisibilityOff height={20} width={20} />}
+                    <DenylistBadge hotspotAddress={address} />
                   </Box>
                 </>
               )}

@@ -6,6 +6,7 @@ enum Articles {
   Witnesses = 'https://docs.helium.com/troubleshooting/understanding-witnesses',
   Mine = 'https://www.helium.com/mine',
   Stake = 'https://www.helium.com/stake',
+  Denylist = 'https://github.com/helium/denylist',
 }
 
 export default Articles

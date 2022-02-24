@@ -14,6 +14,7 @@ import Map, { NO_FEATURES } from '../../../components/Map'
 import { RootState } from '../../../store/rootReducer'
 import hotspotDetailsSlice, {
   fetchHotspotData,
+  fetchHotspotDenylists,
 } from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import HotspotsViewHeader from './HotspotsViewHeader'
 import HotspotsList from './HotspotsList'
@@ -301,6 +302,7 @@ const HotspotsView = ({
           index = foundIndex
         }
       }
+      dispatch(fetchHotspotDenylists(hotspots[index].address))
       setSelectedHotspotIndex(index)
       if (hotspots?.length) {
         handleShortcutItemSelected(hotspots[index] as Hotspot)
