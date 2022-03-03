@@ -187,6 +187,7 @@ const SendDetailsForm = ({
       }
     } catch (e) {
       if (e?.message === 'Request failed with status code 404') {
+        setIsHotspotAddress(false)
         setHotspotLoadFailed(false)
         setSendDisabled(false)
       } else {
@@ -205,6 +206,7 @@ const SendDetailsForm = ({
       }
     } catch (e) {
       if (e?.message === 'Request failed with status code 404') {
+        setIsHotspotAddress(false)
         setHotspotLoadFailed(false)
         setSendDisabled(false)
       } else {
