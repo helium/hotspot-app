@@ -8,7 +8,7 @@ const RAK_V1 = {
   translations: {
     en: {
       diagnostic:
-        '<b><white>Diagnostic support allows MNTD to identify issues with your Hotspot in a secure way.</white></b>\n\MNTD will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>app@send.getmntd.com</b></purple> from the email used to purchase the Hotspot.',
+        '<b><white>Diagnostic support allows MNTD to identify issues with your Hotspot in a secure way.</white></b>\nMNTD will never have access to private keys and will only ever be able to access your Hotspot and not any other devices on your Network.\n\nIf you would like to opt-out of diagnostic support please email <purple><b>app@send.getmntd.com</b></purple> from the email used to purchase the Hotspot.',
       power: [
         'Plug in the provided power adapter into an outlet near a window.',
         'The RAK Hotspot Miner will show a red LED light once it’s powered on.',
