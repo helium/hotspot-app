@@ -469,6 +469,7 @@ export default {
   },
   send: {
     not_valid_address: 'Not a valid Helium Wallet Address.',
+    load_failed: 'Cannot validate address. Please try again.',
     title: {
       payment: 'Send HNT',
       dcBurn: 'Burn HNT',

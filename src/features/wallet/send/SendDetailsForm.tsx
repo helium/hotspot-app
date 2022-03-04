@@ -84,6 +84,7 @@ const SendDetailsForm = ({
   const [dcAmount, setDcAmount] = useState<string>(sendDetails.dcAmount)
   const [memo, setMemo] = useState<string>(sendDetails.memo)
   const [isHotspotAddress, setIsHotspotAddress] = useState<boolean>()
+  const [hotspotLoadFailed, setHotspotLoadFailed] = useState(false)
 
   useEffect(() => {
     updateSendDetails(sendDetails.id, {
@@ -173,6 +174,49 @@ const SendDetailsForm = ({
     }
   }
 
+  const checkHotspotAddress = useCallback(async () => {
+    setAddressLoading(true)
+    try {
+      const hotspot = await getHotspotDetails(address)
+      setHotspotLoadFailed(false)
+      if (hotspot.address === address) {
+        setIsHotspotAddress(true)
+        setSendDisabled(true)
+        setAddressLoading(false)
+        return
+      }
+    } catch (e) {
+      if (e?.message === 'Request failed with status code 404') {
+        setIsHotspotAddress(false)
+        setHotspotLoadFailed(false)
+        setSendDisabled(false)
+      } else {
+        setHotspotLoadFailed(true)
+        setSendDisabled(true)
+      }
+    }
+    try {
+      const validator = await getValidatorDetails(address)
+      setHotspotLoadFailed(false)
+      if (validator.address === address) {
+        setIsHotspotAddress(true)
+        setSendDisabled(true)
+        setAddressLoading(false)
+        return
+      }
+    } catch (e) {
+      if (e?.message === 'Request failed with status code 404') {
+        setIsHotspotAddress(false)
+        setHotspotLoadFailed(false)
+        setSendDisabled(false)
+      } else {
+        setHotspotLoadFailed(true)
+        setSendDisabled(true)
+      }
+    }
+    setAddressLoading(false)
+  }, [address, setSendDisabled])
+
   // set isHotspotAddress for default address
   useAsync(async () => {
     if (
@@ -180,18 +224,7 @@ const SendDetailsForm = ({
       address !== '' &&
       isHotspotAddress === undefined
     ) {
-      setAddressLoading(true)
-      try {
-        const hotspot = await getHotspotDetails(address)
-        if (hotspot.address === address) {
-          setIsHotspotAddress(true)
-          setSendDisabled(true)
-          setAddressLoading(false)
-        }
-      } catch (e) {
-        setIsHotspotAddress(false)
-        setAddressLoading(false)
-      }
+      await checkHotspotAddress()
     }
   }, [])
 
@@ -202,32 +235,7 @@ const SendDetailsForm = ({
 
   const onDoneEditingAddress = async () => {
     if (!Address.isValid(address)) return
-    setAddressLoading(true)
-    try {
-      const hotspot = await getHotspotDetails(address)
-      if (hotspot.address === address) {
-        setIsHotspotAddress(true)
-        setSendDisabled(true)
-        setAddressLoading(false)
-        return
-      }
-    } catch (e) {
-      setIsHotspotAddress(false)
-      setSendDisabled(false)
-    }
-    try {
-      const validator = await getValidatorDetails(address)
-      if (validator.address === address) {
-        setIsHotspotAddress(true)
-        setSendDisabled(true)
-        setAddressLoading(false)
-        return
-      }
-    } catch (e) {
-      setIsHotspotAddress(false)
-      setSendDisabled(false)
-    }
-    setAddressLoading(false)
+    await checkHotspotAddress()
   }
 
   const renderLockedPaymentForm = () => (
@@ -277,6 +285,7 @@ const SendDetailsForm = ({
               addressLoading={addressLoading}
               isValidAddress={
                 Address.isValid(address) &&
+                !hotspotLoadFailed &&
                 isHotspotAddress !== undefined &&
                 !isHotspotAddress
               }
@@ -286,7 +295,12 @@ const SendDetailsForm = ({
           footer={
             <Box>
               <AddressAliasFooter addressAlias={addressAlias} />
-              {isHotspotAddress && (
+              {hotspotLoadFailed && (
+                <Text color="redMain" variant="body2">
+                  {t('send.load_failed')}
+                </Text>
+              )}
+              {!hotspotLoadFailed && isHotspotAddress && (
                 <Text color="redMain" variant="body2">
                   {t('send.not_valid_address')}
                 </Text>
@@ -404,11 +418,26 @@ const SendDetailsForm = ({
           addressLoading={addressLoading}
           isValidAddress={
             Address.isValid(address) &&
+            !hotspotLoadFailed &&
             isHotspotAddress !== undefined &&
             !isHotspotAddress
           }
           onScanPress={onScanPress}
         />
+      }
+      footer={
+        <Box>
+          {hotspotLoadFailed && (
+            <Text color="redMain" variant="body2">
+              {t('send.load_failed')}
+            </Text>
+          )}
+          {!hotspotLoadFailed && isHotspotAddress && (
+            <Text color="redMain" variant="body2">
+              {t('send.not_valid_address')}
+            </Text>
+          )}
+        </Box>
       }
     />
   )
