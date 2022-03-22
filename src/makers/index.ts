@@ -25,8 +25,9 @@ import deepernetwork from './deepernetwork'
 import dragino from './dragino'
 import { LangType, supportedLangs } from '../utils/i18n/i18nTypes'
 import { HotspotMakerLangField } from './hotspotMakerTypes'
+import { MakerType } from './makerType'
 
-export const Makers: Record<string, { id: number; supportEmail: string }> = {
+export const Makers: Record<string, MakerType> = {
   PantherX,
   bobcat,
   cotx,

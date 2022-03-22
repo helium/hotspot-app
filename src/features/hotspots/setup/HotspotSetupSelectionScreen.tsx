@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next'
 import { FlatList } from 'react-native-gesture-handler'
 import { Edge } from 'react-native-safe-area-context'
 import Fuse from 'fuse.js'
+import { upperFirst } from 'lodash'
+import { Linking, Platform } from 'react-native'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
@@ -15,10 +17,12 @@ import {
   HotspotType,
   HotspotModelKeys,
   HotspotMakerModels,
+  Makers,
 } from '../../../makers'
 import SearchInput from '../../../components/SearchInput'
 import animateTransition from '../../../utils/animateTransition'
 import { useBorderRadii } from '../../../theme/themeHooks'
+import useAlert from '../../../utils/useAlert'
 
 const ItemSeparatorComponent = () => (
   <Box height={1} backgroundColor="primaryBackground" />
@@ -31,6 +35,7 @@ const HotspotSetupSelectionScreen = () => {
   const edges = useMemo((): Edge[] => ['top', 'left', 'right'], [])
   const radii = useBorderRadii()
   const [searchTerm, setSearchTerm] = useState('')
+  const { showOKCancelAlert } = useAlert()
 
   // clear any existing onboarding state
   useEffect(() => {
@@ -38,11 +43,38 @@ const HotspotSetupSelectionScreen = () => {
   }, [dispatch])
 
   const handlePress = useCallback(
-    (hotspotType: HotspotType) => () => {
+    (hotspotType: HotspotType) => async () => {
+      const makerHotspot = HotspotMakerModels[hotspotType]
+      const makerArr = Object.keys(Makers).map((makerName) => ({
+        ...Makers[makerName],
+        name: upperFirst(makerName),
+      }))
+      const maker = makerArr.find((m) => !!m.hotspots[hotspotType])
+      const platformOS = Platform.OS as 'android' | 'ios'
+
+      const appStoreUrl = maker?.makerApp?.[platformOS]
+      const makerAppName = maker?.makerApp?.makerAppName
+      const makerName = maker?.name
+      if (appStoreUrl && makerAppName && makerName) {
+        const decision = await showOKCancelAlert({
+          titleKey: 'hotspot_setup.selection.makerAppAlert.title',
+          messageKey: 'hotspot_setup.selection.makerAppAlert.body',
+          messageOptions: {
+            maker: makerName,
+            makerAppName,
+          },
+          okKey: 'hotspot_setup.selection.makerAppAlert.visit',
+        })
+
+        if (decision) {
+          Linking.openURL(appStoreUrl)
+        }
+        return
+      }
+
       dispatch(hotspotOnboardingSlice.actions.setHotspotType(hotspotType))
 
-      const { onboardType } = HotspotMakerModels[hotspotType]
-      if (onboardType === 'BLE') {
+      if (makerHotspot.onboardType === 'BLE') {
         navigation.push('HotspotSetupEducationScreen', { hotspotType })
       } else {
         navigation.push('HotspotSetupExternalScreen', {
@@ -50,7 +82,7 @@ const HotspotSetupSelectionScreen = () => {
         })
       }
     },
-    [dispatch, navigation],
+    [dispatch, navigation, showOKCancelAlert],
   )
 
   const keyExtractor = useCallback((item) => item, [])

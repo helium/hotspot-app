@@ -158,6 +158,12 @@ export default {
     selection: {
       title: 'Choose\nyour Hotspot.',
       subtitle: 'What kind of Hotspot do you\nwish to add?',
+      makerAppAlert: {
+        title: 'Download Now',
+        body:
+          '{{maker}} hotspots can now be onboarded using the {{makerAppName}}',
+        visit: 'Visit Store',
+      },
     },
     education: {
       title: 'Placing\nyour Hotspot.',
