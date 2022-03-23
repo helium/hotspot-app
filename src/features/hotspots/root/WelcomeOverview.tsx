@@ -3,8 +3,12 @@ import React, { useEffect, useState, memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
-import Balance, { CurrencyType } from '@helium/currency'
+import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
 import { addMinutes, startOfYesterday } from 'date-fns'
+import { useAsync } from 'react-async-hook'
+import SharedGroupPreferences from 'react-native-shared-group-preferences'
+import { Platform } from 'react-native'
+import { getWalletApiToken } from '../../../utils/secureAccount'
 import Box from '../../../components/Box'
 import EmojiBlip from '../../../components/EmojiBlip'
 import Text from '../../../components/Text'
@@ -16,6 +20,7 @@ import { CacheRecord } from '../../../utils/cacheUtils'
 import { AccountReward } from '../../../store/account/accountSlice'
 import DateModule from '../../../utils/DateModule'
 
+const widgetGroup = 'group.com.helium.mobile.wallet.widget'
 const TimeOfDayTitle = ({ date }: { date: Date }) => {
   const { t } = useTranslation()
   const hours = date.getHours()
@@ -77,6 +82,58 @@ const WelcomeOverview = ({ accountRewards }: Props) => {
   const validatorsLoading = useSelector(
     (state: RootState) => state.validators.validators.loading,
   )
+
+  const accountAddress = useSelector(
+    (state: RootState) => state.account.account?.address,
+  )
+
+  const hotspotRewards = useSelector(
+    (state: RootState) => state.hotspots.rewards || {},
+  )
+
+  const currentOraclePrice = useSelector(
+    (state: RootState) => state.heliumData.currentOraclePrice,
+  )
+
+  // Hook that is used for helium balance widget.
+  useAsync(async () => {
+    if (Platform.OS === 'ios') {
+      const token = await getWalletApiToken()
+      const oraclePrice = currentOraclePrice?.price
+      const floatBalance = oraclePrice?.floatBalance
+
+      await SharedGroupPreferences.setItem(
+        'myBalanceWidgetKey',
+        {
+          hntPrice: floatBalance,
+          token,
+          accountAddress,
+        },
+        widgetGroup,
+      )
+    }
+  }, [currentOraclePrice, accountAddress])
+
+  // Hook that is used for helium hotspots widget.
+  useAsync(async () => {
+    if (Platform.OS === 'ios') {
+      const token = await getWalletApiToken()
+      const rewards: { address: string; reward: Balance<NetworkTokens> }[] = []
+      Object.keys(hotspotRewards).forEach((address) => {
+        const reward = hotspotRewards[address]
+        const rewardObj = {
+          address,
+          reward,
+        }
+        rewards.push(rewardObj)
+      })
+      await SharedGroupPreferences.setItem(
+        'myHotspotsWidgetKey',
+        { hotspots, rewards, token, accountAddress },
+        widgetGroup,
+      )
+    }
+  }, [hotspots, hotspotRewards, accountAddress])
 
   useEffect(() => {
     if (hotspotsLoaded && validatorsLoaded) return
