@@ -8,7 +8,7 @@ import helium from './helium'
 import linxdot from './linxdot'
 import longAP from './longAP'
 import nebra from './nebra'
-import rak from './rak'
+import rak, { rakWireless } from './rak'
 import risinghf from './risinghf'
 import sensecap from './sensecap'
 import syncrobit from './syncrobit'
@@ -37,6 +37,7 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
   longAP,
   nebra,
   rak,
+  rakWireless,
   risinghf,
   sensecap,
   syncrobit,

@@ -7,3 +7,10 @@ export default {
   id: 2,
   supportEmail: 'app@send.getmntd.com',
 }
+
+export const rakWireless = {
+  antennas,
+  hotspots,
+  id: 9,
+  supportEmail: 'app@send.getmntd.com',
+}
