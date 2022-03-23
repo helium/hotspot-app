@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 import { FlatList } from 'react-native-gesture-handler'
 import { Edge } from 'react-native-safe-area-context'
 import Fuse from 'fuse.js'
-import { upperFirst } from 'lodash'
 import { Linking, Platform } from 'react-native'
 import BackScreen from '../../../components/BackScreen'
 import Box from '../../../components/Box'
@@ -17,7 +16,7 @@ import {
   HotspotType,
   HotspotModelKeys,
   HotspotMakerModels,
-  Makers,
+  getHotspotMaker,
 } from '../../../makers'
 import SearchInput from '../../../components/SearchInput'
 import animateTransition from '../../../utils/animateTransition'
@@ -45,11 +44,7 @@ const HotspotSetupSelectionScreen = () => {
   const handlePress = useCallback(
     (hotspotType: HotspotType) => async () => {
       const makerHotspot = HotspotMakerModels[hotspotType]
-      const makerArr = Object.keys(Makers).map((makerName) => ({
-        ...Makers[makerName],
-        name: upperFirst(makerName),
-      }))
-      const maker = makerArr.find((m) => !!m.hotspots[hotspotType])
+      const maker = getHotspotMaker(hotspotType)
       const platformOS = Platform.OS as 'android' | 'ios'
 
       const appStoreUrl = maker?.makerApp?.[platformOS]

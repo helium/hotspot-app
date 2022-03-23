@@ -1,3 +1,4 @@
+import { upperFirst } from 'lodash'
 import PantherX from './panther'
 import bobcat from './bobcat'
 import cotx from './cotx'
@@ -145,3 +146,12 @@ export const getMakerSupportEmail = (makerId?: number): string => {
   const makerKey = Object.keys(Makers).find((m) => Makers[m].id === makerId)
   return makerKey ? Makers[makerKey].supportEmail : 'support@helium.com'
 }
+
+export const listMakers = () =>
+  Object.keys(Makers).map((makerName) => ({
+    ...Makers[makerName],
+    name: upperFirst(makerName),
+  }))
+
+export const getHotspotMaker = (hotspotType: HotspotType) =>
+  listMakers().find((m) => !!m.hotspots[hotspotType])

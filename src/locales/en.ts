@@ -161,7 +161,7 @@ export default {
       makerAppAlert: {
         title: 'Download Now',
         body:
-          '{{maker}} hotspots can now be onboarded using the {{makerAppName}}',
+          '{{maker}} hotspots should now be onboarded using the {{makerAppName}}',
         visit: 'Visit Store',
       },
     },
