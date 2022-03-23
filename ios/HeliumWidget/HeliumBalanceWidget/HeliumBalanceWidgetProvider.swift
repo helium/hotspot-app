@@ -38,7 +38,7 @@ struct Provider: IntentTimelineProvider {
               // Fetch balance data from helium API. This consists of fetching from 2 different endpoints.
               fetchBalanceWidgetData(balanceWidgetData: parsedData) { error, parsedBalanceWidgetData in
                 let nextRefresh = Calendar.current.date(byAdding: .minute, value: 15, to: entryDate)!
-                let entry = BalanceWidgetEntry(date: nextRefresh, configuration: configuration, hntPrice: parsedData.hntPrice, hntDailyEarnings: parsedBalanceWidgetData.total, balance: parsedBalanceWidgetData.balance)
+                let entry = BalanceWidgetEntry(date: nextRefresh, configuration: configuration, hntPrice: parsedBalanceWidgetData.price, hntDailyEarnings: parsedBalanceWidgetData.total, balance: parsedBalanceWidgetData.balance)
                 let timeline = Timeline(entries: [entry], policy: .atEnd)
                 completion(timeline)
               }

@@ -56,10 +56,17 @@ struct HeliumBalanceWidgetEntryView : View {
   }
   
   func dateToShortFormat() -> String {
-    let date = Date()
+    // Getting yesterdays date object
+    let yesterday = Date().dayBefore
     let dateFormatter = DateFormatter()
     dateFormatter.timeZone = TimeZone.current
     dateFormatter.dateFormat = "MMM d"
-    return dateFormatter.string(from: date)
+    return dateFormatter.string(from: yesterday)
   }
+}
+
+extension Date {
+    var dayBefore: Date {
+        return Calendar.current.date(byAdding: .day, value: -1, to: self)!
+    }
 }

@@ -26,7 +26,7 @@ struct HeliumHotspotsWidgetView : View {
             reward.address == entry.hotspots[i].address
           }
           
-          HeliumHotspotListItemView(Utils.removeDashAndCapitalize(text: entry.isPreview ? "Digital Mauve Swan" : entry.hotspots[i].name), entry.isPreview ? "Northeast 5th Ave, Miami, US" : "\(entry.hotspots[i].geocode.longStreet), \(entry.hotspots[i].geocode.shortCity), \(entry.hotspots[i].geocode.shortCountry)", entry.isPreview ? 0.3 : rewardObj?.reward.floatBalance ?? 0.0, i != min(entry.isPreview ? 3 : entry.hotspots.count, 3) - 1, entry.isPreview ? true : entry.hotspots[i].status.online == "online")
+          HeliumHotspotListItemView(Utils.removeDashAndCapitalize(text: entry.isPreview ? "Angry Purple Tiger" : entry.hotspots[i].name), entry.isPreview ? "San Francisco, CA, US" : "\(entry.hotspots[i].geocode.longStreet), \(entry.hotspots[i].geocode.shortCity), \(entry.hotspots[i].geocode.shortCountry)", entry.isPreview ? 0.3 : rewardObj?.reward.floatBalance ?? 0.0, i != min(entry.isPreview ? 3 : entry.hotspots.count, 3) - 1, entry.isPreview ? true : entry.hotspots[i].status.online == "online")
         }
         
         Spacer()
@@ -40,7 +40,7 @@ struct HeliumHotspotsWidgetView : View {
             reward.address == entry.hotspots[i].address
           }
           
-          HeliumHotspotListItemView(Utils.removeDashAndCapitalize(text: entry.isPreview ? "Digital Mauve Swan" : entry.hotspots[i].name), entry.isPreview ? "Northeast 5th Ave, Miami, US" : "\(entry.hotspots[i].geocode.longStreet), \(entry.hotspots[i].geocode.shortCity), \(entry.hotspots[i].geocode.shortCountry)", entry.isPreview ? 0.3 : rewardObj?.reward.floatBalance ?? 0.0, true, entry.isPreview ? true : entry.hotspots[i].status.online == "online")
+          HeliumHotspotListItemView(Utils.removeDashAndCapitalize(text: entry.isPreview ? "Angry Purple Tiger" : entry.hotspots[i].name), entry.isPreview ? "San Francisco, CA, US" : "\(entry.hotspots[i].geocode.longStreet), \(entry.hotspots[i].geocode.shortCity), \(entry.hotspots[i].geocode.shortCountry)", entry.isPreview ? 0.3 : rewardObj?.reward.floatBalance ?? 0.0, true, entry.isPreview ? true : entry.hotspots[i].status.online == "online")
         }
 
         

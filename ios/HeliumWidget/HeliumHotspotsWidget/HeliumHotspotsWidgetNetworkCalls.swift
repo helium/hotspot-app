@@ -83,7 +83,7 @@ func fetchHotspotRewards(hotspotsWidgetData: HotspotsWidgetData, completion: @es
       forHTTPHeaderField: "Authorization"
   )
   
-  // Change the URLRequest to a POST request
+  // Change the URLRequest to a GET request
   request.httpMethod = "GET"
   
   // Create the HTTP request
@@ -126,7 +126,7 @@ func fetchHotspotStatuses(hotspotsWidgetData: HotspotsWidgetData, completion: @e
       forHTTPHeaderField: "Authorization"
   )
   
-  // Change the URLRequest to a POST request
+  // Change the URLRequest to a GET request
   request.httpMethod = "GET"
   
   // Create the HTTP request
