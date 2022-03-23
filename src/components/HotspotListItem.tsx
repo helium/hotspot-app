@@ -8,6 +8,7 @@ import Balance, { NetworkTokens } from '@helium/currency'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import { Pressable } from 'react-native'
 import { useAsync } from 'react-async-hook'
+import { useSelector } from 'react-redux'
 import Box from './Box'
 import Text from './Text'
 import useCurrency from '../utils/useCurrency'
@@ -16,6 +17,7 @@ import HexBadge from '../features/hotspots/details/HexBadge'
 import { useColors } from '../theme/themeHooks'
 import Signal from '../assets/images/signal.svg'
 import VisibilityOff from '../assets/images/visibility_off.svg'
+import { RootState } from '../store/rootReducer'
 
 type HotspotListItemProps = {
   onPress?: (hotspot: Hotspot) => void
@@ -51,6 +53,9 @@ const HotspotListItem = ({
   const { toggleConvertHntToCurrency, hntBalanceToDisplayVal } = useCurrency()
   const handlePress = useCallback(() => onPress?.(gateway), [gateway, onPress])
   const [reward, setReward] = useState('')
+  const pendingTxns = useSelector(
+    (state: RootState) => state.activity.txns.pending,
+  )
 
   useAsync(async () => {
     if (!totalReward) return
@@ -60,12 +65,15 @@ const HotspotListItem = ({
   }, [hntBalanceToDisplayVal, totalReward])
 
   const locationText = useMemo(() => {
+    if (pendingTxns.data.find((p) => p.txn.gateway === gateway.address)) {
+      return t('hotspot_details.updating_location')
+    }
     const { geocode: geo } = gateway as Hotspot
     if (!geo || (!geo.longStreet && !geo.longCity && !geo.shortCountry)) {
       return t('hotspot_details.no_location_title')
     }
     return `${geo.longStreet}, ${geo.longCity}, ${geo.shortCountry}`
-  }, [gateway, t])
+  }, [gateway, pendingTxns.data, t])
 
   const isRelayed = useMemo(() => isRelay(gateway?.status?.listenAddrs), [
     gateway?.status,
