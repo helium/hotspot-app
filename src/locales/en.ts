@@ -981,6 +981,7 @@ export default {
       share: 'Share',
     },
     no_location_title: 'No Asserted Location',
+    updating_location: 'Updating Location...',
     no_location_body: 'Pair with the Hotspot to begin.',
     percent_synced: '{{percent}}% Synced',
     starting_sync: 'Starting Sync...',

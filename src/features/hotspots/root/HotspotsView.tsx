@@ -112,6 +112,9 @@ const HotspotsView = ({
   const loadingHotspotsForHex = useSelector(
     (state: RootState) => state.discovery.loadingHotspotsForHex,
   )
+  const pendingTxns = useSelector(
+    (state: RootState) => state.activity.txns.pending,
+  )
   const [selectedHexId, setSelectedHexId] = useState<string>()
   const [selectedHotspotIndex, setSelectedHotspotIndex] = useState(0)
   const animatedIndex = useSharedValue<number>(0)
@@ -536,6 +539,13 @@ const HotspotsView = ({
     [t],
   )
 
+  const showMapOverlay = useMemo(() => {
+    if (pendingTxns.data.find((p) => p.txn.gateway === hotspotAddress)) {
+      return 'updating_location'
+    }
+    if (!hotspotHasLocation) return 'no_location'
+  }, [hotspotAddress, hotspotHasLocation, pendingTxns.data])
+
   return (
     <>
       <Box flex={1} flexDirection="column" justifyContent="space-between">
@@ -568,7 +578,7 @@ const HotspotsView = ({
               animationDuration={800}
               onHexSelected={onMapHexSelected}
               interactive={hotspotHasLocation}
-              showNoLocation={!hotspotHasLocation}
+              showOverlay={showMapOverlay}
               showNearbyHotspots
               showH3Grid
               coverageFeatures={coverageFeatures}
