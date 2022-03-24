@@ -41,9 +41,9 @@
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-		<key>NSAllowsLocalNetworking</key>
-		<true/>
 		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+		<key>NSAllowsLocalNetworking</key>
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
@@ -65,6 +65,10 @@
 	<string>Allow Helium to use your location to add Hotspots to the network and explore Hotspots around you</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow Helium to use the microphone</string>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>ConfigurationIntent</string>
+	</array>
 	<key>UIAppFonts</key>
 	<array>
 		<string>NotoSerif-Bold.ttf</string>
