@@ -231,18 +231,6 @@ const MoreScreen = () => {
     [changeLanguage],
   )
 
-  const handleNetworkChange = useCallback(
-    (network: string) => {
-      dispatch(
-        updateSetting({
-          key: 'network',
-          value: network,
-        }),
-      )
-    },
-    [dispatch],
-  )
-
   const handleCurrencyTypeChange = useCallback(
     (currencyType: string) => {
       dispatch(
@@ -381,17 +369,6 @@ const MoreScreen = () => {
             },
           },
           {
-            title: t('more.sections.app.network'),
-            value: account.settings.network,
-            select: {
-              items: [
-                { label: 'StakeJoy API', value: 'stakejoy' },
-                { label: 'Helium API', value: 'helium' },
-              ],
-              onValueSelect: handleNetworkChange,
-            },
-          },
-          {
             title: t('more.sections.app.enableHapticFeedback'),
             onToggle: handleHaptic,
             value: !app.isHapticDisabled,
@@ -436,11 +413,9 @@ const MoreScreen = () => {
     language,
     handleLanguageChange,
     account.settings.currencyType,
-    account.settings.network,
     account.settings.convertHntToCurrency,
     account.settings.isFleetModeEnabled,
     handleCurrencyTypeChange,
-    handleNetworkChange,
     handleHaptic,
     handleConvertHntToCurrency,
     handleFleetMode,

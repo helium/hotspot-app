@@ -597,7 +597,6 @@ export default {
         convertHntToCurrency: 'Convert HNT to Currency',
         language: 'Language',
         currency: 'Currency',
-        network: 'Choose API Provider',
         signOut: 'Sign Out',
         clearMapCache: 'Clear Map Cache',
         clearMapCacheAlert: {

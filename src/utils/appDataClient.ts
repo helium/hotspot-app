@@ -24,6 +24,7 @@ const userAgent = `helium-hotspot-app-${getVersion()}-${Platform.OS}-js-client`
 
 const baseURL = Config.HTTP_CLIENT_PROXY_URL
 
+// default network to production until we have a wallet api token for the proxy
 let client = new Client(Network.production, {
   retry: 1,
   name: userAgent,
