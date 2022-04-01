@@ -163,6 +163,7 @@ export default {
         body:
           '{{maker}} hotspots should now be onboarded using the {{makerAppName}}',
         visit: 'Visit Store',
+        continue: 'Continue With Helium App',
       },
     },
     education: {

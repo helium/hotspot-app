@@ -49,9 +49,14 @@ const HotspotSetupSelectionScreen = () => {
 
       const appStoreUrl = maker?.makerApp?.[platformOS]
       const makerAppName = maker?.makerApp?.makerAppName
+      const forceRedirect = maker?.makerApp?.forceRedirect
       const makerName = maker?.name
       if (appStoreUrl && makerAppName && makerName) {
         const decision = await showOKCancelAlert({
+          cancelKey: forceRedirect
+            ? 'generic.cancel'
+            : 'hotspot_setup.selection.makerAppAlert.continue',
+          cancelStyle: forceRedirect ? 'destructive' : 'default',
           titleKey: 'hotspot_setup.selection.makerAppAlert.title',
           messageKey: 'hotspot_setup.selection.makerAppAlert.body',
           messageOptions: {
@@ -59,12 +64,17 @@ const HotspotSetupSelectionScreen = () => {
             makerAppName,
           },
           okKey: 'hotspot_setup.selection.makerAppAlert.visit',
+          okStyle: forceRedirect ? 'default' : 'cancel',
         })
 
         if (decision) {
           Linking.openURL(appStoreUrl)
+          return
         }
-        return
+
+        if (forceRedirect) {
+          return
+        }
       }
 
       dispatch(hotspotOnboardingSlice.actions.setHotspotType(hotspotType))
