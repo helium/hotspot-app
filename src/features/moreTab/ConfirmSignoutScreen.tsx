@@ -68,6 +68,7 @@ const ConfirmSignoutScreen = () => {
 
   return (
     <ConfirmWordsScreen
+      title={t('account_setup.confirm.titleSignOut')}
       onComplete={onWordsConfirmed}
       onForgotWords={onForgotWords}
     />

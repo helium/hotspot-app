@@ -38,6 +38,7 @@ export default {
     },
     confirm: {
       title: 'Confirm\nYour Words',
+      titleSignOut: 'Confirm Your\nWords To Sign Out',
       subtitle:
         'Which word below was your <b><purple>{{ordinal}} word?</purple></b>',
       forgot: 'I forgot my words',

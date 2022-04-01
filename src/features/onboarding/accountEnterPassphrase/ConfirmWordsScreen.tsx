@@ -19,10 +19,11 @@ import animateTransition from '../../../utils/animateTransition'
 
 type CarouselItemData = number
 type Props = {
+  title?: string
   onComplete: () => void
   onForgotWords?: () => void
 }
-const ConfirmWordsScreen = ({ onComplete, onForgotWords }: Props) => {
+const ConfirmWordsScreen = ({ title, onComplete, onForgotWords }: Props) => {
   const [step, setStep] = useState(0)
   const [word, setWord] = useState<string | null>(null)
   const [correct, setCorrect] = useState(false)
@@ -143,7 +144,7 @@ const ConfirmWordsScreen = ({ onComplete, onForgotWords }: Props) => {
         adjustsFontSizeToFit
         maxFontSizeMultiplier={1}
       >
-        {t('account_setup.confirm.title')}
+        {title || t('account_setup.confirm.title')}
       </Text>
       <Box flex={0.5} />
       <TextTransform
