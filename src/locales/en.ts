@@ -610,6 +610,10 @@ export default {
           body:
             'You are signing out of your account. Do you have your 12 recovery words? If you don’t, you will lose access to:\n\n- your Hotspots\n- your HNT\n- your Wallet',
         },
+        signOutForgot: {
+          title: 'Reveal Words',
+          body: 'Would you like to reveal your accounts words?',
+        },
       },
     },
   },

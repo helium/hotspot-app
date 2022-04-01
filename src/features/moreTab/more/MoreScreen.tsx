@@ -7,7 +7,7 @@ import React, {
   useState,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Alert, SectionList } from 'react-native'
+import { SectionList } from 'react-native'
 import { useSelector } from 'react-redux'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { isEqual } from 'lodash'
@@ -26,12 +26,11 @@ import {
 import MoreListItem, { MoreListItemType } from './MoreListItem'
 import useAuthIntervals from './useAuthIntervals'
 import { useSpacing } from '../../../theme/themeHooks'
-import accountSlice, {
+import {
   fetchAccountSettings,
   updateFleetModeEnabled,
   updateSetting,
 } from '../../../store/account/accountSlice'
-import connectedHotspotSlice from '../../../store/connectedHotspot/connectedHotspotSlice'
 import Security from '../../../assets/images/security.svg'
 import Learn from '../../../assets/images/learn.svg'
 import Account from '../../../assets/images/account.svg'
@@ -39,14 +38,11 @@ import Box from '../../../components/Box'
 import DiscordItem from './DiscordItem'
 import AppInfoItem from './AppInfoItem'
 import DeployModeModal from './DeployModeModal'
-import activitySlice from '../../../store/activity/activitySlice'
-import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
 import { useLanguageContext } from '../../../providers/LanguageProvider'
 import { EXPLORER_BASE_URL } from '../../../utils/config'
 import { SUPPORTED_LANGUAGUES } from '../../../utils/i18n/i18nTypes'
 import Articles from '../../../constants/articles'
 import useAlert from '../../../utils/useAlert'
-import validatorsSlice from '../../../store/validators/validatorsSlice'
 import { SUPPORTED_CURRENCIES } from '../../../utils/useCurrency'
 import { clearMapCache } from '../../../utils/mapUtils'
 
@@ -200,29 +196,8 @@ const MoreScreen = () => {
   }, [showOKCancelAlert])
 
   const handleSignOut = useCallback(() => {
-    Alert.alert(
-      t('more.sections.app.signOutAlert.title'),
-      t('more.sections.app.signOutAlert.body'),
-      [
-        {
-          text: t('generic.cancel'),
-          style: 'cancel',
-        },
-        {
-          text: t('more.sections.app.signOut'),
-          style: 'destructive',
-          onPress: () => {
-            dispatch(appSlice.actions.signOut())
-            dispatch(accountSlice.actions.signOut())
-            dispatch(activitySlice.actions.signOut())
-            dispatch(hotspotsSlice.actions.signOut())
-            dispatch(validatorsSlice.actions.signOut())
-            dispatch(connectedHotspotSlice.actions.signOut())
-          },
-        },
-      ],
-    )
-  }, [t, dispatch])
+    navigation.push('ConfirmSignout')
+  }, [navigation])
 
   const handleLanguageChange = useCallback(
     (lng: string) => {
