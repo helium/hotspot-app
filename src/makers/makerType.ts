@@ -6,5 +6,10 @@ export type MakerType = {
   supportEmail: string
   antennas: Record<string, MakerAntenna>
   hotspots: Record<string, MakerHotspot>
-  makerApp?: Record<'makerAppName' | 'ios' | 'android', string>
+  makerApp?: {
+    makerAppName: string
+    ios: string
+    android: string
+    forceRedirect: boolean
+  }
 }
