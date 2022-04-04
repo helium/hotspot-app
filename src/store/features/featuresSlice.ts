@@ -9,7 +9,6 @@ export type FeaturesState = {
   appRetryCount: number
   featuresLoaded: boolean
   walletChartEnabled: boolean
-  proxyEnabled: boolean
   fetchFeaturesFailed: boolean
   checklistEnabled: boolean
   discovery: {
@@ -27,7 +26,6 @@ const initialState: FeaturesState = {
   appRetryCount: 1,
   featuresLoaded: false,
   walletChartEnabled: false,
-  proxyEnabled: false,
   fetchFeaturesFailed: false,
   checklistEnabled: false,
   discovery: {
@@ -53,7 +51,6 @@ const featuresSlice = createSlice({
       state.fleetModeLowerLimit = payload.fleetModeLowerLimit
       state.hotspotSyncBuffer = payload.hotspotSyncBuffer
       state.walletChartEnabled = payload.walletChartEnabled
-      state.proxyEnabled = payload.proxyEnabled
       state.checklistEnabled = payload.checklistEnabled
       if (payload.tileServerRes8Url) {
         state.tileServerRes8Url = payload.tileServerRes8Url
