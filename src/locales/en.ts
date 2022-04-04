@@ -38,6 +38,7 @@ export default {
     },
     confirm: {
       title: 'Confirm\nYour Words',
+      titleSignOut: 'Confirm Your\nWords To Sign Out',
       subtitle:
         'Which word below was your <b><purple>{{ordinal}} word?</purple></b>',
       forgot: 'I forgot my words',
@@ -609,6 +610,10 @@ export default {
           title: 'Warning!',
           body:
             'You are signing out of your account. Do you have your 12 recovery words? If you don’t, you will lose access to:\n\n- your Hotspots\n- your HNT\n- your Wallet',
+        },
+        signOutForgot: {
+          title: 'Reveal Words',
+          body: 'Would you like to reveal your accounts words?',
         },
       },
     },
