@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { upperCase } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
@@ -99,6 +106,22 @@ const ConfirmWordsScreen = ({ title, onComplete, onForgotWords }: Props) => {
 
   const data = useMemo(() => mnemonic.map((_, index) => index), [mnemonic])
 
+  const challengeWordChips = useMemo(
+    () =>
+      challengeWords.map((w) => (
+        <PhraseChip
+          marginRight="s"
+          marginBottom="s"
+          key={w}
+          title={w}
+          fail={word === w && !correct}
+          success={word === w && correct}
+          onPress={() => !word && onPressWord(w)}
+        />
+      )),
+    [challengeWords, correct, onPressWord, word],
+  )
+
   const renderItem = ({ item: index }: { item: CarouselItemData }) => {
     return (
       <Card
@@ -177,17 +200,7 @@ const ConfirmWordsScreen = ({ title, onComplete, onForgotWords }: Props) => {
       </Box>
       <Box flex={1} />
       <Box flexDirection="row" flexWrap="wrap">
-        {challengeWords.map((w) => (
-          <PhraseChip
-            marginRight="s"
-            marginBottom="s"
-            key={w}
-            title={w}
-            fail={word === w && !correct}
-            success={word === w && correct}
-            onPress={() => !word && onPressWord(w)}
-          />
-        ))}
+        {challengeWordChips}
       </Box>
       <Box flex={2} />
       <Button
@@ -198,4 +211,4 @@ const ConfirmWordsScreen = ({ title, onComplete, onForgotWords }: Props) => {
   )
 }
 
-export default ConfirmWordsScreen
+export default memo(ConfirmWordsScreen)
