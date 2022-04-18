@@ -360,8 +360,8 @@ export default {
   account_import: {
     word_entry: {
       title: '输入恢复\n助记词',
-      directions: '输入第 <b>{{ordinal}}</b> 个助记词',
-      placeholder: '第 {{ordinal}} 个助记词',
+      directions: '输入<b>{{ordinal}}</b>助记词',
+      placeholder: '{{ordinal}}助记词',
       subtitle: '恢复助记词不区分大小写\n',
     },
     confirm: {
