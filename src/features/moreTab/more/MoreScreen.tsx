@@ -40,6 +40,7 @@ import AppInfoItem from './AppInfoItem'
 import DeployModeModal from './DeployModeModal'
 import { useLanguageContext } from '../../../providers/LanguageProvider'
 import { EXPLORER_BASE_URL } from '../../../utils/config'
+import { currencyType as defaultCurrencyType } from '../../../utils/i18n'
 import { SUPPORTED_LANGUAGUES } from '../../../utils/i18n/i18nTypes'
 import Articles from '../../../constants/articles'
 import useAlert from '../../../utils/useAlert'
@@ -56,6 +57,9 @@ const MoreScreen = () => {
   const showHiddenHotspots = useSelector(
     (state: RootState) => state.account.settings.showHiddenHotspots,
   )
+  const currencyType =
+    useSelector((state: RootState) => state.account.settings.currencyType) ||
+    defaultCurrencyType
   const account = useSelector((state: RootState) => state.account, isEqual)
   const fleetModeLowerLimit = useSelector(
     (state: RootState) => state.features.fleetModeLowerLimit,
@@ -288,6 +292,11 @@ const MoreScreen = () => {
         disabled: app.isDeployModeEnabled,
       },
     ]
+
+    if (!SUPPORTED_CURRENCIES[currencyType]) {
+      SUPPORTED_CURRENCIES[currencyType] = currencyType
+    }
+    
     return [
       {
         title: t('more.sections.security.title'),
@@ -331,7 +340,7 @@ const MoreScreen = () => {
           },
           {
             title: t('more.sections.app.currency'),
-            value: account.settings.currencyType,
+            value: currencyType,
             select: {
               items: Object.keys(SUPPORTED_CURRENCIES).map((p) => {
                 return {
@@ -387,7 +396,7 @@ const MoreScreen = () => {
     handleRevealWords,
     language,
     handleLanguageChange,
-    account.settings.currencyType,
+    currencyType,
     account.settings.convertHntToCurrency,
     account.settings.isFleetModeEnabled,
     handleCurrencyTypeChange,
