@@ -92,7 +92,6 @@ const ConfirmWordsScreen = ({ title, onComplete, onForgotWords }: Props) => {
         await sleep(1000)
         setWord(null)
         setChallengeWords(Account.generateChallengeWords(findTargetWord(step)))
-        animateTransition('AccountEnterPassphraseScreen.OnPressWord')
       }
     },
     [findTargetWord, nextStep, step, triggerNotification],
