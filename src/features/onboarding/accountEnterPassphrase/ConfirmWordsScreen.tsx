@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
 import Carousel from 'react-native-snap-carousel'
 import { Account } from '@helium/react-native-sdk'
+import { useSelector } from 'react-redux'
 import Box from '../../../components/Box'
 import Text from '../../../components/Text'
 import PhraseChip from './PhraseChip'
@@ -23,6 +24,7 @@ import sleep from '../../../utils/sleep'
 import { wp } from '../../../utils/layout'
 import useHaptic from '../../../utils/useHaptic'
 import animateTransition from '../../../utils/animateTransition'
+import { RootState } from '../../../store/rootReducer'
 
 type CarouselItemData = number
 type Props = {
@@ -40,6 +42,10 @@ const ConfirmWordsScreen = ({ title, onComplete, onForgotWords }: Props) => {
   const { t } = useTranslation()
   const { triggerNotification } = useHaptic()
   const navigation = useNavigation()
+
+  const isDeployModeEnabled = useSelector(
+    (state: RootState) => state.app.isDeployModeEnabled,
+  )
 
   useEffect(() => {
     resetState()
@@ -204,6 +210,7 @@ const ConfirmWordsScreen = ({ title, onComplete, onForgotWords }: Props) => {
       </Box>
       <Box flex={2} />
       <Button
+        visible={!isDeployModeEnabled}
         title={t('account_setup.confirm.forgot')}
         onPress={onForgotWords || navigation.goBack}
       />
