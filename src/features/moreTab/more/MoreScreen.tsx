@@ -7,7 +7,7 @@ import React, {
   useState,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SectionList } from 'react-native'
+import { Alert, SectionList } from 'react-native'
 import { useSelector } from 'react-redux'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { isEqual } from 'lodash'
@@ -26,7 +26,7 @@ import {
 import MoreListItem, { MoreListItemType } from './MoreListItem'
 import useAuthIntervals from './useAuthIntervals'
 import { useSpacing } from '../../../theme/themeHooks'
-import {
+import accountSlice, {
   fetchAccountSettings,
   updateFleetModeEnabled,
   updateSetting,
@@ -45,6 +45,10 @@ import Articles from '../../../constants/articles'
 import useAlert from '../../../utils/useAlert'
 import { SUPPORTED_CURRENCIES } from '../../../utils/useCurrency'
 import { clearMapCache } from '../../../utils/mapUtils'
+import activitySlice from '../../../store/activity/activitySlice'
+import hotspotsSlice from '../../../store/hotspots/hotspotsSlice'
+import validatorsSlice from '../../../store/validators/validatorsSlice'
+import connectedHotspotSlice from '../../../store/connectedHotspot/connectedHotspotSlice'
 
 type Route = RouteProp<RootStackParamList & MoreStackParamList, 'MoreScreen'>
 const MoreScreen = () => {
@@ -59,6 +63,9 @@ const MoreScreen = () => {
   const account = useSelector((state: RootState) => state.account, isEqual)
   const fleetModeLowerLimit = useSelector(
     (state: RootState) => state.features.fleetModeLowerLimit,
+  )
+  const isDeployModeEnabled = useSelector(
+    (state: RootState) => state.app.isDeployModeEnabled,
   )
   const authIntervals = useAuthIntervals()
   const { showOKCancelAlert } = useAlert()
@@ -196,8 +203,33 @@ const MoreScreen = () => {
   }, [showOKCancelAlert])
 
   const handleSignOut = useCallback(() => {
-    navigation.push('ConfirmSignout')
-  }, [navigation])
+    if (isDeployModeEnabled) {
+      Alert.alert(
+        t('more.sections.app.signOutAlert.title'),
+        t('more.sections.app.signOutAlert.body'),
+        [
+          {
+            text: t('generic.cancel'),
+            style: 'cancel',
+          },
+          {
+            text: t('more.sections.app.signOut'),
+            style: 'destructive',
+            onPress: () => {
+              dispatch(appSlice.actions.signOut())
+              dispatch(accountSlice.actions.signOut())
+              dispatch(activitySlice.actions.signOut())
+              dispatch(hotspotsSlice.actions.signOut())
+              dispatch(validatorsSlice.actions.signOut())
+              dispatch(connectedHotspotSlice.actions.signOut())
+            },
+          },
+        ],
+      )
+    } else {
+      navigation.push('ConfirmSignout')
+    }
+  }, [dispatch, isDeployModeEnabled, navigation, t])
 
   const handleLanguageChange = useCallback(
     (lng: string) => {
