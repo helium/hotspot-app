@@ -1289,7 +1289,7 @@ export default {
   linkWallet: {
     title: 'Link Helium Wallet\nto {{appName}}?',
     body:
-      'By Linking Helum Wallet to Maker App, you can safely sign blockchain transactions without re-entering your seed phrase.',
+      'By Linking Helium Wallet to Maker App, you can safely sign blockchain transactions without re-entering your seed phrase.',
     yes: 'Yes, Link my Wallet',
     no: 'No, Cancel',
   },
