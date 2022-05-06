@@ -1017,13 +1017,13 @@ export default {
         'The Hotspots in this list have witnessed a Beacon from {{hotspotName}} recently.\n\nFluctuations are normal and expected. The number of Hotspots will reset to zero if you update location, antenna, or elevation',
     },
     witness_desc:
-      'Over the last 5 days, this Hotspot has witnessed beacons from <b><purplemain>{{count}} Hotspot</purplemain></b>, with an average transmit scale of',
+      'Over the last 3 days, this Hotspot has witnessed beacons from <b><purplemain>{{count}} Hotspot</purplemain></b>, with an average transmit scale of',
     witness_desc_plural:
-      'Over the last 5 days, this Hotspot has witnessed beacons from <b><purplemain>{{count}} Hotspots</purplemain></b>, with an average transmit scale of',
+      'Over the last 3 days, this Hotspot has witnessed beacons from <b><purplemain>{{count}} Hotspots</purplemain></b>, with an average transmit scale of',
     witness_desc_two:
       'Hotspots are rewarded more HNT when the Hotspots they witness have higher transmit scales.',
     witness_desc_none:
-      'Over the last 5 days, this Hotspot has witnessed no beacons.',
+      'Over the last 3 days, this Hotspot has witnessed no beacons.',
     get_witnessed: 'WITNESS BEACONS',
     get_witnessed_desc:
       'Position your Hotspot so that it can hear others. Often this means moving it higher in order to increase its range.',
