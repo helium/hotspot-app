@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { PocReceiptsV2, Reward, RewardsV2 } from '@helium/http'
+import { PocReceiptsV2, RewardsV2 } from '@helium/http'
+import { Reward } from '@helium/http/build/models/Transaction'
 import { getHotspotActivityList } from '../../utils/appDataClient'
 import { HotspotActivityType } from '../../features/hotspots/root/hotspotTypes'
 
@@ -26,14 +27,14 @@ export const fetchChecklistActivity = createAsyncThunk(
     const rewardTxns = data[2] as RewardsV2[]
 
     // most recent witness transaction
-    const witnessTxn = rewardTxns?.find((txn: RewardsV1) =>
+    const witnessTxn = rewardTxns?.find((txn: RewardsV2) =>
       txn?.rewards?.find(
         (txnReward: Reward) => txnReward.type === 'poc_witnesses',
       ),
     )
 
     // most recent data credit transaction
-    const dataTransferTxn = rewardTxns?.find((txn: RewardsV1) =>
+    const dataTransferTxn = rewardTxns?.find((txn: RewardsV2) =>
       txn?.rewards?.find(
         (txnReward: Reward) => txnReward.type === 'data_credits',
       ),
@@ -51,8 +52,8 @@ export const fetchChecklistActivity = createAsyncThunk(
 type HotspotChecklistSliceState = {
   challengerTxn?: PocReceiptsV2
   challengeeTxn?: PocReceiptsV2
-  witnessTxn?: RewardsV1
-  dataTransferTxn?: RewardsV1
+  witnessTxn?: RewardsV2
+  dataTransferTxn?: RewardsV2
   loadingActivity: boolean
 }
 const initialState: HotspotChecklistSliceState = {
