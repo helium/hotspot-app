@@ -244,7 +244,6 @@ const HotspotDiagnosticReport = ({ onFinished }: Props) => {
       fw: firmware?.version || '',
       connected: diagnostics?.connected || '',
       dialable: diagnostics?.dialable || '',
-      natType: capitalize(diagnostics?.nat_type || ''),
       ip: capitalize(diagnostics?.ip || ''),
       disk: diagnostics?.disk || '',
       height: info?.height ? info.height.toLocaleString(locale) : 'Unknown',
