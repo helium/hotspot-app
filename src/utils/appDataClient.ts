@@ -46,7 +46,7 @@ export const updateClient = ({
   if (token) {
     headers.Authorization = token
   }
-  let network = networkName === 'helium' ? Network.production : Network.stakejoy
+  let network = Network.production
   if (proxyEnabled) {
     network = new Network({ baseURL, version: 1 })
   }
