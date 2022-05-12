@@ -12,12 +12,7 @@ type Props = {
   hitSlop?: Insets
 }
 
-const StatusBadge = ({
-  online = 'offline',
-  isDataOnly,
-  onPress,
-  hitSlop,
-}: Props) => {
+const StatusBadge = ({ online, isDataOnly, onPress, hitSlop }: Props) => {
   const { t } = useTranslation()
 
   const title = useMemo(() => {
@@ -43,6 +38,8 @@ const StatusBadge = ({
 
     return 'greenOnline'
   }, [isDataOnly, online])
+
+  if (online === undefined) return null
 
   return (
     <TouchableOpacityBox
