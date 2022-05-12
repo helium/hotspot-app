@@ -794,11 +794,8 @@ export default {
     picker_prompt: '範囲を選択',
     status_online: 'オンライン',
     status_offline: '注意が必要',
-    status_syncing: '同期中',
     status_prompt_online: {
       title: 'Hotspotはオンラインになっており、同期されています。',
-      subtitle_active: 'ステータス：{{hotspotBlock}}/{{currentBlock}}ブロック',
-      subtitle_starting: '同期を開始しています...',
     },
     status_prompt_offline: {
       title: 'Hotspotはオフラインになっており、同期されていません。',
@@ -810,8 +807,6 @@ export default {
     },
     no_location_title: 'アサート済みの位置情報はありません',
     no_location_body: 'Hotspotとペアリングをして開始します。',
-    percent_synced: '{{percent}}%同期されました',
-    starting_sync: '同期を開始しています...',
   },
   transfer: {
     title: 'Hotspotでデータを転送',

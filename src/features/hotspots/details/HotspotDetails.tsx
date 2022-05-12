@@ -44,7 +44,6 @@ import HotspotSheetHandle from '../root/HotspotSheetHandle'
 import { hp } from '../../../utils/layout'
 import sleep from '../../../utils/sleep'
 import usePrevious from '../../../utils/usePrevious'
-import useHotspotSync from '../useHotspotSync'
 import useAlert from '../../../utils/useAlert'
 import { locale } from '../../../utils/i18n'
 import { NO_FEATURES } from '../../../components/Map'
@@ -118,8 +117,6 @@ const HotspotDetails = ({
   ])
   const prevHexId = usePrevious(hotspot?.locationHex)
 
-  const { updateSyncStatus, hotspotSyncStatus } = useHotspotSync(hotspot)
-
   const dataOnly = useMemo(() => isDataOnly(hotspot), [hotspot])
 
   const makers = useSelector((state: RootState) => state.heliumData.makers)
@@ -165,10 +162,6 @@ const HotspotDetails = ({
       }),
     )
   }, [address, dispatch, hotspot, listIndex, prevListIndex, timelineValue])
-
-  useEffect(() => {
-    updateSyncStatus()
-  }, [updateSyncStatus])
 
   const formattedHotspotName = useMemo(() => {
     if (!hotspot || !hotspot.address) return ''
@@ -566,7 +559,6 @@ const HotspotDetails = ({
               <StatusBadge
                 hitSlop={hitSlop}
                 online={hotspot?.status?.online}
-                syncStatus={hotspotSyncStatus?.status}
                 onPress={handleToggleStatus}
                 isDataOnly={dataOnly}
               />

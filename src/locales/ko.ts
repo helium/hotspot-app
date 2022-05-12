@@ -770,11 +770,8 @@ export default {
     picker_prompt: '범위 선택',
     status_online: '온라인',
     status_offline: '주의 필요',
-    status_syncing: '동기화 중',
     status_prompt_online: {
       title: 'Hotspot이 온라인 상태이며 동기화 중입니다.',
-      subtitle_active: '상태: 블록 {{hotspotBlock}}의 {{currentBlock}}',
-      subtitle_starting: '동기화 시작...',
     },
     status_prompt_offline: {
       title: 'Hotspot이 오프라인이고 동기화되지 않았습니다.',
@@ -786,8 +783,6 @@ export default {
     },
     no_location_title: '확인된 위치 없음',
     no_location_body: '시작하려면 Hotspot과 페어링하세요.',
-    percent_synced: '{{percent}}% 동기화됨',
-    starting_sync: '동기화 시작...',
   },
   transfer: {
     title: 'Hotspot 전송',

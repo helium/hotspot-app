@@ -975,15 +975,12 @@ export default {
     status_data_only: 'Data-Only',
     status_online: 'Online',
     status_offline: 'Needs Attention',
-    status_syncing: 'Syncing',
     ytd: 'Your Hotspot has earned\n{{number}} HNT since {{date}}',
     status_prompt_online: {
-      title: 'Hotspot is online and syncing.',
-      subtitle_active: 'Status: Block {{hotspotBlock}} of {{currentBlock}}',
-      subtitle_starting: 'Beginning to sync...',
+      title: 'Hotspot is online and connected.',
     },
     status_prompt_offline: {
-      title: 'Hotspot is offline and not syncing.',
+      title: 'Hotspot is offline and not connected.',
     },
     options: {
       settings: 'Settings',
@@ -993,8 +990,6 @@ export default {
     no_location_title: 'No Asserted Location',
     updating_location: 'Updating Location...',
     no_location_body: 'Pair with the Hotspot to begin.',
-    percent_synced: '{{percent}}% Synced',
-    starting_sync: 'Starting Sync...',
     data_only_prompt: {
       title: 'Data-Only Hotspot Explained',
       message:

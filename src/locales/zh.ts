@@ -735,11 +735,8 @@ export default {
     picker_prompt: '选择范围',
     status_online: '在线',
     status_offline: '请注意',
-    status_syncing: '正在同步',
     status_prompt_online: {
       title: 'Hotspot 处于在线同步状态。',
-      subtitle_active: '状态:区块 {{hotspotBlock}} ({{currentBlock}})',
-      subtitle_starting: '开始同步...',
     },
     status_prompt_offline: {
       title: 'Hotspot 离线且未同步。',
@@ -751,8 +748,6 @@ export default {
     },
     no_location_title: '没有声明位置',
     no_location_body: 'Hotspot 配对开始。',
-    percent_synced: '{{percent}}% 已同步',
-    starting_sync: '开始同步...',
   },
   transfer: {
     title: '转让 Hotspot',
