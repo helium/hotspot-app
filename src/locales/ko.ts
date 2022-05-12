@@ -771,7 +771,6 @@ export default {
     status_online: '온라인',
     status_offline: '주의 필요',
     status_syncing: '동기화 중',
-    relayed: '전달됨',
     status_prompt_online: {
       title: 'Hotspot이 온라인 상태이며 동기화 중입니다.',
       subtitle_active: '상태: 블록 {{hotspotBlock}}의 {{currentBlock}}',
@@ -789,11 +788,6 @@ export default {
     no_location_body: '시작하려면 Hotspot과 페어링하세요.',
     percent_synced: '{{percent}}% 동기화됨',
     starting_sync: '동기화 시작...',
-    relay_prompt: {
-      title: 'Hotspot 전달됨',
-      message:
-        'Hotspot 연결이 채굴에 영향을 미칠 수 있는 네트워크의 다른 Hotspot을 통해 전달되고 있습니다. 릴레이에서 Hotspot을 제거하려면 문제 해결 가이드를 참조하세요.',
-    },
   },
   transfer: {
     title: 'Hotspot 전송',
@@ -924,11 +918,6 @@ export default {
       title: 'Discovery 모드를 시작할 수 없음',
       message:
         'Hotspot이 오프라인 상태입니다. 인터넷에 연결하고 다시 시도하세요.',
-    },
-    relay_prompt: {
-      title: 'Hotspot 전달됨',
-      message:
-        'Discovery 모드가 실행되는 전달된 Hotspot은 인접한 Hotspot에서 응답을 받지 못할 수 있습니다. 릴레이에서 Hotspot을 제거하려면 문제 해결 가이드를 참조하세요.',
     },
     session_error_prompt: {
       title: 'Discovery 모드를 시작할 수 없음',

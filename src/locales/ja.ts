@@ -795,7 +795,6 @@ export default {
     status_online: 'オンライン',
     status_offline: '注意が必要',
     status_syncing: '同期中',
-    relayed: 'リレー済み',
     status_prompt_online: {
       title: 'Hotspotはオンラインになっており、同期されています。',
       subtitle_active: 'ステータス：{{hotspotBlock}}/{{currentBlock}}ブロック',
@@ -813,11 +812,6 @@ export default {
     no_location_body: 'Hotspotとペアリングをして開始します。',
     percent_synced: '{{percent}}%同期されました',
     starting_sync: '同期を開始しています...',
-    relay_prompt: {
-      title: 'Hotspotはリレーされています',
-      message:
-        'Hotspotの接続はネットワーク上の別のHotspotを介してリレーされており、マイニングに影響する可能性があります。Hotspotがリレーされないようにするには、トラブルシューティングガイドにアクセスしてください。',
-    },
   },
   transfer: {
     title: 'Hotspotでデータを転送',
@@ -951,11 +945,6 @@ export default {
       title: '検出モードを開始できません',
       message:
         'Hotspotはオフラインになっています。インターネットに接続して、もう一度実行してください。',
-    },
-    relay_prompt: {
-      title: 'Hotspotはリレーされています',
-      message:
-        '検出モードで実行されているHotspotがリレーされている場合、隣接するHotspotからの応答を受信しない可能性があります。Hotspotがリレーされないようにするには、トラブルシューティングガイドにアクセスしてください。',
     },
     session_error_prompt: {
       title: '検出モードを開始できません',

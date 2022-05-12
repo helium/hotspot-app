@@ -736,7 +736,6 @@ export default {
     status_online: '在线',
     status_offline: '请注意',
     status_syncing: '正在同步',
-    relayed: '已中转',
     status_prompt_online: {
       title: 'Hotspot 处于在线同步状态。',
       subtitle_active: '状态:区块 {{hotspotBlock}} ({{currentBlock}})',
@@ -754,11 +753,6 @@ export default {
     no_location_body: 'Hotspot 配对开始。',
     percent_synced: '{{percent}}% 已同步',
     starting_sync: '开始同步...',
-    relay_prompt: {
-      title: 'Hotspot 已中转',
-      message:
-        'Hotspot 连接正通过网络中另一个 Hotspot 进行中转，可能会影响挖矿。要解除 Hotspot 中转，请访问故障排除指南。',
-    },
   },
   transfer: {
     title: '转让 Hotspot',
@@ -881,11 +875,6 @@ export default {
     offline_prompt: {
       title: '无法开启发现模式',
       message: 'Hotspot 离线，请联网并重试。',
-    },
-    relay_prompt: {
-      title: 'Hotspot 已中转',
-      message:
-        '处于发现模式下的中转 Hotspot 可能无法收到邻近 Hotspot 的响应。要解除 Hotspot 中转，请访问故障排除指南。',
     },
     session_error_prompt: {
       title: '无法开启发现模式',
