@@ -3,7 +3,7 @@ import Client, {
   Hotspot,
   NaturalDate,
   Network,
-  PocReceiptsV1,
+  PocReceiptsV2,
   Validator,
 } from '@helium/http'
 import { Transaction } from '@helium/transactions'
@@ -294,7 +294,7 @@ export const getHotspotsLastChallengeActivity = async (
   if (lastHotspotActivity && lastHotspotActivity.time) {
     const dateLastActive = new Date(lastHotspotActivity.time * 1000)
     return {
-      block: (lastHotspotActivity as PocReceiptsV1).height,
+      block: (lastHotspotActivity as PocReceiptsV2).height,
       text: fromNow(dateLastActive)?.toUpperCase(),
     }
   }
