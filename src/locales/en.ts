@@ -975,16 +975,12 @@ export default {
     status_data_only: 'Data-Only',
     status_online: 'Online',
     status_offline: 'Needs Attention',
-    status_syncing: 'Syncing',
-    relayed: 'Relayed',
     ytd: 'Your Hotspot has earned\n{{number}} HNT since {{date}}',
     status_prompt_online: {
-      title: 'Hotspot is online and syncing.',
-      subtitle_active: 'Status: Block {{hotspotBlock}} of {{currentBlock}}',
-      subtitle_starting: 'Beginning to sync...',
+      title: 'Hotspot is online and connected.',
     },
     status_prompt_offline: {
-      title: 'Hotspot is offline and not syncing.',
+      title: 'Hotspot is offline and not connected.',
     },
     options: {
       settings: 'Settings',
@@ -994,17 +990,10 @@ export default {
     no_location_title: 'No Asserted Location',
     updating_location: 'Updating Location...',
     no_location_body: 'Pair with the Hotspot to begin.',
-    percent_synced: '{{percent}}% Synced',
-    starting_sync: 'Starting Sync...',
     data_only_prompt: {
       title: 'Data-Only Hotspot Explained',
       message:
         'These Hotspots earn HNT for transmitting data packets from sensors.\n\nThey do not affect transmit scales and do not affect Hotspot Proof-of-Coverage earnings of nearby Hotspots.',
-    },
-    relay_prompt: {
-      title: 'Hotspot is Relayed',
-      message:
-        "Hotspot's connection is being relayed through another Hotspot on the network which may affect mining. To take a Hotspot out of Relay, please visit the troubleshooting guide.",
     },
     reward_scale_prompt: {
       title: 'Transmit Scale',
@@ -1164,15 +1153,10 @@ export default {
       title: 'Unable to initiate Discovery Mode',
       message: 'Hotspot is offline, connect to internet and try again.',
     },
-    relay_prompt: {
-      title: 'Hotspot is Relayed',
-      message:
-        'Relayed Hotspots running Discovery Mode may not receive responses from neighboring Hotspots. To take a Hotspot out of Relay, please visit the troubleshooting guide.',
-    },
     session_error_prompt: {
       title: 'Unable to initiate Discovery Mode',
       message:
-        'Hotspot may be behind a relay and is not responding. Check your router settings and try again.',
+        'Hotspot is not responding. Check your router settings and try again.',
     },
     begin: {
       title: 'Discovery Mode',

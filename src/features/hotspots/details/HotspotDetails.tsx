@@ -2,12 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import {
-  LayoutChangeEvent,
-  Linking,
-  ActivityIndicator,
-  Insets,
-} from 'react-native'
+import { LayoutChangeEvent, ActivityIndicator, Insets } from 'react-native'
 import { Hotspot, Witness } from '@helium/http'
 import Animated from 'react-native-reanimated'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
@@ -34,11 +29,8 @@ import useToggle from '../../../utils/useToggle'
 import {
   isDataOnly,
   HELIUM_OLD_MAKER_ADDRESS,
-  isRelay,
   generateRewardScaleColor,
 } from '../../../utils/hotspotUtils'
-import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import Articles from '../../../constants/articles'
 import HotspotListItem from '../../../components/HotspotListItem'
 import Location from '../../../assets/images/location.svg'
 import Signal from '../../../assets/images/signal.svg'
@@ -52,7 +44,6 @@ import HotspotSheetHandle from '../root/HotspotSheetHandle'
 import { hp } from '../../../utils/layout'
 import sleep from '../../../utils/sleep'
 import usePrevious from '../../../utils/usePrevious'
-import useHotspotSync from '../useHotspotSync'
 import useAlert from '../../../utils/useAlert'
 import { locale } from '../../../utils/i18n'
 import { NO_FEATURES } from '../../../components/Map'
@@ -105,10 +96,9 @@ const HotspotDetails = ({
     (state: RootState) => state.features.checklistEnabled,
   )
 
-  const { showOKAlert, showOKCancelAlert } = useAlert()
+  const { showOKAlert } = useAlert()
   const listRef = useRef<BottomSheet>(null)
   const scrollViewRef = useRef<any>(null) // eslint-disable-line @typescript-eslint/no-explicit-any
-  const [isRelayed, setIsRelayed] = useState(false)
   const [timelineValue, setTimelineValue] = useState(7)
   const [timelineIndex, setTimelineIndex] = useState(3)
   const [snapPoints, setSnapPoints] = useState([1, 1])
@@ -127,8 +117,6 @@ const HotspotDetails = ({
   ])
   const prevHexId = usePrevious(hotspot?.locationHex)
 
-  const { updateSyncStatus, hotspotSyncStatus } = useHotspotSync(hotspot)
-
   const dataOnly = useMemo(() => isDataOnly(hotspot), [hotspot])
 
   const makers = useSelector((state: RootState) => state.heliumData.makers)
@@ -138,15 +126,6 @@ const HotspotDetails = ({
       hotspot?.address ? hiddenAddresses?.includes(hotspot?.address) : false,
     [hiddenAddresses, hotspot?.address],
   )
-
-  useEffect(() => {
-    if (!visible) return
-    if (isDataOnly(hotspot)) {
-      setIsRelayed(false)
-    } else {
-      setIsRelayed(isRelay(hotspot?.status?.listenAddrs || []))
-    }
-  }, [hotspot, visible])
 
   useEffect(() => {
     if (visible || listIndex !== 1) return
@@ -183,10 +162,6 @@ const HotspotDetails = ({
       }),
     )
   }, [address, dispatch, hotspot, listIndex, prevListIndex, timelineValue])
-
-  useEffect(() => {
-    updateSyncStatus()
-  }, [updateSyncStatus])
 
   const formattedHotspotName = useMemo(() => {
     if (!hotspot || !hotspot.address) return ''
@@ -238,19 +213,6 @@ const HotspotDetails = ({
     [],
   )
 
-  const handleRelayedPress = useCallback(async () => {
-    const decision = await showOKCancelAlert({
-      titleKey: 'hotspot_details.relay_prompt.title',
-      messageKey: 'hotspot_details.relay_prompt.message',
-      cancelKey: 'discovery.troubleshooting_guide',
-      cancelStyle: 'cancel',
-    })
-
-    if (!decision && Linking.canOpenURL(Articles.Relay)) {
-      Linking.openURL(Articles.Relay)
-    }
-  }, [showOKCancelAlert])
-
   const getDistance = useCallback(
     (otherHotspot: Hotspot | Witness) => {
       if (
@@ -286,7 +248,6 @@ const HotspotDetails = ({
           showAddress={false}
           distanceAway={getDistance(witness)}
           showRewardScale
-          showRelayStatus
           showAntennaDetails
         />
       )
@@ -598,27 +559,9 @@ const HotspotDetails = ({
               <StatusBadge
                 hitSlop={hitSlop}
                 online={hotspot?.status?.online}
-                syncStatus={hotspotSyncStatus?.status}
                 onPress={handleToggleStatus}
                 isDataOnly={dataOnly}
               />
-              {isRelayed && (
-                <TouchableOpacityBox
-                  hitSlop={hitSlop}
-                  borderColor="orangeMedium"
-                  borderWidth={1}
-                  paddingHorizontal="s"
-                  borderRadius="l"
-                  alignItems="center"
-                  justifyContent="center"
-                  marginLeft="xs"
-                  onPress={handleRelayedPress}
-                >
-                  <Text color="orangeMedium" variant="medium" fontSize={14}>
-                    {t('hotspot_details.relayed')}
-                  </Text>
-                </TouchableOpacityBox>
-              )}
               <HexBadge
                 hitSlop={hitSlop}
                 hotspotId={hotspot.address}

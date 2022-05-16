@@ -10,7 +10,6 @@ export default ({
   fw,
   connected,
   dialable,
-  natType,
   ip,
   disk,
   height,
@@ -27,7 +26,6 @@ export default ({
   fw: string
   connected: string
   dialable: string
-  natType: string
   ip: string
   disk: string
   height: string
@@ -59,7 +57,6 @@ export default ({
     `App Version: ${appVersion}`,
     `Wi-Fi MAC: ${wifi}`,
     `Eth MAC: ${eth}`,
-    `NAT Type: ${natType}`,
     `IP Address: ${ip}`,
     `Disk status: ${disk}`,
     `Report Generated: ${reportGenerated}`,

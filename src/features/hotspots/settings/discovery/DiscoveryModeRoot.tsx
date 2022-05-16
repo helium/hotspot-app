@@ -1,10 +1,8 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { Hotspot, Witness } from '@helium/http'
 import { useAsync } from 'react-async-hook'
-import { Alert, Linking } from 'react-native'
 import { useSelector } from 'react-redux'
 import animalName from 'angry-purple-tiger'
-import { useTranslation } from 'react-i18next'
 import { isEqual } from 'lodash'
 import discoverySlice, {
   fetchDiscoveryById,
@@ -24,8 +22,7 @@ import DiscoveryModeBegin from './DiscoveryModeBegin'
 import DiscoveryModeResults from './DiscoveryModeResults'
 import useMount from '../../../../utils/useMount'
 import useAlert from '../../../../utils/useAlert'
-import { isDataOnly, isRelay } from '../../../../utils/hotspotUtils'
-import Articles from '../../../../constants/articles'
+import { isDataOnly } from '../../../../utils/hotspotUtils'
 import useDiscoveryPoll from './useDiscoveryPoll'
 import useHotspotSync from '../../useHotspotSync'
 
@@ -35,7 +32,6 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
   const [errorShownForRequestId, setErrorShownForRequestId] = useState<
     Record<string, boolean>
   >({})
-  const { t } = useTranslation()
   const { enableBack } = useHotspotSettingsContext()
   const { result: userAddress } = useAsync(getSecureItem, ['address'])
   const dispatch = useAppDispatch()
@@ -141,41 +137,16 @@ const DiscoveryModeRoot = ({ onClose, hotspot }: Props) => {
         titleKey: 'discovery.offline_prompt.title',
         messageKey: 'discovery.offline_prompt.message',
       })
-    } else if (isRelay(hotspot.status?.listenAddrs)) {
-      Alert.alert(
-        t('discovery.relay_prompt.title'),
-        t('discovery.relay_prompt.message'),
-        [
-          {
-            text: t('generic.continue'),
-            onPress: () => dispatchDiscovery(),
-          },
-          {
-            text: t('discovery.troubleshooting_guide'),
-            style: 'cancel',
-            onPress: () => {
-              if (Linking.canOpenURL(Articles.Relay))
-                Linking.openURL(Articles.Relay)
-            },
-          },
-          {
-            text: t('generic.cancel'),
-            style: 'destructive',
-          },
-        ],
-      )
     } else {
       dispatchDiscovery()
     }
   }, [
     hotspot.address,
     hotspot.status?.online,
-    hotspot.status?.listenAddrs,
     userAddress,
     hotspotSyncStatus?.status,
     dataOnly,
     showOKAlert,
-    t,
     dispatchDiscovery,
   ])
 

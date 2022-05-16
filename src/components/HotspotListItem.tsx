@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux'
 import Box from './Box'
 import Text from './Text'
 import useCurrency from '../utils/useCurrency'
-import { isDataOnly, isRelay } from '../utils/hotspotUtils'
+import { isDataOnly } from '../utils/hotspotUtils'
 import HexBadge from '../features/hotspots/details/HexBadge'
 import { useColors } from '../theme/themeHooks'
 import Signal from '../assets/images/signal.svg'
@@ -28,7 +28,6 @@ type HotspotListItemProps = {
   showAddress?: boolean
   showRewardScale?: boolean
   distanceAway?: string
-  showRelayStatus?: boolean
   showAntennaDetails?: boolean
   pressable?: boolean
   hidden?: boolean
@@ -42,7 +41,6 @@ const HotspotListItem = ({
   showCarot = false,
   showAddress = true,
   showRewardScale = false,
-  showRelayStatus = false,
   showAntennaDetails = false,
   pressable = true,
   distanceAway,
@@ -74,10 +72,6 @@ const HotspotListItem = ({
     }
     return `${geo.longStreet}, ${geo.longCity}, ${geo.shortCountry}`
   }, [gateway, pendingTxns.data, t])
-
-  const isRelayed = useMemo(() => isRelay(gateway?.status?.listenAddrs), [
-    gateway?.status,
-  ])
 
   const statusBackgroundColor = useMemo(() => {
     if (hidden || isDataOnly(gateway)) return 'grayLightText'
@@ -207,17 +201,6 @@ const HotspotListItem = ({
                       </Text>
                     )}
                   </Box>
-                )}
-                {showRelayStatus && isRelayed && (
-                  <Text
-                    color="grayText"
-                    variant="regular"
-                    fontSize={12}
-                    marginLeft="s"
-                    maxFontSizeMultiplier={1.2}
-                  >
-                    {t('hotspot_details.relayed')}
-                  </Text>
                 )}
               </Box>
             </Box>
