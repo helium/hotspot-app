@@ -973,8 +973,8 @@ export default {
     picker_options: { 7: '7D', 14: '14D', 30: '30D', YTD: 'YTD' },
     picker_prompt: 'Select Range',
     status_data_only: 'Data-Only',
-    status_online: 'Online',
-    status_offline: 'Needs Attention',
+    status_online: 'Active',
+    status_offline: 'Inactive',
     ytd: 'Your Hotspot has earned\n{{number}} HNT since {{date}}',
     status_prompt_online: {
       title: 'Hotspot is online and connected.',
