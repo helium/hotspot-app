@@ -10,7 +10,7 @@ import React, {
 import { Linking } from 'react-native'
 import queryString from 'query-string'
 import { useSelector } from 'react-redux'
-import { Address } from '@helium/crypto-react-native'
+import Address from '@helium/address'
 import { BarCodeScanningResult } from 'expo-camera'
 import useMount from '../utils/useMount'
 import { getAddress } from '../utils/secureAccount'

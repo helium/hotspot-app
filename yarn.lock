@@ -2369,23 +2369,15 @@
     js-sha256 "^0.9.0"
     multiformats "^9.6.4"
 
-"@helium/crypto-react-native@^3.50.0":
-  version "3.50.0"
-  resolved "https://registry.npmjs.org/@helium/crypto-react-native/-/crypto-react-native-3.50.0.tgz"
-  integrity sha512-B8lEicGKwqc3IhM6OGuXEWgQ8Dyg/2eqwkU93K1PAAFCpSuhDfKy9Oja40hcBQacLusCWAxcKcycpP4c5hljEA==
+"@helium/crypto-react-native@^4.3.1":
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/@helium/crypto-react-native/-/crypto-react-native-4.3.1.tgz#3d1ef0ddc16b7bdf0126759fd1d2ef6aeff8372d"
+  integrity sha512-7S0Qof6o00ZPlIWZ2VUawwXtmOz/HO+qP+JeR+05fU2S8rOntzYFX0KYb4vVUa+gQlSBQt+eb49DPQkzkB6GRg==
   dependencies:
-    bs58 "^4.0.1"
-    buffer "^6.0.1"
+    "@helium/address" "^4.3.1"
     js-sha256 "^0.9.0"
     react-native-sodium "^0.3.8"
     safe-buffer "^5.2.1"
-
-"@helium/currency@^3.52.0":
-  version "3.52.0"
-  resolved "https://registry.npmjs.org/@helium/currency/-/currency-3.52.0.tgz"
-  integrity sha512-L91EKuzO+X4v45df8fgr9ihR1WTzThTQIx3Uh2bQwpwkDjxvxdI6xq43VEhz0+y7JN2XGRl3tX4ljQST+Azw4Q==
-  dependencies:
-    bignumber.js "^9.0.0"
 
 "@helium/currency@^4.2.0":
   version "4.2.0"
@@ -5474,13 +5466,6 @@ base-64@^1.0.0:
   resolved "https://registry.npmjs.org/base-64/-/base-64-1.0.0.tgz"
   integrity sha512-kwDPIFCGx0NZHog36dj+tHiwP4QMzsZ3AgMViUBKI0+V5n4U0ufTCUMhnQ04diaRI8EX/QcPfql7zlhZ7j4zgg==
 
-base-x@^3.0.2:
-  version "3.0.8"
-  resolved "https://registry.npmjs.org/base-x/-/base-x-3.0.8.tgz"
-  integrity sha512-Rl/1AWP4J/zRrk54hhlxH4drNxPJXYUaKffODVI53/dAsV4t9fBxyxYKAVPU1XBHxYwOWP9h9H0hM2MVw4YfJA==
-  dependencies:
-    safe-buffer "^5.0.1"
-
 base-x@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/base-x/-/base-x-4.0.0.tgz#d0e3b7753450c73f8ad2389b5c018a4af7b2224a"
@@ -5625,13 +5610,6 @@ bs-logger@0.x:
   dependencies:
     fast-json-stable-stringify "2.x"
 
-bs58@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.npmjs.org/bs58/-/bs58-4.0.1.tgz"
-  integrity sha1-vhYedsNU9veIrkBx9j806MTwpCo=
-  dependencies:
-    base-x "^3.0.2"
-
 bs58@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/bs58/-/bs58-5.0.0.tgz#865575b4d13c09ea2a84622df6c8cbeb54ffc279"
@@ -5682,7 +5660,7 @@ buffer@^5.2.0:
     base64-js "^1.3.1"
     ieee754 "^1.1.13"
 
-buffer@^6.0.1, buffer@^6.0.3:
+buffer@^6.0.3:
   version "6.0.3"
   resolved "https://registry.npmjs.org/buffer/-/buffer-6.0.3.tgz"
   integrity sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==

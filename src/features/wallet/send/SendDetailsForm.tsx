@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { ActivityIndicator, Alert } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Address } from '@helium/crypto-react-native'
+import Address from '@helium/address'
 import { Account } from '@helium/http'
 import Balance, { NetworkTokens } from '@helium/currency'
 import { useAsync } from 'react-async-hook'

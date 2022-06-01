@@ -7,7 +7,7 @@ import Balance, {
   DataCredits,
   NetworkTokens,
 } from '@helium/currency'
-import { Address } from '@helium/crypto-react-native'
+import Address from '@helium/address'
 import { useAsync } from 'react-async-hook'
 import { useSelector } from 'react-redux'
 import { TransferHotspotV1 } from '@helium/transactions'

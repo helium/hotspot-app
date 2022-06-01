@@ -1,9 +1,13 @@
 import { StackNavigationProp } from '@react-navigation/stack'
+import { NetTypes } from '@helium/address'
 
 export type OnboardingStackParamList = {
   Welcome: undefined
   AccountPassphraseWarning: undefined
-  AccountPassphraseGeneration: undefined
+  AccountPassphraseGeneration: {
+    netType: NetTypes.NetType
+    wordCount: 12 | 24
+  }
   AccountCreatePassphraseScreen: undefined
   AccountEnterPassphraseScreen: undefined
   AccountCreatePinScreen:

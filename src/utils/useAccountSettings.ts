@@ -8,8 +8,9 @@ import accountSlice, {
 import { RootState } from '../store/rootReducer'
 import { useAppDispatch } from '../store/store'
 import { fetchFeatures } from '../store/features/featuresSlice'
-import { getWalletApiToken } from './secureAccount'
+import { getAddress, getWalletApiToken } from './secureAccount'
 import { updateClient } from './appDataClient'
+import { getNetTypeString } from './accountUtils'
 
 const settingsToTransfer = [
   'isFleetModeEnabled',
@@ -60,7 +61,13 @@ export default () => {
   // enable proxy after wallet api token is loaded
   useAsync(async () => {
     const token = await getWalletApiToken()
-    updateClient({ proxyEnabled: true, retryCount: 1, token })
+    const address = await getAddress()
+    updateClient({
+      proxyEnabled: true,
+      retryCount: 1,
+      token,
+      networkName: getNetTypeString(address?.netType),
+    })
   }, [accountBackedUp])
 
   useAsync(async () => {
