@@ -2,38 +2,38 @@ import React from 'react'
 import DC from '@assets/images/dc.svg'
 import HST from '@assets/images/hst.svg'
 import STAKE from '@assets/images/stakeCloud.svg'
+import MOBILE from '@assets/images/mobile-icon.svg'
 import Box from '../../../../components/Box'
 import Text from '../../../../components/Text'
 import { locale } from '../../../../utils/i18n'
 
 type Props = {
-  variant: 'dc' | 'hst' | 'stake'
+  variant: 'dc' | 'hst' | 'stake' | 'mobile'
   amount?: number
 }
 
-const CurrencyBadge = ({ variant, amount }: Props) => (
-  <Box
-    flexDirection="row"
-    backgroundColor="purple300"
-    borderRadius="round"
-    alignItems="center"
-    justifyContent="center"
-    paddingHorizontal="s"
-    height={30}
-    marginRight="m"
-  >
-    {variant === 'dc' && <DC height={16} />}
-    {variant === 'hst' && <HST width={16} />}
-    {variant === 'stake' && <STAKE width={16} color="#A667F6" />}
-    <Text
-      color="white"
-      marginLeft="xs"
-      fontSize={14}
-      visible={amount !== undefined}
+const CurrencyBadge = ({ variant, amount }: Props) => {
+  if (amount === undefined) return null
+  return (
+    <Box
+      flexDirection="row"
+      backgroundColor="purple300"
+      borderRadius="round"
+      alignItems="center"
+      justifyContent="center"
+      paddingHorizontal="s"
+      height={30}
+      marginRight="m"
     >
-      {amount?.toLocaleString(locale)}
-    </Text>
-  </Box>
-)
+      {variant === 'dc' && <DC height={16} />}
+      {variant === 'hst' && <HST width={16} />}
+      {variant === 'stake' && <STAKE width={16} color="#A667F6" />}
+      {variant === 'mobile' && <MOBILE width={16} color="#A667F6" />}
+      <Text color="white" marginLeft="xs" fontSize={14}>
+        {amount?.toLocaleString(locale)}
+      </Text>
+    </Box>
+  )
+}
 
 export default CurrencyBadge
