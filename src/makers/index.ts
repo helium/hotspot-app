@@ -1,3 +1,4 @@
+import { upperFirst } from 'lodash'
 import PantherX from './panther'
 import bobcat from './bobcat'
 import cotx from './cotx'
@@ -8,7 +9,7 @@ import helium from './helium'
 import linxdot from './linxdot'
 import longAP from './longAP'
 import nebra from './nebra'
-import rak from './rak'
+import rak, { rakWireless } from './rak'
 import risinghf from './risinghf'
 import sensecap from './sensecap'
 import syncrobit from './syncrobit'
@@ -25,8 +26,9 @@ import deepernetwork from './deepernetwork'
 import dragino from './dragino'
 import { LangType, supportedLangs } from '../utils/i18n/i18nTypes'
 import { HotspotMakerLangField } from './hotspotMakerTypes'
+import { MakerType } from './makerType'
 
-export const Makers: Record<string, { id: number; supportEmail: string }> = {
+export const Makers: Record<string, MakerType> = {
   PantherX,
   bobcat,
   cotx,
@@ -37,6 +39,7 @@ export const Makers: Record<string, { id: number; supportEmail: string }> = {
   longAP,
   nebra,
   rak,
+  rakWireless,
   risinghf,
   sensecap,
   syncrobit,
@@ -144,3 +147,12 @@ export const getMakerSupportEmail = (makerId?: number): string => {
   const makerKey = Object.keys(Makers).find((m) => Makers[m].id === makerId)
   return makerKey ? Makers[makerKey].supportEmail : 'support@helium.com'
 }
+
+export const listMakers = () =>
+  Object.keys(Makers).map((makerName) => ({
+    ...Makers[makerName],
+    name: upperFirst(makerName),
+  }))
+
+export const getHotspotMaker = (hotspotType: HotspotType) =>
+  listMakers().find((m) => !!m.hotspots[hotspotType])

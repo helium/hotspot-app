@@ -38,6 +38,7 @@ export default {
     },
     confirm: {
       title: 'Confirm\nYour Words',
+      titleSignOut: 'Confirm Your\nWords To Sign Out',
       subtitle:
         'Which word below was your <b><purple>{{ordinal}} word?</purple></b>',
       forgot: 'I forgot my words',
@@ -158,6 +159,13 @@ export default {
     selection: {
       title: 'Choose\nyour Hotspot.',
       subtitle: 'What kind of Hotspot do you\nwish to add?',
+      makerAppAlert: {
+        title: 'Download Now',
+        body:
+          '{{maker}} hotspots should now be onboarded using the {{makerAppName}}',
+        visit: 'Visit Store',
+        continue: 'Continue With Helium App',
+      },
     },
     education: {
       title: 'Placing\nyour Hotspot.',
@@ -469,6 +477,7 @@ export default {
   },
   send: {
     not_valid_address: 'Not a valid Helium Wallet Address.',
+    load_failed: 'Cannot validate address. Please try again.',
     title: {
       payment: 'Send HNT',
       dcBurn: 'Burn HNT',
@@ -590,7 +599,6 @@ export default {
         convertHntToCurrency: 'Convert HNT to Currency',
         language: 'Language',
         currency: 'Currency',
-        network: 'Choose API Provider',
         signOut: 'Sign Out',
         clearMapCache: 'Clear Map Cache',
         clearMapCacheAlert: {
@@ -602,6 +610,10 @@ export default {
           title: 'Warning!',
           body:
             'You are signing out of your account. Do you have your 12 recovery words? If you don’t, you will lose access to:\n\n- your Hotspots\n- your HNT\n- your Wallet',
+        },
+        signOutForgot: {
+          title: 'Reveal Words',
+          body: 'Would you like to reveal your accounts words?',
         },
       },
     },
@@ -963,16 +975,12 @@ export default {
     status_data_only: 'Data-Only',
     status_online: 'Online',
     status_offline: 'Needs Attention',
-    status_syncing: 'Syncing',
-    relayed: 'Relayed',
     ytd: 'Your Hotspot has earned\n{{number}} HNT since {{date}}',
     status_prompt_online: {
-      title: 'Hotspot is online and syncing.',
-      subtitle_active: 'Status: Block {{hotspotBlock}} of {{currentBlock}}',
-      subtitle_starting: 'Beginning to sync...',
+      title: 'Hotspot is online and connected.',
     },
     status_prompt_offline: {
-      title: 'Hotspot is offline and not syncing.',
+      title: 'Hotspot is offline and not connected.',
     },
     options: {
       settings: 'Settings',
@@ -980,18 +988,12 @@ export default {
       share: 'Share',
     },
     no_location_title: 'No Asserted Location',
+    updating_location: 'Updating Location...',
     no_location_body: 'Pair with the Hotspot to begin.',
-    percent_synced: '{{percent}}% Synced',
-    starting_sync: 'Starting Sync...',
     data_only_prompt: {
       title: 'Data-Only Hotspot Explained',
       message:
         'These Hotspots earn HNT for transmitting data packets from sensors.\n\nThey do not affect transmit scales and do not affect Hotspot Proof-of-Coverage earnings of nearby Hotspots.',
-    },
-    relay_prompt: {
-      title: 'Hotspot is Relayed',
-      message:
-        "Hotspot's connection is being relayed through another Hotspot on the network which may affect mining. To take a Hotspot out of Relay, please visit the troubleshooting guide.",
     },
     reward_scale_prompt: {
       title: 'Transmit Scale',
@@ -1004,18 +1006,19 @@ export default {
         'The Hotspots in this list have witnessed a Beacon from {{hotspotName}} recently.\n\nFluctuations are normal and expected. The number of Hotspots will reset to zero if you update location, antenna, or elevation',
     },
     witness_desc:
-      'Over the last 5 days, this Hotspot has witnessed beacons from <b><purplemain>{{count}} Hotspot</purplemain></b>, with an average transmit scale of',
+      'Over the last 3 days, this Hotspot has witnessed beacons from <b><purplemain>{{count}} Hotspot</purplemain></b>, with an average transmit scale of',
     witness_desc_plural:
-      'Over the last 5 days, this Hotspot has witnessed beacons from <b><purplemain>{{count}} Hotspots</purplemain></b>, with an average transmit scale of',
+      'Over the last 3 days, this Hotspot has witnessed beacons from <b><purplemain>{{count}} Hotspots</purplemain></b>, with an average transmit scale of',
     witness_desc_two:
       'Hotspots are rewarded more HNT when the Hotspots they witness have higher transmit scales.',
     witness_desc_none:
-      'Over the last 5 days, this Hotspot has witnessed no beacons.',
+      'Over the last 3 days, this Hotspot has witnessed no beacons.',
     get_witnessed: 'WITNESS BEACONS',
     get_witnessed_desc:
       'Position your Hotspot so that it can hear others. Often this means moving it higher in order to increase its range.',
     your_earnings: 'Your Earnings',
     network_avg: 'Network Avg',
+    denylist: 'On Denylist',
   },
   transfer: {
     title: 'Transfer Hotspot',
@@ -1150,15 +1153,10 @@ export default {
       title: 'Unable to initiate Discovery Mode',
       message: 'Hotspot is offline, connect to internet and try again.',
     },
-    relay_prompt: {
-      title: 'Hotspot is Relayed',
-      message:
-        'Relayed Hotspots running Discovery Mode may not receive responses from neighboring Hotspots. To take a Hotspot out of Relay, please visit the troubleshooting guide.',
-    },
     session_error_prompt: {
       title: 'Unable to initiate Discovery Mode',
       message:
-        'Hotspot may be behind a relay and is not responding. Check your router settings and try again.',
+        'Hotspot is not responding. Check your router settings and try again.',
     },
     begin: {
       title: 'Discovery Mode',
@@ -1275,7 +1273,7 @@ export default {
   linkWallet: {
     title: 'Link Helium Wallet\nto {{appName}}?',
     body:
-      'By Linking Helum Wallet to Maker App, you can safely sign blockchain transactions without re-entering your seed phrase.',
+      'By Linking Helium Wallet to Maker App, you can safely sign blockchain transactions without re-entering your seed phrase.',
     yes: 'Yes, Link my Wallet',
     no: 'No, Cancel',
   },

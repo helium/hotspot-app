@@ -1,0 +1,13 @@
+/* 
+  Localizable.strings
+  Helium
+
+  Created by Luis F. Perrone on 1/23/22.
+  
+*/
+
+"Wallet_Title" = "My Wallet";
+"Balance_Widget_Title" = "Helium Balance Widget";
+"Balance_Widget_Description" = "Track your daily earnings and current balance.";
+"Hotspots_Widget_Title" = "Helium Hotspots Widget";
+"Hotspots_Widget_Description" = "Track your hotspots performance.";

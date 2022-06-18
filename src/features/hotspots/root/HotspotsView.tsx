@@ -14,6 +14,7 @@ import Map, { NO_FEATURES } from '../../../components/Map'
 import { RootState } from '../../../store/rootReducer'
 import hotspotDetailsSlice, {
   fetchHotspotData,
+  fetchHotspotDenylists,
 } from '../../../store/hotspotDetails/hotspotDetailsSlice'
 import HotspotsViewHeader from './HotspotsViewHeader'
 import HotspotsList from './HotspotsList'
@@ -110,6 +111,9 @@ const HotspotsView = ({
   )
   const loadingHotspotsForHex = useSelector(
     (state: RootState) => state.discovery.loadingHotspotsForHex,
+  )
+  const pendingTxns = useSelector(
+    (state: RootState) => state.activity.txns.pending,
   )
   const [selectedHexId, setSelectedHexId] = useState<string>()
   const [selectedHotspotIndex, setSelectedHotspotIndex] = useState(0)
@@ -300,6 +304,9 @@ const HotspotsView = ({
         if (foundIndex >= 0) {
           index = foundIndex
         }
+      }
+      if (hotspots[index]?.address) {
+        dispatch(fetchHotspotDenylists(hotspots[index].address))
       }
       setSelectedHotspotIndex(index)
       if (hotspots?.length) {
@@ -532,6 +539,13 @@ const HotspotsView = ({
     [t],
   )
 
+  const showMapOverlay = useMemo(() => {
+    if (pendingTxns.data.find((p) => p.txn.gateway === hotspotAddress)) {
+      return 'updating_location'
+    }
+    if (!hotspotHasLocation) return 'no_location'
+  }, [hotspotAddress, hotspotHasLocation, pendingTxns.data])
+
   return (
     <>
       <Box flex={1} flexDirection="column" justifyContent="space-between">
@@ -564,7 +578,7 @@ const HotspotsView = ({
               animationDuration={800}
               onHexSelected={onMapHexSelected}
               interactive={hotspotHasLocation}
-              showNoLocation={!hotspotHasLocation}
+              showOverlay={showMapOverlay}
               showNearbyHotspots
               showH3Grid
               coverageFeatures={coverageFeatures}

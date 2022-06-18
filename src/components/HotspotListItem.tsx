@@ -8,14 +8,16 @@ import Balance, { NetworkTokens } from '@helium/currency'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import { Pressable } from 'react-native'
 import { useAsync } from 'react-async-hook'
+import { useSelector } from 'react-redux'
 import Box from './Box'
 import Text from './Text'
 import useCurrency from '../utils/useCurrency'
-import { isDataOnly, isRelay } from '../utils/hotspotUtils'
+import { isDataOnly } from '../utils/hotspotUtils'
 import HexBadge from '../features/hotspots/details/HexBadge'
 import { useColors } from '../theme/themeHooks'
 import Signal from '../assets/images/signal.svg'
 import VisibilityOff from '../assets/images/visibility_off.svg'
+import { RootState } from '../store/rootReducer'
 
 type HotspotListItemProps = {
   onPress?: (hotspot: Hotspot) => void
@@ -26,7 +28,6 @@ type HotspotListItemProps = {
   showAddress?: boolean
   showRewardScale?: boolean
   distanceAway?: string
-  showRelayStatus?: boolean
   showAntennaDetails?: boolean
   pressable?: boolean
   hidden?: boolean
@@ -40,7 +41,6 @@ const HotspotListItem = ({
   showCarot = false,
   showAddress = true,
   showRewardScale = false,
-  showRelayStatus = false,
   showAntennaDetails = false,
   pressable = true,
   distanceAway,
@@ -51,6 +51,9 @@ const HotspotListItem = ({
   const { toggleConvertHntToCurrency, hntBalanceToDisplayVal } = useCurrency()
   const handlePress = useCallback(() => onPress?.(gateway), [gateway, onPress])
   const [reward, setReward] = useState('')
+  const pendingTxns = useSelector(
+    (state: RootState) => state.activity.txns.pending,
+  )
 
   useAsync(async () => {
     if (!totalReward) return
@@ -60,16 +63,15 @@ const HotspotListItem = ({
   }, [hntBalanceToDisplayVal, totalReward])
 
   const locationText = useMemo(() => {
+    if (pendingTxns.data.find((p) => p.txn.gateway === gateway.address)) {
+      return t('hotspot_details.updating_location')
+    }
     const { geocode: geo } = gateway as Hotspot
     if (!geo || (!geo.longStreet && !geo.longCity && !geo.shortCountry)) {
       return t('hotspot_details.no_location_title')
     }
     return `${geo.longStreet}, ${geo.longCity}, ${geo.shortCountry}`
-  }, [gateway, t])
-
-  const isRelayed = useMemo(() => isRelay(gateway?.status?.listenAddrs), [
-    gateway?.status,
-  ])
+  }, [gateway, pendingTxns.data, t])
 
   const statusBackgroundColor = useMemo(() => {
     if (hidden || isDataOnly(gateway)) return 'grayLightText'
@@ -199,17 +201,6 @@ const HotspotListItem = ({
                       </Text>
                     )}
                   </Box>
-                )}
-                {showRelayStatus && isRelayed && (
-                  <Text
-                    color="grayText"
-                    variant="regular"
-                    fontSize={12}
-                    marginLeft="s"
-                    maxFontSizeMultiplier={1.2}
-                  >
-                    {t('hotspot_details.relayed')}
-                  </Text>
                 )}
               </Box>
             </Box>

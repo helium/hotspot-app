@@ -10,11 +10,7 @@ const breadcrumbOpts = { type: 'HTTP Request', category: 'walletClient' }
 const userAgent = `helium-hotspot-app-${getVersion()}-${
   Platform.OS
 }-wallet-client`
-let network = 'stakejoy'
-
-export const updateNetwork = (nextNetwork: string) => {
-  network = nextNetwork
-}
+const network = 'helium'
 
 const makeRequest = async (
   url: string,

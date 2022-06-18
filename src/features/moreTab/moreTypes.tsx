@@ -12,6 +12,7 @@ export type MoreStackParamList = {
     pinReset?: boolean
   }
   RevealWordsScreen: undefined
+  ConfirmSignout: undefined
 }
 
 export type MoreNavigationProp = StackNavigationProp<MoreStackParamList>

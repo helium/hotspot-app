@@ -25,7 +25,7 @@ export type HotspotActivityType = typeof HotspotActivityKeys[number]
 export const HotspotActivityFilters = {
   all: [],
   rewards: ['rewards_v1', 'rewards_v2'],
-  challenge_activity: ['poc_receipts_v1'],
+  challenge_activity: ['poc_receipts_v1', 'poc_receipts_v2'],
   data_transfer: ['state_channel_close_v1'],
   challenge_construction: ['poc_request_v1'],
   consensus_group: ['consensus_group_v1'],

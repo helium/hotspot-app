@@ -38,6 +38,26 @@
 		96312B7273D51AF24B1598D2 /* libPods-Helium-HeliumTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A72051727B457342FC5B510 /* libPods-Helium-HeliumTests.a */; };
 		964E9C302638CD0C00CCBCCC /* bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 964E9C2F2638CD0C00CCBCCC /* bridge.swift */; };
 		9C95565CDA4073E9382DDAB6 /* libPods-OneSignalNotificationServiceExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D7573A5CEBF5290F082A50D /* libPods-OneSignalNotificationServiceExtension.a */; };
+		9D579E2227952EE8000EFCD5 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D579E2127952EE8000EFCD5 /* WidgetKit.framework */; };
+		9D579E2427952EE8000EFCD5 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D579E2327952EE8000EFCD5 /* SwiftUI.framework */; };
+		9D579E2727952EE9000EFCD5 /* HeliumBalanceWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D579E2627952EE9000EFCD5 /* HeliumBalanceWidget.swift */; };
+		9D579E2A27952EEC000EFCD5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D579E2927952EEC000EFCD5 /* Assets.xcassets */; };
+		9D579E2C27952EEC000EFCD5 /* HeliumWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 9D579E2827952EE9000EFCD5 /* HeliumWidget.intentdefinition */; };
+		9D579E2D27952EEC000EFCD5 /* HeliumWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 9D579E2827952EE9000EFCD5 /* HeliumWidget.intentdefinition */; };
+		9D579E3027952EEC000EFCD5 /* HeliumWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 9D579E2027952EE8000EFCD5 /* HeliumWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		9D5D86C8279A3D9000A8B5B6 /* WidgetKitHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D5BBA30279A1A9B002076AE /* WidgetKitHelper.swift */; };
+		9D72C0B22797677B004F1A00 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		9D72C0B527976CBC004F1A00 /* HeliumBalanceWidgetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D72C0B327976C0C004F1A00 /* HeliumBalanceWidgetProvider.swift */; };
+		9D72C0B82797BDCB004F1A00 /* HeliumBalanceWidgetEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D72C0B62797BD42004F1A00 /* HeliumBalanceWidgetEntryView.swift */; };
+		9D72C0BB2797BE9F004F1A00 /* HeliumHotspotsWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D72C0B92797BE9C004F1A00 /* HeliumHotspotsWidgetView.swift */; };
+		9D72C0C02797BF04004F1A00 /* HeliumHotspotsWidgetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D72C0BE2797BEED004F1A00 /* HeliumHotspotsWidgetProvider.swift */; };
+		9D72C0C22797C017004F1A00 /* HeliumWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D72C0C12797C017004F1A00 /* HeliumWidgetBundle.swift */; };
+		9D72C0C42797C06F004F1A00 /* HeliumHotspotsWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D72C0C32797C06F004F1A00 /* HeliumHotspotsWidget.swift */; };
+		9D72C0C627991246004F1A00 /* HeliumHotspotListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D72C0C527991246004F1A00 /* HeliumHotspotListItemView.swift */; };
+		9DF7AD7F279DB89D00E7CAEC /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF7AD7D279DB7A100E7CAEC /* Utils.swift */; };
+		9DF7AD83279DCED000E7CAEC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9DF7AD85279DCED000E7CAEC /* Localizable.strings */; };
+		9DF7AD8A27BCA04000E7CAEC /* HeliumHotspotsWidgetNetworkCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF7AD8927BCA04000E7CAEC /* HeliumHotspotsWidgetNetworkCalls.swift */; };
+		9DF7AD8C27BCA32F00E7CAEC /* HeliumBalanceWidgetNetworkCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF7AD8B27BCA32F00E7CAEC /* HeliumBalanceWidgetNetworkCalls.swift */; };
 		A10E8BD929D049EDA161260D /* NotoSerif-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BF9582A476D94209AF37866B /* NotoSerif-Italic.ttf */; };
 		A42E05B8AD2D452DBA997CF2 /* Soleil-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = E60DB270CEE74027B4039F4A /* Soleil-Regular.otf */; };
 		A63A7C36C9E948809F57B404 /* Inter-ExtraBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E61F2B2B732547DEB1C3219F /* Inter-ExtraBold.otf */; };
@@ -63,6 +83,13 @@
 			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
 			remoteInfo = Helium;
 		};
+		9D579E2E27952EEC000EFCD5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9D579E1F27952EE8000EFCD5;
+			remoteInfo = HeliumWidgetExtension;
+		};
 		F8B0E21F256300AD00EB1E73 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
@@ -79,6 +106,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				9D579E3027952EEC000EFCD5 /* HeliumWidgetExtension.appex in Embed App Extensions */,
 				F8B0E221256300AD00EB1E73 /* OneSignalNotificationServiceExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
@@ -124,7 +152,30 @@
 		95CD4A187085862594C8E317 /* Pods-OneSignalNotificationServiceExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OneSignalNotificationServiceExtension.debug.xcconfig"; path = "Target Support Files/Pods-OneSignalNotificationServiceExtension/Pods-OneSignalNotificationServiceExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		964E9C2E2638CD0B00CCBCCC /* Helium-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Helium-Bridging-Header.h"; sourceTree = "<group>"; };
 		964E9C2F2638CD0C00CCBCCC /* bridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bridge.swift; sourceTree = "<group>"; };
+		96C64BDB27EBF09400B70B24 /* HeliumWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HeliumWidgetExtension.entitlements; sourceTree = "<group>"; };
 		9863D0E9676144BB8873C9FF /* Inter-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Light.otf"; path = "../src/assets/fonts/Inter-Light.otf"; sourceTree = "<group>"; };
+		9D579E2027952EE8000EFCD5 /* HeliumWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = HeliumWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		9D579E2127952EE8000EFCD5 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		9D579E2327952EE8000EFCD5 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		9D579E2627952EE9000EFCD5 /* HeliumBalanceWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeliumBalanceWidget.swift; sourceTree = "<group>"; };
+		9D579E2827952EE9000EFCD5 /* HeliumWidget.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = HeliumWidget.intentdefinition; sourceTree = "<group>"; };
+		9D579E2927952EEC000EFCD5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9D579E2B27952EEC000EFCD5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9D5BBA30279A1A9B002076AE /* WidgetKitHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetKitHelper.swift; sourceTree = "<group>"; };
+		9D72C0B327976C0C004F1A00 /* HeliumBalanceWidgetProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeliumBalanceWidgetProvider.swift; sourceTree = "<group>"; };
+		9D72C0B62797BD42004F1A00 /* HeliumBalanceWidgetEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeliumBalanceWidgetEntryView.swift; sourceTree = "<group>"; };
+		9D72C0B92797BE9C004F1A00 /* HeliumHotspotsWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeliumHotspotsWidgetView.swift; sourceTree = "<group>"; };
+		9D72C0BE2797BEED004F1A00 /* HeliumHotspotsWidgetProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeliumHotspotsWidgetProvider.swift; sourceTree = "<group>"; };
+		9D72C0C12797C017004F1A00 /* HeliumWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeliumWidgetBundle.swift; sourceTree = "<group>"; };
+		9D72C0C32797C06F004F1A00 /* HeliumHotspotsWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeliumHotspotsWidget.swift; sourceTree = "<group>"; };
+		9D72C0C527991246004F1A00 /* HeliumHotspotListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeliumHotspotListItemView.swift; sourceTree = "<group>"; };
+		9DF7AD7D279DB7A100E7CAEC /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		9DF7AD84279DCED000E7CAEC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		9DF7AD86279DCEE500E7CAEC /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		9DF7AD87279DCEE700E7CAEC /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
+		9DF7AD88279DE53000E7CAEC /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		9DF7AD8927BCA04000E7CAEC /* HeliumHotspotsWidgetNetworkCalls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeliumHotspotsWidgetNetworkCalls.swift; sourceTree = "<group>"; };
+		9DF7AD8B27BCA32F00E7CAEC /* HeliumBalanceWidgetNetworkCalls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeliumBalanceWidgetNetworkCalls.swift; sourceTree = "<group>"; };
 		9EB90AF3A0FA454484F833EB /* NotoSerif-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSerif-BoldItalic.ttf"; path = "../src/assets/fonts/NotoSerif-BoldItalic.ttf"; sourceTree = "<group>"; };
 		A07D7D3FE6559D874629BF61 /* Pods-Helium.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Helium.debug.xcconfig"; path = "Target Support Files/Pods-Helium/Pods-Helium.debug.xcconfig"; sourceTree = "<group>"; };
 		A479F1315370424BA4C2BF03 /* InputMono-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InputMono-Light.ttf"; path = "../src/assets/fonts/InputMono-Light.ttf"; sourceTree = "<group>"; };
@@ -171,6 +222,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9D579E1D27952EE8000EFCD5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D579E2427952EE8000EFCD5 /* SwiftUI.framework in Frameworks */,
+				9D579E2227952EE8000EFCD5 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F8B0E217256300AD00EB1E73 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -212,6 +272,7 @@
 				13B07FB71A68108700A75B9A /* main.m */,
 				50220072260B817100BE34C9 /* RCTDateModule.h */,
 				50220073260B81B500BE34C9 /* RCTDateModule.m */,
+				9D5BBA30279A1A9B002076AE /* WidgetKitHelper.swift */,
 				964E9C2F2638CD0C00CCBCCC /* bridge.swift */,
 				964E9C2E2638CD0B00CCBCCC /* Helium-Bridging-Header.h */,
 			);
@@ -226,6 +287,8 @@
 				E42FEF544D7EC4DA196E96C2 /* libPods-Helium.a */,
 				7A72051727B457342FC5B510 /* libPods-Helium-HeliumTests.a */,
 				2D7573A5CEBF5290F082A50D /* libPods-OneSignalNotificationServiceExtension.a */,
+				9D579E2127952EE8000EFCD5 /* WidgetKit.framework */,
+				9D579E2327952EE8000EFCD5 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -287,10 +350,12 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				96C64BDB27EBF09400B70B24 /* HeliumWidgetExtension.entitlements */,
 				13B07FAE1A68108700A75B9A /* Helium */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* HeliumTests */,
 				F8B0E21B256300AD00EB1E73 /* OneSignalNotificationServiceExtension */,
+				9D579E2527952EE9000EFCD5 /* HeliumWidget */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBB8A579C848048078120971 /* Pods */,
@@ -308,8 +373,48 @@
 				13B07F961A680F5B00A75B9A /* Helium.app */,
 				00E356EE1AD99517003FC87E /* HeliumTests.xctest */,
 				F8B0E21A256300AD00EB1E73 /* OneSignalNotificationServiceExtension.appex */,
+				9D579E2027952EE8000EFCD5 /* HeliumWidgetExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		9D579E2527952EE9000EFCD5 /* HeliumWidget */ = {
+			isa = PBXGroup;
+			children = (
+				9DF7AD88279DE53000E7CAEC /* README.md */,
+				9D72C0C12797C017004F1A00 /* HeliumWidgetBundle.swift */,
+				9D72C0BD2797BEC4004F1A00 /* HeliumBalanceWidget */,
+				9D72C0BC2797BEB0004F1A00 /* HeliumHotspotsWidget */,
+				9D579E2827952EE9000EFCD5 /* HeliumWidget.intentdefinition */,
+				9D579E2927952EEC000EFCD5 /* Assets.xcassets */,
+				9D579E2B27952EEC000EFCD5 /* Info.plist */,
+				9DF7AD7D279DB7A100E7CAEC /* Utils.swift */,
+				9DF7AD85279DCED000E7CAEC /* Localizable.strings */,
+			);
+			path = HeliumWidget;
+			sourceTree = "<group>";
+		};
+		9D72C0BC2797BEB0004F1A00 /* HeliumHotspotsWidget */ = {
+			isa = PBXGroup;
+			children = (
+				9D72C0C32797C06F004F1A00 /* HeliumHotspotsWidget.swift */,
+				9D72C0B92797BE9C004F1A00 /* HeliumHotspotsWidgetView.swift */,
+				9D72C0C527991246004F1A00 /* HeliumHotspotListItemView.swift */,
+				9D72C0BE2797BEED004F1A00 /* HeliumHotspotsWidgetProvider.swift */,
+				9DF7AD8927BCA04000E7CAEC /* HeliumHotspotsWidgetNetworkCalls.swift */,
+			);
+			path = HeliumHotspotsWidget;
+			sourceTree = "<group>";
+		};
+		9D72C0BD2797BEC4004F1A00 /* HeliumBalanceWidget */ = {
+			isa = PBXGroup;
+			children = (
+				9D579E2627952EE9000EFCD5 /* HeliumBalanceWidget.swift */,
+				9D72C0B327976C0C004F1A00 /* HeliumBalanceWidgetProvider.swift */,
+				9D72C0B62797BD42004F1A00 /* HeliumBalanceWidgetEntryView.swift */,
+				9DF7AD8B27BCA32F00E7CAEC /* HeliumBalanceWidgetNetworkCalls.swift */,
+			);
+			path = HeliumBalanceWidget;
 			sourceTree = "<group>";
 		};
 		B76ACDA5BE791373FE56B1B5 /* HeliumTests */ = {
@@ -395,11 +500,29 @@
 			);
 			dependencies = (
 				F8B0E220256300AD00EB1E73 /* PBXTargetDependency */,
+				9D579E2F27952EEC000EFCD5 /* PBXTargetDependency */,
 			);
 			name = Helium;
 			productName = Helium;
 			productReference = 13B07F961A680F5B00A75B9A /* Helium.app */;
 			productType = "com.apple.product-type.application";
+		};
+		9D579E1F27952EE8000EFCD5 /* HeliumWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9D579E3327952EEC000EFCD5 /* Build configuration list for PBXNativeTarget "HeliumWidgetExtension" */;
+			buildPhases = (
+				9D579E1C27952EE8000EFCD5 /* Sources */,
+				9D579E1D27952EE8000EFCD5 /* Frameworks */,
+				9D579E1E27952EE8000EFCD5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HeliumWidgetExtension;
+			productName = HeliumWidgetExtension;
+			productReference = 9D579E2027952EE8000EFCD5 /* HeliumWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 		F8B0E219256300AD00EB1E73 /* OneSignalNotificationServiceExtension */ = {
 			isa = PBXNativeTarget;
@@ -425,7 +548,7 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1220;
+				LastSwiftUpdateCheck = 1320;
 				LastUpgradeCheck = 1130;
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
@@ -435,6 +558,11 @@
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = PVM9KJZ2AD;
 						LastSwiftMigration = 1250;
+					};
+					9D579E1F27952EE8000EFCD5 = {
+						CreatedOnToolsVersion = 13.2.1;
+						DevelopmentTeam = PVM9KJZ2AD;
+						ProvisioningStyle = Automatic;
 					};
 					F8B0E219256300AD00EB1E73 = {
 						CreatedOnToolsVersion = 12.2;
@@ -449,6 +577,8 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				ja,
+				ko,
 				Base,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
@@ -459,6 +589,7 @@
 				13B07F861A680F5B00A75B9A /* Helium */,
 				00E356ED1AD99517003FC87E /* HeliumTests */,
 				F8B0E219256300AD00EB1E73 /* OneSignalNotificationServiceExtension */,
+				9D579E1F27952EE8000EFCD5 /* HeliumWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -509,6 +640,16 @@
 				F6789F5F69A34F20B503AC2E /* Inter-Thin.otf in Resources */,
 				19324A79480445D6A4F2865D /* Inter-ThinItalic.otf in Resources */,
 				317C3D6FA3594073A9892514 /* Inter-V.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9D579E1E27952EE8000EFCD5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D579E2A27952EEC000EFCD5 /* Assets.xcassets in Resources */,
+				9DF7AD83279DCED000E7CAEC /* Localizable.strings in Resources */,
+				9D72C0B22797677B004F1A00 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -735,11 +876,32 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D579E2D27952EEC000EFCD5 /* HeliumWidget.intentdefinition in Sources */,
 				964E9C302638CD0C00CCBCCC /* bridge.swift in Sources */,
+				9D5D86C8279A3D9000A8B5B6 /* WidgetKitHelper.swift in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				50220074260B81B500BE34C9 /* RCTDateModule.m in Sources */,
 				BC8AE2F359263CFDB1F5DAD7 /* ExpoModulesProvider.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9D579E1C27952EE8000EFCD5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D72C0B82797BDCB004F1A00 /* HeliumBalanceWidgetEntryView.swift in Sources */,
+				9D72C0C627991246004F1A00 /* HeliumHotspotListItemView.swift in Sources */,
+				9D72C0C42797C06F004F1A00 /* HeliumHotspotsWidget.swift in Sources */,
+				9D579E2C27952EEC000EFCD5 /* HeliumWidget.intentdefinition in Sources */,
+				9D579E2727952EE9000EFCD5 /* HeliumBalanceWidget.swift in Sources */,
+				9DF7AD7F279DB89D00E7CAEC /* Utils.swift in Sources */,
+				9DF7AD8A27BCA04000E7CAEC /* HeliumHotspotsWidgetNetworkCalls.swift in Sources */,
+				9D72C0B527976CBC004F1A00 /* HeliumBalanceWidgetProvider.swift in Sources */,
+				9D72C0C22797C017004F1A00 /* HeliumWidgetBundle.swift in Sources */,
+				9D72C0BB2797BE9F004F1A00 /* HeliumHotspotsWidgetView.swift in Sources */,
+				9D72C0C02797BF04004F1A00 /* HeliumHotspotsWidgetProvider.swift in Sources */,
+				9DF7AD8C27BCA32F00E7CAEC /* HeliumBalanceWidgetNetworkCalls.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -759,12 +921,30 @@
 			target = 13B07F861A680F5B00A75B9A /* Helium */;
 			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
 		};
+		9D579E2F27952EEC000EFCD5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9D579E1F27952EE8000EFCD5 /* HeliumWidgetExtension */;
+			targetProxy = 9D579E2E27952EEC000EFCD5 /* PBXContainerItemProxy */;
+		};
 		F8B0E220256300AD00EB1E73 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = F8B0E219256300AD00EB1E73 /* OneSignalNotificationServiceExtension */;
 			targetProxy = F8B0E21F256300AD00EB1E73 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		9DF7AD85279DCED000E7CAEC /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9DF7AD84279DCED000E7CAEC /* en */,
+				9DF7AD86279DCEE500E7CAEC /* ja */,
+				9DF7AD87279DCEE700E7CAEC /* ko */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
@@ -786,6 +966,7 @@
 					"$(inherited)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Helium.app/Helium";
 			};
@@ -807,6 +988,7 @@
 					"$(inherited)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Helium.app/Helium";
 			};
@@ -827,13 +1009,14 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = Helium/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 3.11.0;
+				MARKETING_VERSION = 4.1.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.helium.mobile.wallet;
+				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)";
 				PRODUCT_NAME = Helium;
 				SWIFT_OBJC_BRIDGING_HEADER = "Helium-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -857,13 +1040,14 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = Helium/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 3.11.0;
+				MARKETING_VERSION = 4.1.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.helium.mobile.wallet;
+				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)";
 				PRODUCT_NAME = Helium;
 				SWIFT_OBJC_BRIDGING_HEADER = "Helium-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -905,7 +1089,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				EXCLUDED_ARCHS = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 ";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -925,12 +1109,13 @@
 				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
-					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
+					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.2/$(PLATFORM_NAME)\"",
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Debug;
 		};
@@ -967,7 +1152,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				EXCLUDED_ARCHS = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 ";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -980,12 +1165,92 @@
 				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
-					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
+					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.2/$(PLATFORM_NAME)\"",
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		9D579E3127952EEC000EFCD5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = HeliumWidgetExtensionDebug.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = PVM9KJZ2AD;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = HeliumWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = HeliumWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = "";
+				MARKETING_VERSION = 4.1.1;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.helium.mobile.wallet.HeliumWidget;
+				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9D579E3227952EEC000EFCD5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = HeliumWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = PVM9KJZ2AD;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = HeliumWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = HeliumWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = "";
+				MARKETING_VERSION = 4.1.1;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.helium.mobile.wallet.HeliumWidget;
+				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1009,10 +1274,11 @@
 				INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 3.11.0;
+				MARKETING_VERSION = 4.1.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.helium.mobile.wallet.OneSignalNotificationServiceExtension;
+				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -1042,9 +1308,10 @@
 				INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 3.11.0;
+				MARKETING_VERSION = 4.1.1;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.helium.mobile.wallet.OneSignalNotificationServiceExtension;
+				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -1079,6 +1346,15 @@
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
 				83CBBA211A601CBA00E9B192 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9D579E3327952EEC000EFCD5 /* Build configuration list for PBXNativeTarget "HeliumWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9D579E3127952EEC000EFCD5 /* Debug */,
+				9D579E3227952EEC000EFCD5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

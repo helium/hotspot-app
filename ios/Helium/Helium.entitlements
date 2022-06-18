@@ -11,6 +11,7 @@
 	<key>com.apple.security.application-groups</key>
 	<array>
 		<string>group.com.helium.mobile.wallet.onesignal</string>
+		<string>group.com.helium.mobile.wallet.widget</string>
 	</array>
 </dict>
 </plist>

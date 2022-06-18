@@ -3,7 +3,7 @@ import Client, {
   Hotspot,
   NaturalDate,
   Network,
-  PocReceiptsV1,
+  PocReceiptsV2,
   Validator,
 } from '@helium/http'
 import { Transaction } from '@helium/transactions'
@@ -24,6 +24,7 @@ const userAgent = `helium-hotspot-app-${getVersion()}-${Platform.OS}-js-client`
 
 const baseURL = Config.HTTP_CLIENT_PROXY_URL
 
+// default network to production until we have a wallet api token for the proxy
 let client = new Client(Network.production, {
   retry: 1,
   name: userAgent,
@@ -45,7 +46,7 @@ export const updateClient = ({
   if (token) {
     headers.Authorization = token
   }
-  let network = networkName === 'helium' ? Network.production : Network.stakejoy
+  let network = Network.production
   if (proxyEnabled) {
     network = new Network({ baseURL, version: 1 })
   }
@@ -143,6 +144,21 @@ export const getValidatorDetails = async (
 export const getHotspotDetails = async (address: string): Promise<Hotspot> => {
   Logger.breadcrumb('getHotspotDetails', breadcrumbOpts)
   return client.hotspots.get(address)
+}
+
+export const getHotspotDenylists = async (
+  address: string,
+): Promise<string[]> => {
+  Logger.breadcrumb('getHotspotDenylistDetails', breadcrumbOpts)
+  try {
+    const denylistResponse = await (
+      await fetch(`https://denylist-api.herokuapp.com/api/hotspots/${address}`)
+    ).json()
+    return denylistResponse.denylists
+  } catch (e) {
+    Logger.error(e)
+    return []
+  }
 }
 
 const getRewardsRange = (numDaysBack: number) => {
@@ -270,7 +286,7 @@ export const getHotspotsLastChallengeActivity = async (
   const hotspotActivityList = await client
     .hotspot(gatewayAddress)
     .activity.list({
-      filterTypes: ['poc_receipts_v1', 'poc_request_v1'],
+      filterTypes: ['poc_receipts_v1', 'poc_receipts_v2', 'poc_request_v1'],
     })
   const [lastHotspotActivity] = hotspotActivityList
     ? await hotspotActivityList?.take(1)
@@ -278,7 +294,7 @@ export const getHotspotsLastChallengeActivity = async (
   if (lastHotspotActivity && lastHotspotActivity.time) {
     const dateLastActive = new Date(lastHotspotActivity.time * 1000)
     return {
-      block: (lastHotspotActivity as PocReceiptsV1).height,
+      block: (lastHotspotActivity as PocReceiptsV2).height,
       text: fromNow(dateLastActive)?.toUpperCase(),
     }
   }

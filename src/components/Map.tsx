@@ -21,6 +21,7 @@ import {
   Pressable,
   StyleProp,
   ViewStyle,
+  StyleSheet,
 } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { h3ToGeo } from 'h3-js'
@@ -36,6 +37,7 @@ import { useColors } from '../theme/themeHooks'
 import Coverage, { CoverageFeatures } from './Coverage'
 import { distance } from '../utils/location'
 import LocationIcon from '../assets/images/location-icon.svg'
+import BlurBox from './BlurBox'
 
 const defaultLngLat = [-122.419418, 37.774929] // San Francisco
 
@@ -62,7 +64,7 @@ type Props = BoxProps<Theme> & {
   minZoomLevel?: number
   interactive?: boolean
   showUserLocation?: boolean
-  showNoLocation?: boolean
+  showOverlay?: 'no_location' | 'updating_location'
   showNearbyHotspots?: boolean
   showH3Grid?: boolean
   coverageFeatures?: CoverageFeatures
@@ -84,7 +86,7 @@ const Map = ({
   minZoomLevel = 0,
   interactive = true,
   onHexSelected = () => {},
-  showNoLocation,
+  showOverlay,
   showNearbyHotspots = false,
   showH3Grid = false,
   followedHotspots,
@@ -286,7 +288,7 @@ const Map = ({
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...props}
       >
-        {showNoLocation && (
+        {showOverlay === 'no_location' && (
           <Box
             position="absolute"
             zIndex={100}
@@ -305,6 +307,16 @@ const Map = ({
               {t('hotspot_details.no_location_body')}
             </Text>
           </Box>
+        )}
+        {showOverlay === 'updating_location' && (
+          <BlurBox
+            style={StyleSheet.absoluteFill}
+            zIndex={999999999}
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Text variant="h2">{t('hotspot_details.updating_location')}</Text>
+          </BlurBox>
         )}
         <MapboxGL.MapView
           ref={map}

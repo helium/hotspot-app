@@ -10,6 +10,7 @@ import AccountCreatePinScreen from '../onboarding/accountCreatePin/AccountCreate
 import AccountConfirmPinScreen from '../onboarding/accountConfirmPin/AccountConfirmPinScreen'
 import { RootStackParamList } from '../../navigation/main/tabTypes'
 import RevealWordsScreen from './reveal/RevealWordsScreen'
+import ConfirmSignoutScreen from './ConfirmSignoutScreen'
 
 const MoreStack = createStackNavigator<MoreStackParamList>()
 
@@ -42,6 +43,10 @@ const More = ({ navigation, route }: Props) => {
       <MoreStack.Screen
         name="RevealWordsScreen"
         component={RevealWordsScreen}
+      />
+      <MoreStack.Screen
+        name="ConfirmSignout"
+        component={ConfirmSignoutScreen}
       />
     </MoreStack.Navigator>
   )
