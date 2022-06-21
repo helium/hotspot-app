@@ -286,7 +286,12 @@ export const getHotspotsLastChallengeActivity = async (
   const hotspotActivityList = await client
     .hotspot(gatewayAddress)
     .activity.list({
-      filterTypes: ['poc_receipts_v1', 'poc_receipts_v2', 'poc_request_v1'],
+      filterTypes: [
+        'poc_receipts_v1',
+        'poc_receipts_v2',
+        'poc_request_v1',
+        'state_channel_close_v1',
+      ],
     })
   const [lastHotspotActivity] = hotspotActivityList
     ? await hotspotActivityList?.take(1)
