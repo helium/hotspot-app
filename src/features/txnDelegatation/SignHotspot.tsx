@@ -1,7 +1,7 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Linking } from 'react-native'
+import { Linking, ScrollView } from 'react-native'
 import {
   AddGateway,
   WalletLink,
@@ -231,42 +231,32 @@ const SignHotspot = () => {
       padding="xl"
       justifyContent="center"
     >
-      <Text variant="bold" fontSize={34} adjustsFontSizeToFit>
+      <Text
+        variant="bold"
+        fontSize={34}
+        adjustsFontSizeToFit
+        maxFontSizeMultiplier={1}
+      >
         {title}
       </Text>
 
-      <Box backgroundColor="white" borderRadius="l" padding="l" marginTop="l">
-        <Text variant="regular" fontSize={16} color="purpleText">
-          {t('signHotspot.name')}
-        </Text>
-        <Text
-          variant="bold"
-          fontSize={20}
-          color="primaryBackground"
-          marginBottom="m"
-        >
-          {name}
-        </Text>
-        {location && (
-          <>
-            <Text variant="regular" fontSize={16} color="purpleText">
-              {t('signHotspot.location')}
-            </Text>
-            <Text
-              variant="bold"
-              fontSize={20}
-              color="primaryBackground"
-              marginBottom="m"
-            >
-              {location}
-            </Text>
-          </>
-        )}
-        <Box flexDirection="row">
-          {locationTxn?.gain !== undefined && (
-            <Box marginEnd="xxl">
+      <ScrollView>
+        <Box backgroundColor="white" borderRadius="l" padding="l" marginTop="l">
+          <Text variant="regular" fontSize={16} color="purpleText">
+            {t('signHotspot.name')}
+          </Text>
+          <Text
+            variant="bold"
+            fontSize={20}
+            color="primaryBackground"
+            marginBottom="m"
+          >
+            {name}
+          </Text>
+          {location && (
+            <>
               <Text variant="regular" fontSize={16} color="purpleText">
-                {t('signHotspot.gain')}
+                {t('signHotspot.location')}
               </Text>
               <Text
                 variant="bold"
@@ -274,67 +264,84 @@ const SignHotspot = () => {
                 color="primaryBackground"
                 marginBottom="m"
               >
-                {locationTxn.gain}
+                {location}
               </Text>
-            </Box>
+            </>
           )}
-          {locationTxn?.elevation !== undefined && (
-            <Box>
+          <Box flexDirection="row">
+            {locationTxn?.gain !== undefined && (
+              <Box marginEnd="xxl">
+                <Text variant="regular" fontSize={16} color="purpleText">
+                  {t('signHotspot.gain')}
+                </Text>
+                <Text
+                  variant="bold"
+                  fontSize={20}
+                  color="primaryBackground"
+                  marginBottom="m"
+                >
+                  {locationTxn.gain}
+                </Text>
+              </Box>
+            )}
+            {locationTxn?.elevation !== undefined && (
+              <Box>
+                <Text variant="regular" fontSize={16} color="purpleText">
+                  {t('signHotspot.elevation')}
+                </Text>
+                <Text
+                  variant="bold"
+                  fontSize={20}
+                  color="primaryBackground"
+                  marginBottom="m"
+                >
+                  {locationTxn.elevation}
+                </Text>
+              </Box>
+            )}
+          </Box>
+          {transferTxn?.newOwner !== undefined && (
+            <>
               <Text variant="regular" fontSize={16} color="purpleText">
-                {t('signHotspot.elevation')}
+                {t('signHotspot.newOwner')}
               </Text>
               <Text
                 variant="bold"
-                fontSize={20}
+                fontSize={16}
                 color="primaryBackground"
                 marginBottom="m"
               >
-                {locationTxn.elevation}
+                {transferTxn.newOwner.b58}
               </Text>
-            </Box>
+            </>
+          )}
+          {!!parsedToken?.address && (
+            <>
+              <Text variant="regular" fontSize={16} color="purpleText">
+                {t('signHotspot.owner')}
+              </Text>
+              <Text
+                variant="bold"
+                fontSize={16}
+                color="primaryBackground"
+                marginBottom="m"
+              >
+                {parsedToken.address}
+              </Text>
+            </>
+          )}
+          {!!parsedToken?.appName && (
+            <>
+              <Text variant="regular" fontSize={16} color="purpleText">
+                {t('signHotspot.maker')}
+              </Text>
+              <Text variant="bold" fontSize={20} color="primaryBackground">
+                {parsedToken.appName}
+              </Text>
+            </>
           )}
         </Box>
-        {transferTxn?.newOwner !== undefined && (
-          <>
-            <Text variant="regular" fontSize={16} color="purpleText">
-              {t('signHotspot.newOwner')}
-            </Text>
-            <Text
-              variant="bold"
-              fontSize={16}
-              color="primaryBackground"
-              marginBottom="m"
-            >
-              {transferTxn.newOwner.b58}
-            </Text>
-          </>
-        )}
-        {!!parsedToken?.address && (
-          <>
-            <Text variant="regular" fontSize={16} color="purpleText">
-              {t('signHotspot.owner')}
-            </Text>
-            <Text
-              variant="bold"
-              fontSize={16}
-              color="primaryBackground"
-              marginBottom="m"
-            >
-              {parsedToken.address}
-            </Text>
-          </>
-        )}
-        {!!parsedToken?.appName && (
-          <>
-            <Text variant="regular" fontSize={16} color="purpleText">
-              {t('signHotspot.maker')}
-            </Text>
-            <Text variant="bold" fontSize={20} color="primaryBackground">
-              {parsedToken.appName}
-            </Text>
-          </>
-        )}
-      </Box>
+      </ScrollView>
       <Box flexDirection="row" marginTop="l">
         <TouchableOpacityBox
           flex={1}

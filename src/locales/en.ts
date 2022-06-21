@@ -522,7 +522,7 @@ export default {
     last_activity: 'LAST REPORTED ACTIVITY: {{activity}}',
     label_error: 'You do not have enough HNT in your account.',
     stale_error:
-      'Hotspot has not participated in Proof-of-Coverage in the last {{blocks}} blocks. Unable to proceed with transfer.',
+      'Hotspot has not participated in Proof-of-Coverage or Data Transfer in the last {{blocks}} blocks. Unable to proceed with transfer.',
     scan: {
       title: 'Ways to use a QR Code',
       send: 'Send HNT',
