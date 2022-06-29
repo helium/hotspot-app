@@ -10,6 +10,7 @@ import { Transaction } from '@helium/transactions'
 import { Platform } from 'react-native'
 import { getVersion } from 'react-native-device-info'
 import { subDays } from 'date-fns'
+import Config from 'react-native-config'
 import {
   HotspotActivityFilters,
   HotspotActivityType,
@@ -21,10 +22,10 @@ import * as Logger from './logger'
 const MAX = 100000
 const userAgent = `helium-hotspot-app-${getVersion()}-${Platform.OS}-js-client`
 
-// const baseURL = Config.HTTP_CLIENT_PROXY_URL
+const baseURL = Config.HTTP_CLIENT_PROXY_URL
 
 // default network to production until we have a wallet api token for the proxy
-let client = new Client(Network.testnet, {
+let client = new Client(Network.production, {
   retry: 1,
   name: userAgent,
   userAgent,
@@ -34,6 +35,7 @@ export const updateClient = ({
   networkName,
   retryCount,
   token,
+  proxyEnabled,
 }: {
   networkName?: string
   retryCount: number
@@ -44,7 +46,10 @@ export const updateClient = ({
   if (token) {
     headers.Authorization = token
   }
-  const network = Network.testnet
+  let network = Network.production
+  if (proxyEnabled) {
+    network = new Network({ baseURL, version: 1 })
+  }
   client = new Client(network, {
     retry: retryCount,
     name: userAgent,

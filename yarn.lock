@@ -2386,10 +2386,10 @@
   dependencies:
     bignumber.js "^9.0.0"
 
-"@helium/http@^4.3.1":
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/@helium/http/-/http-4.3.1.tgz#56fe8b3e9187bd418d3282a694deeaa3f8c798ce"
-  integrity sha512-XkW2IPPQcgOaM7dPE3sjJ2VykmIgF+EpaymMHb5luAqhpRuL0WlU9yWoDZ60gpLAxzN6nYnrmrGbsp7/n/LLVw==
+"@helium/http@^4.4.0":
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/@helium/http/-/http-4.4.0.tgz#2233fc9c9bed30d698675142bbb56e87b4b98d90"
+  integrity sha512-szjDDFMRdXCyssyC4SLLcBC8NGfaA9w10V1427D/Bik0kN+Z3SOiRoKPx4vQsLM36U5xiC0P8vRw87U5s0rcdw==
   dependencies:
     "@helium/address" "^4.3.1"
     "@helium/currency" "^4.2.0"
@@ -2399,18 +2399,18 @@
     retry-axios "^2.1.2"
     snakecase-keys "^5.1.0"
 
-"@helium/onboarding@^3.59.0":
-  version "3.59.0"
-  resolved "https://registry.npmjs.org/@helium/onboarding/-/onboarding-3.59.0.tgz"
-  integrity sha512-Xbo3m3/2VbHEiOzDOp4mUbaK38xtEoOLcvUDk0BUMTWa+E6xAvul/uxHq0NAhQtbwUclkvDaZpfjo3EmXHsDPA==
+"@helium/onboarding@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@helium/onboarding/-/onboarding-4.0.0.tgz#2e630d0f268c0c013f7e3049bf7d76c2438e5893"
+  integrity sha512-F8MADJYeCphCg3HCotgHoi8XjupdEnZben4+311m6N1dPMSbJ/IokHBoap0I1OZHHfdrINM00tq40DYCPeJF+Q==
   dependencies:
     axios "^0.24.0"
     qs "^6.10.3"
 
-"@helium/proto-ble@^3.37.0":
-  version "3.37.0"
-  resolved "https://registry.npmjs.org/@helium/proto-ble/-/proto-ble-3.37.0.tgz"
-  integrity sha512-/DJTKG7IbuWxErVcC6ZbJZPFc3oSd7RGkNsNGDMRrsqApCjFjyQpDOo/cbB9UWixT/fAdAU3jdjwgjFMiaFSZw==
+"@helium/proto-ble@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@helium/proto-ble/-/proto-ble-4.0.0.tgz#dd2800d0dbbfc793ea5cb6b45e7613f490f8a4d8"
+  integrity sha512-0wVj6y/+E6fw9eZDOa5aawHM/P26Mmin43zFwi0RSHlUoBwB4thIN83ra/NpxWmIXzr002XCPdRD2bif2TK81g==
   dependencies:
     protobufjs "^6.8.9"
 
@@ -2421,10 +2421,10 @@
   dependencies:
     protobufjs "^6.8.9"
 
-"@helium/react-native-sdk@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@helium/react-native-sdk/-/react-native-sdk-0.2.1.tgz#326e6c5f593ca8aa7ecd25b703442eb4c6ab01aa"
-  integrity sha512-sU1TC/YlchEAe5RqxxhUb2Nz0OoEIDEuNgAb1qqkgJc56XOhmiULsuyqg6cpaiKeadAthTfpGRvGqGfbA69B/g==
+"@helium/react-native-sdk@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@helium/react-native-sdk/-/react-native-sdk-0.3.0.tgz#0f877da59c7b2d3aa93cd480756305a67f03a89c"
+  integrity sha512-4E/TqhrlTYUbFBt0dblCFif1rqMw1UCXohJY1JltpRi6LUU3ghNfQFtNAdKsVZuMsocI8I7l5EyorIcDylNYHg==
 
 "@helium/transactions@^4.3.1":
   version "4.3.1"

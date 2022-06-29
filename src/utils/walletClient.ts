@@ -10,7 +10,7 @@ const breadcrumbOpts = { type: 'HTTP Request', category: 'walletClient' }
 const userAgent = `helium-hotspot-app-${getVersion()}-${
   Platform.OS
 }-wallet-client`
-const network = 'testnet'
+const network = 'mainnet'
 
 const makeRequest = async (
   url: string,
@@ -24,7 +24,7 @@ const makeRequest = async (
       throw new Error('no token')
     }
 
-    const baseUrl = Config.WALLET_API_BASE_URL_DEV
+    const baseUrl = Config.WALLET_API_BASE_URL
     const route = [baseUrl, url].join('/')
 
     const response = await fetch(route, {
