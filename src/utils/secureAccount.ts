@@ -1,5 +1,10 @@
 import { Keypair, Mnemonic } from '@helium/crypto-react-native'
-import { WalletLink } from '@helium/react-native-sdk'
+import {
+  LinkWalletRequest,
+  makeAppLinkAuthToken,
+  Token,
+} from '@helium/wallet-link'
+import { getUnixTime } from 'date-fns'
 import * as SecureStore from 'expo-secure-store'
 import OneSignal from 'react-native-onesignal'
 import Sodium from 'react-native-sodium'
@@ -156,25 +161,25 @@ export const getWalletApiToken = async () => {
   return apiToken
 }
 
-export const makeAppLinkAuthToken = async (
-  token: WalletLink.LinkWalletRequest & {
+export const createLinkToken = async (
+  token: LinkWalletRequest & {
     signingAppId: string
-    time: number
     address: string
   },
 ) => {
-  const stringifiedToken = JSON.stringify(token)
   const keypair = await getKeypair()
   if (!keypair) return
-  const buffer = await keypair.sign(stringifiedToken)
-
-  const signature = buffer.toString('base64')
-
-  const signedToken = { ...token, signature }
-  return Buffer.from(JSON.stringify(signedToken)).toString('base64')
+  const time = getUnixTime(new Date())
+  return makeAppLinkAuthToken(
+    {
+      time,
+      ...token,
+    },
+    keypair,
+  )
 }
 
-export const verifyAppLinkAuthToken = async (token: WalletLink.Token) => {
+export const verifyAppLinkAuthToken = async (token: Token) => {
   const { signature, ...tokenWithoutSignature } = token
   const stringifiedToken = JSON.stringify(tokenWithoutSignature)
   const base64Token = Buffer.from(stringifiedToken).toString('base64')

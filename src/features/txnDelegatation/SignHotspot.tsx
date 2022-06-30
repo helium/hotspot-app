@@ -2,13 +2,13 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Linking, ScrollView } from 'react-native'
-import {
-  AddGateway,
-  WalletLink,
-  Location,
-  Transfer,
-} from '@helium/react-native-sdk'
+import { AddGateway, Location, Transfer } from '@helium/react-native-sdk'
 import animalHash from 'angry-purple-tiger'
+import {
+  createSignHotspotCallbackUrl,
+  parseWalletLinkToken,
+  SignHotspotResponse,
+} from '@helium/wallet-link'
 import Box from '../../components/Box'
 import SafeAreaBox from '../../components/SafeAreaBox'
 import Text from '../../components/Text'
@@ -36,13 +36,13 @@ const SignHotspot = () => {
 
   const parsedToken = useMemo(() => {
     if (!token) return
-    return WalletLink.parseWalletLinkToken(token)
+    return parseWalletLinkToken(token)
   }, [token])
 
   const callback = useCallback(
-    async (responseParams: WalletLink.SignHotspotResponse) => {
+    async (responseParams: SignHotspotResponse) => {
       if (!parsedToken?.callbackUrl) return
-      const url = WalletLink.createSignHotspotCallbackUrl(
+      const url = createSignHotspotCallbackUrl(
         parsedToken.callbackUrl,
         responseParams,
       )
@@ -97,7 +97,7 @@ const SignHotspot = () => {
       const responseParams = {
         status: 'success',
         gatewayAddress,
-      } as WalletLink.SignHotspotResponse
+      } as SignHotspotResponse
 
       if (gatewayTxn) {
         const txnOwnerSigned = await gatewayTxn.sign({
