@@ -8,9 +8,9 @@ import Client, {
 } from '@helium/http'
 import { Transaction } from '@helium/transactions'
 import { Platform } from 'react-native'
-import Config from 'react-native-config'
 import { getVersion } from 'react-native-device-info'
 import { subDays } from 'date-fns'
+import Config from 'react-native-config'
 import {
   HotspotActivityFilters,
   HotspotActivityType,

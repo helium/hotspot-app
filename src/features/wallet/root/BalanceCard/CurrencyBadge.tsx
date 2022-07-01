@@ -11,29 +11,27 @@ type Props = {
   amount?: number
 }
 
-const CurrencyBadge = ({ variant, amount }: Props) => (
-  <Box
-    flexDirection="row"
-    backgroundColor="purple300"
-    borderRadius="round"
-    alignItems="center"
-    justifyContent="center"
-    paddingHorizontal="s"
-    height={30}
-    marginRight="m"
-  >
-    {variant === 'dc' && <DC height={16} />}
-    {variant === 'hst' && <HST width={16} />}
-    {variant === 'stake' && <STAKE width={16} color="#A667F6" />}
-    <Text
-      color="white"
-      marginLeft="xs"
-      fontSize={14}
-      visible={amount !== undefined}
+const CurrencyBadge = ({ variant, amount }: Props) => {
+  if (amount === undefined) return null
+  return (
+    <Box
+      flexDirection="row"
+      backgroundColor="purple300"
+      borderRadius="round"
+      alignItems="center"
+      justifyContent="center"
+      paddingHorizontal="s"
+      height={30}
+      marginRight="m"
     >
-      {amount?.toLocaleString(locale)}
-    </Text>
-  </Box>
-)
+      {variant === 'dc' && <DC height={16} />}
+      {variant === 'hst' && <HST width={16} />}
+      {variant === 'stake' && <STAKE width={16} color="#A667F6" />}
+      <Text color="white" marginLeft="xs" fontSize={14}>
+        {amount?.toLocaleString(locale)}
+      </Text>
+    </Box>
+  )
+}
 
 export default CurrencyBadge

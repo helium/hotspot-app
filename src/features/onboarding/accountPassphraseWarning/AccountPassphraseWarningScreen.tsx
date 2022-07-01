@@ -1,6 +1,7 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
+import { NetTypes } from '@helium/address'
 import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import TextTransform from '../../../components/TextTransform'
@@ -43,7 +44,12 @@ const AccountPassphraseWarningScreen = () => {
         variant="primary"
         width="100%"
         marginBottom="l"
-        onPress={() => navigation.push('AccountPassphraseGeneration')}
+        onPress={() =>
+          navigation.push('AccountPassphraseGeneration', {
+            netType: NetTypes.MAINNET,
+            wordCount: 12,
+          })
+        }
         title={t('account_setup.warning.generate')}
       />
     </BackScreen>

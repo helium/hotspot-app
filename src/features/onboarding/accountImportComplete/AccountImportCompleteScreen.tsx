@@ -26,7 +26,7 @@ const AccountImportCompleteScreen = () => {
 
     const genKeypair = async () => {
       try {
-        await createKeypair(words)
+        await createKeypair({ mnemonic: words })
         timer = setTimeout(() => {
           navigation.push('AccountCreatePinScreen', { fromImport: true })
         }, 2000)

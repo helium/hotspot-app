@@ -1,22 +1,31 @@
 import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigation } from '@react-navigation/native'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import SafeAreaBox from '../../../components/SafeAreaBox'
 import Text from '../../../components/Text'
-import { OnboardingNavigationProp } from '../onboardingTypes'
+import {
+  OnboardingNavigationProp,
+  OnboardingStackParamList,
+} from '../onboardingTypes'
 import { createKeypair } from '../../../utils/secureAccount'
 import RingLoader from '../../../components/Loaders/RingLoader'
 
 const DURATION = 4000
 const IMAGE_SIZE = 212
 
+type Route = RouteProp<OnboardingStackParamList, 'AccountPassphraseGeneration'>
+
 const AccountPassphraseGenerationScreen = () => {
   const { t } = useTranslation()
   const navigation = useNavigation<OnboardingNavigationProp>()
+  const { params } = useRoute<Route>()
 
   useEffect(() => {
     const genKeypair = async () => {
-      await createKeypair()
+      await createKeypair({
+        netType: params.netType,
+        wordCount: params.wordCount,
+      })
     }
 
     const timer = setTimeout(
@@ -28,7 +37,7 @@ const AccountPassphraseGenerationScreen = () => {
     return () => {
       clearTimeout(timer)
     }
-  }, [navigation])
+  }, [navigation, params.netType, params.wordCount])
 
   return (
     <SafeAreaBox
