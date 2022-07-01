@@ -8,6 +8,7 @@ import {
   createSignHotspotCallbackUrl,
   parseWalletLinkToken,
   SignHotspotResponse,
+  verifyWalletLinkToken,
 } from '@helium/wallet-link'
 import Box from '../../components/Box'
 import SafeAreaBox from '../../components/SafeAreaBox'
@@ -17,7 +18,7 @@ import {
   RootNavigationProp,
   RootStackParamList,
 } from '../../navigation/main/tabTypes'
-import { getKeypair, verifyAppLinkAuthToken } from '../../utils/secureAccount'
+import { getKeypair } from '../../utils/secureAccount'
 import * as Logger from '../../utils/logger'
 
 type Route = RouteProp<RootStackParamList, 'SignHotspot'>
@@ -176,7 +177,7 @@ const SignHotspot = () => {
 
   useEffect(() => {
     if (!parsedToken) return
-    verifyAppLinkAuthToken(parsedToken)
+    verifyWalletLinkToken(parsedToken)
       .then((valid) => {
         setValidated(valid)
       })
