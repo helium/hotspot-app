@@ -2369,10 +2369,10 @@
     js-sha256 "^0.9.0"
     multiformats "^9.6.4"
 
-"@helium/crypto-react-native@^4.3.1":
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/@helium/crypto-react-native/-/crypto-react-native-4.3.1.tgz#3d1ef0ddc16b7bdf0126759fd1d2ef6aeff8372d"
-  integrity sha512-7S0Qof6o00ZPlIWZ2VUawwXtmOz/HO+qP+JeR+05fU2S8rOntzYFX0KYb4vVUa+gQlSBQt+eb49DPQkzkB6GRg==
+"@helium/crypto-react-native@^4.5.0":
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/@helium/crypto-react-native/-/crypto-react-native-4.5.0.tgz#dbc7daeacf22b6f936848ca2a001550609782594"
+  integrity sha512-l/9+cf/hDzIA+bNGalQCTUEk3fLCu7UputhLJgA4nIDxwjG7nQqjXQD4ZelnfM5XkMrqDNI8C5Fca7S1Sgw4sA==
   dependencies:
     "@helium/address" "^4.3.1"
     js-sha256 "^0.9.0"
@@ -2399,10 +2399,10 @@
     retry-axios "^2.1.2"
     snakecase-keys "^5.1.0"
 
-"@helium/onboarding@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@helium/onboarding/-/onboarding-4.0.0.tgz#2e630d0f268c0c013f7e3049bf7d76c2438e5893"
-  integrity sha512-F8MADJYeCphCg3HCotgHoi8XjupdEnZben4+311m6N1dPMSbJ/IokHBoap0I1OZHHfdrINM00tq40DYCPeJF+Q==
+"@helium/onboarding@^4.5.0":
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/@helium/onboarding/-/onboarding-4.5.0.tgz#90a24297f60d19160777adeec500e4f3b445763d"
+  integrity sha512-7N7RF/ialP2sOqdZNaeF4BPBA6h3IxygtmJ1Jp4KcgQWFREy6BN6EKMu3MFBKpzpjTQc7OnEqKK9yVvqEhLmPQ==
   dependencies:
     axios "^0.24.0"
     qs "^6.10.3"
@@ -2421,10 +2421,10 @@
   dependencies:
     protobufjs "^6.8.9"
 
-"@helium/react-native-sdk@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@helium/react-native-sdk/-/react-native-sdk-0.3.0.tgz#0f877da59c7b2d3aa93cd480756305a67f03a89c"
-  integrity sha512-4E/TqhrlTYUbFBt0dblCFif1rqMw1UCXohJY1JltpRi6LUU3ghNfQFtNAdKsVZuMsocI8I7l5EyorIcDylNYHg==
+"@helium/react-native-sdk@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@helium/react-native-sdk/-/react-native-sdk-1.0.0.tgz#41024fa99859490bd8a0b717f52acc11ae72f114"
+  integrity sha512-Qi1Nnp/q2hsz2D7aeuM6LxXhNX8NrHz1U+PoQslwK2XfqPFZEYb4uAzjXDKlc+JBWPiF96GMJywv/ofxlZ9XLg==
 
 "@helium/transactions@^4.3.1":
   version "4.3.1"
@@ -2436,6 +2436,16 @@
     "@types/libsodium-wrappers" "^0.7.8"
     long "^4.0.0"
     path "^0.12.7"
+
+"@helium/wallet-link@^4.5.0":
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/@helium/wallet-link/-/wallet-link-4.5.0.tgz#a3ea186ace0f6c9985ebc788de04767c9fcc75c1"
+  integrity sha512-XOQgmJG++NY1il1L1zTO21w+tb/PyvA3DJJk2Yr3wJGedASvurvc876RheG3y4PPTOmbieluVk0cACOmU3BIPA==
+  dependencies:
+    "@helium/address" "^4.3.1"
+    "@helium/transactions" "^4.3.1"
+    date-fns "^2.28.0"
+    query-string "^7.1.1"
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
@@ -6356,6 +6366,11 @@ date-fns@^2.16.1:
   resolved "https://registry.npmjs.org/date-fns/-/date-fns-2.21.2.tgz"
   integrity sha512-FMkG7pIPx64mGIpS2LOb3Wp3O606H/hatoiz7G0oiYWai1izdM4tF1dd7QABv2NogkIDI4wxsfLLFQSuVvDHgA==
 
+date-fns@^2.28.0:
+  version "2.28.0"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.28.0.tgz#9570d656f5fc13143e50c975a3b6bbeb46cd08b2"
+  integrity sha512-8d35hViGYx/QH0icHYCeLmsLmMUheMmTyV9Fcm6gvNwdw31yXXH+O85sOBJ+OLnLQMKZowvpKb6FgMIQjcpvQw==
+
 dayjs@^1.8.15:
   version "1.10.4"
   resolved "https://registry.npmjs.org/dayjs/-/dayjs-1.10.4.tgz"
@@ -8405,7 +8420,7 @@ inflight@^1.0.4:
 
 inherits@2, inherits@2.0.4, inherits@~2.0.3:
   version "2.0.4"
-  resolved "https://registry.npmjs.org/inherits/-/inherits-2.0.4.tgz"
+  resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
 
 inherits@2.0.3:
@@ -12152,6 +12167,16 @@ query-string@^7.0.0:
     split-on-first "^1.0.0"
     strict-uri-encode "^2.0.0"
 
+query-string@^7.1.1:
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/query-string/-/query-string-7.1.1.tgz#754620669db978625a90f635f12617c271a088e1"
+  integrity sha512-MplouLRDHBZSG9z7fpuAAcI7aAYjDLhtsiVZsevsfaHWDS2IDdORKbSd1kWUA+V4zyva/HZoSfpwnYMMQDhb0w==
+  dependencies:
+    decode-uri-component "^0.2.0"
+    filter-obj "^1.1.0"
+    split-on-first "^1.0.0"
+    strict-uri-encode "^2.0.0"
+
 querystringify@^2.1.1:
   version "2.2.0"
   resolved "https://registry.npmjs.org/querystringify/-/querystringify-2.2.0.tgz"
@@ -14333,8 +14358,8 @@ utif@^2.0.1:
 
 util-deprecate@~1.0.1:
   version "1.0.2"
-  resolved "https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz"
-  integrity sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8=
+  resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
+  integrity sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==
 
 util.promisify@~1.0.0:
   version "1.0.1"
