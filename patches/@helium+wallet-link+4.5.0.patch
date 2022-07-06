@@ -1,0 +1,13 @@
+diff --git a/node_modules/@helium/wallet-link/build/walletLink.js b/node_modules/@helium/wallet-link/build/walletLink.js
+index 8583f31..43d8b37 100644
+--- a/node_modules/@helium/wallet-link/build/walletLink.js
++++ b/node_modules/@helium/wallet-link/build/walletLink.js
+@@ -17,7 +17,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.createUpdateHotspotUrl = exports.createSignHotspotCallbackUrl = exports.createLinkWalletCallbackUrl = exports.createWalletLinkUrl = exports.parseWalletLinkToken = exports.verifyWalletLinkToken = exports.makeAppLinkAuthToken = void 0;
+ /* eslint-disable object-curly-newline */
+ const address_1 = __importDefault(require("@helium/address"));
+-const crypto_1 = require("@helium/crypto");
++const crypto_1 = require("@helium/crypto-react-native");
+ const query_string_1 = __importDefault(require("query-string"));
+ const date_fns_1 = require("date-fns");
+ const types_1 = require("./types");

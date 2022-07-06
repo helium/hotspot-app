@@ -3,10 +3,12 @@ import React, { memo, useCallback } from 'react'
 import { useAsync } from 'react-async-hook'
 import { useTranslation } from 'react-i18next'
 import { Linking } from 'react-native'
-import { getUnixTime } from 'date-fns'
-import { WalletLink } from '@helium/react-native-sdk'
 import { getBundleId } from 'react-native-device-info'
 import AppLinkIcon from '@assets/images/appLink.svg'
+import {
+  createLinkWalletCallbackUrl,
+  LinkWalletResponse,
+} from '@helium/wallet-link'
 import SafeAreaBox from '../../components/SafeAreaBox'
 import Text from '../../components/Text'
 import TouchableOpacityBox from '../../components/TouchableOpacityBox'
@@ -14,7 +16,7 @@ import {
   RootNavigationProp,
   RootStackParamList,
 } from '../../navigation/main/tabTypes'
-import { makeAppLinkAuthToken, getSecureItem } from '../../utils/secureAccount'
+import { createLinkToken, getSecureItem } from '../../utils/secureAccount'
 
 type Route = RouteProp<RootStackParamList, 'LinkWallet'>
 const LinkWallet = () => {
@@ -26,10 +28,10 @@ const LinkWallet = () => {
   const { result: address } = useAsync(getSecureItem, ['address'])
 
   const callback = useCallback(
-    async (responseParams: WalletLink.LinkWalletResponse) => {
+    async (responseParams: LinkWalletResponse) => {
       if (!address) return
 
-      const url = WalletLink.createLinkWalletCallbackUrl(
+      const url = createLinkWalletCallbackUrl(
         callbackUrl,
         address,
         responseParams,
@@ -44,9 +46,7 @@ const LinkWallet = () => {
   const handleLink = useCallback(async () => {
     if (!address) return
 
-    const time = getUnixTime(new Date())
-    const token = await makeAppLinkAuthToken({
-      time,
+    const token = await createLinkToken({
       address,
       requestAppId,
       signingAppId: getBundleId(),
