@@ -24,7 +24,7 @@ const userAgent = `helium-hotspot-app-${getVersion()}-${Platform.OS}-js-client`
 // const baseURL = Config.HTTP_CLIENT_PROXY_URL
 
 // default network to production until we have a wallet api token for the proxy
-let client = new Client(Network.testnet, {
+let client = new Client(Network.devnet, {
   retry: 1,
   name: userAgent,
   userAgent,
@@ -44,7 +44,7 @@ export const updateClient = ({
   if (token) {
     headers.Authorization = token
   }
-  const network = Network.testnet
+  const network = Network.devnet
   client = new Client(network, {
     retry: retryCount,
     name: userAgent,

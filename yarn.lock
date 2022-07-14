@@ -2369,40 +2369,42 @@
     js-sha256 "^0.9.0"
     multiformats "^9.6.4"
 
-"@helium/crypto-react-native@^4.5.0":
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/@helium/crypto-react-native/-/crypto-react-native-4.5.0.tgz#dbc7daeacf22b6f936848ca2a001550609782594"
-  integrity sha512-l/9+cf/hDzIA+bNGalQCTUEk3fLCu7UputhLJgA4nIDxwjG7nQqjXQD4ZelnfM5XkMrqDNI8C5Fca7S1Sgw4sA==
+"@helium/crypto-react-native@^4.6.0":
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/@helium/crypto-react-native/-/crypto-react-native-4.6.0.tgz#f41eef6ccbbd5fea720f95f147b749ee1fc5be3d"
+  integrity sha512-hRqVTr40nQlGao9xh4gA6CaC+uWQ3f3KerwpFOWBRVM+3C1OdwZrW+nuklOT0zzYKRu7eivvnid+4vlqDHY9qg==
   dependencies:
     "@helium/address" "^4.3.1"
     js-sha256 "^0.9.0"
     react-native-sodium "^0.3.8"
     safe-buffer "^5.2.1"
 
-"@helium/currency@^4.2.0":
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/@helium/currency/-/currency-4.2.0.tgz#2d255973d8e74ca655b347a7dc53c3cb20805f4c"
-  integrity sha512-PU055OU5HSi8brGp+YQQapPAGkc/bLQ/QEpZRduEadDTvVpmLA77qEnf0RQ+fuKP5E8nWP3yQ3nwZMTe/VAydg==
+"@helium/currency@^4.6.0":
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/@helium/currency/-/currency-4.6.0.tgz#b1d3f867a54369294df96bea1a5c28a88f970a2d"
+  integrity sha512-l5GrtH+MVrG5xgCGKxEkr2Qb1emr4pETgbJ4TdGuUQY4VGLfwmVEKvyEJwAnyCb9phtWT3djTFjtrWvJcp2Irg==
   dependencies:
+    "@helium/transactions" "^4.6.0"
     bignumber.js "^9.0.0"
 
-"@helium/http@^4.4.0":
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/@helium/http/-/http-4.4.0.tgz#2233fc9c9bed30d698675142bbb56e87b4b98d90"
-  integrity sha512-szjDDFMRdXCyssyC4SLLcBC8NGfaA9w10V1427D/Bik0kN+Z3SOiRoKPx4vQsLM36U5xiC0P8vRw87U5s0rcdw==
+"@helium/http@^4.6.0":
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/@helium/http/-/http-4.6.0.tgz#f935760ca0a8151060e0af365be0cb4616bd7eaf"
+  integrity sha512-xN4nxtHQ6+iZAceksPUoQdIsmQwKoGZ/Y+lSj/ev51yBZYTXVS5U/NRTMzke5u+gXExcvWeLrMJ7tcxIpvEpow==
   dependencies:
     "@helium/address" "^4.3.1"
-    "@helium/currency" "^4.2.0"
+    "@helium/currency" "^4.6.0"
+    "@helium/transactions" "^4.6.0"
     axios "^0.21.1"
     camelcase-keys "^6.2.2"
     qs "^6.9.3"
     retry-axios "^2.1.2"
     snakecase-keys "^5.1.0"
 
-"@helium/onboarding@^4.5.0":
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/@helium/onboarding/-/onboarding-4.5.0.tgz#90a24297f60d19160777adeec500e4f3b445763d"
-  integrity sha512-7N7RF/ialP2sOqdZNaeF4BPBA6h3IxygtmJ1Jp4KcgQWFREy6BN6EKMu3MFBKpzpjTQc7OnEqKK9yVvqEhLmPQ==
+"@helium/onboarding@^4.6.0":
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/@helium/onboarding/-/onboarding-4.6.0.tgz#2375976bdda8664f08547c32b7d7ae551f797546"
+  integrity sha512-dggT5w9WdHOD5i2LNXdyirItAWHAa5/XpLe7p9m79FLRgTBPrlQyYdyhUk2FfxA+mR7iDXtGhljiVxXTz0U5QA==
   dependencies:
     axios "^0.24.0"
     qs "^6.10.3"
@@ -2414,36 +2416,36 @@
   dependencies:
     protobufjs "^6.8.9"
 
-"@helium/proto@^1.5.0":
-  version "1.5.0"
-  resolved "https://registry.npmjs.org/@helium/proto/-/proto-1.5.0.tgz"
-  integrity sha512-dP3M6rApsNG0fl7IZgYu0R0kxEbhZ/z6BhBoYdmCQDyX9FX+kNlzuPWMji4P9jUFcAs7UAXTZLHR5XATJifVPw==
+"@helium/proto@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@helium/proto/-/proto-1.6.0.tgz#b97003bbc511afec1abac7cbffc5c088e348022d"
+  integrity sha512-aoVjhYDcic5g+n/iwKGXmGgMruPXTffpyr2ziGjuhAvU0phPSv6gnTbyHKY7FqBCUOYX4jHzEKJgX7M27UOGGg==
   dependencies:
-    protobufjs "^6.8.9"
+    protobufjs "^6.11.3"
 
 "@helium/react-native-sdk@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@helium/react-native-sdk/-/react-native-sdk-1.0.0.tgz#41024fa99859490bd8a0b717f52acc11ae72f114"
   integrity sha512-Qi1Nnp/q2hsz2D7aeuM6LxXhNX8NrHz1U+PoQslwK2XfqPFZEYb4uAzjXDKlc+JBWPiF96GMJywv/ofxlZ9XLg==
 
-"@helium/transactions@^4.3.1":
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/@helium/transactions/-/transactions-4.3.1.tgz#b4ad5782ad6f9d25287ba43efc4683db34d4ec25"
-  integrity sha512-acH0gDLrC/aTDtM4Jljd8xdQCzITWVNBsGvyTClfrS5dRos++A9wisvCx/VwUyl3w9x/NNU/+V5q8Is6fPJtJw==
+"@helium/transactions@^4.6.0":
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/@helium/transactions/-/transactions-4.6.0.tgz#9c72d9548fabf5ed10f775898cf76f0e8df1b345"
+  integrity sha512-t+fAOvt8+CeMbHfB6B32NQz3L5qgAS3ke5UcSd4Zv93FWZAkphxqGVXOXutbzi1wVkqTiU832kgQTyzeOL4T3w==
   dependencies:
     "@helium/address" "^4.3.1"
-    "@helium/proto" "^1.5.0"
+    "@helium/proto" "^1.6.0"
     "@types/libsodium-wrappers" "^0.7.8"
     long "^4.0.0"
     path "^0.12.7"
 
-"@helium/wallet-link@^4.5.0":
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/@helium/wallet-link/-/wallet-link-4.5.0.tgz#a3ea186ace0f6c9985ebc788de04767c9fcc75c1"
-  integrity sha512-XOQgmJG++NY1il1L1zTO21w+tb/PyvA3DJJk2Yr3wJGedASvurvc876RheG3y4PPTOmbieluVk0cACOmU3BIPA==
+"@helium/wallet-link@^4.6.0":
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/@helium/wallet-link/-/wallet-link-4.6.0.tgz#0c369b62d40dea992806ebd57e32f5ecfe1be318"
+  integrity sha512-RY4mNmraqd7j2DEL4BNpdtwig9YE6aiANyGmUHdmRGtz4afz8w8wUQzivIrDX3+J//uQToscMjqndH3zkX38Zw==
   dependencies:
     "@helium/address" "^4.3.1"
-    "@helium/transactions" "^4.3.1"
+    "@helium/transactions" "^4.6.0"
     date-fns "^2.28.0"
     query-string "^7.1.1"
 
@@ -12071,6 +12073,25 @@ protobufjs@^6.10.2, protobufjs@^6.8.9:
   version "6.11.2"
   resolved "https://registry.npmjs.org/protobufjs/-/protobufjs-6.11.2.tgz"
   integrity sha512-4BQJoPooKJl2G9j3XftkIXjoC9C0Av2NOrWmbLWT1vH32GcSUHjM0Arra6UfTsVyfMAuFzaLucXn1sadxJydAw==
+  dependencies:
+    "@protobufjs/aspromise" "^1.1.2"
+    "@protobufjs/base64" "^1.1.2"
+    "@protobufjs/codegen" "^2.0.4"
+    "@protobufjs/eventemitter" "^1.1.0"
+    "@protobufjs/fetch" "^1.1.0"
+    "@protobufjs/float" "^1.0.2"
+    "@protobufjs/inquire" "^1.1.0"
+    "@protobufjs/path" "^1.1.2"
+    "@protobufjs/pool" "^1.1.0"
+    "@protobufjs/utf8" "^1.1.0"
+    "@types/long" "^4.0.1"
+    "@types/node" ">=13.7.0"
+    long "^4.0.0"
+
+protobufjs@^6.11.3:
+  version "6.11.3"
+  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-6.11.3.tgz#637a527205a35caa4f3e2a9a4a13ddffe0e7af74"
+  integrity sha512-xL96WDdCZYdU7Slin569tFX712BxsxslWwAfAhCYjQKGTq7dAU91Lomy6nLLhh/dyGhk/YH4TwTSRxTzhuHyZg==
   dependencies:
     "@protobufjs/aspromise" "^1.1.2"
     "@protobufjs/base64" "^1.1.2"
