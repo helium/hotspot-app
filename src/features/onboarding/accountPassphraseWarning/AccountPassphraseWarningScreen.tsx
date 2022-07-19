@@ -42,20 +42,6 @@ const AccountPassphraseWarningScreen = () => {
       <Button
         mode="contained"
         variant="primary"
-        backgroundColor="redMedium"
-        width="100%"
-        marginBottom="l"
-        onPress={() =>
-          navigation.push('AccountPassphraseGeneration', {
-            netType: NetTypes.TESTNET,
-            wordCount: 12,
-          })
-        }
-        title="Generate Testnet Account"
-      />
-      <Button
-        mode="contained"
-        variant="primary"
         width="100%"
         marginBottom="l"
         onPress={() =>
