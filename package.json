@@ -39,11 +39,11 @@
   "dependencies": {
     "@expo/react-native-action-sheet": "^3.12.0",
     "@gorhom/bottom-sheet": "^4.1.5",
-    "@helium/address": "^4.3.1",
-    "@helium/crypto-react-native": "^4.5.0",
-    "@helium/currency": "^4.2.0",
-    "@helium/http": "^4.4.0",
-    "@helium/onboarding": "^4.5.0",
+    "@helium/address": "^4.6.2",
+    "@helium/crypto-react-native": "^4.6.2",
+    "@helium/currency": "^4.6.2",
+    "@helium/http": "^4.6.2",
+    "@helium/onboarding": "^4.6.2",
     "@helium/proto-ble": "^4.0.0",
     "@helium/react-native-sdk": "^1.0.0",
     "@helium/transactions": "^4.6.2",
@@ -181,8 +181,5 @@
     "reactotron-redux": "^3.1.3",
     "ts-jest": "^27.0.3",
     "typescript": "^3.9.7"
-  },
-  "resolutions": {
-    "@helium/transactions": "4.6.2"
   }
 }
