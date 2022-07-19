@@ -360,8 +360,10 @@ const useActivityItem = (
         return formatAmount('+', rewardsAmount)
       }
       case 'subnetwork_rewards_v1': {
-        if (txn.token_type === undefined || txn.token_type === null) return
-        const currencyType = CurrencyType.fromTokenType(txn.token_type)
+        const currencyType =
+          txn.token_type === undefined || txn.token_type === null
+            ? CurrencyType.mobile
+            : CurrencyType.fromTokenType(txn.token_type)
         const rewardsAmount =
           txn.rewards
             ?.filter((subnetItem) => subnetItem.account === address)
