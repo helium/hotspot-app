@@ -46,7 +46,7 @@
     "@helium/onboarding": "^4.5.0",
     "@helium/proto-ble": "^4.0.0",
     "@helium/react-native-sdk": "^1.0.0",
-    "@helium/transactions": "^4.3.1",
+    "@helium/transactions": "^4.6.2",
     "@helium/wallet-link": "^4.6.2",
     "@react-native-community/art": "^1.2.0",
     "@react-native-community/async-storage": "^1.12.1",
@@ -183,6 +183,6 @@
     "typescript": "^3.9.7"
   },
   "resolutions": {
-    "@helium/transactions": "4.1.0"
+    "@helium/transactions": "4.6.2"
   }
 }
