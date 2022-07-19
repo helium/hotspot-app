@@ -2360,19 +2360,19 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
-"@helium/address@^4.3.1":
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/@helium/address/-/address-4.3.1.tgz#e82f001b438166822ce8548713549b1ff87741e8"
-  integrity sha512-5f24ncoR3uOQgzFEtU2+YsHZTXW3+WYEBVdMVQEc5Hkou0bOTAOjVJZNhMqpIWLRzQXto2NOrDVIWXcFqqYnkg==
+"@helium/address@^4.0.0", "@helium/address@^4.6.2":
+  version "4.6.2"
+  resolved "https://registry.yarnpkg.com/@helium/address/-/address-4.6.2.tgz#0356bd9693ff7184f93f3c4e12c04f4f9c1db7b6"
+  integrity sha512-MXlT9SH4HPrBj+r71w51grZj4MUNi4o4SnDJds/yallROBK0qlO8m/bDCsKfmj0FVm861tIfQBrJc6y5vjsymg==
   dependencies:
     bs58 "^5.0.0"
     js-sha256 "^0.9.0"
     multiformats "^9.6.4"
 
-"@helium/address@^4.6.2":
-  version "4.6.2"
-  resolved "https://registry.yarnpkg.com/@helium/address/-/address-4.6.2.tgz#0356bd9693ff7184f93f3c4e12c04f4f9c1db7b6"
-  integrity sha512-MXlT9SH4HPrBj+r71w51grZj4MUNi4o4SnDJds/yallROBK0qlO8m/bDCsKfmj0FVm861tIfQBrJc6y5vjsymg==
+"@helium/address@^4.3.1":
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/@helium/address/-/address-4.3.1.tgz#e82f001b438166822ce8548713549b1ff87741e8"
+  integrity sha512-5f24ncoR3uOQgzFEtU2+YsHZTXW3+WYEBVdMVQEc5Hkou0bOTAOjVJZNhMqpIWLRzQXto2NOrDVIWXcFqqYnkg==
   dependencies:
     bs58 "^5.0.0"
     js-sha256 "^0.9.0"
@@ -2430,17 +2430,21 @@
   dependencies:
     protobufjs "^6.8.9"
 
-"@helium/proto@^1.6.0":
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/@helium/proto/-/proto-1.6.0.tgz#b97003bbc511afec1abac7cbffc5c088e348022d"
-  integrity sha512-aoVjhYDcic5g+n/iwKGXmGgMruPXTffpyr2ziGjuhAvU0phPSv6gnTbyHKY7FqBCUOYX4jHzEKJgX7M27UOGGg==
-  dependencies:
-    protobufjs "^6.11.3"
-
 "@helium/react-native-sdk@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@helium/react-native-sdk/-/react-native-sdk-1.0.0.tgz#41024fa99859490bd8a0b717f52acc11ae72f114"
   integrity sha512-Qi1Nnp/q2hsz2D7aeuM6LxXhNX8NrHz1U+PoQslwK2XfqPFZEYb4uAzjXDKlc+JBWPiF96GMJywv/ofxlZ9XLg==
+
+"@helium/transactions@4.1.0", "@helium/transactions@^4.6.2":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@helium/transactions/-/transactions-4.1.0.tgz#a5fc8b35a9359109bb6459f1b49c57b57c054267"
+  integrity sha512-hBv3mA9dkdl4yEepB1myt7+T4ShQFnpK26EsCp5oYAugn9jNPtT1nQfWtSZMGVgqmn//TGPxzP9ZnSOVW7k1fQ==
+  dependencies:
+    "@helium/address" "^4.0.0"
+    "@helium/proto" "^1.5.0"
+    "@types/libsodium-wrappers" "^0.7.8"
+    long "^4.0.0"
+    path "^0.12.7"
 
 "@helium/transactions@^4.3.1":
   version "4.3.1"
@@ -2449,17 +2453,6 @@
   dependencies:
     "@helium/address" "^4.3.1"
     "@helium/proto" "^1.5.0"
-    "@types/libsodium-wrappers" "^0.7.8"
-    long "^4.0.0"
-    path "^0.12.7"
-
-"@helium/transactions@^4.6.2":
-  version "4.6.2"
-  resolved "https://registry.yarnpkg.com/@helium/transactions/-/transactions-4.6.2.tgz#f81b599b524252a24571415501e19074f5781e6e"
-  integrity sha512-zD32S+lk9Iz4m//6R43crgWHWFHYltgTgWCSHHLNwAH4bKfC3D2986rlBtXa37A3zUdPWt9vfqsVE5rdKszyiA==
-  dependencies:
-    "@helium/address" "^4.6.2"
-    "@helium/proto" "^1.6.0"
     "@types/libsodium-wrappers" "^0.7.8"
     long "^4.0.0"
     path "^0.12.7"
@@ -12098,25 +12091,6 @@ protobufjs@^6.10.2, protobufjs@^6.8.9:
   version "6.11.2"
   resolved "https://registry.npmjs.org/protobufjs/-/protobufjs-6.11.2.tgz"
   integrity sha512-4BQJoPooKJl2G9j3XftkIXjoC9C0Av2NOrWmbLWT1vH32GcSUHjM0Arra6UfTsVyfMAuFzaLucXn1sadxJydAw==
-  dependencies:
-    "@protobufjs/aspromise" "^1.1.2"
-    "@protobufjs/base64" "^1.1.2"
-    "@protobufjs/codegen" "^2.0.4"
-    "@protobufjs/eventemitter" "^1.1.0"
-    "@protobufjs/fetch" "^1.1.0"
-    "@protobufjs/float" "^1.0.2"
-    "@protobufjs/inquire" "^1.1.0"
-    "@protobufjs/path" "^1.1.2"
-    "@protobufjs/pool" "^1.1.0"
-    "@protobufjs/utf8" "^1.1.0"
-    "@types/long" "^4.0.1"
-    "@types/node" ">=13.7.0"
-    long "^4.0.0"
-
-protobufjs@^6.11.3:
-  version "6.11.3"
-  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-6.11.3.tgz#637a527205a35caa4f3e2a9a4a13ddffe0e7af74"
-  integrity sha512-xL96WDdCZYdU7Slin569tFX712BxsxslWwAfAhCYjQKGTq7dAU91Lomy6nLLhh/dyGhk/YH4TwTSRxTzhuHyZg==
   dependencies:
     "@protobufjs/aspromise" "^1.1.2"
     "@protobufjs/base64" "^1.1.2"
