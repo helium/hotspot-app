@@ -31,6 +31,7 @@ import {
   HttpTransaction,
 } from '../../../store/activity/activitySlice'
 import { TxnTypeKeys } from './walletTypes'
+import { capitalize } from '../../../utils/stringUtils'
 
 type TxnDisplayVals = {
   backgroundColor: string
@@ -121,11 +122,14 @@ const useActivityItem = (
       case 'rewards_v2':
       case 'stake_validator_v1':
       case 'transfer_validator_stake_v1':
+      case 'subnetwork_rewards_v1':
         return 'purpleBright'
       case 'token_burn_v1':
         return 'orange'
       case 'unstake_validator_v1':
         return 'greenBright'
+      case 'token_redeem_v1':
+        return 'blueBright'
       default:
         return 'black'
     }
@@ -168,8 +172,17 @@ const useActivityItem = (
         return t('transactions.unstakeValidator')
       case 'transfer_validator_stake_v1':
         return t('transactions.transferValidator')
+      case 'subnetwork_rewards_v1':
+        return t('transactions.subnetworkRewards', {
+          ticker:
+            txn.token_type !== undefined && txn.token_type !== null
+              ? capitalize(CurrencyType.fromTokenType(txn.token_type).ticker)
+              : t('transactions.subnetwork'),
+        })
+      case 'token_redeem_v1':
+        return t('transactions.tokenRedeem')
     }
-  }, [isSending, isSelling, t, item])
+  }, [item.type, t, isSending, isSelling, txn.token_type])
 
   const detailIcon = useMemo(() => {
     switch (item.type) {
@@ -194,6 +207,8 @@ const useActivityItem = (
         return <Location width={20} height={23} color="white" />
       case 'rewards_v1':
       case 'rewards_v2':
+      case 'subnetwork_rewards_v1':
+      case 'token_redeem_v1':
         return <Rewards width={26} height={26} />
       case 'token_burn_v1':
         return <Burn width={23} height={28} />
@@ -223,6 +238,8 @@ const useActivityItem = (
         return <Location width={20} height={23} color="white" />
       case 'rewards_v1':
       case 'rewards_v2':
+      case 'subnetwork_rewards_v1':
+      case 'token_redeem_v1':
         return <Rewards width={26} height={26} />
       case 'token_burn_v1':
         return <Burn width={23} height={28} />
@@ -243,6 +260,7 @@ const useActivityItem = (
     if (
       item.type === 'rewards_v1' ||
       item.type === 'rewards_v2' ||
+      item.type === 'subnetwork_rewards_v1' ||
       item.type === 'unstake_validator_v1'
     ) {
       return false
@@ -283,7 +301,11 @@ const useActivityItem = (
   )
 
   const fee = useMemo(async () => {
-    if (item.type === 'rewards_v1' || item.type === 'rewards_v2') {
+    if (
+      item.type === 'rewards_v1' ||
+      item.type === 'rewards_v2' ||
+      item.type === 'subnetwork_rewards_v1'
+    ) {
       return ''
     }
 
@@ -300,7 +322,8 @@ const useActivityItem = (
       item.type === 'add_gateway_v1' ||
       item.type === 'assert_location_v1' ||
       item.type === 'assert_location_v2' ||
-      item.type === 'token_burn_v1'
+      item.type === 'token_burn_v1' ||
+      item.type === 'token_redeem_v1'
     ) {
       return formatAmount('-', dcBalance(txn.fee))
     }
@@ -334,6 +357,19 @@ const useActivityItem = (
               sum.plus(new Balance(current.amount, CurrencyType.networkToken)),
             new Balance(0, CurrencyType.networkToken),
           ) || new Balance(0, CurrencyType.networkToken)
+        return formatAmount('+', rewardsAmount)
+      }
+      case 'subnetwork_rewards_v1': {
+        if (txn.token_type === undefined || txn.token_type === null) return
+        const currencyType = CurrencyType.fromTokenType(txn.token_type)
+        const rewardsAmount =
+          txn.rewards
+            ?.filter((subnetItem) => subnetItem.account === address)
+            ?.reduce(
+              (sum, current) =>
+                sum.plus(new Balance(current.amount, currencyType)),
+              new Balance(0, currencyType),
+            ) || new Balance(0, currencyType)
         return formatAmount('+', rewardsAmount)
       }
       case 'transfer_hotspot_v1':

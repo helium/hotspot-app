@@ -53,6 +53,7 @@ export type HttpTransaction = {
   location?: string | null
   owner?: string | null
   buyer?: string | null
+  token_type?: number | null
 }
 
 export type AccountTransactions = {
