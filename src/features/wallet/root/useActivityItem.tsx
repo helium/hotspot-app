@@ -278,7 +278,7 @@ const useActivityItem = (
 
   const formatAmount = useCallback(
     async (
-      prefix: '-' | '+',
+      prefix: '-' | '+' | '',
       amount?: Balance<DataCredits | NetworkTokens> | null,
     ): Promise<string> => {
       if (!amount) return ''
@@ -373,6 +373,17 @@ const useActivityItem = (
               new Balance(0, currencyType),
             ) || new Balance(0, currencyType)
         return formatAmount('+', rewardsAmount)
+      }
+      case 'token_redeem_v1': {
+        const currencyType =
+          txn.token_type === undefined || txn.token_type === null
+            ? CurrencyType.mobile
+            : CurrencyType.fromTokenType(txn.token_type)
+        if (txn.amount) {
+          const redeemAmount = new Balance(txn.amount, currencyType)
+          return formatAmount('', redeemAmount)
+        }
+        return currencyType.ticker
       }
       case 'transfer_hotspot_v1':
       case 'transfer_hotspot_v2':

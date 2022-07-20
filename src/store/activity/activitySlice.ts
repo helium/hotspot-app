@@ -54,6 +54,7 @@ export type HttpTransaction = {
   owner?: string | null
   buyer?: string | null
   token_type?: number | null
+  account?: string | null
 }
 
 export type AccountTransactions = {
