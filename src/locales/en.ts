@@ -764,7 +764,7 @@ export default {
   transactions: {
     pending: 'Pending',
     mining: 'Mining Rewards',
-    sent: 'Sent HNT',
+    sent: 'Sent Tokens',
     stakeValidator: 'Stake HNT',
     unstakeValidator: 'Unstake HNT',
     transferValidator: 'Transfer Stake',
@@ -772,7 +772,7 @@ export default {
     subnetwork: 'Subnetwork',
     tokenRedeem: 'Token Redeem',
     burnHNT: 'Burn HNT',
-    received: 'Received HNT',
+    received: 'Received Tokens',
     added: 'Hotspot Added to Blockchain',
     location: 'Confirm Location',
     location_v2: 'Update Hotspot',

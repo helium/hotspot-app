@@ -4,11 +4,14 @@ import { useTranslation } from 'react-i18next'
 import Balance, {
   CurrencyType,
   DataCredits,
+  IotTokens,
+  MobileTokens,
   NetworkTokens,
 } from '@helium/currency'
 import { startCase } from 'lodash'
 import { useSelector } from 'react-redux'
 import animalName from 'angry-purple-tiger'
+import { TokenType } from '@helium/transactions'
 import { useColors } from '../../../theme/themeHooks'
 import Rewards from '../../../assets/images/rewards.svg'
 import SentHnt from '../../../assets/images/sentHNT.svg'
@@ -86,6 +89,9 @@ const useActivityItem = (
   const makers = useSelector((state: RootState) => state.heliumData.makers)
   const blockHeight = useSelector(
     (state: RootState) => state.heliumData.blockHeight,
+  )
+  const convert = useSelector(
+    (state: RootState) => state.account.settings.convertHntToCurrency,
   )
 
   const txn = useMemo(() => {
@@ -175,14 +181,14 @@ const useActivityItem = (
       case 'subnetwork_rewards_v1':
         return t('transactions.subnetworkRewards', {
           ticker:
-            txn.token_type !== undefined && txn.token_type !== null
-              ? capitalize(CurrencyType.fromTokenType(txn.token_type).ticker)
+            txn.tokenType !== undefined && txn.tokenType !== null
+              ? capitalize(CurrencyType.fromTokenType(txn.tokenType).ticker)
               : t('transactions.subnetwork'),
         })
       case 'token_redeem_v1':
         return t('transactions.tokenRedeem')
     }
-  }, [item.type, t, isSending, isSelling, txn.token_type])
+  }, [item.type, t, isSending, isSelling, txn.tokenType])
 
   const detailIcon = useMemo(() => {
     switch (item.type) {
@@ -279,7 +285,9 @@ const useActivityItem = (
   const formatAmount = useCallback(
     async (
       prefix: '-' | '+' | '',
-      amount?: Balance<DataCredits | NetworkTokens> | null,
+      amount?: Balance<
+        DataCredits | NetworkTokens | MobileTokens | IotTokens
+      > | null,
     ): Promise<string> => {
       if (!amount) return ''
 
@@ -289,6 +297,12 @@ const useActivityItem = (
 
       if (amount instanceof Balance && amount.type.ticker === 'HNT') {
         const display = await hntBalanceToDisplayVal(amount, false, 8)
+        if (convert) {
+          return `${prefix}${amount?.toString(8, {
+            groupSeparator,
+            decimalSeparator,
+          })} (${prefix}${display})`
+        }
         return `${prefix}${display}`
       }
 
@@ -297,7 +311,7 @@ const useActivityItem = (
         decimalSeparator,
       })}`
     },
-    [hntBalanceToDisplayVal],
+    [convert, hntBalanceToDisplayVal],
   )
 
   const fee = useMemo(async () => {
@@ -361,9 +375,9 @@ const useActivityItem = (
       }
       case 'subnetwork_rewards_v1': {
         const currencyType =
-          txn.token_type === undefined || txn.token_type === null
+          txn.tokenType === undefined || txn.tokenType === null
             ? CurrencyType.mobile
-            : CurrencyType.fromTokenType(txn.token_type)
+            : CurrencyType.fromTokenType(txn.tokenType)
         const rewardsAmount =
           txn.rewards
             ?.filter((subnetItem) => subnetItem.account === address)
@@ -376,9 +390,9 @@ const useActivityItem = (
       }
       case 'token_redeem_v1': {
         const currencyType =
-          txn.token_type === undefined || txn.token_type === null
+          txn.tokenType === undefined || txn.tokenType === null
             ? CurrencyType.mobile
-            : CurrencyType.fromTokenType(txn.token_type)
+            : CurrencyType.fromTokenType(txn.tokenType)
         if (txn.amount) {
           const redeemAmount = new Balance(txn.amount, currencyType)
           return formatAmount('', redeemAmount)
@@ -413,19 +427,55 @@ const useActivityItem = (
         )
       case 'payment_v2': {
         if (txn.payer === address) {
-          const paymentTotal =
-            txn.payments?.reduce(
-              (sum, current) =>
-                sum.plus(
-                  new Balance(current.amount, CurrencyType.networkToken),
-                ),
-              new Balance(0, CurrencyType.networkToken),
-            ) || new Balance(0, CurrencyType.networkToken)
-          return formatAmount('-', paymentTotal)
+          const sumAmountHnt = (txn.payments || [])
+            .filter(
+              (p) => p.tokenType === undefined || p.tokenType === TokenType.hnt,
+            )
+            .reduce((sum, { amount: current }) => sum + current, 0)
+          const totalAmountHnt = new Balance(sumAmountHnt, CurrencyType.default)
+          const sumAmountMobile = (txn.payments || [])
+            .filter((p) => p.tokenType === TokenType.mobile)
+            .reduce((sum, { amount: current }) => sum + current, 0)
+          const totalAmountMobile = new Balance(
+            sumAmountMobile,
+            CurrencyType.mobile,
+          )
+          const sumAmountIot = (txn.payments || [])
+            .filter((p) => p.tokenType === TokenType.iot)
+            .reduce((sum, { amount: current }) => sum + current, 0)
+          const totalAmountIot = new Balance(sumAmountIot, CurrencyType.iot)
+          let fullAmount = ''
+          if (totalAmountHnt.integerBalance !== 0) {
+            fullAmount += `-${totalAmountHnt.toString(8, {
+              groupSeparator,
+              decimalSeparator,
+            })}`
+          }
+          if (totalAmountMobile.integerBalance !== 0) {
+            fullAmount += ` -${totalAmountMobile.toString(8, {
+              groupSeparator,
+              decimalSeparator,
+            })}`
+          }
+          if (totalAmountIot.integerBalance !== 0) {
+            fullAmount += ` -${totalAmountIot.toString(8, {
+              groupSeparator,
+              decimalSeparator,
+            })}`
+          }
+          return fullAmount
         }
 
         const payment = txn.payments?.find((p) => p.payee === address)
-        return formatAmount('+', hntBalance(payment?.amount))
+        return formatAmount(
+          '+',
+          new Balance(
+            payment?.amount,
+            payment?.tokenType !== undefined && payment?.tokenType !== null
+              ? CurrencyType.fromTokenType(payment?.tokenType)
+              : CurrencyType.networkToken,
+          ),
+        )
       }
     }
   }, [address, formatAmount, isSelling, item.type, txn])
