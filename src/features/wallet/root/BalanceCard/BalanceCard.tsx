@@ -114,6 +114,10 @@ const BalanceCard = ({
           variant="stake"
           amount={account?.stakedBalance?.floatBalance}
         />
+        <CurrencyBadge
+          variant="mobile"
+          amount={account?.mobileBalance?.floatBalance}
+        />
       </Box>
     </Box>
   )

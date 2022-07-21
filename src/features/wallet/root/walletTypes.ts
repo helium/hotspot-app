@@ -11,8 +11,8 @@ export type FilterType = typeof FilterKeys[number]
 
 export const Filters = {
   all: ['all'],
-  mining: ['rewards_v1', 'rewards_v2'],
-  payment: ['payment_v1', 'payment_v2'],
+  mining: ['rewards_v1', 'rewards_v2', 'subnetwork_rewards_v1'],
+  payment: ['payment_v1', 'payment_v2', 'token_redeem_v1'],
   hotspot: [
     'add_gateway_v1',
     'assert_location_v1',
@@ -32,6 +32,8 @@ export const Filters = {
 export const TxnTypeKeys = [
   'rewards_v1',
   'rewards_v2',
+  'subnetwork_rewards_v1',
+  'token_redeem_v1',
   'payment_v1',
   'payment_v2',
   'add_gateway_v1',

@@ -32,6 +32,7 @@ import Burn from './Burn'
 import UnknownTransaction from './UnknownTransaction'
 import UnstakeValidator from './UnstakeValidator'
 import TransferValidator from './TransferStake'
+import Redeem from './Redeem'
 
 const DF = 'MM/dd/yyyy hh:mm a'
 type Props = { detailTxn: HttpTransaction | HttpPendingTransaction }
@@ -160,6 +161,7 @@ const ActivityDetails = ({ detailTxn }: Props) => {
             <Rewards item={txn} />
             <Payment item={txn} address={address || ''} />
             <Burn item={txn} address={address || ''} />
+            <Redeem item={txn} address={address || ''} />
             <HotspotTransaction item={txn} address={address || ''} />
             <UnknownTransaction item={txn} />
             {block && (

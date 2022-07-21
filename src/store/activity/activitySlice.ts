@@ -18,6 +18,7 @@ export type HttpPayment = {
   payee: string
   amount: number
   memo?: string | null
+  tokenType?: number
 }
 
 export type HttpTransaction = {
@@ -53,6 +54,8 @@ export type HttpTransaction = {
   location?: string | null
   owner?: string | null
   buyer?: string | null
+  tokenType?: number | null
+  account?: string | null
 }
 
 export type AccountTransactions = {
