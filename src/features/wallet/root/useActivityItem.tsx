@@ -11,7 +11,6 @@ import Balance, {
 import { startCase } from 'lodash'
 import { useSelector } from 'react-redux'
 import animalName from 'angry-purple-tiger'
-import { TokenType } from '@helium/transactions'
 import { useColors } from '../../../theme/themeHooks'
 import Rewards from '../../../assets/images/rewards.svg'
 import SentHnt from '../../../assets/images/sentHNT.svg'
@@ -182,7 +181,7 @@ const useActivityItem = (
         return t('transactions.subnetworkRewards', {
           ticker:
             txn.tokenType !== undefined && txn.tokenType !== null
-              ? capitalize(CurrencyType.fromTokenType(txn.tokenType).ticker)
+              ? capitalize(txn.tokenType)
               : t('transactions.subnetwork'),
         })
       case 'token_redeem_v1':
@@ -377,7 +376,7 @@ const useActivityItem = (
         const currencyType =
           txn.tokenType === undefined || txn.tokenType === null
             ? CurrencyType.mobile
-            : CurrencyType.fromTokenType(txn.tokenType)
+            : CurrencyType.fromTicker(txn.tokenType)
         const rewardsAmount =
           txn.rewards
             ?.filter((subnetItem) => subnetItem.account === address)
@@ -392,7 +391,7 @@ const useActivityItem = (
         const currencyType =
           txn.tokenType === undefined || txn.tokenType === null
             ? CurrencyType.mobile
-            : CurrencyType.fromTokenType(txn.tokenType)
+            : CurrencyType.fromTicker(txn.tokenType)
         if (txn.amount) {
           const redeemAmount = new Balance(txn.amount, currencyType)
           return formatAmount('', redeemAmount)
@@ -428,20 +427,18 @@ const useActivityItem = (
       case 'payment_v2': {
         if (txn.payer === address) {
           const sumAmountHnt = (txn.payments || [])
-            .filter(
-              (p) => p.tokenType === undefined || p.tokenType === TokenType.hnt,
-            )
+            .filter((p) => p.tokenType === undefined || p.tokenType === 'hnt')
             .reduce((sum, { amount: current }) => sum + current, 0)
           const totalAmountHnt = new Balance(sumAmountHnt, CurrencyType.default)
           const sumAmountMobile = (txn.payments || [])
-            .filter((p) => p.tokenType === TokenType.mobile)
+            .filter((p) => p.tokenType === 'mobile')
             .reduce((sum, { amount: current }) => sum + current, 0)
           const totalAmountMobile = new Balance(
             sumAmountMobile,
             CurrencyType.mobile,
           )
           const sumAmountIot = (txn.payments || [])
-            .filter((p) => p.tokenType === TokenType.iot)
+            .filter((p) => p.tokenType === 'iot')
             .reduce((sum, { amount: current }) => sum + current, 0)
           const totalAmountIot = new Balance(sumAmountIot, CurrencyType.iot)
           let fullAmount = ''
@@ -472,7 +469,7 @@ const useActivityItem = (
           new Balance(
             payment?.amount,
             payment?.tokenType !== undefined && payment?.tokenType !== null
-              ? CurrencyType.fromTokenType(payment?.tokenType)
+              ? CurrencyType.fromTicker(payment?.tokenType)
               : CurrencyType.networkToken,
           ),
         )
