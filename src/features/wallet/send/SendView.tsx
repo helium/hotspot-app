@@ -62,6 +62,7 @@ import {
   AppLink,
   AppLinkPayment,
   AppLinkCategoryType,
+  AppLinkTransfer,
 } from '../../../providers/appLinkTypes'
 import { MainTabNavigationProp } from '../../../navigation/main/tabTypes'
 import { isDataOnly } from '../../../utils/hotspotUtils'
@@ -160,7 +161,9 @@ const SendView = ({
   useAsync(async () => {
     if (type === 'transfer' && hotspotAddress && blockHeight) {
       const gateway = await getHotspotDetails(hotspotAddress)
-      if (isDataOnly(gateway)) {
+      const canSkipActivityCheck =
+        isDataOnly(gateway) || scanResult?.skipActivityCheck
+      if (canSkipActivityCheck) {
         setLastReportedActivity('')
         setHasValidActivity(true)
         setStalePocBlockCount(0)
@@ -237,6 +240,11 @@ const SendView = ({
     ): scanRes is AppLinkPayment => {
       return scanRes.type === 'payment' && scanRes.payees !== undefined
     }
+    const isAppLinkTransfer = (
+      scanRes: AppLink | AppLinkPayment | AppLinkTransfer,
+    ): scanRes is AppLinkTransfer => {
+      return scanRes.type === 'transfer'
+    }
     if (isAppLinkPayment(scanResult)) {
       scannedSendDetails = scanResult.payees.map(
         ({ address, amount: scanAmount, memo = '' }, i) => {
@@ -259,7 +267,10 @@ const SendView = ({
       scannedSendDetails = [
         {
           id: 'transfer0',
-          address: scanResult.address,
+          address:
+            isAppLinkTransfer(scanResult) && scanResult.newOwnerAddress
+              ? scanResult.newOwnerAddress
+              : scanResult.address,
           addressAlias: '',
           addressLoading: false,
           amount,

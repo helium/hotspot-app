@@ -23,7 +23,15 @@ export type AppLink = {
   address: string
   amount?: string | number
   memo?: string
-  [key: string]: string | number | undefined
+  [key: string]: string | number | boolean | undefined
+}
+
+export type AppLinkTransfer = {
+  type: 'transfer'
+  newOwnerAddress: string
+  hotspotAddress?: string
+  skipActivityCheck?: boolean
+  isSeller?: boolean
 }
 
 export type AppLinkPayment = {
