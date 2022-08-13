@@ -198,7 +198,11 @@ function isPaymentMultiMemo(data: string, scanType?: AppLinkCategoryType) {
 }
 
 function isAntennaGainAssert(data: string, scanType?: AppLinkCategoryType) {
-  return scanType === 'hotspot_antenna'
+  try {
+    const dataObj = JSON.parse(data)
+    const type = dataObj.type || scanType
+    return type === 'hotspot_antenna'
+  } catch (err) {}
 }
 
 function getDataScanType(

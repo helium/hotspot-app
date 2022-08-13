@@ -25,7 +25,9 @@ type Props = {
  */
 function HotspotAntennaUpdateScreen({ route }: Props) {
   const { hotspotAddress, gain, elevation } = route.params
-  const hotspots = useSelector((state: RootState) => state.hotspots.hotspots)
+  const hotspots = useSelector(
+    (state: RootState) => state.hotspots.hotspots.data,
+  )
   const hotspot = hotspots.find((h) => h.address === hotspotAddress)
 
   const navigation = useNavigation()
