@@ -13,6 +13,7 @@ export const AppLinkCategories = [
   'hotspot_location',
   'link_wallet',
   'sign_hotspot',
+  'hotspot_antenna',
 ] as const
 export type AppLinkCategoryType = typeof AppLinkCategories[number]
 
@@ -61,3 +62,10 @@ export type LinkWalletRequest = {
 export type SignHotspotRequest = {
   type: AppLinkCategoryType
 } & Sign
+
+export type AppLinkAntenna = {
+  type: AppLinkCategoryType
+  hotspotAddress: string
+  gain: number
+  elevation?: number
+}

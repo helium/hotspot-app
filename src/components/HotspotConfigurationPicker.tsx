@@ -17,12 +17,41 @@ import { useColors } from '../theme/themeHooks'
 import { AntennaModelKeys, AntennaModels } from '../makers'
 import { MakerAntenna } from '../makers/antennaMakerTypes'
 
+function gainFloatToString(gainFloat?: number): string {
+  return gainFloat != null
+    ? gainFloat.toLocaleString(locale, {
+        maximumFractionDigits: 1,
+        minimumFractionDigits: 1,
+      })
+    : ''
+}
+function gainStringToFloat(gainStr?: string): number | undefined {
+  return gainStr
+    ? parseFloat(
+        gainStr.replace(groupSeparator, '').replace(decimalSeparator, '.'),
+      )
+    : undefined
+}
+function elevationStringToInt(elevationStr?: string): number | undefined {
+  return elevationStr
+    ? parseInt(
+        elevationStr.replace(groupSeparator, '').replace(decimalSeparator, '.'),
+        10,
+      )
+    : undefined
+}
+function elevationIntToString(elevationInt?: number): string {
+  return elevationInt != null ? elevationInt.toLocaleString(locale) : ''
+}
+
 type Props = {
   onAntennaUpdated: (antenna: MakerAntenna) => void
-  onGainUpdated: (gain: number) => void
-  onElevationUpdated: (elevation: number) => void
+  onGainUpdated: (gain: number | undefined) => void
+  onElevationUpdated: (elevation: number | undefined) => void
   selectedAntenna?: MakerAntenna
   outline?: boolean
+  gain?: number
+  elevation?: number
 }
 const HotspotConfigurationPicker = ({
   selectedAntenna,
@@ -30,6 +59,8 @@ const HotspotConfigurationPicker = ({
   onGainUpdated,
   onElevationUpdated,
   outline,
+  gain,
+  elevation,
 }: Props) => {
   const { t } = useTranslation()
   const colors = useColors()
@@ -37,13 +68,17 @@ const HotspotConfigurationPicker = ({
   const gainInputRef = useRef<TextInput | null>(null)
   const elevationInputRef = useRef<TextInput | null>(null)
 
-  const [gain, setGain] = useState<string | undefined>(
-    selectedAntenna
-      ? selectedAntenna.gain.toLocaleString(locale, {
-          maximumFractionDigits: 1,
-          minimumFractionDigits: 1,
-        })
-      : undefined,
+  // Use state to track temporary raw edits for gain and elevation so that we can delay actual
+  // updates (delegated to parent component) until the user has finished editing. This prevents
+  // the need to reformat input as the user is actively typing, while ensuring the parent component
+  // only receives updates when the user has finished.
+  const [isEditingGain, setIsEditingGain] = useState(false)
+  const [isEditingElevation, setIsEditingElevation] = useState(false)
+  const [tmpGain, setTmpGain] = useState<string | undefined>(
+    gain != null ? gainFloatToString(gain) : undefined,
+  )
+  const [tmpElevation, setTmpElevation] = useState<string | undefined>(
+    elevation != null ? elevationIntToString(elevation) : undefined,
   )
 
   const antennas = useMemo(
@@ -62,12 +97,7 @@ const HotspotConfigurationPicker = ({
     const antenna = antennas[index]
     onAntennaUpdated(antenna)
     onGainUpdated(antenna.gain)
-    setGain(
-      antenna.gain.toLocaleString(locale, {
-        maximumFractionDigits: 1,
-        minimumFractionDigits: 1,
-      }),
-    )
+    setTmpGain(gainFloatToString(antenna.gain))
   }
 
   const showElevationInfo = () =>
@@ -91,69 +121,43 @@ const HotspotConfigurationPicker = ({
     elevationInputRef.current?.focus()
   }
 
-  const parseGainFloat = (floatString?: string) =>
-    floatString
-      ? parseFloat(
-          floatString
-            .replace(groupSeparator, '')
-            .replace(decimalSeparator, '.'),
-        )
-      : 0
-
   const onChangeGain = (text: string) => {
-    let gainFloat = parseGainFloat(text)
-    if (!gainFloat || gainFloat <= 1) {
-      gainFloat = 1
-    } else if (gainFloat >= 15) {
-      gainFloat = 15
-    }
-    setGain(text)
-    onGainUpdated(gainFloat)
+    if (!isEditingGain) setIsEditingGain(true)
+    setTmpGain(text)
   }
-
   const onDoneEditingGain = () => {
-    const gainFloat = parseGainFloat(gain)
-    let gainString
-    if (!gainFloat || gainFloat <= 1) {
-      gainString = '1'
-    } else if (gainFloat >= 15) {
-      gainString = '15'
-    } else {
-      gainString = gainFloat.toLocaleString(locale, {
-        maximumFractionDigits: 1,
-      })
+    setIsEditingGain(false)
+    const gainStrRaw = tmpGain
+    let gainFloat = gainStringToFloat(gainStrRaw)
+    if (gainFloat) {
+      if (gainFloat <= 1) gainFloat = 1
+      if (gainFloat >= 15) gainFloat = 15
     }
-    setGain(gainString)
+    const gainStr = gainFloatToString(gainFloat)
+    setTmpGain(gainStr)
     onGainUpdated(gainFloat)
     Keyboard.dismiss()
   }
-
   const onChangeElevation = (text: string) => {
-    const elevationInteger = text
-      ? parseInt(
-          text.replace(groupSeparator, '').replace(decimalSeparator, '.'),
-          10,
-        )
-      : 0
-    let stringElevation
-    if (!elevationInteger) {
-      stringElevation = '0'
-    } else {
-      stringElevation = elevationInteger.toString()
-    }
-    onElevationUpdated(parseInt(stringElevation, 10))
+    if (!isEditingElevation) setIsEditingElevation(true)
+    setTmpElevation(text)
+  }
+  const onDoneEditingElevation = () => {
+    setIsEditingElevation(false)
+    const elevationStrRaw = tmpElevation
+    const elevationInt = elevationStringToInt(elevationStrRaw)
+    const elevationStr = elevationIntToString(elevationInt)
+    setTmpElevation(elevationStr)
+    onElevationUpdated(elevationInt)
+    Keyboard.dismiss()
   }
 
   useEffect(() => {
     if (selectedAntenna) {
-      setGain(
-        selectedAntenna.gain.toLocaleString(locale, {
-          maximumFractionDigits: 1,
-          minimumFractionDigits: 1,
-        }),
-      )
+      onGainUpdated(selectedAntenna.gain)
+      setTmpGain(gainFloatToString(selectedAntenna.gain))
     }
-  }, [selectedAntenna])
+  }, [selectedAntenna, onGainUpdated])
 
   return (
     <Box
@@ -205,7 +209,7 @@ const HotspotConfigurationPicker = ({
               style={styles.textInput}
               ref={gainInputRef}
               keyboardType="numeric"
-              value={gain}
+              value={isEditingGain ? tmpGain : gainFloatToString(gain)}
               returnKeyType="done"
               maxFontSizeMultiplier={1.2}
               onChangeText={onChangeGain}
@@ -245,7 +249,12 @@ const HotspotConfigurationPicker = ({
             returnKeyType="done"
             maxFontSizeMultiplier={1.2}
             onChangeText={onChangeElevation}
-            onEndEditing={Keyboard.dismiss}
+            onEndEditing={onDoneEditingElevation}
+            value={
+              isEditingElevation
+                ? tmpElevation
+                : elevationIntToString(elevation)
+            }
           />
         </Box>
       </TouchableWithoutFeedback>

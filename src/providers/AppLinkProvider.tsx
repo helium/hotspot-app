@@ -24,6 +24,7 @@ import {
   AppLinkPayment,
   AppLinkLocation,
   AppLinkTransfer,
+  AppLinkAntenna,
   LinkWalletRequest,
   SignHotspotRequest,
 } from './appLinkTypes'
@@ -112,6 +113,8 @@ enum ScanDataType {
   PAYMENT_MULTI,
   // Payment to multiple recipients and optional memos
   PAYMENT_MULTI_MEMO,
+  // Assert the gain/elevation of a hotspot's antenna
+  ANTENNA_GAIN_ASSERT,
 }
 
 function isDeeplink(data: string) {
@@ -194,6 +197,10 @@ function isPaymentMultiMemo(data: string, scanType?: AppLinkCategoryType) {
   } catch (err) {}
 }
 
+function isAntennaGainAssert(data: string, scanType?: AppLinkCategoryType) {
+  return scanType === 'hotspot_antenna'
+}
+
 function getDataScanType(
   data: string,
   scanType?: AppLinkCategoryType,
@@ -209,6 +216,8 @@ function getDataScanType(
     return ScanDataType.PAYMENT_ADDRESS_ONLY
   if (isPaymentMulti(data, scanType)) return ScanDataType.PAYMENT_MULTI
   if (isPaymentMultiMemo(data, scanType)) return ScanDataType.PAYMENT_MULTI_MEMO
+  if (isAntennaGainAssert(data, scanType))
+    return ScanDataType.ANTENNA_GAIN_ASSERT
 }
 
 export const createAppLink = (
@@ -251,6 +260,7 @@ const useAppLink = () => {
         | AppLink
         | AppLinkPayment
         | AppLinkLocation
+        | AppLinkAntenna
         | AppLinkTransfer
         | LinkWalletRequest
         | SignHotspotRequest,
@@ -303,6 +313,15 @@ const useAppLink = () => {
         case 'sign_hotspot':
           navigator.signHotspot(record as SignHotspotRequest)
           break
+        case 'hotspot_antenna': {
+          const { hotspotAddress, gain, elevation } = record as AppLinkAntenna
+          navigator.updateHotspotAntenna({
+            hotspotAddress,
+            gain,
+            elevation,
+          })
+          break
+        }
       }
     },
     [isLocked, isBackedUp],
@@ -371,7 +390,11 @@ const useAppLink = () => {
       data: string,
       scanType: AppLinkCategoryType,
     ): Promise<
-      AppLink | AppLinkPayment | AppLinkLocation | AppLinkTransfer
+      | AppLink
+      | AppLinkPayment
+      | AppLinkLocation
+      | AppLinkAntenna
+      | AppLinkTransfer
     > => {
       if (!data) throw new Error('Missing required data')
       const scanDataType = getDataScanType(data, scanType)
@@ -490,6 +513,18 @@ const useAppLink = () => {
         return scanResult
       }
 
+      if (scanDataType === ScanDataType.ANTENNA_GAIN_ASSERT) {
+        const rawScanResult = JSON.parse(data)
+        const scanResult: AppLinkAntenna = {
+          type: 'hotspot_antenna',
+          hotspotAddress: rawScanResult.hotspotAddress,
+          gain: rawScanResult.gain,
+          elevation: rawScanResult.elevation,
+        }
+        assertValidAddress(scanResult.hotspotAddress)
+        return scanResult
+      }
+
       throw new Error('Unknown scan type')
     },
     [parseUrl],
@@ -505,6 +540,7 @@ const useAppLink = () => {
           | AppLink
           | AppLinkPayment
           | AppLinkLocation
+          | AppLinkAntenna
           | AppLinkTransfer,
       ) => void,
     ) => {
