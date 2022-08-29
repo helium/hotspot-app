@@ -60,6 +60,22 @@ const dcBalance = (v: number | undefined | null) => {
   return new Balance(v, CurrencyType.dataCredit)
 }
 
+const fixTokenType = ({
+  tokenType,
+  fallbackType,
+}: {
+  tokenType?: string | null | number[]
+  fallbackType: 'hnt' | 'mobile' | 'hst' | 'iot'
+}) => {
+  if (typeof tokenType === 'string') return tokenType
+
+  if (Array.isArray(tokenType)) {
+    return String.fromCharCode(...tokenType)
+  }
+
+  return fallbackType
+}
+
 export const isPendingTransaction = (
   item: unknown,
 ): item is HttpPendingTransaction =>
@@ -373,10 +389,11 @@ const useActivityItem = (
         return formatAmount('+', rewardsAmount)
       }
       case 'subnetwork_rewards_v1': {
-        const currencyType =
-          txn.tokenType === undefined || txn.tokenType === null
-            ? CurrencyType.mobile
-            : CurrencyType.fromTicker(txn.tokenType)
+        const tokenType = fixTokenType({
+          tokenType: txn.tokenType,
+          fallbackType: 'mobile',
+        })
+        const currencyType = CurrencyType.fromTicker(tokenType)
         const rewardsAmount =
           txn.rewards
             ?.filter((subnetItem) => subnetItem.account === address)
@@ -388,10 +405,11 @@ const useActivityItem = (
         return formatAmount('+', rewardsAmount)
       }
       case 'token_redeem_v1': {
-        const currencyType =
-          txn.tokenType === undefined || txn.tokenType === null
-            ? CurrencyType.mobile
-            : CurrencyType.fromTicker(txn.tokenType)
+        const tokenType = fixTokenType({
+          tokenType: txn.tokenType,
+          fallbackType: 'mobile',
+        })
+        const currencyType = CurrencyType.fromTicker(tokenType)
         if (txn.amount) {
           const redeemAmount = new Balance(txn.amount, currencyType)
           return formatAmount('', redeemAmount)
@@ -464,14 +482,13 @@ const useActivityItem = (
         }
 
         const payment = txn.payments?.find((p) => p.payee === address)
+        const tokenType = fixTokenType({
+          tokenType: payment?.tokenType,
+          fallbackType: 'hnt',
+        })
         return formatAmount(
           '+',
-          new Balance(
-            payment?.amount,
-            payment?.tokenType !== undefined && payment?.tokenType !== null
-              ? CurrencyType.fromTicker(payment?.tokenType)
-              : CurrencyType.networkToken,
-          ),
+          new Balance(payment?.amount, CurrencyType.fromTicker(tokenType)),
         )
       }
     }
