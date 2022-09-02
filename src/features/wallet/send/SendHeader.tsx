@@ -6,6 +6,7 @@ import Animated, {
   useSharedValue,
   withTiming,
   Easing,
+  WithTimingConfig,
 } from 'react-native-reanimated'
 import Box from '../../../components/Box'
 import SendCircle from '../../../assets/images/send-circle.svg'
@@ -50,9 +51,9 @@ const SendHeader = ({ type, onClosePress }: Props) => {
     }
   }, [keyboardHide, keyboardShow])
 
-  const animatedOptions = {
+  const animatedOptions: WithTimingConfig = {
     duration: 300,
-    easing: Easing.bezier(0.17, 0.59, 0.4, 0.77),
+    easing: Easing.bezier(0.17, 0.59, 0.4, 0.77).factory(),
   }
 
   const containerStyles = useAnimatedStyle(() => {

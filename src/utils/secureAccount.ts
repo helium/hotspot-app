@@ -4,7 +4,6 @@ import { getUnixTime } from 'date-fns'
 import * as SecureStore from 'expo-secure-store'
 import OneSignal from 'react-native-onesignal'
 import Address, { NetTypes } from '@helium/address'
-import * as Logger from './logger'
 
 type AccountStoreKey = BooleanKey | StringKey
 
@@ -75,7 +74,6 @@ export const createKeypair = async ({
   )
 
   OneSignal.sendTags({ address: address.b58 })
-  Logger.setUser(address.b58)
 
   await Promise.all([
     setSecureItem('mnemonic', JSON.stringify(newMnemonic.words)),

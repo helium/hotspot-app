@@ -32,7 +32,6 @@ import {
 } from './store/account/accountSlice'
 import BluetoothProvider from './providers/BluetoothProvider'
 import ConnectedHotspotProvider from './providers/ConnectedHotspotProvider'
-import * as Logger from './utils/logger'
 import { configChainVars } from './utils/appDataClient'
 import {
   fetchBlockHeight,
@@ -143,7 +142,6 @@ const App = () => {
       dispatch(fetchNotifications())
     })
     MapboxGL.setAccessToken(Config.MAPBOX_ACCESS_TOKEN)
-    Logger.init()
   }, [dispatch])
 
   // fetch notifications for the app
