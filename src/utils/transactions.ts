@@ -9,7 +9,7 @@ import {
 } from '@helium/transactions'
 import Balance, { CurrencyType } from '@helium/currency'
 import { getKeypair } from './secureAccount'
-import { getAccount } from './appDataClient'
+import { configChainVars, getAccount } from './appDataClient'
 import { decimalSeparator, groupSeparator } from './i18n'
 import * as Logger from './logger'
 import { SendDetails } from '../features/wallet/send/sendTypes'
@@ -34,6 +34,8 @@ export const makePaymentTxn = async (
 ): Promise<PaymentV2> => {
   const keypair = await getKeypair()
   if (!keypair) throw new Error('missing keypair')
+
+  await configChainVars()
   const paymentTxn = new PaymentV2({
     payer: keypair.address,
     payments: paymentDetails.map(({ address, balanceAmount, memo }) => ({
@@ -52,6 +54,7 @@ export const makeAddGatewayTxn = async (
   const addGatewayTxn = AddGatewayV1.fromString(partialTxnBin)
   const keypair = await getKeypair()
 
+  await configChainVars()
   return addGatewayTxn.sign({
     owner: keypair,
   })
@@ -73,6 +76,7 @@ export const makeAssertLocTxn = async (
   const payer = Address.fromB58(payerB58)
   const ownerIsPayer = payerB58 === ownerB58
 
+  await configChainVars()
   const assertLocTxn = new AssertLocationV2({
     owner,
     gateway,
@@ -101,6 +105,7 @@ export const makeBurnTxn = async (
 
   if (!keypair) throw new Error('missing keypair')
 
+  await configChainVars()
   const tokenBurnTxn = new TokenBurnV1({
     payer: keypair.address,
     payee,
@@ -125,6 +130,7 @@ export const makeTransferV2Txn = async (
 
   if (!keypair) throw new Error('missing keypair')
 
+  await configChainVars()
   const transferV2Txn = new TransferHotspotV2({
     gateway,
     owner,
@@ -170,6 +176,8 @@ export const makeBuyerTransferHotspotTxn = async (
   transferHotspotTxn: TransferHotspotV1,
 ): Promise<TransferHotspotV1> => {
   const keypair = await getKeypair()
+
+  await configChainVars()
   return transferHotspotTxn.sign({ buyer: keypair })
 }
 
