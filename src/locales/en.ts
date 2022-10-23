@@ -64,6 +64,16 @@ export default {
       mining: 'Hotspot is Mining',
       later: "No thanks, I'll set it up later",
     },
+    revealPrivateKey: {
+      alertMessage:
+        "This will access and display your private key from your device's secure storage",
+      alertTitle: 'Are you sure?',
+      done: 'Done',
+      subtitle:
+        '<secondaryText>Do not share your private key!</secondaryText><red>\n\nIf someone has your private key they will have full control of your wallet!</red>',
+      tap: 'Tap to reveal your private key',
+      title: 'Your Private Key',
+    },
   },
   learn: {
     title: 'How do I earn\nHNT?',
@@ -93,6 +103,7 @@ export default {
     next: "I've read the guide",
   },
   generic: {
+    copied: 'Copied {{target}}',
     clear: 'Clear',
     done: 'Done',
     disabled: 'Disabled',
@@ -566,6 +577,7 @@ export default {
           after_4_hr: 'After 4 hours',
         },
         revealWords: 'Reveal Words',
+        revealPrivateKey: 'Reveal Private Key',
         deployMode: {
           title: 'Deploy Mode',
           subtitle:

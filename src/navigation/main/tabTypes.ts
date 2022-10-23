@@ -21,6 +21,7 @@ export type LockScreenRequestType =
   | 'resetPin'
   | 'unlock'
   | 'revealWords'
+  | 'revealPrivateKey'
   | 'send'
 
 export type RootStackParamList = {
