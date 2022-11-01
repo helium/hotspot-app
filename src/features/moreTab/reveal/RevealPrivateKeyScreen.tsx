@@ -9,7 +9,7 @@ import Button from '../../../components/Button'
 import BackScreen from '../../../components/BackScreen'
 import TextTransform from '../../../components/TextTransform'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
-import CopyAddress from '../../../components/CopyAddress'
+import CopyAddress from '../../../components/Address'
 import useAlert from '../../../utils/useAlert'
 import { getKeypair } from '../../../utils/secureAccount'
 
@@ -21,7 +21,7 @@ const RevealPrivateKeyScreen = () => {
   const { showOKCancelAlert } = useAlert()
 
   useAsync(async () => {
-    // don't remove key from secure store until they press reveal
+    // don't get key from secure store until they press reveal
     if (!revealed) return
     const keypair = await getKeypair()
     if (!keypair || !keypair.privateKey) return
