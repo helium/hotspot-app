@@ -12,6 +12,7 @@ export type MoreStackParamList = {
     pinReset?: boolean
   }
   RevealWordsScreen: undefined
+  RevealPrivateKeyScreen: undefined
   ConfirmSignout: undefined
 }
 

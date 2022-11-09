@@ -693,7 +693,7 @@ SPEC CHECKSUMS:
   FBLazyVector: e5569e42a1c79ca00521846c223173a57aca1fe1
   FBReactNativeSpec: fe08c1cd7e2e205718d77ad14b34957cce949b58
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 43737235ae6a21de4f45297f4f73b6420fc2ecb2
+  glog: 5337263514dd6f09803962437687240c5dc39aa4
   helium-react-native-sdk: 32c0a7e3abc733a7f3d291013b2db31475fc6980
   lottie-ios: 48fac6be217c76937e36e340e2d09cf7b10b7f5f
   lottie-react-native: 4dff8fe8d10ddef9e7880e770080f4a56121397e
@@ -701,7 +701,7 @@ SPEC CHECKSUMS:
   MapboxMobileEvents: 2bc0ca2eedb627b73cf403258dce2b2fa98074a6
   MultiplatformBleAdapter: 5a6a897b006764392f9cef785e4360f54fb9477d
   OneSignalXCFramework: 27159b0a150cdfe528c85325215c9d78b2f973c7
-  RCT-Folly: e2636706cc3fded205cf0d380428ec0ea7455f80
+  RCT-Folly: a21c126816d8025b547704b777a2ba552f3d9fa9
   RCTRequired: 4bf86c70714490bca4bf2696148638284622644b
   RCTTypeSafety: c475a7059eb77935fa53d2c17db299893f057d5d
   React: f64af14e3f2c50f6f2c91a5fd250e4ff1b3c3459

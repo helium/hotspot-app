@@ -40,3 +40,12 @@ export const isMainnet = (address: string) => {
 export const isTestnet = (address: string) => {
   return accountNetType(address) === NetType.TESTNET
 }
+
+type EllipsizeOpts = {
+  numChars?: number
+}
+
+export const ellipsizeAddress = (address: string, options?: EllipsizeOpts) => {
+  const numChars = options?.numChars || 8
+  return [address.slice(0, numChars), address.slice(-numChars)].join('...')
+}

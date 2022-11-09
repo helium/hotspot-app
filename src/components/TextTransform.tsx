@@ -11,6 +11,7 @@ const components = {
   blue: <Text color="blueMain" />,
   white: <Text color="white" />,
   purple: <Text color="purpleMain" />,
+  secondaryText: <Text color="secondaryText" variant="body1" />,
 }
 
 type Props = TextProps<Theme> & {

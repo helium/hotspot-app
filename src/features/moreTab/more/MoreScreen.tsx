@@ -106,6 +106,9 @@ const MoreScreen = () => {
       case 'revealWords':
         navigation.push('RevealWordsScreen')
         break
+      case 'revealPrivateKey':
+        navigation.push('RevealPrivateKeyScreen')
+        break
     }
   }, [dispatch, params, navigation])
 
@@ -266,6 +269,14 @@ const MoreScreen = () => {
     }
   }, [app.isPinRequired, navigation])
 
+  const handleRevealPrivateKey = useCallback(() => {
+    if (app.isPinRequired) {
+      navigation.push('LockScreen', { requestType: 'revealPrivateKey' })
+    } else {
+      navigation.push('RevealPrivateKeyScreen')
+    }
+  }, [app.isPinRequired, navigation])
+
   const SectionData = useMemo(() => {
     let pin: MoreListItemType[] = [
       {
@@ -303,6 +314,11 @@ const MoreScreen = () => {
       {
         title: t('more.sections.security.revealWords'),
         onPress: handleRevealWords,
+        disabled: app.isDeployModeEnabled,
+      },
+      {
+        title: t('more.sections.security.revealPrivateKey'),
+        onPress: handleRevealPrivateKey,
         disabled: app.isDeployModeEnabled,
       },
       {
@@ -436,6 +452,7 @@ const MoreScreen = () => {
     handlePinRequiredForPayment,
     showingDeployModeConfirmation,
     handleClearMapCache,
+    handleRevealPrivateKey,
   ])
 
   const contentContainer = useMemo(
