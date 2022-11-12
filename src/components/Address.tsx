@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React from 'react'
+import React, { memo, useCallback, useMemo } from 'react'
 import { Linking } from 'react-native'
 import Clipboard from '@react-native-community/clipboard'
 import { useTranslation } from 'react-i18next'
@@ -16,6 +16,7 @@ type Props = React.ComponentProps<typeof Text> & {
   text?: string
   clickToCopy?: boolean
   type?: 'account' | 'txn'
+  toastText?: string
 }
 
 type AddressOption = { label: string; action?: () => void }
@@ -30,47 +31,55 @@ const Address = ({
   maxWidth,
   clickToCopy,
   type = 'account',
+  toastText,
   ...rest
 }: Props) => {
   const { t } = useTranslation()
   const { triggerNavHaptic } = useHaptic()
   const { showActionSheetWithOptions } = useActionSheet()
 
-  const showToast = () => {
-    Toast.show(t('wallet.copiedToClipboard', { address: truncatedAddress }))
-  }
+  const truncatedAddress = useMemo(() => {
+    if (!address) return ''
+    return [address.slice(0, 8), address.slice(-8)].join('...')
+  }, [address])
 
-  if (!address) return null
+  const showToast = useCallback(() => {
+    Toast.show(
+      t('wallet.copiedToClipboard', { address: toastText || truncatedAddress }),
+    )
+  }, [t, toastText, truncatedAddress])
 
-  const truncatedAddress = [address.slice(0, 8), address.slice(-8)].join('...')
-
-  const goToExplorer = () => {
+  const goToExplorer = useCallback(() => {
     if (address) {
       Linking.openURL(`${EXPLORER_BASE_URL}/${type}s/${address}`)
     }
-  }
+  }, [address, type])
 
-  const copyAddress = () => {
+  const copyAddress = useCallback(() => {
+    if (!address) return
     Clipboard.setString(address)
     showToast()
     triggerNavHaptic()
-  }
+  }, [address, showToast, triggerNavHaptic])
 
-  const opts: AddressOption[] = [
-    {
-      label: `${t('generic.copy')} ${t(`copyAddress.${type}`)}`,
-      action: copyAddress,
-    },
-    {
-      label: t('hotspot_details.options.viewExplorer'),
-      action: goToExplorer,
-    },
-    {
-      label: t('generic.cancel'),
-    },
-  ]
+  const opts: AddressOption[] = useMemo(
+    () => [
+      {
+        label: `${t('generic.copy')} ${t(`copyAddress.${type}`)}`,
+        action: copyAddress,
+      },
+      {
+        label: t('hotspot_details.options.viewExplorer'),
+        action: goToExplorer,
+      },
+      {
+        label: t('generic.cancel'),
+      },
+    ],
+    [copyAddress, goToExplorer, t, type],
+  )
 
-  const onPress = () => {
+  const onPress = useCallback(() => {
     if (clickToCopy) {
       copyAddress()
     } else {
@@ -84,7 +93,9 @@ const Address = ({
         },
       )
     }
-  }
+  }, [clickToCopy, copyAddress, opts, showActionSheetWithOptions])
+
+  if (!address) return null
 
   return (
     <>
@@ -109,4 +120,4 @@ const Address = ({
   )
 }
 
-export default Address
+export default memo(Address)

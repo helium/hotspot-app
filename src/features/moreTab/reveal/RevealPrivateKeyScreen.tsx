@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useAsync } from 'react-async-hook'
 import { useNavigation } from '@react-navigation/native'
 import bs58 from 'bs58'
+import { Linking } from 'react-native'
 import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
@@ -36,40 +37,53 @@ const RevealPrivateKeyScreen = () => {
     setRevealed(decision)
   }, [showOKCancelAlert])
 
+  const goToHeliumWallet = useCallback(() => {
+    Linking.openURL(`https://wallet.helium.com/import_key/${privateKey}`)
+  }, [privateKey])
+
   return (
     <BackScreen backgroundColor="primaryBackground" flex={1}>
-      <Text variant="h1" maxFontSizeMultiplier={1} marginTop="xl">
+      <Text variant="h1" maxFontSizeMultiplier={1} marginTop="l">
         {t('account_setup.revealPrivateKey.title')}
       </Text>
       <TextTransform
         variant="body1"
         maxFontSizeMultiplier={1}
+        textAlign="center"
         marginTop="m"
         i18nKey="account_setup.revealPrivateKey.subtitle"
         marginBottom="xl"
       />
       {revealed ? (
-        <>
-          <Box
-            marginHorizontal="xs"
-            height={{ smallPhone: 80, phone: 100 }}
-            marginVertical="l"
-            backgroundColor="primaryBackground"
-            padding="l"
-            borderRadius="m"
-            justifyContent="center"
+        <Box marginTop="l">
+          <Text
+            fontSize={16}
+            color="primaryText"
+            maxFontSizeMultiplier={1}
+            textAlign="center"
+            marginBottom="s"
           >
-            <Text
-              fontSize={12}
+            {t('account_setup.revealPrivateKey.tapCopy')}
+          </Text>
+          <CopyAddress
+            address={privateKey || ''}
+            color="white"
+            clickToCopy
+            fontWeight="bold"
+            fontSize={18}
+            toastText={t('account_setup.revealPrivateKey.privateKey')}
+          />
+          <TouchableOpacityBox onPress={goToHeliumWallet}>
+            <TextTransform
+              fontSize={18}
               color="primaryText"
               maxFontSizeMultiplier={1}
-              selectable
-            >
-              {privateKey}
-            </Text>
-          </Box>
-          <CopyAddress address={privateKey || ''} />
-        </>
+              textAlign="center"
+              marginTop="xxl"
+              i18nKey="account_setup.revealPrivateKey.download"
+            />
+          </TouchableOpacityBox>
+        </Box>
       ) : (
         <TouchableOpacityBox
           onPress={showConfirmDialog}
