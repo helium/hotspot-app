@@ -77,7 +77,7 @@ const ScanView = ({ scanType = 'payment', showBottomSheet = true }: Props) => {
       setScanned(true)
       triggerNotification('success')
     } catch (error) {
-      handleFailedScan(error)
+      handleFailedScan(error as Error)
     }
   }
 

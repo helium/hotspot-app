@@ -6,6 +6,7 @@ enum Articles {
   Mine = 'https://www.helium.com/mine',
   Stake = 'https://www.helium.com/stake',
   Denylist = 'https://github.com/helium/denylist',
+  Wallet_Site = 'https://wallet.helium.com',
 }
 
 export default Articles

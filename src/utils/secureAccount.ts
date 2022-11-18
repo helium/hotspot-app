@@ -16,6 +16,8 @@ const stringKeys = [
   'walletApiToken',
   'language',
   'permanentPaymentAddress',
+  'permanentPaymentAddress',
+  'lastSolanaNotification',
 ] as const
 type StringKey = typeof stringKeys[number]
 

@@ -13,6 +13,7 @@ import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import CopyAddress from '../../../components/Address'
 import useAlert from '../../../utils/useAlert'
 import { getKeypair } from '../../../utils/secureAccount'
+import Articles from '../../../constants/articles'
 
 const RevealPrivateKeyScreen = () => {
   const { t } = useTranslation()
@@ -38,7 +39,7 @@ const RevealPrivateKeyScreen = () => {
   }, [showOKCancelAlert])
 
   const goToHeliumWallet = useCallback(() => {
-    Linking.openURL(`https://wallet.helium.com/import_key/${privateKey}`)
+    Linking.openURL(`${Articles.Wallet_Site}/import_key/${privateKey}`)
   }, [privateKey])
 
   return (

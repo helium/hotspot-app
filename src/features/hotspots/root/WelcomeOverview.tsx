@@ -7,10 +7,11 @@ import Balance, { CurrencyType, NetworkTokens } from '@helium/currency'
 import { addMinutes, startOfYesterday } from 'date-fns'
 import { useAsync } from 'react-async-hook'
 import SharedGroupPreferences from 'react-native-shared-group-preferences'
-import { Platform } from 'react-native'
+import { Alert, Linking, Platform } from 'react-native'
+import Emoji from 'react-native-emoji'
+import { useNavigation } from '@react-navigation/native'
 import { getWalletApiToken } from '../../../utils/secureAccount'
 import Box from '../../../components/Box'
-import EmojiBlip from '../../../components/EmojiBlip'
 import Text from '../../../components/Text'
 import { RootState } from '../../../store/rootReducer'
 import useCurrency from '../../../utils/useCurrency'
@@ -19,29 +20,11 @@ import animateTransition from '../../../utils/animateTransition'
 import { CacheRecord } from '../../../utils/cacheUtils'
 import { AccountReward } from '../../../store/account/accountSlice'
 import DateModule from '../../../utils/DateModule'
+import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import Articles from '../../../constants/articles'
+import { RootNavigationProp } from '../../../navigation/main/tabTypes'
 
 const widgetGroup = 'group.com.helium.mobile.wallet.widget'
-const TimeOfDayTitle = ({ date }: { date: Date }) => {
-  const { t } = useTranslation()
-  const hours = date.getHours()
-  let timeOfDay = t('time.afternoon')
-  if (hours >= 4 && hours < 12) {
-    timeOfDay = t('time.morning')
-  }
-  if (hours >= 17 || hours < 4) {
-    timeOfDay = t('time.evening')
-  }
-  return (
-    <Text
-      variant="h1"
-      color="purpleMain"
-      maxFontSizeMultiplier={1}
-      marginTop="s"
-    >
-      {timeOfDay}
-    </Text>
-  )
-}
 
 type Props = { accountRewards: CacheRecord<AccountReward> }
 const WelcomeOverview = ({ accountRewards }: Props) => {
@@ -52,6 +35,7 @@ const WelcomeOverview = ({ accountRewards }: Props) => {
     hotspotsLoaded: false,
     validatorsLoaded: false,
   })
+  const navigation = useNavigation<RootNavigationProp>()
   const hotspots = useSelector(
     (state: RootState) => state.hotspots.hotspots.data,
     isEqual,
@@ -62,6 +46,9 @@ const WelcomeOverview = ({ accountRewards }: Props) => {
   )
   const showHiddenHotspots = useSelector(
     (state: RootState) => state.account.settings.showHiddenHotspots,
+  )
+  const isPinRequired = useSelector(
+    (state: RootState) => state.app.isPinRequired,
   )
 
   const visibleHotspots = useMemo(() => {
@@ -216,18 +203,68 @@ const WelcomeOverview = ({ accountRewards }: Props) => {
     updateBodyText()
   }, [updateBodyText])
 
-  const [date, setDate] = useState(new Date())
-  useEffect(() => {
-    const dateTimer = setInterval(() => setDate(new Date()), 300000) // update every 5 min
-    return () => clearInterval(dateTimer)
-  })
+  const onPressMigrate = useCallback(() => {
+    Alert.alert(t('solana.alert.title'), t('solana.alert.message2'), [
+      {
+        text: t('solana.alert.button3'),
+        onPress: () => Linking.openURL(Articles.Wallet_Site),
+      },
+      {
+        text: t('solana.alert.button4'),
+        onPress: () => {
+          if (isPinRequired) {
+            navigation.navigate('LockScreen', {
+              requestType: 'revealPrivateKey',
+            })
+          } else {
+            navigation.navigate('MainTabs', {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              screen: 'More',
+              params: {
+                screen: 'RevealPrivateKeyScreen',
+              },
+            })
+          }
+        },
+      },
+      {
+        text: t('generic.ok'),
+        onPress: () => {},
+      },
+    ])
+  }, [isPinRequired, navigation, t])
 
   return (
     <Box alignItems="center">
-      <HotspotsTicker marginBottom="xxl" />
-      <EmojiBlip date={date} />
-      <TimeOfDayTitle date={date} />
-      <Box marginTop="m" marginBottom="xxl">
+      <HotspotsTicker marginBottom="xl" />
+      <Emoji name="wave" style={{ fontSize: 36 }} maxFontSizeMultiplier={1.2} />
+      <TouchableOpacityBox onPress={onPressMigrate}>
+        <Text
+          textAlign="center"
+          fontWeight="600"
+          fontSize={36}
+          color="purpleMain"
+          maxFontSizeMultiplier={1}
+          adjustsFontSizeToFit
+          marginTop="s"
+        >
+          {t('solana.migrate')}
+        </Text>
+        <Text
+          fontWeight="400"
+          fontSize={20}
+          lineHeight={24}
+          textAlign="center"
+          color="black"
+          paddingHorizontal="m"
+          maxFontSizeMultiplier={1.2}
+          marginTop="m"
+        >
+          {t('solana.migrateMessage')}
+        </Text>
+      </TouchableOpacityBox>
+      <Box marginTop="l" marginBottom="xl">
         {hotspotsLoaded && validatorsLoaded ? (
           <Text
             variant="light"

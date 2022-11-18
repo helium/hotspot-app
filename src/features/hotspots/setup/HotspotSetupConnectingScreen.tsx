@@ -77,7 +77,7 @@ const HotspotSetupConnectingScreen = () => {
         })
       } catch (e) {
         const titleKey = 'generic.error'
-        await showOKAlert({ titleKey, messageKey: e.toString() })
+        await showOKAlert({ titleKey, messageKey: e?.toString() })
         navigation.goBack()
       }
     })

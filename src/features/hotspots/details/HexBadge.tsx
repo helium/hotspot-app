@@ -48,9 +48,7 @@ const HexBadge = ({
           style: 'cancel',
           onPress: () => {
             const url = `https://app.hotspotty.net/hotspots/${hotspotId}/reward-scaling`
-            if (Linking.canOpenURL(url)) {
-              Linking.openURL(url)
-            }
+            Linking.openURL(url)
           },
         },
       ],

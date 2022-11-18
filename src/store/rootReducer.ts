@@ -20,6 +20,10 @@ import featuresSlice from './features/featuresSlice'
 import locationSlice from './location/locationSlice'
 import hotspotOnboardingSlice from './hotspots/hotspotOnboardingSlice'
 import notificationSlice from './notifications/notificationSlice'
+import {
+  reducer as solanaStatusReducer,
+  solanaStatusApi,
+} from './solana/solanaStatusApi'
 
 const discoveryConfig = {
   key: discoverySlice.name,
@@ -71,6 +75,7 @@ const rootReducer = combineReducers({
   status: heliumStatusSlice.reducer,
   hotspotOnboarding: hotspotOnboardingSlice.reducer,
   notifications: notificationSlice.reducer,
+  [solanaStatusApi.reducerPath]: solanaStatusReducer,
 })
 
 export type RootState = ReturnType<typeof rootReducer>

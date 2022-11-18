@@ -70,7 +70,7 @@ const HotspotDiagnosticsConnection = ({ onConnected }: Props) => {
         )
       }
     } catch (e) {
-      handleConnectFailure(e.toString())
+      handleConnectFailure(e?.toString())
     }
   }
 

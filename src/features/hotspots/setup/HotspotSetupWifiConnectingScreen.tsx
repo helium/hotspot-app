@@ -90,7 +90,7 @@ const HotspotSetupWifiConnectingScreen = () => {
         await removeConfiguredWifi(connectedNetworks[0])
       }
     } catch (e) {
-      handleError(e)
+      handleError(e as string)
     }
   }
 

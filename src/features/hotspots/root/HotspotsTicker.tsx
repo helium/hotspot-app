@@ -1,23 +1,20 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, memo, useMemo, useState } from 'react'
-import { useSelector } from 'react-redux'
+import React, { useEffect, memo, useMemo, useState, useCallback } from 'react'
 import TextTicker from 'react-native-text-ticker'
 import { BoxProps } from '@shopify/restyle'
 import { useTranslation } from 'react-i18next'
-import { Easing } from 'react-native'
-import { isTablet } from 'react-native-device-info'
-import Box from '../../../components/Box'
+import { Easing, Linking } from 'react-native'
 import {
   fetchStats,
   fetchCurrentOraclePrice,
   fetchPredictedOraclePrice,
 } from '../../../store/helium/heliumDataSlice'
-import { RootState } from '../../../store/rootReducer'
 import { useAppDispatch } from '../../../store/store'
 import { useTextVariants } from '../../../theme/themeHooks'
 import { Theme } from '../../../theme/theme'
-import { locale } from '../../../utils/i18n'
 import useVisible from '../../../utils/useVisible'
+import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
+import Articles from '../../../constants/articles'
 
 type Props = BoxProps<Theme>
 const HotspotsTicker = ({ ...boxProps }: Props) => {
@@ -26,16 +23,6 @@ const HotspotsTicker = ({ ...boxProps }: Props) => {
   const { body2 } = useTextVariants()
   const [lastDataFetch, setLastDataFetch] = useState(0)
   const visible = useVisible()
-
-  const currentOraclePrice = useSelector(
-    (state: RootState) => state.heliumData.currentOraclePrice,
-  )
-  const hotspotCount = useSelector(
-    (state: RootState) => state.heliumData.hotspotCount,
-  )
-  const blockTime = useSelector(
-    (state: RootState) => state.heliumData.blockTime,
-  )
 
   useEffect(() => {
     if (!visible && lastDataFetch !== 0) return
@@ -56,32 +43,12 @@ const HotspotsTicker = ({ ...boxProps }: Props) => {
     [body2],
   )
 
-  const text = useMemo(() => {
-    const formattedHotspotCount = hotspotCount?.toLocaleString(locale)
-    const oraclePrice = currentOraclePrice?.price
-    const formattedBlockTime = blockTime?.toLocaleString(locale, {
-      maximumFractionDigits: 0,
-    })
-    const opts = {
-      formattedHotspotCount,
-      oraclePrice: oraclePrice?.floatBalance,
-      formattedBlockTime,
-    }
-    if (blockTime && formattedHotspotCount) {
-      return t('hotspots.ticker', opts)
-    }
-    if (blockTime) {
-      return t('hotspots.ticker_no_hotspots', opts)
-    }
-    if (formattedHotspotCount) {
-      return t('hotspots.ticker_no_block', opts)
-    }
-
-    return t('hotspots.ticker_no_hotspots_or_block', opts)
-  }, [blockTime, currentOraclePrice?.price, hotspotCount, t])
+  const onPressTicker = useCallback(() => {
+    Linking.openURL(Articles.Wallet_Site)
+  }, [])
 
   return (
-    <Box {...boxProps}>
+    <TouchableOpacityBox {...boxProps} onPress={onPressTicker}>
       <TextTicker
         style={textStyle}
         scrollSpeed={200}
@@ -90,9 +57,9 @@ const HotspotsTicker = ({ ...boxProps }: Props) => {
         easing={Easing.linear}
         maxFontSizeMultiplier={1.2}
       >
-        {isTablet() ? text + text : text}
+        {t('hotspots.migration_ticker')}
       </TextTicker>
-    </Box>
+    </TouchableOpacityBox>
   )
 }
 

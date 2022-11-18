@@ -53,15 +53,11 @@ const HotspotsEmpty = ({
   )
 
   const onHotspotInfoPress = useCallback(() => {
-    if (Linking.canOpenURL(Articles.Mine)) {
-      Linking.openURL(Articles.Mine)
-    }
+    Linking.openURL(Articles.Mine)
   }, [])
 
   const onValidatorInfoPress = useCallback(() => {
-    if (Linking.canOpenURL(Articles.Stake)) {
-      Linking.openURL(Articles.Stake)
-    }
+    Linking.openURL(Articles.Stake)
   }, [])
 
   if (!visible) return null
