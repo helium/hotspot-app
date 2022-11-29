@@ -479,8 +479,14 @@ const SendView = ({
       return txn
     } catch (error) {
       if (
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         error.message !== 'transfer amount changed' &&
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         error.message !== 'transfer nonce invalid' &&
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         error.message !== 'transfer delete invalid'
       ) {
         Alert.alert(

@@ -55,7 +55,7 @@ const WifiSettings = ({ onNetworkSelected, onError }: Props) => {
       errorShown.current = true
       await showOKAlert({
         titleKey: 'generic.error',
-        messageKey: e.toString(),
+        messageKey: e?.toString(),
       })
       onError()
     }

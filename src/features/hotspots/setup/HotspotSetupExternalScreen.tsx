@@ -51,9 +51,7 @@ const HotspotSetupExternalScreen = () => {
         })
         triggerNotification('success')
       } catch (error) {
-        if (error.message) {
-          Toast.showWithGravity(error.message, Toast.LONG, Toast.CENTER)
-        }
+        Toast.showWithGravity(t('generic.error'), Toast.LONG, Toast.CENTER)
         triggerNotification('error')
       }
     },

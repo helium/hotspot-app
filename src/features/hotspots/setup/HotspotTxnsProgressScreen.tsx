@@ -131,7 +131,7 @@ const HotspotTxnsProgressScreen = () => {
 
           await submitTxn(stakingServerSignedTxn)
         } catch (error) {
-          handleError(error, 'add_gateway')
+          handleError(error as string, 'add_gateway')
           return
         }
       } else {
@@ -142,7 +142,7 @@ const HotspotTxnsProgressScreen = () => {
             return
           }
         } catch (error) {
-          handleError(error, 'add_gateway')
+          handleError(error as string, 'add_gateway')
           return
         }
       }
@@ -171,7 +171,7 @@ const HotspotTxnsProgressScreen = () => {
         }
         handleError(false, 'assert_location')
       } catch (error) {
-        handleError(error, 'assert_location')
+        handleError(error as string, 'assert_location')
       }
     } else {
       setFinished(true)

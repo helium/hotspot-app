@@ -1,4 +1,9 @@
-import { configureStore, Action, getDefaultMiddleware } from '@reduxjs/toolkit'
+import {
+  configureStore,
+  Action,
+  getDefaultMiddleware,
+  StoreEnhancer,
+} from '@reduxjs/toolkit'
 import { ThunkAction } from 'redux-thunk'
 import { useDispatch, useStore } from 'react-redux'
 import AsyncStorage from '@react-native-community/async-storage'
@@ -16,10 +21,11 @@ import hotspotsSlice from './hotspots/hotspotsSlice'
 import hotspotDetailsSlice from './hotspotDetails/hotspotDetailsSlice'
 import hotspotSearchSlice from './hotspotSearch/hotspotSearchSlice'
 import validatorsSlice from './validators/validatorsSlice'
+import { solanaStatusApi } from './solana/solanaStatusApi'
 
-const enhancers = []
+const enhancers: StoreEnhancer[] = []
 if (Reactotron.createEnhancer) {
-  enhancers.push(Reactotron.createEnhancer())
+  enhancers.push(Reactotron.createEnhancer() as StoreEnhancer)
 }
 
 const persistConfig = {
@@ -37,6 +43,7 @@ const persistConfig = {
     rewardsSlice.name,
     hotspotDetailsSlice.name,
     hotspotSearchSlice.name,
+    solanaStatusApi.reducerPath,
   ],
 }
 
@@ -49,7 +56,7 @@ const store = configureStore({
     serializableCheck: false,
     immutableCheck: false,
     // TODO: The BigNumber type in some models is not serializable. Ignoring the warning for now.
-  }),
+  }).concat([solanaStatusApi.middleware]),
 })
 
 export type AppDispatch = typeof store.dispatch

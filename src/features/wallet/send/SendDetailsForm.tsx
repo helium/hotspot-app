@@ -186,6 +186,8 @@ const SendDetailsForm = ({
         return
       }
     } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       if (e?.message === 'Request failed with status code 404') {
         setIsHotspotAddress(false)
         setHotspotLoadFailed(false)
@@ -205,6 +207,8 @@ const SendDetailsForm = ({
         return
       }
     } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       if (e?.message === 'Request failed with status code 404') {
         setIsHotspotAddress(false)
         setHotspotLoadFailed(false)

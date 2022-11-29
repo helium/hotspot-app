@@ -5,10 +5,12 @@ import NotificationsNew from '@assets/images/notificationsNew.svg'
 import Notifications from '@assets/images/notifications.svg'
 import Hotspot from '@assets/images/hotspotIcon.svg'
 import Account from '@assets/images/accountIcon.svg'
+import AccountWarn from '@assets/images/accountIconWarn.svg'
 import Box from '../../components/Box'
 import { MainTabType, TabBarIconType } from './tabTypes'
 import { useColors } from '../../theme/themeHooks'
 import { RootState } from '../../store/rootReducer'
+import { hasTimePassed } from '../../utils/timeUtils'
 
 type Props = {
   name: MainTabType
@@ -26,12 +28,19 @@ const Icon = ({
   const notifications = useSelector(
     (state: RootState) => state.notifications.notifications,
   )
+  const lastSolanaNotification = useSelector(
+    (state: RootState) => state.app.lastSolanaNotification,
+  )
 
   if (name === 'Hotspots') {
     return <Hotspot height={size} width={size} color={color} />
   }
   if (name === 'Wallet') {
-    return <Account height={size} width={size} color={color} />
+    return hasTimePassed(lastSolanaNotification) ? (
+      <AccountWarn height={size} width={size} color={color} />
+    ) : (
+      <Account height={size} width={size} color={color} />
+    )
   }
   if (name === 'Notifications') {
     const hasUnread = !!notifications.find((n) => !n.viewedAt)

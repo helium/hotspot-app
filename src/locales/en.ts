@@ -72,7 +72,10 @@ export default {
       subtitle:
         '<secondaryText>Do not share your private key!</secondaryText><red>\n\nIf someone has your private key they will have full control of your wallet!</red>',
       tap: 'Tap to reveal your private key',
+      tapCopy: 'Tap to copy. Your private key is:',
       title: 'Your Private Key',
+      privateKey: 'private key',
+      download: 'Tap here to import into the <b>Helium Wallet App</b>.',
     },
   },
   learn: {
@@ -577,7 +580,7 @@ export default {
           after_4_hr: 'After 4 hours',
         },
         revealWords: 'Reveal Words',
-        revealPrivateKey: 'Reveal Private Key',
+        revealPrivateKey: 'Export Private Key',
         deployMode: {
           title: 'Deploy Mode',
           subtitle:
@@ -715,6 +718,8 @@ export default {
     ticker_no_block:
       '{{formattedHotspotCount}} Hotspots • Oracle Price: {{oraclePrice}} ',
     ticker_no_hotspots_or_block: 'Oracle Price: {{oraclePrice}}',
+    migration_ticker:
+      'Solana Migration is coming. Download the Wallet app to manage your tokens • ',
   },
   permissions: {
     location: {
@@ -1313,5 +1318,27 @@ export default {
   copyAddress: {
     account: 'Address',
     txn: 'Transaction Hash',
+  },
+  solana: {
+    migrate: 'Migrate Your Wallet',
+    migrateMessage:
+      'The Helium Hotspot App is saying goodbye as part of the Solana transition.',
+    alert: {
+      title: 'The Helium Solana Migration is coming',
+      message: 'Be prepared and export your Account to Helium Wallet today.',
+      message2:
+        'Be prepared and export your Account to Helium Wallet today.\n\n' +
+        '1. Export Private Key \n' +
+        '2. Import your account in the Helium Wallet App\n\n' +
+        'Important Dates\n' +
+        'December 1: Hotspot Onboarding will be managed by the Hotspot manufacturer.\n' +
+        'December 31: Wallet functionality will be disabled. Please import your account into the Helium Wallet App to interact with HNT, MOBILE, and Hotspots.\n' +
+        'Q2 2023: All Hotspot management features will be disabled. Please use the apps provided by your Hotspot Manufacturer.\n' +
+        'For Original Helium Hotspot owners, Nova Labs has partnered with Hotspotty to manage Original Helium Hotspots.',
+      button1: 'Remind Me Later',
+      button2: 'Read More',
+      button3: 'Download Helium Wallet',
+      button4: 'Export Private Key',
+    },
   },
 }

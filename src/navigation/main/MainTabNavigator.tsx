@@ -2,6 +2,8 @@ import React, { useEffect, memo, useMemo, useCallback } from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { useNavigation } from '@react-navigation/native'
 import { useSelector } from 'react-redux'
+import { Alert, Linking } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import Hotspots from '../../features/hotspots/root/HotspotsNavigator'
 import {
   TabBarIconType,
@@ -20,15 +22,23 @@ import appSlice from '../../store/user/appSlice'
 import NotificationsScreen from '../../features/notifications/NotificationsScreen'
 import notificationSlice from '../../store/notifications/notificationSlice'
 import { fetchHotspotsData } from '../../store/hotspots/hotspotsSlice'
+import { hasTimePassed } from '../../utils/timeUtils'
+import Articles from '../../constants/articles'
 
 const MainTab = createBottomTabNavigator()
 
 const MainTabs = () => {
   const { primaryBackground } = useColors()
+  const { t } = useTranslation()
   const navigation = useNavigation<RootNavigationProp>()
   const tabNavigation = useNavigation<MainTabNavigationProp>()
   const {
-    app: { isLocked, isSettingUpHotspot },
+    app: {
+      isLocked,
+      isSettingUpHotspot,
+      lastSolanaNotification,
+      isPinRequired,
+    },
   } = useSelector((state: RootState) => state)
   const pushNotification = useSelector(
     (state: RootState) => state.notifications.pushNotification,
@@ -94,6 +104,50 @@ const MainTabs = () => {
     dispatch,
   ])
 
+  const showSolanaDetailAlert = useCallback(() => {
+    Alert.alert(t('solana.alert.title'), t('solana.alert.message2'), [
+      {
+        text: t('solana.alert.button3'),
+        onPress: () => Linking.openURL(Articles.Wallet_Site),
+      },
+      {
+        text: t('solana.alert.button4'),
+        onPress: () => {
+          if (isPinRequired) {
+            navigation.navigate('LockScreen', {
+              requestType: 'revealPrivateKey',
+            })
+          } else {
+            navigation.navigate('MainTabs', {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              screen: 'More',
+              params: {
+                screen: 'RevealPrivateKeyScreen',
+              },
+            })
+          }
+        },
+      },
+    ])
+  }, [isPinRequired, navigation, t])
+
+  const showSolanaAlert = useCallback(() => {
+    if (hasTimePassed(lastSolanaNotification)) {
+      Alert.alert(t('solana.alert.title'), t('solana.alert.message'), [
+        {
+          text: t('solana.alert.button1'),
+          onPress: () =>
+            dispatch(appSlice.actions.updateLastSolanaNotification()),
+        },
+        {
+          text: t('solana.alert.button2'),
+          onPress: showSolanaDetailAlert,
+        },
+      ])
+    }
+  }, [dispatch, lastSolanaNotification, showSolanaDetailAlert, t])
+
   return (
     <MainTab.Navigator
       sceneContainerStyle={sceneContainerStyle}
@@ -108,7 +162,13 @@ const MainTabs = () => {
           tabPress: fetchHotspotData,
         }}
       />
-      <MainTab.Screen name="Wallet" component={WalletNavigator} />
+      <MainTab.Screen
+        name="Wallet"
+        component={WalletNavigator}
+        listeners={() => ({
+          tabPress: showSolanaAlert,
+        })}
+      />
       <MainTab.Screen name="Notifications" component={NotificationsScreen} />
       <MainTab.Screen name="More" component={More} />
     </MainTab.Navigator>
