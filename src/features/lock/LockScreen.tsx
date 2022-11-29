@@ -11,7 +11,6 @@ import {
 } from '../../navigation/main/tabTypes'
 import { getSecureItem } from '../../utils/secureAccount'
 import ConfirmPinView from '../../components/ConfirmPinView'
-import { MoreNavigationProp } from '../moreTab/moreTypes'
 import { useAppDispatch } from '../../store/store'
 import appSlice from '../../store/user/appSlice'
 import SafeAreaBox from '../../components/SafeAreaBox'
@@ -25,7 +24,6 @@ const LockScreen = () => {
     params: { lock: shouldLock, requestType, sendParams },
   } = useRoute<Route>()
   const rootNav = useNavigation<RootNavigationProp>()
-  const moreNav = useNavigation<MoreNavigationProp>()
   const sendNav = useNavigation<SendNavigationProps>()
   const [locked, setLocked] = useStateWithCallbackLazy(shouldLock)
   const dispatch = useAppDispatch()
@@ -42,8 +40,16 @@ const LockScreen = () => {
     } else if (requestType === 'send') {
       sendNav.navigate('Send', { pinVerified: 'pass', ...passedSendParams })
     } else {
-      moreNav.navigate('MoreScreen', {
-        pinVerifiedFor: requestType,
+      rootNav.navigate('MainTabs', {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        screen: 'More',
+        params: {
+          screen: 'MoreScreen',
+          params: {
+            pinVerifiedFor: requestType,
+          },
+        },
       })
     }
   }, [
@@ -54,7 +60,6 @@ const LockScreen = () => {
     rootNav,
     sendNav,
     passedSendParams,
-    moreNav,
   ])
 
   const handleSignOut = useCallback(() => {
