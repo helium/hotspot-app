@@ -6,4 +6,11 @@ export default {
   hotspots,
   id: 24, // your maker id
   supportEmail: 'iot.support@milesight.com', // your support email
+  makerApp: {
+    makerAppName: 'Milesight App',
+    ios: '',
+    android:
+      'https://play.google.com/store/apps/details?id=com.milesight.hotspot',
+    forceRedirect: false,
+  },
 }

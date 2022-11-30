@@ -6,6 +6,13 @@ export default {
   hotspots,
   id: 2,
   supportEmail: 'app@send.getmntd.com',
+  makerApp: {
+    makerAppName: 'Minted App',
+    ios:
+      'https://apps.apple.com/us/app/mntd-helium-hotspot-manager/id1595569593',
+    android: 'https://play.google.com/store/apps/details?id=com.getmntd.wallet',
+    forceRedirect: false,
+  },
 }
 
 export const rakWireless = {
@@ -13,4 +20,11 @@ export const rakWireless = {
   hotspots,
   id: 9,
   supportEmail: 'app@send.getmntd.com',
+  makerApp: {
+    makerAppName: 'Minted App',
+    ios:
+      'https://apps.apple.com/us/app/mntd-helium-hotspot-manager/id1595569593',
+    android: 'https://play.google.com/store/apps/details?id=com.getmntd.wallet',
+    forceRedirect: false,
+  },
 }

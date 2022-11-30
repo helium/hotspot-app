@@ -6,4 +6,11 @@ export default {
   hotspots,
   id: 10,
   supportEmail: 'support@kerlink.com',
+  makerApp: {
+    makerAppName: 'Kerlink App',
+    ios: 'https://apps.apple.com/app/kerlink-helium-hotspot/id1613698129',
+    android:
+      'https://play.google.com/store/apps/details?id=com.kerlink.heliumhotspot',
+    forceRedirect: false,
+  },
 }
