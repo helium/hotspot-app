@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Hotspot, Witness } from '@helium/http'
 import { useTranslation } from 'react-i18next'
-import { ActivityIndicator, Alert } from 'react-native'
+import { ActivityIndicator, Alert, Linking, Platform } from 'react-native'
 import { useAsync } from 'react-async-hook'
 import { Balance, CurrencyType } from '@helium/currency'
 import { useNavigation } from '@react-navigation/native'
 import Toast from 'react-native-simple-toast'
+import { createUpdateHotspotUrl } from '@helium/wallet-link/build/walletLink'
 import Text from '../../../../components/Text'
 import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
 import Box from '../../../../components/Box'
@@ -25,7 +26,6 @@ import {
   loadLocationFeeData,
 } from '../../../../utils/assertLocationUtils'
 import { getOnboardingRecord } from '../../../../utils/stakingClient'
-import useSubmitTxn from '../../../../hooks/useSubmitTxn'
 import {
   decimalSeparator,
   groupSeparator,
@@ -42,6 +42,10 @@ import { isPendingTransaction } from '../../../wallet/root/useActivityItem'
 import { useAppDispatch } from '../../../../store/store'
 import { hp } from '../../../../utils/layout'
 import { getHotspotDetails } from '../../../../utils/appDataClient'
+import {
+  getWalletAppToken,
+  linkWalletApp,
+} from '../../../../utils/secureAccount'
 
 type Props = {
   onClose: () => void
@@ -53,7 +57,6 @@ type State = 'antenna' | 'location' | 'confirm'
 
 const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
   const { t } = useTranslation()
-  const submitTxn = useSubmitTxn()
   const navigation = useNavigation()
   const dispatch = useAppDispatch()
   const [state, setState] = useState<State>(
@@ -226,12 +229,33 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
     try {
       const txn = await constructTransaction()
       if (txn) {
-        await submitTxn(txn)
-        navigation.navigate('Wallet')
-        onCloseSettings()
-        setTimeout(() => {
-          Toast.show(t('hotspot_settings.reassert.submit'), Toast.LONG)
-        }, 500)
+        const token = await getWalletAppToken()
+        if (token) {
+          const walletUrl = createUpdateHotspotUrl({
+            token,
+            platform: Platform.OS,
+            assertLocationTxn: txn?.toString(),
+          })
+          Linking.openURL(`${walletUrl}&submit=true`)
+          navigation.navigate('Wallet')
+          onCloseSettings()
+        } else {
+          Alert.alert(
+            t('linkWallet.txnAlert.title'),
+            t('linkWallet.txnAlert.body'),
+            [
+              {
+                text: t('linkWallet.txnAlert.action'),
+                onPress: linkWalletApp,
+              },
+              {
+                text: t('generic.cancel'),
+                onPress: () => {},
+              },
+            ],
+          )
+          setLoading(false)
+        }
       } else {
         setLoading(false)
         Logger.error(new Error('Assert failed with null txn'))

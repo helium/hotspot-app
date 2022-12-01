@@ -31,12 +31,15 @@ const Icon = ({
   const lastSolanaNotification = useSelector(
     (state: RootState) => state.app.lastSolanaNotification,
   )
+  const hideSolanaNotification = useSelector(
+    (state: RootState) => state.app.hideSolanaNotification,
+  )
 
   if (name === 'Hotspots') {
     return <Hotspot height={size} width={size} color={color} />
   }
   if (name === 'Wallet') {
-    return hasTimePassed(lastSolanaNotification) ? (
+    return !hideSolanaNotification && hasTimePassed(lastSolanaNotification) ? (
       <AccountWarn height={size} width={size} color={color} />
     ) : (
       <Account height={size} width={size} color={color} />

@@ -22,6 +22,7 @@ export type AppState = {
   isLocked: boolean
   isRequestingPermission: boolean
   lastSolanaNotification?: number
+  hideSolanaNotification?: boolean
 }
 const initialState: AppState = {
   isBackedUp: false,
@@ -48,6 +49,7 @@ type Restore = {
   isLocked: boolean
   isHapticDisabled: boolean
   lastSolanaNotification: number
+  hideSolanaNotification: boolean
 }
 
 export const restoreAppSettings = createAsyncThunk<Restore>(
@@ -63,6 +65,7 @@ export const restoreAppSettings = createAsyncThunk<Restore>(
       isDeployModeEnabled,
       permanentPaymentAddress,
       lastSolanaNotification,
+      hideSolanaNotification,
     ] = await Promise.all([
       getSecureItem('accountBackedUp'),
       getSecureItem('requirePin'),
@@ -73,6 +76,7 @@ export const restoreAppSettings = createAsyncThunk<Restore>(
       getSecureItem('deployModeEnabled'),
       getSecureItem('permanentPaymentAddress'),
       getSecureItem('lastSolanaNotification'),
+      getSecureItem('hideSolanaNotification'),
     ])
 
     if (isBackedUp && address) {
@@ -92,6 +96,7 @@ export const restoreAppSettings = createAsyncThunk<Restore>(
       lastSolanaNotification: lastSolanaNotification
         ? Number(lastSolanaNotification)
         : undefined,
+      hideSolanaNotification,
     } as Restore
   },
 )
@@ -158,6 +163,10 @@ const appSlice = createSlice({
       const now = Date.now()
       state.lastSolanaNotification = now
       setSecureItem('lastSolanaNotification', now.toString())
+    },
+    updateHideSolanaNotification: (state, action: PayloadAction<boolean>) => {
+      setSecureItem('hideSolanaNotification', action.payload)
+      state.hideSolanaNotification = action.payload
     },
   },
   extraReducers: (builder) => {

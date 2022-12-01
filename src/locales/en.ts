@@ -1296,6 +1296,13 @@ export default {
       'By Linking Helium Wallet to Maker App, you can safely sign blockchain transactions without re-entering your seed phrase.',
     yes: 'Yes, Link my Wallet',
     no: 'No, Cancel',
+    linked: 'Wallet App Linked',
+    txnAlert: {
+      title: 'Wallet App Not Linked',
+      body:
+        'You need to link to the Helium Wallet App to complete this transaction.',
+      action: 'Link Wallet App',
+    },
   },
   signHotspot: {
     title: 'Add Hotspot to\nBlockchain?',
