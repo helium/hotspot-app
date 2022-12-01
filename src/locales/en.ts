@@ -1348,4 +1348,16 @@ export default {
       button4: 'Export Private Key',
     },
   },
+  sentinel: {
+    action: 'Understood',
+    in_progress: {
+      title: 'Helium Blockchain Stopped',
+      body: 'Helium is transitioning to Solana.',
+    },
+    complete: {
+      title: 'App migration needed',
+      body:
+        'Helium has transitioned to Solana. Migrate to the Wallet app to manage your account on Solana.',
+    },
+  },
 }
