@@ -173,7 +173,7 @@ const useAppLink = () => {
             // we are coming back from a link to wallet app
             saveWalletAppToken(token)
             Toast.show(t('linkWallet.linked'), Toast.LONG)
-          } else {
+          } else if (status !== 'user_cancelled') {
             // we are linking to this wallet
             navigator.linkWallet(record as LinkWalletRequest)
           }
