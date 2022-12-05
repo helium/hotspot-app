@@ -1,9 +1,14 @@
 import { Keypair, Mnemonic } from '@helium/crypto-react-native'
-import { LinkWalletRequest, makeAppLinkAuthToken } from '@helium/wallet-link'
+import {
+  createWalletLinkUrl,
+  LinkWalletRequest,
+  makeAppLinkAuthToken,
+} from '@helium/wallet-link'
 import { getUnixTime } from 'date-fns'
 import * as SecureStore from 'expo-secure-store'
 import OneSignal from 'react-native-onesignal'
 import Address, { NetTypes } from '@helium/address'
+import { Linking, Platform } from 'react-native'
 
 type AccountStoreKey = BooleanKey | StringKey
 
@@ -18,6 +23,7 @@ const stringKeys = [
   'permanentPaymentAddress',
   'permanentPaymentAddress',
   'lastSolanaNotification',
+  'walletLinkToken',
 ] as const
 type StringKey = typeof stringKeys[number]
 
@@ -31,6 +37,7 @@ const boolKeys = [
   'deployModeEnabled',
   'fleetModeEnabled',
   'hasFleetModeAutoEnabled',
+  'hideSolanaNotification',
 ] as const
 type BooleanKey = typeof boolKeys[number]
 
@@ -172,6 +179,25 @@ export const createLinkToken = async (
     },
     keypair,
   )
+}
+
+export const getWalletAppToken = async () => {
+  return getSecureItem('walletLinkToken')
+}
+
+export const saveWalletAppToken = async (token: string) => {
+  await setSecureItem('walletLinkToken', token)
+}
+
+export const linkWalletApp = () => {
+  const url = createWalletLinkUrl({
+    universalLink: 'https://wallet.helium.com/',
+    requestAppId:
+      Platform.OS === 'ios' ? 'com.helium.mobile.wallet' : 'com.helium.wallet',
+    callbackUrl: 'helium://',
+    appName: 'Helium Hotspot App',
+  })
+  Linking.openURL(url)
 }
 
 export const signOut = async () => {

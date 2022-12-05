@@ -12,8 +12,10 @@ import queryString from 'query-string'
 import { useSelector } from 'react-redux'
 import Address from '@helium/address'
 import { BarCodeScanningResult } from 'expo-camera'
+import Toast from 'react-native-simple-toast'
+import { useTranslation } from 'react-i18next'
 import useMount from '../utils/useMount'
-import { getAddress } from '../utils/secureAccount'
+import { getAddress, saveWalletAppToken } from '../utils/secureAccount'
 import { RootState } from '../store/rootReducer'
 import navigator from '../navigation/navigator'
 import {
@@ -91,6 +93,8 @@ const useAppLink = () => {
     app: { isLocked, isBackedUp },
   } = useSelector((state: RootState) => state)
 
+  const { t } = useTranslation()
+
   useMount(() => {
     Linking.addEventListener('url', ({ url: nextUrl }) => {
       if (!nextUrl) return
@@ -160,15 +164,27 @@ const useAppLink = () => {
           })
           break
         }
-        case 'link_wallet':
-          navigator.linkWallet(record as LinkWalletRequest)
+        case 'link_wallet': {
+          const { status, token } = record as AppLink & {
+            status?: string
+            token?: string
+          }
+          if (status === 'success' && token !== undefined) {
+            // we are coming back from a link to wallet app
+            saveWalletAppToken(token)
+            Toast.show(t('linkWallet.linked'), Toast.LONG)
+          } else if (status !== 'user_cancelled') {
+            // we are linking to this wallet
+            navigator.linkWallet(record as LinkWalletRequest)
+          }
           break
+        }
         case 'sign_hotspot':
           navigator.signHotspot(record as SignHotspotRequest)
           break
       }
     },
-    [isLocked, isBackedUp],
+    [t, isLocked, isBackedUp],
   )
 
   useEffect(() => {

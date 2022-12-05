@@ -37,6 +37,7 @@ const MainTabs = () => {
       isLocked,
       isSettingUpHotspot,
       lastSolanaNotification,
+      hideSolanaNotification,
       isPinRequired,
     },
   } = useSelector((state: RootState) => state)
@@ -113,6 +114,7 @@ const MainTabs = () => {
       {
         text: t('solana.alert.button4'),
         onPress: () => {
+          dispatch(appSlice.actions.updateHideSolanaNotification(true))
           if (isPinRequired) {
             navigation.navigate('LockScreen', {
               requestType: 'revealPrivateKey',
@@ -130,10 +132,10 @@ const MainTabs = () => {
         },
       },
     ])
-  }, [isPinRequired, navigation, t])
+  }, [dispatch, isPinRequired, navigation, t])
 
   const showSolanaAlert = useCallback(() => {
-    if (hasTimePassed(lastSolanaNotification)) {
+    if (!hideSolanaNotification && hasTimePassed(lastSolanaNotification)) {
       Alert.alert(t('solana.alert.title'), t('solana.alert.message'), [
         {
           text: t('solana.alert.button1'),
@@ -146,7 +148,13 @@ const MainTabs = () => {
         },
       ])
     }
-  }, [dispatch, lastSolanaNotification, showSolanaDetailAlert, t])
+  }, [
+    dispatch,
+    hideSolanaNotification,
+    lastSolanaNotification,
+    showSolanaDetailAlert,
+    t,
+  ])
 
   return (
     <MainTab.Navigator

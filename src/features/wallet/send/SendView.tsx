@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Alert } from 'react-native'
+import { Alert, Linking, Platform } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
 import Balance, {
@@ -12,6 +12,7 @@ import { useAsync } from 'react-async-hook'
 import { useSelector } from 'react-redux'
 import { TransferHotspotV1 } from '@helium/transactions'
 import { isEqual, some } from 'lodash'
+import { createUpdateHotspotUrl } from '@helium/wallet-link/build/walletLink'
 import { RootState } from '../../../store/rootReducer'
 import Box from '../../../components/Box'
 import useHaptic from '../../../utils/useHaptic'
@@ -49,7 +50,11 @@ import {
   getTransfer,
   Transfer,
 } from '../../hotspots/transfers/TransferRequests'
-import { getAddress } from '../../../utils/secureAccount'
+import {
+  getAddress,
+  getWalletAppToken,
+  linkWalletApp,
+} from '../../../utils/secureAccount'
 import Text from '../../../components/Text'
 import useSubmitTxn from '../../../hooks/useSubmitTxn'
 import { decimalSeparator, groupSeparator } from '../../../utils/i18n'
@@ -532,11 +537,41 @@ const SendView = ({
     setDisableSubmit(true)
     try {
       const txn = await constructTxn()
-      if (txn) {
-        await submitTxn(txn)
+      if (type === 'transfer') {
+        if (txn) {
+          const token = await getWalletAppToken()
+          if (token) {
+            const walletUrl = createUpdateHotspotUrl({
+              token,
+              platform: Platform.OS,
+              transferHotspotTxn: txn?.toString(),
+            })
+            Linking.openURL(`${walletUrl}&submit=true`)
+            sendNavigation.navigate('SendComplete')
+          } else {
+            Alert.alert(
+              t('linkWallet.txnAlert.title'),
+              t('linkWallet.txnAlert.body'),
+              [
+                {
+                  text: t('linkWallet.txnAlert.action'),
+                  onPress: linkWalletApp,
+                },
+                {
+                  text: t('generic.cancel'),
+                  onPress: () => {},
+                },
+              ],
+            )
+          }
+        }
+      } else {
+        if (txn) {
+          await submitTxn(txn)
+        }
+        triggerNavHaptic()
+        sendNavigation.navigate('SendComplete')
       }
-      triggerNavHaptic()
-      sendNavigation.navigate('SendComplete')
     } catch (error) {
       Logger.error(error)
       if (type !== 'transfer') {

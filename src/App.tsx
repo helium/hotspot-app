@@ -56,6 +56,7 @@ import {
   fetchFollowedValidators,
   fetchMyValidators,
 } from './store/validators/validatorsSlice'
+import SentinelScreen from './components/SentinelScreen'
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
@@ -237,11 +238,13 @@ const App = () => {
                   <StatusBar translucent backgroundColor="transparent" />
                 )}
                 {initialized ? (
-                  <NavigationContainer ref={navigationRef}>
-                    <AppLinkProvider>
-                      <NavigationRoot />
-                    </AppLinkProvider>
-                  </NavigationContainer>
+                  <SentinelScreen>
+                    <NavigationContainer ref={navigationRef}>
+                      <AppLinkProvider>
+                        <NavigationRoot />
+                      </AppLinkProvider>
+                    </NavigationContainer>
+                  </SentinelScreen>
                 ) : (
                   <Box flex={1} justifyContent="center" alignItems="center">
                     <ActivityIndicator color="white" />
