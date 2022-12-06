@@ -51,20 +51,36 @@ type Props = {
   onClose: () => void
   onCloseSettings: () => void
   hotspot: Hotspot | Witness
+  antennaGain?: number
+  antennaElevation?: number
+  initState?: State
 }
 
 type State = 'antenna' | 'location' | 'confirm'
 
-const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
+const UpdateHotspotConfig = ({
+  onClose,
+  onCloseSettings,
+  hotspot,
+  antennaGain,
+  antennaElevation,
+  initState,
+}: Props) => {
   const { t } = useTranslation()
   const navigation = useNavigation()
   const dispatch = useAppDispatch()
   const [state, setState] = useState<State>(
-    isDataOnly(hotspot) ? 'location' : 'antenna',
+    initState ?? (isDataOnly(hotspot) ? 'location' : 'antenna'),
   )
-  const [antenna, setAntenna] = useState<MakerAntenna>()
-  const [gain, setGain] = useState<number>()
-  const [elevation, setElevation] = useState<number>(0)
+  const [antenna, setAntenna] = useState<MakerAntenna | undefined>(
+    antennaGain != null
+      ? ({ name: 'Custom Antenna', gain: antennaGain } as MakerAntenna)
+      : undefined,
+  )
+  const [gain, setGain] = useState<number | undefined>(antennaGain)
+  const [elevation, setElevation] = useState<number | undefined>(
+    antennaElevation,
+  )
   const [location, setLocation] = useState<Coords>()
   const [locationName, setLocationName] = useState<string>()
   const [fullScreen, setFullScreen] = useState(false)
@@ -81,6 +97,24 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
   useEffect(() => {
     enableBack(onClose)
   }, [enableBack, onClose])
+
+  useEffect(() => {
+    if (!!(antennaGain || antennaElevation) && initState === 'confirm') {
+      updateLocationFeeForUpdatingAntenna()
+      setIsLocationChange(false)
+    }
+  }, [antennaGain, antennaElevation, initState])
+
+  const updateLocationFeeForUpdatingAntenna = () => {
+    const feeData = calculateAssertLocFee(undefined, undefined, undefined)
+    const feeDc = new Balance(feeData.fee, CurrencyType.dataCredit)
+    setLocationFee(
+      feeDc.toString(0, {
+        groupSeparator,
+        decimalSeparator,
+      }),
+    )
+  }
 
   const toggleUpdateAntenna = () => {
     animateTransition('UpdateHotspotConfig.ToggleUpdateAntenna', {
@@ -100,14 +134,7 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
     animateTransition('UpdateHotspotConfig.OnConfirm', {
       enabledOnAndroid: false,
     })
-    const feeData = calculateAssertLocFee(undefined, undefined, undefined)
-    const feeDc = new Balance(feeData.fee, CurrencyType.dataCredit)
-    setLocationFee(
-      feeDc.toString(0, {
-        groupSeparator,
-        decimalSeparator,
-      }),
-    )
+    updateLocationFeeForUpdatingAntenna()
     setState('confirm')
   }
   const updatingAntenna = useMemo(() => state === 'antenna', [state])
@@ -442,6 +469,8 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
               onGainUpdated={setGain}
               onElevationUpdated={setElevation}
               selectedAntenna={antenna}
+              gain={gain}
+              elevation={elevation}
             />
             <Button
               title={t('hotspot_settings.reassert.update_antenna')}

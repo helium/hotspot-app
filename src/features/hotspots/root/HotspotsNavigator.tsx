@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import defaultScreenOptions from '../../../navigation/defaultScreenOptions'
 import HotspotsScreen from './HotspotsScreen'
 import HotspotLocationUpdateScreen from './HotspotLocationUpdateScreen'
+import HotspotAntennaUpdateScreen from './HotspotAntennaUpdateScreen'
 import { HotspotStackParamList } from './hotspotTypes'
 
 const HotspotsStack = createStackNavigator<HotspotStackParamList>()
@@ -17,6 +18,10 @@ const Hotspots = () => {
       <HotspotsStack.Screen
         name="HotspotLocationUpdateScreen"
         component={HotspotLocationUpdateScreen}
+      />
+      <HotspotsStack.Screen
+        name="HotspotAntennaUpdateScreen"
+        component={HotspotAntennaUpdateScreen}
       />
     </HotspotsStack.Navigator>
   )

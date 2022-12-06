@@ -13,6 +13,7 @@ export const AppLinkCategories = [
   'hotspot_location',
   'link_wallet',
   'sign_hotspot',
+  'hotspot_antenna',
 ] as const
 export type AppLinkCategoryType = typeof AppLinkCategories[number]
 
@@ -23,7 +24,15 @@ export type AppLink = {
   address: string
   amount?: string | number
   memo?: string
-  [key: string]: string | number | undefined
+  [key: string]: string | number | boolean | undefined
+}
+
+export type AppLinkTransfer = {
+  type: 'transfer'
+  newOwnerAddress: string
+  hotspotAddress?: string
+  skipActivityCheck?: boolean
+  isSeller?: boolean
 }
 
 export type AppLinkPayment = {
@@ -53,3 +62,10 @@ export type LinkWalletRequest = {
 export type SignHotspotRequest = {
   type: AppLinkCategoryType
 } & Sign
+
+export type AppLinkAntenna = {
+  type: AppLinkCategoryType
+  hotspotAddress: string
+  gain: number
+  elevation?: number
+}
