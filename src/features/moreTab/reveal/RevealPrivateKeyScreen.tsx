@@ -4,6 +4,7 @@ import { useAsync } from 'react-async-hook'
 import { useNavigation } from '@react-navigation/native'
 import bs58 from 'bs58'
 import { Linking } from 'react-native'
+import { Buffer } from 'buffer'
 import Text from '../../../components/Text'
 import Box from '../../../components/Box'
 import Button from '../../../components/Button'
@@ -12,7 +13,7 @@ import TextTransform from '../../../components/TextTransform'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
 import CopyAddress from '../../../components/Address'
 import useAlert from '../../../utils/useAlert'
-import { getKeypair } from '../../../utils/secureAccount'
+import { getKeypair, getMnemonic } from '../../../utils/secureAccount'
 import Articles from '../../../constants/articles'
 
 const RevealPrivateKeyScreen = () => {
@@ -38,9 +39,14 @@ const RevealPrivateKeyScreen = () => {
     setRevealed(decision)
   }, [showOKCancelAlert])
 
-  const goToHeliumWallet = useCallback(() => {
-    Linking.openURL(`${Articles.Wallet_Site}/import_key/${privateKey}`)
-  }, [privateKey])
+  const exportToWalletApp = useCallback(async () => {
+    const mnemonic = await getMnemonic()
+    if (!mnemonic || !mnemonic.words) return
+    const encoded = Buffer.from(JSON.stringify(mnemonic.words))
+    Linking.openURL(
+      `${Articles.Wallet_Site}/import_key/${encoded.toString('base64')}`,
+    )
+  }, [])
 
   return (
     <BackScreen backgroundColor="primaryBackground" flex={1}>
@@ -74,16 +80,6 @@ const RevealPrivateKeyScreen = () => {
             fontSize={18}
             toastText={t('account_setup.revealPrivateKey.privateKey')}
           />
-          <TouchableOpacityBox onPress={goToHeliumWallet}>
-            <TextTransform
-              fontSize={18}
-              color="primaryText"
-              maxFontSizeMultiplier={1}
-              textAlign="center"
-              marginTop="xxl"
-              i18nKey="account_setup.revealPrivateKey.download"
-            />
-          </TouchableOpacityBox>
         </Box>
       ) : (
         <TouchableOpacityBox
@@ -113,9 +109,16 @@ const RevealPrivateKeyScreen = () => {
         height={60}
         borderRadius="round"
         backgroundColor="purpleMain"
-        title={t('account_setup.revealPrivateKey.done')}
+        title={t('account_setup.revealPrivateKey.export')}
         marginBottom="m"
         mode="contained"
+        onPress={exportToWalletApp}
+      />
+      <Button
+        height={60}
+        borderRadius="round"
+        title={t('account_setup.revealPrivateKey.done')}
+        mode="text"
         onPress={navigation.goBack}
       />
     </BackScreen>

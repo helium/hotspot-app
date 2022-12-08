@@ -75,7 +75,7 @@ export default {
       tapCopy: 'Tap to copy. Your private key is:',
       title: 'Your Private Key',
       privateKey: 'private key',
-      download: 'Tap here to import into the <b>Helium Wallet App</b>.',
+      export: 'Export to Wallet App',
     },
   },
   learn: {
