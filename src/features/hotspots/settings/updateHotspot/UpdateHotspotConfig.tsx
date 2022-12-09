@@ -88,6 +88,7 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
       {
         text: t('solana.alert.button4'),
         onPress: () => {
+          onCloseSettings()
           dispatch(appSlice.actions.updateHideSolanaNotification(true))
           if (isPinRequired) {
             navigation.navigate('LockScreen', {
@@ -110,7 +111,15 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
         onPress: () => {},
       },
     ])
-  }, [dispatch, enableBack, isPinRequired, navigation, onClose, t])
+  }, [
+    dispatch,
+    enableBack,
+    isPinRequired,
+    navigation,
+    onClose,
+    onCloseSettings,
+    t,
+  ])
 
   const toggleUpdateAntenna = () => {
     animateTransition('UpdateHotspotConfig.ToggleUpdateAntenna', {

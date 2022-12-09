@@ -52,6 +52,7 @@ const HotspotTransfer = ({
       {
         text: t('solana.alert.button4'),
         onPress: () => {
+          onCloseSettings()
           dispatch(appSlice.actions.updateHideSolanaNotification(true))
           if (isPinRequired) {
             navigation.navigate('LockScreen', {
@@ -74,7 +75,15 @@ const HotspotTransfer = ({
         onPress: () => {},
       },
     ])
-  }, [dispatch, enableBack, isPinRequired, navigation, onCloseTransfer, t])
+  }, [
+    dispatch,
+    enableBack,
+    isPinRequired,
+    navigation,
+    onCloseSettings,
+    onCloseTransfer,
+    t,
+  ])
 
   const handleTypeName = (text: string) => {
     setTypedName(text)

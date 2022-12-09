@@ -175,9 +175,11 @@ export default {
       subtitle: 'What kind of Hotspot do you\nwish to add?',
       makerAppAlert: {
         title: 'Download Now',
+        titleEmail: 'Email Now',
         body:
           '{{maker}} hotspots should now be onboarded using the {{makerAppName}}',
         visit: 'Visit Store',
+        email: 'Email Maker',
         continue: 'Continue With Helium App',
       },
     },
