@@ -7,6 +7,7 @@ import { Balance, CurrencyType } from '@helium/currency'
 import { useNavigation } from '@react-navigation/native'
 import Toast from 'react-native-simple-toast'
 import { createUpdateHotspotUrl } from '@helium/wallet-link/build/walletLink'
+import { useSelector } from 'react-redux'
 import Text from '../../../../components/Text'
 import TouchableOpacityBox from '../../../../components/TouchableOpacityBox'
 import Box from '../../../../components/Box'
@@ -46,6 +47,8 @@ import {
   getWalletAppToken,
   linkWalletApp,
 } from '../../../../utils/secureAccount'
+import appSlice from '../../../../store/user/appSlice'
+import { RootState } from '../../../../store/rootReducer'
 
 type Props = {
   onClose: () => void
@@ -62,6 +65,7 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
   const [state, setState] = useState<State>(
     isDataOnly(hotspot) ? 'location' : 'antenna',
   )
+  const { isPinRequired } = useSelector((s: RootState) => s.app)
   const [antenna, setAntenna] = useState<MakerAntenna>()
   const [gain, setGain] = useState<number>()
   const [elevation, setElevation] = useState<number>(0)
@@ -80,7 +84,33 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
   const { enableBack, disableBack } = useHotspotSettingsContext()
   useEffect(() => {
     enableBack(onClose)
-  }, [enableBack, onClose])
+    Alert.alert(t('solana.migrate'), t('solana.updateMessage'), [
+      {
+        text: t('solana.alert.button4'),
+        onPress: () => {
+          dispatch(appSlice.actions.updateHideSolanaNotification(true))
+          if (isPinRequired) {
+            navigation.navigate('LockScreen', {
+              requestType: 'revealPrivateKey',
+            })
+          } else {
+            navigation.navigate('MainTabs', {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              screen: 'More',
+              params: {
+                screen: 'RevealPrivateKeyScreen',
+              },
+            })
+          }
+        },
+      },
+      {
+        text: t('generic.ok'),
+        onPress: () => {},
+      },
+    ])
+  }, [dispatch, enableBack, isPinRequired, navigation, onClose, t])
 
   const toggleUpdateAntenna = () => {
     animateTransition('UpdateHotspotConfig.ToggleUpdateAntenna', {

@@ -4,6 +4,8 @@ import animalName from 'angry-purple-tiger'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@react-navigation/native'
 import Toast from 'react-native-simple-toast'
+import { Alert } from 'react-native'
+import { useSelector } from 'react-redux'
 import Text from '../../../components/Text'
 import TextInput from '../../../components/TextInput'
 import TouchableOpacityBox from '../../../components/TouchableOpacityBox'
@@ -21,6 +23,8 @@ import {
 } from '../../../store/activity/activitySlice'
 import { isPendingTransaction } from '../../wallet/root/useActivityItem'
 import { useAppDispatch } from '../../../store/store'
+import appSlice from '../../../store/user/appSlice'
+import { RootState } from '../../../store/rootReducer'
 
 type Props = {
   onCloseTransfer: () => void
@@ -40,10 +44,37 @@ const HotspotTransfer = ({
   const { enableBack } = useHotspotSettingsContext()
   const colors = useColors()
   const dispatch = useAppDispatch()
+  const { isPinRequired } = useSelector((state: RootState) => state.app)
 
   useEffect(() => {
     enableBack(onCloseTransfer)
-  }, [enableBack, onCloseTransfer])
+    Alert.alert(t('solana.migrate'), t('solana.transferMessage'), [
+      {
+        text: t('solana.alert.button4'),
+        onPress: () => {
+          dispatch(appSlice.actions.updateHideSolanaNotification(true))
+          if (isPinRequired) {
+            navigation.navigate('LockScreen', {
+              requestType: 'revealPrivateKey',
+            })
+          } else {
+            navigation.navigate('MainTabs', {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              screen: 'More',
+              params: {
+                screen: 'RevealPrivateKeyScreen',
+              },
+            })
+          }
+        },
+      },
+      {
+        text: t('generic.ok'),
+        onPress: () => {},
+      },
+    ])
+  }, [dispatch, enableBack, isPinRequired, navigation, onCloseTransfer, t])
 
   const handleTypeName = (text: string) => {
     setTypedName(text)

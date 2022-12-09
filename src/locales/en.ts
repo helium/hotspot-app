@@ -1330,6 +1330,10 @@ export default {
     migrate: 'Migrate Your Wallet',
     migrateMessage:
       'The Helium Hotspot App is saying goodbye as part of the Solana transition.',
+    transferMessage:
+      'Transfer Hotspot now requires an account export to the Helium Wallet App.',
+    updateMessage:
+      'Update Hotspot now requires an account export to the Helium Wallet App.',
     alert: {
       title: 'The Helium Solana Migration is coming',
       message: 'Be prepared and export your Account to Helium Wallet today.',
