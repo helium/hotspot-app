@@ -13,6 +13,7 @@ import SendNavigator from '../../features/wallet/send/SendNavigator'
 import ScanNavigator from '../../features/wallet/scan/ScanNavigator'
 import SignHotspot from '../../features/txnDelegatation/SignHotspot'
 import LinkWallet from '../../features/txnDelegatation/LinkWallet'
+import SentinelScreen from '../../components/SentinelScreen'
 
 const HomeStack = createStackNavigator()
 
@@ -32,7 +33,7 @@ const HomeStackScreen = () => {
     <HomeStack.Navigator
       mode="modal"
       screenOptions={({ route }) => {
-        if (route.name === 'LockScreen')
+        if (route.name === 'LockScreen' || route.name === 'SentinelScreen')
           return { ...defaultScreenOptions, gestureEnabled: false }
 
         if (Platform.OS === 'android') return defaultScreenOptions
@@ -89,6 +90,11 @@ const HomeStackScreen = () => {
           cardOverlayEnabled: isIOS,
           ...modalTransition,
         }}
+      />
+      <HomeStack.Screen
+        name="SentinelScreen"
+        component={SentinelScreen}
+        options={{ headerShown: false }}
       />
     </HomeStack.Navigator>
   )

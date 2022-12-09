@@ -22,6 +22,7 @@ export type AppState = {
   isLocked: boolean
   isRequestingPermission: boolean
   lastSolanaNotification?: number
+  lastSeenSentinel?: number
   hideSolanaNotification?: boolean
 }
 const initialState: AppState = {
@@ -49,6 +50,7 @@ type Restore = {
   isLocked: boolean
   isHapticDisabled: boolean
   lastSolanaNotification: number
+  lastSeenSentinel: number
   hideSolanaNotification: boolean
 }
 
@@ -78,6 +80,7 @@ export const restoreAppSettings = createAsyncThunk<Restore>(
       getSecureItem('lastSolanaNotification'),
       getSecureItem('hideSolanaNotification'),
     ])
+    const lastSeenSentinel = await getSecureItem('lastSeenSentinel')
 
     if (isBackedUp && address) {
       OneSignal.sendTags({ address })
@@ -97,6 +100,7 @@ export const restoreAppSettings = createAsyncThunk<Restore>(
         ? Number(lastSolanaNotification)
         : undefined,
       hideSolanaNotification,
+      lastSeenSentinel: lastSeenSentinel ? Number(lastSeenSentinel) : undefined,
     } as Restore
   },
 )
@@ -163,6 +167,11 @@ const appSlice = createSlice({
       const now = Date.now()
       state.lastSolanaNotification = now
       setSecureItem('lastSolanaNotification', now.toString())
+    },
+    updateLastSeenSentinel: (state) => {
+      const now = Date.now()
+      state.lastSeenSentinel = now
+      setSecureItem('lastSeenSentinel', now.toString())
     },
     updateHideSolanaNotification: (state, action: PayloadAction<boolean>) => {
       setSecureItem('hideSolanaNotification', action.payload)

@@ -24,6 +24,7 @@ const stringKeys = [
   'permanentPaymentAddress',
   'lastSolanaNotification',
   'walletLinkToken',
+  'lastSeenSentinel',
 ] as const
 type StringKey = typeof stringKeys[number]
 

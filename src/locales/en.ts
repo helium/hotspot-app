@@ -1350,6 +1350,11 @@ export default {
   },
   sentinel: {
     action: 'Understood',
+    not_started: {
+      title: 'Migrate to Wallet App',
+      body:
+        'Helium is transitioning to Solana. Migrate to the Wallet app to manage your account on Solana.',
+    },
     in_progress: {
       title: 'Helium Blockchain Stopped',
       body: 'Helium is transitioning to Solana.',

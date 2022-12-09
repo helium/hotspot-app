@@ -1,104 +1,82 @@
-import React, { memo, ReactNode, useCallback, useEffect, useState } from 'react'
-import { View } from 'react-native'
+import React, { memo, useCallback } from 'react'
 import InfoError from '@assets/images/infoError.svg'
 import { useTranslation } from 'react-i18next'
-import Animated, {
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated'
+import { useSelector } from 'react-redux'
+import { useNavigation } from '@react-navigation/native'
 import Text from './Text'
 import Box from './Box'
 import { useGetSolanaStatusQuery } from '../store/solana/solanaStatusApi'
 import Button from './Button'
+import { RootState } from '../store/rootReducer'
+import { RootNavigationProp } from '../navigation/main/tabTypes'
 
-const SentinelScreen = ({ children }: { children: ReactNode }) => {
+const SentinelScreen = () => {
   const { t } = useTranslation()
   const { data: status } = useGetSolanaStatusQuery()
-  const [showSentinel, setShowSentinel] = useState<boolean>()
-  const animValue = useSharedValue(1)
-  const [animationComplete, setAnimationComplete] = useState(false)
-
-  const animationCompleted = useCallback(() => {
-    setAnimationComplete(true)
-  }, [])
-
-  const style = useAnimatedStyle(() => {
-    let animVal = animValue.value
-
-    if (animValue.value === 0) {
-      animVal = withTiming(
-        animValue.value,
-        { duration: 300 },
-        runOnJS(animationCompleted),
-      )
-    }
-    return {
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-      position: 'absolute',
-      opacity: animVal,
-    }
-  })
-
-  useEffect(() => {
-    if (!status || status.migrationStatus === 'not_started') return
-
-    // if needed we can add this back to show only for a specific app version
-    // const { minimumVersions } = status
-    // const bundleId = DeviceInfo.getBundleId()
-    // const minVersion = minimumVersions[bundleId]
-    // const version = DeviceInfo.getVersion()
-    // const valid = semver.gte(version, minVersion)
-    setShowSentinel(true)
-  }, [status])
+  const navigation = useNavigation<RootNavigationProp>()
+  const { isPinRequired } = useSelector((state: RootState) => state.app)
 
   const handleClose = useCallback(() => {
-    animValue.value = 0
-  }, [animValue])
+    navigation.goBack()
+  }, [navigation])
+
+  const exportAccount = useCallback(() => {
+    if (isPinRequired) {
+      navigation.navigate('LockScreen', {
+        requestType: 'revealPrivateKey',
+      })
+    } else {
+      navigation.navigate('MainTabs', {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        screen: 'More',
+        params: {
+          screen: 'RevealPrivateKeyScreen',
+        },
+      })
+    }
+  }, [isPinRequired, navigation])
 
   return (
-    <View style={{ flex: 1 }}>
-      {children}
-      {!!showSentinel && !animationComplete && (
-        <Animated.View style={style}>
-          <Box
-            backgroundColor="primaryBackground"
-            flex={1}
-            justifyContent="center"
-            paddingHorizontal="xl"
-          >
-            <Box justifyContent="center" alignItems="center" marginBottom="xl">
-              <InfoError />
-            </Box>
-            <Text variant="h1" textAlign="center" fontSize={40} lineHeight={42}>
-              {t(`sentinel.${status?.migrationStatus}.title`)}
-            </Text>
-            <Text
-              variant="subtitle"
-              color="secondaryText"
-              textAlign="center"
-              marginTop="m"
-              marginHorizontal="l"
-            >
-              {t(`sentinel.${status?.migrationStatus}.body`)}
-            </Text>
+    <Box
+      backgroundColor="primaryBackground"
+      flex={1}
+      justifyContent="center"
+      paddingHorizontal="l"
+    >
+      <Box justifyContent="center" alignItems="center" marginBottom="xl">
+        <InfoError />
+      </Box>
+      <Text variant="h1" textAlign="center" fontSize={40} lineHeight={42}>
+        {t(`sentinel.${status?.migrationStatus}.title`)}
+      </Text>
+      <Text
+        variant="subtitle"
+        color="secondaryText"
+        textAlign="center"
+        marginTop="m"
+      >
+        {t(`sentinel.${status?.migrationStatus}.body`)}
+      </Text>
 
-            <Button
-              borderRadius="round"
-              onPress={handleClose}
-              backgroundColor="primaryText"
-              title={t('sentinel.action')}
-              color="black"
-              marginTop="l"
-            />
-          </Box>
-        </Animated.View>
-      )}
-    </View>
+      <Button
+        borderRadius="round"
+        onPress={exportAccount}
+        backgroundColor="primaryText"
+        title={t('more.sections.security.revealPrivateKey')}
+        color="black"
+        marginTop="xxl"
+      />
+
+      <Button
+        mode="text"
+        borderRadius="round"
+        onPress={handleClose}
+        title={t('sentinel.action')}
+        color="secondaryText"
+        marginTop="m"
+      />
+    </Box>
   )
 }
 

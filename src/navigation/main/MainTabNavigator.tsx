@@ -33,23 +33,27 @@ const MainTabs = () => {
   const navigation = useNavigation<RootNavigationProp>()
   const tabNavigation = useNavigation<MainTabNavigationProp>()
   const {
-    app: {
-      isLocked,
-      isSettingUpHotspot,
-      lastSolanaNotification,
-      hideSolanaNotification,
-      isPinRequired,
-    },
-  } = useSelector((state: RootState) => state)
+    isLocked,
+    isSettingUpHotspot,
+    lastSolanaNotification,
+    hideSolanaNotification,
+    isPinRequired,
+    lastSeenSentinel,
+  } = useSelector((state: RootState) => state.app)
   const pushNotification = useSelector(
     (state: RootState) => state.notifications.pushNotification,
   )
   const dispatch = useAppDispatch()
 
   useEffect(() => {
+    if (hasTimePassed(lastSeenSentinel)) {
+      dispatch(appSlice.actions.updateLastSeenSentinel())
+      navigation.navigate('SentinelScreen')
+    }
+
     if (!isLocked) return
     navigation.navigate('LockScreen', { requestType: 'unlock', lock: true })
-  }, [isLocked, navigation])
+  }, [dispatch, isLocked, lastSeenSentinel, navigation])
 
   useEffect(() => {
     if (!isSettingUpHotspot) return
