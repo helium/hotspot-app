@@ -1355,20 +1355,23 @@ export default {
     },
   },
   sentinel: {
-    action: 'Understood',
+    action: 'Download Helium Wallet',
+    mainAction: 'Start Migration',
+    infoAction: 'More Information',
     not_started: {
-      title: 'Migrate to Wallet App',
+      title: 'Migration Required',
       body:
-        'Helium is transitioning to Solana. Migrate to the Wallet app to manage your account on Solana.',
+        'All Hotspot app users must upgrade to the Helium Wallet app to manage HNT, MOBILE, and IOT. You will need the Helium Wallet app to migrate.\n\n<b>Your tokens and Hotspots will be safe during transfer.</b>',
     },
     in_progress: {
       title: 'Helium Blockchain Stopped',
-      body: 'Helium is transitioning to Solana.',
+      body:
+        'Helium is transitioning to Solana.\n\nAll Hotspot app users must upgrade to the Helium Wallet app to manage HNT, MOBILE, and IOT. You will need the Helium Wallet app to migrate.\n\n<b>Your tokens and Hotspots will be safe during transfer.</b>',
     },
     complete: {
-      title: 'App migration needed',
+      title: 'Migration Required',
       body:
-        'Helium has transitioned to Solana. Migrate to the Wallet app to manage your account on Solana.',
+        'Helium has transitioned to Solana.\n\nAll Hotspot app users must upgrade to the Helium Wallet app to manage HNT, MOBILE, and IOT. You will need the Helium Wallet app to migrate.\n\n<b>Your tokens and Hotspots will be safe during transfer.</b>',
     },
   },
 }

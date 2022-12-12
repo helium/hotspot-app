@@ -6,12 +6,15 @@ import {
   TouchableOpacityBoxProps,
 } from './TouchableOpacityBox'
 import { useColors } from '../theme/themeHooks'
+import { Colors } from '../theme/theme'
 
-const CloseButton = (props: TouchableOpacityBoxProps) => {
-  const { white } = useColors()
+const CloseButton = (
+  props: TouchableOpacityBoxProps & { buttonColor?: Colors },
+) => {
+  const colors = useColors()
   return (
     <DebouncedTouchableOpacityBox padding="xs" {...props}>
-      <Close color={white} />
+      <Close color={colors[props.buttonColor || 'white']} />
     </DebouncedTouchableOpacityBox>
   )
 }

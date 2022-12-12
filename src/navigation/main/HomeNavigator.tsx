@@ -94,7 +94,11 @@ const HomeStackScreen = () => {
       <HomeStack.Screen
         name="SentinelScreen"
         component={SentinelScreen}
-        options={{ headerShown: false }}
+        options={{
+          headerShown: false,
+          cardOverlayEnabled: isIOS,
+          ...modalTransition,
+        }}
       />
     </HomeStack.Navigator>
   )
