@@ -1361,17 +1361,17 @@ export default {
     not_started: {
       title: 'Migration Required',
       body:
-        'All Hotspot app users must upgrade to the Helium Wallet app to manage HNT, MOBILE, and IOT. You will need the Helium Wallet app to migrate.\n\n<b>Your tokens and Hotspots will be safe during transfer.</b>',
+        'All Hotspot app users must upgrade to the Helium Wallet app to manage HNT, MOBILE, and IOT in preparation for the Solana Layer 1 Migration. You will need the Helium Wallet app to migrate.\n\n<b>Your tokens and Hotspots will be safe during transfer.</b>',
     },
     in_progress: {
       title: 'Helium Blockchain Stopped',
       body:
-        'Helium is transitioning to Solana.\n\nAll Hotspot app users must upgrade to the Helium Wallet app to manage HNT, MOBILE, and IOT. You will need the Helium Wallet app to migrate.\n\n<b>Your tokens and Hotspots will be safe during transfer.</b>',
+        'All Hotspot app users must upgrade to the Helium Wallet app to manage HNT, MOBILE, and IOT in preparation for the Solana Layer 1 Migration. You will need the Helium Wallet app to migrate.\n\n<b>Your tokens and Hotspots will be safe during transfer.</b>',
     },
     complete: {
       title: 'Migration Required',
       body:
-        'Helium has transitioned to Solana.\n\nAll Hotspot app users must upgrade to the Helium Wallet app to manage HNT, MOBILE, and IOT. You will need the Helium Wallet app to migrate.\n\n<b>Your tokens and Hotspots will be safe during transfer.</b>',
+        'Helium blockchain has transitioned to Solana blockchain.\n\nAll Hotspot app users must upgrade to the Helium Wallet app to manage HNT, MOBILE, and IOT. You will need the Helium Wallet app to migrate.\n\n<b>Your tokens and Hotspots will be safe during transfer.</b>',
     },
   },
 }
