@@ -8,8 +8,8 @@ export default {
   supportEmail: 'support@longap.com',
   makerApp: {
     makerAppName: 'LongAP Dashboard',
-    ios: 'http://dashboard.longap.com/',
-    android: 'http://dashboard.longap.com/',
+    ios: '', // http://dashboard.longap.com/ not working
+    android: '', // http://dashboard.longap.com/ not working
     forceRedirect: false,
   },
 }
