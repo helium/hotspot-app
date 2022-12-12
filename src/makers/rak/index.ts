@@ -11,7 +11,7 @@ export default {
     ios:
       'https://apps.apple.com/us/app/mntd-helium-hotspot-manager/id1595569593',
     android: 'https://play.google.com/store/apps/details?id=com.getmntd.wallet',
-    forceRedirect: false,
+    forceRedirect: true,
   },
 }
 
@@ -25,6 +25,6 @@ export const rakWireless = {
     ios:
       'https://apps.apple.com/us/app/mntd-helium-hotspot-manager/id1595569593',
     android: 'https://play.google.com/store/apps/details?id=com.getmntd.wallet',
-    forceRedirect: false,
+    forceRedirect: true,
   },
 }

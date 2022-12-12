@@ -10,6 +10,6 @@ export default {
     makerAppName: 'ClodPi App',
     ios: '',
     android: 'https://play.google.com/store/apps/details?id=io.clodpi.hotspots',
-    forceRedirect: false,
+    forceRedirect: true,
   },
 }

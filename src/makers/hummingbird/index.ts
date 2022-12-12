@@ -10,6 +10,6 @@ export default {
     makerAppName: 'Hummingbird App',
     ios: 'https://apps.apple.com/app/hummingbird-hotspot/id1612429261',
     android: 'https://www.xdt.com/app.html',
-    forceRedirect: false,
+    forceRedirect: true,
   },
 }

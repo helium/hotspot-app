@@ -11,6 +11,6 @@ export default {
     ios: 'https://apps.apple.com/app/nebra-hotspot/id1617299471',
     android:
       'https://play.google.com/store/apps/details?id=com.nebra.helium.maker',
-    forceRedirect: false,
+    forceRedirect: true,
   },
 }

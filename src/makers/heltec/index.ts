@@ -10,6 +10,6 @@ export default {
     makerAppName: 'Heltec App',
     ios: 'https://heltec.org/maker-app/',
     android: 'https://heltec.org/maker-app/',
-    forceRedirect: false,
+    forceRedirect: true,
   },
 }

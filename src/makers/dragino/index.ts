@@ -6,4 +6,10 @@ export default {
   hotspots,
   id: 27,
   supportEmail: 'support@dragino.com',
+  makerApp: {
+    makerAppName: 'Dragino App',
+    ios: '',
+    android: '',
+    forceRedirect: true,
+  },
 }

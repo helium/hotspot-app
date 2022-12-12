@@ -10,6 +10,6 @@ export default {
     makerAppName: 'LongAP Dashboard',
     ios: '', // http://dashboard.longap.com/ not working
     android: '', // http://dashboard.longap.com/ not working
-    forceRedirect: false,
+    forceRedirect: true,
   },
 }

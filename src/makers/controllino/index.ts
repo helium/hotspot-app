@@ -6,4 +6,10 @@ export default {
   hotspots,
   id: 17,
   supportEmail: 'helium@controllino.com',
+  makerApp: {
+    makerAppName: 'Controllino App',
+    ios: '',
+    android: '',
+    forceRedirect: true,
+  },
 }
