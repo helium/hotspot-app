@@ -30,7 +30,7 @@ const SentinelScreen = () => {
   }, [])
 
   const handleMoreInfo = useCallback(() => {
-    Linking.openURL(Articles.Docs_Root)
+    Linking.openURL(Articles.Docs_Wallets)
   }, [])
 
   const exportAccount = useCallback(() => {
