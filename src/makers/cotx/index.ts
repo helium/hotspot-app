@@ -10,6 +10,6 @@ export default {
     makerAppName: 'COTX App',
     ios: 'https://apps.apple.com/app/cotx/id1605937419',
     android: 'https://play.google.com/store/apps/details?id=com.cotxnetworks',
-    forceRedirect: false,
+    forceRedirect: true,
   },
 }

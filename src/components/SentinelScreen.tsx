@@ -1,104 +1,118 @@
-import React, { memo, ReactNode, useCallback, useEffect, useState } from 'react'
-import { View } from 'react-native'
-import InfoError from '@assets/images/infoError.svg'
+import React, { memo, useCallback } from 'react'
+import InfoCaution from '@assets/images/caution.svg'
 import { useTranslation } from 'react-i18next'
-import Animated, {
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated'
+import { useSelector } from 'react-redux'
+import { useNavigation } from '@react-navigation/native'
+import { Linking } from 'react-native'
 import Text from './Text'
 import Box from './Box'
 import { useGetSolanaStatusQuery } from '../store/solana/solanaStatusApi'
 import Button from './Button'
+import { RootState } from '../store/rootReducer'
+import { RootNavigationProp } from '../navigation/main/tabTypes'
+import CloseButton from './CloseButton'
+import TextTransform from './TextTransform'
+import Articles from '../constants/articles'
+import TouchableOpacityBox from './TouchableOpacityBox'
 
-const SentinelScreen = ({ children }: { children: ReactNode }) => {
+const SentinelScreen = () => {
   const { t } = useTranslation()
   const { data: status } = useGetSolanaStatusQuery()
-  const [showSentinel, setShowSentinel] = useState<boolean>()
-  const animValue = useSharedValue(1)
-  const [animationComplete, setAnimationComplete] = useState(false)
-
-  const animationCompleted = useCallback(() => {
-    setAnimationComplete(true)
-  }, [])
-
-  const style = useAnimatedStyle(() => {
-    let animVal = animValue.value
-
-    if (animValue.value === 0) {
-      animVal = withTiming(
-        animValue.value,
-        { duration: 300 },
-        runOnJS(animationCompleted),
-      )
-    }
-    return {
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-      position: 'absolute',
-      opacity: animVal,
-    }
-  })
-
-  useEffect(() => {
-    if (!status || status.migrationStatus === 'not_started') return
-
-    // if needed we can add this back to show only for a specific app version
-    // const { minimumVersions } = status
-    // const bundleId = DeviceInfo.getBundleId()
-    // const minVersion = minimumVersions[bundleId]
-    // const version = DeviceInfo.getVersion()
-    // const valid = semver.gte(version, minVersion)
-    setShowSentinel(true)
-  }, [status])
+  const navigation = useNavigation<RootNavigationProp>()
+  const { isPinRequired } = useSelector((state: RootState) => state.app)
 
   const handleClose = useCallback(() => {
-    animValue.value = 0
-  }, [animValue])
+    navigation.goBack()
+  }, [navigation])
+
+  const handleDownload = useCallback(() => {
+    Linking.openURL(Articles.Wallet_Site)
+  }, [])
+
+  const handleMoreInfo = useCallback(() => {
+    Linking.openURL(Articles.Docs_Wallets)
+  }, [])
+
+  const exportAccount = useCallback(() => {
+    if (isPinRequired) {
+      navigation.navigate('LockScreen', {
+        requestType: 'revealPrivateKey',
+      })
+    } else {
+      navigation.navigate('MainTabs', {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        screen: 'More',
+        params: {
+          screen: 'RevealPrivateKeyScreen',
+        },
+      })
+    }
+  }, [isPinRequired, navigation])
 
   return (
-    <View style={{ flex: 1 }}>
-      {children}
-      {!!showSentinel && !animationComplete && (
-        <Animated.View style={style}>
-          <Box
-            backgroundColor="primaryBackground"
-            flex={1}
-            justifyContent="center"
-            paddingHorizontal="xl"
-          >
-            <Box justifyContent="center" alignItems="center" marginBottom="xl">
-              <InfoError />
-            </Box>
-            <Text variant="h1" textAlign="center" fontSize={40} lineHeight={42}>
-              {t(`sentinel.${status?.migrationStatus}.title`)}
-            </Text>
-            <Text
-              variant="subtitle"
-              color="secondaryText"
-              textAlign="center"
-              marginTop="m"
-              marginHorizontal="l"
-            >
-              {t(`sentinel.${status?.migrationStatus}.body`)}
-            </Text>
+    <Box backgroundColor="white" flex={1} padding="l">
+      <CloseButton
+        buttonColor="secondaryText"
+        alignSelf="flex-end"
+        onPress={handleClose}
+      />
+      <Box
+        justifyContent="center"
+        alignItems="center"
+        marginBottom="xl"
+        marginTop="xxl"
+      >
+        <InfoCaution color="#FFB156" />
+      </Box>
+      <Text
+        variant="h1"
+        textAlign="center"
+        color="black"
+        numberOfLines={1}
+        adjustsFontSizeToFit
+      >
+        {t(`sentinel.${status?.migrationStatus}.title`)}
+      </Text>
+      <TextTransform
+        variant="body1"
+        color="black"
+        textAlign="center"
+        marginTop="m"
+        i18nKey={`sentinel.${status?.migrationStatus}.body`}
+      />
+      <TouchableOpacityBox onPress={handleMoreInfo}>
+        <Text
+          variant="body2"
+          color="blueBrightDarkened"
+          textAlign="center"
+          marginTop="l"
+          textDecorationLine="underline"
+        >
+          {t('sentinel.infoAction')}
+        </Text>
+      </TouchableOpacityBox>
 
-            <Button
-              borderRadius="round"
-              onPress={handleClose}
-              backgroundColor="primaryText"
-              title={t('sentinel.action')}
-              color="black"
-              marginTop="l"
-            />
-          </Box>
-        </Animated.View>
-      )}
-    </View>
+      <Box flex={1} />
+
+      <Button
+        mode="text"
+        borderRadius="round"
+        onPress={handleDownload}
+        title={t('sentinel.action')}
+        color="blueBrightDarkened"
+        marginTop="xxl"
+      />
+
+      <Button
+        borderRadius="round"
+        onPress={exportAccount}
+        backgroundColor="blueBrightDarkened"
+        title={t('sentinel.mainAction')}
+        color="white"
+        marginVertical="m"
+      />
+    </Box>
   )
 }
 

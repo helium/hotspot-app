@@ -36,6 +36,7 @@ export type RootStackParamList = {
   SendStack: undefined | SendRouteType
   LinkWallet: LinkWalletRequest
   SignHotspot: SignHotspotRequest
+  SentinelScreen: undefined
 }
 
 export type RootNavigationProp = StackNavigationProp<RootStackParamList>

@@ -11,6 +11,6 @@ export default {
     ios: 'https://apps.apple.com/app/kerlink-helium-hotspot/id1613698129',
     android:
       'https://play.google.com/store/apps/details?id=com.kerlink.heliumhotspot',
-    forceRedirect: false,
+    forceRedirect: true,
   },
 }

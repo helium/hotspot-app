@@ -11,6 +11,6 @@ export default {
     ios: '',
     android:
       'https://play.google.com/store/apps/details?id=com.milesight.hotspot',
-    forceRedirect: false,
+    forceRedirect: true,
   },
 }

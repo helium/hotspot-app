@@ -12,7 +12,6 @@ import nebra from './nebra'
 import rak, { rakWireless } from './rak'
 import risinghf from './risinghf'
 import sensecap from './sensecap'
-import syncrobit from './syncrobit'
 import kerlink from './kerlink'
 import heltec from './heltec'
 import pisces from './pisces'
@@ -22,7 +21,6 @@ import hummingbird from './hummingbird'
 import merryIoT from './merryIoT'
 import milesight from './milesight'
 import midas from './midas'
-import deepernetwork from './deepernetwork'
 import dragino from './dragino'
 import { LangType, supportedLangs } from '../utils/i18n/i18nTypes'
 import { HotspotMakerLangField } from './hotspotMakerTypes'
@@ -42,7 +40,6 @@ export const Makers: Record<string, MakerType> = {
   rakWireless,
   risinghf,
   sensecap,
-  syncrobit,
   kerlink,
   heltec,
   pisces,
@@ -52,7 +49,6 @@ export const Makers: Record<string, MakerType> = {
   merryIoT,
   milesight,
   midas,
-  deepernetwork,
   dragino,
 }
 
@@ -70,7 +66,6 @@ export const AntennaModels = {
   ...rak.antennas,
   ...risinghf.antennas,
   ...sensecap.antennas,
-  ...syncrobit.antennas,
   ...kerlink.antennas,
   ...heltec.antennas,
   ...pisces.antennas,
@@ -80,7 +75,6 @@ export const AntennaModels = {
   ...merryIoT.antennas,
   ...milesight.antennas,
   ...midas.antennas,
-  ...deepernetwork.antennas,
   ...dragino.antennas,
 }
 
@@ -97,7 +91,6 @@ export const HotspotMakerModels = {
   ...rak.hotspots,
   ...risinghf.hotspots,
   ...sensecap.hotspots,
-  ...syncrobit.hotspots,
   ...kerlink.hotspots,
   ...heltec.hotspots,
   ...pisces.hotspots,
@@ -107,7 +100,6 @@ export const HotspotMakerModels = {
   ...merryIoT.hotspots,
   ...milesight.hotspots,
   ...midas.hotspots,
-  ...deepernetwork.hotspots,
   ...dragino.hotspots,
 }
 

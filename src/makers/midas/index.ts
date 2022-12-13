@@ -11,6 +11,6 @@ export default {
     ios: 'https://apps.apple.com/app/midas-starter/id1612601349',
     android:
       'https://play.google.com/store/apps/details?id=com.midaswireless.starter',
-    forceRedirect: false,
+    forceRedirect: true,
   },
 }

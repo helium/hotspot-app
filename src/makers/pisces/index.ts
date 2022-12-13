@@ -10,6 +10,6 @@ export default {
     makerAppName: 'Pisces App',
     ios: 'https://apps.apple.com/app/pisceshotspot/id1615544069',
     android: 'https://play.google.com/store/apps/details?id=com.pisces.pisces',
-    forceRedirect: false,
+    forceRedirect: true,
   },
 }

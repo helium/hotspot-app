@@ -8,8 +8,8 @@ export default {
   supportEmail: 'support@heltec.cn',
   makerApp: {
     makerAppName: 'Heltec App',
-    ios: '',
+    ios: 'https://heltec.org/maker-app/',
     android: 'https://heltec.org/maker-app/',
-    forceRedirect: false,
+    forceRedirect: true,
   },
 }

@@ -6,4 +6,10 @@ export default {
   hotspots,
   id: 20,
   supportEmail: 'support@panther.global',
+  makerApp: {
+    makerAppName: 'Panther App',
+    ios: '',
+    android: '',
+    forceRedirect: true,
+  },
 }
