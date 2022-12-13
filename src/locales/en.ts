@@ -1340,7 +1340,7 @@ export default {
       title: 'The Helium Solana Migration is coming',
       message: 'Be prepared and export your Account to Helium Wallet today.',
       button1: 'Download Helium Wallet',
-      button2: 'Export Private Key',
+      button2: 'Start Migration',
     },
   },
   sentinel: {
