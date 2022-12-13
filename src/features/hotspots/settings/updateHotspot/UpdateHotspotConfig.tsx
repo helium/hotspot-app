@@ -86,7 +86,7 @@ const UpdateHotspotConfig = ({ onClose, onCloseSettings, hotspot }: Props) => {
     enableBack(onClose)
     Alert.alert(t('solana.migrate'), t('solana.updateMessage'), [
       {
-        text: t('solana.alert.button4'),
+        text: t('solana.alert.button2'),
         onPress: () => {
           onCloseSettings()
           dispatch(appSlice.actions.updateHideSolanaNotification(true))

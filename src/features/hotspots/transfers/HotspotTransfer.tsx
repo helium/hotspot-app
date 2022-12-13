@@ -50,7 +50,7 @@ const HotspotTransfer = ({
     enableBack(onCloseTransfer)
     Alert.alert(t('solana.migrate'), t('solana.transferMessage'), [
       {
-        text: t('solana.alert.button4'),
+        text: t('solana.alert.button2'),
         onPress: () => {
           onCloseSettings()
           dispatch(appSlice.actions.updateHideSolanaNotification(true))
