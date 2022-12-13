@@ -1339,19 +1339,8 @@ export default {
     alert: {
       title: 'The Helium Solana Migration is coming',
       message: 'Be prepared and export your Account to Helium Wallet today.',
-      message2:
-        'Be prepared and export your Account to Helium Wallet today.\n\n' +
-        '1. Export Private Key \n' +
-        '2. Import your account in the Helium Wallet App\n\n' +
-        'Important Dates\n' +
-        'December 1: Hotspot Onboarding will be managed by the Hotspot manufacturer.\n' +
-        'December 31: Wallet functionality will be disabled. Please import your account into the Helium Wallet App to interact with HNT, MOBILE, and Hotspots.\n' +
-        'Q2 2023: All Hotspot management features will be disabled. Please use the apps provided by your Hotspot Manufacturer.\n' +
-        'For Original Helium Hotspot owners, Nova Labs has partnered with Hotspotty to manage Original Helium Hotspots.',
-      button1: 'Remind Me Later',
-      button2: 'Read More',
-      button3: 'Download Helium Wallet',
-      button4: 'Export Private Key',
+      button1: 'Download Helium Wallet',
+      button2: 'Start Migration',
     },
   },
   sentinel: {

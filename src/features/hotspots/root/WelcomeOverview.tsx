@@ -204,13 +204,13 @@ const WelcomeOverview = ({ accountRewards }: Props) => {
   }, [updateBodyText])
 
   const onPressMigrate = useCallback(() => {
-    Alert.alert(t('solana.alert.title'), t('solana.alert.message2'), [
+    Alert.alert(t('solana.alert.title'), t('solana.alert.message'), [
       {
-        text: t('solana.alert.button3'),
+        text: t('solana.alert.button1'),
         onPress: () => Linking.openURL(Articles.Wallet_Site),
       },
       {
-        text: t('solana.alert.button4'),
+        text: t('solana.alert.button2'),
         onPress: () => {
           if (isPinRequired) {
             navigation.navigate('LockScreen', {

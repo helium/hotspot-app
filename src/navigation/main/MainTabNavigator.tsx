@@ -109,54 +109,41 @@ const MainTabs = () => {
     dispatch,
   ])
 
-  const showSolanaDetailAlert = useCallback(() => {
-    Alert.alert(t('solana.alert.title'), t('solana.alert.message2'), [
-      {
-        text: t('solana.alert.button3'),
-        onPress: () => Linking.openURL(Articles.Wallet_Site),
-      },
-      {
-        text: t('solana.alert.button4'),
-        onPress: () => {
-          dispatch(appSlice.actions.updateHideSolanaNotification(true))
-          if (isPinRequired) {
-            navigation.navigate('LockScreen', {
-              requestType: 'revealPrivateKey',
-            })
-          } else {
-            navigation.navigate('MainTabs', {
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              screen: 'More',
-              params: {
-                screen: 'RevealPrivateKeyScreen',
-              },
-            })
-          }
-        },
-      },
-    ])
-  }, [dispatch, isPinRequired, navigation, t])
-
   const showSolanaAlert = useCallback(() => {
     if (!hideSolanaNotification && hasTimePassed(lastSolanaNotification)) {
       Alert.alert(t('solana.alert.title'), t('solana.alert.message'), [
         {
           text: t('solana.alert.button1'),
-          onPress: () =>
-            dispatch(appSlice.actions.updateLastSolanaNotification()),
+          onPress: () => Linking.openURL(Articles.Wallet_Site),
         },
         {
           text: t('solana.alert.button2'),
-          onPress: showSolanaDetailAlert,
+          onPress: () => {
+            dispatch(appSlice.actions.updateHideSolanaNotification(true))
+            if (isPinRequired) {
+              navigation.navigate('LockScreen', {
+                requestType: 'revealPrivateKey',
+              })
+            } else {
+              navigation.navigate('MainTabs', {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                screen: 'More',
+                params: {
+                  screen: 'RevealPrivateKeyScreen',
+                },
+              })
+            }
+          },
         },
       ])
     }
   }, [
     dispatch,
     hideSolanaNotification,
+    isPinRequired,
     lastSolanaNotification,
-    showSolanaDetailAlert,
+    navigation,
     t,
   ])
 
