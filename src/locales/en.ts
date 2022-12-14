@@ -1331,7 +1331,7 @@ export default {
   solana: {
     migrate: 'Migrate Your Wallet',
     migrateMessage:
-      'The Helium Hotspot App is saying goodbye as part of the Solana transition.',
+      'Use the Helium Wallet App to manage your tokens. Migrate today.',
     transferMessage:
       'Transfer Hotspot now requires an account export to the Helium Wallet App.',
     updateMessage:
