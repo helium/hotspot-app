@@ -22,6 +22,7 @@ import SearchInput from '../../../components/SearchInput'
 import animateTransition from '../../../utils/animateTransition'
 import { useBorderRadii } from '../../../theme/themeHooks'
 import useAlert from '../../../utils/useAlert'
+import Helium from '../../../makers/helium'
 
 const ItemSeparatorComponent = () => (
   <Box height={1} backgroundColor="primaryBackground" />
@@ -52,36 +53,38 @@ const HotspotSetupSelectionScreen = () => {
       const forceRedirect = maker?.makerApp?.forceRedirect
       const makerName = maker?.name
       const makerEmail = maker?.supportEmail
-      const decision = await showOKCancelAlert({
-        cancelKey: forceRedirect
-          ? 'generic.cancel'
-          : 'hotspot_setup.selection.makerAppAlert.continue',
-        cancelStyle: forceRedirect ? 'destructive' : 'default',
-        titleKey: appStoreUrl
-          ? 'hotspot_setup.selection.makerAppAlert.title'
-          : 'hotspot_setup.selection.makerAppAlert.titleEmail',
-        messageKey: 'hotspot_setup.selection.makerAppAlert.body',
-        messageOptions: {
-          maker: makerName || 'Maker',
-          makerAppName: makerAppName || 'Maker App',
-        },
-        okKey: appStoreUrl
-          ? 'hotspot_setup.selection.makerAppAlert.visit'
-          : 'hotspot_setup.selection.makerAppAlert.email',
-        okStyle: forceRedirect ? 'default' : 'cancel',
-      })
+      if (maker?.id !== Helium.id) {
+        const decision = await showOKCancelAlert({
+          cancelKey: forceRedirect
+            ? 'generic.cancel'
+            : 'hotspot_setup.selection.makerAppAlert.continue',
+          cancelStyle: forceRedirect ? 'destructive' : 'default',
+          titleKey: appStoreUrl
+            ? 'hotspot_setup.selection.makerAppAlert.title'
+            : 'hotspot_setup.selection.makerAppAlert.titleEmail',
+          messageKey: 'hotspot_setup.selection.makerAppAlert.body',
+          messageOptions: {
+            maker: makerName || 'Maker',
+            makerAppName: makerAppName || 'Maker App',
+          },
+          okKey: appStoreUrl
+            ? 'hotspot_setup.selection.makerAppAlert.visit'
+            : 'hotspot_setup.selection.makerAppAlert.email',
+          okStyle: forceRedirect ? 'default' : 'cancel',
+        })
 
-      if (decision) {
-        if (appStoreUrl) {
-          Linking.openURL(appStoreUrl)
-        } else {
-          Linking.openURL(`mailto:${makerEmail}`)
+        if (decision) {
+          if (appStoreUrl) {
+            Linking.openURL(appStoreUrl)
+          } else {
+            Linking.openURL(`mailto:${makerEmail}`)
+          }
+          return
         }
-        return
-      }
 
-      if (forceRedirect) {
-        return
+        if (forceRedirect) {
+          return
+        }
       }
 
       dispatch(hotspotOnboardingSlice.actions.setHotspotType(hotspotType))
