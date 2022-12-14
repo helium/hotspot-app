@@ -22,6 +22,7 @@ import SearchInput from '../../../components/SearchInput'
 import animateTransition from '../../../utils/animateTransition'
 import { useBorderRadii } from '../../../theme/themeHooks'
 import useAlert from '../../../utils/useAlert'
+import Helium from '../../../makers/helium'
 
 const ItemSeparatorComponent = () => (
   <Box height={1} backgroundColor="primaryBackground" />
@@ -52,7 +53,7 @@ const HotspotSetupSelectionScreen = () => {
       const forceRedirect = maker?.makerApp?.forceRedirect
       const makerName = maker?.name
       const makerEmail = maker?.supportEmail
-      if (maker?.id !== 1) {
+      if (maker?.id !== Helium.id) {
         const decision = await showOKCancelAlert({
           cancelKey: forceRedirect
             ? 'generic.cancel'
