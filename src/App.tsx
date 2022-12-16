@@ -79,6 +79,7 @@ const App = () => {
     'EventEmitter.removeListener',
     '`new NativeEventEmitter()` was called with a non-null argument',
     'expo-permissions is now deprecated',
+    'Warning: Internal React error: Attempted to capture a commit phase error inside a detached tree.',
   ])
 
   const { appState } = useAppState()

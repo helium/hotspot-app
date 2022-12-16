@@ -20,6 +20,7 @@ DerivedData
 *.hmap
 *.ipa
 *.xcuserstate
+ios/.xcode.env.local
 
 # Android/IntelliJ
 #
@@ -29,6 +30,7 @@ build/
 local.properties
 *.iml
 *.hprof
+.cxx/
 /android/app/release/
 
 # Android/VSCode
@@ -66,14 +68,17 @@ buck-out/
 */fastlane/report.xml
 */fastlane/Preview.html
 */fastlane/screenshots
+**/fastlane/test_output
 
 # Bundle artifact
 *.jsbundle
 
 # CocoaPods
 /ios/Pods/
+/vendor/bundle/
 
 #
 .env
 .yalc
 yalc.lock
+.expo

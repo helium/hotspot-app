@@ -77,6 +77,8 @@ const HotspotSetupConnectingScreen = () => {
         })
       } catch (e) {
         const titleKey = 'generic.error'
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         await showOKAlert({ titleKey, messageKey: e?.toString() })
         navigation.goBack()
       }

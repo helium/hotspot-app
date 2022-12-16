@@ -26,7 +26,12 @@ const RevealPrivateKeyScreen = () => {
 
   return (
     <BackScreen backgroundColor="primaryBackground" flex={1}>
-      <Text variant="h1" maxFontSizeMultiplier={1} marginTop="l">
+      <Text
+        variant="h1"
+        maxFontSizeMultiplier={1}
+        marginTop="l"
+        textAlign="center"
+      >
         {t('account_setup.revealPrivateKey.title')}
       </Text>
       <TextTransform

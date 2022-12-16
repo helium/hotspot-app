@@ -119,6 +119,8 @@ const ValidatorDetailsPenalties = ({ validator }: Props) => {
         showsVerticalScrollIndicator={false}
         style={style}
         data={penalties}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         contentContainerStyle={contentContainerStyle}

@@ -68,12 +68,15 @@ const HotspotSearch = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible])
 
-  const keyExtractor = useCallback((item: PlacePrediction | Hotspot) => {
-    if ('placeId' in item) {
-      return item.placeId
-    }
-    return item.address
-  }, [])
+  const keyExtractor = useCallback(
+    (item: Hotspot | Validator | PlacePrediction) => {
+      if ('placeId' in item) {
+        return item.placeId
+      }
+      return item.address
+    },
+    [],
+  )
 
   const onPressItem = useCallback(
     (item: PlacePrediction | Hotspot | Validator) => () => {
