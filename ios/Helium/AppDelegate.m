@@ -105,6 +105,12 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
                     restorationHandler:restorationHandler];
 }
 
+- (void)applicationDidEnterBackground:(UIApplication *)application {
+    if (@available(iOS 14.0, *)) {
+        [WidgetKitHelper reloadAllWidgets];
+    }
+}
+
 #if RCT_NEW_ARCH_ENABLED
 
 #pragma mark - RCTCxxBridgeDelegate
@@ -140,12 +146,6 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
   return RCTAppSetupDefaultModuleFromClass(moduleClass);
-}
-
-- (void)applicationDidEnterBackground:(UIApplication *)application {
-    if (@available(iOS 14.0, *)) {
-        [WidgetKitHelper reloadAllWidgets];
-    }
 }
 
 #endif
