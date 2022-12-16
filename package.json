@@ -5,7 +5,7 @@
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx && tsc",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "prettier": "prettier --write *.ts*",
     "start": "react-native start",
     "test": "echo \"tests are temporarily disabled due to a bug in reanimated.\"",

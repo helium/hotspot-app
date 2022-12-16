@@ -112,7 +112,7 @@ const InputField = ({
               multiline
               testID={testID}
               blurOnSubmit
-              autoCompleteType="off"
+              autoComplete="off"
               textContentType="none"
               autoCapitalize="none"
               autoCorrect={false}

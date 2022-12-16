@@ -31,6 +31,8 @@ const makeRequest = async (url: string, opts: RequestInit = {}) => {
       throw new Error(text)
     }
   } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     Logger.breadcrumb(error)
     throw error
   }

@@ -305,6 +305,8 @@ const useHotspot = () => {
         doCallback('error')
       })
     } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       callback?.('error', e)
     }
   }

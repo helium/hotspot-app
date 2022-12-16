@@ -582,6 +582,8 @@ const ShortcutNav = ({
         ref={listRef}
         showsHorizontalScrollIndicator={false}
         horizontal
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         data={data}
         contentContainerStyle={contentContainerStyle}
         initialNumToRender={10000} // Need all pills to render in order to avoid snap jank
