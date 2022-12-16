@@ -312,15 +312,16 @@ dependencies {
         if (enableHermes) {
             //noinspection GradleDynamicVersion
             implementation("com.facebook.react:hermes-engine:+") { // From node_modules
-                exclude group:'com.facebook.fbjni'
+                exclude group: 'com.facebook.fbjni'
             }
-    } else {
-        implementation jscFlavor
-    }
+        } else {
+            implementation jscFlavor
+        }
 
-    configurations.all {
-        resolutionStrategy { force 'androidx.work:work-runtime:2.6.0' }
-        resolutionStrategy { force 'androidx.browser:browser:1.3.0' }
+        configurations.all {
+            resolutionStrategy { force 'androidx.work:work-runtime:2.6.0' }
+            resolutionStrategy { force 'androidx.browser:browser:1.3.0' }
+        }
     }
 }
 
