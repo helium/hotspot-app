@@ -1,6 +1,5 @@
 import React, { memo, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigation } from '@react-navigation/native'
 import { Linking } from 'react-native'
 import { Buffer } from 'buffer'
 import RNSodium from 'react-native-sodium'
@@ -15,7 +14,6 @@ import TextInput from '../../../components/TextInput'
 
 const RevealPrivateKeyScreen = () => {
   const { t } = useTranslation()
-  const navigation = useNavigation()
   const [password, setPassword] = useState<string>()
 
   const exportToWalletApp = useCallback(async () => {
@@ -51,12 +49,17 @@ const RevealPrivateKeyScreen = () => {
     setPassword(text)
   }, [])
 
+  const onDownload = useCallback(() => {
+    Linking.openURL(Articles.Wallet_Site)
+  }, [])
+
   return (
     <BackScreen backgroundColor="primaryBackground" flex={1}>
       <Text
         variant="h1"
         maxFontSizeMultiplier={1}
-        marginTop="l"
+        numberOfLines={1}
+        adjustsFontSizeToFit
         textAlign="center"
       >
         {t('account_setup.revealPrivateKey.title')}
@@ -72,12 +75,13 @@ const RevealPrivateKeyScreen = () => {
         variant="body1"
         maxFontSizeMultiplier={1}
         marginTop="xl"
+        marginBottom="m"
         textAlign="center"
-        marginBottom="l"
       >
         {t('account_setup.revealPrivateKey.passMessage')}
       </Text>
       <TextInput
+        textAlign="center"
         variant="regularDark"
         placeholder={t('account_setup.revealPrivateKey.inputPlaceholder')}
         keyboardAppearance="dark"
@@ -90,6 +94,14 @@ const RevealPrivateKeyScreen = () => {
       <Box flex={1} />
       <Button
         height={60}
+        borderRadius="round"
+        title={t('account_setup.revealPrivateKey.download')}
+        mode="text"
+        marginBottom="m"
+        onPress={onDownload}
+      />
+      <Button
+        height={60}
         disabled={!password}
         borderRadius="round"
         backgroundColor="purpleMain"
@@ -97,13 +109,6 @@ const RevealPrivateKeyScreen = () => {
         marginBottom="m"
         mode="contained"
         onPress={exportToWalletApp}
-      />
-      <Button
-        height={60}
-        borderRadius="round"
-        title={t('account_setup.revealPrivateKey.done')}
-        mode="text"
-        onPress={navigation.goBack}
       />
     </BackScreen>
   )
