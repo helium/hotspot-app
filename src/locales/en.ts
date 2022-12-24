@@ -76,6 +76,10 @@ export default {
       title: 'Your Private Key',
       privateKey: 'private key',
       export: 'Export to Wallet App',
+      download: 'Download Wallet App',
+      passMessage:
+        'Enter a password to secure your private key. You will need to enter this again in Wallet App.',
+      inputPlaceholder: 'Enter Password',
     },
   },
   learn: {

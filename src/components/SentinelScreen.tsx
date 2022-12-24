@@ -61,7 +61,7 @@ const SentinelScreen = () => {
         justifyContent="center"
         alignItems="center"
         marginBottom="xl"
-        marginTop="xxl"
+        marginTop="l"
       >
         <InfoCaution color="#FFB156" />
       </Box>
@@ -86,7 +86,7 @@ const SentinelScreen = () => {
           variant="body2"
           color="blueBrightDarkened"
           textAlign="center"
-          marginTop="l"
+          marginTop="m"
           textDecorationLine="underline"
         >
           {t('sentinel.infoAction')}
@@ -101,7 +101,6 @@ const SentinelScreen = () => {
         onPress={handleDownload}
         title={t('sentinel.action')}
         color="blueBrightDarkened"
-        marginTop="xxl"
       />
 
       <Button
@@ -110,7 +109,7 @@ const SentinelScreen = () => {
         backgroundColor="blueBrightDarkened"
         title={t('sentinel.mainAction')}
         color="white"
-        marginVertical="m"
+        marginVertical="s"
       />
     </Box>
   )
