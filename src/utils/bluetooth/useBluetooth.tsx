@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useCallback, useRef } from 'react'
 import {
   Base64,
   BleManager,
@@ -6,6 +6,8 @@ import {
   Device,
   LogLevel,
 } from 'react-native-ble-plx'
+import { PermissionsAndroid, Platform } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import sleep from '../sleep'
 import {
   FirmwareCharacteristic,
@@ -16,6 +18,7 @@ import * as Logger from '../logger'
 
 const useBluetooth = () => {
   const instanceRef = useRef<BleManager | null>(null)
+  const { t } = useTranslation()
 
   const getBleManager = () => {
     const instance = instanceRef.current
@@ -34,6 +37,37 @@ const useBluetooth = () => {
     return newInstance
   }
 
+  const checkAndroidPermissions = useCallback(async () => {
+    if (Platform.OS !== 'android') return true
+
+    const grantedBleScan = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+      {
+        title: t('permissions.bluetoothPermissionTitle'),
+        message: t('permissions.bluetoothPermissionMessage'),
+        buttonNegative: t('permissions.bluetoothPermissionButtonNegative'),
+        buttonPositive: t('permissions.bluetoothPermissionButtonPositive'),
+      },
+    )
+    const grantedBleConnect = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+      {
+        title: t('permissions.bluetoothPermissionTitle'),
+        message: t('permissions.bluetoothPermissionMessage'),
+        buttonNegative: t('permissions.bluetoothPermissionButtonNegative'),
+        buttonPositive: t('permissions.bluetoothPermissionButtonPositive'),
+      },
+    )
+    if (
+      grantedBleScan !== PermissionsAndroid.RESULTS.GRANTED ||
+      grantedBleConnect !== PermissionsAndroid.RESULTS.GRANTED
+    ) {
+      return false
+    }
+
+    return true
+  }, [t])
+
   const getState = async () => getBleManager().state()
 
   const enable = async () => getBleManager().enable()
@@ -44,6 +78,9 @@ const useBluetooth = () => {
     Logger.breadcrumb('Connect hotspot requested')
 
     try {
+      const androidPermission = await checkAndroidPermissions()
+      if (!androidPermission) return
+
       const device = await hotspotDevice.connect({ refreshGatt: 'OnConnected' })
       Logger.breadcrumb('Hotspot Connected')
       return device
@@ -56,6 +93,9 @@ const useBluetooth = () => {
   const scan = async (ms: number, callback: (device: Device) => void) => {
     Logger.breadcrumb('Scan for hotspots')
     try {
+      const androidPermission = await checkAndroidPermissions()
+      if (!androidPermission) return
+
       getBleManager().startDeviceScan(
         [Service.MAIN_UUID],
         { allowDuplicates: false },

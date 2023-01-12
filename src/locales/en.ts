@@ -733,6 +733,12 @@ export default {
       message:
         'Helium needs access to your location for Bluetooth discovery and to enable location assertion. This information will never be sold or shared.',
     },
+    bluetoothDisabled: 'Bluetooth Disabled',
+    bluetoothPermissionButtonNegative: 'DENY',
+    bluetoothPermissionButtonPositive: 'ALLOW',
+    bluetoothPermissionMessage:
+      'This app needs bluetooth permissions in order to connect to and setup your Hotspot.',
+    bluetoothPermissionTitle: 'Bluetooth permission required',
   },
   time: {
     morning: 'Morning',
