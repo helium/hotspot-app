@@ -22,7 +22,7 @@ import appSlice from '../../store/user/appSlice'
 import NotificationsScreen from '../../features/notifications/NotificationsScreen'
 import notificationSlice from '../../store/notifications/notificationSlice'
 import { fetchHotspotsData } from '../../store/hotspots/hotspotsSlice'
-import { hasTimePassed } from '../../utils/timeUtils'
+import { hasSentinelTimePassed } from '../../utils/timeUtils'
 import Articles from '../../constants/articles'
 
 const MainTab = createBottomTabNavigator()
@@ -46,7 +46,7 @@ const MainTabs = () => {
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    if (hasTimePassed(lastSeenSentinel)) {
+    if (hasSentinelTimePassed(lastSeenSentinel)) {
       dispatch(appSlice.actions.updateLastSeenSentinel())
       navigation.navigate('SentinelScreen')
     }
@@ -110,7 +110,10 @@ const MainTabs = () => {
   ])
 
   const showSolanaAlert = useCallback(() => {
-    if (!hideSolanaNotification && hasTimePassed(lastSolanaNotification)) {
+    if (
+      !hideSolanaNotification &&
+      hasSentinelTimePassed(lastSolanaNotification)
+    ) {
       Alert.alert(t('solana.alert.title'), t('solana.alert.message'), [
         {
           text: t('solana.alert.button1'),
