@@ -1,4 +1,4 @@
-import { differenceInCalendarMonths, formatDistance } from 'date-fns'
+import { differenceInDays, formatDistance } from 'date-fns'
 
 export const fromNow = (date: Date) => {
   return formatDistance(date, new Date(), {
@@ -8,5 +8,5 @@ export const fromNow = (date: Date) => {
 
 export const hasSentinelTimePassed = (startTime?: number) => {
   if (!startTime) return true
-  return differenceInCalendarMonths(new Date(), startTime) >= 1
+  return differenceInDays(new Date(), startTime) >= 7
 }
