@@ -10,7 +10,7 @@ import Box from '../../components/Box'
 import { MainTabType, TabBarIconType } from './tabTypes'
 import { useColors } from '../../theme/themeHooks'
 import { RootState } from '../../store/rootReducer'
-import { hasTimePassed } from '../../utils/timeUtils'
+import { hasSentinelTimePassed } from '../../utils/timeUtils'
 
 type Props = {
   name: MainTabType
@@ -39,7 +39,8 @@ const Icon = ({
     return <Hotspot height={size} width={size} color={color} />
   }
   if (name === 'Wallet') {
-    return !hideSolanaNotification && hasTimePassed(lastSolanaNotification) ? (
+    return !hideSolanaNotification &&
+      hasSentinelTimePassed(lastSolanaNotification) ? (
       <AccountWarn height={size} width={size} color={color} />
     ) : (
       <Account height={size} width={size} color={color} />

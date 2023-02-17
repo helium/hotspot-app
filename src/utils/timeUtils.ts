@@ -1,4 +1,4 @@
-import { differenceInHours, formatDistance } from 'date-fns'
+import { differenceInDays, formatDistance } from 'date-fns'
 
 export const fromNow = (date: Date) => {
   return formatDistance(date, new Date(), {
@@ -6,7 +6,7 @@ export const fromNow = (date: Date) => {
   })
 }
 
-export const hasTimePassed = (startTime?: number, hoursPassed = 24) => {
+export const hasSentinelTimePassed = (startTime?: number) => {
   if (!startTime) return true
-  return differenceInHours(new Date(), startTime) > hoursPassed
+  return differenceInDays(new Date(), startTime) >= 7
 }
