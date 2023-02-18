@@ -24,8 +24,8 @@ import {
   AppLinkCategories,
   AppLinkCategoryType,
   AppLinkPayment,
-  Payee,
   AppLinkLocation,
+  AppLinkTransfer,
   LinkWalletRequest,
   SignHotspotRequest,
 } from './appLinkTypes'
@@ -78,6 +78,140 @@ const assertCurrentSenderAddress = async (senderAddress: string) => {
     throw new MismatchedAddressError(AddressType.SenderAddress)
   }
 }
+async function assertPaymentAddresses(data: AppLinkPayment) {
+  if (data.senderAddress) {
+    // If a senderAddress is provided, ensure that it's both a valid wallet address and that
+    // it matches the current wallet address
+    assertValidAddress(data.senderAddress, AddressType.SenderAddress)
+    await assertCurrentSenderAddress(data.senderAddress)
+  }
+  if (data.payees?.length > 0) {
+    data.payees.forEach(({ address }) =>
+      assertValidAddress(address, AddressType.ReceiverAddress),
+    )
+  }
+}
+
+// ScanDataType describes both the scanned data format as well as intended use.
+// For example, multiple types are intended to pre-fill the payment "send" form but can provide
+// varying levels of information (like single or multiple recipients, optional memo fields, etc).
+enum ScanDataType {
+  // Deeplink to somewhere in the app
+  DEEPLINK,
+  // Hotspot address update
+  LOCATION_UPDATE,
+  // DC burn
+  DC_BURN,
+  // Hotspot transfer
+  TRANSFER,
+  // Hotspot transfer with only address provided
+  TRANSFER_ADDRESS_ONLY,
+  // Payment
+  PAYMENT,
+  // Payment with only address provided
+  PAYMENT_ADDRESS_ONLY,
+  // Payment to multiple recipients
+  PAYMENT_MULTI,
+  // Payment to multiple recipients and optional memos
+  PAYMENT_MULTI_MEMO,
+}
+
+function isDeeplink(data: string) {
+  try {
+    const parsed = queryString.parseUrl(data)
+    return (
+      parsed.url.includes(APP_LINK_PROTOCOL) &&
+      parsed.url.includes(UNIVERSAL_LINK_BASE) &&
+      parsed.url.includes(UNIVERSAL_LINK_WWW_BASE)
+    )
+  } catch (err) {}
+}
+
+function isLocationUpdate(data: string) {
+  try {
+    const dataObj = JSON.parse(data)
+    return dataObj.lat && dataObj.lng && dataObj.address
+  } catch (err) {}
+}
+
+function isDcBurn(data: string, scanType?: AppLinkCategoryType) {
+  try {
+    const dataObj = JSON.parse(data)
+    const type = dataObj.type || scanType
+    return type === 'dc_burn' && dataObj.address
+  } catch (err) {}
+}
+
+function isTransfer(data: string, scanType?: AppLinkCategoryType) {
+  try {
+    const dataObj = JSON.parse(data)
+    const type = dataObj.type || scanType
+    return type === 'transfer' && dataObj.newOwnerAddress
+  } catch (err) {}
+}
+
+function isTransferAddressOnly(data: string, scanType?: AppLinkCategoryType) {
+  return scanType === 'transfer' && Address.isValid(data)
+}
+
+function isPayment(data: string, scanType?: AppLinkCategoryType) {
+  try {
+    const dataObj = JSON.parse(data)
+    const type = dataObj.type || scanType
+    return type === 'payment' && dataObj.address
+  } catch (err) {}
+}
+
+function isPaymentAddressOnly(data: string, scanType?: AppLinkCategoryType) {
+  return scanType === 'payment' && Address.isValid(data)
+}
+
+function isPaymentMulti(data: string, scanType?: AppLinkCategoryType) {
+  // data = { payees: { [payeeAddress]: amount } }
+  type Payees = Record<string, number>
+
+  try {
+    const dataObj = JSON.parse(data)
+    const type = dataObj.type || scanType
+    return (
+      type === 'payment' &&
+      dataObj.payees &&
+      typeof Object.values(dataObj.payees as Payees)[0] === 'number'
+    )
+  } catch (err) {}
+}
+
+function isPaymentMultiMemo(data: string, scanType?: AppLinkCategoryType) {
+  // data = { payees: { [payeeAddress]: { amount: number, memo?: string } } }
+  type Payees = Record<string, { amount: number; memo?: string }>
+
+  try {
+    const dataObj = JSON.parse(data)
+    const type = dataObj.type || scanType
+    return (
+      type === 'payment' &&
+      dataObj.payees &&
+      typeof Object.values(dataObj.payees as Payees)[0]?.amount === 'number'
+    )
+  } catch (err) {}
+}
+
+function getDataScanType(
+  data: string,
+  scanType?: AppLinkCategoryType,
+): ScanDataType | undefined {
+  if (isDeeplink(data)) return ScanDataType.DEEPLINK
+  if (isLocationUpdate(data)) return ScanDataType.LOCATION_UPDATE
+  if (isDcBurn(data, scanType)) return ScanDataType.DC_BURN
+  if (isTransfer(data, scanType)) return ScanDataType.TRANSFER
+  if (isTransferAddressOnly(data, scanType))
+    return ScanDataType.TRANSFER_ADDRESS_ONLY
+  if (isPayment(data, scanType)) return ScanDataType.PAYMENT
+  if (isPaymentAddressOnly(data, scanType))
+    return ScanDataType.PAYMENT_ADDRESS_ONLY
+  if (isPaymentMulti(data, scanType)) return ScanDataType.PAYMENT_MULTI
+  if (isPaymentMultiMemo(data, scanType)) return ScanDataType.PAYMENT_MULTI_MEMO
+}
 
 export const createAppLink = (
   resource: AppLinkCategoryType,
@@ -121,6 +255,7 @@ const useAppLink = () => {
         | AppLink
         | AppLinkPayment
         | AppLinkLocation
+        | AppLinkTransfer
         | LinkWalletRequest
         | SignHotspotRequest,
     ) => {
@@ -141,7 +276,9 @@ const useAppLink = () => {
         case 'dc_burn':
         case 'payment':
         case 'transfer':
-          navigator.send({ scanResult: record as AppLink | AppLinkPayment })
+          navigator.send({
+            scanResult: record as AppLink | AppLinkPayment | AppLinkTransfer,
+          })
           break
 
         case 'add_gateway': {
@@ -245,123 +382,130 @@ const useAppLink = () => {
     } catch (err) {}
   }
 
-  /**
-   * The data scanned from the QR code is expected to be one of these possibilities:
-   * (1) A helium deeplink URL
-   * (2) A lat/lng pair + hotspot address for hotspot location updates
-   * (3) address string
-   * (4) stringified JSON object { type, senderAddress?, address, amount?, memo? }
-   * (5) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: amount} }
-   * (6) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: { amount, memo? }} }
-   */
   const parseBarCodeData = useCallback(
     async (
       data: string,
       scanType: AppLinkCategoryType,
-    ): Promise<AppLink | AppLinkPayment | AppLinkLocation> => {
-      // Case (1) helium deeplink URL
-      const urlParams = parseUrl(data)
-      if (urlParams) {
-        return urlParams
+    ): Promise<
+      AppLink | AppLinkPayment | AppLinkLocation | AppLinkTransfer
+    > => {
+      if (!data) throw new Error('Missing required data')
+      const scanDataType = getDataScanType(data, scanType)
+
+      if (scanDataType === ScanDataType.DEEPLINK) {
+        return parseUrl(data) as AppLink
       }
 
-      // Case (2) lat/lng pair
-      const location = parseLocation(data)
-      if (location) {
-        assertValidAddress(location.hotspotAddress)
+      if (scanDataType === ScanDataType.LOCATION_UPDATE) {
+        const location = parseLocation(data) as AppLinkLocation
+        assertValidAddress(location.hotspotAddress, AddressType.HotspotAddress)
         return location
       }
 
-      // Case (3) address string
-      if (Address.isValid(data)) {
-        if (scanType === 'transfer') {
-          return {
-            type: scanType,
-            address: data,
-          }
-        }
-        return {
-          type: scanType,
-          payees: [{ address: data }],
-        }
-      }
-
-      const rawScanResult = JSON.parse(data)
-      const type = rawScanResult.type || scanType
-
-      if (type === 'dc_burn') {
-        // Case (4) stringified JSON { type, address, amount?, memo? }
+      if (scanDataType === ScanDataType.DC_BURN) {
+        const rawScanResult = JSON.parse(data)
         const scanResult: AppLink = {
-          type,
+          type: 'dc_burn',
           address: rawScanResult.address,
           amount: rawScanResult.amount,
           memo: rawScanResult.memo,
         }
+        // TODO: Validate sender ownership?
         assertValidAddress(scanResult.address, AddressType.SenderAddress)
         return scanResult
       }
 
-      if (type === 'payment') {
-        let scanResult: AppLinkPayment
-        if (rawScanResult.address) {
-          // Case (4) stringified JSON { type, senderAddress?, address, amount?, memo? }
-          scanResult = {
-            type,
-            senderAddress: rawScanResult.senderAddress,
-            payees: [
-              {
-                address: rawScanResult.address,
-                amount: rawScanResult.amount,
-                memo: rawScanResult.memo,
-              },
-            ],
-          }
-        } else if (rawScanResult.payees) {
-          scanResult = {
-            type,
-            senderAddress: rawScanResult.senderAddress,
-            payees: Object.entries(rawScanResult.payees).map((entries) => {
-              let amount
-              let memo
-              if (entries[1]) {
-                if (typeof entries[1] === 'number') {
-                  // Case (5) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: amount} }
-                  amount = entries[1] as number
-                } else if (typeof entries[1] === 'object') {
-                  // Case (6) stringified JSON object { type, senderAddress?, payees: {[payeeAddress]: { amount, memo? }} }
-                  const scanData = entries[1] as {
-                    amount: string
-                    memo?: string
-                  }
-                  amount = scanData.amount
-                  memo = scanData.memo
-                }
-              }
-              return {
-                address: entries[0],
-                amount: `${amount}`,
-                memo,
-              } as Payee
-            }),
-          }
-        } else {
-          throw new Error('Unrecognized payload for payment scan')
+      if (scanDataType === ScanDataType.TRANSFER) {
+        const rawScanResult = JSON.parse(data)
+        const scanResult: AppLinkTransfer = {
+          type: 'transfer',
+          newOwnerAddress: rawScanResult.newOwnerAddress,
+          hotspotAddress: rawScanResult.hotspotAddress,
+          skipActivityCheck: rawScanResult.skipActivityCheck,
+          isSeller: rawScanResult.isSeller,
         }
-
-        if (scanResult.senderAddress) {
-          // If a senderAddress is provided, ensure that it's both a valid wallet address and that
-          // it matches the current wallet address
+        // TODO: Validate sender ownership?
+        assertValidAddress(
+          scanResult.newOwnerAddress,
+          AddressType.ReceiverAddress,
+        )
+        if (scanResult.hotspotAddress) {
           assertValidAddress(
-            scanResult.senderAddress,
-            AddressType.SenderAddress,
+            scanResult.hotspotAddress,
+            AddressType.HotspotAddress,
           )
-          await assertCurrentSenderAddress(scanResult.senderAddress)
         }
-        scanResult.payees.forEach(({ address }) =>
-          assertValidAddress(address, AddressType.ReceiverAddress),
+        return scanResult
+      }
+
+      if (scanDataType === ScanDataType.TRANSFER_ADDRESS_ONLY) {
+        const scanResult: AppLinkTransfer = {
+          type: 'transfer',
+          newOwnerAddress: data,
+        }
+        // TODO: Validate sender ownership?
+        assertValidAddress(
+          scanResult.newOwnerAddress,
+          AddressType.ReceiverAddress,
         )
         return scanResult
       }
+
+      if (scanDataType === ScanDataType.PAYMENT) {
+        const rawScanResult = JSON.parse(data)
+        const scanResult: AppLinkPayment = {
+          type: 'payment',
+          senderAddress: rawScanResult.senderAddress,
+          payees: [
+            {
+              address: rawScanResult.address,
+              amount: rawScanResult.amount,
+              memo: rawScanResult.memo,
+            },
+          ],
+        }
+        await assertPaymentAddresses(scanResult)
+        return scanResult
+      }
+
+      if (scanDataType === ScanDataType.PAYMENT_ADDRESS_ONLY) {
+        const scanResult: AppLinkPayment = {
+          type: scanType,
+          payees: [{ address: data }],
+        }
+        await assertPaymentAddresses(scanResult)
+        return scanResult
+      }
+
+      if (scanDataType === ScanDataType.PAYMENT_MULTI) {
+        const rawScanResult = JSON.parse(data)
+        const scanResult: AppLinkPayment = {
+          type: 'payment',
+          senderAddress: rawScanResult.senderAddress,
+          payees: Object.entries(rawScanResult.payees).map((entries) => ({
+            address: entries[0],
+            amount: entries[1] as number,
+          })),
+        }
+        await assertPaymentAddresses(scanResult)
+        return scanResult
+      }
+
+      if (scanDataType === ScanDataType.PAYMENT_MULTI_MEMO) {
+        const rawScanResult = JSON.parse(data)
+        const scanResult: AppLinkPayment = {
+          type: 'payment',
+          senderAddress: rawScanResult.senderAddress,
+          payees: Object.entries(rawScanResult.payees).map((entries) => ({
+            address: entries[0],
+            amount: (entries[1] as { amount?: number; memo?: string }).amount,
+            memo: (entries[1] as { amount?: number; memo?: string }).memo,
+          })),
+        }
+        await assertPaymentAddresses(scanResult)
+        return scanResult
+      }
+
       throw new Error('Unknown scan type')
     },
     [parseUrl],
@@ -373,7 +517,11 @@ const useAppLink = () => {
       scanType: AppLinkCategoryType,
       opts?: Record<string, string>,
       assertScanResult?: (
-        scanResult: AppLink | AppLinkPayment | AppLinkLocation,
+        scanResult:
+          | AppLink
+          | AppLinkPayment
+          | AppLinkLocation
+          | AppLinkTransfer,
       ) => void,
     ) => {
       const scanResult = await parseBarCodeData(data, scanType)

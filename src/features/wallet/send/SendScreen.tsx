@@ -22,9 +22,15 @@ const SendScreen = ({ route }: Props) => {
   const rootNavigation = useNavigation<RootNavigationProp>()
   const tabNavigation = useNavigation<MainTabNavigationProp>()
   const scanResult = route?.params?.scanResult
-  const hotspotAddress = route?.params?.hotspotAddress
-  const isSeller = route?.params?.isSeller
   const isPinVerified = route?.params?.pinVerified
+
+  let { hotspotAddress, isSeller, type } = route?.params ?? {}
+  if (scanResult?.hotspotAddress) {
+    hotspotAddress = scanResult.hotspotAddress as string
+  }
+  if (scanResult?.isSeller) isSeller = scanResult.isSeller as boolean
+  if (scanResult?.type) type = scanResult.type
+
   const isPinRequiredForPayment = useSelector(
     (state: RootState) => state.app.isPinRequiredForPayment,
   )
@@ -34,8 +40,9 @@ const SendScreen = ({ route }: Props) => {
   const permanentPaymentAddress = useSelector(
     (state: RootState) => state.app.permanentPaymentAddress,
   )
+
   // If "Deploy Mode" is enabled, only allow payment transactions
-  const type = isDeployModeEnabled ? 'payment' : route?.params?.type
+  if (isDeployModeEnabled) type = 'payment'
   // If "Deploy Mode" is enabled without a permanent payment address, disable all payments
   const isDeployModePaymentsDisabled =
     isDeployModeEnabled && !permanentPaymentAddress

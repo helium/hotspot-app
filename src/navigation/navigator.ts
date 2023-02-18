@@ -4,6 +4,7 @@ import { LockScreenRequestType } from './main/tabTypes'
 import {
   AppLink,
   AppLinkPayment,
+  AppLinkTransfer,
   LinkWalletRequest,
   SignHotspotRequest,
 } from '../providers/appLinkTypes'
@@ -17,7 +18,9 @@ const lock = (params: {
   navigationRef.current?.navigate('LockScreen', params)
 }
 
-const send = (params: { scanResult: AppLink | AppLinkPayment }) => {
+const send = (params: {
+  scanResult: AppLink | AppLinkPayment | AppLinkTransfer
+}) => {
   navigationRef.current?.navigate('Send', params)
 }
 
