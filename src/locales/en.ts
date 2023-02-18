@@ -361,7 +361,7 @@ export default {
       back: 'Back to Hotspot Pairing',
       wait_error_title: 'Please Try Again',
       wait_error_body:
-        'Hotspot miner is waiting to start. Please try again in a few minutes.',
+        'Hotspot miner is waiting to start. Please try connecting with Ethernet, waiting one hour, then pairing again.',
       add_hotspot_error_body:
         'There was an error constructing the Add Hotspot transaction. Please try again.',
       assert_loc_error_body:
