@@ -22,6 +22,7 @@ import merryIoT from './merryIoT'
 import milesight from './milesight'
 import midas from './midas'
 import dragino from './dragino'
+import aitek from './aitek'
 import { LangType, supportedLangs } from '../utils/i18n/i18nTypes'
 import { HotspotMakerLangField } from './hotspotMakerTypes'
 import { MakerType } from './makerType'
@@ -50,6 +51,7 @@ export const Makers: Record<string, MakerType> = {
   milesight,
   midas,
   dragino,
+  aitek,
 }
 
 export const AntennaModels = {
@@ -76,6 +78,7 @@ export const AntennaModels = {
   ...milesight.antennas,
   ...midas.antennas,
   ...dragino.antennas,
+  ...aitek.antennas,
 }
 
 export const HotspotMakerModels = {
@@ -101,6 +104,7 @@ export const HotspotMakerModels = {
   ...milesight.hotspots,
   ...midas.hotspots,
   ...dragino.hotspots,
+  ...aitek.hotspots,
 }
 
 export type HotspotType = keyof typeof HotspotMakerModels
